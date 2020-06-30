@@ -666,7 +666,11 @@ class lizmapProject extends qgisProject
 
     public function getFormFilterLayersConfig()
     {
-        return $this->cfg->formFilterLayers;
+        $config = Null;
+        if (property_exists($this->cfg, 'formFilterLayers')) {
+            $config = $this->cfg->formFilterLayers;
+        }
+        return $config;
     }
 
     public function hasTimemanagerLayers()

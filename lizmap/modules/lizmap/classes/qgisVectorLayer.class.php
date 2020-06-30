@@ -157,93 +157,20 @@ class qgisVectorLayer extends qgisMapLayer
             return $this->dtParams;
         }
 
-        // Get datasource information from QGIS
+        $datasourceParser = new qgisVectorLayerDatasource(
+            $this->provider,
+            $this->datasource
+        );
+        $parameters = array(
+            'dbname', 'service', 'host', 'port', 'user', 'password',
+            'sslmode', 'key', 'estimatedmetadata', 'selectatid',
+            'srid', 'type', 'checkPrimaryKeyUnicity',
+            'table', 'geocol', 'sql', 'schema', 'tablename'
+        );
 
-        // Provider ogr AND layername given -> the layer is Spatialite or GPKG
-        if( $this->provider == 'ogr' and preg_match('#layername=#', $this->datasource ) ){
-            $split = explode('|', $this->datasource);
-            $dbname = $split[0];
-            $table = str_replace('layername=', '', $split[1]);
-            $sql = '';
-            if( count($split) == 3 ){
-                $sql = str_replace('subset=', '', $split[1]);
-            }
-            $table = str_replace('layername=', '', $split[1]);
-            $ds = array (
-                'dbname' => $dbname,
-                'service' => '',
-                'host' => '',
-                'port' => '',
-                'user' => '',
-                'password' => '',
-                'sslmode' => '',
-                'key' => '',
-                'estimatedmetadata' => '',
-                'selectatid' => '',
-                'srid' => '',
-                'type' => '',
-                'checkPrimaryKeyUnicity' => '',
-                'table' => $table,
-                'geocol' => 'geom',
-                'sql' => $sql
-            );
-        }else {
-            // Else this is a regular database layer: provider = postgres or spatialite
-            $datasourceMatch = preg_match(
-                "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:checkPrimaryKeyUnicity='([0-1]+)' )?(?:table=\"([^ ]+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
-
-                $this->datasource,
-                $dt
-            );
-
-            if (count($dt) < 15 or $dt[14] == '') {
-
-                // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
-                $datasourceMatch = preg_match(
-                    "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:checkPrimaryKeyUnicity='([0-1]+)' )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
-                    $this->datasource,
-                    $dt
-                );
-            }
-
-            $ds = array(
-                'dbname' => $dt[1],
-                'service' => $dt[2],
-                'host' => $dt[3],
-                'port' => $dt[4],
-                'user' => $dt[5],
-                'password' => $dt[6],
-                'sslmode' => $dt[7],
-                'key' => $dt[8],
-                'estimatedmetadata' => $dt[9],
-                'selectatid' => $dt[10],
-                'srid' => $dt[11],
-                'type' => $dt[12],
-                'checkPrimaryKeyUnicity' => $dt[13],
-                'table' => $dt[14],
-                'geocol' => $dt[15],
-                'sql' => $dt[16],
-            );
+        foreach ($parameters as $param) {
+            $ds[$param] = $datasourceParser->getDatasourceParameter($param);
         }
-
-        $table = $ds['table'];
-        $tableAlone = $table;
-        $schema = '';
-        if (preg_match('#"."#', $table)) {
-            $table = '"'.$table.'"';
-            $exp = explode('.', str_replace('"', '', $table));
-            $tableAlone = $exp[1];
-            $schema = $exp[0];
-        }
-        // Handle subqueries
-        if (substr($table, 0, 1) == '(' and substr($table, -1) == ')') {
-            $table = $tableAlone = $table.' fooliz';
-            // remove \" which escapes table and schema names in QGIS WML within subquery
-            $table = str_replace('\"', '"', $table);
-        }
-        $ds['schema'] = $schema;
-        $ds['table'] = $table;
-        $ds['tablename'] = $tableAlone;
 
         $this->dtParams = (object) $ds;
 

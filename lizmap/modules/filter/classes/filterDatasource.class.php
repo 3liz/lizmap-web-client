@@ -311,7 +311,7 @@ class filterDatasource {
         }
         $sql.= ' FROM ' . $this->datasource->table;
         $sql.= ' WHERE 2>1';
-        if($filter){
+        if ($filter){
             $sql.= " AND ( " . $filter ." )";
         }
         return $this->getData($sql);
