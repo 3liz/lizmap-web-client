@@ -14,10 +14,6 @@ export default class Digitizing extends HTMLElement {
 
         const mainTemplate = () => html`
         <div class="digitizing">
-            <button type="button" class="digitizing-toggle-visibility btn" @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
-                <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
-            </button>
-            <input type="color" class="digitizing-color btn" value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
             <div class="digitizing-buttons btn-group">
                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                     <svg>
@@ -25,7 +21,7 @@ export default class Digitizing extends HTMLElement {
                     </svg>
                     <span class="caret"></span>
                 </a>
-                <ul class="dropdown-menu pull-right">
+                <ul class="dropdown-menu">
                     <li class="digitizing-point btn ${mainLizmap.digitizing.toolSelected === 'point' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'point'} data-original-title="${lizDict['digitizing.toolbar.query.point']}">
                         <svg>
                             <use xlink:href="#mActionSelectPoint"></use>
@@ -51,10 +47,14 @@ export default class Digitizing extends HTMLElement {
                     </li>
                 </ul>
             </div>
+            <input type="color" class="digitizing-color btn" value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
             <button type="button" class="digitizing-erase btn" @click=${() => mainLizmap.digitizing.erase()}>
                 <svg>
                     <use xlink:href="#eraser"/>
                 </svg>
+            </button>
+            <button type="button" class="digitizing-toggle-visibility btn" @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
+                <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
             <div class="digitizing-buffer">
                 <label><span>${lizDict['digitizing.toolbar.buffer']}</span>
