@@ -59,11 +59,11 @@ export default class Digitizing {
         this._bufferLayer = new OpenLayers.Layer.Vector(
             'drawBufferLayer', {
                 styleMap: new OpenLayers.StyleMap({
-                    fillColor: 'blue',
-                    fillOpacity: 0.1,
+                    fillColor: 'white',
+                    fillOpacity: 0,
                     strokeColor: 'blue',
                     strokeOpacity: 1,
-                    strokeWidth: 1,
+                    strokeWidth: 2,
                     strokeDashstyle: 'longdash'
                 })
             }
