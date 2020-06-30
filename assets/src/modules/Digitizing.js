@@ -105,6 +105,18 @@ export default class Digitizing {
             this.toolSelected = 'deactivate';
         };
 
+        // Disable getFeatureInfo when drawing with clicks
+        const drawAndGetFeatureInfoMutuallyExclusive = (event) => {
+            if (lizMap.controls.hasOwnProperty('featureInfo') && lizMap.controls.featureInfo){
+                if (event.type === 'activate' && lizMap.controls.featureInfo.active) {
+                    lizMap.controls.featureInfo.deactivate();
+                }
+                else if (event.type === 'deactivate' && !lizMap.controls.featureInfo.active) {
+                    lizMap.controls.featureInfo.activate();
+                }
+            }
+        };
+
         /**
          * Point
          * @type @new;OpenLayers.Control.DrawFeature
@@ -116,17 +128,8 @@ export default class Digitizing {
                 'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
-                    // getFeatureInfo and point draw controls are mutually exclusive
-                    'activate': function () {
-                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && lizMap.controls.featureInfo.active) {
-                            lizMap.controls.featureInfo.deactivate();
-                        }
-                    },
-                    'deactivate': function () {
-                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && !lizMap.controls.featureInfo.active) {
-                            lizMap.controls.featureInfo.activate();
-                        }
-                    }
+                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
+                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
                 }
             }
         );
@@ -142,17 +145,8 @@ export default class Digitizing {
                 'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
-                    // getFeatureInfo and point draw controls are mutually exclusive
-                    'activate': function () {
-                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && lizMap.controls.featureInfo.active) {
-                            lizMap.controls.featureInfo.deactivate();
-                        }
-                    },
-                    'deactivate': function () {
-                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && !lizMap.controls.featureInfo.active) {
-                            lizMap.controls.featureInfo.activate();
-                        }
-                    }
+                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
+                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
                 }
             }
         );
@@ -168,17 +162,8 @@ export default class Digitizing {
                 'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
-                    // getFeatureInfo and polygon draw controls are mutually exclusive
-                    'activate': function () {
-                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && lizMap.controls.featureInfo.active) {
-                            lizMap.controls.featureInfo.deactivate();
-                        }
-                    },
-                    'deactivate': function () {
-                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && !lizMap.controls.featureInfo.active) {
-                            lizMap.controls.featureInfo.activate();
-                        }
-                    }
+                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
+                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
                 }
             }
         );
