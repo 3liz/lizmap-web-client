@@ -118,7 +118,10 @@ build: debug
 
 tests: debug build
 	composer install --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
-	cd tests/units/ && php vendor/bin/phpunit
+	cd tests/units/ && php vendor/bin/phpunit -v
+
+quicktests: debug
+	cd tests/units/ && php vendor/bin/phpunit -v
 
 clean:
 	rm -rf $(STAGE)

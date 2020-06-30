@@ -492,7 +492,7 @@ class qgisProject
                 }
             }
             $WMSKeywordList = implode(', ', $values);
-            
+
             $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
             $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[1];
             $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[2];
