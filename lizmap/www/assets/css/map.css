@@ -2501,6 +2501,11 @@ div.tooltip {
   width: unset;
 }
 
+.digitizing .dropdown-menu{
+  min-width: unset;
+  padding: 3px;
+}
+
 .digitizing svg {
   width: 24px;
   height: 24px;
