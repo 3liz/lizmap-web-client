@@ -16,6 +16,8 @@ export default class Digitizing {
 
         this._featureDrawnVisibility = true;
 
+        this._isEdited = false;
+
         // Draw tools style
         const drawStyle = new OpenLayers.Style({
             pointRadius: 7,
@@ -196,10 +198,15 @@ export default class Digitizing {
             handlerOptions: { freehand: true }
         });
 
-        this._drawControls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
+        this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
 
-        // Add controls to map
-        mainLizmap.lizmap3.map.addControls(this._drawControls);
+        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer,
+            {standalone: true}
+        );
+
+        // Add draw and modification controls to map
+        mainLizmap.lizmap3.map.addControls(this._drawCtrls);
+        mainLizmap.lizmap3.map.addControl(this._editCtrl);
 
         // Display saved feature if any
         this.savedFeatureDrawnToMap();
@@ -220,7 +227,7 @@ export default class Digitizing {
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
-            for (const drawControl of this._drawControls) {
+            for (const drawControl of this._drawCtrls) {
                 drawControl.deactivate();
             }
 
@@ -251,6 +258,9 @@ export default class Digitizing {
 
                 this._toolSelected = tool;
             }
+
+            // Disable edition when tool changes
+            this.isEdited = false;
 
             mainEventDispatcher.dispatch('digitizing.toolSelected');
         }
@@ -297,6 +307,25 @@ export default class Digitizing {
         return null;
     }
 
+    get isEdited() {
+        return this._isEdited;
+    }
+
+    set isEdited(edited) {
+        if(this._isEdited != edited){
+            this._isEdited = edited;
+
+            if (this._isEdited) {
+                this._editCtrl.activate();
+                this._editCtrl.selectFeature(this.featureDrawn);
+            } else {
+                this._editCtrl.deactivate();
+            }
+
+            mainEventDispatcher.dispatch('digitizing.edit');
+        }
+    }
+
     toggleFeatureDrawnVisibility() {
         this._featureDrawnVisibility = !this._featureDrawnVisibility;
 
@@ -306,12 +335,20 @@ export default class Digitizing {
         mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
     }
 
+    toggleEdit() {
+        this.isEdited = !this.isEdited;
+    }
+
     erase() {
         this._drawLayer.destroyFeatures();
         this._bufferLayer.destroyFeatures();
 
         localStorage.removeItem('drawLayer');
         localStorage.removeItem('bufferLayer');
+
+        this.isEdited = false;
+
+        mainEventDispatcher.dispatch('digitizing.erase');
     }
 
     saveFeatureDrawn() {

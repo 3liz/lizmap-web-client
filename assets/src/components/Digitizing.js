@@ -2,8 +2,9 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 import '../images/svg/mActionSelectPoint.svg';
 import '../images/svg/mActionSelectLine.svg';
-import '../images/svg/eraser.svg';
 import '../images/svg/pencil.svg';
+import '../images/svg/edit.svg';
+import '../images/svg/eraser.svg';
 
 export default class Digitizing extends HTMLElement {
     constructor() {
@@ -48,12 +49,17 @@ export default class Digitizing extends HTMLElement {
                 </ul>
             </div>
             <input type="color" class="digitizing-color btn" value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
-            <button type="button" class="digitizing-erase btn" @click=${() => mainLizmap.digitizing.erase()}>
+            <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()}>
+                <svg>
+                    <use xlink:href="#edit"/>
+                </svg>
+            </button>
+            <button type="button" class="digitizing-erase btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.erase()}>
                 <svg>
                     <use xlink:href="#eraser"/>
                 </svg>
             </button>
-            <button type="button" class="digitizing-toggle-visibility btn" @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
+            <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
             <div class="digitizing-buffer">
@@ -76,7 +82,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.bufferValue']
+            ['digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.bufferValue', 'digitizing.edit', 'digitizing.erase']
         );
     }
 
