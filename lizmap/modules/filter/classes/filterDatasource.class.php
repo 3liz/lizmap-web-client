@@ -128,6 +128,9 @@ class filterDatasource {
         if($filter){
             $sql.= " AND ( " . $filter ." )";
         }
+        if (!empty($this->datasource->sql)) {
+            $sql.= " AND ( " . $this->datasource->sql . " )";
+        }
         return $this->getData($sql);
 
     }
@@ -176,6 +179,9 @@ class filterDatasource {
             if($filter){
                 $sql.= " AND ( " . $filter ." )";
             }
+            if (!empty($this->datasource->sql)) {
+                $sql.= " AND ( " . $this->datasource->sql . " )";
+            }
             $sql.= ' GROUP BY v';
             $sql.= ' ORDER BY v';
         } else {
@@ -193,6 +199,9 @@ class filterDatasource {
                 $sql.= '     WHERE 2>1';
                 if($filter){
                     $sql.= "    AND ( " . $filter ." )";
+                }
+                if (!empty($this->datasource->sql)) {
+                    $sql.= " AND ( " . $this->datasource->sql . " )";
                 }
                 $sql.= ') t';
                 $sql.= ' GROUP BY v';
@@ -212,8 +221,11 @@ class filterDatasource {
                 $sql.= '    SELECT ' . implode(' || ', $pkfields) . ' AS id,';
                 $sql.= '        substr("' . $fieldname . '", 1, instr("' . $fieldname . '", ' . $this->cnx->quote($splitter). ')-1) as first_item,';
                 $sql.= '        substr("' . $fieldname . '", instr("' . $fieldname . '", ' . $this->cnx->quote($splitter). ')+1) as rest';
-                $sql.= '    FROM events';
+                $sql.= '    FROM ' . $this->datasource->table;
                 $sql.= '    WHERE "' . $fieldname . '" LIKE ' . $this->cnx->quote('%' . $splitter . '%' );
+                if (!empty($this->datasource->sql)) {
+                    $sql.= " AND ( " . $this->datasource->sql . " )";
+                }
                 $sql.= '    UNION ALL';
                 $sql.= '    SELECT id,';
                 $sql.= '        substr(rest, 1, instr(rest, ' . $this->cnx->quote($splitter) .')-1) AS first_item,';
@@ -233,8 +245,11 @@ class filterDatasource {
                 $sql.= '    GROUP BY rest';
                 $sql.= '    UNION ALL';
                 $sql.= '    SELECT \'NULL\' AS cat, count(' . implode(' || ', $pkfields) . ') AS nb';
-                $sql.= '    FROM events';
+                $sql.= '    FROM ' . $this->datasource->table;
                 $sql.= '    WHERE "' . $fieldname . '" IS NULL';
+                if (!empty($this->datasource->sql)) {
+                    $sql.= " AND ( " . $this->datasource->sql . " )";
+                }
                 $sql.= ' )';
                 $sql.= ' SELECT cat AS v, sum(nb) AS c';
                 $sql.= ' FROM source';
@@ -288,6 +303,9 @@ class filterDatasource {
         if($filter){
             $sql.= " AND ( " . $filter ." )";
         }
+        if (!empty($this->datasource->sql)) {
+            $sql.= " AND ( " . $this->datasource->sql . " )";
+        }
         return $this->getData($sql);
     }
 
@@ -329,6 +347,9 @@ class filterDatasource {
         $sql.= ' WHERE 2>1';
         if($filter){
             $sql.= " AND ( " . $filter ." )";
+        }
+        if (!empty($this->datasource->sql)) {
+            $sql.= " AND ( " . $this->datasource->sql . " )";
         }
         return $this->getData($sql);
     }
