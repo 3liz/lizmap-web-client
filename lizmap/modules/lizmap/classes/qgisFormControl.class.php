@@ -317,14 +317,25 @@ class qgisFormControl
             case 'input':
                 $this->ctrl = new jFormsControlInput($this->ref);
                 if ($this->fieldEditType === 15) {
-                    $this->ctrl->minvalue = (float) $this->edittype->attributes()->min;
-                    $this->ctrl->maxvalue = (float) $this->edittype->attributes()->max;
+                    $this->ctrl->datatype = new jDatatypeDecimal();
+                    $attributes = $this->edittype->attributes();
+                    if (property_exists($attributes, 'min')) {
+                        $this->ctrl->datatype->addFacet('minValue', (float) $attributes->min);
+                    }
+                    if (property_exists($attributes, 'max')) {
+                        $this->ctrl->datatype->addFacet('maxValue', (float) $attributes->max);
+                    }
                 } elseif ($this->fieldEditType === 'Range' ||
                          $this->fieldEditType === 'EditRange') {
-                    $this->ctrl->minvalue = (float) $this->widgetv2configAttr->Min;
-                    $this->ctrl->maxvalue = (float) $this->widgetv2configAttr->Max;
+                    $this->ctrl->datatype = new jDatatypeDecimal();
+                    $attributes = $this->widgetv2configAttr;
+                    if (property_exists($attributes, 'Min')) {
+                        $this->ctrl->datatype->addFacet('minValue', (float) $attributes->Min);
+                    }
+                    if (property_exists($attributes, 'Max')) {
+                        $this->ctrl->datatype->addFacet('maxValue', (float) $attributes->Max);
+                    }
                 }
-
                 break;
 
             case 'menulist':
