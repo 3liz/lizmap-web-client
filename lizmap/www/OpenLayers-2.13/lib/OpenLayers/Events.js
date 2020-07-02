@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015 by OpenLayers Contributors (see authors.txt for
+/* Copyright (c) 2006-2013 by OpenLayers Contributors (see authors.txt for
  * full list of contributors). Published under the 2-clause BSD license.
  * See license.txt in the OpenLayers distribution or repository for the
  * full text of the license. */
@@ -122,23 +122,6 @@ OpenLayers.Event = {
      */
     isMultiTouch: function (event) {
         return event.touches && event.touches.length > 1;
-    },
-
-    /**
-     * Method: isTouchEvent
-     * Determine whether the event was triggered by a touch
-     * 
-     * Parameters:
-     * evt - {Event}
-     * 
-     * Returns:
-     * {Boolean}
-     */
-    isTouchEvent: function (evt) {
-        return ("" + evt.type).indexOf("touch") === 0 || (
-            "pointerType" in evt && (
-                evt.pointerType === evt.MSPOINTER_TYPE_TOUCH /*IE10 pointer*/ ||
-                evt.pointerType === "touch" /*W3C pointer*/));
     },
 
     /**
@@ -429,24 +412,6 @@ OpenLayers.Events = OpenLayers.Class({
         "keydown"
     ],
 
-    /**
-     * Constant: standard pointer model
-     * {string}
-     */
-    TOUCH_MODEL_POINTER: "pointer",
-
-    /**
-     * Constant: prefixed pointer model (IE10)
-     * {string}
-     */
-    TOUCH_MODEL_MSPOINTER: "MSPointer",
-
-    /**
-     * Constant: legacy touch model
-     * {string}
-     */
-    TOUCH_MODEL_TOUCH: "touch",
-
     /** 
      * Property: listeners 
      * {Object} Hashtable of Array(Function): events listener functions  
@@ -605,7 +570,7 @@ OpenLayers.Events = OpenLayers.Class({
         this.listeners = {};
         this.extensions = {};
         this.extensionCount = {};
-        this._pointerTouches = [];
+        this._msTouches = [];
 
         // if a dom element is specified, add a listeners list 
         // for browser events on the element and register them
@@ -672,17 +637,15 @@ OpenLayers.Events = OpenLayers.Class({
             );
         }
         this.element = element;
-        var touchModel = this.getTouchModel();
+        var msTouch = !!window.navigator.msMaxTouchPoints;
         var type;
         for (var i = 0, len = this.BROWSER_EVENTS.length; i < len; i++) {
             type = this.BROWSER_EVENTS[i];
             // register the event cross-browser
-            if ((touchModel === this.TOUCH_MODEL_POINTER ||
-                touchModel === this.TOUCH_MODEL_MSPOINTER) &&
-                type.indexOf('touch') === 0) {
-                this.addPointerTouchListener(element, type, this.eventHandler);
-            } else {
-                OpenLayers.Event.observe(element, type, this.eventHandler);
+            OpenLayers.Event.observe(element, type, this.eventHandler
+            );
+            if (msTouch && type.indexOf('touch') === 0) {
+                this.addMsTouchListener(element, type, this.eventHandler);
             }
         }
         // disable dragstart in IE so that mousedown/move/up works normally
@@ -939,7 +902,7 @@ OpenLayers.Events = OpenLayers.Class({
     handleBrowserEvent: function (evt) {
         var type = evt.type, listeners = this.listeners[type];
         if (!listeners || listeners.length == 0) {
-            // no one's listening, bail out
+            // noone's listening, bail out
             return;
         }
         // add clientX & clientY to all events - corresponds to average x, y
@@ -1062,38 +1025,18 @@ OpenLayers.Events = OpenLayers.Class({
     },
 
     /**
-     * Method: getTouchModel
-     * Get the touch model currently in use.
-     * 
-     * This is cached on OpenLayers.Events as _TOUCH_MODEL 
-     * 
-     * Returns:
-     * {string} The current touch model (TOUCH_MODEL_xxx), null if none
-     */
-    getTouchModel: function () {
-        if (!("_TOUCH_MODEL" in OpenLayers.Events)) {
-            OpenLayers.Events._TOUCH_MODEL =
-                (window.PointerEvent && "pointer") ||
-                (window.MSPointerEvent && "MSPointer") ||
-                (("ontouchdown" in document) && "touch") ||
-                null;
-        }
-        return OpenLayers.Events._TOUCH_MODEL;
-    },
-
-    /**
-     * Method: addPointerTouchListener
+     * Method: addMsTouchListener
      *
      * Parameters:
      * element - {DOMElement} The DOM element to register the listener on
      * type - {String} The event type
      * handler - {Function} the handler
      */
-    addPointerTouchListener: function (element, type, handler) {
+    addMsTouchListener: function (element, type, handler) {
         var eventHandler = this.eventHandler;
-        var touches = this._pointerTouches;
+        var touches = this._msTouches;
 
-        function pointerHandler(evt) {
+        function msHandler(evt) {
             handler(OpenLayers.Util.applyDefaults({
                 stopPropagation: function () {
                     for (var i = touches.length - 1; i >= 0; --i) {
@@ -1111,33 +1054,28 @@ OpenLayers.Events = OpenLayers.Class({
 
         switch (type) {
             case 'touchstart':
-                return this.addPointerTouchListenerStart(element, type, pointerHandler);
+                return this.addMsTouchListenerStart(element, type, msHandler);
             case 'touchend':
-                return this.addPointerTouchListenerEnd(element, type, pointerHandler);
+                return this.addMsTouchListenerEnd(element, type, msHandler);
             case 'touchmove':
-                return this.addPointerTouchListenerMove(element, type, pointerHandler);
+                return this.addMsTouchListenerMove(element, type, msHandler);
             default:
                 throw 'Unknown touch event type';
         }
     },
 
     /**
-     * Method: addPointerTouchListenerStart
+     * Method: addMsTouchListenerStart
      *
      * Parameters:
      * element - {DOMElement} The DOM element to register the listener on
      * type - {String} The event type
      * handler - {Function} the handler
      */
-    addPointerTouchListenerStart: function (element, type, handler) {
-        var touches = this._pointerTouches;
+    addMsTouchListenerStart: function (element, type, handler) {
+        var touches = this._msTouches;
 
         var cb = function (e) {
-
-            // pointer could be mouse or pen
-            if (!OpenLayers.Event.isTouchEvent(e)) {
-                return;
-            }
 
             var alreadyInArray = false;
             for (var i = 0, ii = touches.length; i < ii; ++i) {
@@ -1154,52 +1092,35 @@ OpenLayers.Events = OpenLayers.Class({
             handler(e);
         };
 
-        OpenLayers.Event.observe(element,
-            this.getTouchModel() === this.TOUCH_MODEL_MSPOINTER ?
-                'MSPointerDown' : 'pointerdown',
-            cb);
+        OpenLayers.Event.observe(element, 'MSPointerDown', cb);
 
-        // the pointerId only needs to be removed from the _pointerTouches array
-        // when the pointer has left its element
+        // Need to also listen for end events to keep the _msTouches list
+        // accurate
         var internalCb = function (e) {
-
-            // pointer could be mouse or pen
-            if (!OpenLayers.Event.isTouchEvent(e)) {
-                return;
-            }
-
-            var up = false;
             for (var i = 0, ii = touches.length; i < ii; ++i) {
                 if (touches[i].pointerId == e.pointerId) {
-                    if (this.clientWidth != 0 && this.clientHeight != 0) {
-                        if ((Math.ceil(e.clientX) >= this.clientWidth || Math.ceil(e.clientY) >= this.clientHeight)) {
-                            touches.splice(i, 1);
-                        }
-                    }
+                    touches.splice(i, 1);
                     break;
                 }
             }
         };
-        OpenLayers.Event.observe(element,
-            this.getTouchModel() === this.TOUCH_MODEL_MSPOINTER ?
-                'MSPointerOut' : 'pointerout',
-            internalCb);
+        OpenLayers.Event.observe(element, 'MSPointerUp', internalCb);
     },
 
     /**
-     * Method: addPointerTouchListenerMove
+     * Method: addMsTouchListenerMove
      *
      * Parameters:
      * element - {DOMElement} The DOM element to register the listener on
      * type - {String} The event type
      * handler - {Function} the handler
      */
-    addPointerTouchListenerMove: function (element, type, handler) {
-        var touches = this._pointerTouches;
+    addMsTouchListenerMove: function (element, type, handler) {
+        var touches = this._msTouches;
         var cb = function (e) {
 
-            // pointer could be mouse or pen
-            if (!OpenLayers.Event.isTouchEvent(e)) {
+            //Don't fire touch moves when mouse isn't down
+            if (e.pointerType == e.MSPOINTER_TYPE_MOUSE && e.buttons == 0) {
                 return;
             }
 
@@ -1219,29 +1140,21 @@ OpenLayers.Events = OpenLayers.Class({
             handler(e);
         };
 
-        OpenLayers.Event.observe(element,
-            this.getTouchModel() === this.TOUCH_MODEL_MSPOINTER ?
-                'MSPointerMove' : 'pointermove',
-            cb);
+        OpenLayers.Event.observe(element, 'MSPointerMove', cb);
     },
 
     /**
-     * Method: addPointerTouchListenerEnd
+     * Method: addMsTouchListenerEnd
      *
      * Parameters:
      * element - {DOMElement} The DOM element to register the listener on
      * type - {String} The event type
      * handler - {Function} the handler
      */
-    addPointerTouchListenerEnd: function (element, type, handler) {
-        var touches = this._pointerTouches;
+    addMsTouchListenerEnd: function (element, type, handler) {
+        var touches = this._msTouches;
 
         var cb = function (e) {
-
-            // pointer could be mouse or pen
-            if (!OpenLayers.Event.isTouchEvent(e)) {
-                return;
-            }
 
             for (var i = 0, ii = touches.length; i < ii; ++i) {
                 if (touches[i].pointerId == e.pointerId) {
@@ -1254,10 +1167,7 @@ OpenLayers.Events = OpenLayers.Class({
             handler(e);
         };
 
-        OpenLayers.Event.observe(element,
-            this.getTouchModel() === this.TOUCH_MODEL_MSPOINTER ?
-                'MSPointerUp' : 'pointerup',
-            cb);
+        OpenLayers.Event.observe(element, 'MSPointerUp', cb);
     },
 
     CLASS_NAME: "OpenLayers.Events"
