@@ -110,8 +110,8 @@ build: debug
 	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
 
 tests: debug build
-	@echo "No tests yet. All is ok."
-
+	composer install --working-dir=tests/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
+	cd tests/ && php vendor/bin/phpunit --debug
 clean:
 	rm -rf $(STAGE)
 	rm -f $(DOCKER_MANIFEST) docker/$(GENERIC_PACKAGE_ZIP)
