@@ -3,7 +3,7 @@
     <info id="info@3liz.com" name="admin" createdate="2012-07-27">
         <version date="2020-04-30">3.4.0-alpha.1</version>
         <label lang="en_US">admin</label>
-        <description lang="en_US" />
+        <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
         <copyright>2012-2020 3liz</copyright>
         <creator name="3liz" email="info@3liz.com"/>
@@ -11,9 +11,9 @@
     </info>
     <dependencies>
         <jelix minversion="1.5" maxversion="1.6.*"/>
-        <module name="jacl2db" />
-        <module name="master_admin" />
-        <module name="jauthdb_admin" />
-        <module name="jacl2db_admin" />
+        <module name="jacl2db"/>
+        <module name="master_admin"/>
+        <module name="jauthdb_admin"/>
+        <module name="jacl2db_admin"/>
     </dependencies>
 </module>
