@@ -15,28 +15,6 @@
         <module name="admin"/>
     </dependencies>
     <autoload>
-<<<<<<< HEAD
-        <class name="lizmap" file="classes/lizmap.class.php" />
-        <class name="lizmapLogItem" file="classes/lizmapLogItem.class.php" />
-        <class name="lizmapOGCRequest" file="classes/lizmapOGCRequest.class.php" />
-        <class name="qgisProject" file="classes/qgisProject.class.php" />
-        <class name="lizmapProject" file="classes/lizmapProject.class.php" />
-        <class name="lizmapProxy" file="classes/lizmapProxy.class.php" />
-        <class name="lizmapRepository" file="classes/lizmapRepository.class.php" />
-        <class name="lizmapWMSRequest" file="classes/lizmapWMSRequest.class.php" />
-        <class name="lizmapWFSRequest" file="classes/lizmapWFSRequest.class.php" />
-        <class name="lizmapWMTSRequest" file="classes/lizmapWMTSRequest.class.php" />
-        <class name="lizmapTiler" file="classes/lizmapTiler.class.php" />
-        <class name="qgisMapLayer" file="classes/qgisMapLayer.class.php" />
-        <class name="qgisVectorLayerDatasource" file="classes/qgisVectorLayerDatasource.class.php" />
-        <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php" />
-        <class name="qgisForm" file="classes/qgisForm.class.php" />
-        <class name="qgisFormControl" file="classes/qgisFormControl.class.php" />
-        <class name="qgisAttributeEditorElement" file="classes/qgisAttributeEditorElement.class.php" />
-        <class name="qgisLayerDbFieldsInfo" file="classes/qgisLayerDbFieldsInfo.class.php" />
-        <class name="qgisFormControlsInterface" file="classes/qgisFormControlsInterface.php" />
-        <namespacePathMap name="Lizmap" dir="lib" />
-=======
         <class name="lizmap" file="classes/lizmap.class.php"/>
         <class name="lizmapLogItem" file="classes/lizmapLogItem.class.php"/>
         <class name="lizmapOGCRequest" file="classes/lizmapOGCRequest.class.php"/>
@@ -49,6 +27,7 @@
         <class name="lizmapWMTSRequest" file="classes/lizmapWMTSRequest.class.php"/>
         <class name="lizmapTiler" file="classes/lizmapTiler.class.php"/>
         <class name="qgisMapLayer" file="classes/qgisMapLayer.class.php"/>
+        <class name="qgisVectorLayerDatasource" file="classes/qgisVectorLayerDatasource.class.php"/>
         <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php"/>
         <class name="qgisForm" file="classes/qgisForm.class.php"/>
         <class name="qgisFormControl" file="classes/qgisFormControl.class.php"/>
@@ -56,6 +35,5 @@
         <class name="qgisLayerDbFieldsInfo" file="classes/qgisLayerDbFieldsInfo.class.php"/>
         <class name="qgisFormControlsInterface" file="classes/qgisFormControlsInterface.php"/>
         <namespacePathMap name="Lizmap" dir="lib"/>
->>>>>>> github/release_3_3
     </autoload>
 </module>
