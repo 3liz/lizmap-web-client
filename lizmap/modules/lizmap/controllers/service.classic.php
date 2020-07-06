@@ -663,13 +663,11 @@ class serviceCtrl extends jController
         $rep->setHttpStatus($result->code, '');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
-        $rep->doDownload = false;
+        $rep->doDownload = true;
         $rep->outputFileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
 
         // Log
-        $logContent = '
-     <a href="'.jUrl::get('lizmap~service:index', jApp::coord()->request->params).'" target="_blank">'.$this->params['template'].'<a>
-     ';
+        $logContent = '<a href="'.jUrl::get('lizmap~service:index', jApp::coord()->request->params).'" target="_blank">'.$this->params['template'].'<a>';
         $eventParams = array(
             'key' => 'print',
             'content' => $logContent,
