@@ -58,6 +58,12 @@ export default class Digitizing {
             }
         );
 
+        this._drawLayer.events.on({
+            'afterfeaturemodified': () => {
+                this.isEdited = false;
+            }
+        });
+
         this._bufferLayer = new OpenLayers.Layer.Vector(
             'drawBufferLayer', {
                 styleMap: new OpenLayers.StyleMap({
@@ -319,6 +325,7 @@ export default class Digitizing {
                 this._editCtrl.activate();
                 this._editCtrl.selectFeature(this.featureDrawn);
             } else {
+                this.saveFeatureDrawn();
                 this._editCtrl.deactivate();
             }
 
