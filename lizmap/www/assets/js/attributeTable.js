@@ -1333,7 +1333,34 @@ var lizAttributeTable = function() {
                             case 'long':
                             case 'unsignedLong':
                                 colConf['mRender'] = function( data, type, full, meta ){
-                                    return parseInt(data);
+                                    // Translate field ( language translation OR code->label translation )
+                                    var colMeta = meta.settings.aoColumns[meta.col];
+                                    var colName = colMeta.mData
+                                    var translation_dict = null;
+                                    var tdata = data;
+                                    if(data || data === 0)
+                                        tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
+                                    if( tdata === null )
+                                        tdata = data;
+
+                                    // Replace media and URL with links
+                                    if( !tdata || !( typeof tdata === 'string') )
+                                        return tdata;
+                                    if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
+                                        var rdata = tdata;
+                                        if( tdata.substr(0,7) == '/media/' )
+                                            rdata = tdata.slice(1);
+                                        return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
+                                    }
+                                    else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
+                                        var rdata = tdata;
+                                        if(tdata.substr(0,3) == 'www')
+                                            rdata = 'http://' + tdata;
+                                        return '<a href="' + rdata + '" target="_blank">' + tdata + '</a>';
+                                    }
+                                    else
+                                        return tdata;
+                                    //return parseInt(data);
                                 }
                                 colConf['className'] = 'text-right';
                                 break;
