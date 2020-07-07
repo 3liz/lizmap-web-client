@@ -4071,6 +4071,14 @@ var lizMap = function() {
       if ( selection.length !=0 ){
         printParams['SELECTIONTOKEN'] = selection.join(';');
       }
+
+      // if user has made a visible draw, print it with redlining
+      if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
+        const formatWKT = new OpenLayers.Format.WKT();
+
+        printParams['map0:HIGHLIGHT_GEOM'] = formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn);
+        printParams['map0:HIGHLIGHT_SYMBOL'] = lizMap.mainLizmap.digitizing.featureDrawnSLD;
+      }
       
       downloadFile(url, printParams);
       return false;
