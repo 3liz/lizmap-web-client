@@ -1,7 +1,5 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {html, render} from 'lit-html';
-import '../images/svg/mActionSelectPoint.svg';
-import '../images/svg/mActionSelectLine.svg';
 
 export default class SelectionTool extends HTMLElement {
     constructor() {

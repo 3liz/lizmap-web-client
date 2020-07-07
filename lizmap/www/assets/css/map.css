@@ -2493,8 +2493,9 @@ div.tooltip {
 
 .digitizing .btn {
   width: 45px;
-  height: 40px;
+  height: 45px;
   box-sizing: border-box;
+  padding: 10px;
 }
 
 .digitizing .dropdown-toggle{
@@ -2518,6 +2519,7 @@ div.tooltip {
 input[type="color"].digitizing-color{
   vertical-align: top;
   cursor: pointer;
+  padding: 4px;
 }
 
 .digitizing-buffer > label > span {
