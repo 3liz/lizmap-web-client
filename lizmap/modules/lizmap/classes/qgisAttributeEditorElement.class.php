@@ -181,4 +181,33 @@ class qgisAttributeEditorElement
             count($this->childrenBeforeTab) +
             count($this->childrenAfterTab)) > 0;
     }
+
+    public function getFields()
+    {
+        $fields = array();
+        if (!$this->hasChildren()) {
+            return $fields;
+        }
+
+        foreach ($this->getChildrenBeforeTab() as $child) {
+            if ($child->isGroupBox()) {
+                array_merge($fields, $child->getFields());
+            } else {
+                $fields[] = $child->getCtrlRef();
+            }
+        }
+
+        foreach ($this->getTabChildren() as $child) {
+            array_merge($fields, $child->getFields());
+        }
+
+        foreach ($this->getChildrenAfterTab() as $child) {
+            if ($child->isGroupBox()) {
+                array_merge($fields, $child->getFields());
+            } else {
+                $fields[] = $child->getCtrlRef();
+            }
+        }
+        return $fields;
+    }
 }

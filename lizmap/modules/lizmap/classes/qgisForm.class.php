@@ -487,17 +487,44 @@ class qgisForm implements qgisFormControlsInterface
         $dataFields = $this->dbFieldsInfo->dataFields;
         $geometryColumn = $this->dbFieldsInfo->geometryColumn;
 
+        // Get list of fields diplayed in form
+        // can be an empty list
+        $formFields = array();
+        $attributeEditorForm = $this->getAttributesEditorForm();
+        if ($attributeEditorForm) {
+            $formFields = $attributeEditorForm->getFields();
+        }
+
         // Get list of fields which are not primary keys
         $fields = array();
         foreach ($dataFields as $fieldName => $prop) {
-            // For update : And get only fields corresponding to edition capabilities
-            if (
-                (strtolower($capabilities->modifyAttribute) == 'true' and $fieldName != $geometryColumn)
-                or (strtolower($capabilities->modifyGeometry) == 'true' and $fieldName == $geometryColumn)
-                or $insertAction
-            ) {
-                $fields[] = $fieldName;
+            // For geometry column does not add it
+            // if it's not an insert action
+            // and no geometry modification capability
+            if ($fieldName == $geometryColumn
+                && !$insertAction
+                && strtolower($capabilities->modifyGeometry) != 'true') {
+                continue;
             }
+
+            // For other column than geometry does not add it
+            // if it's not an insert action
+            // and no attribute modification capability
+            if ($fieldName != $geometryColumn
+                && !$insertAction
+                && strtolower($capabilities->modifyAttribute) != 'true') {
+                continue;
+            }
+
+            // For other column than geometry does not add it
+            // if it's column not in form
+            if ($fieldName != $geometryColumn
+                && count($formFields) != 0
+                && !in_array($fieldName, $formFields)) {
+                continue;
+            }
+
+            $fields[] = $fieldName;
         }
 
         if (count($fields) == 0) {
@@ -512,9 +539,14 @@ class qgisForm implements qgisFormControlsInterface
         $values = array();
         // Loop though the fields and filter the form posted values
         foreach ($fields as $ref) {
-            if ($form->getControl($ref) instanceof jFormsControlUpload) {
+            $jCtrl = $form->getControl($ref);
+            // Field not in form
+            if ($jCtrl === null) {
+                continue;
+            }
+            // Control is an upload control
+            if ($jCtrl instanceof jFormsControlUpload) {
                 $values[$ref] = $this->processUploadedFile($form, $ref, $cnx);
-
                 continue;
             }
 
