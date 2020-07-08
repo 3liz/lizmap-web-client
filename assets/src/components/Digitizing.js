@@ -62,7 +62,7 @@ export default class Digitizing extends HTMLElement {
                     </li>
                 </ul>
             </div>
-            <input type="color" class="digitizing-color btn" value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
+            <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
             <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()}>
                 <svg>
                     <use xlink:href="#edit"/>
@@ -89,7 +89,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.edit', 'digitizing.erase']
+            ['digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.edit', 'digitizing.erase', 'digitizing.drawColor']
         );
     }
 
