@@ -332,8 +332,8 @@ class qgisForm
             if ($c->name === 'attributeEditorField') {
                 // Get field name
                 $fields[] = $c->attributes->name;
-            } elseif ($c->name === 'attributeEditorContainer') {
-                array_merge($fields, $this->getEditorContainerFields($c));
+            } else if ($c->name === 'attributeEditorContainer') {
+                $fields = array_merge($fields, $this->getEditorContainerFields($c));
             }
         }
         return $fields;
