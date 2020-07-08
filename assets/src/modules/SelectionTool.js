@@ -111,7 +111,7 @@ export default class SelectionTool {
                     }
                 }
             },
-            ['digitizing.featureDrawn']
+            ['digitizing.featureDrawn', 'digitizing.edit']
         );
 
         // Change buffer visibility on digitizing.featureDrawnVisibility event
