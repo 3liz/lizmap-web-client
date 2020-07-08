@@ -191,19 +191,19 @@ class qgisAttributeEditorElement
 
         foreach ($this->getChildrenBeforeTab() as $child) {
             if ($child->isGroupBox()) {
-                array_merge($fields, $child->getFields());
+                $fields = array_merge($fields, $child->getFields());
             } else {
                 $fields[] = $child->getCtrlRef();
             }
         }
 
         foreach ($this->getTabChildren() as $child) {
-            array_merge($fields, $child->getFields());
+            $fields = array_merge($fields, $child->getFields());
         }
 
         foreach ($this->getChildrenAfterTab() as $child) {
             if ($child->isGroupBox()) {
-                array_merge($fields, $child->getFields());
+                $fields = array_merge($fields, $child->getFields());
             } else {
                 $fields[] = $child->getCtrlRef();
             }
