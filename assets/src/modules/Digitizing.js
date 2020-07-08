@@ -250,6 +250,8 @@ export default class Digitizing {
 
         drawStyles.temporary.defaultStyle.fillColor = color;
         drawStyles.temporary.defaultStyle.strokeColor = color;
+
+        mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
     get featureDrawn() {
