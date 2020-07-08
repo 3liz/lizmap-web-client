@@ -76,13 +76,6 @@ export default class Digitizing extends HTMLElement {
             <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
-            <div class="digitizing-buffer">
-                <label><span>${lizDict['digitizing.toolbar.buffer']}</span>
-                    <div class="input-append">
-                        <input class="input-mini" type="number" min="0" .value="${mainLizmap.digitizing.bufferValue}" @input=${ (event) => mainLizmap.digitizing.bufferValue = parseInt(event.target.value)}><span class="add-on">m</span>
-                    </div>
-                </label>
-            </div>
         </div>`;
 
         render(mainTemplate(), this);
@@ -96,7 +89,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.bufferValue', 'digitizing.edit', 'digitizing.erase']
+            ['digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.edit', 'digitizing.erase']
         );
     }
 

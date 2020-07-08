@@ -1,7 +1,4 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
-import GeoJSONWriter from 'jsts/org/locationtech/jts/io/GeoJSONWriter.js';
-import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
 
 export default class Digitizing {
 
@@ -12,7 +9,6 @@ export default class Digitizing {
 
         // Set draw color to value in local storage if any or default (red)
         this._drawColor = localStorage.getItem('drawColor') || '#ff0000';
-        this._bufferValue = 0;
 
         this._featureDrawnVisibility = true;
 
@@ -64,20 +60,7 @@ export default class Digitizing {
             }
         });
 
-        this._bufferLayer = new OpenLayers.Layer.Vector(
-            'drawBufferLayer', {
-                styleMap: new OpenLayers.StyleMap({
-                    fillColor: 'white',
-                    fillOpacity: 0,
-                    strokeColor: 'blue',
-                    strokeOpacity: 1,
-                    strokeWidth: 2,
-                    strokeDashstyle: 'longdash'
-                })
-            }
-        );
-
-        mainLizmap.lizmap3.map.addLayers([this._drawLayer, this._bufferLayer]);
+        mainLizmap.lizmap3.map.addLayer(this._drawLayer);
 
         const onDrawFeatureAdded = (feature) => {
             /**
@@ -87,22 +70,6 @@ export default class Digitizing {
                 if (feature.layer.features.length > 1) {
                     feature.layer.destroyFeatures(feature.layer.features.shift());
                 }
-            }
-
-            // Handle buffer if any
-            this._bufferLayer.destroyFeatures();
-            if (this._bufferValue > 0) {
-                const geoJSONParser = new OpenLayers.Format.GeoJSON();
-                const drawGeoJSON = geoJSONParser.write(feature.geometry);
-                const jstsGeoJSONReader = new GeoJSONReader();
-                const jstsGeoJSONWriter = new GeoJSONWriter();
-                const jstsGeom = jstsGeoJSONReader.read(drawGeoJSON);
-                const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
-                const bufferedDraw = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
-
-                // Draw buffer
-                this._bufferLayer.addFeatures(bufferedDraw);
-                this._bufferLayer.redraw(true);
             }
 
             // Save features drawn in localStorage
@@ -222,10 +189,6 @@ export default class Digitizing {
         return this._drawLayer;
     }
 
-    get bufferLayer() {
-        return this._bufferLayer;
-    }
-
     get toolSelected() {
         return this._toolSelected;
     }
@@ -289,16 +252,6 @@ export default class Digitizing {
         drawStyles.temporary.defaultStyle.strokeColor = color;
     }
 
-    get bufferValue(){
-        return this._bufferValue;
-    }
-
-    set bufferValue(bufferValue){
-        this._bufferValue = isNaN(bufferValue) ? 0 : bufferValue;
-
-        mainEventDispatcher.dispatch('digitizing.bufferValue');
-    }
-
     get featureDrawn() {
         if (this._drawLayer.features.length){
             return this._drawLayer.features[0];
@@ -308,13 +261,6 @@ export default class Digitizing {
 
     get featureDrawnVisibility() {
         return this._featureDrawnVisibility;
-    }
-
-    get featureDrawnBuffered() {
-        if (this._bufferLayer.features.length) {
-            return this._bufferLayer.features[0];
-        }
-        return null;
     }
 
     get featureDrawnSLD() {
@@ -391,7 +337,6 @@ export default class Digitizing {
         this._featureDrawnVisibility = !this._featureDrawnVisibility;
 
         this._drawLayer.setVisibility(this._featureDrawnVisibility);
-        this._bufferLayer.setVisibility(this._featureDrawnVisibility);
 
         mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
     }
@@ -402,10 +347,8 @@ export default class Digitizing {
 
     erase() {
         this._drawLayer.destroyFeatures();
-        this._bufferLayer.destroyFeatures();
 
         localStorage.removeItem('drawLayer');
-        localStorage.removeItem('bufferLayer');
 
         this.isEdited = false;
 
@@ -419,9 +362,6 @@ export default class Digitizing {
         if (this.featureDrawn){
             localStorage.setItem('drawLayer', formatWKT.write(this.featureDrawn));
         }
-        if (this.featureDrawnBuffered){
-            localStorage.setItem('bufferLayer', formatWKT.write(this.featureDrawnBuffered));
-        }
 
         // Save color
         localStorage.setItem('drawColor', this._drawColor);
@@ -431,16 +371,10 @@ export default class Digitizing {
         const formatWKT = new OpenLayers.Format.WKT();
 
         const drawLayerWKT = localStorage.getItem('drawLayer');
-        const bufferLayerWKT = localStorage.getItem('bufferLayer');
 
         if (drawLayerWKT){
             this._drawLayer.addFeatures(formatWKT.read(drawLayerWKT));
             this._drawLayer.redraw(true);
-        }
-
-        if (bufferLayerWKT){
-            this._bufferLayer.addFeatures(formatWKT.read(bufferLayerWKT));
-            this._bufferLayer.redraw(true);
         }
     }
 }

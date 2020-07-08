@@ -31,6 +31,13 @@ export default class SelectionTool extends HTMLElement {
                     </select>
                 </div>
                 <lizmap-digitizing></lizmap-digitizing>
+                <div class="selectiontool-buffer">
+                    <label><span>${lizDict['selectiontool.toolbar.buffer']}</span>
+                        <div class="input-append">
+                            <input class="input-mini" type="number" min="0" .value="${mainLizmap.selectionTool.bufferValue}" @input=${(event) => mainLizmap.selectionTool.bufferValue = parseInt(event.target.value)}><span class="add-on">m</span>
+                        </div>
+                    </label>
+                </div>
                 <div>
                     <select class="selection-geom-operator" @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value} data-original-title="${lizDict['selectiontool.toolbar.geomOperator']}">
                         <option value="intersects">Interects</option>
@@ -97,7 +104,7 @@ export default class SelectionTool extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['selectionTool.newAddRemoveSelected', 'selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged', 'selectionTool.toogleSelectionLayerVisibility']
+            ['selectionTool.newAddRemoveSelected', 'selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged', 'selectionTool.toogleSelectionLayerVisibility', 'selection.bufferValue']
         );
     }
 

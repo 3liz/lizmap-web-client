@@ -2478,6 +2478,8 @@ div.tooltip {
   display:block;
 }
 
+/* Selection */
+
 .selectiontool-export-formats{
   left: auto;
   right: 0px;
@@ -2487,6 +2489,15 @@ div.tooltip {
 
 .selectiontool-filter.active {
   background-color: rgba(255, 171, 0, 0.4);
+}
+
+.selection-buffer > label > span {
+  vertical-align: text-bottom;
+}
+
+lizmap-selection-invert svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* Digitizing */
@@ -2520,15 +2531,6 @@ input[type="color"].digitizing-color{
   vertical-align: top;
   cursor: pointer;
   padding: 4px;
-}
-
-.digitizing-buffer > label > span {
-  vertical-align: text-bottom;
-}
-
-lizmap-selection-invert svg {
-  width: 14px;
-  height: 14px;
 }
 
 /*
