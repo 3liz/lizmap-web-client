@@ -191,11 +191,6 @@ OpenLayers.Control.lizmapMousePosition = OpenLayers.Class(OpenLayers.Control, {
                 return;
             }
             
-            if (this.displayProjection) {
-                lonLat.transform(this.map.getProjectionObject(),
-                                 this.displayProjection );
-            }
-            
             this.lastXy = evt.xy;
 
         }
@@ -225,6 +220,12 @@ OpenLayers.Control.lizmapMousePosition = OpenLayers.Class(OpenLayers.Control, {
      */
     formatOutput: function(lonLat) {
         var digits = parseInt(this.numDigits);
+
+        if (this.displayProjection.getUnits() === 'm' && this.displayUnit === 'm') {
+            lonLat.transform(this.map.getProjectionObject(),
+                this.displayProjection);
+        }
+        
         if ( this.displayUnit != null
           && this.displayUnit.indexOf('d') == 0
           && this.map.projection.getUnits() != 'degrees')
