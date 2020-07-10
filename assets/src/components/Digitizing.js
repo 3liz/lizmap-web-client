@@ -12,6 +12,8 @@ import '../images/svg/pencil.svg';
 import '../images/svg/edit.svg';
 import '../images/svg/eraser.svg';
 
+import '../images/svg/file-download.svg';
+
 export default class Digitizing extends HTMLElement {
     constructor() {
         super();
@@ -76,6 +78,25 @@ export default class Digitizing extends HTMLElement {
             <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
+            <div class="btn-group">
+                <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown">
+                    <svg>
+                        <use xlink:href="#file-download"></use>
+                    </svg>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" @click=${() => mainLizmap.digitizing.download('geojson')}>GeoJSON</a>
+                    </li>
+                    <li class="${mainLizmap.digitizing.featureDrawn && mainLizmap.digitizing.featureDrawn.geometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon' ? 'hide' : '' /* GPX does not handle polygon*/}">
+                        <a href="#" @click=${() => mainLizmap.digitizing.download('gpx')}>GPX</a>
+                    </li>
+                    <li>
+                        <a href="#" @click=${() => mainLizmap.digitizing.download('kml')}>KML</a>
+                    </li>
+                </ul>
+            </div>
         </div>`;
 
         render(mainTemplate(), this);
@@ -89,7 +110,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.edit', 'digitizing.erase', 'digitizing.drawColor']
+            ['digitizing.featureDrawn', 'digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.edit', 'digitizing.erase', 'digitizing.drawColor']
         );
     }
 
