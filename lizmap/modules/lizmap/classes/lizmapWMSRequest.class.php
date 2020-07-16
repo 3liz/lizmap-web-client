@@ -538,6 +538,8 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $popupMaxFeatures = $configLayer->popupMaxFeatures + 0;
         }
         $layerFeaturesCounter = 0;
+        $allFeatureAttributes = array();
+
         foreach ($layer->Feature as $feature) {
             $id = (string) $feature['id'];
             // Optionnally filter by feature id
@@ -643,6 +645,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
                 if ($configLayer->popupSource == 'lizmap' and $templateConfigured) {
                     $finalContent = $lizmapContent;
                 }
+                if ($configLayer->popupSource == 'auto') {
+                    $allFeatureAttributes[] = $feature->Attribute;
+                }
             }
 
             $tpl = new jTpl();
@@ -653,6 +658,17 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $tpl->assign('popupContent', $hiddenFeatureId.$hiddenGeometry.$finalContent);
             $content[] = $tpl->fetch('view~popup', 'html');
         } // loop features
+
+        // Build hidden table containing all features
+        if (count($allFeatureAttributes) > 0) {
+            $tpl = new jTpl();
+            $tpl->assign('layerTitle', $layerTitle);
+            $tpl->assign('repository', $this->repository->getKey());
+            $tpl->assign('project', $this->project->getKey());
+            $tpl->assign('allFeatureAttributes', array_reverse($allFeatureAttributes));
+            $content[] = $tpl->fetch('view~popup_all_features_table', 'html');
+        }
+
         return $content;
     }
 
