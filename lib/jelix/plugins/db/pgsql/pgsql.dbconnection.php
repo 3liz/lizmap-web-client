@@ -104,6 +104,12 @@ class pgsqlDbConnection extends jDbConnection {
         // If given, no need to add host, user, database, port and password
         if(isset($this->profile['service']) && $this->profile['service'] != ''){
             $str = 'service=\''.$this->profile['service'].'\''.$str;
+
+            // Database name may be given, even if service is used
+            // dbname should not be mandatory in service file
+            if ($this->profile['database'] != '') {
+                $str .= ' dbname=\''.$this->profile['database'].'\'';
+            }
         }
         else {
             // we do a distinction because if the host is given == TCP/IP connection else unix socket

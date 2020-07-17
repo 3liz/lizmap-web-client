@@ -211,6 +211,11 @@ class qgisVectorLayer extends qgisMapLayer
                     'driver' => 'pgsql',
                     'service' => $dtParams->service,
                 );
+                // Database may be used since dbname
+                // is not mandatory in service file
+                if (!empty($dtParams->dbname)) {
+                    $jdbParams['database'] = $dtParams->dbname;
+                }
             } else {
                 $jdbParams = array(
                     'driver' => 'pgsql',
