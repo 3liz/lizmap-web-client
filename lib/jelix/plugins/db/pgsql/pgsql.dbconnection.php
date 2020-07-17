@@ -107,7 +107,7 @@ class pgsqlDbConnection extends jDbConnection {
 
             // Database name may be given, even if service is used
             // dbname should not be mandatory in service file
-            if ($this->profile['database'] != '') {
+            if (isset($this->profile['database']) && $this->profile['database'] != '') {
                 $str .= ' dbname=\''.$this->profile['database'].'\'';
             }
         }
