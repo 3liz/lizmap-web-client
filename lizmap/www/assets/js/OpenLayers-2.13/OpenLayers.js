@@ -1804,9 +1804,9 @@ return false;},draw:function(){var clickCallbacks={click:this.defaultClick,dblcl
 return this.div;},redraw:function(evt){var lonLat;if(evt==null){this.reset();return;}else{if(this.lastXy==null||Math.abs(evt.xy.x-this.lastXy.x)>this.granularity||Math.abs(evt.xy.y-this.lastXy.y)>this.granularity)
 {this.lastXy=evt.xy;return;}
 lonLat=this.map.getLonLatFromPixel(evt.xy);if(!lonLat){return;}
-if(this.displayProjection){lonLat.transform(this.map.getProjectionObject(),this.displayProjection);}
 this.lastXy=evt.xy;}
-var newHtml=this.formatOutput(lonLat);if(newHtml!=this.element.innerHTML){this.element.innerHTML=newHtml;}},reset:function(evt){if(this.emptyString!=null){this.element.innerHTML=this.emptyString;}},formatOutput:function(lonLat){var digits=parseInt(this.numDigits);if(this.displayUnit!=null&&this.displayUnit.indexOf('d')==0&&this.map.projection.getUnits()!='degrees')
+var newHtml=this.formatOutput(lonLat);if(newHtml!=this.element.innerHTML){this.element.innerHTML=newHtml;}},reset:function(evt){if(this.emptyString!=null){this.element.innerHTML=this.emptyString;}},formatOutput:function(lonLat){var digits=parseInt(this.numDigits);if(this.displayProjection&&this.displayProjection.getUnits()==='m'&&this.displayUnit==='m'){lonLat.transform(this.map.getProjectionObject(),this.displayProjection);}
+if(this.displayUnit!=null&&this.displayUnit.indexOf('d')==0&&this.map.projection.getUnits()!='degrees')
 lonLat.transform(this.map.getProjectionObject(),'EPSG:4326');var newHtml=this.prefix+
 lonLat.lon.toFixed(digits)+
 this.separator+
