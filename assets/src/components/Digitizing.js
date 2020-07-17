@@ -97,6 +97,7 @@ export default class Digitizing extends HTMLElement {
                     </li>
                 </ul>
             </div>
+            <input type="file" id="input" accept=".kml, .geojson, .json, .gpx" @change=${(event) => mainLizmap.digitizing.import(event.target.files)}>
         </div>`;
 
         render(mainTemplate(), this);
