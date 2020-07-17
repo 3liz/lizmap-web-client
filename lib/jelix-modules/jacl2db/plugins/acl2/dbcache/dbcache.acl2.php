@@ -73,9 +73,8 @@ class dbcacheAcl2Driver implements jIAcl2Driver2 {
         if (empty($resource)) {
             $resource = '-';
         }
-
-        $login = jCache::normalizeKey($login);
-        $rightkey = 'acl2db/'.$login.'/rights';
+        $escapedLogin = jCache::normalizeKey($login);
+        $rightkey = 'acl2db/'.$escapedLogin.'/rights';
         $groups = null;
 
         if (!isset($this->acl[$login])) {
@@ -118,7 +117,7 @@ class dbcacheAcl2Driver implements jIAcl2Driver2 {
             return $this->acl[$login][$subject];
         }
 
-        $rightreskey = 'acl2db/'.$login.'/rightsres/'.$subject;
+        $rightreskey = 'acl2db/'.$escapedLogin.'/rightsres/'.$subject;
 
         if (!isset($this->aclres[$login][$subject])) {
             $rights = jCache::get($rightreskey, 'acl2db');
