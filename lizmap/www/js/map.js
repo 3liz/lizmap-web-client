@@ -193,6 +193,11 @@ var lizMap = function() {
     if ( aName in cleanNameMap )
         return aName;
 
+    if ( aName == undefined ) {
+        console.log( "An undefined name has been clean" );
+        return '';
+    }
+
     theCleanName = performCleanName( aName );
     if ( (theCleanName in cleanNameMap) && cleanNameMap[theCleanName] != aName ){
         i = 1;
@@ -904,6 +909,10 @@ var lizMap = function() {
         qgisLayerName = layerIdMap[layer.name];
       else if ( layer.name in shortNameMap )
         qgisLayerName = shortNameMap[layer.name];
+      // The found name is not in config
+      if (!(qgisLayerName in config.layers)) {
+        continue;
+      }
       var layerConfig = config.layers[qgisLayerName];
       var layerName = cleanName(qgisLayerName);
       layerCleanNames[layerName] = qgisLayerName;
