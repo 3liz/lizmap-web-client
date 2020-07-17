@@ -58,20 +58,6 @@ export default class Digitizing {
             'select': drawStyleSelect
         });
 
-        this._drawLayer = new OpenLayers.Layer.Vector(
-            'drawLayer', {
-                styleMap: drawStyleMap
-            }
-        );
-
-        this._drawLayer.events.on({
-            'afterfeaturemodified': () => {
-                this.isEdited = false;
-            }
-        });
-
-        mainLizmap.lizmap3.map.addLayer(this._drawLayer);
-
         const onDrawFeatureAdded = (feature) => {
             /**
              * @todo Ne gère que si il ya a seulement 1 géométrie
@@ -89,6 +75,21 @@ export default class Digitizing {
 
             this.toolSelected = 'deactivate';
         };
+
+        this._drawLayer = new OpenLayers.Layer.Vector(
+            'drawLayer', {
+                styleMap: drawStyleMap
+            }
+        );
+
+        this._drawLayer.events.on({
+            'afterfeaturemodified': () => {
+                this.isEdited = false;
+            },
+            'featureadded': onDrawFeatureAdded
+        });
+
+        mainLizmap.lizmap3.map.addLayer(this._drawLayer);
 
         // Disable getFeatureInfo when drawing with clicks
         const drawAndGetFeatureInfoMutuallyExclusive = (event) => {
@@ -446,5 +447,68 @@ export default class Digitizing {
         a.click();
         document.body.removeChild(a);
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+    }
+
+    import(files){
+        if(files.length > 0){
+            const reader = new FileReader();
+            const file = files[0];
+
+            reader.onload = ((aThis) => {
+                return (e) => {
+                    const fileContent = e.target.result;
+                    let OL6feature;
+
+                    // Handle GeoJSON, GPX or KML strings
+                    if(fileContent[0] === '{'){
+                        OL6feature = (new GeoJSON()).readFeature(fileContent);
+                    } else if (fileContent.slice(0, 4) === '<gpx'){
+                        OL6feature = (new GPX()).readFeature(fileContent);
+
+                    } else if (fileContent.slice(0, 4) === '<kml'){
+                        OL6feature = (new KML()).readFeature(fileContent);
+                    }
+
+                    if (OL6feature){
+                        // Erase previous feature
+                        aThis.erase();
+
+                        // Draw loaded feature
+                        const importedGeom = OL6feature.getGeometry();
+                        const importedGeomType = importedGeom.getType();
+
+                        // Convert from EPSG:4326 to current projection
+                        importedGeom.transform('EPSG:4326', mainLizmap.projection);
+                        const importedGeomCoordinates = importedGeom.getCoordinates();
+
+                        const importedGeomAsArrayOfPoints = [];
+                        let geomToDraw;
+
+                        if (importedGeomType === 'Point') {
+                            geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
+                        }else if (importedGeomType === 'LineString'){
+                            for (const coordinate of importedGeomCoordinates) {
+                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
+                        } else if (importedGeomType === 'Polygon') {
+                            for (const coordinate of importedGeomCoordinates[0]) {
+                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
+                        }
+
+                        if(geomToDraw){
+                            this._drawLayer.addFeatures(new OpenLayers.Feature.Vector(geomToDraw));
+                            this._drawLayer.redraw(true);
+                        }
+                    }
+                };
+            })(this);
+
+            reader.readAsText(file);
+        }
     }
 }
