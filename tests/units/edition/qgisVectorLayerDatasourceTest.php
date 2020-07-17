@@ -58,6 +58,34 @@ class qgisVectorLayerDatasourceTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testPostgresqlDatasourceWithService() {
+
+        $provider = 'postgres';
+        $datasource = "dbname='test_dbname' service='test_service' sslmode=disable key='id' srid=2193 type=Polygon checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\" (geom) sql=";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('test_service', $element->getDatasourceParameter('service'));
+        $this->assertEquals('', $element->getDatasourceParameter('host'));
+        $this->assertEquals('', $element->getDatasourceParameter('port'));
+        $this->assertEquals('', $element->getDatasourceParameter('user'));
+        $this->assertEquals('', $element->getDatasourceParameter('password'));
+        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('id', $element->getDatasourceParameter('key'));
+        $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
+        $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
+        $this->assertEquals('2193', $element->getDatasourceParameter('srid'));
+        $this->assertEquals('Polygon', $element->getDatasourceParameter('type'));
+        $this->assertEquals('1', $element->getDatasourceParameter('checkPrimaryKeyUnicity'));
+        $this->assertEquals('"public"."EditTest"', $element->getDatasourceParameter('table'));
+        $this->assertEquals('EditTest', $element->getDatasourceParameter('tablename'));
+        $this->assertEquals('public', $element->getDatasourceParameter('schema'));
+        $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
+        $this->assertEquals('', $element->getDatasourceParameter('sql'));
+
+    }
+
     function testComplexQueryDatasource() {
 
         $provider = 'postgres';
