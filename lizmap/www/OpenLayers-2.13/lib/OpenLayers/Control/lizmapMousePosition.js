@@ -221,7 +221,7 @@ OpenLayers.Control.lizmapMousePosition = OpenLayers.Class(OpenLayers.Control, {
     formatOutput: function(lonLat) {
         var digits = parseInt(this.numDigits);
 
-        if (this.displayProjection.getUnits() === 'm' && this.displayUnit === 'm') {
+        if (this.displayProjection && this.displayProjection.getUnits() === 'm' && this.displayUnit === 'm') {
             lonLat.transform(this.map.getProjectionObject(),
                 this.displayProjection);
         }
