@@ -195,15 +195,7 @@ class qgisForm
     {
         $this->form_name = self::generateFormName($this->form->getSelector());
 
-        $layerXml = $this->layer->getXmlLayer();
-        $_editorlayout = $layerXml->xpath('editorlayout');
-        $attributeEditorForm = null;
-        if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
-            $_attributeEditorForm = $layerXml->xpath('attributeEditorForm');
-            if ($_attributeEditorForm && count($_attributeEditorForm)) {
-                $attributeEditorForm = $this->xml2obj($_attributeEditorForm[0]);
-            }
-        }
+        $attributeEditorForm = $this->editorForm();
 
         $formPlugins = array();
         foreach ($this->formPlugins as $fName => $pName) {
@@ -262,6 +254,38 @@ class qgisForm
         return $tpl->fetchFromString($template, 'html');
     }
 
+
+    /**
+     * get the fields displayed in the form.
+     *
+     * @return array list of field name
+     */
+    public function getFormFields()
+    {
+        $fields = array();
+        $attributeEditorForm = $this->editorForm();
+        if ($attributeEditorForm && property_exists($attributeEditorForm, 'children')) {
+            $fields = $this->getEditorContainerFields($attributeEditorForm);
+        } else {
+            $fields = array_keys($this->formControls);
+        }
+        return $fields;
+    }
+
+    private function editorForm()
+    {
+        $layerXml = $this->layer->getXmlLayer();
+        $_editorlayout = $layerXml->xpath('editorlayout');
+        $attributeEditorForm = null;
+        if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
+            $_attributeEditorForm = $layerXml->xpath('attributeEditorForm');
+            if ($_attributeEditorForm && count($_attributeEditorForm)) {
+                $attributeEditorForm = $this->xml2obj($_attributeEditorForm[0]);
+            }
+        }
+        return $attributeEditorForm;
+    }
+
     private function xml2obj($node)
     {
         $jsnode = array(
@@ -286,6 +310,33 @@ class qgisForm
         }
 
         return (object) $jsnode;
+    }
+
+    private function getEditorContainerFields($container)
+    {
+        $fields = array();
+        // a container has children
+        if (!property_exists($container, 'children')) {
+            return $fields;
+        }
+        // a container has a name
+        if (!property_exists($container, 'name')) {
+            return $fields;
+        }
+        // a container can be the root
+        if ($container->name != 'attributeEditorContainer' && $container->name != 'attributeEditorForm') {
+            return $fields;
+        }
+
+        foreach ($container->children as $c) {
+            if ($c->name === 'attributeEditorField') {
+                // Get field name
+                $fields[] = $c->attributes->name;
+            } else if ($c->name === 'attributeEditorContainer') {
+                $fields = array_merge($fields, $this->getEditorContainerFields($c));
+            }
+        }
+        return $fields;
     }
 
     private function getEditorContainerHtmlContent($container, $parent_id, $depth)
@@ -512,17 +563,41 @@ class qgisForm
         $dataFields = $this->dbFieldsInfo->dataFields;
         $geometryColumn = $this->dbFieldsInfo->geometryColumn;
 
+
+        // Get list of fields diplayed in form
+        // can be an empty list
+        $formFields = $this->getFormFields();
+
         // Get list of fields which are not primary keys
         $fields = array();
         foreach ($dataFields as $fieldName => $prop) {
-            // For update : And get only fields corresponding to edition capabilities
-            if (
-                (strtolower($capabilities->modifyAttribute) == 'true' and $fieldName != $geometryColumn)
-                or (strtolower($capabilities->modifyGeometry) == 'true' and $fieldName == $geometryColumn)
-                or $insertAction
-            ) {
-                $fields[] = $fieldName;
+            // For geometry column does not add it
+            // if it's not an insert action
+            // and no geometry modification capability
+            if ($fieldName == $geometryColumn
+                && !$insertAction
+                && strtolower($capabilities->modifyGeometry) != 'true') {
+                continue;
             }
+
+            // For other column than geometry does not add it
+            // if it's not an insert action
+            // and no attribute modification capability
+            if ($fieldName != $geometryColumn
+                && !$insertAction
+                && strtolower($capabilities->modifyAttribute) != 'true') {
+                continue;
+            }
+
+            // For other column than geometry does not add it
+            // if it's column not in form
+            if ($fieldName != $geometryColumn
+                && count($formFields) != 0
+                && !in_array($fieldName, $formFields)) {
+                continue;
+            }
+
+            $fields[] = $fieldName;
         }
 
         if (count($fields) == 0) {
@@ -537,9 +612,13 @@ class qgisForm
         $values = array();
         // Loop though the fields and filter the form posted values
         foreach ($fields as $ref) {
-            if ($form->getControl($ref) instanceof jFormsControlUpload) {
+            $jCtrl = $form->getControl($ref);
+            // Field not in form
+            if ($jCtrl === null) {
+                continue;
+            }
+            if ($jCtrl instanceof jFormsControlUpload) {
                 $values[$ref] = $this->processUploadedFile($form, $ref, $cnx);
-
                 continue;
             }
 
