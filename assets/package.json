@@ -20,7 +20,7 @@
     "svgo-loader": "^2.2.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^5.0.9"
   },
   "author": "3Liz",
   "license": "ISC",
