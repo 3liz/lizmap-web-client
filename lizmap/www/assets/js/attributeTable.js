@@ -44,11 +44,16 @@ var lizAttributeTable = function() {
 
             for (var lname in config.attributeLayers) {
                 var al = config.attributeLayers[lname];
-                attributeLayersSorted[al.order] = lname;
+                al.name = lname;
+                attributeLayersSorted.push(al);
             }
+            attributeLayersSorted.sort(function(a, b) {
+                return a.order - b.order;
+            });
 
             for (var i = 0; i < attributeLayersSorted.length; i++) {
-                attributeLayersDic[lizMap.cleanName(attributeLayersSorted[i])] = attributeLayersSorted[i];
+                var al = attributeLayersSorted[i];
+                attributeLayersDic[lizMap.cleanName(al.name)] = al.name;
             }
 
             for(const featureType of featureTypes) {
@@ -56,7 +61,7 @@ var lizAttributeTable = function() {
                 var typeName = featureType.getElementsByTagName('Name')[0].textContent;
                 // layername
                 var layername = lizMap.getNameByTypeName( typeName );
-                if ( !layername )
+                if ( !layername || layername == undefined )
                     continue;
                 // lizmap internal js cleaned name
                 var cleanName = lizMap.cleanName(layername);
