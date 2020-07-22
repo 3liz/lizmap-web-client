@@ -2031,6 +2031,17 @@ class lizmapProject extends qgisProject
             );
         }
 
+        if (property_exists($configOptions, 'draw')
+            && $configOptions->draw == 'True') {
+            $tpl = new jTpl();
+            $dockable[] = new lizmapMapDockItem(
+                'draw',
+                jLocale::get('view~map.draw.navbar.title'),
+                $tpl->fetch('view~map_draw'),
+                9
+            );
+        }
+
         return $dockable;
     }
 
