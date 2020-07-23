@@ -459,20 +459,25 @@ export default class Digitizing {
 
                 // Handle GeoJSON, GPX or KML strings
                 if(fileContent[0] === '{'){
-                    OL6feature = (new GeoJSON()).readFeature(fileContent);
+                    OL6feature = (new GeoJSON()).readFeatures(fileContent);
                 } else if (fileContent.slice(0, 4) === '<gpx'){
-                    OL6feature = (new GPX()).readFeature(fileContent);
+                    OL6feature = (new GPX()).readFeatures(fileContent);
 
                 } else if (fileContent.slice(0, 4) === '<kml'){
-                    OL6feature = (new KML()).readFeature(fileContent);
+                    OL6feature = (new KML()).readFeatures(fileContent);
                 }
 
                 if (OL6feature){
                     // Erase previous feature
                     aThis.erase();
 
+                    // If there are multiple features we only take the first and inform user
+                    if(OL6feature.length > 1){
+                        lizMap.addMessage(lizDict['digitizing.import.inform.singleFeature'], 'info', true)
+                    }
+
                     // Draw loaded feature
-                    const importedGeom = OL6feature.getGeometry();
+                    const importedGeom = OL6feature[0].getGeometry();
                     const importedGeomType = importedGeom.getType();
 
                     // Convert from EPSG:4326 to current projection
