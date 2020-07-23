@@ -3354,6 +3354,7 @@ var lizMap = function() {
   }
 
   function addChildrenDatavizFilteredByPopupFeature(popup, containerId) {
+    if ('datavizLayers' in lizMap.config) {
       // build selector
       var selector = 'div.lizmapPopupContent > div.lizmapPopupDiv';
       if ( containerId )
@@ -3434,7 +3435,10 @@ var lizMap = function() {
                 }
             }
         });
-    });
+      });
+    }else{
+      return false;
+    }
   }
 
   function getChildrenFeatureInfo( rConfigLayer, wmsOptions, parentDiv, aCallback ) {
