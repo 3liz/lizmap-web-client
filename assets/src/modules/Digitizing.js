@@ -458,13 +458,17 @@ export default class Digitizing {
                 let OL6feature;
 
                 // Handle GeoJSON, GPX or KML strings
-                if(fileContent[0] === '{'){
-                    OL6feature = (new GeoJSON()).readFeatures(fileContent);
-                } else if (fileContent.slice(0, 4) === '<gpx'){
-                    OL6feature = (new GPX()).readFeatures(fileContent);
+                try {
+                    if (fileContent[0] === '{') {
+                        OL6feature = (new GeoJSON()).readFeatures(fileContent);
+                    } else if (fileContent.slice(0, 4) === '<gpx') {
+                        OL6feature = (new GPX()).readFeatures(fileContent);
 
-                } else if (fileContent.slice(0, 4) === '<kml'){
-                    OL6feature = (new KML()).readFeatures(fileContent);
+                    } else if (fileContent.slice(0, 4) === '<kml') {
+                        OL6feature = (new KML()).readFeatures(fileContent);
+                    }
+                } catch (error) {
+                    lizMap.addMessage(error, 'error', true)
                 }
 
                 if (OL6feature){
