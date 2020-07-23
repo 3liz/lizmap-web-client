@@ -2571,7 +2571,11 @@ input[type="color"].digitizing-color{
 }
 
 .digitizing-import .file-name{
-  font-size: .9em;
+  font-size: .8em;
+  max-width: 120px;
+  display: inline-block;
+  word-break: break-word;
+  vertical-align: middle;
 }
 
 /*
