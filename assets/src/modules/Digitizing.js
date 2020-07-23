@@ -449,66 +449,63 @@ export default class Digitizing {
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
     }
 
-    import(files){
-        if(files.length > 0){
-            const reader = new FileReader();
-            const file = files[0];
+    import(file){
+        const reader = new FileReader();
 
-            reader.onload = ((aThis) => {
-                return (e) => {
-                    const fileContent = e.target.result;
-                    let OL6feature;
+        reader.onload = ((aThis) => {
+            return (e) => {
+                const fileContent = e.target.result;
+                let OL6feature;
 
-                    // Handle GeoJSON, GPX or KML strings
-                    if(fileContent[0] === '{'){
-                        OL6feature = (new GeoJSON()).readFeature(fileContent);
-                    } else if (fileContent.slice(0, 4) === '<gpx'){
-                        OL6feature = (new GPX()).readFeature(fileContent);
+                // Handle GeoJSON, GPX or KML strings
+                if(fileContent[0] === '{'){
+                    OL6feature = (new GeoJSON()).readFeature(fileContent);
+                } else if (fileContent.slice(0, 4) === '<gpx'){
+                    OL6feature = (new GPX()).readFeature(fileContent);
 
-                    } else if (fileContent.slice(0, 4) === '<kml'){
-                        OL6feature = (new KML()).readFeature(fileContent);
-                    }
+                } else if (fileContent.slice(0, 4) === '<kml'){
+                    OL6feature = (new KML()).readFeature(fileContent);
+                }
 
-                    if (OL6feature){
-                        // Erase previous feature
-                        aThis.erase();
+                if (OL6feature){
+                    // Erase previous feature
+                    aThis.erase();
 
-                        // Draw loaded feature
-                        const importedGeom = OL6feature.getGeometry();
-                        const importedGeomType = importedGeom.getType();
+                    // Draw loaded feature
+                    const importedGeom = OL6feature.getGeometry();
+                    const importedGeomType = importedGeom.getType();
 
-                        // Convert from EPSG:4326 to current projection
-                        importedGeom.transform('EPSG:4326', mainLizmap.projection);
-                        const importedGeomCoordinates = importedGeom.getCoordinates();
+                    // Convert from EPSG:4326 to current projection
+                    importedGeom.transform('EPSG:4326', mainLizmap.projection);
+                    const importedGeomCoordinates = importedGeom.getCoordinates();
 
-                        const importedGeomAsArrayOfPoints = [];
-                        let geomToDraw;
+                    const importedGeomAsArrayOfPoints = [];
+                    let geomToDraw;
 
-                        if (importedGeomType === 'Point') {
-                            geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
-                        }else if (importedGeomType === 'LineString'){
-                            for (const coordinate of importedGeomCoordinates) {
-                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
-                            }
-
-                            geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
-                        } else if (importedGeomType === 'Polygon') {
-                            for (const coordinate of importedGeomCoordinates[0]) {
-                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
-                            }
-
-                            geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
+                    if (importedGeomType === 'Point') {
+                        geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
+                    }else if (importedGeomType === 'LineString'){
+                        for (const coordinate of importedGeomCoordinates) {
+                            importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
                         }
 
-                        if(geomToDraw){
-                            this._drawLayer.addFeatures(new OpenLayers.Feature.Vector(geomToDraw));
-                            this._drawLayer.redraw(true);
+                        geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
+                    } else if (importedGeomType === 'Polygon') {
+                        for (const coordinate of importedGeomCoordinates[0]) {
+                            importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
                         }
-                    }
-                };
-            })(this);
 
-            reader.readAsText(file);
-        }
+                        geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
+                    }
+
+                    if(geomToDraw){
+                        this._drawLayer.addFeatures(new OpenLayers.Feature.Vector(geomToDraw));
+                        this._drawLayer.redraw(true);
+                    }
+                }
+            };
+        })(this);
+
+        reader.readAsText(file);
     }
 }
