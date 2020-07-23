@@ -13,6 +13,7 @@ import '../images/svg/edit.svg';
 import '../images/svg/eraser.svg';
 
 import '../images/svg/file-download.svg';
+import '../images/svg/file-upload.svg';
 
 export default class Digitizing extends HTMLElement {
     constructor() {
@@ -78,26 +79,45 @@ export default class Digitizing extends HTMLElement {
             <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
-            <div class="btn-group">
-                <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown">
-                    <svg>
-                        <use xlink:href="#file-download"></use>
-                    </svg>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="#" @click=${() => mainLizmap.digitizing.download('geojson')}>GeoJSON</a>
-                    </li>
-                    <li class="${mainLizmap.digitizing.featureDrawn && mainLizmap.digitizing.featureDrawn.geometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon' ? 'hide' : '' /* GPX does not handle polygon*/}">
-                        <a href="#" @click=${() => mainLizmap.digitizing.download('gpx')}>GPX</a>
-                    </li>
-                    <li>
-                        <a href="#" @click=${() => mainLizmap.digitizing.download('kml')}>KML</a>
-                    </li>
-                </ul>
+            <div>
+                <div class="btn-group digitizing-export">
+                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown">
+                        <svg>
+                            <use xlink:href="#file-download"></use>
+                        </svg>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#" @click=${() => mainLizmap.digitizing.download('geojson')}>GeoJSON</a>
+                        </li>
+                        <li class="${mainLizmap.digitizing.featureDrawn && mainLizmap.digitizing.featureDrawn.geometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon' ? 'hide' : '' /* GPX does not handle polygon*/}">
+                            <a href="#" @click=${() => mainLizmap.digitizing.download('gpx')}>GPX</a>
+                        </li>
+                        <li>
+                            <a href="#" @click=${() => mainLizmap.digitizing.download('kml')}>KML</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="digitizing-import">
+                    <label class="btn">
+                        <svg>
+                            <use xlink:href="#file-upload"></use>
+                        </svg>
+                        <input class="hide" type="file" accept=".kml, .geojson, .json, .gpx" @change=${
+                            (event) => 
+                                    {
+                                        if (event.target.files.length > 0){
+                                            event.target.parentElement.nextElementSibling.textContent = event.target.files[0].name;
+                                            mainLizmap.digitizing.import(event.target.files[0]);
+                                        }
+                                    }
+                        }>
+                    </label>
+                    <span class="file-name"></span>
+                </div>
             </div>
-            <input type="file" id="input" accept=".kml, .geojson, .json, .gpx" @change=${(event) => mainLizmap.digitizing.import(event.target.files)}>
+            
         </div>`;
 
         render(mainTemplate(), this);

@@ -2517,6 +2517,10 @@ lizmap-selection-invert svg {
 
 /* Digitizing */
 
+.digitizing{
+  min-width: 260px;
+}
+
 .digitizing .btn {
   width: 45px;
   height: 45px;
@@ -2528,9 +2532,12 @@ lizmap-selection-invert svg {
   width: unset;
 }
 
-.digitizing .dropdown-menu{
+.digitizing-buttons .dropdown-menu{
   min-width: unset;
   padding: 3px;
+  position: absolute;
+  left: 60px;
+  top: -1px;
 }
 
 .digitizing svg {
@@ -2546,6 +2553,25 @@ input[type="color"].digitizing-color{
   vertical-align: top;
   cursor: pointer;
   padding: 4px;
+}
+
+.digitizing-export .dropdown-menu{
+  min-width: unset;
+  position: absolute;
+  left: 60px;
+  top: -45px;
+}
+
+.digitizing .caret{
+  transform: rotate(270deg);
+}
+
+.digitizing-import{
+  display: inline-block;
+}
+
+.digitizing-import .file-name{
+  font-size: .9em;
 }
 
 /*
