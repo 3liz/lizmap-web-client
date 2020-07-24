@@ -1,11 +1,31 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
+import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
+import GeoJSONWriter from 'jsts/org/locationtech/jts/io/GeoJSONWriter.js';
+import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
+
 export default class SelectionTool {
 
     constructor() {
 
         this._layers = [];
         this._allFeatureTypeSelected = [];
+
+        this._bufferValue = 0;
+
+        this._bufferLayer = new OpenLayers.Layer.Vector(
+            'selectionBufferLayer', {
+            styleMap: new OpenLayers.StyleMap({
+                fillColor: 'white',
+                fillOpacity: 0,
+                strokeColor: 'blue',
+                strokeOpacity: 1,
+                strokeWidth: 2,
+                strokeDashstyle: 'longdash'
+            })
+        });
+
+        mainLizmap.lizmap3.map.addLayer(this._bufferLayer);
 
         this._geomOperator = 'intersects';
 
@@ -62,16 +82,52 @@ export default class SelectionTool {
             format => !['GML2', 'GML3', 'GEOJSON'].includes(format.tagName)
         );
 
-        // Listen to digitizing tool to query a selection when tool is active and a feature is drawn
+        // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
         mainEventDispatcher.addListener(
             () => {
                 if(this.isActive){
-                    for (const featureType of this.allFeatureTypeSelected) {
-                        mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, mainLizmap.digitizing.featureDrawn, this._geomOperator);
+                    const selectionFeature = mainLizmap.digitizing.featureDrawn;
+
+                    if (selectionFeature){
+                        // Handle buffer if any
+                        this._bufferLayer.destroyFeatures();
+                        if (this._bufferValue > 0) {
+                            const geoJSONParser = new OpenLayers.Format.GeoJSON();
+                            const drawGeoJSON = geoJSONParser.write(selectionFeature.geometry);
+                            const jstsGeoJSONReader = new GeoJSONReader();
+                            const jstsGeoJSONWriter = new GeoJSONWriter();
+                            const jstsGeom = jstsGeoJSONReader.read(drawGeoJSON);
+                            const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
+                            const bufferedDraw = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
+
+                            // Draw buffer
+                            this._bufferLayer.addFeatures(bufferedDraw);
+                            this._bufferLayer.redraw(true);
+                        }
+
+                        for (const featureType of this.allFeatureTypeSelected) {
+                            mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, this.featureDrawnBuffered || selectionFeature, this._geomOperator);
+                        }
                     }
                 }
             },
-            ['digitizing.featureDrawn']
+            ['digitizing.featureDrawn', 'digitizing.edit']
+        );
+
+        // Change buffer visibility on digitizing.featureDrawnVisibility event
+        mainEventDispatcher.addListener(
+            () => {
+                this._bufferLayer.setVisibility(mainLizmap.digitizing.featureDrawnVisibility);
+            },
+            ['digitizing.featureDrawnVisibility']
+        );
+
+        // Erase buffer on digitizing.erase event
+        mainEventDispatcher.addListener(
+            () => {
+                this._bufferLayer.destroyFeatures();
+            },
+            ['digitizing.erase']
         );
 
         mainLizmap.lizmap3.events.on({
@@ -98,6 +154,27 @@ export default class SelectionTool {
 
     get layers() {
         return this._layers;
+    }
+
+    get bufferLayer() {
+        return this._bufferLayer;
+    }
+
+    get bufferValue() {
+        return this._bufferValue;
+    }
+
+    set bufferValue(bufferValue) {
+        this._bufferValue = isNaN(bufferValue) ? 0 : bufferValue;
+
+        mainEventDispatcher.dispatch('selection.bufferValue');
+    }
+
+    get featureDrawnBuffered() {
+        if (this._bufferLayer.features.length) {
+            return this._bufferLayer.features[0];
+        }
+        return null;
     }
 
     get exportFormats() {
@@ -195,7 +272,7 @@ export default class SelectionTool {
             );
         }
         mainLizmap.digitizing.drawLayer.destroyFeatures();
-        mainLizmap.digitizing.bufferLayer.destroyFeatures();
+        this._bufferLayer.destroyFeatures();
     }
 
     filter() {

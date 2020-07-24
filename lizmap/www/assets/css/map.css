@@ -224,6 +224,15 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-position: -600px 0px;
 }
 
+#mapmenu .nav-list > li.draw .icon{
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' stroke-width='2' stroke='%23fff' fill='none' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24' id='pencil'><path d='M0 0h24v24H0z' stroke='none'></path><path d='M4 20h4L18.5 9.5a1.5 1.5 0 00-4-4L4 16v4M13.5 6.5l4 4'></path></svg>");
+}
+
+#mapmenu .nav-list > li.draw.active .icon,
+#mapmenu .nav-list > li.draw a:hover .icon{
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' stroke-width='2' stroke='%23000' fill='none' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24' id='pencil'><path d='M0 0h24v24H0z' stroke='none'></path><path d='M4 20h4L18.5 9.5a1.5 1.5 0 00-4-4L4 16v4M13.5 6.5l4 4'></path></svg>");
+}
+
 #content.mobile #mapmenu li.tooltip-layer {
   display:none;
 }
@@ -1090,6 +1099,12 @@ div.modal h3 .text {
 #dock .timemanager h3 .icon,
 #mini-dock .timemanager h3 .icon {
   background-position : -625px 0px;
+}
+
+#mini-dock .draw h3 svg {
+  width: 22px;
+  height: 22px;
+  vertical-align: sub;
 }
 
 #map-content {
@@ -2478,6 +2493,8 @@ div.tooltip {
   display:block;
 }
 
+/* Selection */
+
 .selectiontool-export-formats{
   left: auto;
   right: 0px;
@@ -2489,37 +2506,76 @@ div.tooltip {
   background-color: rgba(255, 171, 0, 0.4);
 }
 
-.digitizing-toggle-visibility{
-  vertical-align: top;
-}
-
-input[type="color"].digitizing-color{
-  width: 26px;
-  vertical-align: top;
-  cursor: pointer;
-}
-
-.digitizing-buttons {
-  margin-bottom: 10px;
-}
-
-.digitizing-buttons button {
-  width: 46px;
-  height: 33px;
-}
-
-.digitizing-buttons button svg {
-  width: 24px;
-  height: 24px;
-}
-
-.digitizing-buffer > label > span {
+.selection-buffer > label > span {
   vertical-align: text-bottom;
 }
 
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;
+}
+
+/* Digitizing */
+
+.digitizing{
+  min-width: 260px;
+}
+
+.digitizing .btn {
+  width: 45px;
+  height: 45px;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.digitizing .dropdown-toggle{
+  width: unset;
+}
+
+.digitizing-buttons .dropdown-menu{
+  min-width: unset;
+  padding: 3px;
+  position: absolute;
+  left: 60px;
+  top: -1px;
+}
+
+.digitizing svg {
+  width: 24px;
+  height: 24px;
+}
+
+.digitizing-toggle-visibility{
+  vertical-align: top;
+}
+
+input[type="color"].digitizing-color{
+  vertical-align: top;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.digitizing-export .dropdown-menu{
+  min-width: unset;
+  position: absolute;
+  left: 60px;
+  top: -45px;
+}
+
+.digitizing .caret{
+  transform: rotate(270deg);
+}
+
+.digitizing-import{
+  display: inline-block;
+}
+
+.digitizing-import .file-name{
+  font-size: .8em;
+  max-width: 120px;
+  display: inline-block;
+  word-break: break-word;
+  vertical-align: middle;
 }
 
 /*
