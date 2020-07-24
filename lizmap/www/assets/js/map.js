@@ -3907,21 +3907,25 @@ var lizMap = function() {
       var url = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
           );
-      url += '&SERVICE=WMS';
-      url += '&VERSION=1.3.0&REQUEST=GetPrint';
-      url += '&FORMAT='+$('#print-format').val();
-      url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
-      url += '&SRS='+projCode;
-      url += '&DPI='+$('#print-dpi').val();
-      url += '&TEMPLATE='+pTemplate.title;
-      url += '&'+dragCtrl.layout.mapId+':extent='+extent.toBBOX(null, reverseAxisOrder);
-      var scale = $('#print-scale').val();
-      url += '&'+dragCtrl.layout.mapId+':scale='+scale;
+      let printParams = {};
+      printParams['SERVICE'] = 'WMS';
+      printParams['VERSION'] = '1.3.0';
+      printParams['REQUEST'] = 'GetPrint';
+      printParams['FORMAT'] = document.querySelector('#print-format').value;
+      printParams['EXCEPTIONS'] = 'application/vnd.ogc.se_inimage';
+      printParams['TRANSPARENT'] = 'true';
+      printParams['SRS'] = projCode;
+      printParams['DPI'] = document.querySelector('#print-dpi').value;
+      printParams['TEMPLATE'] = pTemplate.title;
+      printParams[dragCtrl.layout.mapId + ':extent'] = extent.toBBOX(null, reverseAxisOrder);
+      printParams[dragCtrl.layout.mapId + ':scale'] = document.querySelector('#print-scale').value;
+
       if ( 'grid' in dragCtrl.layout && dragCtrl.layout.grid ) {
-          var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
-          url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
-          url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
+        var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
+        printParams[dragCtrl.layout.mapId + ':grid_interval_x='] = gridInterval;
+        printParams[dragCtrl.layout.mapId + ':grid_interval_y='] = gridInterval;
       }
+
       var printLayers = [];
       var styleLayers = [];
       var opacityLayers = [];
@@ -4016,15 +4020,16 @@ var lizMap = function() {
         opacityLayers.reverse();
       }
 
-      url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
-      url += '&'+dragCtrl.layout.mapId+':STYLES='+styleLayers.join(',');
+      printParams[dragCtrl.layout.mapId + ':LAYERS'] = printLayers.join(',');
+      printParams[dragCtrl.layout.mapId + ':STYLES'] = styleLayers.join(',');
 
       if ( dragCtrl.layout.overviewId != null
           && config.options.hasOverview ) {
         var bbox = config.options.bbox;
         var oExtent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-        url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
-        url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
+        printParams[dragCtrl.layout.overviewId + ':extent'] = oExtent;
+        printParams[dragCtrl.layout.overviewId + ':LAYERS'] = 'Overview';
+
         if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
             printLayers.push('Overview');
             if ( config.options.qgisServerVersion.startsWith('3.') ) {
@@ -4039,37 +4044,52 @@ var lizMap = function() {
             opacityLayers.unshift(255);
         }
       }
-      url += '&LAYERS='+printLayers.join(',');
-      url += '&STYLES='+styleLayers.join(',');
-      url += '&OPACITIES='+opacityLayers.join(',');
-      var labels = $('#print .print-labels').find('input.print-label, textarea.print-label').serialize();
-      if ( labels != "" )
-        url += '&'+labels;
+      printParams['LAYERS'] = printLayers.join(',');
+      printParams['STYLES'] = styleLayers.join(',');
+      printParams['OPACITIES'] = opacityLayers.join(',');
+
+      const customPrintLabels = document.querySelectorAll('#print .print-labels .print-label');
+      if (customPrintLabels){
+        for (const label of customPrintLabels) {
+          printParams[label.name] = encodeURIComponent(label.value);
+        }
+      }
+
       var filter = [];
       var selection = [];
       for ( var  lName in config.layers ) {
           var lConfig = config.layers[lName];
-          if ( !('request_params' in lConfig)
-            || lConfig['request_params'] == null )
-              continue;
           var requestParams = lConfig['request_params'];
-            if ( ('filtertoken' in lConfig['request_params'])
-            && lConfig['request_params']['filtertoken'] != null
-            && lConfig['request_params']['filtertoken'] != "" ) {
-              filter.push( lConfig['request_params']['filtertoken'] );
+          if ( !('request_params' in lConfig)
+            || requestParams == null )
+              continue;
+            if ( ('filtertoken' in requestParams)
+            && requestParams['filtertoken'] != null
+            && requestParams['filtertoken'] != "" ) {
+              filter.push( requestParams['filtertoken'] );
           }
-          if ( ('selectiontoken' in lConfig['request_params'])
-            && lConfig['request_params']['selectiontoken'] != null
-            && lConfig['request_params']['selectiontoken'] != "" ) {
-              selection.push( lConfig['request_params']['selectiontoken'] );
+          if ( ('selectiontoken' in requestParams)
+            && requestParams['selectiontoken'] != null
+            && requestParams['selectiontoken'] != "" ) {
+              selection.push( requestParams['selectiontoken'] );
           }
       }
       if ( filter.length !=0 ){
-        url += '&FILTERTOKEN='+ filter.join(';');
+        printParams['FILTERTOKEN'] = filter.join(';');
       }
-      if ( selection.length !=0 )
-        url += '&SELECTIONTOKEN='+ selection.join(';');
-      window.open(url);
+      if ( selection.length !=0 ){
+        printParams['SELECTIONTOKEN'] = selection.join(';');
+      }
+
+      // if user has made a visible draw, print it with redlining
+      if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
+        const formatWKT = new OpenLayers.Format.WKT();
+
+        printParams['map0:HIGHLIGHT_GEOM'] = formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn);
+        printParams['map0:HIGHLIGHT_SYMBOL'] = lizMap.mainLizmap.digitizing.featureDrawnSLD;
+      }
+      
+      downloadFile(url, printParams);
       return false;
     });
     map.events.on({
