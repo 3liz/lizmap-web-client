@@ -280,7 +280,7 @@ class qgisForm implements qgisFormControlsInterface
     protected function getDefaultValue($fieldName)
     {
         $expression = $this->layer->getDefaultValue($fieldName);
-        if ($expression === null) {
+        if ($expression === null || trim($expression) === '') {
             return null;
         }
         if (is_numeric($expression)) {
@@ -295,8 +295,44 @@ class qgisForm implements qgisFormControlsInterface
                 return str_replace("\\'", "'", $expression);
             }
         }
-        // TODO implement a true QGIS expression parser or add the possibility
-        // to evaluate the expression by qgis
+        // Evaluate the expression by qgis
+        $project = $this->layer->getProject();
+        $plugins = $project->getQgisServerPlugins();
+        if (array_key_exists('Lizmap', $plugins)) {
+            $valueExpressions = array(
+                $fieldName => $expression
+            );
+            $params = array(
+                'service' => 'EXPRESSION',
+                'request' => 'Evaluate',
+                'map' => $project->getRelativeQgisPath(),
+                'layer' => $this->layer->getName(),
+                'expressions' => json_encode($valueExpressions),
+            );
+            $url = lizmapProxy::constructUrl($params, array('method' => 'post'));
+            list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+            if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
+                $json = json_decode($data);
+                if (property_exists($json, 'status') && $json->status != 'success') {
+                    // TODO parse errors
+                    // if (property_exists($json, 'errors')) {
+                    // }
+                    jLog::log($data, 'error');
+                    return null;
+                }
+                // Get result
+                if (property_exists($json, 'results') &&
+                    array_key_exists(0, $json->results)) {
+                    $results = $json->results[0];
+                    if (property_exists($results, $fieldName)) {
+                        return $results->$fieldName;
+                    }
+                }
+                // Data not well formed
+                jLog::log($data, 'error');
+                return null;
+            }
+        }
         return null;
     }
 
