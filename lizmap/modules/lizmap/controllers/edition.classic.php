@@ -629,12 +629,11 @@ class editionCtrl extends jController
         $form->initFromRequest();
 
         // Check the form data and redirect if needed
-        $check = $form->check();
-        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
-        if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
-            $check = false;
-            $form->setErrorOn($this->geometryColumn, jLocale::get('view~edition.message.error.no.geometry'));
+        $feature = null;
+        if ($this->featureId) {
+            $feature = $this->featureData->features[0];
         }
+        $check = $qgisForm->check($feature);
 
         // event to add additionnal checks
         $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
@@ -654,10 +653,6 @@ class editionCtrl extends jController
         // And get returned primary key values
         $pkvals = null;
         if ($check) {
-            $feature = null;
-            if ($this->featureId) {
-                $feature = $this->featureData->features[0];
-            }
             $pkvals = $qgisForm->saveToDb($feature);
         }
 

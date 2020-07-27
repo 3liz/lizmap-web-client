@@ -517,6 +517,15 @@ class qgisFormControl
 
         // Set control main properties
         $this->setControlMainProperties();
+
+        // Hint based on constraints
+        if ($constraints !== null && $constraints['exp']) {
+            if ( $constraints['exp_desc'] !== '' ) {
+                $this->ctrl->hint = $constraints['exp_desc'];
+            } else {
+                $this->ctrl->hint = jLocale::get('view~edition.message.hint.constraint', array($constraints['exp_value']));
+            }
+        }
     }
 
     /*
