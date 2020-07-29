@@ -8,6 +8,14 @@
     <dl>
       <dt>{@admin~admin.generic.version.number.label@}</dt><dd>{$version}</dd>
     </dl>
+    <dl>
+      <dt>{@admin~admin.generic.qgis_server.info.label@}</dt>
+      {if $qgis_server_info}
+      <dd>{jlocale "admin~admin.generic.qgis_server.info.value", array($qgis_server_info['release_name'],$qgis_server_info['version'])}</dd>
+      {else}
+      <dt>{@admin~admin.generic.qgis_server.info.error@}</dt>
+      {/if}
+    </dl>
   </div>
 
   {ifacl2 'lizmap.admin.services.view'}

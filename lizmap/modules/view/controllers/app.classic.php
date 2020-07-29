@@ -48,13 +48,18 @@ class appCtrl extends jController
             preg_match('#ServiceExceptionReport#i', $resp) ||
             preg_match('#WMS_Capabilities#i', $resp)) {
             $data['qgis_server']['test'] = 'OK';
+
+            $ser = lizmap::getServices();
+            jClasses::inc('lizmap~qgisServer');
+            $data['qgis_server']['info'] = qgisServer::information($ser->wmsServerURL);
         } else {
             $data['qgis_server']['test'] = 'ERROR';
         }
-        $data['qgis_server']['mime_type'] = $mime;
+        $data['qgis_server']['test_info'] = array();
+        $data['qgis_server']['test_info']['mime_type'] = $mime;
         if ( jAcl2::check('lizmap.admin.access') ) {
-            $data['qgis_server']['http_code'] = $code;
-            $data['qgis_server']['response'] = $resp;
+            $data['qgis_server']['test_info']['http_code'] = $code;
+            $data['qgis_server']['test_info']['response'] = $resp;
         }
 
         $rep->data = $data;
