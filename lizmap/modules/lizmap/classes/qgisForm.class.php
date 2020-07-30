@@ -267,6 +267,33 @@ class qgisForm implements qgisFormControlsInterface
                 }
             }
         }
+
+
+        // Set form's private data
+        $privateData = array();
+        $privateData['liz_repository'] = $layer->getProject()->getRepository()->getKey();
+        $privateData['liz_project'] = $layer->getProject()->getKey();
+        $privateData['liz_layerId'] = $layer->getId();
+        $privateData['liz_featureId'] = $featureId;
+
+        $privateData['qgis_controls'] = array();
+        foreach($this->formControls as $fieldName => $formControl) {
+            $privateData['qgis_controls'][$formControl->ref] = array(
+              'fieldName' => $formControl->fieldName,
+              'defaultValue' => $formControl->defaultValue,
+              'fieldEditType' => $formControl->fieldEditType,
+              'fieldAlias' => $formControl->fieldAlias,
+              // 'rendererCategories' => $formControl->rendererCategories, // needs to be parsed
+              'fieldDataType' => $formControl->fieldDataType,
+              'isReadOnly' => $formControl->isReadOnly,
+              'required' => $formControl->required,
+              'valueRelationData' => $formControl->valueRelationData,
+              'relationReferenceData' => $formControl->relationReferenceData,
+              'uniqueValuesData' => $formControl->uniqueValuesData,
+            );
+        }
+
+        $form->getContainer()->privateData = array_merge($form->getContainer()->privateData , $privateData);
     }
 
     /**
