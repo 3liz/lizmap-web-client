@@ -1132,28 +1132,22 @@ class qgisForm implements qgisFormControlsInterface
         $project = $this->layer->getProject();
         $relationLayerId = $formControl->valueRelationData['layer'];
 
-        $_relationLayerXml = $project->getXmlLayer($relationLayerId);
-        if (count($_relationLayerXml) == 0) {
+        $layer = $project->getLayer($relationLayerId);
+        if ($layer === null) {
             $formControl->ctrl->hint = 'Control not well configured!';
             $formControl->ctrl->help = 'Control not well configured!';
 
             return;
         }
-        $relationLayerXml = $_relationLayerXml[0];
 
-        $_layerName = $relationLayerXml->xpath('layername');
-        if (count($_layerName) == 0) {
-            $formControl->ctrl->hint = 'Control not well configured!';
-            $formControl->ctrl->help = 'Control not well configured!';
-
-            return;
+        $typename = $layer->getShortName();
+        if ($typename === null || $typename === '') {
+            $typename = str_replace(' ', '_', $layer->getName());
         }
-        $layerName = (string) $_layerName[0];
 
         $valueColumn = $formControl->valueRelationData['value'];
         $keyColumn = $formControl->valueRelationData['key'];
         $filterExpression = $formControl->valueRelationData['filterExpression'];
-        $typename = str_replace(' ', '_', $layerName);
 
         $params = array(
             'SERVICE' => 'WFS',
