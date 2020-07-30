@@ -173,3 +173,7 @@ only screen and (                   max-device-height : 640px) {
     display: none;
   }
 }
+/* smartphones, touchscreens */
+@media (hover: none) and (pointer: coarse) {
+
+}
