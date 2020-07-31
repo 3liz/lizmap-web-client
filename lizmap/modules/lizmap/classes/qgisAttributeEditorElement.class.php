@@ -18,6 +18,7 @@ class qgisAttributeEditorElement
     protected $_isContainer = false;
     protected $_isGroupBox = false;
     protected $_isTabPanel = false;
+    protected $_isUploadControl = false;
 
     protected $attributes = array();
 
@@ -38,9 +39,10 @@ class qgisAttributeEditorElement
             $this->attributes[$name] = (string) $attr;
         }
 
-        $formControlName = $formControls->getFormControlName($this->getName());
-        if ($formControlName !== null) {
-            $this->ctrlRef = $formControlName;
+        $qgisControl = $formControls->getQgisControl($this->getName());
+        if ($qgisControl !== null) {
+            $this->ctrlRef = $qgisControl->getControlName();
+            $this->_isUploadControl = $qgisControl->isUploadControl();
         }
 
         $name = $node->getName();
@@ -146,6 +148,12 @@ class qgisAttributeEditorElement
         return $this->_isTabPanel;
     }
 
+    public function isUploadControl()
+    {
+        return $this->_isUploadControl;
+    }
+
+
     /**
      * @return qgisAttributeEditorElement[]
      */
@@ -193,7 +201,7 @@ class qgisAttributeEditorElement
             if ($child->isGroupBox()) {
                 $fields = array_merge($fields, $child->getFields());
             } else {
-                $fields[] = $child->getCtrlRef();
+                $fields[] = $child->getName();
             }
         }
 
@@ -205,7 +213,7 @@ class qgisAttributeEditorElement
             if ($child->isGroupBox()) {
                 $fields = array_merge($fields, $child->getFields());
             } else {
-                $fields[] = $child->getCtrlRef();
+                $fields[] = $child->getName();
             }
         }
         return $fields;
