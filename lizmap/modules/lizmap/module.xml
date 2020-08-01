@@ -36,6 +36,7 @@
         <class name="qgisLayerDbFieldsInfo" file="classes/qgisLayerDbFieldsInfo.class.php"/>
         <class name="qgisFormControlsInterface" file="classes/qgisFormControlsInterface.php"/>
         <class name="lizmapServices" file="classes/lizmapServices.class.php"/>
+        <class name="qgisFormValueRelationDynamicDatasource" file="classes/qgisFormValueRelationDynamicDatasource.class.php"/>
         <namespacePathMap name="Lizmap" dir="lib"/>
     </autoload>
 </module>
