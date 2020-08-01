@@ -146,6 +146,7 @@ class qgisAttributeEditorElement
         return $this->_isTabPanel;
     }
 
+
     /**
      * @return qgisAttributeEditorElement[]
      */
@@ -193,7 +194,7 @@ class qgisAttributeEditorElement
             if ($child->isGroupBox()) {
                 $fields = array_merge($fields, $child->getFields());
             } else {
-                $fields[] = $child->getCtrlRef();
+                $fields[] = $child->getName();
             }
         }
 
@@ -205,7 +206,7 @@ class qgisAttributeEditorElement
             if ($child->isGroupBox()) {
                 $fields = array_merge($fields, $child->getFields());
             } else {
-                $fields[] = $child->getCtrlRef();
+                $fields[] = $child->getName();
             }
         }
         return $fields;
