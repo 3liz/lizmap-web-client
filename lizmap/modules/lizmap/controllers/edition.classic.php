@@ -199,7 +199,7 @@ class editionCtrl extends jController
         $this->layerName = $layerName;
 
         // Optionnaly filter data by login
-        $this->loginFilteredOverride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
+        $this->loginFilteredOverride = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
 
         $dbFieldsInfo = $this->layer->getDbFieldsInfo();
         $this->primaryKeys = $dbFieldsInfo->primaryKeys;
