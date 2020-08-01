@@ -1151,6 +1151,47 @@ class qgisForm implements qgisFormControlsInterface
      */
     private function fillControlFromValueRelationLayer($fieldName, $formControl)
     {
+
+        // required
+        if (!$formControl->valueRelationData['allowNull']) {
+            $formControl->ctrl->required = true;
+        }
+        // combobox
+        if (array_key_exists('useCompleter', $formControl->valueRelationData)
+             && $formControl->valueRelationData['useCompleter']
+        ) {
+            $formControl->ctrl->setAttribute('class', 'combobox');
+        }
+
+        // Add default empty value for required fields
+        // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+        $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->ctrl->required);
+
+        // criteriaFrom based on current_value in filterExpression
+        if (array_key_exists('filterExpression', $formControl->valueRelationData)
+             && $formControl->valueRelationData['filterExpression'] !== ''
+        ) {
+            $filterExpression = $formControl->valueRelationData['filterExpression'];
+            $criteriaFrom = array();
+            preg_match_all("/current_value\(\s*'([^)]*)'\s*\)/", $filterExpression, $matches);
+            if (count($matches)==2) {
+                $criteriaFrom = array_values(array_unique($matches[1]));
+            }
+            if (count($criteriaFrom) !== 0) {
+                $dataSource->setCriteriaControls($criteriaFrom);
+            }
+        }
+
+
+        $formControl->ctrl->datasource = $dataSource;
+
+        // Add default empty value for required fields
+        // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+        //if ($formControl->ctrl->required) {
+        //    $data[''] = '';
+        //}
+
+        /*
         $wfsData = null;
         $mime = '';
 
@@ -1266,7 +1307,7 @@ class qgisForm implements qgisFormControlsInterface
                 $formControl->ctrl->hint = 'No data to fill this control!';
                 $formControl->ctrl->help = 'No data to fill this control!';
             }
-        }
+        }*/
     }
 
     /**
