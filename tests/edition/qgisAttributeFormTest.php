@@ -42,6 +42,8 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $controls = new dummyQgisFormControls();
         $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0,0);
 
+        $this->assertEquals(3, count($element->getFields()));
+
         $this->assertEquals(3, count($element->getChildrenBeforeTab()));
         $this->assertEquals(0, count($element->getChildrenAfterTab()));
         $this->assertEquals(0, count($element->getTabChildren()));
@@ -105,6 +107,9 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $sXml = simplexml_load_string($xml);
         $controls = new dummyQgisFormControls();
         $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0,0);
+
+        $this->assertEquals(3, count($element->getFields()));
+
         $this->assertEquals(1, count($element->getChildrenBeforeTab()));
         $this->assertEquals(0, count($element->getChildrenAfterTab()));
         $this->assertEquals(0, count($element->getTabChildren()));
@@ -192,6 +197,9 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $sXml = simplexml_load_string($xml);
         $controls = new dummyQgisFormControls();
         $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0,0);
+
+        $this->assertEquals(7, count($element->getFields()));
+
         $this->assertEquals(0, count($element->getChildrenBeforeTab()));
         $this->assertEquals(0, count($element->getChildrenAfterTab()));
         $this->assertEquals(2, count($element->getTabChildren()));
