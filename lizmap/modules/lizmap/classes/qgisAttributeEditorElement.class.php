@@ -18,7 +18,6 @@ class qgisAttributeEditorElement
     protected $_isContainer = false;
     protected $_isGroupBox = false;
     protected $_isTabPanel = false;
-    protected $_isUploadControl = false;
 
     protected $attributes = array();
 
@@ -39,10 +38,9 @@ class qgisAttributeEditorElement
             $this->attributes[$name] = (string) $attr;
         }
 
-        $qgisControl = $formControls->getQgisControl($this->getName());
-        if ($qgisControl !== null) {
-            $this->ctrlRef = $qgisControl->getControlName();
-            $this->_isUploadControl = $qgisControl->isUploadControl();
+        $formControlName = $formControls->getFormControlName($this->getName());
+        if ($formControlName !== null) {
+            $this->ctrlRef = $formControlName;
         }
 
         $name = $node->getName();
@@ -146,11 +144,6 @@ class qgisAttributeEditorElement
     public function isTabPanel()
     {
         return $this->_isTabPanel;
-    }
-
-    public function isUploadControl()
-    {
-        return $this->_isUploadControl;
     }
 
 
