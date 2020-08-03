@@ -11,7 +11,7 @@ php_composer_version: 1.9.1
 # Lizmap nginx frontal
 lizmap_port: 80
 lizmap_hostname: lizmap.local
-
+vagrant_web_port: 8136
 
 lizmap_fpm_socket: /var/run/php/php{{ php_version }}-fpm.sock
 
