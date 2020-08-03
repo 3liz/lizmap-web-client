@@ -58,7 +58,8 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         }
     }
 
-    protected function _installForEntrypoint(InstallHelpers $helpers, EntryPoint $entryPoint, IniModifier $authConf) {
+    protected function _installForEntrypoint(InstallHelpers $helpers, EntryPoint $entryPoint, IniModifier $authConf)
+    {
 
         $dbProfile = $authConf->getValue('profile', 'Db');
         $database = $helpers->database();
@@ -129,6 +130,11 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
             return;
         }
 
+        $oldTable = $cn->schema()->getTable('jlx_user');
+        if (!$oldTable) {
+            return;
+        }
+
         $targetFields = array();
         $properties = array('login', 'password', 'status', 'email', 'create_date');
         $daoProperties = $dao->getProperties();
@@ -151,7 +157,6 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
             $targetFields[] = $cn->encloseName($daoProperties['nickname']['fieldName']);
         }
 
-        $oldTable = $cn->schema()->getTable('jlx_user');
         $colCreateDate = $oldTable->getColumn('create_date');
         if ($colCreateDate) {
             $sourceFields[] = $cn->encloseName('create_date');
