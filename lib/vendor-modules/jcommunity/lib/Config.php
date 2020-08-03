@@ -54,13 +54,13 @@ class Config
             'useJAuthDbAdminRights' => 'useJAuthDbAdminRights',
             'validationKeyTTL' => 'validationKeyTTL',
                 ) as $prop => $param) {
-            if (isset($config[$param])) {
+            if (array_key_exists($param, $config)) {
                 $this->$prop = $config[$param];
             }
         }
 
 
-        if (isset($config['publicProperties'])) {
+        if (array_key_exists('publicProperties', $config)) {
             if (!is_array($config['publicProperties'])) {
                 $this->publicProperties = preg_split('/\s*,\s*/', trim($config['publicProperties']));
             }
@@ -69,7 +69,7 @@ class Config
             }
         }
 
-        if ((!isset($config['disableJPref']) || $config['disableJPref'] == false) &&
+        if (array_key_exists('disableJPref', $config) && $config['disableJPref'] == false &&
             class_exists('jPref')
         ) {
             $pref = \jPref::get('jcommunity_registrationEnabled');
@@ -85,13 +85,13 @@ class Config
                 $this->resetAdminPasswordEnabled = $pref;
             }
         } else {
-            if (isset($config['registrationEnabled'])) {
+            if (array_key_exists('registrationEnabled', $config)) {
                 $this->registrationEnabled = (bool) $config['registrationEnabled'];
             }
-            if (isset($config['resetPasswordEnabled'])) {
+            if (array_key_exists('resetPasswordEnabled', $config)) {
                 $this->resetPasswordEnabled = (bool) $config['resetPasswordEnabled'];
             }
-            if (isset($config['resetAdminPasswordEnabled'])) {
+            if (array_key_exists('resetAdminPasswordEnabled', $config)) {
                 $this->resetAdminPasswordEnabled = (bool) $config['resetAdminPasswordEnabled'];
             }
         }

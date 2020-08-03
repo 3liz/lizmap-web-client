@@ -62,7 +62,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
             'useJAuthDbAdminRights' =>false,
             'registrationEnabled' =>true,
             'resetPasswordEnabled' =>true,
-            'resetPasswordAdminEnabled' =>true,
+            'resetAdminPasswordEnabled' =>true,
             'disableJPref' =>true,
             'publicProperties' =>array('login', 'nickname', 'create_date')
         );
@@ -76,7 +76,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
 
         $defaultConfig['registrationEnabled'] = $cli->askConfirmation('Is the registration enabled?', $defaultConfig['registrationEnabled']);
         $defaultConfig['resetPasswordEnabled'] = $cli->askConfirmation('Can the user reset his password when he forgot it?', $defaultConfig['resetPasswordEnabled']);
-        $defaultConfig['resetPasswordAdminEnabled'] = $cli->askConfirmation('Can administrators reset user password instead of setting a password himself?', $defaultConfig['resetPasswordAdminEnabled']);
+        $defaultConfig['resetAdminPasswordEnabled'] = $cli->askConfirmation('Can administrators reset user password instead of setting a password himself?', $defaultConfig['resetAdminPasswordEnabled']);
         $defaultConfig['passwordChangeEnabled'] = $cli->askConfirmation('Can the user change his password?', $defaultConfig['passwordChangeEnabled']);
         $defaultConfig['accountDestroyEnabled'] = $cli->askConfirmation('Can the user destroy his account?', $defaultConfig['accountDestroyEnabled']);
         $helpers->getConfigIni()->setValues($defaultConfig, 'jcommunity');

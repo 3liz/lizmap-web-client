@@ -25,11 +25,13 @@ class authadmincommunityListener extends jEventListener{
         }
         $form->deactivate('keyactivate');
         $form->deactivate('request_date');
+        /** @var jTpl $tpl */
+        $tpl = $event->tpl;
+
+        $canChangePassword = $tpl->get('canChangePass');
 
         $config = new \Jelix\JCommunity\Config();
-        if ($config->isResetAdminPasswordEnabledForAdmin()) {
-            /** @var jTpl $tpl */
-            $tpl = $event->tpl;
+        if ($config->isResetAdminPasswordEnabledForAdmin() && $canChangePassword) {
             $tpl->assign('canChangePass', false);
             $links = $tpl->get('otherLinks');
             $status = $form->getData('status');

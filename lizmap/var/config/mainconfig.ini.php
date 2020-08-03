@@ -306,7 +306,7 @@ emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.
 loginResponse = htmlauth
 registrationEnabled = off
 resetPasswordEnabled = on
-resetPasswordAdminEnabled = on
+resetAdminPasswordEnabled = on
 verifyNickname = off
 ;passwordChangeEnabled=on
 ;accountDestroyEnabled=on
