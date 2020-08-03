@@ -298,11 +298,11 @@ email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
 
 [jcommunity]
-loginResponse=htmlauth
-registrationEnabled=off
-resetPasswordEnabled=on
-resetPasswordAdminEnabled=on
-verifyNickname=off
+loginResponse = htmlauth
+registrationEnabled = off
+resetPasswordEnabled = on
+resetAdminPasswordEnabled = on
+verifyNickname = off
 ;passwordChangeEnabled=on
 ;accountDestroyEnabled=on
 useJAuthDbAdminRights=on
