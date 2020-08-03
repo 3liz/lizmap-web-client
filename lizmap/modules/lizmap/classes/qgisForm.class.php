@@ -275,6 +275,7 @@ class qgisForm implements qgisFormControlsInterface
         $privateData['liz_project'] = $layer->getProject()->getKey();
         $privateData['liz_layerId'] = $layer->getId();
         $privateData['liz_featureId'] = $featureId;
+        $privateData['liz_geometryColumn'] = $this->dbFieldsInfo->geometryColumn;
 
         $privateData['qgis_controls'] = array();
         foreach($this->formControls as $fieldName => $formControl) {
@@ -1176,6 +1177,9 @@ class qgisForm implements qgisFormControlsInterface
             preg_match_all("/current_value\(\s*'([^)]*)'\s*\)/", $filterExpression, $matches);
             if (count($matches)==2) {
                 $criteriaFrom = array_values(array_unique($matches[1]));
+            }
+            if (preg_match("/\bcurrent_geometry\b/", $filterExpression) === 1) {
+                $criteriaFrom[] = $this->dbFieldsInfo->geometryColumn;
             }
             if (count($criteriaFrom) !== 0) {
                 $dataSource->setCriteriaControls($criteriaFrom);
