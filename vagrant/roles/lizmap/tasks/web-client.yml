@@ -29,6 +29,7 @@
     - { section: "logger", option: "notice", value: "file" }
     - { section: "logger", option: "deprecated", value: "file" }
     - { section: "logger", option: "auth", value: "file" }
+    - { section: "", option: "forceHTTPPort", value: "{{ vagrant_web_port }}" }
 
 - name: Setup localconfig.ini.php for ldap support
   ini_file:
