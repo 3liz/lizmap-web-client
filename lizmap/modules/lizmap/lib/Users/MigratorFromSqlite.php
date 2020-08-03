@@ -48,11 +48,11 @@ class MigratorFromSqlite {
             $db->exec('DELETE FROM '.$db->prefixTable($table));
             $table = $daoGeoBkmNew->getTables()[$daoGeoBkmNew->getPrimaryTable()]['realname'];
             $db->exec('DELETE FROM '.$db->prefixTable($table));
-            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_group"));
-            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_subject_group"));
-            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_subject"));
-            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_user_group"));
             $db->exec('DELETE FROM '.$db->prefixTable("jacl2_rights"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_user_group"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_subject"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_subject_group"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_group"));
         }
         else if ($daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
@@ -60,9 +60,9 @@ class MigratorFromSqlite {
 
         $this->copyTable($daoUserSelector, 'oldjauth', $profile);
         $this->copyTable('lizmap~geobookmark', 'oldjauth', $profile);
+        $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2subjectgroup', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2subject', 'oldjauth', $profile);
-        $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2usergroup', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2rights', 'oldjauth', $profile);
 
