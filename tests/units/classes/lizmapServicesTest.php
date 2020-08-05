@@ -200,7 +200,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
     {
         $testLizmapServices = new LizmapServices(array(), (object) $globalConfig, false, '');
         $this->assertEquals($expectedReturnValue, $testLizmapServices->modify($newConfig));
-        if (isset($changedProperty)) {
+        if ($changedProperty) {
             $this->assertEquals($changedValue, $testLizmapServices->{$changedProperty});
         }
         unset($testLizmapServices);
@@ -271,14 +271,21 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
         $ini2 = array();
         $liveIni = array(
             'webmasterEmail' => 'test.test@test.com',
-            'webmasterName' => 'Adrien',
+            'webmasterName' => 'Adrien'
         );
-
+        $evalTab1 = array(
+            'appName' => 'Lizmap',
+            'debugMode' => false
+        );
+        $evalTab2 = array(
+            'adminSenderEmail' => 'test.test@test.com',
+            'adminSenderName' => 'Adrien'
+        );
         return array(
-            array('$testLizmapServices->appName = "Lizmap"; $testLizmapServices->adminContactEmail = "test.test@test.com";', $ini1, null, 'services', false),
-            array('$testLizmapServices->appName = "Lizmap"; $testLizmapServices->debugMode = false;', $ini1_1, null, 'services', true),
-            array('$testLizmapServices->adminSenderEmail = "test.test@test.com"; $testLizmapServices->adminSenderName = "Adrien";', null, $liveIni, 'mailer', false),
-            array('$testLizmapServices->adminSenderEmail = "test.test@test.com"; $testLizmapServices->adminSenderName = "Adrien";', null, $ini2, 'mailer', true),
+            array($ini1, $ini1, null, 'services', false),
+            array($evalTab1, $ini1_1, null, 'services', true),
+            array($evalTab2, null, $liveIni, 'mailer', false),
+            array($evalTab2, null, $ini2, 'mailer', true),
         );
     }
 
@@ -316,7 +323,10 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
             $testLizmapServices->{$prop} = '';
         }
 
-        eval($dataModification);
+        foreach ($dataModification as $key => $val) {
+            $testLizmapServices->$key = $val;
+        }
+
         $ini = new jIniFileModifier($iniPath);
         $liveIni = new jIniFileModifier($liveIniPath);
         $testLizmapServices->saveIntoIni($ini, $liveIni);

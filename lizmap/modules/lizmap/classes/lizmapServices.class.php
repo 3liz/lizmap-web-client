@@ -182,12 +182,11 @@ class lizmapServices
     // application id for google analytics
     public $googleAnalyticsID = '';
 
-    public function __construct($lizmapConfigFileTab, $appConfig, $ldapEnabled, $varPath)
+    public function __construct($lizmapConfigFileTab, $globalConfig, $ldapEnabled, $varPath)
     {
         // read the lizmap configuration file
         $readConfigPath = $lizmapConfigFileTab;
         $this->data = $readConfigPath;
-        $globalConfig = $appConfig;
         $this->globalConfig = $globalConfig;
         $this->varPath = $varPath;
         $this->isUsingLdap = $ldapEnabled;
@@ -327,21 +326,6 @@ class lizmapServices
                 $this->{$k} = $v;
                 $modified = true;
             }
-        }
-
-        return $modified;
-    }
-
-    /**
-     * Update the services. (modify and save).
-     *
-     * @param array $data array containing the data of the services
-     */
-    public function update($data)
-    {
-        $modified = $this->modify($data);
-        if ($modified) {
-            $modified = $this->save();
         }
 
         return $modified;
