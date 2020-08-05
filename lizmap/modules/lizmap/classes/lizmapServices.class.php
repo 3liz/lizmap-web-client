@@ -105,7 +105,10 @@ class lizmapServices
         'adminSenderName' => array('webmasterName', 'mailer'),
     );
 
-    private $isUsingLdap = false;
+	private $isUsingLdap = false;
+	
+	private	$varPath = '';
+	private $globalConfig = null;
 
     // Wms map server
     public $appName = 'Lizmap';
@@ -176,16 +179,17 @@ class lizmapServices
     public $adminSenderEmail = '';
     public $adminSenderName = '';
     // application id for google analytics
-    public $googleAnalyticsID = '';
+	public $googleAnalyticsID = '';
 
-    public function __construct()
+    public function __construct($lizmapConfigFileTab, $appConfig, $ldapEnabled, $varPath)
     {
         // read the lizmap configuration file
-        $readConfigPath = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+        $readConfigPath = $lizmapConfigFileTab;
         $this->data = $readConfigPath;
-        $globalConfig = jApp::config();
-
-        $this->isUsingLdap = jApp::isModuleEnabled('ldapdao');
+		$globalConfig = $appConfig;
+		$this->globalConfig = $globalConfig;
+		$this->varPath = $varPath;
+        $this->isUsingLdap = $ldapEnabled;
 
         // set generic parameters
         foreach ($this->properties as $prop) {
@@ -208,7 +212,7 @@ class lizmapServices
             }
         }
 
-        // check email address where to send notifications
+		// check email address where to send notifications
         if ($this->adminContactEmail == 'root@localhost' ||
             $this->adminContactEmail == 'root@localhost.localdomain' ||
             $this->adminContactEmail == '' ||
@@ -278,10 +282,10 @@ class lizmapServices
         if ($rootRepositories != '') {
             // if path is relative, get full path
             if ($rootRepositories[0] != '/' and $rootRepositories[1] != ':') {
-                $rootRepositories = realpath(jApp::varPath().$rootRepositories);
+				$rootRepositories = realpath($this->varPath.$rootRepositories);
             }
             // add a trailing slash if needed
-            if (!preg_match('#/$#', $rootRepositories)) {
+            if (!preg_match('#/$#', $rootRepositories) && $rootRepositories !== FALSE) {
                 $rootRepositories .= '/';
             }
         }
@@ -303,7 +307,10 @@ class lizmapServices
     public function modify($data)
     {
         $modified = false;
-        $globalConfig = jApp::config();
+		$globalConfig = $this->globalConfig;
+		if (!isset($data))	{
+			return $modified;
+		}
         foreach ($data as $k => $v) {
             if (isset($this->globalConfigProperties[$k])) {
                 list($key, $section) = $this->globalConfigProperties[$k];
@@ -339,21 +346,14 @@ class lizmapServices
         return $modified;
     }
 
-    /**
-     * save the services.
-     */
-    public function save()
+    public function saveIntoIni($ini, $liveIni)
     {
-        // Get access to the ini file
-        $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
-        $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
-
-        $dontSaveSensitiveProps = $this->hideSensitiveProperties();
+		$dontSaveSensitiveProps = $this->hideSensitiveProperties();
         $hiddenProps = array();
         if ($dontSaveSensitiveProps) {
             $hiddenProps = array_combine($this->sensitiveProperties, array_fill(0, count($this->sensitiveProperties), true));
-        }
-
+		}
+		
         foreach ($this->properties as $prop) {
             if ($dontSaveSensitiveProps && isset($hiddenProps[$prop])) {
                 continue;
@@ -361,20 +361,12 @@ class lizmapServices
             if (isset($this->globalConfigProperties[$prop])) {
                 list($key, $section) = $this->globalConfigProperties[$prop];
                 $liveIni->setValue($key, $this->{$prop}, $section);
-            } elseif ($this->{$prop} != '') {
+            } elseif (isset($this->{$prop}) && $this->{$prop} != '') {
                 $ini->setValue($prop, $this->{$prop}, 'services');
             } else {
                 $ini->removeValue($prop, 'services');
             }
         }
-
-        $modified = $ini->isModified() || $liveIni->isModified();
-
-        // Save the ini file
-        $ini->save();
-        $liveIni->save();
-
-        return $modified;
     }
 
     public function sendNotificationEmail($subject, $body)
