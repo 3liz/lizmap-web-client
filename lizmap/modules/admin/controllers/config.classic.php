@@ -264,8 +264,11 @@ class configCtrl extends jController
             }
         }
 
-        $modifyServices = $services->update($data);
-        if ($modifyServices) {
+		$modifyServices = $services->modify($data);
+		if ($modifyServices)	{
+        	$modifyServices = lizmap::saveServices();
+		}
+		if ($modifyServices) {
             jMessage::add(jLocale::get('admin~admin.form.admin_services.message.data.saved'));
         }
 
