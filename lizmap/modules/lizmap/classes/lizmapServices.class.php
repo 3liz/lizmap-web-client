@@ -59,7 +59,7 @@ class lizmapServices
     );
 
     /**
-     * services properties to not display into the configuration form
+     * services properties to not display into the configuration form.
      */
     private $sensitiveProperties = array(
         'qgisServerVersion',
@@ -105,10 +105,10 @@ class lizmapServices
         'adminSenderName' => array('webmasterName', 'mailer'),
     );
 
-	private $isUsingLdap = false;
-	
-	private	$varPath = '';
-	private $globalConfig = null;
+    private $isUsingLdap = false;
+
+    private $varPath = '';
+    private $globalConfig;
 
     // Wms map server
     public $appName = 'Lizmap';
@@ -142,7 +142,8 @@ class lizmapServices
     /**
      * backend to use to do http request : use curl ('curl') or file_get_contents ('php').
      * leave empty to have automatic selection (it will use curl if the curl extension is installed).
-     * Fill it only for tests
+     * Fill it only for tests.
+     *
      * @var string
      */
     public $proxyHttpBackend = '';
@@ -179,16 +180,16 @@ class lizmapServices
     public $adminSenderEmail = '';
     public $adminSenderName = '';
     // application id for google analytics
-	public $googleAnalyticsID = '';
+    public $googleAnalyticsID = '';
 
     public function __construct($lizmapConfigFileTab, $appConfig, $ldapEnabled, $varPath)
     {
         // read the lizmap configuration file
         $readConfigPath = $lizmapConfigFileTab;
         $this->data = $readConfigPath;
-		$globalConfig = $appConfig;
-		$this->globalConfig = $globalConfig;
-		$this->varPath = $varPath;
+        $globalConfig = $appConfig;
+        $this->globalConfig = $globalConfig;
+        $this->varPath = $varPath;
         $this->isUsingLdap = $ldapEnabled;
 
         // set generic parameters
@@ -212,7 +213,7 @@ class lizmapServices
             }
         }
 
-		// check email address where to send notifications
+        // check email address where to send notifications
         if ($this->adminContactEmail == 'root@localhost' ||
             $this->adminContactEmail == 'root@localhost.localdomain' ||
             $this->adminContactEmail == '' ||
@@ -282,10 +283,10 @@ class lizmapServices
         if ($rootRepositories != '') {
             // if path is relative, get full path
             if ($rootRepositories[0] != '/' and $rootRepositories[1] != ':') {
-				$rootRepositories = realpath($this->varPath.$rootRepositories);
+                $rootRepositories = realpath($this->varPath.$rootRepositories);
             }
             // add a trailing slash if needed
-            if (!preg_match('#/$#', $rootRepositories) && $rootRepositories !== FALSE) {
+            if (!preg_match('#/$#', $rootRepositories) && $rootRepositories !== false) {
                 $rootRepositories .= '/';
             }
         }
@@ -307,10 +308,10 @@ class lizmapServices
     public function modify($data)
     {
         $modified = false;
-		$globalConfig = $this->globalConfig;
-		if (!isset($data))	{
-			return $modified;
-		}
+        $globalConfig = $this->globalConfig;
+        if (!isset($data)) {
+            return $modified;
+        }
         foreach ($data as $k => $v) {
             if (isset($this->globalConfigProperties[$k])) {
                 list($key, $section) = $this->globalConfigProperties[$k];
@@ -348,12 +349,12 @@ class lizmapServices
 
     public function saveIntoIni($ini, $liveIni)
     {
-		$dontSaveSensitiveProps = $this->hideSensitiveProperties();
+        $dontSaveSensitiveProps = $this->hideSensitiveProperties();
         $hiddenProps = array();
         if ($dontSaveSensitiveProps) {
             $hiddenProps = array_combine($this->sensitiveProperties, array_fill(0, count($this->sensitiveProperties), true));
-		}
-		
+        }
+
         foreach ($this->properties as $prop) {
             if ($dontSaveSensitiveProps && isset($hiddenProps[$prop])) {
                 continue;

@@ -14,7 +14,7 @@ class configCtrl extends jController
     // Configure access via jacl2 rights management
     public $pluginParams = array(
         '*' => array('jacl2.right' => 'lizmap.admin.access'),
-        'index' => array('jacl2.rights.and'=> ['lizmap.admin.access', 'lizmap.admin.services.view']),
+        'index' => array('jacl2.rights.and' => array('lizmap.admin.access', 'lizmap.admin.services.view')),
         'modifyServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
         'editServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
         'saveServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
@@ -264,11 +264,11 @@ class configCtrl extends jController
             }
         }
 
-		$modifyServices = $services->modify($data);
-		if ($modifyServices)	{
-        	$modifyServices = lizmap::saveServices();
-		}
-		if ($modifyServices) {
+        $modifyServices = $services->modify($data);
+        if ($modifyServices) {
+            $modifyServices = lizmap::saveServices();
+        }
+        if ($modifyServices) {
             jMessage::add(jLocale::get('admin~admin.form.admin_services.message.data.saved'));
         }
 
@@ -280,5 +280,4 @@ class configCtrl extends jController
 
         return $rep;
     }
-
 }
