@@ -124,14 +124,16 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
 
     public function getRootRepositoriesData()
     {
+
+        $path = realpath(__DIR__.'/../../../');
         return array(
-            array('/srv/lzm/tests/qgis-projects', '/srv/lzm/lizmap/var/', '/srv/lzm/tests/qgis-projects/'),
-            array('', '/srv/lzm/lizmap/var/', ''),
-            array('/srv/lzm/tests/qgis-projects', '', '/srv/lzm/tests/qgis-projects/'),
+            array($path.'/tests/qgis-projects', $path.'/lizmap/var/', $path.'/tests/qgis-projects/'),
+            array('', $path.'/lizmap/var/', ''),
+            array($path.'/tests/qgis-projects', '', $path.'/tests/qgis-projects/'),
             array('', '', ''),
             array('C:\Program Files\Lizmap', '', 'C:\Program Files\Lizmap/'),
-            array('../var/log/.././', '/srv/lzm/lizmap/var/', '/srv/lzm/lizmap/var/'),
-            array('../file/not/existing', '/srv/lzm/lizmap/var/', false),
+            array('../var/log/.././', $path.'/lizmap/var/', $path.'/lizmap/var/'),
+            array('../file/not/existing', $path.'/lizmap/var/', false),
         );
     }
 
