@@ -82,12 +82,12 @@ class lizmapRepository
         return $this->data['path'];
     }
 
-    public function getProperties()
+    public static function getProperties()
     {
         return self::$properties;
     }
 
-    public function getPropertiesOptions()
+    public static function getPropertiesOptions()
     {
         return self::$propertiesOptions;
     }
