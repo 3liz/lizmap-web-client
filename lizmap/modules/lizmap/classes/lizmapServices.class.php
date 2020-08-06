@@ -384,7 +384,10 @@ class lizmapServices
     public function getLizmapRepository($key)
     {
         $section = 'repository:'.$key;
-
+        
+        if ($key === null || $key === '') {
+            return false;
+        }
         // Check if repository exists in the ini file
         if (array_key_exists($section, $this->data)) {
             $data = $this->data[$section];
