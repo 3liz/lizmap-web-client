@@ -9,4 +9,5 @@ Version 3.2.16 (next)
     - Update Jelix: you can indicate a database name in a connection profile
       when using Postgresql services. 
 - Fix an error on SQL queries during the migration of user table from Sqlite to Postgresql
+- Use form in edition.js to get it's id
 
