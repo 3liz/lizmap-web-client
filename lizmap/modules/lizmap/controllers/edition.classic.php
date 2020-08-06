@@ -541,14 +541,19 @@ class editionCtrl extends jController
             $title = 'No title';
         }
 
+        // Prepare template
+        $attributeEditorForm = $qgisForm->getAttributesEditorForm();
+        $form = $qgisForm->getForm();
+
         // Use template to create html form content
         $tpl = new jTpl();
-        $tpl->assign('attributeEditorForm', $qgisForm->getAttributesEditorForm());
+        $tpl->assign('attributeEditorForm', $attributeEditorForm);
         $tpl->assign('fieldNames', $qgisForm->getFieldNames());
         $tpl->assign('title', $title);
-        $tpl->assign('form', $qgisForm->getForm());
+        $tpl->assign('form', $form);
         $tpl->assign('formPlugins', $qgisForm->getFormPlugins());
         $tpl->assign('ajaxNewFeatureUrl', jUrl::get('lizmap~edition:saveNewFeature'));
+        $tpl->assign('groupVisibilities', qgisExpressionUtils::evaluateGroupVisibilities($attributeEditorForm, $form));
 
         // event to add custom fields into the jForms form, or to modify those that
         // have been added by QgisForm, and to inject custom data into the template
@@ -1251,5 +1256,70 @@ class editionCtrl extends jController
         }
 
         return $this->serviceAnswer();
+    }
+
+    /**
+    * web service for XHR request when group visibilities
+    * depending of the value of form controls.
+    */
+    public function getGroupVisibilities()
+    {
+        if (!$this->request->isPostMethod() || !$this->request->isAjax()) {
+            $rep = $this->getResponse('text', true);
+            $rep->setHttpStatus('405', 'Method Not Allowed');
+            return $rep;
+        }
+
+        $rep = $this->getResponse('json', true);
+
+        try {
+            $form = jForms::get($this->param('__form'), $this->param('__formid'));
+            if (!$form) {
+                throw new Exception ('dummy');
+            }
+        }
+        catch(Exception $e) {
+            $rep = $this->getResponse('text', true);
+            $rep->setHttpStatus('422', 'Unprocessable entity');
+            $rep->content = 'invalid form selector';
+            return $rep;
+        }
+
+        // check CSRF
+        if ($form->securityLevel == jFormsBase::SECURITY_CSRF) {
+            if ($form->getContainer()->token !== $this->param('__JFORMS_TOKEN__')) {
+                $rep = $this->getResponse('text', true);
+                $rep->setHttpStatus('422', 'Unprocessable entity');
+                $rep->content = 'invalid token';
+                jLog::logEx(new jException("jelix~formserr.invalid.token"), "error");
+                return $rep;
+            }
+        }
+
+        // Get Private data
+        $privateData = $form->getContainer()->privateData;
+
+        // Build QGIS Form
+        $repository = $privateData['liz_repository'];
+        $project = $privateData['liz_project'];
+        $layerId = $privateData['liz_layerId'];
+        $featureId = $privateData['liz_featureId'];
+
+        $lrep = lizmap::getRepository($repository);
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        $layer = $lproj->getLayer($layerId);
+
+        $qgisForm = new qgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()));
+
+        // Update form
+        $dependencies = $privateData['qgis_groupDependencies'];
+        foreach ($dependencies as $ctname) {
+            $form->setData($ctname, $this->param($ctname));
+        }
+
+        // evaluate group visibilities
+        $attributeEditorForm = $qgisForm->getAttributesEditorForm();
+        $rep->data = qgisExpressionUtils::evaluateGroupVisibilities($attributeEditorForm, $form);
+        return $rep;
     }
 }
