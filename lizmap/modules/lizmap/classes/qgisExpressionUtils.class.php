@@ -50,6 +50,31 @@ class qgisExpressionUtils
         return array_values(array_unique($criteriaFrom));
     }
 
+    static public function updateExpressionByUser($layer, $expression)
+    {
+        $project = $layer->getProject();
+        $repository = $project->getRepository();
+        // No filter data by login rights
+        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $repository->getKey())) {
+            return $expression;
+        }
+
+        // get login filters
+        $loginFilters = $project->getLoginFilters(array($layer->getName()));
+
+        // login filters array is empty
+        if (empty($loginFilters)) {
+            return $expression;
+        }
+
+        // layer not in login filters array
+        if (array_key_exists($layer->getName(), $loginFilters)) {
+            return $expression;
+        }
+
+        return '('.$expression.') AND ('.$loginFilters[$layer->getName()].')';
+    }
+
     /**
      * Return form group visibilities.
      *
