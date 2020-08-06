@@ -27,6 +27,11 @@ class qgisForm implements qgisFormControlsInterface
     protected $form_name;
 
     /**
+     * @var qgisAttributeEditorElement|null the qgis form element
+     */
+    protected $attributeEditorForm;
+
+    /**
      * @var string
      */
     protected $featureId;
@@ -268,7 +273,6 @@ class qgisForm implements qgisFormControlsInterface
             }
         }
 
-
         // Set form's private data
         $privateData = array();
         $privateData['liz_repository'] = $layer->getProject()->getRepository()->getKey();
@@ -292,6 +296,16 @@ class qgisForm implements qgisFormControlsInterface
               'relationReferenceData' => $formControl->relationReferenceData,
               'uniqueValuesData' => $formControl->uniqueValuesData,
             );
+        }
+
+
+        $attributeEditorForm = $this->getAttributesEditorForm();
+        if ($attributeEditorForm) {
+            $groupVisibilities = $attributeEditorForm->getGroupVisibilityExpressions();
+            $qgis_groupDependencies = qgisExpressionUtils::getCriteriaFromExpressions($groupVisibilities);
+            $privateData['qgis_groupDependencies'] = array_intersect($qgis_groupDependencies, array_keys($this->dbFieldsInfo->dataFields));
+        } else {
+            $privateData['qgis_groupDependencies'] = array();
         }
 
         $form->getContainer()->privateData = array_merge($form->getContainer()->privateData , $privateData);
@@ -398,6 +412,10 @@ class qgisForm implements qgisFormControlsInterface
      */
     public function getAttributesEditorForm()
     {
+        if ($this->form_name !== null && $this->form_name != '') {
+            return $this->attributeEditorForm;
+        }
+
         $this->form_name = self::generateFormName($this->form->getSelector());
 
         $layerXml = $this->layer->getXmlLayer();
@@ -411,6 +429,7 @@ class qgisForm implements qgisFormControlsInterface
         }
 
         if ($attributeEditorForm && $attributeEditorForm->hasChildren()) {
+            $this->attributeEditorForm = $attributeEditorForm;
             return $attributeEditorForm;
         }
 
