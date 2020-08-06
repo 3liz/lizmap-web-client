@@ -76,7 +76,7 @@
     dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
     section: "modules"
     option: "lizmapdemo.path"
-    value: "app:../extra_modules/lizmapdemo/"
+    value: "app:../extra-modules/lizmapdemo/"
 
 - name: Setup localconfig.ini.php to enable demo 2)
   ini_file:
