@@ -170,6 +170,8 @@ class lizmapServices
     public $cacheRedisDb = '';
     // Redis key prefix
     public $cacheRedisKeyPrefix = '';
+    // cache Expiration
+    public $cacheExpiration = '';
     // method to flush keys when $cacheRedisKeyPrefix is set. See Jelix documentation
     public $cacheRedisKeyPrefixFlushMethod = '';
     // if we allow to view the form to request an account
@@ -346,7 +348,7 @@ class lizmapServices
             if (isset($this->globalConfigProperties[$prop])) {
                 list($key, $section) = $this->globalConfigProperties[$prop];
                 $liveIni->setValue($key, $this->{$prop}, $section);
-            } elseif (isset($this->{$prop}) && $this->{$prop} != '') {
+            } elseif ($this->{$prop} != '') {
                 $ini->setValue($prop, $this->{$prop}, 'services');
             } else {
                 $ini->removeValue($prop, 'services');
