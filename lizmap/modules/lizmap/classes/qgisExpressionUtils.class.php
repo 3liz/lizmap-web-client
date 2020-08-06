@@ -75,6 +75,26 @@ class qgisExpressionUtils
         return '('.$expression.') AND ('.$loginFilters[$layer->getName()].')';
     }
 
+    static public function evaluateExpressions($layer, $expressions)
+    {
+        // Evaluate the expression by qgis
+        $project = $layer->getProject();
+        $plugins = $project->getQgisServerPlugins();
+        if (array_key_exists('Lizmap', $plugins)) {
+            $params = array(
+                'service' => 'EXPRESSION',
+                'request' => 'Evaluate',
+                'map' => $project->getRelativeQgisPath(),
+                'layer' => $layer->getName(),
+                'expressions' => json_encode($expressions),
+            );
+
+            // Request evaluate expression
+            return self::request($params);
+        }
+        return null;
+    }
+
     /**
      * Return form group visibilities.
      *
