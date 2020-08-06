@@ -139,9 +139,9 @@ class lizmap
         }
 
         // reconstruct form fields based on repositoryPropertyList
-        $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
+        $propertiesOptions = lizmapRepository::getPropertiesOptions();
 
-        foreach (lizmap::getRepositoryProperties() as $k) {
+        foreach (lizmapRepository::getProperties() as $k) {
             $ctrl = null;
             if ($propertiesOptions[$k]['fieldType'] == 'checkbox') {
                 $ctrl = new jFormsControlCheckbox($k);
@@ -190,7 +190,7 @@ class lizmap
             $form->addControl($ctrl);
         }
         if ($rep) {
-            foreach ($rep->getProperties() as $k) {
+            foreach (lizmapRepository::getProperties as $k) {
                 $v = $rep->getData($k);
                 if ($k == 'path' && $rootRepositories != '' &&
                     substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
