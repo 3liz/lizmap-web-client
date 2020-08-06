@@ -14,12 +14,22 @@ class lizmapRepository
     // Lizmap configuration file path (relative to the path folder)
     private $config = 'config/lizmapConfig.ini.php';
 
-    // services properties
+    /**
+     * services properties.
+     *
+     * @deprecated
+     */
     public static $properties = array(
         'label',
         'path',
         'allowUserDefinedThemes',
     );
+
+    /**
+     * services properties options.
+     *
+     * @deprecated
+     */
     public static $propertiesOptions = array(
         'label' => array(
             'fieldType' => 'text',
