@@ -29,11 +29,6 @@ class lizmap
      */
     protected static $repositoryInstances = array();
 
-    /**
-     * @var lizmapProject[] list of projects. keys are projects names
-     */
-    protected static $projectInstances = array();
-
     // log items
     protected static $logItems = array();
 
@@ -315,20 +310,7 @@ class lizmap
             return null;
         }
 
-        if (isset(self::$projectInstances[$key])) {
-            return self::$projectInstances[$key];
-        }
-
-        try {
-            $proj = new lizmapProject($matches['proj'], $rep);
-        } catch (UnknownLizmapProjectException $e) {
-            throw $e;
-        } catch (Exception $e) {
-            jLog::logEx($e, 'error');
-
-            return null;
-        }
-        self::$projectInstances[$key] = $proj;
+        $proj = $rep->getProject($matches['proj']);
 
         return $proj;
     }
