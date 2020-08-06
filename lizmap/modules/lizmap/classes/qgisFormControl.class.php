@@ -605,6 +605,7 @@ class qgisFormControl
                     $v = (string) $category->attributes()->value;
                     $data[$v] = $k;
                 }
+                asort($data);
 
                 break;
 
@@ -625,6 +626,7 @@ class qgisFormControl
                     $data[(string) $i] = $i;
                 }
                 $data[(string) $max] = $max;
+                asort($data);
 
                 break;
 
@@ -647,6 +649,7 @@ class qgisFormControl
                     $data[(string) $i] = $i;
                 }
                 $data[(string) $max] = $max;
+                asort($data);
 
                 break;
 
@@ -719,7 +722,6 @@ class qgisFormControl
                 break;
         }
 
-        asort($data);
         $dataSource->data = $data;
         $this->ctrl->datasource = $dataSource;
     }
