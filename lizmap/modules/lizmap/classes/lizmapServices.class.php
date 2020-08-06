@@ -184,10 +184,9 @@ class lizmapServices
     // application id for google analytics
     public $googleAnalyticsID = '';
 
-    public function __construct($lizmapConfigFileTab, $globalConfig, $ldapEnabled, $varPath)
+    public function __construct($readConfigPath, $globalConfig, $ldapEnabled, $varPath)
     {
         // read the lizmap configuration file
-        $readConfigPath = $lizmapConfigFileTab;
         $this->data = $readConfigPath;
         $this->globalConfig = $globalConfig;
         $this->varPath = $varPath;
@@ -380,5 +379,20 @@ class lizmapServices
                 jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
             }
         }
+    }
+
+    public function getLizmapRepository($key)
+    {
+        $section = 'repository:'.$key;
+
+        // Check if repository exists in the ini file
+        if (array_key_exists($section, $this->data)) {
+            $data = $this->data[$section];
+        } else {
+            return false;
+        }
+        $repo = new lizmapRepository($key, $data, $this->varPath);
+
+        return $repo;
     }
 }

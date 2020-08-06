@@ -227,7 +227,8 @@ class lizmap
             return self::$repositoryInstances[$key];
         }
 
-        $rep = new lizmapRepository($key);
+        $services = self::getServices();
+        $rep = $services->getLizmapRepository($key);
         self::$repositoryInstances[$key] = $rep;
 
         return $rep;
@@ -249,8 +250,10 @@ class lizmap
             return null;
         }
 
-        $rep = new lizmapRepository($key);
-        $rep->update($data);
+        $services = self::getServices();
+        $rep = $services->getLizmapRepository($key);
+        $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
+        $rep->update($data, $ini);
         self::getRepositoryList();
         self::$repositoryInstances[$key] = $rep;
 

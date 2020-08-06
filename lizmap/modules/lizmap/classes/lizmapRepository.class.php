@@ -54,20 +54,17 @@ class lizmapRepository
      */
     protected $projectInstances = array();
 
+    private $varPath = '';
 
-    public function __construct($key)
+    public function __construct($key, $data, $varPath)
     {
-        // read the lizmap configuration file
-        $readConfigPath = parse_ini_file(jApp::varPath().$this->config, true);
+        $properties = self::getProperties();
+        $this->varPath = $varPath;
 
-        $section = 'repository:'.$key;
-        // Check if repository exists in the ini file
-        if (array_key_exists($section, $readConfigPath)) {
-            // Set each property
-            foreach (self::$properties as $property) {
-                if (array_key_exists($property, $readConfigPath[$section])) {
-                    $this->data[$property] = $readConfigPath[$section][$property];
-                }
+        // Set each property
+        foreach ($properties as $property) {
+            if (array_key_exists($property, $data)) {
+                $this->data[$property] = $data[$property];
             }
         }
         $this->key = $key;
@@ -86,7 +83,7 @@ class lizmapRepository
         }
         // if path is relative, get full path
         if ($this->data['path'][0] != '/' and $this->data['path'][1] != ':') {
-            return realpath(jApp::varPath().$this->data['path']).'/';
+            return realpath($this->varPath.$this->data['path']).'/';
         }
 
         return $this->data['path'];
@@ -111,12 +108,8 @@ class lizmapRepository
         return $this->data[$key];
     }
 
-    public function update($data)
+    public function update($data, $ini)
     {
-        // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
-
         // Set section
         $section = 'repository:'.$this->key;
 

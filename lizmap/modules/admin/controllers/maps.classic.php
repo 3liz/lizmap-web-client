@@ -470,7 +470,8 @@ class mapsCtrl extends jController
         if ($new && !$lrep) {
             $lrep = lizmap::createRepository($repository, $data);
         } elseif ($lrep) {
-            $modifySection = $lrep->update($data);
+            $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
+            $modifySection = $lrep->update($data, $ini);
         }
         jMessage::add(jLocale::get('admin~admin.form.admin_section.message.data.saved'));
         // group rights data
