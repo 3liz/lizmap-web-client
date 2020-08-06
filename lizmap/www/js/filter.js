@@ -391,7 +391,9 @@ var lizLayerFilterTool = function() {
                 );
 
                 // Order fkeys alphabetically (which means sort checkboxes for each field)
-                fkeys.sort();
+                fkeys.sort(function (a, b) {
+                    return a.localeCompare(b);
+                });
 
                 for( var z in fkeys ){
                     var f_val = fkeys[z];
