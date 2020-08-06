@@ -186,4 +186,30 @@ class qgisExpressionUtils
 
         return $visibilities;
     }
+
+    static protected function request($params)
+    {
+        $url = lizmapProxy::constructUrl($params, array('method' => 'post'));
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+
+        // Check data from request
+        if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
+            $json = json_decode($data);
+            if (property_exists($json, 'status') && $json->status != 'success') {
+                // TODO parse errors
+                // if (property_exists($json, 'errors')) {
+                // }
+                jLog::log($data, 'error');
+            } else if (property_exists($json, 'results') &&
+                array_key_exists(0, $json->results)) {
+                // Get results
+                return $json->results[0];
+            } else {
+                // Data not well formed
+                jLog::log($data, 'error');
+            }
+        }
+
+        return null;
+    }
 }
