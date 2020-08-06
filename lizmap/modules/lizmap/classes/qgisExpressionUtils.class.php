@@ -75,7 +75,7 @@ class qgisExpressionUtils
         return '('.$expression.') AND ('.$loginFilters[$layer->getName()].')';
     }
 
-    static public function evaluateExpressions($layer, $expressions)
+    static public function evaluateExpressions($layer, $expressions, $form_feature=null)
     {
         // Evaluate the expression by qgis
         $project = $layer->getProject();
@@ -88,6 +88,10 @@ class qgisExpressionUtils
                 'layer' => $layer->getName(),
                 'expressions' => json_encode($expressions),
             );
+            if ($form_feature) {
+                $params['feature'] = json_encode($form_feature);
+                $params['form_scope'] = 'true';
+            }
 
             // Request evaluate expression
             return self::request($params);

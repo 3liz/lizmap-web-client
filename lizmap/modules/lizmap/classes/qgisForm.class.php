@@ -585,59 +585,32 @@ class qgisForm implements qgisFormControlsInterface
 
         // Evaluate constraint expressions
         if (count($constraintExpressions) > 0) {
-            // Check that lizmap plugin is installed
-            $project = $this->layer->getProject();
-            $plugins = $project->getQgisServerPlugins();
-            if (array_key_exists('Lizmap', $plugins)) {
-                // Build request
-                $form_feature = array(
-                    'type' => 'Feature',
-                    'geometry' => null,
-                    'properties' => $values
-                );
-                $params = array(
-                    'service' => 'EXPRESSION',
-                    'request' => 'Evaluate',
-                    'map' => $project->getRelativeQgisPath(),
-                    'layer' => $this->layer->getName(),
-                    'expressions' => json_encode($constraintExpressions),
-                    'feature' => json_encode($form_feature),
-                    'form_scope' => 'true',
-                );
+            $form_feature = array(
+                'type' => 'Feature',
+                'geometry' => null,
+                'properties' => $values
+            );
+            $results = qgisExpressionUtils::evaluateExpressions(
+                $this->layer,
+                $constraintExpressions,
+                $form_feature);
 
-                // Request evaluate constraint expressions
-                $url = lizmapProxy::constructUrl($params, array('method' => 'post'));
-                list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
-
-                // Check data from request
-                if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
-                    $json = json_decode($data);
-                    if (property_exists($json, 'status') && $json->status != 'success') {
-                        // TODO parse errors
-                        // if (property_exists($json, 'errors')) {
-                        // }
-                        jLog::log($data, 'error');
-                    } else if (property_exists($json, 'results') &&
-                        array_key_exists(0, $json->results)) {
-                        // Get results
-                        $results = (array) $json->results[0];
-                        foreach ($results as $fieldName => $result) {
-                            if ($result === 1) {
-                                continue;
-                            }
-                            $constraints = $this->getConstraints($fieldName);
-                            if ( $constraints['exp_desc'] !== '' ) {
-                                $form->setErrorOn($fieldName, $constraints['exp_desc']);
-                            } else {
-                                $form->setErrorOn($fieldName, jLocale::get('view~edition.message.error.constraint', array($constraints['exp_value'])));
-                            }
-                            $check = false;
-                        }
-                    } else {
-                        // Data not well formed
-                        jLog::log($data, 'error');
-                    }
+            if (!$results) {
+                // Evaluation failed
+                return $check;
+            }
+            $results = (array) $results;
+            foreach ($results as $fieldName => $result) {
+                if ($result === 1) {
+                    continue;
                 }
+                $constraints = $this->getConstraints($fieldName);
+                if ( $constraints['exp_desc'] !== '' ) {
+                    $form->setErrorOn($fieldName, $constraints['exp_desc']);
+                } else {
+                    $form->setErrorOn($fieldName, jLocale::get('view~edition.message.error.constraint', array($constraints['exp_value'])));
+                }
+                $check = false;
             }
         }
 
