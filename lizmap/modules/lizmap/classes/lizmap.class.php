@@ -37,6 +37,9 @@ class lizmap
     // log items
     protected static $logItems = array();
 
+    // lizmapServices counter
+    protected static $lizmapServicesInstance = null;
+
     /**
      * this is a static class, so private constructor.
      */
@@ -49,7 +52,30 @@ class lizmap
      */
     public static function getServices()
     {
-        return jClasses::getService('lizmap~lizmapServices');
+        if (!isset(self::$lizmapServicesInstance)) {
+            $lizmapConfigTab = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+            $globalConfig = jApp::config();
+            $ldapEnabled = jApp::isModuleEnabled('ldapdao');
+            $varPath = jApp::varPath();
+            self::$lizmapServicesInstance = new lizmapServices($lizmapConfigTab, $globalConfig, $ldapEnabled, $varPath);
+        }
+
+        return self::$lizmapServicesInstance;
+    }
+
+    public static function saveServices()
+    {
+        $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
+        $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
+
+        $services = self::getServices();
+        $services->saveIntoIni($ini, $liveIni);
+
+        $modified = $ini->isModified() || $liveIni->isModified();
+        $ini->save();
+        $liveIni->save();
+
+        return $modified;
     }
 
     /**

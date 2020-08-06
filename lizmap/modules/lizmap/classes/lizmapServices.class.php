@@ -59,7 +59,7 @@ class lizmapServices
     );
 
     /**
-     * services properties to not display into the configuration form
+     * services properties to not display into the configuration form.
      */
     private $sensitiveProperties = array(
         'qgisServerVersion',
@@ -107,6 +107,9 @@ class lizmapServices
 
     private $isUsingLdap = false;
 
+    private $varPath = '';
+    private $globalConfig;
+
     // Wms map server
     public $appName = 'Lizmap';
     // QGIS Server version
@@ -139,7 +142,8 @@ class lizmapServices
     /**
      * backend to use to do http request : use curl ('curl') or file_get_contents ('php').
      * leave empty to have automatic selection (it will use curl if the curl extension is installed).
-     * Fill it only for tests
+     * Fill it only for tests.
+     *
      * @var string
      */
     public $proxyHttpBackend = '';
@@ -166,6 +170,8 @@ class lizmapServices
     public $cacheRedisDb = '';
     // Redis key prefix
     public $cacheRedisKeyPrefix = '';
+    // cache Expiration
+    public $cacheExpiration = '';
     // method to flush keys when $cacheRedisKeyPrefix is set. See Jelix documentation
     public $cacheRedisKeyPrefixFlushMethod = '';
     // if we allow to view the form to request an account
@@ -178,14 +184,14 @@ class lizmapServices
     // application id for google analytics
     public $googleAnalyticsID = '';
 
-    public function __construct()
+    public function __construct($lizmapConfigFileTab, $globalConfig, $ldapEnabled, $varPath)
     {
         // read the lizmap configuration file
-        $readConfigPath = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+        $readConfigPath = $lizmapConfigFileTab;
         $this->data = $readConfigPath;
-        $globalConfig = jApp::config();
-
-        $this->isUsingLdap = jApp::isModuleEnabled('ldapdao');
+        $this->globalConfig = $globalConfig;
+        $this->varPath = $varPath;
+        $this->isUsingLdap = $ldapEnabled;
 
         // set generic parameters
         foreach ($this->properties as $prop) {
@@ -278,10 +284,10 @@ class lizmapServices
         if ($rootRepositories != '') {
             // if path is relative, get full path
             if ($rootRepositories[0] != '/' and $rootRepositories[1] != ':') {
-                $rootRepositories = realpath(jApp::varPath().$rootRepositories);
+                $rootRepositories = realpath($this->varPath.$rootRepositories);
             }
             // add a trailing slash if needed
-            if (!preg_match('#/$#', $rootRepositories)) {
+            if (!preg_match('#/$#', $rootRepositories) && $rootRepositories !== false) {
                 $rootRepositories .= '/';
             }
         }
@@ -303,7 +309,10 @@ class lizmapServices
     public function modify($data)
     {
         $modified = false;
-        $globalConfig = jApp::config();
+        $globalConfig = $this->globalConfig;
+        if (!isset($data)) {
+            return $modified;
+        }
         foreach ($data as $k => $v) {
             if (isset($this->globalConfigProperties[$k])) {
                 list($key, $section) = $this->globalConfigProperties[$k];
@@ -324,30 +333,8 @@ class lizmapServices
         return $modified;
     }
 
-    /**
-     * Update the services. (modify and save).
-     *
-     * @param array $data array containing the data of the services
-     */
-    public function update($data)
+    public function saveIntoIni($ini, $liveIni)
     {
-        $modified = $this->modify($data);
-        if ($modified) {
-            $modified = $this->save();
-        }
-
-        return $modified;
-    }
-
-    /**
-     * save the services.
-     */
-    public function save()
-    {
-        // Get access to the ini file
-        $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
-        $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
-
         $dontSaveSensitiveProps = $this->hideSensitiveProperties();
         $hiddenProps = array();
         if ($dontSaveSensitiveProps) {
@@ -367,14 +354,6 @@ class lizmapServices
                 $ini->removeValue($prop, 'services');
             }
         }
-
-        $modified = $ini->isModified() || $liveIni->isModified();
-
-        // Save the ini file
-        $ini->save();
-        $liveIni->save();
-
-        return $modified;
     }
 
     public function sendNotificationEmail($subject, $body)
