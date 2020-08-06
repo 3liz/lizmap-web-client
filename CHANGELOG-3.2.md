@@ -10,3 +10,5 @@ Version 3.2.16 (next)
       when using Postgresql services. 
 - Fix an error on SQL queries during the migration of user table from Sqlite to Postgresql
 - Don't sort values with ValueMap widget to keep order defined in QGIS
+- Use form in edition.js to get it's id
+
