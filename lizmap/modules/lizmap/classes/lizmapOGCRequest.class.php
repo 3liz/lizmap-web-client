@@ -262,7 +262,11 @@ class lizmapOGCRequest
             jLog::logEx($e, 'error');
         }
         // invalid cache
-        if ($cached !== false && $cached['mtime'] < $this->project->getFileTime() ) {
+        if ($cached !== false &&
+            $cached['mtime'] < $this->project->getFileTime() &&
+            ( !array_key_exists('ctime', $cached) ||
+              $cached['ctime'] < $this->project->getCfgFileTime())
+            ) {
             $cached = false;
         }
         // return cached data
@@ -287,6 +291,7 @@ class lizmapOGCRequest
         if ($response->code == 200) {
             $cached = array(
                 'mtime' => $this->project->getFileTime(),
+                'ctime' => $this->project->getCfgFileTime(),
                 'code' => $response->code,
                 'mime' => $response->mime,
                 'data' => $response->data,
