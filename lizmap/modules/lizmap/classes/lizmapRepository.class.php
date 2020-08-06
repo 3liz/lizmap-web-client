@@ -39,6 +39,11 @@ class lizmapRepository
     private $key = '';
     // Lizmap repository configuration data
     private $data = array();
+    /**
+     * @var lizmapProject[] list of projects. keys are projects names
+     */
+    protected $projectInstances = array();
+
 
     public function __construct($key)
     {
@@ -125,6 +130,25 @@ class lizmapRepository
         return $modified;
     }
 
+    public function getProject($key)
+    {
+        if (isset($this->projectInstances[$key])) {
+            return $this->projectInstances[$key];
+        }
+
+        try {
+            $proj = new lizmapProject($key, $this);
+        } catch (UnknownLizmapProjectException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+            return null;
+        }
+        
+        $this->projectInstances[$key] = $proj;
+        return $proj;
+    }
+
     public function getProjects()
     {
         $projects = array();
@@ -147,7 +171,7 @@ class lizmapRepository
                     $proj = null;
                     if (in_array($qgsFile.'.cfg', $cfgFiles)) {
                         try {
-                            $proj = lizmap::getProject($this->key.'~'.substr($qgsFile, 0, -4));
+                            $proj = $this->getProject(substr($qgsFile, 0, -4));
                             if ($proj != null) {
                                 $projects[] = $proj;
                             }
