@@ -52,30 +52,13 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
                 'properties' => $values
             );
 
-            // build expression getFeatureWithFormsScope parameters
-            $params = array(
-                'service' => 'EXPRESSION',
-                'request' => 'getFeatureWithFormScope',
-                'map' => $lproj->getRelativeQgisPath(),
-                'layer' => $layer->getName(),
-                'filter' => $filterExpression,
-                'form_feature' => json_encode($form_feature),
-                'fields' => $keyColumn.','.$valueColumn
-            );
-
-            $url = lizmapProxy::constructUrl($params, array('method' => 'post'));
-            list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
-
-            if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
-                $json = json_decode($data);
-                // Get result from json
-                $features = $json->features;
-                foreach ($features as $feat) {
-                    if (property_exists($feat, 'properties')
-                        and property_exists($feat->properties, $keyColumn)
-                        and property_exists($feat->properties, $valueColumn)) {
-                        $result[(string) $feat->properties->{$keyColumn}] = $feat->properties->{$valueColumn};
-                    }
+            // Get Feature With Forms Scope
+            $features = qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn));
+            foreach ($features as $feat) {
+                if (property_exists($feat, 'properties')
+                    and property_exists($feat->properties, $keyColumn)
+                    and property_exists($feat->properties, $valueColumn)) {
+                    $result[(string) $feat->properties->{$keyColumn}] = $feat->properties->{$valueColumn};
                 }
             }
         } else {
