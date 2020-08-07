@@ -157,7 +157,6 @@ class lizmapRepository
             throw $e;
         } catch (Exception $e) {
             jLog::logEx($e, 'error');
-
             return null;
         }
 

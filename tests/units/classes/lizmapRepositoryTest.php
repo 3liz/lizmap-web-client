@@ -153,7 +153,11 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
         unset($services, $repo, $ini);
     }
 
-    public function testGetProject()
+    /**
+     * Tests for after the lizmapProject class refactorisation
+     */
+
+/*  public function testGetProject()
     {
         $ini = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
         $services = new lizmapServices($ini, jApp::config(), true, jApp::varPath());
@@ -186,5 +190,5 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($projKey, $projects[$key]->getKey());
         }
         unset($projects, $rep, $services);
-    }
+    } */
 }
