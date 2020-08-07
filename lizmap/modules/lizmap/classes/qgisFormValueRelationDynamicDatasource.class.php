@@ -37,70 +37,9 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             $values = array();
             foreach ($this->criteriaFrom as $ref) {
                 if ($ref == $privateData['liz_geometryColumn']) {
-                    // from wkt to json
+                    // from wkt to geom
                     $wkt = trim($form->getData($ref));
-
-                    // Get geometry type
-                    preg_match("/^\w*/", $wkt, $matches);
-                    if (count($matches) != 1) {
-                        continue;
-                    }
-                    $geomType = strtolower($matches[0]);
-
-                    // Get coordinates
-                    preg_match("/\((.*)\)$/", $wkt, $matches);
-                    if (count($matches) != 2) {
-                        continue;
-                    }
-                    $coord = $matches[1];
-
-                    if ($geomType === 'point') {
-                        preg_match_all("/\d\d*\.*\d*/", $coord, $matches);
-                        if (count($matches) != 1 || count($matches[0]) < 2) {
-                            continue;
-                        }
-                        $geom = Array(
-                            'type' => 'Point',
-                            'coordinates' => array(
-                                floatval($matches[0][0]),
-                                floatval($matches[0][1])
-                            )
-                        );
-                    } else if ($geomType === 'linestring') {
-                        $coordinates = array();
-                        foreach (explode(',', $coord) as $ptCoord) {
-                            preg_match_all("/\d\d*\.*\d*/", trim($ptCoord), $matches);
-                            $coordinates[] = array(
-                                floatval($matches[0][0]),
-                                floatval($matches[0][1])
-                            );
-                        }
-                        $geom = Array(
-                            'type' => 'LineString',
-                            'coordinates' => $coordinates
-                        );
-                    } else if ($geomType === 'polygon') {
-                        $coordinates = array();
-                        foreach (preg_split('/\)\s*,\s*\(/', $coord) as $splitCoord) {
-                            preg_match("/[^\(\)][^\(\)]*/", $splitCoord, $matches);
-                            $lineCoord = $matches[0];
-                            $lineCoordinates = array();
-                            foreach (explode(',', $lineCoord) as $ptCoord) {
-                                preg_match_all("/\d\d*\.*\d*/", trim($ptCoord), $matches);
-                                $lineCoordinates[] = array(
-                                    floatval($matches[0][0]),
-                                    floatval($matches[0][1])
-                                );
-                            }
-                            if (count($lineCoordinates) > 2) {
-                                $coordinates[] = $lineCoordinates;
-                            }
-                        }
-                        $geom = Array(
-                            'type' => 'Polygon',
-                            'coordinates' => $coordinates
-                        );
-                    }
+                    $geom = lizmapWkt::parse($wkt);
                 } else {
                     // properties
                     $values[$ref] = $form->getData($ref);
