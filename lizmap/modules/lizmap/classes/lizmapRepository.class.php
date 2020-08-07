@@ -97,6 +97,7 @@ class lizmapRepository
         } else {
             return false;
         }
+
         return $this->data['path'];
     }
 
@@ -156,10 +157,12 @@ class lizmapRepository
             throw $e;
         } catch (Exception $e) {
             jLog::logEx($e, 'error');
+
             return null;
         }
-        
+
         $this->projectInstances[$key] = $proj;
+
         return $proj;
     }
 
@@ -167,6 +170,7 @@ class lizmapRepository
     {
         $projects = array();
         $dir = $this->getPath();
+
         if (is_dir($dir)) {
             if ($dh = opendir($dir)) {
                 $cfgFiles = array();
