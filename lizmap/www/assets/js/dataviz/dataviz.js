@@ -132,9 +132,10 @@ var lizDataviz = function() {
             lparams['exp_filter'] = exp_filter;
         }
 
-        // Use cache if exsits
+        // Use cache if it exists
         if (!exp_filter && dv.plots[plot_id]['cache']
             && 'data' in dv.plots[plot_id]['cache']
+            && dv.plots[plot_id]['cache'].data
             && dv.plots[plot_id]['cache'].data.length > 0
         ) {
             // Store filter
