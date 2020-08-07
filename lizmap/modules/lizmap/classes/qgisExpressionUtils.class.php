@@ -94,7 +94,23 @@ class qgisExpressionUtils
             }
 
             // Request evaluate expression
-            return self::request($params);
+            $json = self::request($params);
+            if (!$json) {
+                return null;
+            }
+            if (property_exists($json, 'status') && $json->status != 'success') {
+                // TODO parse errors
+                // if (property_exists($json, 'errors')) {
+                // }
+                jLog::log($data, 'error');
+            } else if (property_exists($json, 'results') &&
+                array_key_exists(0, $json->results)) {
+                // Get results
+                return $json->results[0];
+            } else {
+                // Data not well formed
+                jLog::log($data, 'error');
+            }
         }
         return null;
     }
@@ -218,20 +234,7 @@ class qgisExpressionUtils
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
-            $json = json_decode($data);
-            if (property_exists($json, 'status') && $json->status != 'success') {
-                // TODO parse errors
-                // if (property_exists($json, 'errors')) {
-                // }
-                jLog::log($data, 'error');
-            } else if (property_exists($json, 'results') &&
-                array_key_exists(0, $json->results)) {
-                // Get results
-                return $json->results[0];
-            } else {
-                // Data not well formed
-                jLog::log($data, 'error');
-            }
+            return json_decode($data);
         }
 
         return null;
