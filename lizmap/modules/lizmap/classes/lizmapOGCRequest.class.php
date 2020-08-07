@@ -127,6 +127,24 @@ class lizmapOGCRequest
         return $defaultValue;
     }
 
+    public function parameters()
+    {
+        // Check if a user is authenticated
+        if ( !jAuth::isConnected() ) {
+            // return empty header array
+            return array_merge($this->params, array(
+                'Lizmap_User' => '',
+                'Lizmap_User_Groups' => ''
+            ));
+        }
+        $user = jAuth::getUserSession();
+        $userGroups = jAcl2DbUserGroup::getGroups();
+        return array_merge($this->params, array(
+            'Lizmap_User' => $user->login,
+            'Lizmap_User_Groups' => implode(', ', $userGroups)
+        ));
+    }
+
     public function process()
     {
         $req = $this->param('request');
@@ -154,8 +172,9 @@ class lizmapOGCRequest
             $url.='&';
         }
 
-        return $url.$this->buildQuery($this->params);
+        return $url.$this->buildQuery($this->parameters());
     }
+
 
     protected function buildQuery($params)
     {
@@ -243,7 +262,11 @@ class lizmapOGCRequest
             jLog::logEx($e, 'error');
         }
         // invalid cache
-        if ($cached !== false && $cached['mtime'] < $this->project->getFileTime() ) {
+        if ($cached !== false &&
+            $cached['mtime'] < $this->project->getFileTime() &&
+            ( !array_key_exists('ctime', $cached) ||
+              $cached['ctime'] < $this->project->getCfgFileTime())
+            ) {
             $cached = false;
         }
         // return cached data
@@ -268,6 +291,7 @@ class lizmapOGCRequest
         if ($response->code == 200) {
             $cached = array(
                 'mtime' => $this->project->getFileTime(),
+                'ctime' => $this->project->getCfgFileTime(),
                 'code' => $response->code,
                 'mime' => $response->mime,
                 'data' => $response->data,

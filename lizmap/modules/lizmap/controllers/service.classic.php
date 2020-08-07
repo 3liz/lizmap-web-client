@@ -314,167 +314,34 @@ class serviceCtrl extends jController
             }
         }
 
-        // Optionally filter data by login
+        // Get the selection token
         if (isset($params['request'])) {
             $request = strtolower($params['request']);
-            if (in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint', 'getprintatlas')) &&
-                !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey())
+            if (isset($params['selectiontoken']) &&
+                in_array($request, array('getmap', 'getfeature', 'getprint'))
             ) {
-                $this->filterDataByLogin();
-            }
-        }
-
-        // Get the selection token
-        if (isset($params['selectiontoken']) &&
-            in_array($request, array('getmap', 'getfeature', 'getprint'))
-        ) {
-            $tokens = $params['selectiontoken'];
-            $tokens = explode(';', $tokens);
-            $selections = array();
-            foreach ($tokens as $token) {
-                $data = jCache::get($token);
-                if ($data) {
-                    $data = json_decode($data);
-                    if (property_exists($data, 'typename') &&
-                        property_exists($data, 'ids') &&
-                        count($data->ids) > 0
-                    ) {
-                        $selections[] = $data->typename.':'.implode(',', $data->ids);
+                $tokens = $params['selectiontoken'];
+                $tokens = explode(';', $tokens);
+                $selections = array();
+                foreach ($tokens as $token) {
+                    $data = jCache::get($token);
+                    if ($data) {
+                        $data = json_decode($data);
+                        if (property_exists($data, 'typename') &&
+                            property_exists($data, 'ids') &&
+                            count($data->ids) > 0
+                        ) {
+                            $selections[] = $data->typename.':'.implode(',', $data->ids);
+                        }
                     }
                 }
-            }
-            if (count($selections) > 0) {
-                $this->params['SELECTION'] = implode(';', $selections);
+                if (count($selections) > 0) {
+                    $this->params['SELECTION'] = implode(';', $selections);
+                }
             }
         }
 
         return true;
-    }
-
-    /**
-     * Filter data by login if necessary
-     * as configured in the plugin for login filtered layers.
-     */
-    protected function filterDataByLogin()
-    {
-
-    // Optionally add a filter parameter
-        $lproj = $this->project;
-
-        $request = strtolower($this->params['request']);
-        if ($request == 'getfeature') {
-            $layers = $this->params['typename'];
-        } else {
-            if (array_key_exists('layers', $this->params)) {
-                $layers = $this->params['layers'];
-            } else {
-                $layers = array();
-            }
-        }
-        if (is_string($layers)) {
-            $layers = explode(',', $layers);
-        }
-        $pConfig = $lproj->getFullCfg();
-
-        // Filter only if needed
-        if ($lproj->hasLoginFilteredLayers() &&
-            $pConfig->loginFilteredLayers
-        ) {
-            // Add client side filter before changing it server side
-            $clientExpFilter = null;
-            if (array_key_exists('exp_filter', $this->params)) {
-                $clientExpFilter = $this->params['exp_filter'];
-            }
-            $clientFilter = null;
-            if (array_key_exists('filter', $this->params)) {
-                $clientFilter = $this->params['filter'];
-            }
-
-            // Check if a user is authenticated
-            $isConnected = jAuth::isConnected();
-
-            // Check need for filter foreach layer
-            $serverFilterArray = array();
-            foreach ($layers as $layername) {
-                $layerByTypeName = $this->project->findLayerByTypeName($layername);
-                if($layerByTypeName){
-                    $layername = $layerByTypeName->name;
-                }
-                if (property_exists($pConfig->loginFilteredLayers, $layername)) {
-                    $oAttribute = $pConfig->loginFilteredLayers->{$layername}->filterAttribute;
-                    $attribute = strtolower($oAttribute);
-
-                    if ($isConnected) {
-                        $user = jAuth::getUserSession();
-                        $login = $user->login;
-                        if (property_exists($pConfig->loginFilteredLayers->{$layername}, 'filterPrivate') &&
-                            $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True'
-                        ) {
-                            $serverFilterArray[$layername] = "\"${attribute}\" IN ( '".$login."' , 'all' )";
-                        } else {
-                            $userGroups = jAcl2DbUserGroup::getGroups();
-                            $flatGroups = implode("' , '", $userGroups);
-                            $serverFilterArray[$layername] = "\"${attribute}\" IN ( '".$flatGroups."' , 'all' )";
-                        }
-                    } else {
-                        // The user is not authenticated: only show data with attribute = 'all'
-                        $serverFilterArray[$layername] = "\"${attribute}\" = 'all'";
-                    }
-                }
-            }
-
-            // Set filter if needed
-            if (count($serverFilterArray) > 0) {
-
-                // WFS : EXP_FILTER
-                if ($request == 'getfeature') {
-                    $filter = '';
-                    $s = '';
-                    if (!empty($clientExpFilter)) {
-                        $filter = $clientExpFilter;
-                        $s = ' AND ';
-                    }
-                    if (count($serverFilterArray) > 0) {
-                        foreach ($serverFilterArray as $lname => $lfilter) {
-                            $filter .= $s.$lfilter;
-                            $s = ' AND ';
-                        }
-                    }
-                    $this->params['exp_filter'] = $filter;
-                    if (array_key_exists('propertyname', $this->params)) {
-                        $propertyName = trim($this->params['propertyname']);
-                        if (!empty($propertyName)) {
-                            $this->params['propertyname'] .= ",${oAttribute}";
-                        }
-                    }
-                }
-                // WMS : FILTER
-                else {
-                    if (!empty($clientFilter)) {
-                        $cfexp = explode(';', $clientFilter);
-                        foreach ($cfexp as $a) {
-                            $b = explode(':', $a);
-                            $lname = trim($b[0]);
-                            $lfilter = trim($b[1]);
-                            if (array_key_exists($lname, $serverFilterArray)) {
-                                $serverFilterArray[$lname] .= ' AND '.$lfilter;
-                            } else {
-                                $serverFilterArray[$lname] = $lfilter;
-                            }
-                        }
-                    }
-                    $filter = '';
-                    $s = '';
-                    foreach ($serverFilterArray as $lname => $lfilter) {
-                        $filter .= $s.$lname.':'.$lfilter;
-                        $s = ';';
-                    }
-                    if (count($serverFilterArray) > 0) {
-                        $this->params['filter'] = $filter;
-                    }
-                }
-            }
-        }
     }
 
     /**
