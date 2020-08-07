@@ -194,7 +194,7 @@ class lizmap
             $form->addControl($ctrl);
         }
         if ($rep) {
-            foreach (lizmapRepository::getProperties as $k) {
+            foreach (lizmapRepository::getProperties() as $k) {
                 $v = $rep->getData($k);
                 if ($k == 'path' && $rootRepositories != '' &&
                     substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
@@ -293,6 +293,20 @@ class lizmap
         }
 
         return false;
+    }
+
+    public static function updateRepository($key, $data)
+    {
+        if (!key_exists($key, self::$repositoryInstances)) {
+            return false;
+        }
+
+        $iniFile = jApp::configPath('lizmapConfig.ini.php');
+        $ini = new jIniFileModifier($iniFile);
+        $rep = self::$repositoryInstances[$key];
+
+        $modified = $rep->update($data, $ini);
+        unset($ini);
     }
 
     /**
