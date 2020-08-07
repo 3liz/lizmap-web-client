@@ -77,15 +77,26 @@ class lizmapRepository
 
     public function getPath()
     {
+        if ($this->data['path'] == '') {
+            return false;
+        }
         // add a trailing slash if needed
         if (!preg_match('#/$#', $this->data['path'])) {
             $this->data['path'] .= '/';
         }
+        $path = $this->data['path'];
         // if path is relative, get full path
         if ($this->data['path'][0] != '/' and $this->data['path'][1] != ':') {
-            return realpath($this->varPath.$this->data['path']).'/';
+            $path = realpath($this->varPath.$this->data['path']).'/';
         }
-
+        if (strstr($this->data['path'], './')) {
+            $path = realpath($this->data['path']).'/';
+        }
+        if (file_exists($path)) {
+            $this->data['path'] = $path;
+        } else {
+            return false;
+        }
         return $this->data['path'];
     }
 
