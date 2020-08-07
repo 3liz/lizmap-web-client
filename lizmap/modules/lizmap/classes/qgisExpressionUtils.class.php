@@ -115,6 +115,35 @@ class qgisExpressionUtils
         return null;
     }
 
+    static public function getFeatureWithFormScope($layer, $expression, $form_feature, $fields)
+    {
+
+        $project = $layer->getProject();
+        $plugins = $project->getQgisServerPlugins();
+        if (array_key_exists('Lizmap', $plugins)) {
+            // build parameters
+            $params = array(
+                'service' => 'EXPRESSION',
+                'request' => 'getFeatureWithFormScope',
+                'map' => $project->getRelativeQgisPath(),
+                'layer' => $layer->getName(),
+                'filter' => $expression,
+                'form_feature' => json_encode($form_feature),
+                'fields' => implode(',', $fields)
+            );
+
+            // Request getFeatureWithFormsScope
+            $json = self::request($params);
+            if (!$json || !property_exists($json, 'features')) {
+                return array();
+            }
+
+            return $json->features;
+        }
+
+        return array();
+    }
+
     /**
      * Return form group visibilities.
      *
