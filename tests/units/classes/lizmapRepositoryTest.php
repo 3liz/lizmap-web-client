@@ -61,4 +61,83 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
         unset($services);
         unset($rep);
     }
+
+    public function getUpdateData()
+    {
+        $data1 = array(
+            'repository:test' => array(
+                'label' => 'test',
+                'path' => '/path/to/test',
+                'allowUserDefinedThemes' => '1'
+            )
+        );
+        $data2 = array(
+            'repository:test' => array()
+        );
+        $data3 = array(
+            'repository:test' => array(
+                'label' => 'test',
+                'path' => '/path/to/test',
+                'notExistingProperty' => '1'
+            )
+        );
+        $expectedData1 = array(
+            'repository:test' => array(
+                'label' => 'test',
+                'path' => '/path/to/test',
+                'allowUserDefinedThemes' => '1'
+            )
+        );
+        $expectedData2 = array(
+            'repository:test' => array(
+                'label' => 'other test',
+                'path' => '/path/to/test',
+                'allowUserDefinedThemes' => '1'
+            )
+        );
+        $expectedData3 = array(
+            'repository:test' => array(
+                'label' => 'test',
+                'path' => '/path/to/test',
+            )
+        );
+        $expectedData4 = array(
+            'repository:test' => array(
+                'label' => 'test'
+            )
+        );
+        return array(
+            array($data1, $expectedData1, null, null, true),
+            array($data1, $expectedData2, 'label', 'other test', true),
+            array($data1, $expectedData1, 'label', '', true),
+            array($data2, $data2, null, null, false),
+            array($data2, $expectedData4, 'label', 'test', true),
+            array($data3, $expectedData3, null, null, true)
+        );
+    }
+
+    /**
+     * @dataProvider getUpdateData
+     */
+
+    public function testUpdate($data, $expectedData, $changedProp, $changedValue, $expectedReturnValue)
+    {
+        $iniFile = realpath(__DIR__.'/../tmp').'/config.ini.php';
+        $section = 'repository:test';
+
+        file_put_contents($iniFile, '');
+        $ini = new jIniFileModifier($iniFile);
+        $services = new lizmapServices($data, (object)array(), true, '');
+        $repo = $services->getLizmapRepository('test');
+        if ($changedProp && $changedValue) {
+            $data[$section][$changedProp] = $changedValue;
+        }
+        $ret = $repo->update($data[$section], $ini);
+        $this->assertEquals($expectedReturnValue, $ret);
+        $this->assertEquals($expectedData[$section], $ini->getValues($section));
+        unlink($iniFile);
+        unset($services);
+        unset($repo);
+        unset($ini);
+    }
 }
