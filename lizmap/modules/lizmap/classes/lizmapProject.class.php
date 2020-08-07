@@ -912,6 +912,79 @@ class lizmapProject extends qgisProject
         return false;
     }
 
+    public function getLoginFilteredConfig($layername)
+    {
+        if (!$this->hasLoginFilteredLayers()) {
+            return Null;
+        }
+
+        $ln = $layername;
+        // In case $layername is a WFS TypeName
+        $layerByTypeName = $this->findLayerByTypeName($layername);
+        if($layerByTypeName){
+            $ln = $layerByTypeName->name;
+        }
+
+        if (!property_exists($this->cfg->loginFilteredLayers, $ln)) {
+            return Null;
+        }
+
+        return $pConfig->loginFilteredLayers->{$n};
+    }
+
+    public function getLoginFilters($layers)
+    {
+        $filters = array();
+
+        if (!$this->hasLoginFilteredLayers()) {
+            return $filters;
+        }
+
+        foreach ($layers as $layername) {
+            $lname = $layername;
+
+            // In case $layername is a WFS TypeName
+            $layerByTypeName = $this->findLayerByTypeName($layername);
+            if($layerByTypeName){
+                $lname = $layerByTypeName->name;
+            }
+
+            // Get config
+            $loginFilteredConfig = $this->getLoginFilteredConfig($lname);
+            if ($loginFilteredConfig == Null) {
+                continue;
+            }
+
+            // attribute to filter
+            $attribute = strtolower($loginFilteredConfig->filterAttribute);
+
+            // default no user connected
+            $filter = "\"${attribute}\" = 'all'";
+
+            // A user is connected
+            if (jAuth::isConnected()) {
+                $user = jAuth::getUserSession();
+                $login = $user->login;
+                if (property_exists($loginFilteredConfig, 'filterPrivate') &&
+                    $this>optionToBoolean($loginFilteredConfig->filterPrivate)
+                ) {
+                    $filter = "\"${attribute}\" IN ( '".$login."' , 'all' )";
+                } else {
+                    $userGroups = jAcl2DbUserGroup::getGroups();
+                    $flatGroups = implode("' , '", $userGroups);
+                    $filter = "\"${attribute}\" IN ( '".$flatGroups."' , 'all' )";
+                }
+            }
+
+            $filters[$layername] = array_merge(
+                $loginFilteredConfig,
+                array('filter' => $filter, 'layername' => $lname)
+            );
+        }
+
+        return $filters;
+    }
+
     private function optionToBoolean($config_string) {
         $ret = false;
         if (strtolower((string)$config_string) == 'true') {
@@ -1665,7 +1738,7 @@ class lizmapProject extends qgisProject
         // Remove editionLayers from config if no right to access this tool
         if (property_exists($configJson, 'editionLayers')) {
             if (jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey())) {
-                $configJson->editionLayers = $this->editionLayers;
+                $configJson->editionLayers = clone $this->editionLayers;
                 // Check right to edit this layer (if property "acl" is in config)
                 foreach ($configJson->editionLayers as $key => $eLayer) {
                     // Check if user groups intersects groups allowed by project editor
@@ -1785,6 +1858,126 @@ class lizmapProject extends qgisProject
         // Get server plugins
         $qplugins = $this->getQgisServerPlugins();
         $configJson->qgisServerPlugins = $qplugins;
+
+        // Check layers group visibility
+        $userGroups = Array('');
+        if (jAuth::isConnected()) {
+            $userGroups = jAcl2DbUserGroup::getGroups();
+        }
+        $layersToRemove = array();
+        foreach ($configJson->layers as $obj) {
+            // no group_visibility config, nothing to do
+            if (!property_exists($obj, 'group_visibility')) {
+                continue;
+            }
+            if ($obj->group_visibility === '') {
+                unset($obj->group_visibility);
+                continue;
+            }
+            // get group visibility as trimed array
+            $group_visibility = array_map('trim', explode(',', $obj->group_visibility));
+            $layerToKeep = False;
+            foreach ($userGroups as $group) {
+                if (in_array($group, $group_visibility)){
+                    $layerToKeep = True;
+                    break;
+                }
+            }
+            if (!$layerToKeep) {
+                $layersToRemove[$obj->name] = $obj;
+            }
+            unset($obj->group_visibility);
+        }
+        foreach($layersToRemove as $key => $obj) {
+            // locateByLayer
+            if (property_exists($configJson->locateByLayer, $key)) {
+                unset($configJson->locateByLayer->{$key});
+            }
+            // locateByLayer vectorjoins
+            foreach($configJson->locateByLayer as $o) {
+                if (!property_exists($o, 'vectorjoins')) {
+                    continue;
+                }
+                $vectorjoinsToKeep = array();
+                foreach($o->vectorjoins as $i=>$v) {
+                    if($v->joinLayerId != $obj->id) {
+                        $vectorjoinsToKeep[] = $o;
+                    }
+                }
+                $o->vectorjoins = $vectorjoinsToKeep;
+            }
+            // attributeLayers
+            if (property_exists($configJson->attributeLayers, $key)) {
+                unset($configJson->attributeLayers->{$key});
+            }
+            // tooltipLayers
+            if (property_exists($configJson->tooltipLayers, $key)) {
+                unset($configJson->tooltipLayers->{$key});
+            }
+            // editionLayers
+            if (property_exists($configJson->editionLayers, $key)) {
+                unset($configJson->editionLayers->{$key});
+            }
+            // datavizLayers
+            if (property_exists($configJson, 'datavizLayers')) {
+                $dvlLayers = $configJson->datavizLayers['layers'];
+                foreach($dvlLayers as $o=>$c) {
+                    if ($c['layer_id'] == $obj->id) {
+                        unset($configJson->datavizLayers['layers'][$o]);
+                    }
+                }
+            }
+            // atlas
+            if (property_exists($configJson->options, 'atlasEnabled') &&
+                $this->optionToBoolean($configJson->options->atlasEnabled) &&
+                $configJson->options->atlasLayer == $obj->id) {
+                $configJson->options->atlasLayer = '';
+                $configJson->options->atlasPrimaryKey = '';
+                $configJson->options->atlasFeatureLabel = '';
+                $configJson->options->atlasSortField = '';
+                $configJson->options->atlasEnabled = 'False';
+            }
+            // multi-atlas
+            // formFilterLayers
+            foreach($configJson->formFilterLayers as $o=>$c) {
+                if ($c['layerId'] = $obj->id) {
+                    unset($configJson->formFilterLayers[$o]);
+                }
+            }
+            // relations
+            if (array_key_exists($key, $configJson->relations)) {
+                unset($configJson->relations->{$key});
+            }
+            foreach($configJson->relations as $k => $layerRelations) {
+                if ($k == 'pivot') {
+                    continue;
+                }
+                $relationsToKeep = array();
+                foreach($layerRelations as $r) {
+                    if($r['referencingLayer'] != $obj->id) {
+                        $relationsToKeep[] = $r;
+                    }
+                }
+                if (count($relationsToKeep) > 0) {
+                    $configJson->relations[$k] = $relationsToKeep;
+                } else {
+                    unset($configJson->relations[$k]);
+                }
+            }
+            // printTemplates
+            $printTemplatesToKeep = array();
+            foreach($configJson->printTemplates as $printTemplate) {
+                if (array_key_exists('atlas', $printTemplate) &&
+                    array_key_exists('coverageLayer', $printTemplate['atlas']) &&
+                    $printTemplate['atlas']['coverageLayer'] != $obj->id) {
+                    $printTemplatesToKeep[] = $printTemplate;
+                }
+            }
+            $configJson->printTemplates = $printTemplatesToKeep;
+
+            // remove layer
+            unset($configJson->layers->{$key});
+        }
 
         return json_encode($configJson);
     }

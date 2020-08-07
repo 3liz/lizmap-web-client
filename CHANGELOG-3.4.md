@@ -12,7 +12,7 @@ New features:
 - possibility to add HTML content on the projects page, with image upload
 - search filter on the projects page
 - New module `action` to run PostgreSQL actions from feature popup.
-  This module allows to add action buttons in the popup which trigger PostgreSQL 
+  This module allows to add action buttons in the popup which trigger PostgreSQL
   queries and return a geometry to display on the map
 - Allow multiple atlas definition
 - administration : project management and lizmap configuration are now into
@@ -20,10 +20,10 @@ New features:
 - Map view :
     - Add digitizing (draw) + redlining
     - Qgis theme switcher on a map
-    - Improvements in the geolocation feature 
+    - Improvements in the geolocation feature
     - angle measurement tool
     - Display mouse position in QGIS project's projection
-- Editor: 
+- Editor:
    - split tool
    - Enhanced selection
    - Snapping while editing
@@ -46,9 +46,11 @@ New features:
 - Map themes - check layer legend checkbox even if not in scale range
 - Expose QGIS themes in Lizmap JSON config
 - BAN Search - Add lon and lat parameters to prefer local search around map initial extent center
-- Support of user packages into `lizmap/my-packages/`. A user can install 
+- Support of user packages into `lizmap/my-packages/`. A user can install
   additionnal PHP packages like vendor modules for Lizmap, into the `my-packages/`
-  directory. He should create a `my-packages/composer.json`. 
+  directory. He should create a `my-packages/composer.json`.
+- Send user info to QGIS Server through parameters to get access control
+  performed by Lizmap plugin as a QGIS Server plugin
 
 
 - Lizmap does not support anymore Internet Explorer (11 and lower)
@@ -61,11 +63,11 @@ New JS events:
 
 New PHP events:
 
-- 
+-
 
 
 
-Under the hood: 
+Under the hood:
 
 - Configuration: remove the support of `proxyMethod`. Lizmap now guesses automatically
   if it can use curl to do HTTP queries.
