@@ -375,19 +375,6 @@ class mapsCtrl extends jController
         }
 
         // Rebuild form fields
-        /*foreach(lizmapRepository::getProperties() as $k){
-          if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
-            $ctrl = new jFormsControlCheckbox($k);
-          }
-          else {
-            $ctrl = new jFormsControlInput($k);
-          }
-          $ctrl->required = $propertiesOptions[$k]['required'];
-          $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
-          $datatype = new jDatatypeString();
-          $ctrl->datatype=$datatype;
-          $form->addControl($ctrl);
-        }*/
         lizmap::constructRepositoryForm($lrep, $form);
         if ($lrep) {
             $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), false);
