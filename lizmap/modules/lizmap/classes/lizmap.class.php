@@ -32,8 +32,11 @@ class lizmap
     // log items
     protected static $logItems = array();
 
-    // lizmapServices counter
+    // lizmapServices instance
     protected static $lizmapServicesInstance = null;
+
+    // lizmapLogConfigInstance
+    protected static $lizmapLogConfigInstance = null;
 
     /**
      * this is a static class, so private constructor.
@@ -322,7 +325,11 @@ class lizmap
      */
     public static function getLogConfig()
     {
-        return jClasses::getService('lizmap~lizmapLogConfig');
+        if (!self::$lizmapLogConfigInstance) {
+            $readConfigPath = parse_ini_file(jApp::varPath().self::lizmapLogConfig, true);
+            self::$lizmapLogConfigInstance = new lizmapLogConfig($readConfigPath);
+        }
+        return self::$lizmapLogConfigInstance;
     }
 
     /**

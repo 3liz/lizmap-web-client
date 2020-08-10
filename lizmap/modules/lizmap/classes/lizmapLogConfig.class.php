@@ -11,9 +11,6 @@
  */
 class lizmapLogConfig
 {
-    // Lizmap log configuration file path (relative to the path folder)
-    private $config = 'config/lizmapLogConfig.ini.php';
-
     // Lizmap log configuration data
     private $data = array();
 
@@ -29,10 +26,8 @@ class lizmapLogConfig
     // database profile
     private $profile = '';
 
-    public function __construct()
+    public function __construct($readConfigPath)
     {
-        // read the lizmap log configuration file
-        $readConfigPath = parse_ini_file(jApp::varPath().$this->config, true);
         $this->data = $readConfigPath;
 
         // set generic parameters
@@ -56,6 +51,9 @@ class lizmapLogConfig
     public function modify($data)
     {
         $modified = false;
+        if (!$data) {
+            return false;
+        }
         foreach ($data as $k => $v) {
             if (in_array($k, $this->properties)) {
                 $this->data['general'][$k] = $v;
@@ -72,11 +70,11 @@ class lizmapLogConfig
      *
      * @param array $data array containing the data of the general options
      */
-    public function update($data)
+    public function update($data, $ini)
     {
         $modified = $this->modify($data);
         if ($modified) {
-            $modified = $this->save();
+            $modified = $this->save($ini);
         }
 
         return $modified;
@@ -85,14 +83,10 @@ class lizmapLogConfig
     /**
      * save the global configuration data.
      */
-    public function save()
+    public function save($ini)
     {
-        // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
-
         foreach ($this->properties as $prop) {
-            if ($this->{$prop} != '') {
+            if ($this->{$prop} !== '' && $this->{$prop} !== null) {
                 $ini->setValue($prop, $this->{$prop}, 'general');
             } else {
                 $ini->removeValue($prop, 'general');
