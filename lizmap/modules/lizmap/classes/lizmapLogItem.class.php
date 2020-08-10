@@ -62,7 +62,13 @@ class lizmapLogItem
         if (array_key_exists($section, $readConfigPath)) {
             // Set each property
             foreach (self::$properties as $property) {
-                $this->data[$property] = $readConfigPath[$section][$property];
+                if (isset($readConfigPath[$section][$property])) {
+                    $this->data[$property] = $readConfigPath[$section][$property];
+                }
+                // not sure about those lines, are every properties essential ? if yes uncomment
+                // else {
+                //     return null;
+                // }
             }
         }
         $this->key = $key;

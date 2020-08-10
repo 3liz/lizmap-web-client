@@ -133,4 +133,48 @@ class lizmapLogConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedList, $list);
         unset($testLizmapLogConfig);
     }
+
+    public function getTestGetLogItemData()
+    {
+        $data = array(
+            'general' => array(),
+            'item:test' => array(
+                'label' => 'label',
+                'logCounter' => 'on'
+            ),
+            'item:test2' => array(
+                'label' => 'label2',
+                'logCounter' => 'on'
+            ),
+            'item:test3' => array(
+                'label' => 'label3',
+                'logCounter' => 'on'
+            )
+        );
+        return array(
+            array($data, 'test', true),
+            array($data, 'test2', true),
+            array($data, 'test3', true),
+            array($data, 'testNotExisting', false)
+        );
+    }
+
+    /**
+     * @dataProvider getTestGetLogItemData
+     */
+
+    public function testGetLogItem($data, $key, $valid)
+    {
+        $testLizmapLogConfig = new lizmapLogConfig($data);
+        $item = $testLizmapLogConfig->getLogItem($key);
+        if (!$valid) {
+            $this->assertEquals(null, $item);
+            return ;
+        }
+        $expectedItem = new lizmapLogItem($key, $data);
+        $item2 = $testLizmapLogConfig->getLogItem($key);
+        $this->assertEquals($expectedItem, $item);
+        $this->assertSame($item, $item2);
+        unset($testLizmapLogConfig, $item, $expectedItem);
+    }
 }

@@ -54,8 +54,8 @@ class lizmapLogConfig
      */
     public function getLogItem($key)
     {
-        if (!in_array($key, $this->logItems)) {
-            if (!in_array('item:'.$key, $this->data)) {
+        if (!key_exists($key, $this->logItems)) {
+            if (!key_exists('item:'.$key, $this->data)) {
                 return null;
             }
             $this->logItems[$key] = new lizmapLogItem($key, $this->data);
