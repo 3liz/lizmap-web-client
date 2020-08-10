@@ -184,6 +184,15 @@ class lizmapServices
     // application id for google analytics
     public $googleAnalyticsID = '';
 
+    /**
+     * constructor method
+     *
+     * @param array $readConfigPath the local ini file put in an array
+     * @param array $globalConfig the jelix ini file put in an array
+     * @param bool $ldapEnabled true if ldapdao module is enabled
+     * @param string $varPath the configuration files path given by jApp::varPath()
+     */
+
     public function __construct($readConfigPath, $globalConfig, $ldapEnabled, $varPath)
     {
         // read the lizmap configuration file
@@ -380,6 +389,14 @@ class lizmapServices
             }
         }
     }
+
+    /**
+     * This method will create and return a lizmapRepository instance
+     *
+     * @param string $key the name of the repository
+     *
+     * @return lizmapRepository The lizmapRepository instance
+     */
 
     public function getLizmapRepository($key)
     {
