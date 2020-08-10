@@ -20,6 +20,8 @@ class lizmapLogConfig
         'profile',
     );
 
+    // list of the logItems of the ini file
+    protected $logItems = array();
     // If the log is active globally or not
     private $active = '';
 
@@ -41,6 +43,42 @@ class lizmapLogConfig
     public function getProperties()
     {
         return $this->properties;
+    }
+
+    /**
+     * Get a log item.
+     *
+     * @param string $key Key of the log item to get
+     *
+     * @return lizmapLogItem
+     */
+    public function getLogItem($key)
+    {
+        if (!in_array($key, $this->logItems)) {
+            if (!in_array('item:'.$key, $this->data)) {
+                return null;
+            }
+            $this->logItems[$key] = new lizmapLogItem($key, $this->data);
+        }
+        return $this->logItems[$key];
+    }
+
+    /**
+     * Get a list of log items names.
+     *
+     * @return string[] list of names
+     */
+    public function getLogItemList()
+    {
+        $logItemList = array();
+
+        foreach ($this->data as $section => $data) {
+            $match = preg_match('#(^item:)#', $section, $matches);
+            if (isset($matches[0])) {
+                $logItemList[] = str_replace($matches[0], '', $section);
+            }
+        }
+        return $logItemList;
     }
 
     /**

@@ -54,11 +54,8 @@ class lizmapLogItem
         'email',
     );
 
-    public function __construct($key)
+    public function __construct($key, $readConfigPath)
     {
-        // read the lizmap log configuration file
-        $readConfigPath = parse_ini_file(jApp::varPath().$this->config, true);
-
         $section = 'item:'.$key;
 
         // Check if this item exists in the ini file

@@ -29,9 +29,6 @@ class lizmap
      */
     protected static $repositoryInstances = array();
 
-    // log items
-    protected static $logItems = array();
-
     // lizmapServices instance
     protected static $lizmapServicesInstance = null;
 
@@ -326,31 +323,10 @@ class lizmap
     public static function getLogConfig()
     {
         if (!self::$lizmapLogConfigInstance) {
-            $readConfigPath = parse_ini_file(jApp::varPath().self::lizmapLogConfig, true);
+            $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
             self::$lizmapLogConfigInstance = new lizmapLogConfig($readConfigPath);
         }
         return self::$lizmapLogConfigInstance;
-    }
-
-    /**
-     * Get a list of log items names.
-     *
-     * @return string[] list of names
-     */
-    public static function getLogItemList()
-    {
-        // read the lizmap log configuration file
-        $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
-        $logItemList = array();
-        foreach ($readConfigPath as $section => $data) {
-            $match = preg_match('#(^item:)#', $section, $matches);
-            if (isset($matches[0])) {
-                $logItemList[] = str_replace($matches[0], '', $section);
-            }
-        }
-        self::$logItems = $logItemList;
-
-        return self::$logItems;
     }
 
     /**
@@ -381,7 +357,8 @@ class lizmap
         return new lizmapLogItem($key);
     }
 
-    /* Returns time spent in milliseconds from beginning of request
+    /**
+     * Returns time spent in milliseconds from beginning of request
      * @param string $label Name of the action to lo
      */
     public static function logMetric($label, $start = 'index')
