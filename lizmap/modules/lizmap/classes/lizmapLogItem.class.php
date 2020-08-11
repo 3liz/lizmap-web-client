@@ -54,6 +54,13 @@ class lizmapLogItem
         'email',
     );
 
+    /**
+     * Construct the object, you should use the lizmapLogConfig::getLogItem() method
+     * which will call this constructor
+     *
+     * @param string $key the name of the item
+     * @param array $readConfigPath the array containing the fields of lizmapLogConfig.ini.php
+     */
     public function __construct($key, $readConfigPath)
     {
         $section = 'item:'.$key;
@@ -64,11 +71,9 @@ class lizmapLogItem
             foreach (self::$properties as $property) {
                 if (isset($readConfigPath[$section][$property])) {
                     $this->data[$property] = $readConfigPath[$section][$property];
+                } else {
+                    return null;
                 }
-                // not sure about those lines, are every properties essential ? if yes uncomment
-                // else {
-                //     return null;
-                // }
             }
         }
         $this->key = $key;

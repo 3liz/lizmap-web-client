@@ -90,7 +90,7 @@ class lizmapLogConfig
     {
         $modified = false;
         if (!$data) {
-            return false;
+            return $modified;
         }
         foreach ($data as $k => $v) {
             if (in_array($k, $this->properties)) {
