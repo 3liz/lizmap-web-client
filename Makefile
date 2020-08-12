@@ -79,6 +79,11 @@ FILES=lib lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRA
 FORBIDDEN_CONFIG_FILES := installer.ini.php liveconfig.ini.php lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
 EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions
 
+#-------- doc
+DOCDIR=../../docs/
+DOC_CONFIG_FILE=../../phpdoc.dist.xml
+DOC_CACHE_FOLDER=$(DOCDIR).phpdoc/
+
 .PHONY: debug build tests clean check-release check-registry check-factory stage package deploy_download deploy_download_stable saas_package trigger_ci saas_release
 .PHONY: local_saas_package docker-build docker-build-ci docker-tag docker-deliver docker-clean docker-clean-all docker-release docker-hub docker-run
 
@@ -267,3 +272,7 @@ docker-run:
     -e LIZMAP_HOME=/srv/lizmap \
     $(DOCKER_BUILDIMAGE) php-fpm
 
+doc: build
+	composer update --working-dir=tests/units --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
+	cd tests/units/ && php vendor/bin/phpdoc run --config=$(DOC_CONFIG_FILE) --cache-folder=$(DOC_CACHE_FOLDER)
+	rm -Rf $(DOC_CACHE_FOLDER)

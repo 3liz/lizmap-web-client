@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+  <title> Lizmap Web Client Classes Documentation </title>
+  <parser>
+    <target>./docs</target>
+	<extensions>
+	  <extension>php</extension>
+	</extensions>
+  </parser>
+  <transformer>
+    <target>./docs</target>
+  </transformer>
+<!-- add another directory if you want to process more files -->
+  <files>
+    <directory>../lizmap/modules/lizmap/classes</directory>
+  </files>
+  <logging>
+    <level>quiet</level>
+  </logging>
+</phpdoc>
