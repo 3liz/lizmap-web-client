@@ -75,7 +75,7 @@ class datavizPlot
     ) {
 
         // Get the project data
-        $lproj = $this->getProject($repository, $project);
+        $lproj = $this->getProject($repository, $project, lizmap::getJelixInfos());
         if (!$lproj) {
             return false;
         }

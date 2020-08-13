@@ -36,6 +36,11 @@ class lizmap
     protected static $lizmapServicesInstance = null;
 
     /**
+     * @var JelixInfos
+     */
+    protected static $jelixInfos = null;
+
+    /**
      * this is a static class, so private constructor.
      */
     private function __construct()
@@ -71,6 +76,15 @@ class lizmap
         $liveIni->save();
 
         return $modified;
+    }
+
+    public static function getJelixInfos()
+    {
+        if (!self::$jelixInfos) {
+            self::$jelixInfos = new jelixInfos();
+        }
+
+        return self::$jelixInfos;
     }
 
     /**
@@ -345,7 +359,7 @@ class lizmap
             return null;
         }
 
-        $proj = $rep->getProject($matches['proj']);
+        $proj = $rep->getProject($matches['proj'], self::getJelixInfos());
 
         return $proj;
     }
