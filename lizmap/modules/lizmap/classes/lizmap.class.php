@@ -310,9 +310,7 @@ class lizmap
             return null;
         }
 
-        $proj = $rep->getProject($matches['proj']);
-
-        return $proj;
+        return $rep->getProject($matches['proj']);
     }
 
     /**
@@ -326,6 +324,7 @@ class lizmap
             $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
             self::$lizmapLogConfigInstance = new lizmapLogConfig($readConfigPath);
         }
+
         return self::$lizmapLogConfigInstance;
     }
 
@@ -345,21 +344,31 @@ class lizmap
      * @param string $key Key of the log item to get
      *
      * @return lizmapLogItem
+     *
+     * @deprecated
      */
     public static function getLogItem($key)
     {
-        if (!in_array($key, self::$logItems)) {
-            if (!in_array($key, self::getLogItemList())) {
-                return null;
-            }
-        }
-
-        return new lizmapLogItem($key);
+        return self::getLogConfig()->getLogItem($key);
     }
 
     /**
-     * Returns time spent in milliseconds from beginning of request
+     * Get a list of log items names.
+     *
+     * @return string[] list of names
+     *
+     * @deprecated
+     */
+    public static function getLogItemList()
+    {
+        return self::getLogConfig()->getLogItemList();
+    }
+
+    /**
+     * Returns time spent in milliseconds from beginning of request.
+     *
      * @param string $label Name of the action to lo
+     * @param mixed  $start
      */
     public static function logMetric($label, $start = 'index')
     {

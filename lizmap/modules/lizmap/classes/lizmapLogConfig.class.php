@@ -58,8 +58,9 @@ class lizmapLogConfig
             if (!key_exists('item:'.$key, $this->data)) {
                 return null;
             }
-            $this->logItems[$key] = new lizmapLogItem($key, $this->data);
+            $this->logItems[$key] = new lizmapLogItem($key, $this->data['item:'.$key]);
         }
+
         return $this->logItems[$key];
     }
 
@@ -78,6 +79,7 @@ class lizmapLogConfig
                 $logItemList[] = str_replace($matches[0], '', $section);
             }
         }
+
         return $logItemList;
     }
 
@@ -106,9 +108,10 @@ class lizmapLogConfig
     /**
      * Update the global config data. (modify and save).
      *
-     * @param array $data array containing the data of the general options
+     * @param array      $data array containing the data of the general options
+     * @param null|mixed $ini
      */
-    public function update($data, $ini)
+    public function update($data, $ini = null)
     {
         $modified = $this->modify($data);
         if ($modified) {
@@ -120,9 +123,15 @@ class lizmapLogConfig
 
     /**
      * save the global configuration data.
+     *
+     * @param null|mixed $ini
      */
-    public function save($ini)
+    public function save($ini = null)
     {
+        if (!$ini) {
+            $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
+            $ini = new jIniFileModifier($iniFile);
+        }
         foreach ($this->properties as $prop) {
             if ($this->{$prop} !== '' && $this->{$prop} !== null) {
                 $ini->setValue($prop, $this->{$prop}, 'general');
