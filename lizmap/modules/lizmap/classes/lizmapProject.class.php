@@ -196,9 +196,9 @@ class lizmapProject extends qgisProject
         // to avoid collision in the cache engine
         $data = false;
 
-        $fileKey = $this->jelix->jCacheHandler('normalizeKey', array($file));
+        $fileKey = $this->jelix->normalizeCacheKey($file);
         try {
-            $data = $this->jelix->jCacheHandler('get', array($fileKey, 'qgisprojects'));
+            $data = $this->jelix->getCache($fileKey, 'qgisprojects');
         } catch (Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
@@ -223,7 +223,7 @@ class lizmapProject extends qgisProject
             }
 
             try {
-                $this->jelix->jCacheHandler('set', array($fileKey, $data, null, 'qgisprojects'));
+                jCache::set($fileKey, $data, null, 'qgisprojects');
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
             }
@@ -243,9 +243,9 @@ class lizmapProject extends qgisProject
     public function clearCache()
     {
         $file = $this->getQgisPath();
-        $fileKey = $this->jelix->jCacheHandler('normalizeKey', array($file));
+        $fileKey = $this->jelix->normalizeCacheKey($file);
         try {
-            $this->jelix->jCacheHandler('delete', array($fileKey, 'qgisprojects'));
+            jCache::delete($fileKey, 'qgisprojects');
         } catch (Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
@@ -802,7 +802,7 @@ class lizmapProject extends qgisProject
     public function hasEditionLayers()
     {
         if (property_exists($this->cfg, 'editionLayers')) {
-            if (!$this->jelix->jAcl2CheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
+            if (!$this->jelix->aclCheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
                 return false;
             }
 
@@ -815,8 +815,8 @@ class lizmapProject extends qgisProject
                     $editionGroups = $eLayer->acl;
                     $editionGroups = array_map('trim', explode(',', $editionGroups));
                     if (is_array($editionGroups) and count($editionGroups) > 0) {
-                        $userGroups = $this->jelix->jAcl2DbUserGroups();
-                        if (array_intersect($editionGroups, $userGroups) or $this->jelix->jAcl2CheckResult(array('lizmap.admin.repositories.delete'))) {
+                        $userGroups = $this->jelix->aclDbUserGroups();
+                        if (array_intersect($editionGroups, $userGroups) or $this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
@@ -943,15 +943,15 @@ class lizmapProject extends qgisProject
             $filter = "\"${attribute}\" = 'all'";
 
             // A user is connected
-            if ($this->jelix->jAuthIsConnected()) {
-                $user = $this->jelix->jAuthGetUserSession();
+            if ($this->jelix->userIsConnected()) {
+                $user = $this->jelix->getUserSession();
                 $login = $user->login;
                 if (property_exists($loginFilteredConfig, 'filterPrivate') &&
                     $this>optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
                     $filter = "\"${attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
-                    $userGroups = $this->jelix->jAcl2DbUserGroups();
+                    $userGroups = $this->jelix->aclDbUserGroups();
                     $flatGroups = implode("' , '", $userGroups);
                     $filter = "\"${attribute}\" IN ( '".$flatGroups."' , 'all' )";
                 }
@@ -986,7 +986,7 @@ class lizmapProject extends qgisProject
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
-            'locale' => $this->jelix->jAppInfos('config', null)->locale
+            'locale' => $this->jelix->appConfig()->locale
         );
         foreach ($this->cfg->datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
@@ -1658,7 +1658,7 @@ class lizmapProject extends qgisProject
 
         // Add an option to display buttons to remove the cache for cached layer
         // Only if appropriate right is found
-        if ($this->jelix->jAcl2CheckResult(array('lizmap.admin.repositories.delete'))) {
+        if ($this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
             $configJson->options->removeCache = 'True';
         }
 
@@ -1686,7 +1686,7 @@ class lizmapProject extends qgisProject
 
         // Remove editionLayers from config if no right to access this tool
         if (property_exists($configJson, 'editionLayers')) {
-            if ($this->jelix->jAcl2CheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
+            if ($this->jelix->aclCheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
                 $configJson->editionLayers = clone $this->editionLayers;
                 // Check right to edit this layer (if property "acl" is in config)
                 foreach ($configJson->editionLayers as $key => $eLayer) {
@@ -1697,8 +1697,8 @@ class lizmapProject extends qgisProject
                         $editionGroups = $eLayer->acl;
                         $editionGroups = array_map('trim', explode(',', $editionGroups));
                         if (is_array($editionGroups) and count($editionGroups) > 0) {
-                            $userGroups = $this->jelix->jAcl2DbUserGroups();
-                            if (array_intersect($editionGroups, $userGroups) or $this->jelix->jAcl2CheckResult(array('lizmap.admin.repositories.delete'))) {
+                            $userGroups = $this->jelix->aclDbUserGroups();
+                            if (array_intersect($editionGroups, $userGroups) or $this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
                                 // User group(s) correspond to the groups given for this edition layer
                                 // or the user is admin
                                 unset($configJson->editionLayers->{$key}->acl);
@@ -1715,7 +1715,7 @@ class lizmapProject extends qgisProject
         }
 
         // Add export layer right
-        if ($this->jelix->jAcl2CheckResult(array('lizmap.tools.layer.export', $this->repository->getKey()))) {
+        if ($this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey()))) {
             $configJson->options->exportLayers = 'True';
         }
 
@@ -1810,8 +1810,8 @@ class lizmapProject extends qgisProject
 
         // Check layers group visibility
         $userGroups = array('');
-        if ($this->jelix->jAuthIsConnected()) {
-            $userGroups = $this->jelix->jAcl2DbUserGroups();
+        if ($this->jelix->userIsConnected()) {
+            $userGroups = $this->jelix->aclDbUserGroups();
         }
         $layersToRemove = array();
         foreach ($configJson->layers as $obj) {
@@ -1968,7 +1968,7 @@ class lizmapProject extends qgisProject
     public function getDefaultDockable()
     {
         $dockable = array();
-        $confUrlEngine = &$this->jelix->jAppInfos('config', null)->urlengine;
+        $confUrlEngine = &$this->jelix->appConfig()->urlengine;
         $bp = $confUrlEngine['basePath'];
         $jwp = $confUrlEngine['jelixWWWPath'];
 
@@ -1977,23 +1977,23 @@ class lizmapProject extends qgisProject
 
         if ($services->projectSwitcher) {
             $projectsTpl = new jTpl();
-            $this->jelix->tplAssign($projectsTpl, 'excludedProject', $this->repository->getKey().'~'.$this->getKey());
+            $ProjectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
             $dockable[] = new lizmapMapDockItem(
                 'projects',
                 $this->jelix->getLocale('view~default.repository.list.title'),
-                $this->jelix->tplFetch($projectsTpl, 'view~map_projects'),
+                $projectsTpl->fetch('view~map_projects'),
                 0
             );
         }
 
         $switcherTpl = new jTpl();
-        $this->jelix->tplAssign($switcherTpl, array(
-            'layerExport' => $this->jelix->jAcl2CheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())),
+        $switcherTpl->assign(array(
+            'layerExport' => $this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())),
         ));
         $dockable[] = new lizmapMapDockItem(
             'switcher',
             $this->jelix->getLocale('view~map.switchermenu.title'),
-            $this->jelix->tplFetch($switcherTpl, 'view~map_switcher'),
+            $switcherTpl->fetch('view~map_switcher'),
             1
         );
         //$legendTpl = new jTpl();
@@ -2003,7 +2003,7 @@ class lizmapProject extends qgisProject
         // Get the WMS information
         $wmsInfo = $this->getWMSInformation();
         // WMS GetCapabilities Url
-        $wmsGetCapabilitiesUrl = $this->jelix->jAcl2CheckResult(
+        $wmsGetCapabilitiesUrl = $this->jelix->aclCheckResult(
             array(
             'lizmap.tools.displayGetCapabilitiesLinks',
             $this->repository->getKey())
@@ -2013,7 +2013,7 @@ class lizmapProject extends qgisProject
             $wmsGetCapabilitiesUrl = $this->getData('wmsGetCapabilitiesUrl');
             $wmtsGetCapabilitiesUrl = $this->getData('wmtsGetCapabilitiesUrl');
         }
-        $this->jelix->tplAssign($metadataTpl, array_merge(array(
+        $metadataTpl->assign(array_merge(array(
             'repositoryLabel' => $this->getData('label'),
             'repository' => $this->repository->getKey(),
             'project' => $this->getKey(),
@@ -2023,7 +2023,7 @@ class lizmapProject extends qgisProject
         $dockable[] = new lizmapMapDockItem(
             'metadata',
             $this->jelix->getLocale('view~map.metadata.link.label'),
-            $this->jelix->tplFetch($metadataTpl, 'view~map_metadata'),
+            $metadataTpl->fetch('view~map_metadata'),
             2
         );
 
@@ -2032,7 +2032,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'edition',
                 $this->jelix->getLocale('view~edition.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_edition'),
+                $tpl->fetch('view~map_edition'),
                 3,
                 $jwp.'design/jform.css',
                 $bp.'assets/js/edition.js'
@@ -2052,12 +2052,12 @@ class lizmapProject extends qgisProject
     {
         $dockable = array();
         $configOptions = $this->getOptions();
-        $bp = $this->jelix->jAppInfos('config', null)->urlengine['basePath'];
+        $bp = $this->jelix->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers()) {
             $tpl = new jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
-            $layerExport = $this->jelix->jAcl2CheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())) ? "layer-export" : "";
+            $layerExport = $this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())) ? "layer-export" : "";
             $dock = new lizmapMapDockItem(
                 'selectiontool',
                 $this->jelix->getLocale('view~map.selectiontool.navbar.title'),
@@ -2075,7 +2075,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'locate',
                 $this->jelix->getLocale('view~map.locatemenu.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_locate'),
+                $tpl->fetch('view~map_locate'),
                 2
             );
         }
@@ -2083,11 +2083,11 @@ class lizmapProject extends qgisProject
         if (property_exists($configOptions, 'geolocation')
             && $configOptions->geolocation == 'True') {
             $tpl = new jTpl();
-            $this->jelix->tplAssign($tpl, 'hasEditionLayers', $this->hasEditionLayers());
+            $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
             $dockable[] = new lizmapMapDockItem(
                 'geolocation',
                 $this->jelix->getLocale('view~map.geolocate.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_geolocation'),
+                $tpl->fetch('view~map_geolocation'),
                 3
             );
         }
@@ -2098,7 +2098,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'print',
                 $this->jelix->getLocale('view~map.print.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_print'),
+                $tpl->fetch('view~map_print'),
                 4
             );
         }
@@ -2109,7 +2109,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'measure',
                 $this->jelix->getLocale('view~map.measure.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_measure'),
+                $tpl->fetch('view~map_measure'),
                 5
             );
         }
@@ -2119,7 +2119,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'tooltip-layer',
                 $this->jelix->getLocale('view~map.tooltip.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_tooltip'),
+                $tpl->fetch('view~map_tooltip'),
                 6,
                 '',
                 ''
@@ -2131,7 +2131,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'timemanager',
                 $this->jelix->getLocale('view~map.timemanager.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_timemanager'),
+                $tpl->fetch('view~map_timemanager'),
                 7,
                 '',
                 $bp.'assets/js/timemanager.js'
@@ -2143,11 +2143,11 @@ class lizmapProject extends qgisProject
             // Get geobookmark if user is connected
             $gbCount = false;
             $gbList = null;
-            if ($this->jelix->jAuthIsConnected()) {
-                $juser = $this->jelix->jAuthGetUserSession();
+            if ($this->jelix->userIsConnected()) {
+                $juser = $this->jelix->getUserSession();
                 $usr_login = $juser->login;
-                $daogb = $this->jelix->jDaoHandler('get', array('lizmap~geobookmark'));
-                $conditions = $this->jelix->jDaoHandler('createConditions', null);
+                $daogb = getDao('lizmap~geobookmark');
+                $conditions = jDao::createConditions();
                 $conditions->addCondition('login', '=', $usr_login);
                 $conditions->addCondition(
                     'map',
@@ -2158,14 +2158,14 @@ class lizmapProject extends qgisProject
                 $gbCount = $daogb->countBy($conditions);
             }
             $tpl = new jTpl();
-            $this->jelix->tplAssign($tpl, 'gbCount', $gbCount);
-            $this->jelix->tplAssign($tpl, 'gbList', $gbList);
+            $tpl->assign('gbCount', $gbCount);
+            $tpl->assign('gbList', $gbList);
             $gbContent = null;
             if ($gbList) {
-                $gbContent = $this->jelix->tplFetch($tpl, 'view~map_geobookmark');
+                $gbContent = $tpl->fetch('view~map_geobookmark');
             }
             $tpl = new jTpl();
-            $this->jelix->tplAssign($tpl, array(
+            $tpl->assign(array(
                 'repository' => $this->repository->getKey(),
                 'project' => $this->getKey(),
                 'gbContent' => $gbContent,
@@ -2173,7 +2173,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'permaLink',
                 $this->jelix->getLocale('view~map.permalink.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_permalink'),
+                $tpl->fetch('view~map_permalink'),
                 8
             );
         }
@@ -2184,7 +2184,7 @@ class lizmapProject extends qgisProject
             $dockable[] = new lizmapMapDockItem(
                 'draw',
                 $this->jelix->getLocale('view~map.draw.navbar.title'),
-                $this->jelix->tplFetch($tpl, 'view~map_draw'),
+                $tpl->fetch('view~map_draw'),
                 9
             );
         }
@@ -2200,10 +2200,10 @@ class lizmapProject extends qgisProject
     public function getDefaultBottomDockable()
     {
         $dockable = array();
-        $bp = $this->jelix->jAppInfos('config', null)->urlengine['basePath'];
+        $bp = $this->jelix->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers(true)) {
-            $form = $this->jelix->createJForm('view~attribute_layers_option');
+            $form = $this->jelix->createForm('view~attribute_layers_option');
             $assign = array('form' => $form);
             $dockable[] = new lizmapMapDockItem(
                 'attributeLayers',
@@ -2227,7 +2227,7 @@ class lizmapProject extends qgisProject
     {
 
         // Check right on repository
-        if (!$this->jelix->jAcl2CheckResult(array('lizmap.repositories.view', $this->repository->getKey()))) {
+        if (!$this->jelix->aclCheckResult(array('lizmap.repositories.view', $this->repository->getKey()))) {
             return false;
         }
 
@@ -2237,18 +2237,18 @@ class lizmapProject extends qgisProject
         }
 
         // Check user is authenticated
-        if (!$this->jelix->jAuthIsConnected()) {
+        if (!$this->jelix->userIsConnected()) {
             return false;
         }
 
         // Check user is admin -> ok, give permission
-        if ($this->jelix->jAcl2CheckResult(array('lizmap.admin.repositories.delete'))) {
+        if ($this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
             return true;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
         $aclGroups = $this->cfg->options->acl;
-        $userGroups = $this->jelix->jAcl2DbUserGroups();
+        $userGroups = $this->jelix->aclDbUserGroups();
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
         }
