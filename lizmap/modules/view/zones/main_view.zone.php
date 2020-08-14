@@ -45,7 +45,7 @@ class main_viewZone extends jZone
             if (jAcl2::check('lizmap.repositories.view', $r)) {
                 $lrep = lizmap::getRepository($r);
                 $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
-                $lprojects = $lrep->getProjects(lizmap::getJelixInfos());
+                $lprojects = $lrep->getProjects(lizmap::getJelixInfos(), lizmap::getServices());
 
                 // WMS GetCapabilities Url
                 $wmsGetCapabilitiesUrl = jAcl2::check(

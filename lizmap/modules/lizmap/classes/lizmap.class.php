@@ -359,7 +359,7 @@ class lizmap
             return null;
         }
 
-        $proj = $rep->getProject($matches['proj'], self::getJelixInfos());
+        $proj = $rep->getProject($matches['proj'], self::getJelixInfos(), self::getServices());
 
         return $proj;
     }

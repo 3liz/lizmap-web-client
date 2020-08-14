@@ -164,14 +164,14 @@ class lizmapRepository
         return $modified;
     }
 
-    public function getProject($key, $jelix)
+    public function getProject($key, $jelix, $services)
     {
         if (isset($this->projectInstances[$key])) {
             return $this->projectInstances[$key];
         }
 
         try {
-            $proj = new lizmapProject($key, $this, $jelix);
+            $proj = new lizmapProject($key, $this, $jelix, $services);
         } catch (UnknownLizmapProjectException $e) {
             throw $e;
         } catch (Exception $e) {
@@ -184,7 +184,7 @@ class lizmapRepository
         return $proj;
     }
 
-    public function getProjects($jelix)
+    public function getProjects($jelix, $services)
     {
         $projects = array();
         $dir = $this->getPath();
@@ -207,7 +207,7 @@ class lizmapRepository
                     $proj = null;
                     if (in_array($qgsFile.'.cfg', $cfgFiles)) {
                         try {
-                            $proj = $this->getProject(substr($qgsFile, 0, -4), $jelix);
+                            $proj = $this->getProject(substr($qgsFile, 0, -4), $jelix, $services);
                             if ($proj != null) {
                                 $projects[] = $proj;
                             }
