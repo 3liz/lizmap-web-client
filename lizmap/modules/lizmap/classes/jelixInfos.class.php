@@ -3,19 +3,11 @@
 class jelixInfos implements lizmapAppContext
 {
     /**
-     * Method permitting to call a static method from jApp.
-     *
-     * @param string $info   The name of the method you want to call
-     * @param array  $params An array containing the params you want
-     *                       to pass to $info
+     * call and return jApp::config.
      */
-    public function jAppInfos($info, $params)
+    public function appConfig()
     {
-        if (!$params || !isset($params[0])) {
-            return jApp::$info();
-        }
-
-        return jApp::$info(...$params);
+        return jApp::config();
     }
 
     /**
@@ -25,7 +17,7 @@ class jelixInfos implements lizmapAppContext
      *
      * @return bool The result of jAcl2::check()
      */
-    public function jAcl2CheckResult($params)
+    public function aclCheckResult($params)
     {
         return jAcl2::check(...$params);
     }
@@ -35,7 +27,7 @@ class jelixInfos implements lizmapAppContext
      *
      * @param bool $list True if you want to get the jAcl2DbUserGroup::getGroupList() result
      */
-    public function jAcl2DbUserGroups($list = false)
+    public function aclDbUserGroups($list = false)
     {
         if ($list) {
             return jAcl2DbUserGroup::getGroupList();
@@ -49,7 +41,7 @@ class jelixInfos implements lizmapAppContext
      *
      * @return bool
      */
-    public function jAuthIsConnected()
+    public function UserIsConnected()
     {
         return jAuth::IsConnected();
     }
@@ -57,7 +49,7 @@ class jelixInfos implements lizmapAppContext
     /**
      * Return the result of jAuth::getUserSession().
      */
-    public function jAuthGetUserSession()
+    public function getUserSession()
     {
         return jAuth::getUserSession();
     }
@@ -69,15 +61,15 @@ class jelixInfos implements lizmapAppContext
      * @param array  $params An array containing the parameters
      *                       to pass to $method
      */
-    public function jCacheHandler($method, $params)
+    public function getCache($key, $profile = '')
     {
-        if (!$params || !isset($params[0])) {
-            return jCache::$method();
-        }
-
-        return jCache::$method(...$params);
+        return jCache::get($key, $profile);
     }
 
+    public function normalizeCacheKey($key)
+    {
+        return jCache::normalizeKey($key);
+    }
     /**
      * Return the result of jProfile::createVirtualProfile.
      *
@@ -158,44 +150,13 @@ class jelixInfos implements lizmapAppContext
     }
 
     /**
-     * Call jTpl::assign on a jTpl Instance.
-     *
-     * @param jTpl         $tpl   The jTpl instance on which to call assign
-     * @param array|string $name  the name of the value to assign or
-     *                            an array ($key => $value) containing the name and the value to assign
-     * @param string       $value the value to assign if $name is not an array
-     */
-    public function tplAssign($tpl, $name, $value = null)
-    {
-        $tpl->assign($name, $value);
-    }
-
-    /**
-     * Call and return the result of jTpl::fetch.
-     *
-     * @param jTpl   $tpl        the jTpl instance on which to call fetch
-     * @param string $name       The Jelix selector to get the template
-     * @param string $outputType The type of the output
-     */
-    public function tplFetch($tpl, $name, $outputType = '')
-    {
-        return $tpl->fetch($name, $outputType);
-    }
-
-    /**
      * Return the result of a jDao method.
      *
-     * @param string $method The method to call
-     * @param array  $params An array containing the parameters
-     *                       to pass to $method
+     * @param string $jSelector
      */
-    public function jDaoHandler($method, $params)
+    public function getDao($jSelector)
     {
-        if (!$params || !isset($params[0])) {
-            return jDao::$method();
-        }
-
-        return jDao::$method(...$params);
+        return jDao::get($jSelector);
     }
 
     /**
@@ -203,7 +164,7 @@ class jelixInfos implements lizmapAppContext
      *
      * @param string $formSelector the Jelix Selector of the form file
      */
-    public function createJForm($formSelector)
+    public function createForm($formSelector)
     {
         return jForms::create($formSelector);
     }
