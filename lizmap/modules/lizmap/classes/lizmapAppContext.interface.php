@@ -7,18 +7,20 @@
  */
 interface lizmapAppContext
 {
-    public function jAppInfos($info, $params);
+    public function appConfig($params);
 
-    public function jAcl2CheckResult($params);
+    public function aclCheckResult($params);
 
-    public function jAcl2DbUserGroups($list = false);
+    public function aclDbUserGroups($list = false);
 
-    public function jAuthIsConnected();
+    public function UserIsConnected();
 
-    public function jAuthGetUserSession();
+    public function getUserSession();
 
-    public function jCacheHandler($method, $params);
+    public function getCache($key, $profile = '');
 
+    public function normalizeCacheKey($key);
+    
     public function createVirtualProfile($category, $name, $params);
 
     public function getProfile($category, $name = '', $noDefault = false);
@@ -35,7 +37,7 @@ interface lizmapAppContext
 
     public function tplFetch($tpl, $name, $outputType = '');
 
-    public function jDaoHandler($method, $params);
+    public function getDao($params);
 
-    public function createJForm($formSelector);
+    public function createForm($formSelector);
 }
