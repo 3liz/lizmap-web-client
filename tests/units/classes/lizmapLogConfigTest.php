@@ -171,7 +171,7 @@ class lizmapLogConfigTest extends PHPUnit_Framework_TestCase
             $this->assertEquals(null, $item);
             return ;
         }
-        $expectedItem = new lizmapLogItem($key, $data);
+        $expectedItem = new lizmapLogItem($key, $data['item:'.$key]);
         $item2 = $testLizmapLogConfig->getLogItem($key);
         $this->assertEquals($expectedItem, $item);
         $this->assertSame($item, $item2);
