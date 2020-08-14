@@ -13,7 +13,7 @@ class mapsCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.rights.and' => ['lizmap.admin.access', 'lizmap.admin.repositories.view']),
+        '*' => array('jacl2.rights.and' => array('lizmap.admin.access', 'lizmap.admin.repositories.view')),
         'createSection' => array('jacl2.rights' => 'lizmap.admin.repositories.create'),
         'modifySection' => array('jacl2.right' => 'lizmap.admin.repositories.update'),
         'editSection' => array('jacl2.rights.or' => array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
@@ -29,7 +29,7 @@ class mapsCtrl extends jController
     protected $lizmapClientPrefix = 'lizmap.repositories|lizmap.tools';
 
     /**
-     * Display the list of repositories and maps
+     * Display the list of repositories and maps.
      */
     public function index()
     {
@@ -375,19 +375,6 @@ class mapsCtrl extends jController
         }
 
         // Rebuild form fields
-        /*foreach(lizmap::getRepositoryProperties() as $k){
-          if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
-            $ctrl = new jFormsControlCheckbox($k);
-          }
-          else {
-            $ctrl = new jFormsControlInput($k);
-          }
-          $ctrl->required = $propertiesOptions[$k]['required'];
-          $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
-          $datatype = new jDatatypeString();
-          $ctrl->datatype=$datatype;
-          $form->addControl($ctrl);
-        }*/
         lizmap::constructRepositoryForm($lrep, $form);
         if ($lrep) {
             $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), false);
@@ -407,7 +394,7 @@ class mapsCtrl extends jController
         }
 
         // Check paths
-        if (in_array('path', lizmap::getRepositoryProperties())) {
+        if (in_array('path', lizmapRepository::getProperties())) {
             $npath = $form->getData('path');
             if ($npath[0] != '/' and $npath[1] != ':') {
                 $npath = jApp::varPath().$npath;
@@ -455,7 +442,7 @@ class mapsCtrl extends jController
 
         // Repository data
         $data = array();
-        foreach (lizmap::getRepositoryProperties() as $prop) {
+        foreach (lizmapRepository::getProperties() as $prop) {
             $data[$prop] = $form->getData($prop);
             // Check paths
             if ($prop == 'path') {
@@ -470,7 +457,7 @@ class mapsCtrl extends jController
         if ($new && !$lrep) {
             $lrep = lizmap::createRepository($repository, $data);
         } elseif ($lrep) {
-            $modifySection = $lrep->update($data);
+            $modifySection = lizmap::updateRepository($lrep->getKey(), $data);
         }
         jMessage::add(jLocale::get('admin~admin.form.admin_section.message.data.saved'));
         // group rights data
