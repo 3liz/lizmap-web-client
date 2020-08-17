@@ -88,6 +88,7 @@ class qgisProject
         // to avoid collision in the cache engine
         $data = false;
         $fileKey = jCache::normalizeKey($file);
+
         try {
             $data = jCache::get($fileKey, 'qgisprojects');
         } catch (Exception $e) {
@@ -124,6 +125,7 @@ class qgisProject
     public function clearCache()
     {
         $fileKey = jCache::normalizeKey($this->path);
+
         try {
             jCache::delete($fileKey, 'qgisprojects');
         } catch (Exception $e) {

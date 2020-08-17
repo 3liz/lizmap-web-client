@@ -1,4 +1,5 @@
 <?php
+
     class datavizDockableListener extends jEventListener
     {
         public function onmapDockable($event)

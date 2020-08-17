@@ -47,7 +47,6 @@ class qgisForm
     /** @var jFormsPlugin[] */
     protected $formPlugins = array();
 
-
     /**
      * qgisForm constructor.
      *
@@ -254,7 +253,6 @@ class qgisForm
         return $tpl->fetchFromString($template, 'html');
     }
 
-
     /**
      * get the fields displayed in the form.
      *
@@ -269,6 +267,7 @@ class qgisForm
         } else {
             $fields = array_keys($this->formControls);
         }
+
         return $fields;
     }
 
@@ -283,6 +282,7 @@ class qgisForm
                 $attributeEditorForm = $this->xml2obj($_attributeEditorForm[0]);
             }
         }
+
         return $attributeEditorForm;
     }
 
@@ -332,10 +332,11 @@ class qgisForm
             if ($c->name === 'attributeEditorField') {
                 // Get field name
                 $fields[] = $c->attributes->name;
-            } else if ($c->name === 'attributeEditorContainer') {
+            } elseif ($c->name === 'attributeEditorContainer') {
                 $fields = array_merge($fields, $this->getEditorContainerFields($c));
             }
         }
+
         return $fields;
     }
 
@@ -476,7 +477,7 @@ class qgisForm
                 or $this->formControls[$ref]->fieldEditType === 'CheckBox')
                 and $this->formControls[$ref]->fieldDataType === 'boolean') {
                 $ctrl->setDataFromDao($value, 'boolean');
-            }else{
+            } else {
                 $form->setData($ref, $value);
             }
         }
@@ -511,11 +512,10 @@ class qgisForm
                 if ($value[0] == '{') {
                     $arrayValue = explode(',', trim($value, '{}'));
                     $form->setData($ref, $arrayValue);
-                }else{
+                } else {
                     $form->setData($ref, $value);
                 }
-            }
-            elseif ($this->formControls[$ref]->fieldEditType === 8
+            } elseif ($this->formControls[$ref]->fieldEditType === 8
                 or $this->formControls[$ref]->fieldEditType === 'FileName'
                 or $this->formControls[$ref]->fieldEditType === 'Photo'
                 or $this->formControls[$ref]->fieldEditType === 'ExternalResource') {
@@ -529,7 +529,7 @@ class qgisForm
                     $ctrl->itemsNames['delete'] = jLocale::get('view~edition.upload.choice.delete').' '.$filename;
                 }
                 $form->setData($ref.'_hidden', $value);
-            }else{
+            } else {
                 $form->setData($ref, $value);
             }
         }
@@ -562,7 +562,6 @@ class qgisForm
 
         $dataFields = $this->dbFieldsInfo->dataFields;
         $geometryColumn = $this->dbFieldsInfo->geometryColumn;
-
 
         // Get list of fields diplayed in form
         // can be an empty list
@@ -619,6 +618,7 @@ class qgisForm
             }
             if ($jCtrl instanceof jFormsControlUpload) {
                 $values[$ref] = $this->processUploadedFile($form, $ref, $cnx);
+
                 continue;
             }
 
