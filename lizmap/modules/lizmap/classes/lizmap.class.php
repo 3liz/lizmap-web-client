@@ -103,17 +103,25 @@ class lizmap
 
     /**
      * Get the list of properties for a generic repository.
+     * This method shouldn't be used, you should use lizmapRepository::getProperties() instead.
+     * @deprecated
      */
     public static function getRepositoryProperties()
     {
+        trigger_error('This method is deprecated. Please use the lizmapRepository::getProperties() method.', E_DEPRECATED);
+
         return lizmapRepository::$properties;
     }
 
     /**
      * Get the list of properties options for a generic repository.
+     * This method shouldn't be used, you should use lizmapRepository::getPropertiesOptions() instead.
+     * @deprecated
      */
     public static function getRepositoryPropertiesOptions()
     {
+        trigger_error('This method is deprecated. Please use the lizmapRepository::getPropertiesOptions() method.', E_DEPRECATED);
+
         return lizmapRepository::$propertiesOptions;
     }
 
@@ -139,9 +147,9 @@ class lizmap
         }
 
         // reconstruct form fields based on repositoryPropertyList
-        $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
+        $propertiesOptions = lizmapRepository::getPropertiesOptions();
 
-        foreach (lizmap::getRepositoryProperties() as $k) {
+        foreach (lizmapRepository::getProperties() as $k) {
             $ctrl = null;
             if ($propertiesOptions[$k]['fieldType'] == 'checkbox') {
                 $ctrl = new jFormsControlCheckbox($k);
@@ -190,7 +198,7 @@ class lizmap
             $form->addControl($ctrl);
         }
         if ($rep) {
-            foreach ($rep->getProperties() as $k) {
+            foreach (lizmapRepository::getProperties() as $k) {
                 $v = $rep->getData($k);
                 if ($k == 'path' && $rootRepositories != '' &&
                     substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
@@ -223,7 +231,8 @@ class lizmap
             return self::$repositoryInstances[$key];
         }
 
-        $rep = new lizmapRepository($key);
+        $services = self::getServices();
+        $rep = $services->getLizmapRepository($key);
         self::$repositoryInstances[$key] = $rep;
 
         return $rep;
@@ -245,8 +254,9 @@ class lizmap
             return null;
         }
 
-        $rep = new lizmapRepository($key);
-        $rep->update($data);
+        $services = self::getServices();
+        $rep = $services->getLizmapRepository($key);
+        self::updateRepository($key, $data);
         self::getRepositoryList();
         self::$repositoryInstances[$key] = $rep;
 
@@ -286,6 +296,31 @@ class lizmap
         }
 
         return false;
+    }
+
+    /**
+     * Uptade a repository
+     *
+     * @param string $key the repository name
+     * @param array $data the repository data
+     *
+     * @return bool false if the repository corresponding to $key cannot be found
+     * or if there is no valid entry in $data
+     */
+
+    public static function updateRepository($key, $data)
+    {
+        if (!key_exists($key, self::$repositoryInstances)) {
+            return false;
+        }
+
+        $iniFile = jApp::configPath('lizmapConfig.ini.php');
+        $ini = new jIniFileModifier($iniFile);
+        $rep = self::$repositoryInstances[$key];
+
+        $modified = $rep->update($data, $ini);
+        unset($ini);
+        return $modified;
     }
 
     /**
