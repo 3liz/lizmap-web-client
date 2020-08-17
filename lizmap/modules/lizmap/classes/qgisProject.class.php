@@ -665,27 +665,27 @@ class qgisProject
                     }
 
                     if (isset($xmlLayer->aliases->alias)) {
-                        foreach($xmlLayer->aliases->alias as $alias) {
+                        foreach ($xmlLayer->aliases->alias as $alias) {
                             $aliases[(string) $alias['field']] = (string) $alias['name'];
                         }
                     }
 
                     if (isset($xmlLayer->defaults->default)) {
-                        foreach($xmlLayer->defaults->default as $default) {
+                        foreach ($xmlLayer->defaults->default as $default) {
                             $defaults[(string) $default['field']] = (string) $default['expression'];
                         }
                     }
 
                     if (isset($xmlLayer->constraints->constraint)) {
-                        foreach($xmlLayer->constraints->constraint as $constraint) {
+                        foreach ($xmlLayer->constraints->constraint as $constraint) {
                             $c = array(
                                 'constraints' => 0,
                                 'notNull' => false,
                                 'unique' => false,
-                                'exp' => false
+                                'exp' => false,
                             );
                             $c['constraints'] = (int) $constraint['constraints'];
-                            if ( $c['constraints'] > 0 ) {
+                            if ($c['constraints'] > 0) {
                                 $c['notNull'] = ((int) $constraint['notnull_strength'] > 0);
                                 $c['unique'] = ((int) $constraint['unique_strength'] > 0);
                                 $c['exp'] = ((int) $constraint['exp_strength'] > 0);

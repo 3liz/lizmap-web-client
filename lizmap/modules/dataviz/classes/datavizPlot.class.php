@@ -60,6 +60,7 @@ class datavizPlot
      * @param null   $layout
      * @param null   $aggregation
      * @param null   $data
+     * @param mixed  $plotConfig
      *
      * @throws jExceptionSelector
      */
@@ -68,7 +69,7 @@ class datavizPlot
         $project,
         $layerId,
         $plotConfig,
-        $data=null
+        $data = null
     ) {
 
         // Get the project data
@@ -91,7 +92,8 @@ class datavizPlot
         return true;
     }
 
-    private function parsePlotConfig($plotConfig) {
+    private function parsePlotConfig($plotConfig)
+    {
         $this->layerId = $plotConfig['layer_id'];
         $this->setTitle($plotConfig['title']);
 
@@ -231,9 +233,10 @@ class datavizPlot
         $layer = $this->lproj->getLayer($this->layerId);
         $aliases = $layer->getAliasFields();
         $name = $field;
-        if (array_key_exists($field, $aliases) and !empty($aliases[$field]) ) {
+        if (array_key_exists($field, $aliases) and !empty($aliases[$field])) {
             $name = $aliases[$field];
         }
+
         return $name;
     }
 
@@ -372,10 +375,10 @@ class datavizPlot
                 'TYPENAME' => $typename,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
-                'PROPERTYNAME' => implode(',', $propertyname)
+                'PROPERTYNAME' => implode(',', $propertyname),
             );
             // Sort by x fields when scatter plot is used
-            if($this->type == 'scatter'){
+            if ($this->type == 'scatter') {
                 $wfsparams['SORTBY'] = ','.implode(',', $this->x_fields);
             }
             if (!empty($this->colorfields)) {
@@ -472,7 +475,7 @@ class datavizPlot
                 $yf = $y_field;
                 // x
                 $xf = null;
-                if (count($this->x_fields)  == 1) {
+                if (count($this->x_fields) == 1) {
                     $xf = $this->x_fields[0];
                 }
                 // z
@@ -521,7 +524,7 @@ class datavizPlot
                         // Fill in Y field
                         $trace[$this->y_property_name][] = $feat->properties->{$yf};
                         // Fill in Z field
-                        if ($this->z_property_name and count($this->z_fields) == 1 ) {
+                        if ($this->z_property_name and count($this->z_fields) == 1) {
                             $trace[$this->z_property_name][] = $feat->properties->{$zf};
                         }
 
@@ -547,7 +550,7 @@ class datavizPlot
                                 $x_aggregate_stddev[$feat->properties->{$xf}] = 0;
                                 $x_aggregate_median[$feat->properties->{$xf}] = array();
 
-                                if( $this->z_property_name and !empty($zf)){
+                                if ($this->z_property_name and !empty($zf)) {
                                     $x_distinct_parent[$feat->properties->{$xf}] = $feat->properties->{$zf};
                                 }
 
@@ -592,7 +595,7 @@ class datavizPlot
                     foreach ($x_aggregate_sum as $key => $value) {
                         // x
                         $trace[$this->x_property_name][] = $key;
-                        if( $this->z_property_name ) {
+                        if ($this->z_property_name) {
                             $trace[$this->z_property_name][] = $x_distinct_parent[$key];
                         }
 
@@ -678,7 +681,7 @@ class datavizPlotScatter extends datavizPlot
     protected $x_property_name = 'x';
 
     protected $y_property_name = 'y';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {
@@ -717,7 +720,7 @@ class datavizPlotBox extends datavizPlot
     protected $x_property_name = 'x';
 
     protected $y_property_name = 'y';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {
@@ -750,7 +753,7 @@ class datavizPlotBar extends datavizPlot
     protected $x_property_name = 'x';
 
     protected $y_property_name = 'y';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {
@@ -803,7 +806,7 @@ class datavizPlotHistogram extends datavizPlot
     protected $x_property_name = 'x';
 
     protected $y_property_name = 'y';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {
@@ -841,7 +844,7 @@ class datavizPlotPie extends datavizPlot
     protected $x_property_name = 'labels';
 
     protected $y_property_name = 'values';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {
@@ -853,7 +856,7 @@ class datavizPlotPie extends datavizPlot
             'hoverinfo' => 'label+value+percent',
             'textinfo' => 'value',
             'opacity' => null,
-            'hole' => '0.4'
+            'hole' => '0.4',
         );
     }
 }
@@ -865,7 +868,7 @@ class datavizPlotHistogram2d extends datavizPlot
     protected $x_property_name = 'x';
 
     protected $y_property_name = 'y';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {
@@ -887,7 +890,7 @@ class datavizPlotPolar extends datavizPlot
     protected $x_property_name = 'r';
 
     protected $y_property_name = 't';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {

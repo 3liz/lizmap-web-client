@@ -138,8 +138,9 @@ class lizmapProxy
         ), $options['headers']);
 
         $options['headers'] = array_merge(
-            self::userHttpHeader()
-            , $options['headers']);
+            self::userHttpHeader(),
+            $options['headers']
+        );
 
         // Initialize responses
         $http_code = null;
@@ -264,18 +265,19 @@ class lizmapProxy
         return array($data, $mime, $http_code);
     }
 
-
-    protected static function userHttpHeader(){
+    protected static function userHttpHeader()
+    {
         // Check if a user is authenticated
-        if ( !jAuth::isConnected() ) {
+        if (!jAuth::isConnected()) {
             // return empty header array
             return array();
         }
         $user = jAuth::getUserSession();
         $userGroups = jAcl2DbUserGroup::getGroups();
+
         return array(
             'X-Lizmap-User' => $user->login,
-            'X-Lizmap-User-Groups' => implode(', ', $userGroups)
+            'X-Lizmap-User-Groups' => implode(', ', $userGroups),
         );
     }
 

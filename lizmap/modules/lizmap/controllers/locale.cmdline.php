@@ -99,6 +99,7 @@ class localeCtrl extends jControllerCmdLine
         }
 
         sort($files);
+
         return $files;
     }
 

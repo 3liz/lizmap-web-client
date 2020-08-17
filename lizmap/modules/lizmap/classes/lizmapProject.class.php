@@ -133,7 +133,6 @@ class lizmapProject extends qgisProject
         'relations', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
         'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion', );
 
-
     /**
      * version of the format of data stored in the cache.
      *
@@ -901,11 +900,13 @@ class lizmapProject extends qgisProject
         return false;
     }
 
-    private function optionToBoolean($config_string) {
+    private function optionToBoolean($config_string)
+    {
         $ret = false;
-        if (strtolower((string)$config_string) == 'true') {
+        if (strtolower((string) $config_string) == 'true') {
             $ret = true;
         }
+
         return $ret;
     }
 
@@ -963,7 +964,7 @@ class lizmapProject extends qgisProject
             if (!empty($lc->color)) {
                 $plotConf['plot']['color'] = $lc->color;
             }
-            if (property_exists($lc, 'color2') and !empty($lc->color2) ) {
+            if (property_exists($lc, 'color2') and !empty($lc->color2)) {
                 $plotConf['plot']['color2'] = $lc->color2;
             }
             if (property_exists($lc, 'aggregation')) {
@@ -1234,7 +1235,7 @@ class lizmapProject extends qgisProject
                     );
 
                     // store mapping between uuid and id
-                    $mapUuidId = [];
+                    $mapUuidId = array();
                     // get layout maps
                     $lMaps = $layout->xpath('LayoutItem[@type="65639"]');
                     if ($lMaps && count($lMaps) > 0) {
@@ -1243,7 +1244,7 @@ class lizmapProject extends qgisProject
                             $lMapSize = explode(',', $lMap['size']);
                             $ptMap = array(
                                 'id' => 'map'.(string) count($printTemplate['maps']),
-                                'uuid' => (string)$lMap['uuid'],
+                                'uuid' => (string) $lMap['uuid'],
                                 'width' => (int) $lMapSize[0],
                                 'height' => (int) $lMapSize[1],
                             );
@@ -1270,10 +1271,12 @@ class lizmapProject extends qgisProject
                         }
                         // Modifying overviewMap to id instead of uuid
                         foreach ($printTemplate['maps'] as $ptMap) {
-                            if (!array_key_exists('overviewMap', $ptMap))
+                            if (!array_key_exists('overviewMap', $ptMap)) {
                                 continue;
+                            }
                             if (!array_key_exists($ptMap['overviewMap'], $mapUuidId)) {
                                 unset($ptMap['overviewMap']);
+
                                 continue;
                             }
                             $ptMap['overviewMap'] = $mapUuidId[$ptMap['overviewMap']];
@@ -1408,7 +1411,6 @@ class lizmapProject extends qgisProject
 
             // Add data into formFilterLayers from configuration
             $formFilterLayers = $cfg->formFilterLayers;
-
         }
 
         return $formFilterLayers;
@@ -1500,7 +1502,7 @@ class lizmapProject extends qgisProject
             if ($customOrderZero->attributes()->enabled == 1) {
                 $items = $customOrderZero->xpath('//item');
                 $lo = 0;
-                foreach  ($items as $layerI) {
+                foreach ($items as $layerI) {
                     // Get layer name from config instead of XML for possible embedded layers
                     $name = $this->getLayerNameByIdFromConfig($layerI);
                     if ($name) {
@@ -1511,7 +1513,7 @@ class lizmapProject extends qgisProject
             } else {
                 return $layersOrder;
             }
-        } else if ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
+        } elseif ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
             $customOrder = $xml->xpath('//layer-tree-canvas/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
@@ -1674,7 +1676,7 @@ class lizmapProject extends qgisProject
                 $externalSearch = array(
                     'type' => 'BAN',
                     'service' => 'lizmapBan',
-                    'url' => jUrl::get('lizmap~ban:search')
+                    'url' => jUrl::get('lizmap~ban:search'),
                 );
             }
             $configJson->options->searches[] = (object) $externalSearch;

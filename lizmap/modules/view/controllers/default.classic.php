@@ -100,25 +100,25 @@ class defaultCtrl extends jController
 
         // Hide header if parameter h=0
         $h = $this->intParam('h', 1);
-        $hide_header = False;
-        if($h == 0){
+        $hide_header = false;
+        if ($h == 0) {
             // Add some CSS to remove header and change other properties
             $hcss = '<style type="text/css">';
-            $hcss.= " body {padding-top: 10px;}";
-            $hcss.= " #search {top: 5px;}";
-            $hcss.= " #header {display: none;}";
-            $hcss.= "</style>";
+            $hcss .= ' body {padding-top: 10px;}';
+            $hcss .= ' #search {top: 5px;}';
+            $hcss .= ' #header {display: none;}';
+            $hcss .= '</style>';
             $rep->addHeadContent($hcss);
 
             // Change URL for each project to add h=0
-            $hide_header = True;
+            $hide_header = true;
         }
 
         // Add main zone with project grid
         $rep->body->assignZone('MAIN', 'main_view', array(
             'repository' => $repository,
             'auth_url_return' => $auth_url_return,
-            'hide_header' => $hide_header
+            'hide_header' => $hide_header,
         ));
 
         // JS code
