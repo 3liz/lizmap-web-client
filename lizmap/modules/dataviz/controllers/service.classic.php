@@ -73,7 +73,7 @@ class serviceCtrl extends jController
         // Fins layer by id
         if (array_key_exists($plot_id, $this->config['layers'])) {
             $plotConfig = $this->config['layers'][$plot_id];
-        }else{
+        } else {
             return array(
                 'errors' => array(
                     'title' => 'No corresponding plot',

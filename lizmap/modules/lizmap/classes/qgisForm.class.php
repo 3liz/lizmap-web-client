@@ -123,7 +123,7 @@ class qgisForm implements qgisFormControlsInterface
                 } else {
                     $edittype = null;
                 }
-            } else if ($fieldConfigurationXml) {
+            } elseif ($fieldConfigurationXml) {
                 $fieldConfiguration = $fieldConfigurationXml->xpath("field[@name='${fieldName}']");
                 if ($fieldConfiguration && count($fieldConfiguration) !== 0) {
                     $fieldConfiguration = $fieldConfiguration[0];
@@ -134,18 +134,18 @@ class qgisForm implements qgisFormControlsInterface
                         $fieldEditType = (string) $editWidgetXml->attributes()->type;
                         // options
                         $fieldEditOptions = array();
-                        foreach( $editWidgetXml->config as $config ) {
-                            foreach( $config->Option as $option ) {
-                                foreach( $option->Option as $opt ) {
+                        foreach ($editWidgetXml->config as $config) {
+                            foreach ($config->Option as $option) {
+                                foreach ($option->Option as $opt) {
                                     // Option with list of values
                                     if ((string) $opt->attributes()->type === 'List') {
                                         $values = array();
-                                        foreach( $opt->Option as $l ) {
+                                        foreach ($opt->Option as $l) {
                                             if ((string) $l->attributes()->type === 'Map') {
-                                                foreach( $l->Option as $v ) {
+                                                foreach ($l->Option as $v) {
                                                     $values[] = (object) array(
-                                                        'key'=>(string) $v->attributes()->name,
-                                                        'value'=>(string) $v->attributes()->value
+                                                        'key' => (string) $v->attributes()->name,
+                                                        'value' => (string) $v->attributes()->value,
                                                     );
                                                 }
                                             } else {
@@ -154,19 +154,19 @@ class qgisForm implements qgisFormControlsInterface
                                         }
                                         $fieldEditOptions[(string) $opt->attributes()->name] = $values;
                                     // Option with list of values as Map
-                                    } else if ((string) $opt->attributes()->type === 'Map') {
+                                    } elseif ((string) $opt->attributes()->type === 'Map') {
                                         $values = array();
-                                        foreach( $opt->Option as $v ) {
+                                        foreach ($opt->Option as $v) {
                                             $values[] = (object) array(
-                                                'key'=>(string) $v->attributes()->name,
-                                                'value'=>(string) $v->attributes()->value
+                                                'key' => (string) $v->attributes()->name,
+                                                'value' => (string) $v->attributes()->value,
                                             );
                                         }
                                         $fieldEditOptions[(string) $opt->attributes()->name] = $values;
                                     // Option with string list of values
-                                    } else if ((string) $opt->attributes()->type === 'StringList') {
+                                    } elseif ((string) $opt->attributes()->type === 'StringList') {
                                         $values = array();
-                                        foreach( $opt->Option as $v ) {
+                                        foreach ($opt->Option as $v) {
                                             $values[] = (string) $v->attributes()->value;
                                         }
                                         $fieldEditOptions[(string) $opt->attributes()->name] = $values;
@@ -178,10 +178,9 @@ class qgisForm implements qgisFormControlsInterface
                             }
                         }
 
-
                         $edittype = array(
-                            "type"=>$fieldEditType,
-                            "options"=>(object) $fieldEditOptions
+                            'type' => $fieldEditType,
+                            'options' => (object) $fieldEditOptions,
                         );
 
                         // editable
@@ -272,12 +271,14 @@ class qgisForm implements qgisFormControlsInterface
 
     /**
      * Get the default value of a QGIS field, if this is
-     * a simple raw value
+     * a simple raw value.
      *
      * @param string $fieldName
-     * @return string|null return null if this is not a number or a string
+     *
+     * @return null|string return null if this is not a number or a string
      */
-    protected function getDefaultValue($fieldName) {
+    protected function getDefaultValue($fieldName)
+    {
         $expression = $this->layer->getDefaultValue($fieldName);
         if ($expression === null) {
             return null;
@@ -285,7 +286,7 @@ class qgisForm implements qgisFormControlsInterface
         if (is_numeric($expression)) {
             return $expression;
         }
-        else if (preg_match("/^'.*'$/", $expression)) {
+        if (preg_match("/^'.*'$/", $expression)) {
             // it seems this is a simple string
             $expression = trim($expression, "'");
             // if there are some ' without a \, then probably we have a
@@ -299,7 +300,8 @@ class qgisForm implements qgisFormControlsInterface
         return null;
     }
 
-    protected function getConstraints($fieldName) {
+    protected function getConstraints($fieldName)
+    {
         return $this->layer->getConstraints($fieldName);
     }
 
@@ -438,8 +440,7 @@ class qgisForm implements qgisFormControlsInterface
             elseif ($this->formControls[$ref]->isValueRelation() && $value[0] === '{') {
                 $arrayValue = array_map('intval', explode(',', trim($value, '{}')));
                 $form->setData($ref, $arrayValue);
-            }
-            elseif ($this->formControls[$ref]->isUploadControl()) {
+            } elseif ($this->formControls[$ref]->isUploadControl()) {
                 $ctrl = $form->getControl($this->formControls[$ref]->getControlName());
                 if ($ctrl && $ctrl->type == 'choice') {
                     $path = explode('/', $value);

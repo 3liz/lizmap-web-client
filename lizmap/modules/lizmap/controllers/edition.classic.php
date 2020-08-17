@@ -846,7 +846,7 @@ class editionCtrl extends jController
             'layer' => $this->layer,
             'featureId' => $this->featureId,
             'featureData' => $this->featureData,
-            'filesToDelete' => $deleteFiles
+            'filesToDelete' => $deleteFiles,
         );
         $event = jEvent::notify('LizmapEditionPreDelete', $eventParams);
         if ($event->allResponsesByKeyAreTrue('filesDeleted')) {
