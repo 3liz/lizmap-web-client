@@ -926,10 +926,10 @@ class lizmapProject extends qgisProject
         }
 
         if (!property_exists($this->cfg->loginFilteredLayers, $ln)) {
-            return Null;
+            return null;
         }
 
-        return $pConfig->loginFilteredLayers->{$n};
+        return $this->cfg->loginFilteredLayers->{$ln};
     }
 
     public function getLoginFilters($layers)
