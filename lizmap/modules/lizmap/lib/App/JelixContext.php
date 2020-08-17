@@ -1,13 +1,14 @@
 <?php
+namespace Lizmap\App;
 
-class jelixInfos implements lizmapAppContext
+class JelixContext implements AppContextInterface
 {
     /**
      * call and return jApp::config.
      */
     public function appConfig()
     {
-        return jApp::config();
+        return \jApp::config();
     }
 
     /**
@@ -19,7 +20,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function aclCheckResult($params)
     {
-        return jAcl2::check(...$params);
+        return \jAcl2::check(...$params);
     }
 
     /**
@@ -30,10 +31,10 @@ class jelixInfos implements lizmapAppContext
     public function aclDbUserGroups($list = false)
     {
         if ($list) {
-            return jAcl2DbUserGroup::getGroupList();
+            return \jAcl2DbUserGroup::getGroupList();
         }
 
-        return jAcl2dbUserGroup::getGroups();
+        return \jAcl2dbUserGroup::getGroups();
     }
 
     /**
@@ -43,7 +44,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function UserIsConnected()
     {
-        return jAuth::IsConnected();
+        return \jAuth::IsConnected();
     }
 
     /**
@@ -51,7 +52,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function getUserSession()
     {
-        return jAuth::getUserSession();
+        return \jAuth::getUserSession();
     }
 
     /**
@@ -63,12 +64,12 @@ class jelixInfos implements lizmapAppContext
      */
     public function getCache($key, $profile = '')
     {
-        return jCache::get($key, $profile);
+        return \jCache::get($key, $profile);
     }
 
     public function normalizeCacheKey($key)
     {
-        return jCache::normalizeKey($key);
+        return \jCache::normalizeKey($key);
     }
     /**
      * Return the result of jProfile::createVirtualProfile.
@@ -79,7 +80,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function createVirtualProfile($category, $name, $params)
     {
-        return jProfiles::createVirtualProfile($category, $name, $params);
+        return \jProfiles::createVirtualProfile($category, $name, $params);
     }
 
     /**
@@ -95,7 +96,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function getProfile($category, $name = '', $noDefault = false)
     {
-        return jProfile::get($category, $name, $noDefault);
+        return \jProfile::get($category, $name, $noDefault);
     }
 
     /**
@@ -108,7 +109,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function eventNotify($name, $params = array())
     {
-        return jEvent::notify($name, $params);
+        return \jEvent::notify($name, $params);
     }
 
     /**
@@ -118,13 +119,13 @@ class jelixInfos implements lizmapAppContext
      */
     public function getDbConnection($name = '')
     {
-        return jDb::getConnection($name);
+        return \jDb::getConnection($name);
     }
 
     /**
      * Return the result of a jDbConnection method.
      *
-     * @param jDbConnection $cnx    The Db Connection on which to call the method
+     * @param \jDbConnection $cnx    The Db Connection on which to call the method
      * @param string        $method The method to call
      * @param array         $params An array containing the parameters
      *                              to pass to $method
@@ -146,7 +147,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function getLocale($key)
     {
-        return jLocale::get($key);
+        return \jLocale::get($key);
     }
 
     /**
@@ -156,7 +157,7 @@ class jelixInfos implements lizmapAppContext
      */
     public function getDao($jSelector)
     {
-        return jDao::get($jSelector);
+        return \jDao::get($jSelector);
     }
 
     /**
@@ -166,6 +167,6 @@ class jelixInfos implements lizmapAppContext
      */
     public function createForm($formSelector)
     {
-        return jForms::create($formSelector);
+        return \jForms::create($formSelector);
     }
 }

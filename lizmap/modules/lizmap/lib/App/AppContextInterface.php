@@ -1,11 +1,12 @@
 <?php
+namespace Lizmap\App;
 
 /**
  * Interface that will be implemented to get Jelix infos so
  * we can either send Jelix's real infos either custom infos
  * to make our own tests.
  */
-interface lizmapAppContext
+interface AppContextInterface
 {
     public function appConfig($params);
 
