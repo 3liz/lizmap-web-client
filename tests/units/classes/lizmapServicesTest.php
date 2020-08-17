@@ -124,7 +124,6 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
 
     public function getRootRepositoriesData()
     {
-
         $path = realpath(__DIR__.'/../../../');
         return array(
             array($path.'/tests/qgis-projects', $path.'/lizmap/var/', $path.'/tests/qgis-projects/'),
@@ -340,5 +339,61 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
         }
         unlink($iniPath);
         unlink($liveIniPath);
+        unset($testLizmapServices);
+    }
+
+    public function getRepoData()
+    {
+        $repo1 = array(
+            'repository:test' => array(
+                'label' => 'Test',
+                'path' => '/path/to/test',
+                'allowUserDefinedThemes' => '1'
+            )
+        );
+        $repo2 = array(
+            'repository:test' => array(
+                'path' => '/path/to/test',
+                'allowUserDefinedThemes' => '1'
+            )
+        );
+        $repo3 = array(
+            'repository:' => array(
+                'label' => 'Test',
+                'path' => '/path/to/test',
+                'allowUserDefinedThemes' => ''
+            )
+        );
+        return array(
+            array($repo1, 'test', true),
+            array($repo1, null, false),
+            array($repo2, 'test', true),
+            array($repo3, '', false),
+            array($repo3, null, false)
+        );
+    }
+
+    /**
+     * @dataProvider getRepoData
+     */
+
+    public function testGetLizmapRepository($repoInfos, $key, $expectedReturnValue)
+    {
+        $testLizmapServices = new lizmapServices($repoInfos, (object)array(), true, '');
+        $repo = $testLizmapServices->getLizmapRepository($key);
+        $this->assertEquals($expectedReturnValue, (bool)$repo);
+        if ($expectedReturnValue === false) {
+            return ;
+        }
+        $this->assertEquals($key, $repo->getKey());
+        $properties = lizmapRepository::getProperties();
+        foreach ($properties as $prop) {
+            if (!isset($repoInfos['repository:'.$key][$prop])) {
+                continue ;
+            }
+            $this->assertEquals($repoInfos['repository:'.$key][$prop], $repo->getData($prop));
+        }
+        unset($testLizmapServices);
+        unset($repo);
     }
 }

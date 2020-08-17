@@ -184,10 +184,18 @@ class lizmapServices
     // application id for google analytics
     public $googleAnalyticsID = '';
 
-    public function __construct($lizmapConfigFileTab, $globalConfig, $ldapEnabled, $varPath)
+    /**
+     * constructor method
+     *
+     * @param array $readConfigPath the local ini file put in an array
+     * @param array $globalConfig the jelix ini file put in an array
+     * @param bool $ldapEnabled true if ldapdao module is enabled
+     * @param string $varPath the configuration files path given by jApp::varPath()
+     */
+
+    public function __construct($readConfigPath, $globalConfig, $ldapEnabled, $varPath)
     {
         // read the lizmap configuration file
-        $readConfigPath = $lizmapConfigFileTab;
         $this->data = $readConfigPath;
         $this->globalConfig = $globalConfig;
         $this->varPath = $varPath;
@@ -380,5 +388,31 @@ class lizmapServices
                 jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
             }
         }
+    }
+
+    /**
+     * This method will create and return a lizmapRepository instance
+     *
+     * @param string $key the name of the repository
+     *
+     * @return lizmapRepository The lizmapRepository instance
+     */
+
+    public function getLizmapRepository($key)
+    {
+        $section = 'repository:'.$key;
+        
+        if ($key === null || $key === '') {
+            return false;
+        }
+        // Check if repository exists in the ini file
+        if (array_key_exists($section, $this->data)) {
+            $data = $this->data[$section];
+        } else {
+            return false;
+        }
+        $repo = new lizmapRepository($key, $data, $this->varPath);
+
+        return $repo;
     }
 }

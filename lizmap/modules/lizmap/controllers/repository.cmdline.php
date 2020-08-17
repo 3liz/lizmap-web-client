@@ -66,7 +66,7 @@ class repositoryCtrl extends jControllerCmdLine
 
         // Repository data
         $data = array();
-        foreach (lizmap::getRepositoryProperties() as $prop) {
+        foreach (lizmapRepository::getProperties() as $prop) {
             $data[$prop] = $this->param($prop);
             // Check paths
             if ($prop == 'path') {
