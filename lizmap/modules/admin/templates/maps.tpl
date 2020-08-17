@@ -21,7 +21,7 @@
                 <dd>
                     <table class="table">
                         {assign $section = 'repository:'.$repo->getKey()}
-                        {assign $properties = lizmapRepository::getProperties()}
+                        {assign $properties = $repo->getRepoProperties()}
                         {foreach $properties as $prop}
                             <tr>
                                 {if $prop == 'path' && $rootRepositories != ''}
