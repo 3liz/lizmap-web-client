@@ -79,12 +79,13 @@ class qgisProject
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
-    protected $jelix = null;
+    protected $jelix;
 
     /**
      * constructor.
      *
-     * @param string $file : the QGIS project path
+     * @param string $file  : the QGIS project path
+     * @param mixed  $jelix
      */
     public function __construct($file, $jelix)
     {
@@ -100,6 +101,7 @@ class qgisProject
         // to avoid collision in the cache engine
         $data = false;
         $cache = new projectCache($file, $this->jelix);
+
         try {
             $data = $cache->getProjectData();
         } catch (Exception $e) {
@@ -287,6 +289,7 @@ class qgisProject
 
     /**
      * Execute an xpath Query on the XML content and return the result.
+     *
      * @param string $query The query to execute
      */
     public function xpathQuery($query)
@@ -295,6 +298,7 @@ class qgisProject
         if (!$ret || empty($ret)) {
             $ret = null;
         }
+
         return $ret;
     }
 
@@ -329,10 +333,21 @@ class qgisProject
         if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
             $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']));
 
-            return $qgsProj->getXml()->xpath("//maplayer[id='${layerId}']");
+            return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
         }
 
-        return $this->getXml()->xpath("//maplayer[id='${layerId}']");
+        return $this->getXml()->xpath("//maplayer[id='{$layerId}']");
+    }
+
+    /**
+     * @param SimpleXMLElement $xml
+     * @param string           $layerId
+     *
+     * @return SimpleXMLElement[]
+     */
+    protected function getXmlLayer2($xml, $layerId)
+    {
+        return $xml->xpath("//maplayer[id='{$layerId}']");
     }
 
     /**
@@ -348,7 +363,7 @@ class qgisProject
      */
     public function getXmlLayerByKeyword($key)
     {
-        return $this->getXml()->xpath("//maplayer/keywordList[value='${key}']/parent::*");
+        return $this->getXml()->xpath("//maplayer/keywordList[value='{$key}']/parent::*");
     }
 
     /**
@@ -364,7 +379,442 @@ class qgisProject
      */
     public function getXmlRelation($relationId)
     {
-        return $this->getXml()->xpath("//relation[@id='${relationId}']");
+        return $this->getXml()->xpath("//relation[@id='{$relationId}']");
+    }
+
+    /**
+     * @param string $layerId
+     * @param mixed  $layers
+     *
+     * @return null|string
+     */
+    public function getLayerNameByIdFromConfig($layerId, $layers)
+    {
+        $name = null;
+        foreach ($layers as $name => $props) {
+            if ($props->id == $layerId) {
+                return $name;
+            }
+        }
+
+        return $name;
+    }
+
+    public function getPrintTemplates()
+    {
+        // get restricted composers
+        $rComposers = array();
+        $restrictedComposers = $this->data->xpath('//properties/WMSRestrictedComposers/value');
+        if ($restrictedComposers && count($restrictedComposers) > 0) {
+            foreach ($restrictedComposers as $restrictedComposer) {
+                $rComposers[] = (string) $restrictedComposer;
+            }
+        }
+
+        $services = $this->services;
+        // get composer qg project version < 3
+        $composers = $this->data->xpath('//Composer');
+        if ($composers && count($composers) > 0) {
+            foreach ($composers as $composer) {
+                // test restriction
+                if (in_array((string) $composer['title'], $rComposers)) {
+                    continue;
+                }
+                // get composition element
+                $composition = $composer->xpath('Composition');
+                if (!$composition || count($composition) == 0) {
+                    continue;
+                }
+                $composition = $composition[0];
+
+                // init print template element
+                $printTemplate = array(
+                    'title' => (string) $composer['title'],
+                    'width' => (int) $composition['paperWidth'],
+                    'height' => (int) $composition['paperHeight'],
+                    'maps' => array(),
+                    'labels' => array(),
+                );
+
+                // get composer maps
+                $cMaps = $composer->xpath('.//ComposerMap');
+                if ($cMaps && count($cMaps) > 0) {
+                    foreach ($cMaps as $cMap) {
+                        $cMapItem = $cMap->xpath('ComposerItem');
+                        if (count($cMapItem) == 0) {
+                            continue;
+                        }
+                        $cMapItem = $cMapItem[0];
+                        $ptMap = array(
+                            'id' => 'map'.(string) $cMap['id'],
+                            'width' => (int) $cMapItem['width'],
+                            'height' => (int) $cMapItem['height'],
+                        );
+
+                        // Before 2.6
+                        if (property_exists($cMap->attributes(), 'overviewFrameMap') and (string) $cMap['overviewFrameMap'] != '-1') {
+                            $ptMap['overviewMap'] = 'map'.(string) $cMap['overviewFrameMap'];
+                        }
+                        // >= 2.6
+                        $cMapOverviews = $cMap->xpath('ComposerMapOverview');
+                        foreach ($cMapOverviews as $cMapOverview) {
+                            if ($cMapOverview and (string) $cMapOverview->attributes()->frameMap != '-1') {
+                                $ptMap['overviewMap'] = 'map'.(string) $cMapOverview->attributes()->frameMap;
+                            }
+                        }
+                        // Grid
+                        $cMapGrids = $cMap->xpath('ComposerMapGrid');
+                        foreach ($cMapGrids as $cMapGrid) {
+                            if ($cMapGrid and (string) $cMapGrid->attributes()->show != '0') {
+                                $ptMap['grid'] = 'True';
+                            }
+                        }
+                        // In QGIS 3.*
+                        // Layout maps now use a string UUID as "id", let's assume that the first map
+                        // has id 0 and so on ...
+                        if (version_compare($services->qgisServerVersion, '3.0', '>=')) {
+                            $ptMap['id'] = 'map'.(string) count($printTemplate['maps']);
+                        }
+                        $printTemplate['maps'][] = $ptMap;
+                    }
+                }
+
+                // get composer labels
+                $cLabels = $composer->xpath('.//ComposerLabel');
+                if ($cLabels && count($cLabels) > 0) {
+                    foreach ($cLabels as $cLabel) {
+                        $cLabelItem = $cLabel->xpath('ComposerItem');
+                        if (!$cLabelItem || count($cLabelItem) == 0) {
+                            continue;
+                        }
+                        $cLabelItem = $cLabelItem[0];
+                        if ((string) $cLabelItem['id'] == '') {
+                            continue;
+                        }
+                        $printTemplate['labels'][] = array(
+                            'id' => (string) $cLabelItem['id'],
+                            'htmlState' => (int) $cLabel['htmlState'],
+                            'text' => (string) $cLabel['labelText'],
+                        );
+                    }
+                }
+
+                // get composer attribute tables
+                $cTables = $composer->xpath('.//ComposerAttributeTableV2');
+                if ($cTables && count($cTables) > 0) {
+                    foreach ($cTables as $cTable) {
+                        $printTemplate['tables'][] = array(
+                            'composerMap' => (int) $cTable['composerMap'],
+                            'vectorLayer' => (string) $cTable['vectorLayer'],
+                        );
+                    }
+                }
+
+                // Atlas
+                $Atlas = $composer->xpath('Atlas');
+                if (count($Atlas) == 1) {
+                    $Atlas = $Atlas[0];
+                    $printTemplate['atlas'] = array(
+                        'enabled' => (string) $Atlas['enabled'],
+                        'coverageLayer' => (string) $Atlas['coverageLayer'],
+                    );
+                }
+                $printTemplates[] = $printTemplate;
+            }
+        }
+        // get layout qgs project version >= 3
+        $layouts = $this->data->xpath('//Layout');
+        if ($layouts && count($layouts) > 0 &&
+            version_compare($services->qgisServerVersion, '3.0', '>=')) {
+            foreach ($layouts as $layout) {
+                // test restriction
+                if (in_array((string) $layout['name'], $rComposers)) {
+                    continue;
+                }
+                // get page element
+                $page = $layout->xpath('PageCollection/LayoutItem[@type="65638"]');
+                if (!$page || count($page) == 0) {
+                    continue;
+                }
+                $page = $page[0];
+
+                $pageSize = explode(',', $page['size']);
+                // init print template element
+                $printTemplate = array(
+                    'title' => (string) $layout['name'],
+                    'width' => (int) $pageSize[0],
+                    'height' => (int) $pageSize[1],
+                    'maps' => array(),
+                    'labels' => array(),
+                );
+
+                // store mapping between uuid and id
+                $mapUuidId = array();
+                // get layout maps
+                $lMaps = $layout->xpath('LayoutItem[@type="65639"]');
+                if ($lMaps && count($lMaps) > 0) {
+                    // Convert xml to json config
+                    foreach ($lMaps as $lMap) {
+                        $lMapSize = explode(',', $lMap['size']);
+                        $ptMap = array(
+                            'id' => 'map'.(string) count($printTemplate['maps']),
+                            'uuid' => (string) $lMap['uuid'],
+                            'width' => (int) $lMapSize[0],
+                            'height' => (int) $lMapSize[1],
+                        );
+                        // store mapping between uuid and id
+                        $mapUuidId[(string) $lMap['uuid']] = 'map'.(string) count($printTemplate['maps']);
+
+                        // Overview
+                        $cMapOverviews = $lMap->xpath('ComposerMapOverview');
+                        foreach ($cMapOverviews as $cMapOverview) {
+                            if ($cMapOverview and (string) $cMapOverview->attributes()->show !== '0' and (string) $cMapOverview->attributes()->frameMap != '-1') {
+                                // frameMap is an uuid
+                                $ptMap['overviewMap'] = (string) $cMapOverview->attributes()->frameMap;
+                            }
+                        }
+                        // Grid
+                        $cMapGrids = $lMap->xpath('ComposerMapGrid');
+                        foreach ($cMapGrids as $cMapGrid) {
+                            if ($cMapGrid and (string) $cMapGrid->attributes()->show !== '0') {
+                                $ptMap['grid'] = 'True';
+                            }
+                        }
+
+                        $printTemplate['maps'][] = $ptMap;
+                    }
+                    // Modifying overviewMap to id instead of uuid
+                    foreach ($printTemplate['maps'] as $ptMap) {
+                        if (!array_key_exists('overviewMap', $ptMap)) {
+                            continue;
+                        }
+                        if (!array_key_exists($ptMap['overviewMap'], $mapUuidId)) {
+                            unset($ptMap['overviewMap']);
+
+                            continue;
+                        }
+                        $ptMap['overviewMap'] = $mapUuidId[$ptMap['overviewMap']];
+                    }
+                }
+
+                // get layout labels
+                $lLabels = $layout->xpath('LayoutItem[@type="65641"]');
+                if ($lLabels && count($lLabels) > 0) {
+                    foreach ($lLabels as $lLabel) {
+                        if ((string) $lLabel['id'] == '') {
+                            continue;
+                        }
+                        $printTemplate['labels'][] = array(
+                            'id' => (string) $lLabel['id'],
+                            'htmlState' => (int) $lLabel['htmlState'],
+                            'text' => (string) $lLabel['labelText'],
+                        );
+                    }
+                }
+
+                // get layout attribute tables
+                $lTables = $layout->xpath('LayoutMultiFrame[@type="65649"]');
+                if ($lTables && count($lTables) > 0) {
+                    foreach ($lTables as $lTable) {
+                        $composerMap = -1;
+                        if (isset($lTable['mapUuid'])) {
+                            $mapUuid = (string) $lTable['mapUuid'];
+                            if (!array_key_exists($mapUuid, $mapUuidId)) {
+                                $mapId = $mapUuidId[$mapUuid];
+                                $composerMap = (string) str_replace('map', '', $mapId);
+                            }
+                        }
+
+                        $printTemplate['tables'][] = array(
+                            'composerMap' => $composerMap,
+                            'vectorLayer' => (string) $lTable['vectorLayer'],
+                            'vectorLayerName' => (string) $lTable['vectorLayerName'],
+                        );
+                    }
+                }
+
+                // Atlas
+                $atlas = $layout->xpath('Atlas');
+                if (count($atlas) == 1) {
+                    $atlas = $atlas[0];
+                    $printTemplate['atlas'] = array(
+                        'enabled' => (string) $atlas['enabled'],
+                        'coverageLayer' => (string) $atlas['coverageLayer'],
+                    );
+                }
+                $printTemplates[] = $printTemplate;
+            }
+        }
+
+        return $printTemplates;
+    }
+
+    public function readLocateByLayers(&$locateByLayer)
+    {
+        // collect layerIds
+        $locateLayerIds = array();
+        foreach ($locateByLayer as $k => $v) {
+            $locateLayerIds[] = $v->layerId;
+        }
+        // update locateByLayer with alias and filter information
+        foreach ($locateByLayer as $k => $v) {
+            $xmlLayer = $this->getXmlLayer2($this->data, $v->layerId);
+            if (count($xmlLayer) == 0) {
+                continue;
+            }
+            $xmlLayerZero = $xmlLayer[0];
+            // aliases
+            $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
+            if ($alias && count($alias) != 0) {
+                $alias = $alias[0];
+                $v->fieldAlias = (string) $alias['name'];
+                $locateByLayer->{$k} = $v;
+            }
+            if (property_exists($v, 'filterFieldName')) {
+                $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
+                if ($alias && count($alias) != 0) {
+                    $alias = $alias[0];
+                    $v->filterFieldAlias = (string) $alias['name'];
+                    $locateByLayer->{$k} = $v;
+                }
+            }
+            // vectorjoins
+            $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
+            if ($vectorjoins && count($vectorjoins) != 0) {
+                if (!property_exists($v, 'vectorjoins')) {
+                    $v->vectorjoins = array();
+                }
+                foreach ($vectorjoins as $vectorjoin) {
+                    $joinLayerId = (string) $vectorjoin['joinLayerId'];
+                    if (in_array($joinLayerId, $locateLayerIds)) {
+                        $v->vectorjoins[] = (object) array(
+                            'joinFieldName' => (string) $vectorjoin['joinFieldName'],
+                            'targetFieldName' => (string) $vectorjoin['targetFieldName'],
+                            'joinLayerId' => (string) $vectorjoin['joinLayerId'],
+                        );
+                    }
+                }
+                $locateByLayer->{$k} = $v;
+            }
+        }
+    }
+
+    public function readEditionLayers(&$editionLayers)
+    {
+        foreach ($editionLayers as $key => $obj) {
+            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            if (count($layerXml) == 0) {
+                continue;
+            }
+            $layerXmlZero = $layerXml[0];
+            $provider = $layerXmlZero->xpath('provider');
+            $provider = (string) $provider[0];
+            if ($provider == 'spatialite') {
+                unset($editionLayers->{$key});
+            }
+        }
+    }
+
+    public function readAttributeLayers(&$attributeLayers)
+    {
+        // Get field order & visibility
+        foreach ($attributeLayers as $key => $obj) {
+            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            if (count($layerXml) == 0) {
+                continue;
+            }
+            $layerXmlZero = $layerXml[0];
+            $attributetableconfigXml = $layerXmlZero->xpath('attributetableconfig');
+            if (count($attributetableconfigXml) == 0) {
+                continue;
+            }
+            $attributetableconfig = str_replace(
+                '@',
+                '',
+                json_encode($attributetableconfigXml[0])
+            );
+            $obj->attributetableconfig = json_decode($attributetableconfig);
+            $attributeLayers->{$key} = $obj;
+        }
+    }
+
+    /**
+     * @param SimpleXMLElement $xml
+     * @param $cfg
+     * @param mixed $layers
+     *
+     * @return int[]
+     */
+    protected function readLayersOrder($xml, $layers)
+    {
+        $layersOrder = array();
+        if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
+            $customOrder = $this->data->xpath('layer-tree-group/custom-order');
+            if (count($customOrder) == 0) {
+                return $layersOrder;
+            }
+            $customOrderZero = $customOrder[0];
+            if ($customOrderZero->attributes()->enabled == 1) {
+                $items = $customOrderZero->xpath('//item');
+                $lo = 0;
+                foreach ($items as $layerI) {
+                    // Get layer name from config instead of XML for possible embedded layers
+                    $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
+                    if ($name) {
+                        $layersOrder[$name] = $lo;
+                    }
+                    ++$lo;
+                }
+            } else {
+                return $layersOrder;
+            }
+        } elseif ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
+            $customOrder = $this->data->xpath('//layer-tree-canvas/custom-order');
+            if (count($customOrder) == 0) {
+                return $layersOrder;
+            }
+            $customOrderZero = $customOrder[0];
+            if ($customOrderZero->attributes()->enabled == 1) {
+                $items = $customOrderZero->xpath('//item');
+                $lo = 0;
+                foreach ($items as $layerI) {
+                    // Get layer name from config instead of XML for possible embedded layers
+                    $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
+                    if ($name) {
+                        $layersOrder[$name] = $lo;
+                    }
+                    ++$lo;
+                }
+            } else {
+                $items = $this->data->xpath('layer-tree-group//layer-tree-layer');
+                $lo = 0;
+                foreach ($items as $layerTree) {
+                    // Get layer name from config instead of XML for possible embedded layers
+                    $name = $this->getLayerNameByIdFromConfig($layerTree->attributes()->id, $layers);
+                    if ($name) {
+                        $layersOrder[$name] = $lo;
+                    }
+                    ++$lo;
+                }
+            }
+        } else {
+            $legend = $this->data->xpath('//legend');
+            if (count($legend) == 0) {
+                return $layersOrder;
+            }
+            $legendZero = $legend[0];
+            $updateDrawingOrder = (string) $legendZero->attributes()->updateDrawingOrder;
+            if ($updateDrawingOrder == 'false') {
+                $layers = $this->data->xpath('//legendlayer');
+                foreach ($layers as $layer) {
+                    if ($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0) {
+                        $layersOrder[(string) $layer->attributes()->name] = (int) $layer->attributes()->drawingOrder;
+                    }
+                }
+            }
+        }
+
+        return $layersOrder;
     }
 
     /**
@@ -575,7 +1025,7 @@ class qgisProject
         $xmlThemes = $xml->xpath('//visibility-presets');
         $themes = array();
 
-        if($xmlThemes){
+        if ($xmlThemes) {
             foreach ($xmlThemes[0] as $theme) {
                 $themeObj = $theme->attributes();
                 if (!array_key_exists((string) $themeObj->name, $themes)) {
@@ -587,7 +1037,7 @@ class qgisProject
                     $layerObj = $layer->attributes();
                     $themes[(string) $themeObj->name]['layers'][(string) $layerObj->id] = array(
                         'style' => (string) $layerObj->style,
-                        'expanded' => (string) $layerObj->expanded
+                        'expanded' => (string) $layerObj->expanded,
                     );
                 }
 
@@ -597,6 +1047,7 @@ class qgisProject
                     $themes[(string) $themeObj->name]['expandedGroupNode'][] = (string) $expandedGroupNodeObj->id;
                 }
             }
+
             return $themes;
         }
 
@@ -748,27 +1199,27 @@ class qgisProject
                     }
 
                     if (isset($xmlLayer->aliases->alias)) {
-                        foreach($xmlLayer->aliases->alias as $alias) {
+                        foreach ($xmlLayer->aliases->alias as $alias) {
                             $aliases[(string) $alias['field']] = (string) $alias['name'];
                         }
                     }
 
                     if (isset($xmlLayer->defaults->default)) {
-                        foreach($xmlLayer->defaults->default as $default) {
+                        foreach ($xmlLayer->defaults->default as $default) {
                             $defaults[(string) $default['field']] = (string) $default['expression'];
                         }
                     }
 
                     if (isset($xmlLayer->constraints->constraint)) {
-                        foreach($xmlLayer->constraints->constraint as $constraint) {
+                        foreach ($xmlLayer->constraints->constraint as $constraint) {
                             $c = array(
                                 'constraints' => 0,
                                 'notNull' => false,
                                 'unique' => false,
-                                'exp' => false
+                                'exp' => false,
                             );
                             $c['constraints'] = (int) $constraint['constraints'];
-                            if ( $c['constraints'] > 0 ) {
+                            if ($c['constraints'] > 0) {
                                 $c['notNull'] = ((int) $constraint['notnull_strength'] > 0);
                                 $c['unique'] = ((int) $constraint['unique_strength'] > 0);
                                 $c['exp'] = ((int) $constraint['exp_strength'] > 0);
