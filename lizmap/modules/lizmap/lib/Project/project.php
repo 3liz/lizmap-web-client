@@ -9,16 +9,19 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapProject extends qgisProject
+
+namespace Lizmap\Project;
+
+class Project
 {
     /**
      * @var lizmapRepository
      */
     protected $repository;
     /**
-     * @var SimpleXMLElement QGIS project XML
+     * @var projectXML QGIS project XML
      */
-    protected $xml;
+    protected $xml = null;
     /**
      * @var object CFG project JSON
      */
@@ -36,6 +39,20 @@ class lizmapProject extends qgisProject
         'bbox',
     );
 
+    /**
+     * @var JelixInfos The jelixInfos instance
+     */
+    protected $jelix;
+
+    /**
+     * @var lizmapServices The lizmapServices instance
+     */
+    protected $services;
+
+    /**
+     * @var string .qgs file path
+     */
+    protected $file = null;
     /**
      * Lizmap project key.
      *
@@ -140,6 +157,11 @@ class lizmapProject extends qgisProject
 
 
     /**
+     * @var string
+     */
+    private $spatialiteExt;
+
+    /**
      * version of the format of data stored in the cache.
      *
      * This number should be increased each time you change the structure of the
@@ -150,17 +172,25 @@ class lizmapProject extends qgisProject
     const CACHE_FORMAT_VERSION = 1;
 
     /**
+     * @var projectCache
+     */
+    protected $cacheHandler = null;
+
+    /**
      * constructor.
      *
      * @param string           $key : the project name
      * @param lizmapRepository $rep : the repository
+     * @param jelixInfo $jelix the instance of jelixInfos
      */
-    public function __construct($key, $rep)
+    public function __construct($key, $rep, $jelix, $services)
     {
         $this->key = $key;
         $this->repository = $rep;
+        $this->jelix = $jelix;
+        $this->services = $services;
 
-        $file = $rep->getPath().$key.'.qgs';
+        $file = $this->getQgisPath();
 
         // Verifying if the files exist
         if (!file_exists($file)) {
@@ -170,18 +200,9 @@ class lizmapProject extends qgisProject
             throw new UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
         }
 
-        // For the cache key, we use the full path of the project file
-        // to avoid collision in the cache engine
-        $data = false;
+        $this->cacheHandler = new projectCache($file, $this->jelix);
 
-        $fileKey = jCache::normalizeKey($file);
-        try {
-            $data = jCache::get($fileKey, 'qgisprojects');
-        } catch (Exception $e) {
-            // if qgisprojects profile does not exist, or if there is an
-            // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
-        }
+        $data = $this->cacheHandler->retrieveProjectData();
 
         if ($data === false ||
             $data['qgsmtime'] < filemtime($file) ||
@@ -199,15 +220,10 @@ class lizmapProject extends qgisProject
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
             }
-
-            try {
-                jCache::set($fileKey, $data, null, 'qgisprojects');
-            } catch (Exception $e) {
-                jLog::logEx($e, 'error');
-            }
+            $this->cacheHandler->storeProjectData($data);
         } else {
             foreach ($this->cachedProperties as $prop) {
-                if(array_key_exists($prop, $data)){
+                if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
                 }
             }
@@ -220,19 +236,10 @@ class lizmapProject extends qgisProject
 
     public function clearCache()
     {
-        $file = $this->repository->getPath().$this->key.'.qgs';
-        $fileKey = jCache::normalizeKey($file);
-        try {
-            jCache::delete($fileKey, 'qgisprojects');
-        } catch (Exception $e) {
-            // if qgisprojects profile does not exist, or if there is an
-            // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
-        }
+        $this->cacheHandler->clearCache();
     }
-
     /**
-     * temporary function to read xml for some methods that relies on
+     * temporary function to read xml for some methods that relies on  // Replace
      * xml data that are not yet stored in the cache.
      *
      * @return SimpleXMLElement
@@ -244,7 +251,7 @@ class lizmapProject extends qgisProject
         if ($this->xml) {
             return $this->xml;
         }
-        $qgs_path = $this->repository->getPath().$this->key.'.qgs';
+        $qgs_path = $this->getQgisPath();
         if (!file_exists($qgs_path) ||
             !file_exists($qgs_path.'.cfg')) {
             throw new Error('Files of project '.$this->key.' does not exists');
@@ -266,23 +273,22 @@ class lizmapProject extends qgisProject
      */
     protected function readProject($key, $rep)
     {
-        $qgs_path = $rep->getPath().$key.'.qgs';
+        $qgs_path = $this->getQgisPath();
 
         if (!file_exists($qgs_path) ||
             !file_exists($qgs_path.'.cfg')) {
             throw new UnknownLizmapProjectException("Files of project ${key} does not exists");
         }
 
-        $config = jFile::read($qgs_path.'.cfg');
-        $this->cfg = json_decode($config);
+        $this->cfg = new configFile($qgs_path.'.cfg');
         if ($this->cfg === null) {
             throw new UnknownLizmapProjectException(".qgs.cfg File of project ${key} has invalid content");
         }
 
-        $configOptions = $this->cfg->options;
+        $configOptions = $this->cfg->getProperty('options');
 
         try {
-            parent::readXmlProject($qgs_path);
+            $this->xml = new qgisProject($qgs_path);
         } catch (Exception $e) {
             throw $e;
         }
@@ -327,109 +333,84 @@ class lizmapProject extends qgisProject
             )
         );
 
-        $shortNames = $qgs_xml->xpath('//maplayer/shortname');
-        if ($shortNames && count($shortNames) > 0) {
+        $shortNames = $qgs_xml->xpathQuery('//maplayer/shortname');
+        if ($shortNames) {
             foreach ($shortNames as $sname) {
                 $sname = (string) $sname;
-                $xmlLayer = $qgs_xml->xpath("//maplayer[shortname='${sname}']");
-                if (count($xmlLayer) == 0) {
+                $xmlLayer = $qgs_xml->xpathQuery("//maplayer[shortname='${sname}']");
+                if (!$xmlLayer) {
                     continue;
                 }
                 $xmlLayer = $xmlLayer[0];
                 $name = (string) $xmlLayer->layername;
-                if (property_exists($this->cfg->layers, $name)) {
-                    $this->cfg->layers->{$name}->shortname = $sname;
+                $layer = $this->cfg->getEditableProp('layers');
+                if ($layer !== null && property_exists($layer, $name)) {
+                   $layer->{$name}->shortname = $sname;
                 }
             }
         }
 
-        $layerWithOpacities = $qgs_xml->xpath('//maplayer/layerOpacity[.!=1]/parent::*');
-        if ($layerWithOpacities && count($layerWithOpacities) > 0) {
-            foreach( $layerWithOpacities as $layerWithOpacitiy ) {
+        $layerWithOpacities = $qgs_xml->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
+        if ($layerWithOpacities) {
+            foreach ($layerWithOpacities as $layerWithOpacitiy) {
                 $name = (string) $layerWithOpacitiy->layername;
-                if (property_exists($this->cfg->layers, $name)) {
+                $prop = $this->cfg->getEditableProp('layers');
+                if ($prop && property_exists($prop, $name)) {
                     $opacity = (float) $layerWithOpacitiy->layerOpacity;
-                    $this->cfg->layers->{$name}->opacity = $opacity;
+                    $prop->{$name}->opacity = $opacity;
                 }
             }
         }
 
-        $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName && count($groupsWithShortName) > 0) {
+        $groupsWithShortName = $qgs_xml->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+        if ($groupsWithShortName) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
                 if ($shortNameProperty && count($shortNameProperty) > 0) {
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
-                    if (property_exists($this->cfg->layers, $name)) {
-                        $this->cfg->layers->{$name}->shortname = $sname;
+                    $prop = $this->cfg->getEditableProp('layers');
+                    if ($prop && property_exists($prop, $name)) {
+                        $prop->{$name}->shortname = $sname;
                     }
                 }
             }
         }
-        $groupsMutuallyExclusive = $qgs_xml->xpath("//layer-tree-group[@mutually-exclusive='1']");
-        if ($groupsMutuallyExclusive && count($groupsMutuallyExclusive) > 0) {
+        $groupsMutuallyExclusive = $qgs_xml->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
+        if ($groupsMutuallyExclusive) {
             foreach ($groupsMutuallyExclusive as $group) {
                 $name = (string) $group['name'];
-                if (property_exists($this->cfg->layers, $name)) {
-                    $this->cfg->layers->{$name}->mutuallyExclusive = 'True';
+                $prop = $this->cfg->getEditableProp('layers');
+                if ($prop && property_exists($prop, $name)) {
+                    $prop->{$name}->smutuallyExclusive = 'True';
                 }
             }
         }
 
-        $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
-        if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount) > 0) {
+        $layersWithShowFeatureCount = $qgs_xml->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        if ($layersWithShowFeatureCount) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
-                if (property_exists($this->cfg->layers, $name)) {
-                    $this->cfg->layers->{$name}->showFeatureCount = 'True';
+                $prop = $this->cfg->getEditableProp('layers');
+                if ($prop && property_exists($prop, $name)) {
+                    $prop->{$name}->showFeatureCont = 'True';
                 }
             }
         }
         //remove plugin layer
-        $pluginLayers = $qgs_xml->xpath('//maplayer[type="plugin"]');
-        if ($pluginLayers && count($pluginLayers) > 0) {
+        $pluginLayers = $qgs_xml->xpathQuery('//maplayer[type="plugin"]');
+        if ($pluginLayers) {
             foreach ($pluginLayers as $layer) {
                 $name = (string) $layer->layername;
-                if (property_exists($this->cfg->layers, $name)) {
-                    unset($this->cfg->layers->{$name});
+                $prop = $this->cfg->getEditableProp('layers');
+                if ($prop && property_exists($prop, $name)) {
+                    unset($prop->{$name});
                 }
             }
         }
-        //unset cache for editionLayers
-        if (property_exists($this->cfg, 'editionLayers')) {
-            foreach ($this->cfg->editionLayers as $key => $obj) {
-                if (property_exists($this->cfg->layers, $key)) {
-                    $this->cfg->layers->{$key}->cached = 'False';
-                    $this->cfg->layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($this->cfg->layers->{$key}, 'cacheExpiration')) {
-                        unset($this->cfg->layers->{$key}->cacheExpiration);
-                    }
-                }
-            }
-        }
-        //unset cache for loginFilteredLayers
-        if (property_exists($this->cfg, 'loginFilteredLayers')) {
-            foreach ($this->cfg->loginFilteredLayers as $key => $obj) {
-                if (property_exists($this->cfg->layers, $key)) {
-                    $this->cfg->layers->{$key}->cached = 'False';
-                    $this->cfg->layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($this->cfg->layers->{$key}, 'cacheExpiration')) {
-                        unset($this->cfg->layers->{$key}->cacheExpiration);
-                    }
-                }
-            }
-        }
-        //unset displayInLegend for geometryType none or unknown
-        foreach ($this->cfg->layers as $key => $obj) {
-            if (property_exists($this->cfg->layers->{$key}, 'geometryType') &&
-                 ($this->cfg->layers->{$key}->geometryType == 'none' ||
-                     $this->cfg->layers->{$key}->geometryType == 'unknown')
-            ) {
-                $this->cfg->layers->{$key}->displayInLegend = 'False';
-            }
-        }
+
+        $this->cfg->unsetPropAfterRead();
 
         $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
@@ -441,12 +422,15 @@ class lizmapProject extends qgisProject
 
     public function getQgisPath()
     {
-        return realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
+        if (!$this->file) {
+            $this->file = realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
+        }
+        return $this->file;
     }
 
     public function getRelativeQgisPath()
     {
-        $services = lizmap::getServices();
+        $services = $this->services; // A changer
 
         $mapParam = $this->getQgisPath();
         if (!$services->isRelativeWMSPath()) {
@@ -504,32 +488,28 @@ class lizmapProject extends qgisProject
             return null;
         }
 
-        // Get by name ie as written in QGIS Desktop legend
-        $layer = $this->findLayerByName($name);
-        if ($layer) {
-            return $layer;
+        $layer = null;
+        $methods = array(
+            // Get by name ie as written in QGIS Desktop legend
+            'Name',
+            // since 2.14 layer's name can be layer's shortName
+            'ShortName',
+            // Get layer by typename : qgis server replaces ' ' by '_' for layer names
+            'TypeName',
+            // Get by id
+            'LayerId',
+            // since 2.6 layer's name can be layer's title
+            'Title'
+        );
+        
+        foreach ($methods as $key) {
+            $method = 'findLayerBy'.$key;
+            $layer = $this->$method($name);
+            if ($layer) {
+                return $layer;
+            }
         }
-
-        // since 2.14 layer's name can be layer's shortName
-        $layer = $this->findLayerByShortName($name);
-        if ($layer) {
-            return $layer;
-        }
-
-        // Get layer by typename : qgis server replaces ' ' by '_' for layer names
-        $layer = $this->findLayerByTypeName($name);
-        if ($layer) {
-            return $layer;
-        }
-
-        // Get by id
-        $layer = $this->findLayerByLayerId($name);
-        if ($layer) {
-            return $layer;
-        }
-
-        // since 2.6 layer's name can be layer's title
-        return $this->findLayerByTitle($name);
+        return $layer;
     }
 
     public function findLayerByName($name)
@@ -632,16 +612,8 @@ class lizmapProject extends qgisProject
 
     public function hasLocateByLayer()
     {
-        if (property_exists($this->cfg, 'locateByLayer')) {
-            $count = 0;
-            foreach ($this->cfg->locateByLayer as $key => $obj) {
-                ++$count;
-            }
-            if ($count != 0) {
-                return true;
-            }
-
-            return false;
+        if (property_exists($this->cfg, 'locateByLayer') && is_array($this->cfg->locateByLayer) && count($this->cfg->locateByLayer)) {
+            return true;
         }
 
         return false;
@@ -649,16 +621,8 @@ class lizmapProject extends qgisProject
 
     public function hasFormFilterLayers()
     {
-        if (property_exists($this->cfg, 'formFilterLayers')) {
-            $count = 0;
-            foreach ($this->cfg->formFilterLayers as $key => $obj) {
-                ++$count;
-            }
-            if ($count != 0) {
-                return true;
-            }
-
-            return false;
+        if (property_exists($this->cfg, 'formFilterLayers') && is_array($this->cfg->formFilterLayers) && count($this->cfg->formFilterLayers)) {
+            return true;
         }
 
         return false;
@@ -666,7 +630,7 @@ class lizmapProject extends qgisProject
 
     public function getFormFilterLayersConfig()
     {
-        $config = Null;
+        $config = null;
         if (property_exists($this->cfg, 'formFilterLayers')) {
             $config = $this->cfg->formFilterLayers;
         }
@@ -675,16 +639,8 @@ class lizmapProject extends qgisProject
 
     public function hasTimemanagerLayers()
     {
-        if (property_exists($this->cfg, 'timemanagerLayers')) {
-            $count = 0;
-            foreach ($this->cfg->timemanagerLayers as $key => $obj) {
-                ++$count;
-            }
-            if ($count != 0) {
-                return true;
-            }
-
-            return false;
+        if (property_exists($this->cfg, 'timemanagerLayers') && is_array($this->cfg->timemanagerLayers) && count($this->cfg->timemanagerLayers)) {
+            return true;
         }
 
         return false;
@@ -713,16 +669,8 @@ class lizmapProject extends qgisProject
 
     public function hasTooltipLayers()
     {
-        if (property_exists($this->cfg, 'tooltipLayers')) {
-            $count = 0;
-            foreach ($this->cfg->tooltipLayers as $key => $obj) {
-                ++$count;
-            }
-            if ($count != 0) {
-                return true;
-            }
-
-            return false;
+        if (property_exists($this->cfg, 'tooltipLayers') && count($this->cfg->tooltipLayers)) {
+            return true;
         }
 
         return false;
@@ -773,11 +721,11 @@ class lizmapProject extends qgisProject
 
         // Create the virtual jdb profile
         $searchJdbName = 'jdb_'.$repository.'_'.$project;
-        jProfiles::createVirtualProfile('jdb', $searchJdbName, $jdbParams);
+        $this->jelix->createVirtualProfile('jdb', $searchJdbName, $jdbParams);
 
         // Check FTS db ( tables and geometry storage
         try {
-            $cnx = jDb::getConnection($searchJdbName);
+            $cnx = $this->jelix->getConnection($searchJdbName);
 
             // Get metadata
             $sql = "
@@ -786,7 +734,7 @@ class lizmapProject extends qgisProject
             WHERE geometry_storage != 'wkb'
             ORDER BY priority
             ";
-            $res = $cnx->query($sql);
+            $res = $this->jelix->useDbConnection($cnx, 'query', array($sql));
             $searches = array();
             foreach ($res as $item) {
                 $searches[$item->search_id] = array(
@@ -813,7 +761,7 @@ class lizmapProject extends qgisProject
     public function hasEditionLayers()
     {
         if (property_exists($this->cfg, 'editionLayers')) {
-            if (!jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey())) {
+            if (!$this->jelix->aclCheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
                 return false;
             }
 
@@ -826,8 +774,8 @@ class lizmapProject extends qgisProject
                     $editionGroups = $eLayer->acl;
                     $editionGroups = array_map('trim', explode(',', $editionGroups));
                     if (is_array($editionGroups) and count($editionGroups) > 0) {
-                        $userGroups = jAcl2DbUserGroup::getGroups();
-                        if (array_intersect($editionGroups, $userGroups) or jAcl2::check('lizmap.admin.repositories.delete')) {
+                        $userGroups = $this->jelix->aclDbUserGroups();
+                        if (array_intersect($editionGroups, $userGroups) or $this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
@@ -897,16 +845,8 @@ class lizmapProject extends qgisProject
      */
     public function hasLoginFilteredLayers()
     {
-        if (property_exists($this->cfg, 'loginFilteredLayers')) {
-            $count = 0;
-            foreach ($this->cfg->loginFilteredLayers as $key => $obj) {
-                ++$count;
-            }
-            if ($count != 0) {
-                return true;
-            }
-
-            return false;
+        if (property_exists($this->cfg, 'loginFilteredLayers') && is_array($this->cfg->hasLoginFilteredLayers) && count($this->cfg->loginFilteredLayers)) {
+            return true;
         }
 
         return false;
@@ -915,13 +855,13 @@ class lizmapProject extends qgisProject
     public function getLoginFilteredConfig($layername)
     {
         if (!$this->hasLoginFilteredLayers()) {
-            return Null;
+            return null;
         }
 
         $ln = $layername;
         // In case $layername is a WFS TypeName
         $layerByTypeName = $this->findLayerByTypeName($layername);
-        if($layerByTypeName){
+        if ($layerByTypeName) {
             $ln = $layerByTypeName->name;
         }
 
@@ -929,7 +869,7 @@ class lizmapProject extends qgisProject
             return null;
         }
 
-        return $this->cfg->loginFilteredLayers->{$ln};
+        return $pConfig->loginFilteredLayers->{$n};
     }
 
     public function getLoginFilters($layers)
@@ -945,13 +885,13 @@ class lizmapProject extends qgisProject
 
             // In case $layername is a WFS TypeName
             $layerByTypeName = $this->findLayerByTypeName($layername);
-            if($layerByTypeName){
+            if ($layerByTypeName) {
                 $lname = $layerByTypeName->name;
             }
 
             // Get config
             $loginFilteredConfig = $this->getLoginFilteredConfig($lname);
-            if ($loginFilteredConfig == Null) {
+            if ($loginFilteredConfig == null) {
                 continue;
             }
 
@@ -962,15 +902,15 @@ class lizmapProject extends qgisProject
             $filter = "\"${attribute}\" = 'all'";
 
             // A user is connected
-            if (jAuth::isConnected()) {
-                $user = jAuth::getUserSession();
+            if ($this->jelix->userIsConnected()) {
+                $user = $this->jelix->getUserSession();
                 $login = $user->login;
                 if (property_exists($loginFilteredConfig, 'filterPrivate') &&
-                    $this->optionToBoolean($loginFilteredConfig->filterPrivate)
+                    $this>optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
                     $filter = "\"${attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
-                    $userGroups = jAcl2DbUserGroup::getGroups();
+                    $userGroups = $this->jelix->aclDbUserGroups();
                     $flatGroups = implode("' , '", $userGroups);
                     $filter = "\"${attribute}\" IN ( '".$flatGroups."' , 'all' )";
                 }
@@ -985,7 +925,8 @@ class lizmapProject extends qgisProject
         return $filters;
     }
 
-    private function optionToBoolean($config_string) {
+    private function optionToBoolean($config_string)
+    {
         $ret = false;
         if (strtolower((string)$config_string) == 'true') {
             $ret = true;
@@ -1004,7 +945,7 @@ class lizmapProject extends qgisProject
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
-            'locale' => jApp::config()->locale
+            'locale' => $this->jelix->appConfig()->locale
         );
         foreach ($this->cfg->datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
@@ -1027,11 +968,32 @@ class lizmapProject extends qgisProject
                     'x_field' => $lc->x_field,
                 ),
             );
-            if (property_exists($lc, 'y_field')) {
-                $plotConf['plot']['y_field'] = $lc->y_field;
+
+            $properties = array(
+                'y_field',
+                'z_field',
+                'x_field',
+                'y2_field',
+                'color',
+                'color2',
+                'colorfield',
+                'colorfield2',
+                'aggregation',
+                'html_template',
+                'display_when_layer_visible',
+                'traces'
+            );
+            foreach ($properties as $prop) {
+                if (property_exists($lc, $prop)) {
+                    $plot_conf['plot'][$prop] = $lc->$prop;
+                }
             }
-            if (property_exists($lc, 'z_field')) {
-                $plotConf['plot']['z_field'] = $lc->z_field;
+
+            if (property_exists($lc, 'popup_display_child_plot')) {
+                $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
+            }
+            if (property_exists($lc, 'only_show_child')) {
+                $plotConf['only_show_child'] = $lc->only_show_child;
             }
 
             $abstract = $layer->abstract;
@@ -1040,66 +1002,23 @@ class lizmapProject extends qgisProject
             }
             $plotConf['abstract'] = $abstract;
 
-            if (property_exists($lc, 'x_field')) {
-                $plotConf['plot']['x_field'] = $lc->x_field;
-            }
-            if (property_exists($lc, 'y_field')) {
-                $plotConf['plot']['y_field'] = $lc->y_field;
-            }
-            if (property_exists($lc, 'popup_display_child_plot')) {
-                $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
-            }
-            if (property_exists($lc, 'only_show_child')) {
-                $plotConf['only_show_child'] = $lc->only_show_child;
-            }
-            if (property_exists($lc, 'y2_field')) {
-                $plotConf['plot']['y2_field'] = $lc->y2_field;
-            }
-            if (!empty($lc->color)) {
-                $plotConf['plot']['color'] = $lc->color;
-            }
-            if (property_exists($lc, 'color2') and !empty($lc->color2) ) {
-                $plotConf['plot']['color2'] = $lc->color2;
-            }
-            if (property_exists($lc, 'aggregation')) {
-                $plotConf['plot']['aggregation'] = $lc->aggregation;
-            }
-            if (property_exists($lc, 'colorfield')) {
-                $plotConf['plot']['colorfield'] = $lc->colorfield;
-            }
-            if (property_exists($lc, 'colorfield2')) {
-                $plotConf['plot']['colorfield2'] = $lc->colorfield2;
-            }
-
-            $display_legend = True;
+            $display_legend = true;
             if (property_exists($lc, 'display_legend')) {
                 $display_legend = $this->optionToBoolean($lc->display_legend);
             }
             $plotConf['plot']['display_legend'] = $display_legend;
 
-            $stacked = False;
+            $stacked = false;
             if (property_exists($lc, 'stacked')) {
                 $stacked = $this->optionToBoolean($lc->stacked);
             }
             $plotConf['plot']['stacked'] = $stacked;
 
-            $horizontal = False;
+            $horizontal = false;
             if (property_exists($lc, 'horizontal')) {
                 $horizontal = $this->optionToBoolean($lc->horizontal);
             }
             $plotConf['plot']['horizontal'] = $horizontal;
-
-            if (property_exists($lc, 'html_template') and !empty($lc->html_template) ) {
-                $plotConf['plot']['html_template'] = $lc->html_template;
-            }
-
-            if (property_exists($lc, 'display_when_layer_visible') and !empty($lc->display_when_layer_visible) ) {
-                $plotConf['plot']['display_when_layer_visible'] = $lc->display_when_layer_visible;
-            }
-
-            if (property_exists($lc, 'traces')) {
-                $plotConf['plot']['traces'] = $lc->traces;
-            }
 
             // Add more layout config, written like:
             // layout_config=barmode:stack,bargap:0.5
@@ -1129,7 +1048,6 @@ class lizmapProject extends qgisProject
             }
 
             $config['layers'][$order] = $plotConf;
-
         }
         if (empty($config['layers'])) {
             return false;
@@ -1159,29 +1077,20 @@ class lizmapProject extends qgisProject
     public function needsGoogle()
     {
         $configOptions = $this->cfg->options;
+        $googleProps = array(
+            'googleStreets',
+            'googleSatellite',
+            'googleHybrid',
+            'googleTerrain'
+        );
 
-        return
-            (
-                property_exists($configOptions, 'googleStreets')
-                && $configOptions->googleStreets == 'True'
-            ) ||
-            (
-                property_exists($configOptions, 'googleSatellite')
-                && $configOptions->googleSatellite == 'True'
-            ) ||
-            (
-                property_exists($configOptions, 'googleHybrid')
-                && $configOptions->googleHybrid == 'True'
-            ) ||
-            (
-                property_exists($configOptions, 'googleTerrain')
-                && $configOptions->googleTerrain == 'True'
-            ) ||
-            (
-                property_exists($configOptions, 'externalSearch')
-                && $configOptions->externalSearch == 'google'
-            )
-        ;
+        foreach ($googleProps as $google) {
+            if (property_exists($configOptions, $google) && $configOptions->$google) {
+                return true;
+            }
+        }
+
+        return (property_exists($configOptions, 'externalSearch') && $configOptions->externalSearch == 'google');
     }
 
     /**
@@ -1233,7 +1142,7 @@ class lizmapProject extends qgisProject
                 }
             }
 
-            $services = lizmap::getServices();
+            $services = $this->services;
             // get composer qg project version < 3
             $composers = $qgsLoad->xpath('//Composer');
             if ($composers && count($composers) > 0) {
@@ -1407,8 +1316,9 @@ class lizmapProject extends qgisProject
                         }
                         // Modifying overviewMap to id instead of uuid
                         foreach ($printTemplate['maps'] as $ptMap) {
-                            if (!array_key_exists('overviewMap', $ptMap))
+                            if (!array_key_exists('overviewMap', $ptMap)) {
                                 continue;
+                            }
                             if (!array_key_exists($ptMap['overviewMap'], $mapUuidId)) {
                                 unset($ptMap['overviewMap']);
                                 continue;
@@ -1545,7 +1455,6 @@ class lizmapProject extends qgisProject
 
             // Add data into formFilterLayers from configuration
             $formFilterLayers = $cfg->formFilterLayers;
-
         }
 
         return $formFilterLayers;
@@ -1637,7 +1546,7 @@ class lizmapProject extends qgisProject
             if ($customOrderZero->attributes()->enabled == 1) {
                 $items = $customOrderZero->xpath('//item');
                 $lo = 0;
-                foreach  ($items as $layerI) {
+                foreach ($items as $layerI) {
                     // Get layer name from config instead of XML for possible embedded layers
                     $name = $this->getLayerNameByIdFromConfig($layerI);
                     if ($name) {
@@ -1648,7 +1557,7 @@ class lizmapProject extends qgisProject
             } else {
                 return $layersOrder;
             }
-        } else if ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
+        } elseif ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
             $customOrder = $xml->xpath('//layer-tree-canvas/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
@@ -1704,12 +1613,11 @@ class lizmapProject extends qgisProject
     {
 
         //FIXME: it's better to use clone keyword, isn't it?
-        $configRead = json_encode($this->cfg);
-        $configJson = json_decode($configRead);
+        $configJson = clone $this->cfg;
 
         // Add an option to display buttons to remove the cache for cached layer
         // Only if appropriate right is found
-        if (jAcl2::check('lizmap.admin.repositories.delete')) {
+        if ($this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
             $configJson->options->removeCache = 'True';
         }
 
@@ -1737,7 +1645,7 @@ class lizmapProject extends qgisProject
 
         // Remove editionLayers from config if no right to access this tool
         if (property_exists($configJson, 'editionLayers')) {
-            if (jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey())) {
+            if ($this->jelix->aclCheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
                 $configJson->editionLayers = clone $this->editionLayers;
                 // Check right to edit this layer (if property "acl" is in config)
                 foreach ($configJson->editionLayers as $key => $eLayer) {
@@ -1748,8 +1656,8 @@ class lizmapProject extends qgisProject
                         $editionGroups = $eLayer->acl;
                         $editionGroups = array_map('trim', explode(',', $editionGroups));
                         if (is_array($editionGroups) and count($editionGroups) > 0) {
-                            $userGroups = jAcl2DbUserGroup::getGroups();
-                            if (array_intersect($editionGroups, $userGroups) or jAcl2::check('lizmap.admin.repositories.delete')) {
+                            $userGroups = $this->jelix->aclDbUserGroups();
+                            if (array_intersect($editionGroups, $userGroups) or $this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
                                 // User group(s) correspond to the groups given for this edition layer
                                 // or the user is admin
                                 unset($configJson->editionLayers->{$key}->acl);
@@ -1766,12 +1674,12 @@ class lizmapProject extends qgisProject
         }
 
         // Add export layer right
-        if (jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey())) {
+        if ($this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey()))) {
             $configJson->options->exportLayers = 'True';
         }
 
         // Add WMS max width ad height
-        $services = lizmap::getServices();
+        $services = $this->services;
         if (array_key_exists('wmsMaxWidth', $this->data)) {
             $configJson->options->wmsMaxWidth = $this->data['wmsMaxWidth'];
         } else {
@@ -1832,7 +1740,7 @@ class lizmapProject extends qgisProject
             );
         }
         // Events to get additional searches
-        $searchServices = jEvent::notify('searchServiceItem', array('repository' => $this->repository->getKey(), 'project' => $this->getKey()))->getResponse();
+        $searchServices = $this->jelix->eventNotify('searchServiceItem', array('repository' => $this->repository->getKey(), 'project' => $this->getKey()))->getResponse();
         foreach ($searchServices as $searchService) {
             if (is_array($searchService)) {
                 if (array_key_exists('type', $searchService) && array_key_exists('url', $searchService)) {
@@ -1860,9 +1768,9 @@ class lizmapProject extends qgisProject
         $configJson->qgisServerPlugins = $qplugins;
 
         // Check layers group visibility
-        $userGroups = Array('');
-        if (jAuth::isConnected()) {
-            $userGroups = jAcl2DbUserGroup::getGroups();
+        $userGroups = array('');
+        if ($this->jelix->userIsConnected()) {
+            $userGroups = $this->jelix->aclDbUserGroups();
         }
         $layersToRemove = array();
         foreach ($configJson->layers as $obj) {
@@ -1876,10 +1784,10 @@ class lizmapProject extends qgisProject
             }
             // get group visibility as trimed array
             $group_visibility = array_map('trim', explode(',', $obj->group_visibility));
-            $layerToKeep = False;
+            $layerToKeep = false;
             foreach ($userGroups as $group) {
-                if (in_array($group, $group_visibility)){
-                    $layerToKeep = True;
+                if (in_array($group, $group_visibility)) {
+                    $layerToKeep = true;
                     break;
                 }
             }
@@ -1888,19 +1796,19 @@ class lizmapProject extends qgisProject
             }
             unset($obj->group_visibility);
         }
-        foreach($layersToRemove as $key => $obj) {
+        foreach ($layersToRemove as $key => $obj) {
             // locateByLayer
             if (property_exists($configJson->locateByLayer, $key)) {
                 unset($configJson->locateByLayer->{$key});
             }
             // locateByLayer vectorjoins
-            foreach($configJson->locateByLayer as $o) {
+            foreach ($configJson->locateByLayer as $o) {
                 if (!property_exists($o, 'vectorjoins')) {
                     continue;
                 }
                 $vectorjoinsToKeep = array();
-                foreach($o->vectorjoins as $i=>$v) {
-                    if($v->joinLayerId != $obj->id) {
+                foreach ($o->vectorjoins as $i=>$v) {
+                    if ($v->joinLayerId != $obj->id) {
                         $vectorjoinsToKeep[] = $o;
                     }
                 }
@@ -1921,7 +1829,7 @@ class lizmapProject extends qgisProject
             // datavizLayers
             if (property_exists($configJson, 'datavizLayers')) {
                 $dvlLayers = $configJson->datavizLayers['layers'];
-                foreach($dvlLayers as $o=>$c) {
+                foreach ($dvlLayers as $o=>$c) {
                     if ($c['layer_id'] == $obj->id) {
                         unset($configJson->datavizLayers['layers'][$o]);
                     }
@@ -1939,7 +1847,7 @@ class lizmapProject extends qgisProject
             }
             // multi-atlas
             // formFilterLayers
-            foreach($configJson->formFilterLayers as $o=>$c) {
+            foreach ($configJson->formFilterLayers as $o=>$c) {
                 if ($c['layerId'] = $obj->id) {
                     unset($configJson->formFilterLayers[$o]);
                 }
@@ -1948,13 +1856,13 @@ class lizmapProject extends qgisProject
             if (array_key_exists($key, $configJson->relations)) {
                 unset($configJson->relations->{$key});
             }
-            foreach($configJson->relations as $k => $layerRelations) {
+            foreach ($configJson->relations as $k => $layerRelations) {
                 if ($k == 'pivot') {
                     continue;
                 }
                 $relationsToKeep = array();
-                foreach($layerRelations as $r) {
-                    if($r['referencingLayer'] != $obj->id) {
+                foreach ($layerRelations as $r) {
+                    if ($r['referencingLayer'] != $obj->id) {
                         $relationsToKeep[] = $r;
                     }
                 }
@@ -1966,7 +1874,7 @@ class lizmapProject extends qgisProject
             }
             // printTemplates
             $printTemplatesToKeep = array();
-            foreach($configJson->printTemplates as $printTemplate) {
+            foreach ($configJson->printTemplates as $printTemplate) {
                 if (array_key_exists('atlas', $printTemplate) &&
                     array_key_exists('coverageLayer', $printTemplate['atlas']) &&
                     $printTemplate['atlas']['coverageLayer'] != $obj->id) {
@@ -2019,19 +1927,19 @@ class lizmapProject extends qgisProject
     public function getDefaultDockable()
     {
         $dockable = array();
-        $confUrlEngine = &jApp::config()->urlengine;
+        $confUrlEngine = &$this->jelix->appConfig()->urlengine;
         $bp = $confUrlEngine['basePath'];
         $jwp = $confUrlEngine['jelixWWWPath'];
 
         // Get lizmap services
-        $services = lizmap::getServices();
+        $services = $this->services; // A changer
 
         if ($services->projectSwitcher) {
             $projectsTpl = new jTpl();
-            $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
+            $ProjectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
             $dockable[] = new lizmapMapDockItem(
                 'projects',
-                jLocale::get('view~default.repository.list.title'),
+                $this->jelix->getLocale('view~default.repository.list.title'),
                 $projectsTpl->fetch('view~map_projects'),
                 0
             );
@@ -2039,11 +1947,11 @@ class lizmapProject extends qgisProject
 
         $switcherTpl = new jTpl();
         $switcherTpl->assign(array(
-            'layerExport' => jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()),
+            'layerExport' => $this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())),
         ));
         $dockable[] = new lizmapMapDockItem(
             'switcher',
-            jLocale::get('view~map.switchermenu.title'),
+            $this->jelix->getLocale('view~map.switchermenu.title'),
             $switcherTpl->fetch('view~map_switcher'),
             1
         );
@@ -2054,9 +1962,10 @@ class lizmapProject extends qgisProject
         // Get the WMS information
         $wmsInfo = $this->getWMSInformation();
         // WMS GetCapabilities Url
-        $wmsGetCapabilitiesUrl = jAcl2::check(
+        $wmsGetCapabilitiesUrl = $this->jelix->aclCheckResult(
+            array(
             'lizmap.tools.displayGetCapabilitiesLinks',
-            $this->repository->getKey()
+            $this->repository->getKey())
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {
@@ -2072,7 +1981,7 @@ class lizmapProject extends qgisProject
         ), $wmsInfo));
         $dockable[] = new lizmapMapDockItem(
             'metadata',
-            jLocale::get('view~map.metadata.link.label'),
+            $this->jelix->getLocale('view~map.metadata.link.label'),
             $metadataTpl->fetch('view~map_metadata'),
             2
         );
@@ -2081,7 +1990,7 @@ class lizmapProject extends qgisProject
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'edition',
-                jLocale::get('view~edition.navbar.title'),
+                $this->jelix->getLocale('view~edition.navbar.title'),
                 $tpl->fetch('view~map_edition'),
                 3,
                 $jwp.'design/jform.css',
@@ -2102,15 +2011,15 @@ class lizmapProject extends qgisProject
     {
         $dockable = array();
         $configOptions = $this->getOptions();
-        $bp = jApp::config()->urlengine['basePath'];
+        $bp = $this->jelix->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers()) {
             $tpl = new jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
-            $layerExport = jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ? "layer-export" : "";
+            $layerExport = $this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())) ? "layer-export" : "";
             $dock = new lizmapMapDockItem(
                 'selectiontool',
-                jLocale::get('view~map.selectiontool.navbar.title'),
+                $this->jelix->getLocale('view~map.selectiontool.navbar.title'),
                 '<lizmap-selection-tool '.$layerExport.'></lizmap-selection-tool>',
                 1,
                 '',
@@ -2124,7 +2033,7 @@ class lizmapProject extends qgisProject
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'locate',
-                jLocale::get('view~map.locatemenu.title'),
+                $this->jelix->getLocale('view~map.locatemenu.title'),
                 $tpl->fetch('view~map_locate'),
                 2
             );
@@ -2136,7 +2045,7 @@ class lizmapProject extends qgisProject
             $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
             $dockable[] = new lizmapMapDockItem(
                 'geolocation',
-                jLocale::get('view~map.geolocate.navbar.title'),
+                $this->jelix->getLocale('view~map.geolocate.navbar.title'),
                 $tpl->fetch('view~map_geolocation'),
                 3
             );
@@ -2147,7 +2056,7 @@ class lizmapProject extends qgisProject
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'print',
-                jLocale::get('view~map.print.navbar.title'),
+                $this->jelix->getLocale('view~map.print.navbar.title'),
                 $tpl->fetch('view~map_print'),
                 4
             );
@@ -2158,7 +2067,7 @@ class lizmapProject extends qgisProject
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'measure',
-                jLocale::get('view~map.measure.navbar.title'),
+                $this->jelix->getLocale('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
                 5
             );
@@ -2168,7 +2077,7 @@ class lizmapProject extends qgisProject
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'tooltip-layer',
-                jLocale::get('view~map.tooltip.navbar.title'),
+                $this->jelix->getLocale('view~map.tooltip.navbar.title'),
                 $tpl->fetch('view~map_tooltip'),
                 6,
                 '',
@@ -2180,7 +2089,7 @@ class lizmapProject extends qgisProject
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'timemanager',
-                jLocale::get('view~map.timemanager.navbar.title'),
+                $this->jelix->getLocale('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
                 7,
                 '',
@@ -2193,10 +2102,10 @@ class lizmapProject extends qgisProject
             // Get geobookmark if user is connected
             $gbCount = false;
             $gbList = null;
-            if (jAuth::isConnected()) {
-                $juser = jAuth::getUserSession();
+            if ($this->jelix->userIsConnected()) {
+                $juser = $this->jelix->getUserSession();
                 $usr_login = $juser->login;
-                $daogb = jDao::get('lizmap~geobookmark');
+                $daogb = getDao('lizmap~geobookmark');
                 $conditions = jDao::createConditions();
                 $conditions->addCondition('login', '=', $usr_login);
                 $conditions->addCondition(
@@ -2222,7 +2131,7 @@ class lizmapProject extends qgisProject
             ));
             $dockable[] = new lizmapMapDockItem(
                 'permaLink',
-                jLocale::get('view~map.permalink.navbar.title'),
+                $this->jelix->getLocale('view~map.permalink.navbar.title'),
                 $tpl->fetch('view~map_permalink'),
                 8
             );
@@ -2233,7 +2142,7 @@ class lizmapProject extends qgisProject
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'draw',
-                jLocale::get('view~map.draw.navbar.title'),
+                $this->jelix->getLocale('view~map.draw.navbar.title'),
                 $tpl->fetch('view~map_draw'),
                 9
             );
@@ -2250,14 +2159,14 @@ class lizmapProject extends qgisProject
     public function getDefaultBottomDockable()
     {
         $dockable = array();
-        $bp = jApp::config()->urlengine['basePath'];
+        $bp = $this->jelix->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers(true)) {
-            $form = jForms::create('view~attribute_layers_option');
+            $form = $this->jelix->createForm('view~attribute_layers_option');
             $assign = array('form' => $form);
             $dockable[] = new lizmapMapDockItem(
                 'attributeLayers',
-                jLocale::get('view~map.attributeLayers.navbar.title'),
+                $this->jelix->getLocale('view~map.attributeLayers.navbar.title'),
                 array('view~map_attributeLayers', $assign),
                 1,
                 '',
@@ -2277,7 +2186,7 @@ class lizmapProject extends qgisProject
     {
 
         // Check right on repository
-        if (!jAcl2::check('lizmap.repositories.view', $this->repository->getKey())) {
+        if (!$this->jelix->aclCheckResult(array('lizmap.repositories.view', $this->repository->getKey()))) {
             return false;
         }
 
@@ -2287,26 +2196,24 @@ class lizmapProject extends qgisProject
         }
 
         // Check user is authenticated
-        if (!jAuth::isConnected()) {
+        if (!$this->jelix->userIsConnected()) {
             return false;
         }
 
         // Check user is admin -> ok, give permission
-        if (jAcl2::check('lizmap.admin.repositories.delete')) {
+        if ($this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
             return true;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
         $aclGroups = $this->cfg->options->acl;
-        $userGroups = jAcl2DbUserGroup::getGroups();
+        $userGroups = $this->jelix->aclDbUserGroups();
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
         }
 
         return false;
     }
-
-    private $spatialiteExt;
 
     public function getSpatialiteExtension()
     {
