@@ -29,11 +29,11 @@ class lizmap
      */
     protected static $repositoryInstances = array();
 
-    // log items
-    protected static $logItems = array();
-
     // lizmapServices instance
     protected static $lizmapServicesInstance = null;
+
+    // lizmapLogConfigInstance
+    protected static $lizmapLogConfigInstance = null;
 
     /**
      * this is a static class, so private constructor.
@@ -345,9 +345,7 @@ class lizmap
             return null;
         }
 
-        $proj = $rep->getProject($matches['proj']);
-
-        return $proj;
+        return $rep->getProject($matches['proj']);
     }
 
     /**
@@ -357,28 +355,12 @@ class lizmap
      */
     public static function getLogConfig()
     {
-        return jClasses::getService('lizmap~lizmapLogConfig');
-    }
-
-    /**
-     * Get a list of log items names.
-     *
-     * @return string[] list of names
-     */
-    public static function getLogItemList()
-    {
-        // read the lizmap log configuration file
-        $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
-        $logItemList = array();
-        foreach ($readConfigPath as $section => $data) {
-            $match = preg_match('#(^item:)#', $section, $matches);
-            if (isset($matches[0])) {
-                $logItemList[] = str_replace($matches[0], '', $section);
-            }
+        if (!self::$lizmapLogConfigInstance) {
+            $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
+            self::$lizmapLogConfigInstance = new lizmapLogConfig($readConfigPath);
         }
-        self::$logItems = $logItemList;
 
-        return self::$logItems;
+        return self::$lizmapLogConfigInstance;
     }
 
     /**
@@ -397,20 +379,31 @@ class lizmap
      * @param string $key Key of the log item to get
      *
      * @return lizmapLogItem
+     *
+     * @deprecated
      */
     public static function getLogItem($key)
     {
-        if (!in_array($key, self::$logItems)) {
-            if (!in_array($key, self::getLogItemList())) {
-                return null;
-            }
-        }
-
-        return new lizmapLogItem($key);
+        return self::getLogConfig()->getLogItem($key);
     }
 
-    /* Returns time spent in milliseconds from beginning of request
+    /**
+     * Get a list of log items names.
+     *
+     * @return string[] list of names
+     *
+     * @deprecated
+     */
+    public static function getLogItemList()
+    {
+        return self::getLogConfig()->getLogItemList();
+    }
+
+    /**
+     * Returns time spent in milliseconds from beginning of request.
+     *
      * @param string $label Name of the action to lo
+     * @param mixed  $start
      */
     public static function logMetric($label, $start = 'index')
     {

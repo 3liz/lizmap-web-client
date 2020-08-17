@@ -54,20 +54,26 @@ class lizmapLogItem
         'email',
     );
 
-    public function __construct($key)
+    /**
+     * Construct the object, you should use the lizmapLogConfig::getLogItem() method
+     * which will call this constructor.
+     *
+     * @param string $key            the name of the item
+     * @param array  $readConfigPath the array containing the fields of lizmapLogConfig.ini.php
+     */
+    public function __construct($key, $readConfigPath)
     {
-        // read the lizmap log configuration file
-        $readConfigPath = parse_ini_file(jApp::varPath().$this->config, true);
-
         $section = 'item:'.$key;
 
-        // Check if this item exists in the ini file
-        if (array_key_exists($section, $readConfigPath)) {
-            // Set each property
-            foreach (self::$properties as $property) {
-                $this->data[$property] = $readConfigPath[$section][$property];
+        // Set each property
+        foreach (self::$properties as $property) {
+            if (isset($readConfigPath[$property])) {
+                $this->data[$property] = $readConfigPath[$property];
+            } else {
+                return null;
             }
         }
+
         $this->key = $key;
     }
 
