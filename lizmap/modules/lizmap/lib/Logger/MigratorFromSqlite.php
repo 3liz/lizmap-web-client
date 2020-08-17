@@ -10,12 +10,10 @@
 
 namespace Lizmap\Logger;
 
-
-class MigratorFromSqlite {
-
-    function __construct()
+class MigratorFromSqlite
+{
+    public function __construct()
     {
-
     }
 
     const MIGRATE_RES_OK = 1;
@@ -26,17 +24,17 @@ class MigratorFromSqlite {
         $daoNew = \jDao::get($daoSelector, $newProfile);
         $daoSqlite = \jDao::create($daoSelector, $oldProfile);
         $properties = array_keys($daoSqlite->getProperties());
-        foreach($daoSqlite->findAll() as $rec) {
+        foreach ($daoSqlite->findAll() as $rec) {
             $daoRec = \jDao::createRecord($daoSelector, $newProfile);
-            foreach($properties as $prop) {
-                $daoRec->$prop = $rec->$prop;
+            foreach ($properties as $prop) {
+                $daoRec->{$prop} = $rec->{$prop};
             }
             $daoNew->insert($daoRec);
         }
     }
 
-    function migrateLog($profileName = 'lizlog') {
-
+    public function migrateLog($profileName = 'lizlog')
+    {
         $profile = \jProfiles::get('jdb', $profileName);
         if (!$profile) {
             throw new \UnexpectedValueException('No lizlog profile defined into profiles.ini.php', 1);
@@ -73,19 +71,19 @@ class MigratorFromSqlite {
         return self::MIGRATE_RES_OK;
     }
 
-
-    protected function createLogTables($profile) {
-
+    protected function createLogTables($profile)
+    {
         $db = \jDb::getConnection($profile);
         $tools = $db->tools();
         $file = \jApp::getModulePath('lizmap').'/install/sql/lizlog.'.$db->dbms.'.sql';
         $db->beginTransaction();
+
         try {
             $tools->execSQLScript($file);
             $db->commit();
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             $db->rollback();
+
             throw $e;
         }
     }

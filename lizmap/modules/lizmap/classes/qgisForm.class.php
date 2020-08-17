@@ -47,7 +47,6 @@ class qgisForm implements qgisFormControlsInterface
     /** @var jFormsPlugin[] */
     protected $formPlugins = array();
 
-
     /**
      * qgisForm constructor.
      *
@@ -406,7 +405,7 @@ class qgisForm implements qgisFormControlsInterface
                 or $this->formControls[$ref]->fieldEditType === 'CheckBox')
                 and $this->formControls[$ref]->fieldDataType === 'boolean') {
                 $ctrl->setDataFromDao($value, 'boolean');
-            }else{
+            } else {
                 $form->setData($ref, $value);
             }
         }
@@ -451,7 +450,7 @@ class qgisForm implements qgisFormControlsInterface
                     $ctrl->itemsNames['delete'] = jLocale::get('view~edition.upload.choice.delete').' '.$filename;
                 }
                 $form->setData($ref.'_hidden', $value);
-            }else{
+            } else {
                 $form->setData($ref, $value);
             }
         }
@@ -547,6 +546,7 @@ class qgisForm implements qgisFormControlsInterface
             // Control is an upload control
             if ($jCtrl instanceof jFormsControlUpload) {
                 $values[$ref] = $this->processUploadedFile($form, $ref, $cnx);
+
                 continue;
             }
 

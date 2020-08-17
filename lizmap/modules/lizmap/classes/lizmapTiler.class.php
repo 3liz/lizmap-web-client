@@ -77,12 +77,12 @@ class lizmapTiler
             );
             $wmsResult = $wmsRequest->process();
             // Http code error
-            if( ($wmsResult->code / 100) >= 4 ) {
+            if (($wmsResult->code / 100) >= 4) {
                 return null;
             }
             $wms = $wmsResult->data;
             // empty data or service exception, WMS not available
-            if(empty($wms) or preg_match('/ServiceExceptionReport/', $wms) ) {
+            if (empty($wms) or preg_match('/ServiceExceptionReport/', $wms)) {
                 return null;
             }
 

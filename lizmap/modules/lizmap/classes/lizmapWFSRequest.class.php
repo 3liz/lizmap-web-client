@@ -127,7 +127,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
             $filter = $this->params['filter'];
         }
 
-        if($provider == 'postgres'){
+        if ($provider == 'postgres') {
             $dtparams = $qgisLayer->getDatasourceParameters();
             // Add key if not present ( WFS need to export id = typename.id for each feature)
             // To be sure to get the primary keys even if there is an issue in QGIS Server
@@ -213,8 +213,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // Verifying that every wfs fields are db fields
         // if not return getfeatureQgis
         foreach ($wfsFields as $field) {
-            if (!array_key_exists($field, $dbFields))
+            if (!array_key_exists($field, $dbFields)) {
                 return $this->getfeatureQgis();
+            }
         }
 
         // Build SQL
@@ -246,7 +247,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // deduplicate columns to avoid SQL errors
         $sfields = array_values(array_unique($sfields));
 
-        $this->selectFields = array_map(function($item) use($cnx) {
+        $this->selectFields = array_map(function ($item) use ($cnx) {
             return $cnx->encloseName($item);
         }, $sfields);
 
@@ -334,7 +335,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         if (!empty($featureid)) {
             $fids = explode(',', $featureid);
             $fidsSql = array();
-            foreach( $fids as $fid ) {
+            foreach ($fids as $fid) {
                 $exp = explode('.', $fid);
                 if (count($exp) == 2 and $exp[0] == $typename) {
                     $fidSql = '(';
@@ -351,12 +352,12 @@ class lizmapWFSRequest extends lizmapOGCRequest
                         $v = ' AND ';
                         ++$i;
                     }
-                    $fidSql.= ')';
+                    $fidSql .= ')';
                     $fidsSql[] = $fidSql;
                 }
             }
             //jLog::log(implode(' OR ', $fidsSql), 'error');
-            $sql.= ' AND '.implode(' OR ', $fidsSql);
+            $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
         // ORDER BY
@@ -472,8 +473,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
     }
 
     /**
-     * @param string $sql
+     * @param string        $sql
      * @param jDbConnection $cnx
+     *
      * @return string
      */
     private function setGeojsonSql($sql, $cnx)
@@ -500,8 +502,8 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // it needs to be an integer, and only one columnn, and must be unique
         // this means some Lizmap features won't work with multiple keys or string ids
         // for example when using a filter clause in this query, row_number() will be false
-        $sql .= " Concat(
-            ".$cnx->quote($this->params['typename']).",
+        $sql .= ' Concat(
+            '.$cnx->quote($this->params['typename']).",
             '.',
             ";
         $key = $this->datasource->key;
