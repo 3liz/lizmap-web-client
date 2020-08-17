@@ -116,6 +116,11 @@ class lizmapRepository
         return self::$properties;
     }
 
+    public function getRepoProperties()
+    {
+        return self::$properties;
+    }
+
     public static function getPropertiesOptions()
     {
         return self::$propertiesOptions;
