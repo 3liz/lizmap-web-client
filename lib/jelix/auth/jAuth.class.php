@@ -126,6 +126,16 @@ class jAuth {
 
             $config[$config['driver']]['password_hash_method'] = $password_hash_method;
             $config[$config['driver']]['password_hash_options'] = $password_hash_options;
+
+            if (isset($config['url_return_external_allowed_domains']) && $config['url_return_external_allowed_domains']) {
+                if (is_string($config['url_return_external_allowed_domains'])) {
+                    $config['url_return_external_allowed_domains'] = array($config['url_return_external_allowed_domains']);
+                }
+            }
+            else {
+                $config['url_return_external_allowed_domains'] = array();
+            }
+
             self::$config = $config;
             self::$driver = null;
         }
@@ -546,5 +556,15 @@ class jAuth {
             setcookie($config['persistant_cookie_name'].'[auth]', $encrypted, $persistence, $config['persistant_cookie_path'], "", false, true);
         }
         return $persistence;
+    }
+
+
+    public static function checkReturnUrl($url)
+    {
+        if ($url == '') {
+            return false;
+        }
+        $config = self::loadConfig();
+        return jUrl::isUrlFromApp($url, $config['url_return_external_allowed_domains']);
     }
 }
