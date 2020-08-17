@@ -69,17 +69,16 @@ class lizmapOGCRequest
     public function process()
     {
         $req = $this->param('request');
-        if($req && method_exists($this, $req)) {
+        if ($req && method_exists($this, $req)) {
             return $this->{$req}();
         }
 
-        if(!$req) {
+        if (!$req) {
             jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
-        }
-        else
-        {
+        } else {
             jMessage::add('Request '.$req.' is not supported', 'OperationNotSupported');
         }
+
         return $this->serviceException(501);
     }
 
@@ -97,7 +96,7 @@ class lizmapOGCRequest
         return $url.$bparams;
     }
 
-    protected function serviceException($code=400)
+    protected function serviceException($code = 400)
     {
         $messages = jMessage::getAll();
         $mime = 'text/plain';

@@ -1112,8 +1112,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
 
             // Activate form tabs based on QGIS drag&drop form layout mode
-            $('#edition-form-container form > ul.nav-tabs li:first a').click().blur();
-            $('#'+$('#edition-form-container form').attr('id')+'_liz_future_action_label').removeClass('control-label');
+            form.children('ul.nav-tabs').find('li:first a').click().blur();
+            $('#'+form.attr('id')+'_liz_future_action_label').removeClass('control-label');
 
             // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );
