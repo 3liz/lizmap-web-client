@@ -9,6 +9,9 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+namespace Lizmap\Project;
+
 class qgisProject
 {
     /**
@@ -76,14 +79,18 @@ class qgisProject
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
+    protected $jelix = null;
+
     /**
      * constructor.
      *
      * @param string $file : the QGIS project path
      */
-    public function __construct($file)
+    public function __construct($file, $jelix)
     {
-
+        if (!$this->jelix) {
+            $this->jelix = $jelix;
+        }
         // Verifying if the files exist
         if (!file_exists($file)) {
             throw new Exception('The QGIS project '.$file.' does not exist!');
@@ -92,9 +99,9 @@ class qgisProject
         // For the cache key, we use the full path of the project file
         // to avoid collision in the cache engine
         $data = false;
-        $fileKey = jCache::normalizeKey($file);
+        $cache = new projectCache($file, $this->jelix);
         try {
-            $data = jCache::get($fileKey, 'qgisprojects');
+            $data = $cache->getProjectData();
         } catch (Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
@@ -113,7 +120,7 @@ class qgisProject
             }
 
             try {
-                jCache::set($fileKey, $data, null, 'qgisprojects');
+                $cache->storeProjectData($data);
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
             }
@@ -128,14 +135,8 @@ class qgisProject
 
     public function clearCache()
     {
-        $fileKey = jCache::normalizeKey($this->path);
-        try {
-            jCache::delete($fileKey, 'qgisprojects');
-        } catch (Exception $e) {
-            // if qgisprojects profile does not exist, or if there is an
-            // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
-        }
+        $cache = new projectCache($file, $this->jelix);
+        $cache->clearCache();
     }
 
     public function getPath()
@@ -282,6 +283,19 @@ class qgisProject
         }
 
         return $layers;
+    }
+
+    /**
+     * Execute an xpath Query on the XML content and return the result.
+     * @param string $query The query to execute
+     */
+    public function xpathQuery($query)
+    {
+        $ret = $this->xml->xpath($query);
+        if (!$ret || empty($ret)) {
+            $ret = null;
+        }
+        return $ret;
     }
 
     /**
