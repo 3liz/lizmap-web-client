@@ -371,7 +371,6 @@ class qgisVectorLayer extends qgisMapLayer
             $prop = $dataFields[$field];
             if ($prop->hasDefault && $prop->default != '' &&
                 !in_array($prop->default, $values)) {
-
                 $provider = $this->getProvider();
                 $cnx = null;
                 if ($provider == 'postgres') {

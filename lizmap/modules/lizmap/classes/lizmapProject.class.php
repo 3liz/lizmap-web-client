@@ -140,6 +140,7 @@ class lizmapProject extends qgisProject
         $data = false;
 
         $fileKey = jCache::normalizeKey($file);
+
         try {
             $data = jCache::get($fileKey, 'qgisprojects');
         } catch (Exception $e) {
@@ -182,6 +183,7 @@ class lizmapProject extends qgisProject
     {
         $file = $this->repository->getPath().$this->key.'.qgs';
         $fileKey = jCache::normalizeKey($file);
+
         try {
             jCache::delete($fileKey, 'qgisprojects');
         } catch (Exception $e) {
@@ -305,7 +307,7 @@ class lizmapProject extends qgisProject
 
         $layerWithOpacities = $qgs_xml->xpath('//maplayer/layerOpacity[.!=1]/parent::*');
         if ($layerWithOpacities && count($layerWithOpacities) > 0) {
-            foreach( $layerWithOpacities as $layerWithOpacitiy ) {
+            foreach ($layerWithOpacities as $layerWithOpacitiy) {
                 $name = (string) $layerWithOpacitiy->layername;
                 if (property_exists($this->cfg->layers, $name)) {
                     $opacity = (float) $layerWithOpacitiy->layerOpacity;

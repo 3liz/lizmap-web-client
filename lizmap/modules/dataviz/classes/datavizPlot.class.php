@@ -220,7 +220,7 @@ class datavizPlot
             ),
         );
 
-        if($this->type == 'pie'){
+        if ($this->type == 'pie') {
             $layout['legend']['orientation'] = 'h';
             $layout['legend']['y'] = '-5';
         }
