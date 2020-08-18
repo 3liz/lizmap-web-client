@@ -609,13 +609,14 @@ class Project
 
     public function hasEditionLayers()
     {
-        if (property_exists($this->cfg, 'editionLayers')) {
+        $editionLayers = $this->cfg->getEditableProperty('editionLayers');
+        if ($editionLayers) {
             if (!$this->jelix->aclCheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
                 return false;
             }
 
             $count = 0;
-            foreach ($this->cfg->editionLayers as $key => $eLayer) {
+            foreach ($editionLayers as $key => $eLayer) {
                 // Check if user groups intersects groups allowed by project editor
                 // If user is admin, no need to check for given groups
                 if (property_exists($eLayer, 'acl') and $eLayer->acl) {
@@ -628,10 +629,10 @@ class Project
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
-                            unset($this->cfg->editionLayers->{$key}->acl);
+                            unset($editionLayers->{$key}->acl);
                         } else {
                             // No match found, we deactivate the edition layer
-                            unset($this->cfg->editionLayers->{$key});
+                            unset($editionLayers->{$key});
                         }
                     }
                 } else {
@@ -648,9 +649,9 @@ class Project
         return false;
     }
 
-    public function getEditionLayers()
+    public function &getEditionLayers()
     {
-        return $this->cfg->editionLayers;
+        return $this->cfg->getEditableProperty('editionLayers');
     }
 
     public function findEditionLayerByName($name)
@@ -659,8 +660,9 @@ class Project
             return null;
         }
 
-        if (property_exists($this->cfg->editionLayers, $name)) {
-            return $this->cfg->editionLayers->{$name};
+        $editionLayers = $this->cfg->getProperty('editionLayers');
+        if ($editionLayers && property_exists($editionLayers, $name)) {
+            return $editionLayers->{$name};
         }
 
         return null;
@@ -677,7 +679,8 @@ class Project
             return null;
         }
 
-        foreach ($this->cfg->editionLayers as $layer) {
+        $editionLayers = $this->cfg->getProperty('editionLayers');
+        foreach ($editionLayers as $layer) {
             if (!property_exists($layer, 'layerId')) {
                 continue;
             }
@@ -694,7 +697,8 @@ class Project
      */
     public function hasLoginFilteredLayers()
     {
-        if (property_exists($this->cfg, 'loginFilteredLayers') && is_array($this->cfg->hasLoginFilteredLayers) && count($this->cfg->loginFilteredLayers)) {
+        $login = $this->cfg->getProperty('loginFilteredLayers');
+        if ($login && is_array($login) && count($login)) {
             return true;
         }
 
@@ -714,11 +718,12 @@ class Project
             $ln = $layerByTypeName->name;
         }
 
-        if (!property_exists($this->cfg->loginFilteredLayers, $ln)) {
+        $login = $this->cfg->getProperty('loginFilteredLayers');
+        if (!$login || !property_exists($login, $ln)) {
             return null;
         }
 
-        return $pConfig->loginFilteredLayers->{$n};
+        return $login->{$ln};
     }
 
     public function getLoginFilters($layers)
@@ -755,7 +760,7 @@ class Project
                 $user = $this->jelix->getUserSession();
                 $login = $user->login;
                 if (property_exists($loginFilteredConfig, 'filterPrivate') &&
-                    $this > optionToBoolean($loginFilteredConfig->filterPrivate)
+                    $this->optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
                     $filter = "\"{$attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
