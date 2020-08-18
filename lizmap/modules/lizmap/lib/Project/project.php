@@ -942,6 +942,54 @@ class Project
         return $this->xml->readLayersOrder($xml, $this->getLayers());
     }
 
+     /**
+     * @deprecated
+     */
+    public function findLayerByAnyName($name)
+    {
+        return $this->cfg->findLayerByAnyName($name);
+    }
+
+     /**
+     * @deprecated
+     */
+    public function findLayerByName($name)
+    {
+        return $this->cfg->findLayerByName($name);
+    }
+
+     /**
+     * @deprecated
+     */
+    public function findLayerByShortName($shortName)
+    {
+        return $this->cfg->findLayerByShortName($shortName);
+    }
+
+     /**
+     * @deprecated
+     */
+    public function findLayerByTitle($title)
+    {
+        return $this->cfg->findLayerByTitle($title);
+    }
+
+     /**
+     * @deprecated
+     */
+    public function findLayerByLayerId($layerId)
+    {
+        return $this->cfg->findLayerByLayerId($layerId);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function findLayerByTypeName($typeName)
+    {
+        return $this->cfg->findLayerByTypeName($typeName);
+    }
+
     /**
      * @return false|string the JSON object corresponding to the configuration
      */
