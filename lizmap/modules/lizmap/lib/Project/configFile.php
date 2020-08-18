@@ -251,4 +251,34 @@ class configFile
 
         return null;
     }
+
+    public function getEditionLayerByName($name)
+    {
+        $editionLayers = $this->data->editionLayers;
+        if ($editionLayers && property_exists($editionLayers, $name)) {
+            return $editionLayers->{$name};
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $layerId
+     *
+     * @return null|array
+     */
+    public function getEditionLayerByLayerId($layerId)
+    {
+        $editionLayers = $this->data->editionLayers;
+        foreach ($editionLayers as $layer) {
+            if (!property_exists($layer, 'layerId')) {
+                continue;
+            }
+            if ($layer->layerId == $layerId) {
+                return $layer;
+            }
+        }
+
+        return null;
+    }
 }

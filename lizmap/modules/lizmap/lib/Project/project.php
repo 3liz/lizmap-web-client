@@ -659,13 +659,7 @@ class Project
         if (!$this->hasEditionLayers()) {
             return null;
         }
-
-        $editionLayers = $this->cfg->getProperty('editionLayers');
-        if ($editionLayers && property_exists($editionLayers, $name)) {
-            return $editionLayers->{$name};
-        }
-
-        return null;
+        return $this->cfg->getEditionLayerByName($name);
     }
 
     /**
@@ -678,18 +672,7 @@ class Project
         if (!$this->hasEditionLayers()) {
             return null;
         }
-
-        $editionLayers = $this->cfg->getProperty('editionLayers');
-        foreach ($editionLayers as $layer) {
-            if (!property_exists($layer, 'layerId')) {
-                continue;
-            }
-            if ($layer->layerId == $layerId) {
-                return $layer;
-            }
-        }
-
-        return null;
+        return $this->cfg->getEditionLayerByLayerId($layerId);
     }
 
     /**
