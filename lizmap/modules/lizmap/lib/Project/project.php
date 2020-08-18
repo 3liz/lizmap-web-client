@@ -307,84 +307,11 @@ class Project
             )
         );
 
-        $shortNames = $qgs_xml->xpathQuery('//maplayer/shortname');
-        if ($shortNames) {
-            foreach ($shortNames as $sname) {
-                $sname = (string) $sname;
-                $xmlLayer = $qgs_xml->xpathQuery("//maplayer[shortname='{$sname}']");
-                if (!$xmlLayer) {
-                    continue;
-                }
-                $xmlLayer = $xmlLayer[0];
-                $name = (string) $xmlLayer->layername;
-                $layer = $this->cfg->getEditableProperty('layers');
-                if ($layer !== null && property_exists($layer, $name)) {
-                    $layer->{$name}->shortname = $sname;
-                }
-            }
-        }
-
-        $layerWithOpacities = $qgs_xml->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
-        if ($layerWithOpacities) {
-            foreach ($layerWithOpacities as $layerWithOpacitiy) {
-                $name = (string) $layerWithOpacitiy->layername;
-                $prop = $this->cfg->getEditableProperty('layers');
-                if ($prop && property_exists($prop, $name)) {
-                    $opacity = (float) $layerWithOpacitiy->layerOpacity;
-                    $prop->{$name}->opacity = $opacity;
-                }
-            }
-        }
-
-        $groupsWithShortName = $qgs_xml->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName) {
-            foreach ($groupsWithShortName as $group) {
-                $name = (string) $group['name'];
-                $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if ($shortNameProperty && count($shortNameProperty) > 0) {
-                    $shortNameProperty = $shortNameProperty[0];
-                    $sname = (string) $shortNameProperty['value'];
-                    $prop = $this->cfg->getEditableProperty('layers');
-                    if ($prop && property_exists($prop, $name)) {
-                        $prop->{$name}->shortname = $sname;
-                    }
-                }
-            }
-        }
-        $groupsMutuallyExclusive = $qgs_xml->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
-        if ($groupsMutuallyExclusive) {
-            foreach ($groupsMutuallyExclusive as $group) {
-                $name = (string) $group['name'];
-                $prop = $this->cfg->getEditableProperty('layers');
-                if ($prop && property_exists($prop, $name)) {
-                    $prop->{$name}->smutuallyExclusive = 'True';
-                }
-            }
-        }
-
-        $layersWithShowFeatureCount = $qgs_xml->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
-        if ($layersWithShowFeatureCount) {
-            foreach ($layersWithShowFeatureCount as $layer) {
-                $name = (string) $layer['name'];
-                $prop = $this->cfg->getEditableProperty('layers');
-                if ($prop && property_exists($prop, $name)) {
-                    $prop->{$name}->showFeatureCont = 'True';
-                }
-            }
-        }
-        //remove plugin layer
-        $pluginLayers = $qgs_xml->xpathQuery('//maplayer[type="plugin"]');
-        if ($pluginLayers) {
-            foreach ($pluginLayers as $layer) {
-                $name = (string) $layer->layername;
-                $prop = $this->cfg->getEditableProperty('layers');
-                if ($prop && property_exists($prop, $name)) {
-                    unset($prop->{$name});
-                }
-            }
-        }
-
-        $this->cfg->unsetPropAfterRead();
+        $this->cfg->setShortNames($qgs_xml);
+        $this->cfg->setLayerOpacity($qgs_xml);
+        $this->cfg->setLayerGroupData($qgs_xml);
+        $this->cfg->setLayerShowFeatureCount($qgs_xml);
+        $this->cfg->unsetPropAfterRead($qgs_xml);
 
         $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
@@ -528,16 +455,14 @@ class Project
     {
         $attributeLayers = $this->cfg->getProperty('attributeLayers');
         if ($attributeLayers) {
-            $count = 0;
             $hasDisplayedLayer = !$onlyDisplayedLayers;
             foreach ($attributeLayers as $key => $obj) {
-                ++$count;
                 if ($onlyDisplayedLayers && !property_exists($obj, 'hideLayer') ||
                     strtolower($obj->hideLayer) != 'true') {
                     $hasDisplayedLayer = true;
                 }
             }
-            if ($count != 0 && $hasDisplayedLayer) {
+            if (count($attributeLayers) && $hasDisplayedLayer) {
                 return true;
             }
         }
@@ -659,6 +584,7 @@ class Project
         if (!$this->hasEditionLayers()) {
             return null;
         }
+
         return $this->cfg->getEditionLayerByName($name);
     }
 
@@ -672,6 +598,7 @@ class Project
         if (!$this->hasEditionLayers()) {
             return null;
         }
+
         return $this->cfg->getEditionLayerByLayerId($layerId);
     }
 
@@ -821,6 +748,7 @@ class Project
                 'html_template',
                 'display_when_layer_visible',
                 'traces',
+                'layout',
             );
             foreach ($properties as $prop) {
                 if (property_exists($lc, $prop)) {
@@ -841,23 +769,18 @@ class Project
             }
             $plotConf['abstract'] = $abstract;
 
-            $display_legend = true;
-            if (property_exists($lc, 'display_legend')) {
-                $display_legend = $this->optionToBoolean($lc->display_legend);
+            $props = array(
+                'display_legend' => true,
+                'stacked' => false,
+                'horizontal' => false,
+            );
+            foreach ($props as $prop => $default) {
+                $value = $default;
+                if (property_exists($lc, $prop)) {
+                    $value = $this->optionToBoolean($lc->{$prop});
+                }
+                $plotConf['plot'][$prop] = $value;
             }
-            $plotConf['plot']['display_legend'] = $display_legend;
-
-            $stacked = false;
-            if (property_exists($lc, 'stacked')) {
-                $stacked = $this->optionToBoolean($lc->stacked);
-            }
-            $plotConf['plot']['stacked'] = $stacked;
-
-            $horizontal = false;
-            if (property_exists($lc, 'horizontal')) {
-                $horizontal = $this->optionToBoolean($lc->horizontal);
-            }
-            $plotConf['plot']['horizontal'] = $horizontal;
 
             // Add more layout config, written like:
             // layout_config=barmode:stack,bargap:0.5
@@ -868,12 +791,7 @@ class Project
                     $b = array_map('trim', explode(':', $i));
                     if (is_array($b) and count($b) == 2) {
                         $c = $b[1];
-                        if ($c == 'false') {
-                            $c = (bool) false;
-                        }
-                        if ($c == 'true') {
-                            $c = (bool) true;
-                        }
+                        $c = $this->optionToBoolean($c);
                         $layout_config[$b[0]] = $c;
                     }
                 }
@@ -881,11 +799,6 @@ class Project
                     $plotConf['plot']['layout_config'] = $layout_config;
                 }
             }
-
-            if (property_exists($lc, 'layout')) {
-                $plotConf['plot']['layout'] = $lc->layout;
-            }
-
             $config['layers'][$order] = $plotConf;
         }
         if (empty($config['layers'])) {
@@ -940,8 +853,7 @@ class Project
     {
         $configOptions = $this->getOptions();
         $gkey = '';
-        if (property_exists($configOptions, 'googleKey')
-            && $configOptions->googleKey != '') {
+        if (property_exists($configOptions, 'googleKey')) {
             $gkey = $configOptions->googleKey;
         }
 
@@ -1368,7 +1280,7 @@ class Project
         $wmsGetCapabilitiesUrl = $this->jelix->aclCheckResult(
             array(
                 'lizmap.tools.displayGetCapabilitiesLinks',
-                $this->repository->getKey())
+                $this->repository->getKey(), )
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {
