@@ -850,7 +850,7 @@ var lizMap = function() {
       if ( layerConfig.groupAsLayer == 'True' )
         layerConfig.type = 'layer';
 
-      var wmsStyles = $.map(layer.styles, function( s, i ){
+      var wmsStyles = $.map(layer.styles, function(s){
           return s.name;
       });
       if ( wmsStyles.length != 0 ) {
@@ -1141,7 +1141,6 @@ var lizMap = function() {
       html += '<td></td>';
     }
 
-    var removeCache = '';
     if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options)){
       html += '<td><button class="btn removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
     }
@@ -1265,8 +1264,6 @@ var lizMap = function() {
     // This avoid the request of each singlettile layer 2 times on startup
     updateContentSize();
 
-    var res = extent.getHeight()/$('#map').height();
-
     var scales = [];
     var resolutions = [];
     if ('resolutions' in config.options)
@@ -1298,7 +1295,7 @@ var lizMap = function() {
         ]
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
         ,eventListeners:{
-         zoomend: function(evt){
+         zoomend: function(){
   // private treeTable
   var options = {
     childPrefix : "child-of-"
@@ -1306,18 +1303,6 @@ var lizMap = function() {
 
   function childrenOf(node) {
     return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  };
-
-  function descendantsOf(node) {
-    var descendants = [];
-    var children = [];
-    if (node && node[0])
-      children = childrenOf(node);
-    for (var i=0, len=children.length; i<len; i++) {
-      descendants.push(children[i]);
-      descendants = descendants.concat(descendantsOf([children[i]]));
-    }
-    return descendants;
   };
 
   function parentOf(node) {
@@ -1408,7 +1393,7 @@ var lizMap = function() {
   /**
    * Get features for locate by layer tool
    */
-  function updateLocateFeatureList(aName, aJoinField, aJoinValue) {
+  function updateLocateFeatureList(aName) {
     var locate = config.locateByLayer[aName];
     // clone features reference
     var features = {};
@@ -1574,7 +1559,7 @@ var lizMap = function() {
       var features = data.features;
       if( locate.crs != 'EPSG:4326' && features.length != 0) {
           // load projection to be sure to have the definition
-          loadProjDefinition( locate.crs, function( aProj ) {
+          loadProjDefinition( locate.crs, function() {
               // in QGIS server > 2.14 GeoJSON is in EPSG:4326
               if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
                 locate.crs = 'EPSG:4326';
@@ -2233,11 +2218,6 @@ var lizMap = function() {
         })
       }));
 
-        // Lizmap URL
-        var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
-
         var featureTypes = getVectorLayerFeatureTypes();
         if (featureTypes.length == 0 ){
           config.locateByLayer = {};
@@ -2267,7 +2247,7 @@ var lizMap = function() {
 
             var locate = config.locateByLayer[lname];
             locate['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
-            loadProjDefinition( locate.crs, function( aProj ) {
+            loadProjDefinition( locate.crs, function() {
                 new OpenLayers.Projection(locate.crs);
             });
             var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
@@ -2634,8 +2614,6 @@ var lizMap = function() {
       if ( $('#permalink').length == 0 )
         return;
 
-    var configOptions = config.options;
-
     var pLink = new OpenLayers.Control.Permalink(
       'permalink',
       null,
@@ -2742,7 +2720,7 @@ var lizMap = function() {
       if ( !('request_params' in lConfig)
         || lConfig['request_params'] == null )
           continue;
-      var requestParams = lConfig['request_params'];
+
       if ( ('filter' in lConfig['request_params'])
         && lConfig['request_params']['filter'] != null
         && lConfig['request_params']['filter'] != "" ) {
@@ -3081,14 +3059,12 @@ var lizMap = function() {
           var popupId = getLayerId[0] + '_' + getLayerId[1];
           var layerId = getLayerId[0];
           var fid = getLayerId[1];
-          var layerName=getLayerId[0].split(/[0-9]/)[0];
 
           var getLayerConfig = lizMap.getLayerConfigById( layerId );
 
           // verifiying  related children objects
           if ( !getLayerConfig )
               return true;
-          var layerConfig = getLayerConfig[1];
           var featureType = getLayerConfig[0];
 
           // We do not want to deactivate the display of filtered children dataviz
@@ -3225,7 +3201,6 @@ var lizMap = function() {
       $(selector).each(function(){
         var self = $(this);
         var val = self.val();
-        var eHtml = '';
         var fid = val.split('.').pop();
         var layerId = val.replace( '.' + fid, '' );
 
@@ -3243,7 +3218,6 @@ var lizMap = function() {
 
         // Display related children objects
         var relations = config.relations[layerId];
-        var featureId = featureType + '.' + fid;
         var popupMaxFeatures = 10;
         if ( 'popupMaxFeatures' in layerConfig && !isNaN(parseInt(layerConfig.popupMaxFeatures)) )
             popupMaxFeatures = parseInt(layerConfig.popupMaxFeatures);
@@ -3537,7 +3511,6 @@ var lizMap = function() {
         $('#'+popupContainerId+' div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
             var self = $(this);
             var val = self.val();
-            var eHtml = '';
             var fid = val.split('.').pop();
             var layerId = val.replace( '.' + fid, '' );
             var aConfig = lizMap.getLayerConfigById( layerId );
@@ -3837,7 +3810,7 @@ var lizMap = function() {
           mAddMessage(lizDict['print.activate'],'info',true).addClass('print');
           layer.setVisibility(true);
         },
-        "deactivate": function(evt) {
+        "deactivate": function() {
           layer.setVisibility(false);
           $('#message .print').remove();
           this.layout = null;
@@ -4001,7 +3974,6 @@ var lizMap = function() {
           $.each( pTableVectorLayers, function( i, layerId ){
               var aConfig = getLayerConfigById( layerId );
               if( aConfig ) {
-                  var layerName = aConfig[0];
                   var layerConfig = aConfig[1];
                   if( ( layerConfig.geometryType == "none" || layerConfig.geometryType == "unknown" || layerConfig.geometryType == "" ) ) {
                       if ( 'shortname' in layerConfig && layerConfig.shortname != '' )
@@ -4231,7 +4203,7 @@ var lizMap = function() {
             fillColor: "transparent"
         }
     });
-    tooltipControl.addInfoPopup = function(feature, evt) {
+    tooltipControl.addInfoPopup = function(feature) {
         var lname = $('#tooltip-layer-list').val();//feature.layer.name.split("@")[1];
         var lconfig = lizMap.config.layers[lname];
         if( !(lname in lizMap.config.layers) )
@@ -4819,12 +4791,6 @@ var lizMap = function() {
       // Set export format
       getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
 
-      // Build WFS url
-      var exportUrl = OpenLayers.Util.urlAppend(
-          getFeatureUrlData['url'],
-          OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
-      );
-
       // Download file
       downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
 
@@ -4883,7 +4849,6 @@ var lizMap = function() {
         typeName = configLayer.shortname;
       else if ( 'typename' in configLayer && configLayer.typename != '' )
           typeName = configLayer.typename;
-      var layerName = cleanName(aName);
 
       var wfsOptions = {
           'SERVICE':'WFS'
@@ -5022,7 +4987,7 @@ var lizMap = function() {
           // verifying the feature CRS
           if( !aConfig.featureCrs && data.features.length != 0) {
               // load projection to be sure to have the definition
-              lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
+              lizMap.loadProjDefinition( aConfig.crs, function() {
                   // in QGIS server > 2.14 GeoJSON is in EPSG:4326
                   if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
                       aConfig['featureCrs'] = 'EPSG:4326';
@@ -5089,9 +5054,6 @@ var lizMap = function() {
 
   function zoomToFeature( featureType, fid, zoomAction ){
       zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
-
-      var layerConfig = config.layers[featureType];
-      var featureId = featureType + '.' + fid;
 
       var proj = new OpenLayers.Projection(config.layers[featureType].crs);
       if( config.layers[featureType].featureCrs )
@@ -5693,11 +5655,11 @@ var lizMap = function() {
     },
 
 
-    launchEdition: function( aLayerId, aFid) {
+    launchEdition: function() {
         return false;
     },
 
-    deleteEditionFeature: function( aLayerId, aFid, aMessage, aCallback ){
+    deleteEditionFeature: function(){
         return false;
     },
 
@@ -6222,9 +6184,7 @@ var lizMap = function() {
  * but after this file
  */
 lizMap.events.on({
-    'treecreated':function(evt){
-    }
-    ,'mapcreated':function(evt){
+    'mapcreated':function(evt){
       // Add empty baselayer to the map
       if ( ('emptyBaselayer' in evt.config.options)
          && evt.config.options.emptyBaselayer == 'True') {
@@ -6757,8 +6717,6 @@ lizMap.events.on({
           evt.map.allOverlays = false;
        }
       } catch(e) {
-         //problems with google
-         var myError = e;
        }
      }
 
