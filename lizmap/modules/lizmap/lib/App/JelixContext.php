@@ -30,7 +30,7 @@ class JelixContext implements AppContextInterface
      */
     public function aclCheck($role, $resource = null)
     {
-        return \jAcl2::check($role);
+        return \jAcl2::check($role, $resource);
     }
 
     /**
