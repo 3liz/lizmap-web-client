@@ -303,43 +303,6 @@ class qgisProject
     }
 
     /**
-     * @FIXME: remove this method. Be sure it is not used in other projects.
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     *
-     * @return SimpleXMLElement[]
-     *
-     * @deprecated
-     */
-    public function getXmlLayers()
-    {
-        return $this->getXml()->xpath('//maplayer');
-    }
-
-    /**
-     * @FIXME: remove this method. Be sure it is not used in other projects.
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     *
-     * @deprecated
-     *
-     * @param mixed $layerId
-     *
-     * @return SimpleXMLElement[]
-     */
-    public function getXmlLayer($layerId)
-    {
-        $layer = $this->getLayerDefinition($layerId);
-        if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
-            $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']));
-
-            return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
-        }
-
-        return $this->getXml()->xpath("//maplayer[id='{$layerId}']");
-    }
-
-    /**
      * @param SimpleXMLElement $xml
      * @param string           $layerId
      *
@@ -348,38 +311,6 @@ class qgisProject
     protected function getXmlLayer2($xml, $layerId)
     {
         return $xml->xpath("//maplayer[id='{$layerId}']");
-    }
-
-    /**
-     * @FIXME: remove this method. Be sure it is not used in other projects
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     *
-     * @deprecated
-     *
-     * @param mixed $key
-     *
-     * @return SimpleXMLElement[]
-     */
-    public function getXmlLayerByKeyword($key)
-    {
-        return $this->getXml()->xpath("//maplayer/keywordList[value='{$key}']/parent::*");
-    }
-
-    /**
-     * @FIXME: remove this method. Be sure it is not used in other projects.
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     *
-     * @deprecated
-     *
-     * @param mixed $relationId
-     *
-     * @return SimpleXMLElement[]
-     */
-    public function getXmlRelation($relationId)
-    {
-        return $this->getXml()->xpath("//relation[@id='{$relationId}']");
     }
 
     /**
@@ -815,32 +746,6 @@ class qgisProject
         }
 
         return $layersOrder;
-    }
-
-    /**
-     * temporary function to read xml for some methods that relies on
-     * xml data that are not yet stored in the cache.
-     *
-     * @return SimpleXMLElement
-     *
-     * @deprecated
-     */
-    protected function getXml()
-    {
-        if ($this->xml) {
-            return $this->xml;
-        }
-        $qgs_path = $this->path;
-        if (!file_exists($qgs_path)) {
-            throw new Exception('The QGIS project '.$qgs_path.' does not exist!');
-        }
-        $xml = simplexml_load_file($qgs_path);
-        if ($xml === false) {
-            throw new Exception('The QGIS project '.$qgs_path.' has invalid content!');
-        }
-        $this->xml = $xml;
-
-        return $xml;
     }
 
     /**

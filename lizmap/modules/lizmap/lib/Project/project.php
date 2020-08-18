@@ -493,7 +493,7 @@ class Project
 
     public function hasAtlasEnabled()
     {
-        $options = $this->cfg->getProperty('options');
+        $options = $this->getOptions();
         $atlas = $this->cfg->getProperty('atlas');
         if (($options->atlasEnabled and $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
             or
@@ -794,7 +794,8 @@ class Project
      */
     public function getDatavizLayersConfig()
     {
-        if (!property_exists($this->cfg, 'datavizLayers')) {
+        $datavizLayers = $this->cfg->getProperty('datavizLayers');
+        if (!$datavizLayers) {
             return false;
         }
         $config = array(
@@ -802,7 +803,7 @@ class Project
             'dataviz' => array(),
             'locale' => $this->jelix->appConfig()->locale,
         );
-        foreach ($this->cfg->datavizLayers as $order => $lc) {
+        foreach ($datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
                 continue;
             }
@@ -912,15 +913,16 @@ class Project
             'location' => 'dock',
             'theme' => 'dark',
         );
-        if (property_exists($this->cfg->options, 'datavizLocation')
-            and in_array($this->cfg->options->datavizLocation, array('dock', 'bottomdock', 'right-dock'))
+        $options = $this->getOptions();
+        if ($options && property_exists($options, 'datavizLocation')
+            && in_array($options->datavizLocation, array('dock', 'bottomdock', 'right-dock'))
         ) {
-            $config['dataviz']['location'] = $this->cfg->options->datavizLocation;
+            $config['dataviz']['location'] = $options->datavizLocation;
         }
-        if (property_exists($this->cfg->options, 'theme')
-            and in_array($this->cfg->options->theme, array('dark', 'light'))
+        if (property_exists($options, 'theme')
+            and in_array($options->theme, array('dark', 'light'))
         ) {
-            $config['dataviz']['theme'] = $this->cfg->options->theme;
+            $config['dataviz']['theme'] = $options->theme;
         }
 
         return $config;
@@ -931,7 +933,7 @@ class Project
      */
     public function needsGoogle()
     {
-        $configOptions = $this->cfg->options;
+        $configOptions = $this->getOptions();
         $googleProps = array(
             'googleStreets',
             'googleSatellite',
@@ -953,7 +955,7 @@ class Project
      */
     public function getGoogleKey()
     {
-        $configOptions = $this->cfg->options;
+        $configOptions = $this->getOptions();
         $gkey = '';
         if (property_exists($configOptions, 'googleKey')
             && $configOptions->googleKey != '') {
@@ -1050,7 +1052,7 @@ class Project
     {
 
         //FIXME: it's better to use clone keyword, isn't it?
-        $configJson = clone $this->cfg;
+        $configJson = $this->cfg->getData();
 
         // Add an option to display buttons to remove the cache for cached layer
         // Only if appropriate right is found
@@ -1132,13 +1134,13 @@ class Project
         $configJson->options->qgisServerVersion = $services->qgisServerVersion;
 
         // Update config with layer relations
-        $relations = $this->getRelations();
+        $relations = $this->xml->getRelations();
         if ($relations) {
             $configJson->relations = $relations;
         }
 
         // Update config with project themes
-        $themes = $this->getThemes();
+        $themes = $this->xml->getThemes();
         if ($themes) {
             $configJson->themes = $themes;
         }
@@ -1334,28 +1336,7 @@ class Project
      */
     public function getFullCfg()
     {
-        return $this->cfg;
-    }
-
-    /**
-     * @FIXME: remove this method. Be sure it is not used in other projects
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     *
-     * @deprecated
-     *
-     * @param mixed $title
-     *
-     * @return null|SimpleXMLElement
-     */
-    public function getComposer($title)
-    {
-        $xmlComposer = $this->getXml()->xpath("//Composer[@title='{$title}']");
-        if ($xmlComposer) {
-            return $xmlComposer[0];
-        }
-
-        return null;
+        return $this->cfg->getData();
     }
 
     /**
@@ -1366,7 +1347,7 @@ class Project
     public function getDefaultDockable()
     {
         $dockable = array();
-        $confUrlEngine = &$this->jelix->appConfig()->urlengine;
+        $confUrlEngine = $this->jelix->appConfig()->urlengine;
         $bp = $confUrlEngine['basePath'];
         $jwp = $confUrlEngine['jelixWWWPath'];
 
@@ -1399,20 +1380,20 @@ class Project
 
         $metadataTpl = new jTpl();
         // Get the WMS information
-        $wmsInfo = $this->getWMSInformation();
+        $wmsInfo = $this->xml->getWMSInformation();
         // WMS GetCapabilities Url
         $wmsGetCapabilitiesUrl = $this->jelix->aclCheckResult(
             array(
                 'lizmap.tools.displayGetCapabilitiesLinks',
-                $this->repository->getKey(), )
+                $this->repository->getKey())
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {
-            $wmsGetCapabilitiesUrl = $this->getData('wmsGetCapabilitiesUrl');
-            $wmtsGetCapabilitiesUrl = $this->getData('wmtsGetCapabilitiesUrl');
+            $wmsGetCapabilitiesUrl = $this->xml->getData('wmsGetCapabilitiesUrl');
+            $wmtsGetCapabilitiesUrl = $this->xml->getData('wmtsGetCapabilitiesUrl');
         }
         $metadataTpl->assign(array_merge(array(
-            'repositoryLabel' => $this->getData('label'),
+            'repositoryLabel' => $this->xml->getData('label'),
             'repository' => $this->repository->getKey(),
             'project' => $this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
@@ -1623,6 +1604,7 @@ class Project
      */
     public function checkAcl()
     {
+        $options = $this->getOptions();
 
         // Check right on repository
         if (!$this->jelix->aclCheckResult(array('lizmap.repositories.view', $this->repository->getKey()))) {
@@ -1630,7 +1612,7 @@ class Project
         }
 
         // Check acl option is configured in project config
-        if (!property_exists($this->cfg->options, 'acl') || !is_array($this->cfg->options->acl) || empty($this->cfg->options->acl)) {
+        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
             return true;
         }
 
@@ -1645,7 +1627,7 @@ class Project
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $this->cfg->options->acl;
+        $aclGroups = $options->acl;
         $userGroups = $this->jelix->aclDbUserGroups();
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
@@ -1656,7 +1638,7 @@ class Project
 
     public function getSpatialiteExtension()
     {
-        if ($this->spatialiteExt !== null) {
+        if ($this->spatialiteExt !== null && $this->spatialiteExt !== '') {
             return $this->spatialiteExt;
         }
 
