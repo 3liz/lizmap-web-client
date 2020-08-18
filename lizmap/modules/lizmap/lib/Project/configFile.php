@@ -15,8 +15,8 @@ class configFile
     }
 
     /**
-     * Return the config file as an array
-     * 
+     * Return the config file as an array.
+     *
      * @return array
      */
     public function getData()
@@ -25,8 +25,8 @@ class configFile
     }
 
     /**
-     * Return the value of a given property
-     * 
+     * Return the value of a given property.
+     *
      * @param string $propName The property to get
      */
     public function getProperty($propName)
@@ -39,8 +39,8 @@ class configFile
     }
 
     /**
-     * Return a reference to a property that can be edited
-     * 
+     * Return a reference to a property that can be edited.
+     *
      * @param string $propName The property to get
      */
     public function &getEditableProperty($propName)
@@ -53,10 +53,115 @@ class configFile
     }
 
     /**
-     * Set/Unset some properties after reading the config file
+     * Set layers' shortname with XML data.
+     *
+     * @param qgisProject $qgs_xml
      */
-    public function unsetPropAfterRead()
+    public function setShortNames($qgs_xml)
     {
+        $shortNames = $qgs_xml->xpathQuery('//maplayer/shortname');
+        if ($shortNames) {
+            foreach ($shortNames as $sname) {
+                $sname = (string) $sname;
+                $xmlLayer = $qgs_xml->xpathQuery("//maplayer[shortname='{$sname}']");
+                if (!$xmlLayer) {
+                    continue;
+                }
+                $xmlLayer = $xmlLayer[0];
+                $name = (string) $xmlLayer->layername;
+                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
+                    $this->data->layers->{$name}->shortname = $sname;
+                }
+            }
+        }
+    }
+
+    /**
+     * Set layers' opacity with XML data.
+     *
+     * @param qgisProject $qgs_xml
+     */
+    public function setLayerOpacity($qgs_xml)
+    {
+        $layerWithOpacities = $qgs_xml->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
+        if ($layerWithOpacities) {
+            foreach ($layerWithOpacities as $layerWithOpacitiy) {
+                $name = (string) $layerWithOpacitiy->layername;
+                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
+                    $opacity = (float) $layerWithOpacitiy->layerOpacity;
+                    $this->data->layers->{$name}->opacity = $opacity;
+                }
+            }
+        }
+    }
+
+    /**
+     * Set layers' group infos.
+     *
+     * @param qgisProject $qgs_xml
+     */
+    public function setLayerGroupData()
+    {
+        $groupsWithShortName = $qgs_xml->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+        if ($groupsWithShortName) {
+            foreach ($groupsWithShortName as $group) {
+                $name = (string) $group['name'];
+                $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
+                if ($shortNameProperty && count($shortNameProperty) > 0) {
+                    $shortNameProperty = $shortNameProperty[0];
+                    $sname = (string) $shortNameProperty['value'];
+                    if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
+                        $this->data->layers->{$name}->shortname = $sname;
+                    }
+                }
+            }
+        }
+        $groupsMutuallyExclusive = $qgs_xml->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
+        if ($groupsMutuallyExclusive) {
+            foreach ($groupsMutuallyExclusive as $group) {
+                $name = (string) $group['name'];
+                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
+                    $this->data->layers->{$name}->smutuallyExclusive = 'True';
+                }
+            }
+        }
+    }
+
+    /**
+     * Set layers' last infos.
+     *
+     * @param qgisProject $qgs_xml
+     */
+    public function setLayerShowFeatureCount($qgs_xml)
+    {
+        $layersWithShowFeatureCount = $qgs_xml->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        if ($layersWithShowFeatureCount) {
+            foreach ($layersWithShowFeatureCount as $layer) {
+                $name = (string) $layer['name'];
+                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
+                    $this->data->layers->{$name}->showFeatureCont = 'True';
+                }
+            }
+        }
+    }
+
+    /**
+     * Set/Unset some properties after reading the config file.
+     *
+     * @param mixed $qgs_xml
+     */
+    public function unsetPropAfterRead($qgs_xml)
+    {
+        //remove plugin layer
+        $pluginLayers = $qgs_xml->xpathQuery('//maplayer[type="plugin"]');
+        if ($pluginLayers) {
+            foreach ($pluginLayers as $layer) {
+                $name = (string) $layer->layername;
+                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
+                    unset($this->data->layers->{$name});
+                }
+            }
+        }
         //unset cache for editionLayers
         if (property_exists($this->data, 'editionLayers')) {
             foreach ($this->data->editionLayers as $key => $obj) {
@@ -93,8 +198,8 @@ class configFile
     }
 
     /**
-     * Call every findLayerBy function to get a layer
-     * 
+     * Call every findLayerBy function to get a layer.
+     *
      * @param string $name The name, shortname, typename, id or title of the layer to get
      */
     public function findLayerByAnyName($name)
@@ -130,8 +235,8 @@ class configFile
     }
 
     /**
-     * Return the layer corresponding to name
-     * 
+     * Return the layer corresponding to name.
+     *
      * @param string $name The name of the layer
      */
     public function findLayerByName($name)
@@ -149,8 +254,8 @@ class configFile
     }
 
     /**
-     * Return the layer corresponding to shortname
-     * 
+     * Return the layer corresponding to shortname.
+     *
      * @param string $shortName The shortname of the layer
      */
     public function findLayerByShortName($shortName)
@@ -173,8 +278,8 @@ class configFile
     }
 
     /**
-     * Return the layer corresponding to title
-     * 
+     * Return the layer corresponding to title.
+     *
      * @param string $title The title of the layer
      */
     public function findLayerByTitle($title)
@@ -197,8 +302,8 @@ class configFile
     }
 
     /**
-     * Return the layer corresponding to layerId
-     * 
+     * Return the layer corresponding to layerId.
+     *
      * @param string $layerId The id of the layer
      */
     public function findLayerByLayerId($layerId)
@@ -221,8 +326,8 @@ class configFile
     }
 
     /**
-     * Return the layer corresponding to typeName
-     * 
+     * Return the layer corresponding to typeName.
+     *
      * @param string $typeName The type name of the layer
      */
     public function findLayerByTypeName($typeName)
