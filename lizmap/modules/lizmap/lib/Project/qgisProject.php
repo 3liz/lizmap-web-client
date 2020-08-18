@@ -135,17 +135,6 @@ class qgisProject
         $this->path = $file;
     }
 
-    public function clearCache()
-    {
-        $cache = new projectCache($file, $this->jelix);
-        $cache->clearCache();
-    }
-
-    public function getPath()
-    {
-        return $this->path;
-    }
-
     public function getData($key)
     {
         if (!array_key_exists($key, $this->data)) {
