@@ -198,10 +198,10 @@ var lizMap = function() {
         return '';
     }
 
-    theCleanName = performCleanName( aName );
+    var theCleanName = performCleanName( aName );
     if ( (theCleanName in cleanNameMap) && cleanNameMap[theCleanName] != aName ){
-        i = 1;
-        nCleanName = theCleanName+i;
+        var i = 1;
+        var nCleanName = theCleanName+i;
         while( (nCleanName in cleanNameMap) && cleanNameMap[nCleanName] != aName ){
           i += 1;
           nCleanName = theCleanName+i;
@@ -1274,7 +1274,7 @@ var lizMap = function() {
       return Number(b) - Number(a);
     });
     // remove duplicate scales
-    nScales = [];
+    var nScales = [];
     while (scales.length != 0){
       var scale = scales.pop(0);
       if ($.inArray( scale, nScales ) == -1 )
@@ -1415,8 +1415,8 @@ var lizMap = function() {
     // filter by vector joins
     if ( 'vectorjoins' in locate && locate.vectorjoins.length != 0 ) {
         var vectorjoins = locate.vectorjoins;
-        for ( i=0, len =vectorjoins.length; i< len; i++) {
-            vectorjoin = vectorjoins[i];
+        for ( var i=0, len =vectorjoins.length; i< len; i++) {
+            var vectorjoin = vectorjoins[i];
             var jName = vectorjoin.joinLayer;
             if ( jName in config.locateByLayer ) {
                 var jLocate = config.locateByLayer[jName];
@@ -2233,7 +2233,7 @@ var lizMap = function() {
                 else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
                     lname = shortNameMap[typeName];
                 else {
-                    for (lbl in config.locateByLayer) {
+                    for (var lbl in config.locateByLayer) {
                         if (lbl.split(' ').join('_') == typeName) {
                             lname = lbl;
                             break;
@@ -3080,7 +3080,7 @@ var lizMap = function() {
               // Where there is all plots
               var plotLayers = lizMap.config.datavizLayers.layers;
               var lrelations = lizMap.config.relations[layerId];
-              nbPlotByLayer = 1;
+              var nbPlotByLayer = 1;
               for(var x in lrelations){
                   var rel = lrelations[x];
                   // Id of the layer which is the child of layerId
@@ -3091,11 +3091,11 @@ var lizMap = function() {
                   for ( var i in plotLayers) {
                       if(plotLayers[i].layer_id==getChildrenId)
                       {
-                          plot_config=plotLayers[i];
+                          var plot_config=plotLayers[i];
                           if('popup_display_child_plot' in plot_config
                             && plot_config.popup_display_child_plot == "True"
                           ){
-                            plot_id=plotLayers[i].plot_id;
+                            var plot_id=plotLayers[i].plot_id;
                             popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
                             // Be sure the id is unique ( popup can be displayed in atlas tool too)
                             popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
@@ -3105,7 +3105,7 @@ var lizMap = function() {
                                 popupId,
                                 false
                             );
-                            html = '<div class="lizmapPopupChildren lizdataviz">';
+                            var html = '<div class="lizmapPopupChildren lizdataviz">';
                             html+= '<h4>'+ plot_config.title+'</h4>';
                             html+= phtml
                             html+= '</div>';
@@ -4124,7 +4124,7 @@ var lizMap = function() {
             else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
                 lname = shortNameMap[typeName];
             else {
-                for (ttl in config.tooltipLayers) {
+                for (var ttl in config.tooltipLayers) {
                     if (ttl.split(' ').join('_') == typeName) {
                         lname = ttl;
                         break;
@@ -4220,7 +4220,7 @@ var lizMap = function() {
         var cAliases = lconfig['alias'];
         var html = '<div id="tooltipPopupContent">';
         html+= '<table class="lizmapPopupTable">';
-        for (a in feature.attributes){
+        for (var a in feature.attributes){
             // Do no show hiddenfields
             if( ($.inArray(a, hiddenFields) > -1) )
                 continue;
@@ -4611,9 +4611,6 @@ var lizMap = function() {
     var format =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
     capabilities = format.read(aData);
 
-    var format = new OpenLayers.Format.XML();
-    composers = format.read(aData).getElementsByTagName('ComposerTemplate');
-
     var capability = capabilities.capability;
     if (!capability) {
       $('#map').html('SERVICE NON DISPONIBLE!');
@@ -4934,8 +4931,8 @@ var lizMap = function() {
   function getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack) {
       // Set function parameters if not given
       aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
-      aFeatureId = typeof aFeatureId !== 'undefined' ?  aFeatureId : null;
-      geometryName = typeof geometryName !== 'undefined' ?  geometryName : null;
+      aFeatureID = typeof aFeatureID !== 'undefined' ? aFeatureID : null;
+      aGeometryName = typeof aGeometryName !== 'undefined' ? aGeometryName : null;
       restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
       startIndex = typeof startIndex !== 'undefined' ?  startIndex : null;
       maxFeatures = typeof maxFeatures !== 'undefined' ?  maxFeatures : null;
@@ -5814,7 +5811,7 @@ var lizMap = function() {
         var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
         wmtsCapabilities = wmtsFormat.read(wmtsCapaData);
         if ('exceptionReport' in wmtsCapabilities) {
-          wmtsElem = $('#metadata-wmts-getcapabilities-url');
+          var wmtsElem = $('#metadata-wmts-getcapabilities-url');
           if (wmtsElem.length != 0) {
             wmtsElem.before('<i title="' + wmtsCapabilities.exceptionReport.exceptions[0].texts[0] + '" class="icon-warning-sign"></i>&nbsp;');
           }
@@ -6738,7 +6735,7 @@ lizMap.events.on({
         }
 
         // Add lizmap external baselayers
-        for (id in evt.config['lizmapExternalBaselayers']) {
+        for (var id in evt.config['lizmapExternalBaselayers']) {
 
           var layerConfig = evt.config['lizmapExternalBaselayers'][id];
 
