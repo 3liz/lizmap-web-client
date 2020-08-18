@@ -1118,7 +1118,7 @@ var lizMap = function() {
 
     function truncateWithEllipsis(str,n){
       return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
-    };
+    }
 
     html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
     html += '<span class="label" title="'+truncateWithEllipsis($('<div>'+nodeConfig.abstract+'</div>').text(),50)+'">'+nodeConfig.title+'</span>';
@@ -1303,7 +1303,7 @@ var lizMap = function() {
 
   function childrenOf(node) {
     return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  };
+  }
 
   function parentOf(node) {
     if (node.length == 0 )
@@ -1318,7 +1318,7 @@ var lizMap = function() {
     }
 
     return null;
-  };
+  }
 
   function ancestorsOf(node) {
     var ancestors = [];
@@ -1326,7 +1326,7 @@ var lizMap = function() {
       ancestors[ancestors.length] = node[0];
     }
     return ancestors;
-  };
+  }
            //layer visibility
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
@@ -1835,7 +1835,7 @@ var lizMap = function() {
 
   function childrenOf(node) {
     return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  };
+  }
 
   function descendantsOf(node) {
     var descendants = [];
@@ -1847,7 +1847,7 @@ var lizMap = function() {
       descendants = descendants.concat(descendantsOf([children[i]]));
     }
     return descendants;
-  };
+  }
 
   function parentOf(node) {
     if (node.length == 0 )
@@ -1862,7 +1862,7 @@ var lizMap = function() {
     }
 
     return null;
-  };
+  }
 
   function ancestorsOf(node) {
     var ancestors = [];
@@ -1870,7 +1870,7 @@ var lizMap = function() {
       ancestors[ancestors.length] = node[0];
     }
     return ancestors;
-  };
+  }
 
     // activate checkbox buttons
     $('#switcher button.checkbox')

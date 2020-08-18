@@ -886,7 +886,7 @@ var lizLayerFilterTool = function() {
             minidockclosed: function() {
             },
             layerfeatureremovefilter: function(){
-                var layerId = filterConfigData.layerId;;
+                var layerId = filterConfigData.layerId;
 
                 // We need to reset the form
                 // Deactivate all triggers to avoid unnecessary requests
@@ -910,7 +910,7 @@ var lizLayerFilterTool = function() {
     function formatDT(aDate, dateFormat) {
         var formatted = $.datepicker.formatDate(dateFormat, aDate);
         return formatted;
-    };
+    }
 
     // Add an event on the inputs of a given field
     // For example, do something when a checkox is clicked
