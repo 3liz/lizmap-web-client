@@ -14,11 +14,21 @@ class configFile
         }
     }
 
+    /**
+     * Return the config file as an array
+     * 
+     * @return array
+     */
     public function getData()
     {
         return $this->data;
     }
 
+    /**
+     * Return the value of a given property
+     * 
+     * @param string $propName The property to get
+     */
     public function getProperty($propName)
     {
         if (isset($this->data->{$propName})) {
@@ -28,6 +38,11 @@ class configFile
         return null;
     }
 
+    /**
+     * Return a reference to a property that can be edited
+     * 
+     * @param string $propName The property to get
+     */
     public function &getEditableProperty($propName)
     {
         if (property_exists($this->data, $propName)) {
@@ -37,6 +52,9 @@ class configFile
         return null;
     }
 
+    /**
+     * Set/Unset some properties after reading the config file
+     */
     public function unsetPropAfterRead()
     {
         //unset cache for editionLayers
@@ -74,6 +92,11 @@ class configFile
         }
     }
 
+    /**
+     * Call every findLayerBy function to get a layer
+     * 
+     * @param string $name The name, shortname, typename, id or title of the layer to get
+     */
     public function findLayerByAnyName($name)
     {
         // name null or empty string
@@ -106,6 +129,11 @@ class configFile
         return $layer;
     }
 
+    /**
+     * Return the layer corresponding to name
+     * 
+     * @param string $name The name of the layer
+     */
     public function findLayerByName($name)
     {
         // name null or empty string
@@ -120,6 +148,11 @@ class configFile
         return null;
     }
 
+    /**
+     * Return the layer corresponding to shortname
+     * 
+     * @param string $shortName The shortname of the layer
+     */
     public function findLayerByShortName($shortName)
     {
         // short name null or empty string
@@ -139,6 +172,11 @@ class configFile
         return null;
     }
 
+    /**
+     * Return the layer corresponding to title
+     * 
+     * @param string $title The title of the layer
+     */
     public function findLayerByTitle($title)
     {
         // title null or empty string
@@ -158,6 +196,11 @@ class configFile
         return null;
     }
 
+    /**
+     * Return the layer corresponding to layerId
+     * 
+     * @param string $layerId The id of the layer
+     */
     public function findLayerByLayerId($layerId)
     {
         // layer id null or empty string
@@ -177,6 +220,11 @@ class configFile
         return null;
     }
 
+    /**
+     * Return the layer corresponding to typeName
+     * 
+     * @param string $typeName The type name of the layer
+     */
     public function findLayerByTypeName($typeName)
     {
         // type name null or empty string
