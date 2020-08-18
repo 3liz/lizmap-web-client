@@ -69,6 +69,10 @@ var lizLayerFilterTool = function() {
         // Add tree
         html+= '<div style="padding:10px 10px;" class="tree menu-content"></div>';
 
+
+        // Add digitizing tool
+        html += '<lizmap-digitizing></lizmap-digitizing>';
+
         return html;
     }
 

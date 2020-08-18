@@ -310,7 +310,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-color:rgba(0,0,0,0.7);
   padding:5px;
   border-left: 1px solid #F0F0F0;
-  max-width:30%;
+  max-width:33%;
   padding-bottom: 5px;
 
   height: 100%;
@@ -2516,10 +2516,6 @@ lizmap-selection-invert svg {
 }
 
 /* Digitizing */
-
-.digitizing{
-  min-width: 260px;
-}
 
 .digitizing .btn {
   width: 45px;

@@ -66,3 +66,8 @@ Toolbar buttons
 ul.ui-autocomplete.ui-menu {
     z-index: 3000 !important;
 }
+
+#filter-content .digitizing{
+    background-color: #F0F0F0;
+    padding: .5em;
+}
