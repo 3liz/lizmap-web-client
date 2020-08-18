@@ -966,7 +966,7 @@ class lizmapProject extends qgisProject
                 $user = jAuth::getUserSession();
                 $login = $user->login;
                 if (property_exists($loginFilteredConfig, 'filterPrivate') &&
-                    $this>optionToBoolean($loginFilteredConfig->filterPrivate)
+                    $this->optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
                     $filter = "\"${attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
