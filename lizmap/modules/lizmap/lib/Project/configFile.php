@@ -14,6 +14,11 @@ class configFile
         }
     }
 
+    public function getData()
+    {
+        return $this->data;
+    }
+
     public function getProperty($propName)
     {
         if (isset($this->data->{$propName})) {
