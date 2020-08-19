@@ -101,5 +101,4 @@ class AbstractController extends \jController
         $rep->setHttpStatus(400, 'Bad request');
         return $this->showError($rep, 'Invalid parameters');
     }
-
 }

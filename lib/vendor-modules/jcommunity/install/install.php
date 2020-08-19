@@ -78,16 +78,17 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         $mapper = new jDaoDbMapper($dbProfile);
         $mapper->createTableFromDao($daoSelector);
 
+        $installDefaultUsers = true;
         if ($this->getParameter('migratejauthdbusers')) {
-            $this->migrateUsers($database, $daoSelector);
+            $installDefaultUsers = !$this->migrateUsers($database, $daoSelector);
         }
-        else {
+
+        if ($installDefaultUsers) {
             $this->fillDefaultValues($database, $daoSelector);
 
             $sourceUserDataModule = null;
             $sourceUserDataFile = '';
             $defaultUsers = $this->getParameter('defaultusers');
-
             if ($defaultUsers &&
                 is_string($defaultUsers) &&
                 preg_match("/^([a-zA-Z0-9_\.]+)~([a-zA-Z0-9_\.]+)$/", $defaultUsers, $m)
@@ -127,12 +128,12 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         $cn = $database->dbConnection();
 
         if ($tableProp['realname'] == $cn->prefixTable('jlx_user')) {
-            return;
+            return false;
         }
 
         $oldTable = $cn->schema()->getTable('jlx_user');
         if (!$oldTable) {
-            return;
+            return false;
         }
 
         $targetFields = array();
@@ -169,6 +170,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         $sql .= '('.implode(',', $targetFields).')';
         $sql .= ' SELECT '.implode(',', $sourceFields) . ' FROM '.$cn->prefixTable('jlx_user');
         $cn->exec($sql);
+        return true;
     }
 
     protected function fillDefaultValues(DatabaseHelpers $helpers, $daoSelector) {

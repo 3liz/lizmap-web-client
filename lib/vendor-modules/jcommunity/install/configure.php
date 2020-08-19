@@ -15,7 +15,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
         return array(
             'manualconfig' => false,
             'masteradmin' => false,
-            'migratejauthdbusers' => true,
+            'migratejauthdbusers' => false,
             'usejpref' => false,
             'defaultusers'=> '', // selector of a json file in an install/ of a module
             'defaultuser' => true, // install users from defaultusers.json
