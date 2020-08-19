@@ -267,7 +267,7 @@ class Project
         } catch (\Exception $e) {
             throw $e;
         }
-        $qgs_xml = $this->xml;
+        $qgsXml = $this->xml;
 
         // Complete data
         $this->data['repository'] = $rep->getKey();
@@ -308,18 +308,18 @@ class Project
             )
         );
 
-        $this->cfg->setShortNames($qgs_xml);
-        $this->cfg->setLayerOpacity($qgs_xml);
-        $this->cfg->setLayerGroupData($qgs_xml);
-        $this->cfg->setLayerShowFeatureCount($qgs_xml);
-        $this->cfg->unsetPropAfterRead($qgs_xml);
+        $this->cfg->setShortNames($qgsXml);
+        $this->cfg->setLayerOpacity($qgsXml);
+        $this->cfg->setLayerGroupData($qgsXml);
+        $this->cfg->setLayerShowFeatureCount($qgsXml);
+        $this->cfg->unsetPropAfterRead($qgsXml);
 
-        $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
-        $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
-        $this->formFilterLayers = $this->readFormFilterLayers($qgs_xml, $this->cfg);
-        $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
-        $this->attributeLayers = $this->readAttributeLayers($qgs_xml, $this->cfg);
-        $this->layersOrder = $this->readLayersOrder($qgs_xml, $this->cfg);
+        $this->printCapabilities = $this->readPrintCapabilities($qgsXml, $this->cfg);
+        $this->locateByLayer = $this->readLocateByLayers($qgsXml, $this->cfg);
+        $this->formFilterLayers = $this->readFormFilterLayers($qgsXml, $this->cfg);
+        $this->editionLayers = $this->readEditionLayers($qgsXml, $this->cfg);
+        $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
+        $this->layersOrder = $this->readLayersOrder($qgsXml, $this->cfg);
     }
 
     public function getQgisPath()
