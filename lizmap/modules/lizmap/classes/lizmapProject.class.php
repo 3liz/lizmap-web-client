@@ -18,7 +18,7 @@ use Lizmap\Project;
   * Verify this methods are not used in external modules so we can delete them without risk, otherwise, we have to implement them
   * in Project and call it here
   */
-class lizmapProject extends qgisProject
+class lizmapProject
 {
     /**
      * @var project
@@ -30,9 +30,9 @@ class lizmapProject extends qgisProject
      * @param string           $key : the project name
      * @param lizmapRepository $rep : the repository
      */
-    public function __construct($key, $rep)
+    public function __construct($key, $rep, $context, $services)
     {
-        $this->proj = new \Lizmap\Project\project($key, $rep, lizmap::getAppContext(), lizmap::getServices());
+        $this->proj = new \Lizmap\Project\project($key, $rep, $context, $services);
     }
 
     public function clearCache()
