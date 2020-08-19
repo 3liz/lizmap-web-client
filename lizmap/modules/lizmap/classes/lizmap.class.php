@@ -71,7 +71,7 @@ class lizmap
         return self::$lizmapServicesInstance;
     }
 
-    public function getAppContext()
+    public static function getAppContext()
     {
         if (!self::$appContext) {
             self::$appContext = new \Lizmap\App\JelixContext();
@@ -369,7 +369,7 @@ class lizmap
             return null;
         }
 
-        return $rep->getProject($matches['proj']);
+        return $rep->getProject($matches['proj'], self::getAppContext(), self::getServices());
     }
 
     /**

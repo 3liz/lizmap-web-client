@@ -152,7 +152,7 @@ class lizmapRepository
         $modified = false;
         // Modify the ini data for the repository
         foreach ($data as $k => $v) {
-            if (in_array($k, self::$properties)) {
+            if (in_array($k, self::getProperties())) {
                 // Set values in ini file
                 $ini->setValue($k, $v, $section);
                 // Modify lizmapConfigData
@@ -169,14 +169,14 @@ class lizmapRepository
         return $modified;
     }
 
-    public function getProject($key)
+    public function getProject($key, $context, $services)
     {
         if (isset($this->projectInstances[$key])) {
             return $this->projectInstances[$key];
         }
 
         try {
-            $proj = new lizmapProject($key, $this);
+            $proj = new lizmapProject($key, $this, $context, $services);
         } catch (UnknownLizmapProjectException $e) {
             throw $e;
         } catch (Exception $e) {
@@ -189,7 +189,7 @@ class lizmapRepository
         return $proj;
     }
 
-    public function getProjects()
+    public function getProjects($context, $services)
     {
         $projects = array();
         $dir = $this->getPath();
@@ -212,7 +212,7 @@ class lizmapRepository
                     $proj = null;
                     if (in_array($qgsFile.'.cfg', $cfgFiles)) {
                         try {
-                            $proj = $this->getProject(substr($qgsFile, 0, -4));
+                            $proj = $this->getProject(substr($qgsFile, 0, -4), $context, $services);
                             if ($proj != null) {
                                 $projects[] = $proj;
                             }
