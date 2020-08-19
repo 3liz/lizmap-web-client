@@ -36,7 +36,7 @@ class ajax_viewZone extends jZone
             if (jAcl2::check('lizmap.repositories.view', $r)) {
                 $lrep = lizmap::getRepository($r);
                 $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
-                $lprojects = $lrep->getProjects();
+                $lprojects = $lrep->getProjects(lizmap::getAppContext(), lizmap::getServices());
                 foreach ($lprojects as $p) {
                     if (!$p->checkAcl()) {
                         continue;
