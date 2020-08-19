@@ -11,6 +11,7 @@
  */
 
 namespace Lizmap\Project;
+
 use Lizmap\App;
 
 class Project
@@ -179,10 +180,10 @@ class Project
     /**
      * constructor.
      *
-     * @param string              $key      : the project name
-     * @param lizmapRepository    $rep      : the repository
+     * @param string                  $key      : the project name
+     * @param lizmapRepository        $rep      : the repository
      * @param App\AppContextInterface $jelix    the instance of jelixInfos
-     * @param mixed               $services
+     * @param mixed                   $services
      */
     public function __construct($key, $rep, App\appContextInterface $appContext, $services)
     {
@@ -201,6 +202,17 @@ class Project
             throw new \UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
         }
 
+        try {
+            $this->cfg = new configFile($file.'.cfg');
+        } catch (\UnknownLizmapProjectException $e) {
+            throw $e;
+        }
+
+        try {
+            $this->xml = new qgisProject($file, $this->appContext);
+        } catch (\UnknownLizmapProjectException $e) {
+            throw $e;
+        }
         $this->cacheHandler = new projectCache($file, $this->appContext);
 
         $data = $this->cacheHandler->retrieveProjectData();
@@ -255,19 +267,8 @@ class Project
             throw new \UnknownLizmapProjectException("Files of project {$key} does not exists");
         }
 
-        $this->cfg = new configFile($qgs_path.'.cfg');
-        if ($this->cfg === null) {
-            throw new \UnknownLizmapProjectException(".qgs.cfg File of project {$key} has invalid content");
-        }
-
-        $configOptions = $this->cfg->getEditableProperty('options');
-
-        try {
-            $this->xml = new qgisProject($qgs_path, $this->appContext);
-        } catch (\Exception $e) {
-            throw $e;
-        }
         $qgsXml = $this->xml;
+        $configOptions = $this->cfg->getEditableProperty('options');
 
         // Complete data
         $this->data['repository'] = $rep->getKey();
@@ -1263,7 +1264,7 @@ class Project
 
         $switcherTpl = new \jTpl();
         $switcherTpl->assign(array(
-            'layerExport' => $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())));
+            'layerExport' => $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()), ));
         $dockable[] = new \lizmapMapDockItem(
             'switcher',
             $this->appContext->getLocale('view~map.switchermenu.title'),
@@ -1278,8 +1279,8 @@ class Project
         $wmsInfo = $this->xml->getWMSInformation();
         // WMS GetCapabilities Url
         $wmsGetCapabilitiesUrl = $this->appContext->aclCheck(
-                'lizmap.tools.displayGetCapabilitiesLinks',
-                $this->repository->getKey()
+            'lizmap.tools.displayGetCapabilitiesLinks',
+            $this->repository->getKey()
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {

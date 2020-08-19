@@ -11,7 +11,7 @@ class configFile
         $fileContent = file_get_contents($cfgFile);
         $this->data = json_decode($fileContent);
         if (!$this->data) {
-            throw new \Exception('The file '.$cfgFile.' cannot be read.');
+            throw new \UnknownLizmapProjectException('The file '.$cfgFile.' cannot be read.');
         }
     }
 
