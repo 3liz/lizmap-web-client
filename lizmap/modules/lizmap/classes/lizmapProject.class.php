@@ -12,23 +12,26 @@
 
 use Lizmap\Project;
 
- /**
-  * @deprecated 
-  * @FIXME getXml, getComposer
-  * Verify this methods are not used in external modules so we can delete them without risk, otherwise, we have to implement them
-  * in Project and call it here
-  */
+/**
+ * @deprecated
+ * @FIXME getXml, getComposer
+ * Verify this methods are not used in external modules so we can delete them without risk, otherwise, we have to implement them
+ * in Project and call it here
+ */
 class lizmapProject
 {
     /**
      * @var project
      */
     protected $proj;
+
     /**
      * constructor.
      *
-     * @param string           $key : the project name
-     * @param lizmapRepository $rep : the repository
+     * @param string           $key      : the project name
+     * @param lizmapRepository $rep      : the repository
+     * @param mixed            $context
+     * @param mixed            $services
      */
     public function __construct($key, $rep, $context, $services)
     {
@@ -58,7 +61,7 @@ class lizmapProject
 
     public function getRelativeQgisPath()
     {
-       return $this->proj->getRelativeQgisPath();
+        return $this->proj->getRelativeQgisPath();
     }
 
     public function getKey()
@@ -217,17 +220,37 @@ class lizmapProject
         return $this->proj->getLoginFilters($layers);
     }
 
-    private function optionToBoolean($config_string)
-    {
-        return $this->proj->optionToBoolean($config_string);
-    }
-
     /**
      * @return array|bool
      */
     public function getDatavizLayersConfig()
     {
         return $this->proj->getDatavizLayersConfig();
+    }
+
+    public function getData($key)
+    {
+        return $this->proj->getData($key);
+    }
+
+    public function getProj4($authId)
+    {
+        return $this->proj->getProj4($authId);
+    }
+
+    public function getAllProj4()
+    {
+        return $this->proj->getAllProj4();
+    }
+
+    public function getCanvasColor()
+    {
+        return $this->proj->getCanvasColor();
+    }
+
+    public function getWMSInformation()
+    {
+        return $this->proj->getWMSInformation();
     }
 
     /**

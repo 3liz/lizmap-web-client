@@ -390,6 +390,35 @@ class Project
         return $this->cfg->getProperty('layers');
     }
 
+    public function getData($key)
+    {
+        if (array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        }
+
+        return $this->xml->getData($key);
+    }
+
+    public function getProj4($authId)
+    {
+        return $this->xml->getProj4($authId);
+    }
+
+    public function getAllProj4()
+    {
+        return $this->xml->getAllProj4();
+    }
+
+    public function getCanvasColor()
+    {
+        return $this->xml->getCanvasColor();
+    }
+
+    public function getWMSInformation()
+    {
+        return $this->xml->getWMSInformation();
+    }
+
     public function hasLocateByLayer()
     {
         $locate = $this->cfg->getProperty('locateByLayer');
@@ -451,7 +480,7 @@ class Project
     public function hasTooltipLayers()
     {
         $tooltip = $this->cfg->getProperty('tooltipLayers');
-        if ($tooltip && count($tooltip)) {
+        if ($tooltip && count((array) $tooltip)) {
             return true;
         }
 
@@ -469,7 +498,7 @@ class Project
                     $hasDisplayedLayer = true;
                 }
             }
-            if (count($attributeLayers) && $hasDisplayedLayer) {
+            if (count((array) $attributeLayers) && $hasDisplayedLayer) {
                 return true;
             }
         }
@@ -870,7 +899,7 @@ class Project
     protected function readPrintCapabilities(QgisProject $qgsLoad, ProjectConfig $cfg)
     {
         $printTemplates = array();
-        $options = $cfg->getProperty('options');
+        $options = $this->getOptions();
         if ($options && $options->print == 'True') {
             $printTemplates = $qgsLoad->getPrintTemplates();
         }
@@ -947,40 +976,50 @@ class Project
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }
 
-     /**
+    /**
      * @deprecated
+     *
+     * @param mixed $name
      */
     public function findLayerByAnyName($name)
     {
         return $this->cfg->findLayerByAnyName($name);
     }
 
-     /**
+    /**
      * @deprecated
+     *
+     * @param mixed $name
      */
     public function findLayerByName($name)
     {
         return $this->cfg->findLayerByName($name);
     }
 
-     /**
+    /**
      * @deprecated
+     *
+     * @param mixed $shortName
      */
     public function findLayerByShortName($shortName)
     {
         return $this->cfg->findLayerByShortName($shortName);
     }
 
-     /**
+    /**
      * @deprecated
+     *
+     * @param mixed $title
      */
     public function findLayerByTitle($title)
     {
         return $this->cfg->findLayerByTitle($title);
     }
 
-     /**
+    /**
      * @deprecated
+     *
+     * @param mixed $layerId
      */
     public function findLayerByLayerId($layerId)
     {
@@ -989,6 +1028,8 @@ class Project
 
     /**
      * @deprecated
+     *
+     * @param mixed $typeName
      */
     public function findLayerByTypeName($typeName)
     {

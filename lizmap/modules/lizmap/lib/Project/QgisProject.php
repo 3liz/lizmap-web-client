@@ -98,6 +98,7 @@ class QgisProject
             // have a kind of lock to avoid this issue.
             $this->readXmlProject($file);
         } else {
+            \jLog::log('je passe: construct else', 'error');
             foreach ($this->cachedProperties as $prop) {
                 $this->{$prop} = $data[$prop];
             }
@@ -145,7 +146,7 @@ class QgisProject
 
     public function getProj4($authId)
     {
-        if (!array_key_exists($authId, $this->data)) {
+        if (!array_key_exists($authId, $this->allProj4)) {
             return null;
         }
 
@@ -731,7 +732,7 @@ class QgisProject
         }
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
-            $xmlLayer = $this->getXmlLayer2($this->data, $v->layerId);
+            $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
             if (count($xmlLayer) == 0) {
                 continue;
             }
@@ -775,7 +776,7 @@ class QgisProject
     public function readEditionLayers(&$editionLayers)
     {
         foreach ($editionLayers as $key => $obj) {
-            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
             if (count($layerXml) == 0) {
                 continue;
             }
@@ -792,7 +793,7 @@ class QgisProject
     {
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {
-            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
             if (count($layerXml) == 0) {
                 continue;
             }
