@@ -10,7 +10,7 @@ class configFile
     {
         $this->data = json_decode($cfgFile);
         if (!$this->data) {
-            return null;
+            throw new \Exception('The file '.$cfgFile.' can not be read.');
         }
     }
 
@@ -55,15 +55,15 @@ class configFile
     /**
      * Set layers' shortname with XML data.
      *
-     * @param qgisProject $qgs_xml
+     * @param qgisProject $qgsXml
      */
-    public function setShortNames($qgs_xml)
+    public function setShortNames($qgsXml)
     {
-        $shortNames = $qgs_xml->xpathQuery('//maplayer/shortname');
+        $shortNames = $qgsXml->xpathQuery('//maplayer/shortname');
         if ($shortNames) {
             foreach ($shortNames as $sname) {
                 $sname = (string) $sname;
-                $xmlLayer = $qgs_xml->xpathQuery("//maplayer[shortname='{$sname}']");
+                $xmlLayer = $qgsXml->xpathQuery("//maplayer[shortname='{$sname}']");
                 if (!$xmlLayer) {
                     continue;
                 }
@@ -79,11 +79,11 @@ class configFile
     /**
      * Set layers' opacity with XML data.
      *
-     * @param qgisProject $qgs_xml
+     * @param qgisProject $qgsXml
      */
-    public function setLayerOpacity($qgs_xml)
+    public function setLayerOpacity($qgsXml)
     {
-        $layerWithOpacities = $qgs_xml->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
+        $layerWithOpacities = $qgsXml->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
         if ($layerWithOpacities) {
             foreach ($layerWithOpacities as $layerWithOpacitiy) {
                 $name = (string) $layerWithOpacitiy->layername;
@@ -98,11 +98,11 @@ class configFile
     /**
      * Set layers' group infos.
      *
-     * @param qgisProject $qgs_xml
+     * @param qgisProject $qgsXml
      */
-    public function setLayerGroupData()
+    public function setLayerGroupData($qgsXml)
     {
-        $groupsWithShortName = $qgs_xml->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+        $groupsWithShortName = $qgsXml->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
         if ($groupsWithShortName) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
@@ -116,7 +116,7 @@ class configFile
                 }
             }
         }
-        $groupsMutuallyExclusive = $qgs_xml->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
+        $groupsMutuallyExclusive = $qgsXml->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
         if ($groupsMutuallyExclusive) {
             foreach ($groupsMutuallyExclusive as $group) {
                 $name = (string) $group['name'];
@@ -130,11 +130,11 @@ class configFile
     /**
      * Set layers' last infos.
      *
-     * @param qgisProject $qgs_xml
+     * @param qgisProject $qgsXml
      */
-    public function setLayerShowFeatureCount($qgs_xml)
+    public function setLayerShowFeatureCount($qgsXml)
     {
-        $layersWithShowFeatureCount = $qgs_xml->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        $layersWithShowFeatureCount = $qgsXml->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
         if ($layersWithShowFeatureCount) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
@@ -148,12 +148,12 @@ class configFile
     /**
      * Set/Unset some properties after reading the config file.
      *
-     * @param mixed $qgs_xml
+     * @param mixed $qgsXml
      */
-    public function unsetPropAfterRead($qgs_xml)
+    public function unsetPropAfterRead($qgsXml)
     {
         //remove plugin layer
-        $pluginLayers = $qgs_xml->xpathQuery('//maplayer[type="plugin"]');
+        $pluginLayers = $qgsXml->xpathQuery('//maplayer[type="plugin"]');
         if ($pluginLayers) {
             foreach ($pluginLayers as $layer) {
                 $name = (string) $layer->layername;
