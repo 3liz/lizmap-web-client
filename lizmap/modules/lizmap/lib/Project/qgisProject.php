@@ -11,6 +11,7 @@
  */
 
 namespace Lizmap\Project;
+use Lizmap\App;
 
 class qgisProject
 {
@@ -79,7 +80,10 @@ class qgisProject
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
-    protected $jelix;
+    /**
+     * @var AppContextInterface
+     */
+    protected $appContext;
 
     /**
      * constructor.
@@ -89,25 +93,25 @@ class qgisProject
      */
     public function __construct($file, $jelix)
     {
-        if (!$this->jelix) {
-            $this->jelix = $jelix;
+        if (!$this->appContext) {
+            $this->appContext = $jelix;
         }
         // Verifying if the files exist
         if (!file_exists($file)) {
-            throw new Exception('The QGIS project '.$file.' does not exist!');
+            throw new \Exception('The QGIS project '.$file.' does not exist!');
         }
 
         // For the cache key, we use the full path of the project file
         // to avoid collision in the cache engine
         $data = false;
-        $cache = new projectCache($file, $this->jelix);
+        $cache = new projectCache($file, $this->appContext);
 
         try {
-            $data = $cache->getProjectData();
-        } catch (Exception $e) {
+            $data = $cache->retrieveProjectData();
+        } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
+            \jLog::logEx($e, 'error');
         }
 
         if ($data === false ||
@@ -123,8 +127,8 @@ class qgisProject
 
             try {
                 $cache->storeProjectData($data);
-            } catch (Exception $e) {
-                jLog::logEx($e, 'error');
+            } catch (\Exception $e) {
+                \jLog::logEx($e, 'error');
             }
         } else {
             foreach ($this->cachedProperties as $prop) {
@@ -218,10 +222,10 @@ class qgisProject
             // get first key found in the filtered layers
             $k = key($layers);
             if ($layers[$k]['type'] == 'vector') {
-                return new qgisVectorLayer($this, $layers[$k]);
+                return new \qgisVectorLayer($this, $layers[$k]);
             }
 
-            return new qgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($this, $layers[$k]);
         }
 
         return null;
@@ -242,10 +246,10 @@ class qgisProject
             // get first key found in the filtered layers
             $k = key($layers);
             if ($layers[$k]['type'] == 'vector') {
-                return new qgisVectorLayer($this, $layers[$k]);
+                return new \qgisVectorLayer($this, $layers[$k]);
             }
 
-            return new qgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($this, $layers[$k]);
         }
 
         return null;
@@ -266,9 +270,9 @@ class qgisProject
         if ($foundLayers) {
             foreach ($foundLayers as $layer) {
                 if ($layer['type'] == 'vector') {
-                    $layers[] = new qgisVectorLayer($this, $layer);
+                    $layers[] = new \qgisVectorLayer($this, $layer);
                 } else {
-                    $layers[] = new qgisMapLayer($this, $layer);
+                    $layers[] = new \qgisMapLayer($this, $layer);
                 }
             }
         }
@@ -324,7 +328,7 @@ class qgisProject
     {
         // get restricted composers
         $rComposers = array();
-        $restrictedComposers = $this->data->xpath('//properties/WMSRestrictedComposers/value');
+        $restrictedComposers = $this->xml->xpath('//properties/WMSRestrictedComposers/value');
         if ($restrictedComposers && count($restrictedComposers) > 0) {
             foreach ($restrictedComposers as $restrictedComposer) {
                 $rComposers[] = (string) $restrictedComposer;
@@ -333,7 +337,7 @@ class qgisProject
 
         $services = $this->services;
         // get composer qg project version < 3
-        $composers = $this->data->xpath('//Composer');
+        $composers = $this->xml->xpath('//Composer');
         if ($composers && count($composers) > 0) {
             foreach ($composers as $composer) {
                 // test restriction
@@ -443,7 +447,7 @@ class qgisProject
             }
         }
         // get layout qgs project version >= 3
-        $layouts = $this->data->xpath('//Layout');
+        $layouts = $this->xml->xpath('//Layout');
         if ($layouts && count($layouts) > 0 &&
             version_compare($services->qgisServerVersion, '3.0', '>=')) {
             foreach ($layouts as $layout) {
@@ -669,7 +673,7 @@ class qgisProject
     {
         $layersOrder = array();
         if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
-            $customOrder = $this->data->xpath('layer-tree-group/custom-order');
+            $customOrder = $this->xml->xpath('layer-tree-group/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
             }
@@ -689,7 +693,7 @@ class qgisProject
                 return $layersOrder;
             }
         } elseif ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
-            $customOrder = $this->data->xpath('//layer-tree-canvas/custom-order');
+            $customOrder = $this->xml->xpath('//layer-tree-canvas/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
             }
@@ -706,7 +710,7 @@ class qgisProject
                     ++$lo;
                 }
             } else {
-                $items = $this->data->xpath('layer-tree-group//layer-tree-layer');
+                $items = $this->xml->xpath('layer-tree-group//layer-tree-layer');
                 $lo = 0;
                 foreach ($items as $layerTree) {
                     // Get layer name from config instead of XML for possible embedded layers
@@ -718,14 +722,14 @@ class qgisProject
                 }
             }
         } else {
-            $legend = $this->data->xpath('//legend');
+            $legend = $this->xml->xpath('//legend');
             if (count($legend) == 0) {
                 return $layersOrder;
             }
             $legendZero = $legend[0];
             $updateDrawingOrder = (string) $legendZero->attributes()->updateDrawingOrder;
             if ($updateDrawingOrder == 'false') {
-                $layers = $this->data->xpath('//legendlayer');
+                $layers = $this->xml->xpath('//legendlayer');
                 foreach ($layers as $layer) {
                     if ($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0) {
                         $layersOrder[(string) $layer->attributes()->name] = (int) $layer->attributes()->drawingOrder;
@@ -745,12 +749,12 @@ class qgisProject
     protected function readXmlProject($qgs_path)
     {
         if (!file_exists($qgs_path)) {
-            throw new Exception('The QGIS project '.basename($qgs_path).' does not exist!');
+            throw new \Exception('The QGIS project '.basename($qgs_path).' does not exist!');
         }
 
         $qgs_xml = simplexml_load_file($qgs_path);
         if ($qgs_xml === false) {
-            throw new Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
+            throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }
         $this->path = $qgs_path;
         $this->xml = $qgs_xml;
@@ -1024,7 +1028,7 @@ class qgisProject
         foreach ($xmlLayers as $xmlLayer) {
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
-                $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project));
+                $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project), $this->appContext);
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
                 $layer['embedded'] = 1;
                 $layer['projectPath'] = (string) $attributes->project;
