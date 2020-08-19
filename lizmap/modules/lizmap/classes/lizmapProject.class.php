@@ -32,7 +32,7 @@ class lizmapProject extends qgisProject
      */
     public function __construct($key, $rep)
     {
-        $this->proj = new \Lizmap\Project\project($key, $rep, lizmap::getJelixInfos(), lizmap::getServices());
+        $this->proj = new \Lizmap\Project\project($key, $rep, lizmap::getAppContext(), lizmap::getServices());
     }
 
     public function clearCache()
