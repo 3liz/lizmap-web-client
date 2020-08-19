@@ -1,6 +1,7 @@
 <?php
 
 namespace Lizmap\Project;
+
 use Lizmap\App;
 
 class projectCache
@@ -34,14 +35,14 @@ class projectCache
     /**
      * Construct the object.
      *
-     * @param string              $file       The full path of the project
+     * @param string                  $file       The full path of the project
      * @param App\appContextInterface $appContext The interface to call Jalix
      */
     public function __construct($file, App\appContextInterface $appContext)
     {
         $this->file = $file;
-        $this->fileKey = $this->appContext->normalizeCacheKey($file);
         $this->appContext = $appContext;
+        $this->fileKey = $this->appContext->normalizeCacheKey($file);
     }
 
     /**
