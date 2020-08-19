@@ -59,8 +59,8 @@ class accountCtrl extends \Jelix\JCommunity\AbstractController
         }
 
         $rep = $this->getResponse('html');
-        $tpl = new jTpl();
 
+        $tpl = new jTpl();
         $tpl->assign('username', $login);
         $rep->title = jLocale::get('account.profile.of', array($login));
 
