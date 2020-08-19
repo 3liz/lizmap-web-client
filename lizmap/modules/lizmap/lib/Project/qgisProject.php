@@ -105,7 +105,7 @@ class qgisProject
         $data = false;
         $cache = new projectCache($file, $this->appContext);
         $this->xml = simplexml_load_file($file);
-
+        $this->path = $file;
 
         try {
             $data = $cache->retrieveProjectData();
@@ -120,7 +120,7 @@ class qgisProject
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
-            $this->readXmlProject($file);
+            $this->readXmlProject();
             $data['qgsmtime'] = filemtime($file);
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
@@ -132,6 +132,7 @@ class qgisProject
                 \jLog::logEx($e, 'error');
             }
         } else {
+            \jLog::log('je passe: construct else', 'error');
             foreach ($this->cachedProperties as $prop) {
                 $this->{$prop} = $data[$prop];
             }
@@ -166,7 +167,7 @@ class qgisProject
 
     public function getProj4($authId)
     {
-        if (!array_key_exists($authId, $this->data)) {
+        if (!array_key_exists($authId, $this->allProj4)) {
             return null;
         }
 
@@ -583,7 +584,7 @@ class qgisProject
         }
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
-            $xmlLayer = $this->getXmlLayer2($this->data, $v->layerId);
+            $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
             if (count($xmlLayer) == 0) {
                 continue;
             }
@@ -627,7 +628,7 @@ class qgisProject
     public function readEditionLayers(&$editionLayers)
     {
         foreach ($editionLayers as $key => $obj) {
-            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
             if (count($layerXml) == 0) {
                 continue;
             }
@@ -644,7 +645,7 @@ class qgisProject
     {
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {
-            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
             if (count($layerXml) == 0) {
                 continue;
             }
@@ -670,7 +671,7 @@ class qgisProject
      *
      * @return int[]
      */
-    protected function readLayersOrder($xml, $layers)
+    public function readLayersOrder($xml, $layers)
     {
         $layersOrder = array();
         if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
@@ -744,20 +745,10 @@ class qgisProject
 
     /**
      * Read the qgis files.
-     *
-     * @param mixed $qgs_path
      */
-    protected function readXmlProject($qgsPath)
+    protected function readXmlProject()
     {
-        if (!file_exists($qgsPath)) {
-            throw new \Exception('The QGIS project '.basename($qgsPath).' does not exist!');
-        }
-
-        $this->path = $qgsPath;
         $qgsXml = $this->xml;
-        // Build data
-        $this->data = array(
-        );
 
         // get title from WMS properties
         if (property_exists($qgsXml->properties, 'WMSServiceTitle')) {

@@ -33,7 +33,7 @@ class configFile
     public function getProperty($propName)
     {
         if (isset($this->data->{$propName})) {
-            return $this->data->propName;
+            return $this->data->{$propName};
         }
 
         return null;
