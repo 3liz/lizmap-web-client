@@ -14,4 +14,6 @@ Version 3.2.16 (next)
 - Fix an error on SQL queries during the migration of user table from Sqlite to Postgresql
 - Don't sort values with ValueMap widget to keep order defined in QGIS
 - Use form in edition.js to get it's id
+- A new command to test the mailer configuration:
+  php scripts/script.php jelix~mailer:test your.email@example.com
 
