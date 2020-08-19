@@ -8,9 +8,10 @@ class configFile
 
     public function __construct($cfgFile)
     {
-        $this->data = json_decode($cfgFile);
+        $fileContent = file_get_contents($cfgFile);
+        $this->data = json_decode($fileContent);
         if (!$this->data) {
-            throw new \Exception('The file '.$cfgFile.' can not be read.');
+            throw new \Exception('The file '.$cfgFile.' cannot be read.');
         }
     }
 
