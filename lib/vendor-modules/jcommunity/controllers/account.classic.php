@@ -12,7 +12,7 @@
 /**
  * controller allowing the user to change his profile properties
  */
-class accountCtrl extends jController
+class accountCtrl extends \Jelix\JCommunity\AbstractController
 {
     public $pluginParams = array(
       '*' => array('auth.required' => true),
@@ -20,13 +20,6 @@ class accountCtrl extends jController
       'destroydone' => array('auth.required' => false),
     );
 
-    protected $config;
-
-    public function __construct($request)
-    {
-        parent::__construct($request);
-        $this->config = new \Jelix\JCommunity\Config();
-    }
     protected function getDaoName()
     {
         $dao = jAuth::getDriverParam('dao');
@@ -60,6 +53,11 @@ class accountCtrl extends jController
     public function show()
     {
         $login = $this->param('user');
+
+        if (!$this->canViewProfiles($login)) {
+            return $this->notavailable();
+        }
+
         $rep = $this->getResponse('html');
         $tpl = new jTpl();
 
@@ -122,7 +120,7 @@ class accountCtrl extends jController
             jAuth::getUserSession()->login != $login ||
             !$this->config->isAccountChangeEnabled()
         ) {
-            return $rep;
+            return $this->notavailable();
         }
 
         $dao = jDao::create($this->getDaoName(), $this->getProfileName());
@@ -156,11 +154,7 @@ class accountCtrl extends jController
             jAuth::getUserSession()->login != $login ||
             !$this->config->isAccountChangeEnabled()
         ) {
-            $rep = $this->getResponse('redirect');
-            $rep->action = 'jcommunity~account:show';
-            $rep->params = array('user' => $login);
-
-            return $rep;
+            return $this->notavailable();
         }
 
         $dao = jDao::create($this->getDaoName(), $this->getProfileName());
@@ -212,7 +206,7 @@ class accountCtrl extends jController
             jAuth::getUserSession()->login != $login||
             !$this->config->isAccountChangeEnabled()
         ) {
-            return $rep;
+            return $this->notavailable();
         }
 
         $accountFact = jDao::create($this->getDaoName(), $this->getProfileName());
@@ -266,10 +260,7 @@ class accountCtrl extends jController
             jAuth::getUserSession()->login != $login ||
             !$this->config->isAccountDestroyEnabled()
         ) {
-            $rep = $this->getResponse('redirect');
-            $rep->action = 'jcommunity~account:show';
-            $rep->params = array('user' => $login);
-            return $rep;
+            return $this->notavailable();
         }
         $rep = $this->getResponse('html');
         $tpl = new jTpl();
@@ -283,18 +274,17 @@ class accountCtrl extends jController
     {
         $login = $this->param('user');
         $password = $this->param('conf_password');
-        $rep = $this->getResponse('redirect');
-        $rep->action = 'jcommunity~account:show';
-        $rep->params = array('user' => $login);
 
         if ($login == '' ||
             !jAuth::isConnected() ||
             jAuth::getUserSession()->login != $login ||
             !$this->config->isAccountDestroyEnabled()
         ) {
-            return $rep;
+            return $this->notavailable();
         }
 
+        $rep = $this->getResponse('redirect');
+        $rep->params = array('user' => $login);
         $rep->action = 'jcommunity~account:destroydone';
         $tpl = new jTpl();
         $tpl->assign('username', $login);
