@@ -11,7 +11,6 @@
  */
 
 namespace Lizmap\Project;
-use Lizmap\App;
 
 class qgisProject
 {
@@ -98,13 +97,15 @@ class qgisProject
         }
         // Verifying if the files exist
         if (!file_exists($file)) {
-            throw new \Exception('The QGIS project '.$file.' does not exist!');
+            throw new \UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
         }
 
         // For the cache key, we use the full path of the project file
         // to avoid collision in the cache engine
         $data = false;
         $cache = new projectCache($file, $this->appContext);
+        $this->xml = simplexml_load_file($file);
+
 
         try {
             $data = $cache->retrieveProjectData();
@@ -746,39 +747,34 @@ class qgisProject
      *
      * @param mixed $qgs_path
      */
-    protected function readXmlProject($qgs_path)
+    protected function readXmlProject($qgsPath)
     {
-        if (!file_exists($qgs_path)) {
-            throw new \Exception('The QGIS project '.basename($qgs_path).' does not exist!');
+        if (!file_exists($qgsPath)) {
+            throw new \Exception('The QGIS project '.basename($qgsPath).' does not exist!');
         }
 
-        $qgs_xml = simplexml_load_file($qgs_path);
-        if ($qgs_xml === false) {
-            throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
-        }
-        $this->path = $qgs_path;
-        $this->xml = $qgs_xml;
-
+        $this->path = $qgsPath;
+        $qgsXml = $this->xml;
         // Build data
         $this->data = array(
         );
 
         // get title from WMS properties
-        if (property_exists($qgs_xml->properties, 'WMSServiceTitle')) {
-            if (!empty($qgs_xml->properties->WMSServiceTitle)) {
-                $this->data['title'] = (string) $qgs_xml->properties->WMSServiceTitle;
+        if (property_exists($qgsXml->properties, 'WMSServiceTitle')) {
+            if (!empty($qgsXml->properties->WMSServiceTitle)) {
+                $this->data['title'] = (string) $qgsXml->properties->WMSServiceTitle;
             }
         }
 
         // get abstract from WMS properties
-        if (property_exists($qgs_xml->properties, 'WMSServiceAbstract')) {
-            $this->data['abstract'] = (string) $qgs_xml->properties->WMSServiceAbstract;
+        if (property_exists($qgsXml->properties, 'WMSServiceAbstract')) {
+            $this->data['abstract'] = (string) $qgsXml->properties->WMSServiceAbstract;
         }
 
         // get keyword list from WMS properties
-        if (property_exists($qgs_xml->properties, 'WMSKeywordList')) {
+        if (property_exists($qgsXml->properties, 'WMSKeywordList')) {
             $values = array();
-            foreach ($qgs_xml->properties->WMSKeywordList->value as $value) {
+            foreach ($qgsXml->properties->WMSKeywordList->value as $value) {
                 if ((string) $value !== '') {
                     $values[] = (string) $value;
                 }
@@ -787,23 +783,23 @@ class qgisProject
         }
 
         // get WMS max width
-        if (property_exists($qgs_xml->properties, 'WMSMaxWidth')) {
-            $this->data['wmsMaxWidth'] = (int) $qgs_xml->properties->WMSMaxWidth;
+        if (property_exists($qgsXml->properties, 'WMSMaxWidth')) {
+            $this->data['wmsMaxWidth'] = (int) $qgsXml->properties->WMSMaxWidth;
         }
         if (!array_key_exists('WMSMaxWidth', $this->data) or !$this->data['wmsMaxWidth']) {
             unset($this->data['wmsMaxWidth']);
         }
 
         // get WMS max height
-        if (property_exists($qgs_xml->properties, 'WMSMaxHeight')) {
-            $this->data['wmsMaxHeight'] = (int) $qgs_xml->properties->WMSMaxHeight;
+        if (property_exists($qgsXml->properties, 'WMSMaxHeight')) {
+            $this->data['wmsMaxHeight'] = (int) $qgsXml->properties->WMSMaxHeight;
         }
         if (!array_key_exists('WMSMaxHeight', $this->data) or !$this->data['wmsMaxHeight']) {
             unset($this->data['wmsMaxHeight']);
         }
 
         // get QGIS project version
-        $qgisRoot = $qgs_xml->xpath('//qgis');
+        $qgisRoot = $qgsXml->xpath('//qgis');
         $qgisRootZero = $qgisRoot[0];
         $qgisProjectVersion = (string) $qgisRootZero->attributes()->version;
         $qgisProjectVersion = explode('-', $qgisProjectVersion);
@@ -820,13 +816,13 @@ class qgisProject
         $qgisProjectVersion = (int) $a;
         $this->qgisProjectVersion = $qgisProjectVersion;
 
-        $this->WMSInformation = $this->readWMSInformation($qgs_xml);
-        $this->canvasColor = $this->readCanvasColor($qgs_xml);
-        $this->allProj4 = $this->readAllProj4($qgs_xml);
-        $this->relations = $this->readRelations($qgs_xml);
-        $this->themes = $this->readThemes($qgs_xml);
-        $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
-        $this->layers = $this->readLayers($qgs_xml);
+        $this->WMSInformation = $this->readWMSInformation($qgsXml);
+        $this->canvasColor = $this->readCanvasColor($qgsXml);
+        $this->allProj4 = $this->readAllProj4($qgsXml);
+        $this->relations = $this->readRelations($qgsXml);
+        $this->themes = $this->readThemes($qgsXml);
+        $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
+        $this->layers = $this->readLayers($qgsXml);
     }
 
     protected function readWMSInformation($qgsLoad)
