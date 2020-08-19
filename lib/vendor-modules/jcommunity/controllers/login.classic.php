@@ -54,7 +54,7 @@ class loginCtrl extends jController {
             $form->setErrorOn('auth_login', jLocale::get('jcommunity~login.error'));
             //jMessage::add(jLocale::get('jcommunity~login.error'), 'error');
             $auth_url_return = $this->param('auth_url_return');
-            if ($auth_url_return) {
+            if (method_exists('jAuth', 'checkReturnUrl') &&  jAuth::checkReturnUrl($auth_url_return)) {
                 $rep->url = jUrl::get('login:index', array('auth_url_return'=>$auth_url_return));
             } else {
                 $rep->url = jUrl::get('login:index');
@@ -63,7 +63,7 @@ class loginCtrl extends jController {
             jForms::destroy('jcommunity~login');
             if ($conf['enable_after_login_override']) {
                 $url_return = $this->param('auth_url_return');
-                if ($url_return) {
+                if (method_exists('jAuth', 'checkReturnUrl') &&  jAuth::checkReturnUrl($url_return)) {
                     $rep->url = $url_return;
                 }
                 else {
@@ -93,7 +93,7 @@ class loginCtrl extends jController {
         if (jApp::coord()->execOriginalAction()) {
             if ($conf['enable_after_logout_override']) {
                 $url_return = $this->param('auth_url_return');
-                if ($url_return) {
+                if (method_exists('jAuth', 'checkReturnUrl') &&  jAuth::checkReturnUrl($url_return)) {
                     $rep->url = $url_return;
                 }
                 else {

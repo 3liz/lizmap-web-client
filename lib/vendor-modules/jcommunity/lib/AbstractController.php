@@ -47,6 +47,11 @@ class AbstractController extends \jController
         return null;
     }
 
+    protected function canViewProfiles($login) {
+        $himself = ($login != ''  && \jAuth::isConnected() && \jAuth::getUserSession()->login == $login);
+        return ($himself || \jAcl2::check('auth.users.view'));
+    }
+
     protected function _getjCommunityResponse()
     {
         $response = 'html';
@@ -65,9 +70,11 @@ class AbstractController extends \jController
         return $this->showError($rep, $errorId);
     }
 
-    protected function showError($rep, $errorId) {
+    protected function showError($rep, $errorId)
+    {
 
         $tpl = new \jTpl();
+        $canViewProfile = $this->canViewProfiles('');
         if (\jAuth::isConnected()) {
             $tpl->assign('login', \jAuth::getUserSession()->login);
         }
@@ -75,6 +82,7 @@ class AbstractController extends \jController
             $tpl->assign('login', '');
         }
         $tpl->assign('error', $errorId);
+        $tpl->assign('canViewProfile', $canViewProfile);
         $rep->body->assign('MAIN', $tpl->fetch('error'));
 
         return $rep;
@@ -87,4 +95,5 @@ class AbstractController extends \jController
         return $this->showError($rep, $errorId);
 
     }
+
 }

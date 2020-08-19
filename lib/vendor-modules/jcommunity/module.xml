@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
       <info id="jcommunity@jelix.org" name="jcommunity">
-        <version date="2019-07-23">1.2.3</version>
+        <version date="2020-08-19">1.2.4</version>
         <label>jCommunity</label>
         <description>module for a portal, to bring registration, profile editing for users</description>
         <licence URL="http://www.gnu.org/licenses/gpl.html">GPL</licence>
-        <copyright>Copyright 2008-2019 jelix.org</copyright>
+        <copyright>Copyright 2008-2020 jelix.org</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org"/>
         <homepageURL>https://github.com/jelix/jcommunity-module/</homepageURL>
     </info>
