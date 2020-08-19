@@ -11,6 +11,7 @@
  */
 
 namespace Lizmap\Project;
+use Lizmap\App;
 
 class Project
 {
@@ -40,9 +41,9 @@ class Project
     );
 
     /**
-     * @var JelixInfos The jelixInfos instance
+     * @var App\AppContextInterface The jelixInfos instance
      */
-    protected $jelix;
+    protected $appContext;
 
     /**
      * @var lizmapServices The lizmapServices instance
@@ -178,29 +179,29 @@ class Project
     /**
      * constructor.
      *
-     * @param string           $key      : the project name
-     * @param lizmapRepository $rep      : the repository
-     * @param jelixInfo        $jelix    the instance of jelixInfos
-     * @param mixed            $services
+     * @param string              $key      : the project name
+     * @param lizmapRepository    $rep      : the repository
+     * @param App\AppContextInterface $jelix    the instance of jelixInfos
+     * @param mixed               $services
      */
-    public function __construct($key, $rep, $jelix, $services)
+    public function __construct($key, $rep, App\appContextInterface $appContext, $services)
     {
         $this->key = $key;
         $this->repository = $rep;
-        $this->jelix = $jelix;
+        $this->appContext = $appContext;
         $this->services = $services;
 
         $file = $this->getQgisPath();
 
         // Verifying if the files exist
         if (!file_exists($file)) {
-            throw new UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
+            throw new \UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
         }
         if (!file_exists($file.'.cfg')) {
-            throw new UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
+            throw new \UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
         }
 
-        $this->cacheHandler = new projectCache($file, $this->jelix);
+        $this->cacheHandler = new projectCache($file, $this->appContext);
 
         $data = $this->cacheHandler->retrieveProjectData();
 
@@ -251,19 +252,19 @@ class Project
 
         if (!file_exists($qgs_path) ||
             !file_exists($qgs_path.'.cfg')) {
-            throw new UnknownLizmapProjectException("Files of project {$key} does not exists");
+            throw new \UnknownLizmapProjectException("Files of project {$key} does not exists");
         }
 
         $this->cfg = new configFile($qgs_path.'.cfg');
         if ($this->cfg === null) {
-            throw new UnknownLizmapProjectException(".qgs.cfg File of project {$key} has invalid content");
+            throw new \UnknownLizmapProjectException(".qgs.cfg File of project {$key} has invalid content");
         }
 
         $configOptions = $this->cfg->getEditableProperty('options');
 
         try {
-            $this->xml = new qgisProject($qgs_path);
-        } catch (Exception $e) {
+            $this->xml = new qgisProject($qgs_path, $this->appContext);
+        } catch (\Exception $e) {
             throw $e;
         }
         $qgs_xml = $this->xml;
@@ -284,7 +285,7 @@ class Project
         $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
 
         // get WMS getCapabilities full URL
-        $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
+        $this->data['wmsGetCapabilitiesUrl'] = \jUrl::getFull(
             'lizmap~service:index',
             array(
                 'repository' => $rep->getKey(),
@@ -296,7 +297,7 @@ class Project
         );
 
         // get WMTS getCapabilities full URL
-        $this->data['wmtsGetCapabilitiesUrl'] = jUrl::getFull(
+        $this->data['wmtsGetCapabilitiesUrl'] = \jUrl::getFull(
             'lizmap~service:index',
             array(
                 'repository' => $rep->getKey(),
@@ -436,7 +437,7 @@ class Project
      */
     public function getQgisServerPlugins()
     {
-        $qgisServer = new qgisServer();
+        $qgisServer = new \qgisServer();
 
         return $qgisServer->getPlugins($this);
     }
@@ -495,11 +496,11 @@ class Project
 
         // Create the virtual jdb profile
         $searchJdbName = 'jdb_'.$repository.'_'.$project;
-        $this->jelix->createVirtualProfile('jdb', $searchJdbName, $jdbParams);
+        $this->appContext->createVirtualProfile('jdb', $searchJdbName, $jdbParams);
 
         // Check FTS db ( tables and geometry storage
         try {
-            $cnx = $this->jelix->getConnection($searchJdbName);
+            $cnx = $this->appContext->getDbConnection($searchJdbName);
 
             // Get metadata
             $sql = "
@@ -508,7 +509,7 @@ class Project
             WHERE geometry_storage != 'wkb'
             ORDER BY priority
             ";
-            $res = $this->jelix->useDbConnection($cnx, 'query', array($sql));
+            $res = $cnx->query($sql);
             $searches = array();
             foreach ($res as $item) {
                 $searches[$item->search_id] = array(
@@ -525,7 +526,7 @@ class Project
                 'jdb_profile' => $searchJdbName,
                 'searches' => $searches,
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
 
@@ -536,7 +537,7 @@ class Project
     {
         $editionLayers = $this->cfg->getEditableProperty('editionLayers');
         if ($editionLayers) {
-            if (!$this->jelix->aclCheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
+            if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
                 return false;
             }
 
@@ -549,8 +550,8 @@ class Project
                     $editionGroups = $eLayer->acl;
                     $editionGroups = array_map('trim', explode(',', $editionGroups));
                     if (is_array($editionGroups) and count($editionGroups) > 0) {
-                        $userGroups = $this->jelix->aclDbUserGroups();
-                        if (array_intersect($editionGroups, $userGroups) or $this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
+                        $userGroups = $this->appContext->aclUserGroupsId();
+                        if (array_intersect($editionGroups, $userGroups) or $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
@@ -666,15 +667,15 @@ class Project
             $filter = "\"{$attribute}\" = 'all'";
 
             // A user is connected
-            if ($this->jelix->userIsConnected()) {
-                $user = $this->jelix->getUserSession();
+            if ($this->appContext->userIsConnected()) {
+                $user = $this->appContext->getUserSession();
                 $login = $user->login;
                 if (property_exists($loginFilteredConfig, 'filterPrivate') &&
                     $this->optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
                     $filter = "\"{$attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
-                    $userGroups = $this->jelix->aclDbUserGroups();
+                    $userGroups = $this->appContext->aclUserGroupsId();
                     $flatGroups = implode("' , '", $userGroups);
                     $filter = "\"{$attribute}\" IN ( '".$flatGroups."' , 'all' )";
                 }
@@ -711,7 +712,7 @@ class Project
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
-            'locale' => $this->jelix->appConfig()->locale,
+            'locale' => $this->appContext->appConfig()->locale,
         );
         foreach ($datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
@@ -886,8 +887,8 @@ class Project
     {
         $formFilterLayers = $cfg->getProperty('formFilterLayer');
 
-        if (!$formFilterLayer) {
-            $formFilterLayer = array();
+        if (!$formFilterLayers) {
+            $formFilterLayers = array();
         }
 
         return $formFilterLayers;
@@ -906,7 +907,7 @@ class Project
                 $spatialiteExt = $this->getSpatialiteExtension();
             }
             if (!$spatialiteExt) {
-                jLog::log('Spatialite is not available', 'error');
+                \jLog::log('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
             }
         } else {
@@ -951,7 +952,7 @@ class Project
 
         // Add an option to display buttons to remove the cache for cached layer
         // Only if appropriate right is found
-        if ($this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
+        if ($this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
             $configJson->options->removeCache = 'True';
         }
 
@@ -979,7 +980,7 @@ class Project
 
         // Remove editionLayers from config if no right to access this tool
         if (property_exists($configJson, 'editionLayers')) {
-            if ($this->jelix->aclCheckResult(array('lizmap.tools.edition.use', $this->repository->getKey()))) {
+            if ($this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
                 $configJson->editionLayers = clone $this->editionLayers;
                 // Check right to edit this layer (if property "acl" is in config)
                 foreach ($configJson->editionLayers as $key => $eLayer) {
@@ -990,8 +991,8 @@ class Project
                         $editionGroups = $eLayer->acl;
                         $editionGroups = array_map('trim', explode(',', $editionGroups));
                         if (is_array($editionGroups) and count($editionGroups) > 0) {
-                            $userGroups = $this->jelix->aclDbUserGroups();
-                            if (array_intersect($editionGroups, $userGroups) or $this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
+                            $userGroups = $this->appContext->aclUserGroupsId();
+                            if (array_intersect($editionGroups, $userGroups) or $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
                                 // User group(s) correspond to the groups given for this edition layer
                                 // or the user is admin
                                 unset($configJson->editionLayers->{$key}->acl);
@@ -1008,7 +1009,7 @@ class Project
         }
 
         // Add export layer right
-        if ($this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey()))) {
+        if ($this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())) {
             $configJson->options->exportLayers = 'True';
         }
 
@@ -1053,12 +1054,12 @@ class Project
                 'service' => $configJson->options->externalSearch,
             );
             if ($configJson->options->externalSearch == 'nominatim') {
-                $externalSearch['url'] = jUrl::get('lizmap~osm:nominatim');
+                $externalSearch['url'] = \jUrl::get('lizmap~osm:nominatim');
             } elseif ($configJson->options->externalSearch == 'ban') {
                 $externalSearch = array(
                     'type' => 'BAN',
                     'service' => 'lizmapBan',
-                    'url' => jUrl::get('lizmap~ban:search'),
+                    'url' => \jUrl::get('lizmap~ban:search'),
                 );
             }
             $configJson->options->searches[] = (object) $externalSearch;
@@ -1070,11 +1071,11 @@ class Project
             $configJson->options->searches[] = (object) array(
                 'type' => 'QuickFinder',
                 'service' => 'lizmapQuickFinder',
-                'url' => jUrl::get('lizmap~search:get'),
+                'url' => \jUrl::get('lizmap~search:get'),
             );
         }
         // Events to get additional searches
-        $searchServices = $this->jelix->eventNotify('searchServiceItem', array('repository' => $this->repository->getKey(), 'project' => $this->getKey()))->getResponse();
+        $searchServices = $this->appContext->eventNotify('searchServiceItem', array('repository' => $this->repository->getKey(), 'project' => $this->getKey()))->getResponse();
         foreach ($searchServices as $searchService) {
             if (is_array($searchService)) {
                 if (array_key_exists('type', $searchService) && array_key_exists('url', $searchService)) {
@@ -1103,8 +1104,8 @@ class Project
 
         // Check layers group visibility
         $userGroups = array('');
-        if ($this->jelix->userIsConnected()) {
-            $userGroups = $this->jelix->aclDbUserGroups();
+        if ($this->appContext->userIsConnected()) {
+            $userGroups = $this->appContext->aclUserGroupsId();
         }
         $layersToRemove = array();
         foreach ($configJson->layers as $obj) {
@@ -1242,7 +1243,7 @@ class Project
     public function getDefaultDockable()
     {
         $dockable = array();
-        $confUrlEngine = $this->jelix->appConfig()->urlengine;
+        $confUrlEngine = $this->appContext->appConfig()->urlengine;
         $bp = $confUrlEngine['basePath'];
         $jwp = $confUrlEngine['jelixWWWPath'];
 
@@ -1250,37 +1251,35 @@ class Project
         $services = $this->services; // A changer
 
         if ($services->projectSwitcher) {
-            $projectsTpl = new jTpl();
-            $ProjectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
-            $dockable[] = new lizmapMapDockItem(
+            $projectsTpl = new \jTpl();
+            $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
+            $dockable[] = new \lizmapMapDockItem(
                 'projects',
-                $this->jelix->getLocale('view~default.repository.list.title'),
+                $this->appContext->getLocale('view~default.repository.list.title'),
                 $projectsTpl->fetch('view~map_projects'),
                 0
             );
         }
 
-        $switcherTpl = new jTpl();
+        $switcherTpl = new \jTpl();
         $switcherTpl->assign(array(
-            'layerExport' => $this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())),
-        ));
-        $dockable[] = new lizmapMapDockItem(
+            'layerExport' => $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())));
+        $dockable[] = new \lizmapMapDockItem(
             'switcher',
-            $this->jelix->getLocale('view~map.switchermenu.title'),
+            $this->appContext->getLocale('view~map.switchermenu.title'),
             $switcherTpl->fetch('view~map_switcher'),
             1
         );
         //$legendTpl = new jTpl();
         //$dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
 
-        $metadataTpl = new jTpl();
+        $metadataTpl = new \jTpl();
         // Get the WMS information
         $wmsInfo = $this->xml->getWMSInformation();
         // WMS GetCapabilities Url
-        $wmsGetCapabilitiesUrl = $this->jelix->aclCheckResult(
-            array(
+        $wmsGetCapabilitiesUrl = $this->appContext->aclCheck(
                 'lizmap.tools.displayGetCapabilitiesLinks',
-                $this->repository->getKey(), )
+                $this->repository->getKey()
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {
@@ -1294,18 +1293,18 @@ class Project
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
             'wmtsGetCapabilitiesUrl' => $wmtsGetCapabilitiesUrl,
         ), $wmsInfo));
-        $dockable[] = new lizmapMapDockItem(
+        $dockable[] = new \lizmapMapDockItem(
             'metadata',
-            $this->jelix->getLocale('view~map.metadata.link.label'),
+            $this->appContext->getLocale('view~map.metadata.link.label'),
             $metadataTpl->fetch('view~map_metadata'),
             2
         );
 
         if ($this->hasEditionLayers()) {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
                 'edition',
-                $this->jelix->getLocale('view~edition.navbar.title'),
+                $this->appContext->getLocale('view~edition.navbar.title'),
                 $tpl->fetch('view~map_edition'),
                 3,
                 $jwp.'design/jform.css',
@@ -1326,15 +1325,15 @@ class Project
     {
         $dockable = array();
         $configOptions = $this->getOptions();
-        $bp = $this->jelix->appConfig()->urlengine['basePath'];
+        $bp = $this->appContext->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers()) {
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
-            $layerExport = $this->jelix->aclCheckResult(array('lizmap.tools.layer.export', $this->repository->getKey())) ? 'layer-export' : '';
-            $dock = new lizmapMapDockItem(
+            $layerExport = $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ? 'layer-export' : '';
+            $dock = new \lizmapMapDockItem(
                 'selectiontool',
-                $this->jelix->getLocale('view~map.selectiontool.navbar.title'),
+                $this->appContext->getLocale('view~map.selectiontool.navbar.title'),
                 '<lizmap-selection-tool '.$layerExport.'></lizmap-selection-tool>',
                 1,
                 '',
@@ -1345,10 +1344,10 @@ class Project
         }
 
         if ($this->hasLocateByLayer()) {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
                 'locate',
-                $this->jelix->getLocale('view~map.locatemenu.title'),
+                $this->appContext->getLocale('view~map.locatemenu.title'),
                 $tpl->fetch('view~map_locate'),
                 2
             );
@@ -1356,11 +1355,11 @@ class Project
 
         if (property_exists($configOptions, 'geolocation')
             && $configOptions->geolocation == 'True') {
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
-            $dockable[] = new lizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'geolocation',
-                $this->jelix->getLocale('view~map.geolocate.navbar.title'),
+                $this->appContext->getLocale('view~map.geolocate.navbar.title'),
                 $tpl->fetch('view~map_geolocation'),
                 3
             );
@@ -1368,10 +1367,10 @@ class Project
 
         if (property_exists($configOptions, 'print')
             && $configOptions->print == 'True') {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
                 'print',
-                $this->jelix->getLocale('view~map.print.navbar.title'),
+                $this->appContext->getLocale('view~map.print.navbar.title'),
                 $tpl->fetch('view~map_print'),
                 4
             );
@@ -1379,20 +1378,20 @@ class Project
 
         if (property_exists($configOptions, 'measure')
             && $configOptions->measure == 'True') {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
                 'measure',
-                $this->jelix->getLocale('view~map.measure.navbar.title'),
+                $this->appContext->getLocale('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
                 5
             );
         }
 
         if ($this->hasTooltipLayers()) {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
                 'tooltip-layer',
-                $this->jelix->getLocale('view~map.tooltip.navbar.title'),
+                $this->appContext->getLocale('view~map.tooltip.navbar.title'),
                 $tpl->fetch('view~map_tooltip'),
                 6,
                 '',
@@ -1401,10 +1400,10 @@ class Project
         }
 
         if ($this->hasTimemanagerLayers()) {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
                 'timemanager',
-                $this->jelix->getLocale('view~map.timemanager.navbar.title'),
+                $this->appContext->getLocale('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
                 7,
                 '',
@@ -1417,11 +1416,11 @@ class Project
             // Get geobookmark if user is connected
             $gbCount = false;
             $gbList = null;
-            if ($this->jelix->userIsConnected()) {
-                $juser = $this->jelix->getUserSession();
+            if ($this->appContext->userIsConnected()) {
+                $juser = $this->appContext->getUserSession();
                 $usr_login = $juser->login;
-                $daogb = getDao('lizmap~geobookmark');
-                $conditions = jDao::createConditions();
+                $daogb = \jDao::get('lizmap~geobookmark');
+                $conditions = \jDao::createConditions();
                 $conditions->addCondition('login', '=', $usr_login);
                 $conditions->addCondition(
                     'map',
@@ -1431,22 +1430,22 @@ class Project
                 $gbList = $daogb->findBy($conditions);
                 $gbCount = $daogb->countBy($conditions);
             }
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign('gbCount', $gbCount);
             $tpl->assign('gbList', $gbList);
             $gbContent = null;
             if ($gbList) {
                 $gbContent = $tpl->fetch('view~map_geobookmark');
             }
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign(array(
                 'repository' => $this->repository->getKey(),
                 'project' => $this->getKey(),
                 'gbContent' => $gbContent,
             ));
-            $dockable[] = new lizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'permaLink',
-                $this->jelix->getLocale('view~map.permalink.navbar.title'),
+                $this->appContext->getLocale('view~map.permalink.navbar.title'),
                 $tpl->fetch('view~map_permalink'),
                 8
             );
@@ -1454,10 +1453,10 @@ class Project
 
         if (property_exists($configOptions, 'draw')
             && $configOptions->draw == 'True') {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
                 'draw',
-                $this->jelix->getLocale('view~map.draw.navbar.title'),
+                $this->appContext->getLocale('view~map.draw.navbar.title'),
                 $tpl->fetch('view~map_draw'),
                 9
             );
@@ -1474,14 +1473,14 @@ class Project
     public function getDefaultBottomDockable()
     {
         $dockable = array();
-        $bp = $this->jelix->appConfig()->urlengine['basePath'];
+        $bp = $this->appContext->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers(true)) {
-            $form = $this->jelix->createForm('view~attribute_layers_option');
+            $form = $this->appContext->createJelixForm('view~attribute_layers_option');
             $assign = array('form' => $form);
-            $dockable[] = new lizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'attributeLayers',
-                $this->jelix->getLocale('view~map.attributeLayers.navbar.title'),
+                $this->appContext->getLocale('view~map.attributeLayers.navbar.title'),
                 array('view~map_attributeLayers', $assign),
                 1,
                 '',
@@ -1502,7 +1501,7 @@ class Project
         $options = $this->getOptions();
 
         // Check right on repository
-        if (!$this->jelix->aclCheckResult(array('lizmap.repositories.view', $this->repository->getKey()))) {
+        if (!$this->appContext->aclCheck('lizmap.repositories.view', $this->repository->getKey())) {
             return false;
         }
 
@@ -1512,18 +1511,18 @@ class Project
         }
 
         // Check user is authenticated
-        if (!$this->jelix->userIsConnected()) {
+        if (!$this->appContext->userIsConnected()) {
             return false;
         }
 
         // Check user is admin -> ok, give permission
-        if ($this->jelix->aclCheckResult(array('lizmap.admin.repositories.delete'))) {
+        if ($this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
             return true;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
         $aclGroups = $options->acl;
-        $userGroups = $this->jelix->aclDbUserGroups();
+        $userGroups = $this->appContext->aclUserGroupsId();
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
         }
@@ -1539,25 +1538,25 @@ class Project
 
         // Try with mod_spatialite
         try {
-            $db = new SQLite3(':memory:');
+            $db = new \SQLite3(':memory:');
             $this->spatialiteExt = 'mod_spatialite.so';
             $spatial = @$db->loadExtension($this->spatialiteExt); // loading SpatiaLite as an extension
             if ($spatial) {
                 return $this->spatialiteExt;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $spatial = false;
         }
         // Try with libspatialite
         if (!$spatial) {
             try {
-                $db = new SQLite3(':memory:');
+                $db = new \SQLite3(':memory:');
                 $this->spatialiteExt = 'libspatialite.so';
                 $spatial = @$db->loadExtension($this->spatialiteExt); // loading SpatiaLite as an extension
                 if ($spatial) {
                     return $this->spatialiteExt;
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
             }
         }
         $this->spatialiteExt = '';
