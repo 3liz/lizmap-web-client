@@ -98,7 +98,6 @@ class QgisProject
             // have a kind of lock to avoid this issue.
             $this->readXmlProject($file);
         } else {
-            \jLog::log('je passe: construct else', 'error');
             foreach ($this->cachedProperties as $prop) {
                 $this->{$prop} = $data[$prop];
             }
