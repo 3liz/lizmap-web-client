@@ -146,6 +146,11 @@ class Project
     protected $attributeLayers = array();
 
     /**
+     * @var array
+     */
+    protected $layers;
+
+    /**
      * @var bool
      */
     protected $useLayerIDs = false;
@@ -209,7 +214,7 @@ class Project
         }
 
         try {
-            $this->xml = new qgisProject($file, $this->appContext);
+            $this->xml = new qgisProject($file, $this->appContext, $services);
         } catch (\UnknownLizmapProjectException $e) {
             throw $e;
         }
@@ -217,6 +222,12 @@ class Project
 
         $data = $this->cacheHandler->retrieveProjectData();
 
+        if (!isset($data['qgsmtime'])) {
+            $data['qgsmtime'] = $this->getData('qgsmtime');
+        }
+        if (!isset($data['qgscfgmtime'])) {
+            $data['qgscfgmtime'] = $this->getData('qgsmtime');
+        }
         if ($data === false ||
             $data['qgsmtime'] < filemtime($file) ||
             $data['qgscfgmtime'] < filemtime($file.'.cfg') ||
@@ -268,7 +279,7 @@ class Project
         }
 
         $qgsXml = $this->xml;
-        $configOptions = $this->cfg->getEditableProperty('options');
+        $configOptions = $this->cfg->getProperty('options');
 
         // Complete data
         $this->data['repository'] = $rep->getKey();
@@ -283,7 +294,9 @@ class Project
         $this->data['bbox'] = implode(', ', $configOptions->bbox);
 
         // Update WMSInformation
+        // $this->WMSInformation = array($this->xml->getWMSInformation(), 'ProjectCrs' => $this->data['proj']);
         $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
+        $this->WMSInformation = array_merge($this->xml->getWMSInformation(), $this->WMSInformation);
 
         // get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = \jUrl::getFull(
@@ -411,6 +424,9 @@ class Project
 
     public function getWMSInformation()
     {
+        if (isset($this->WMSInformation) && count($this->WMSInformation) > 1) {
+            return $this->WMSInformation;
+        }
         return $this->xml->getWMSInformation();
     }
 
@@ -453,7 +469,7 @@ class Project
     {
         $options = $this->getOptions();
         $atlas = $this->cfg->getProperty('atlas');
-        if (($options->atlasEnabled and $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+        if ((property_exists($options, 'atlasEnabled') and $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
             or
             ($atlas and property_exists($atlas, 'layers') and is_array($atlas) and count($atlas) > 0)) { // Multiple atlas
             return true;
@@ -565,7 +581,7 @@ class Project
 
     public function hasEditionLayers()
     {
-        $editionLayers = $this->cfg->getEditableProperty('editionLayers');
+        $editionLayers = $this->cfg->getProperty('editionLayers');
         if ($editionLayers) {
             if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
                 return false;
@@ -585,10 +601,10 @@ class Project
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
-                            unset($editionLayers->{$key}->acl);
+                            $this->cfg->unsetProperty('editionLayers->'.$key.'->acl');
                         } else {
                             // No match found, we deactivate the edition layer
-                            unset($editionLayers->{$key});
+                            $this->cfg->unsetProperty('editionLayers->'.$key);
                         }
                     }
                 } else {
@@ -605,9 +621,9 @@ class Project
         return false;
     }
 
-    public function &getEditionLayers()
+    public function getEditionLayers()
     {
-        return $this->cfg->getEditableProperty('editionLayers');
+        return $this->cfg->getProperty('editionLayers');
     }
 
     public function findEditionLayerByName($name)
@@ -895,7 +911,7 @@ class Project
     {
         $printTemplates = array();
         $options = $this->getOptions();
-        if ($options && $options->print == 'True') {
+        if ($options && property_exists($options, 'print') && $options->print == 'True') {
             $printTemplates = $qgsLoad->getPrintTemplates();
         }
 
@@ -905,9 +921,12 @@ class Project
     protected function readLocateByLayers($xml, $cfg)
     {
         $locateByLayer = array();
-        $locateByLayer = $cfg->getEditableProperty('locateByLayer');
+        $locateByLayer = $cfg->getProperty('locateByLayer');
         if ($locateByLayer) {
+            // The method takes a reference
             $xml->readLocateByLayers($locateByLayer);
+            // so we can modify it here
+            $this->cfg->setProperty('locateByLayer', $locateByLayer);
         }
 
         return $locateByLayer;
@@ -926,10 +945,9 @@ class Project
 
     protected function readEditionLayers($xml, $cfg)
     {
-        $editionLayers = $cfg->getEditableProperty('editionLayers');
+        $editionLayers = $this->getEditionLayers();
 
         if ($editionLayers) {
-
             // Check ability to load spatialite extension
             // And remove ONLY spatialite layers if no extension found
             $spatialiteExt = '';
@@ -938,7 +956,10 @@ class Project
             }
             if (!$spatialiteExt) {
                 \jLog::log('Spatialite is not available', 'error');
+                // method gets a reference
                 $xml->readEditionLayers($editionLayers);
+                // so we can ste the data here
+                $this->cfg->setProperty('EditionLayers', $editionLayers);
             }
         } else {
             $editionLayers = array();
@@ -949,10 +970,13 @@ class Project
 
     protected function readAttributeLayers($xml, $cfg)
     {
-        $attributeLayers = $cfg->getEditableProperty('attributeLayers');
+        $attributeLayers = $cfg->getProperty('attributeLayers');
 
         if ($attributeLayers) {
+            // method takes a reference
             $xml->readAttributeLayers($attributeLayers);
+            // so we can modify data here
+            $this->cfg->setProperty('attributeLayers', $attributeLayers);
         } else {
             $attributeLayers = array();
         }
@@ -1365,7 +1389,7 @@ class Project
 
         $metadataTpl = new \jTpl();
         // Get the WMS information
-        $wmsInfo = $this->xml->getWMSInformation();
+        $wmsInfo = $this->WMSInformation;
         // WMS GetCapabilities Url
         $wmsGetCapabilitiesUrl = $this->appContext->aclCheck(
             'lizmap.tools.displayGetCapabilitiesLinks',

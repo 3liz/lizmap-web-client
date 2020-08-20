@@ -85,12 +85,17 @@ class qgisProject
     protected $appContext;
 
     /**
+     * @var lizmapServices
+     */
+    protected $services;
+
+    /**
      * constructor.
      *
      * @param string $file  : the QGIS project path
      * @param mixed  $jelix
      */
-    public function __construct($file, $jelix)
+    public function __construct($file, $jelix, $services)
     {
         if (!$this->appContext) {
             $this->appContext = $jelix;
@@ -106,6 +111,7 @@ class qgisProject
         $cache = new projectCache($file, $this->appContext);
         $this->xml = simplexml_load_file($file);
         $this->path = $file;
+        $this->services = $services;
 
         try {
             $data = $cache->retrieveProjectData();
@@ -125,14 +131,12 @@ class qgisProject
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
             }
-
             try {
                 $cache->storeProjectData($data);
             } catch (\Exception $e) {
                 \jLog::logEx($e, 'error');
             }
         } else {
-            \jLog::log('je passe: construct else', 'error');
             foreach ($this->cachedProperties as $prop) {
                 $this->{$prop} = $data[$prop];
             }
@@ -1015,7 +1019,7 @@ class qgisProject
         foreach ($xmlLayers as $xmlLayer) {
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
-                $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project), $this->appContext);
+                $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project), $this->appContext, $this->services);
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
                 $layer['embedded'] = 1;
                 $layer['projectPath'] = (string) $attributes->project;

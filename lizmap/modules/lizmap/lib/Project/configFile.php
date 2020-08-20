@@ -39,18 +39,18 @@ class configFile
         return null;
     }
 
-    /**
-     * Return a reference to a property that can be edited.
-     *
-     * @param string $propName The property to get
-     */
-    public function &getEditableProperty($propName)
+    public function setProperty($prop, $value)
     {
-        if (property_exists($this->data, $propName)) {
-            return $this->data->{$propName};
+        if (property_exists($this->data, $prop)) {
+            $this->data->$prop = $value;
         }
+    }
 
-        return null;
+    public function unsetProperty($prop)
+    {
+        if (property_exists($this->data, $prop)) {
+            unset($this->data->prop);
+        }
     }
 
     /**
