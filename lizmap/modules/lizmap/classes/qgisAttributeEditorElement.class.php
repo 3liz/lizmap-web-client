@@ -146,7 +146,6 @@ class qgisAttributeEditorElement
         return $this->_isTabPanel;
     }
 
-
     /**
      * @return qgisAttributeEditorElement[]
      */
@@ -209,6 +208,7 @@ class qgisAttributeEditorElement
                 $fields[] = $child->getName();
             }
         }
+
         return $fields;
     }
 }

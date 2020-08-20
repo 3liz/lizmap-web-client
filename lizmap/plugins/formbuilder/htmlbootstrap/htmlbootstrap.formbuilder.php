@@ -153,7 +153,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
         if ($ctrl->type == 'hidden' || $ctrl->type == 'button') {
             return;
         }
-        else if ($ctrl->type == 'checkbox' &&
+        if ($ctrl->type == 'checkbox' &&
             $ctrl->valueLabelOnCheck === '' &&
             $ctrl->valueLabelOnUncheck === '') {
             return;
