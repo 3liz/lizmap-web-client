@@ -13,10 +13,11 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
 {
     use \Lizmap\Form\WidgetTrait;
 
-    protected function outputJs() {
-        $js = "c = new ".$this->builder->getjFormsJsVarName()."ControlBoolean('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
-        if($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
-            $js = "c = new ".$this->builder->getjFormsJsVarName()."ControlString('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
+    protected function outputJs()
+    {
+        $js = 'c = new '.$this->builder->getjFormsJsVarName()."ControlBoolean('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
+        if ($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
+            $js = 'c = new '.$this->builder->getjFormsJsVarName()."ControlString('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
         }
         $this->parentWidget->addJs($js);
         $this->commonJs();
@@ -24,8 +25,7 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
 
     public function outputControl()
     {
-
-        if($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
+        if ($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
             $this->labelAttributes['class'] = 'radio jforms-radio';
         } else {
             $this->labelAttributes['class'] = 'checkbox';
@@ -34,15 +34,14 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
 
         $attr = $this->getControlAttributes();
 
-        if($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
-
+        if ($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
             echo '<label class="',$attrLabel['class'],'" ',$attrLabel['hint'],'>';
 
             $attrid = ''.$attr['id'];
 
             $attr['type'] = 'radio';
-            if($this->ctrl->valueOnCheck == $this->getValue()){
-                $attr['checked'] = "checked";
+            if ($this->ctrl->valueOnCheck == $this->getValue()) {
+                $attr['checked'] = 'checked';
             }
             $attr['value'] = $this->ctrl->valueOnCheck;
             $attr['id'] = $attrid.'_'.$this->ctrl->valueOnCheck;
@@ -58,14 +57,12 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
             echo htmlspecialchars($this->ctrl->valueLabelOnCheck);
             echo "</label>\n";
 
-
             echo '<label class="',$attrLabel['class'],'" ',$attrLabel['hint'],'>';
 
-            if($this->ctrl->valueOnCheck == $this->getValue()){
+            if ($this->ctrl->valueOnCheck == $this->getValue()) {
                 unset($attr['checked']);
-            }
-            else if($this->ctrl->valueOnUncheck == $this->getValue()){
-                $attr['checked'] = "checked";
+            } elseif ($this->ctrl->valueOnUncheck == $this->getValue()) {
+                $attr['checked'] = 'checked';
             }
             $attr['value'] = ''; //In the HTML form uncheck is equal to no value $this->ctrl->valueOnUncheck;
             $attr['id'] = $attrid.'_'.$this->ctrl->valueOnUncheck;
