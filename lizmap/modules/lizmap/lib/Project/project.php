@@ -203,7 +203,7 @@ class Project
         }
 
         try {
-            $this->cfg = new configFile($file.'.cfg');
+            $this->cfg = new projectConfig($file.'.cfg');
         } catch (\UnknownLizmapProjectException $e) {
             throw $e;
         }
