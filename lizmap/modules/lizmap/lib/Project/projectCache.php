@@ -4,7 +4,7 @@ namespace Lizmap\Project;
 
 use Lizmap\App;
 
-class projectCache
+class ProjectCache
 {
     /**
      * The Cache profile.

@@ -12,7 +12,7 @@
 
 namespace Lizmap\Project;
 
-class qgisProject
+class QgisProject
 {
     /**
      * @var string QGIS project path
@@ -105,7 +105,6 @@ class qgisProject
         $data = false;
         $cache = new projectCache($file, $this->appContext);
         $this->xml = simplexml_load_file($file);
-
 
         try {
             $data = $cache->retrieveProjectData();
@@ -746,6 +745,7 @@ class qgisProject
      * Read the qgis files.
      *
      * @param mixed $qgs_path
+     * @param mixed $qgsPath
      */
     protected function readXmlProject($qgsPath)
     {

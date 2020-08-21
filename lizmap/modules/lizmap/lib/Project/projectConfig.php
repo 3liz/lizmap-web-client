@@ -2,7 +2,7 @@
 
 namespace Lizmap\Project;
 
-class configFile
+class ProjectConfig
 {
     protected $data;
 
