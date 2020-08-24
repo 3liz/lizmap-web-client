@@ -17,15 +17,15 @@ use Lizmap\App;
 class Project
 {
     /**
-     * @var lizmapRepository
+     * @var \LizmapRepository
      */
     protected $repository;
     /**
-     * @var qgisProject QGIS project XML
+     * @var QgisProject QGIS project XML
      */
     protected $qgis;
     /**
-     * @var projectConfig CFG project JSON
+     * @var ProjectConfig CFG project JSON
      */
     protected $cfg;
 
@@ -47,7 +47,7 @@ class Project
     protected $appContext;
 
     /**
-     * @var lizmapServices The lizmapServices instance
+     * @var \LizmapServices The lizmapServices instance
      */
     protected $services;
 
@@ -61,20 +61,6 @@ class Project
      * @var string
      */
     protected $key = '';
-
-    /**
-     * QGIS project filemtime.
-     *
-     * @var string
-     */
-    protected $qgsmtime = '';
-
-    /**
-     * Lizmap config filemtime.
-     *
-     * @var string
-     */
-    protected $qgscfgmtime = '';
 
     /**
      * @var array Lizmap repository configuration data
@@ -173,19 +159,19 @@ class Project
     const CACHE_FORMAT_VERSION = 1;
 
     /**
-     * @var projectCache
+     * @var ProjectCache
      */
     protected $cacheHandler;
 
     /**
      * constructor.
      *
-     * @param string                  $key      : the project name
-     * @param lizmapRepository        $rep      : the repository
-     * @param App\AppContextInterface $jelix    the instance of jelixInfos
+     * @param string                  $key        : the project name
+     * @param \LizmapRepository       $rep        : the repository
+     * @param App\AppContextInterface $appContext the instance of jelixInfos
      * @param mixed                   $services
      */
-    public function __construct($key, \lizmapRepository $rep, App\appContextInterface $appContext, \lizmapServices $services)
+    public function __construct($key, \LizmapRepository $rep, App\appContextInterface $appContext, \lizmapServices $services)
     {
         $this->key = $key;
         $this->repository = $rep;
@@ -203,23 +189,21 @@ class Project
         }
 
         try {
-            $this->cfg = new projectConfig($file.'.cfg');
+            $this->cfg = new ProjectConfig($file.'.cfg');
         } catch (\UnknownLizmapProjectException $e) {
             throw $e;
         }
 
         try {
-            $this->qgis = new qgisProject($file, $this->appContext);
+            $this->qgis = new QgisProject($file, $this->appContext);
         } catch (\UnknownLizmapProjectException $e) {
             throw $e;
         }
-        $this->cacheHandler = new projectCache($file, $this->appContext);
+        $this->cacheHandler = new ProjectCache($file, $this->appContext);
 
         $data = $this->cacheHandler->retrieveProjectData();
 
         if ($data === false ||
-            $data['qgsmtime'] < filemtime($file) ||
-            $data['qgscfgmtime'] < filemtime($file.'.cfg') ||
             !isset($data['format_version']) ||
             $data['format_version'] != self::CACHE_FORMAT_VERSION
         ) {
@@ -227,8 +211,6 @@ class Project
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             $this->readProject($key, $rep);
-            $data['qgsmtime'] = filemtime($file);
-            $data['qgscfgmtime'] = filemtime($file.'.cfg');
             $data['format_version'] = self::CACHE_FORMAT_VERSION;
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
@@ -241,8 +223,6 @@ class Project
                 }
             }
         }
-        $this->qgsmtime = $data['qgsmtime'];
-        $this->qgscfgmtime = $data['qgscfgmtime'];
 
         $this->path = $file;
     }
@@ -260,15 +240,15 @@ class Project
      */
     protected function readProject($key, \lizmapRepository $rep)
     {
-        $qgs_path = $this->getQgisPath();
+        $qgsPath = $this->getQgisPath();
 
-        if (!file_exists($qgs_path) ||
-            !file_exists($qgs_path.'.cfg')) {
+        if (!file_exists($qgsPath) ||
+            !file_exists($qgsPath.'.cfg')) {
             throw new \UnknownLizmapProjectException("Files of project {$key} does not exists");
         }
 
         $qgsXml = $this->qgis;
-        $configOptions = $this->cfg->getEditableProperty('options');
+        $configOptions = $this->cfg->getProperty('options');
 
         // Complete data
         $this->data['repository'] = $rep->getKey();
@@ -358,12 +338,12 @@ class Project
 
     public function getFileTime()
     {
-        return $this->qgsmtime;
+        return $this->cacheHandler->getFileTime();
     }
 
     public function getCfgFileTime()
     {
-        return $this->qgscfgmtime;
+        return $this->cacheHandler->getCfgFileTime();
     }
 
     public function getProperties()
@@ -408,8 +388,8 @@ class Project
 
     public function hasTimemanagerLayers()
     {
-        $timemanager = $this->cfg->getProperty('timemanagerLayers');
-        if ($timemanager && is_array($timemanager) && count($timemanager)) {
+        $timeManager = $this->cfg->getProperty('timemanagerLayers');
+        if ($timeManager && is_array($timeManager) && count($timeManager)) {
             return true;
         }
 
@@ -486,18 +466,18 @@ class Project
             return false;
         }
 
-        $jdbParams = array(
+        $jDbParams = array(
             'driver' => 'pdo',
             'dsn' => 'sqlite:'.$searchDatabase,
         );
 
         // Create the virtual jdb profile
-        $searchJdbName = 'jdb_'.$repository.'_'.$project;
-        $this->appContext->createVirtualProfile('jdb', $searchJdbName, $jdbParams);
+        $searchJDbName = 'jdb_'.$repository.'_'.$project;
+        $this->appContext->createVirtualProfile('jdb', $searchJDbName, $jDbParams);
 
         // Check FTS db ( tables and geometry storage
         try {
-            $cnx = $this->appContext->getDbConnection($searchJdbName);
+            $cnx = $this->appContext->getDbConnection($searchJDbName);
 
             // Get metadata
             $sql = "
@@ -520,7 +500,7 @@ class Project
             }
 
             return array(
-                'jdb_profile' => $searchJdbName,
+                'jdb_profile' => $searchJDbName,
                 'searches' => $searches,
             );
         } catch (\Exception $e) {
@@ -532,7 +512,7 @@ class Project
 
     public function hasEditionLayers()
     {
-        $editionLayers = $this->cfg->getEditableProperty('editionLayers');
+        $editionLayers = $this->cfg->getProperty('editionLayers');
         if ($editionLayers) {
             if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
                 return false;
@@ -574,7 +554,7 @@ class Project
 
     public function getEditionLayers()
     {
-        return $this->cfg->getEditableProperty('editionLayers');
+        return $this->cfg->getProperty('editionLayers');
     }
 
     public function findEditionLayerByName($name)
@@ -613,15 +593,15 @@ class Project
         return false;
     }
 
-    public function getLoginFilteredConfig($layername)
+    public function getLoginFilteredConfig($layerName)
     {
         if (!$this->hasLoginFilteredLayers()) {
             return null;
         }
 
-        $ln = $layername;
-        // In case $layername is a WFS TypeName
-        $layerByTypeName = $this->cfg->findLayerByTypeName($layername);
+        $ln = $layerName;
+        // In case $layerName is a WFS TypeName
+        $layerByTypeName = $this->cfg->findLayerByTypeName($layerName);
         if ($layerByTypeName) {
             $ln = $layerByTypeName->name;
         }
@@ -642,17 +622,17 @@ class Project
             return $filters;
         }
 
-        foreach ($layers as $layername) {
-            $lname = $layername;
+        foreach ($layers as $layerName) {
+            $lName = $layerName;
 
-            // In case $layername is a WFS TypeName
-            $layerByTypeName = $this->cfg->findLayerByTypeName($layername);
+            // In case $layerName is a WFS TypeName
+            $layerByTypeName = $this->cfg->findLayerByTypeName($layerName);
             if ($layerByTypeName) {
-                $lname = $layerByTypeName->name;
+                $lName = $layerByTypeName->name;
             }
 
             // Get config
-            $loginFilteredConfig = $this->getLoginFilteredConfig($lname);
+            $loginFilteredConfig = $this->getLoginFilteredConfig($lName);
             if ($loginFilteredConfig == null) {
                 continue;
             }
@@ -678,19 +658,19 @@ class Project
                 }
             }
 
-            $filters[$layername] = array_merge(
+            $filters[$layerName] = array_merge(
                 $loginFilteredConfig,
-                array('filter' => $filter, 'layername' => $lname)
+                array('filter' => $filter, 'layername' => $lName)
             );
         }
 
         return $filters;
     }
 
-    private function optionToBoolean($config_string)
+    private function optionToBoolean($configString)
     {
         $ret = false;
-        if (strtolower((string) $config_string) == 'true') {
+        if (strtolower((string) $configString) == 'true') {
             $ret = true;
         }
 
@@ -850,12 +830,12 @@ class Project
     public function getGoogleKey()
     {
         $configOptions = $this->getOptions();
-        $gkey = '';
+        $gKey = '';
         if (property_exists($configOptions, 'googleKey')) {
-            $gkey = $configOptions->googleKey;
+            $gKey = $configOptions->googleKey;
         }
 
-        return $gkey;
+        return $gKey;
     }
 
     protected function readPrintCapabilities(qgisProject $qgsLoad, projectConfig $cfg)
@@ -872,7 +852,7 @@ class Project
     protected function readLocateByLayers(qgisProject $xml, projectConfig $cfg)
     {
         $locateByLayer = array();
-        $locateByLayer = $cfg->getEditableProperty('locateByLayer');
+        $locateByLayer = $cfg->getProperty('locateByLayer');
         if ($locateByLayer) {
             $xml->readLocateByLayers($locateByLayer);
         }
@@ -893,7 +873,7 @@ class Project
 
     protected function readEditionLayers(qgisProject $xml, projectConfig $cfg)
     {
-        $editionLayers = $cfg->getEditableProperty('editionLayers');
+        $editionLayers = $cfg->getProperty('editionLayers');
 
         if ($editionLayers) {
 
@@ -1096,8 +1076,7 @@ class Project
         }
 
         // Get server plugins
-        $qplugins = $this->getQgisServerPlugins();
-        $configJson->qgisServerPlugins = $qplugins;
+        $configJson->qgisServerPlugins = $this->getQgisServerPlugins();
 
         // Check layers group visibility
         $userGroups = array('');
@@ -1116,10 +1095,10 @@ class Project
                 continue;
             }
             // get group visibility as trimed array
-            $group_visibility = array_map('trim', explode(',', $obj->group_visibility));
+            $groupVisibility = array_map('trim', explode(',', $obj->group_visibility));
             $layerToKeep = false;
             foreach ($userGroups as $group) {
-                if (in_array($group, $group_visibility)) {
+                if (in_array($group, $groupVisibility)) {
                     $layerToKeep = true;
 
                     break;
@@ -1414,18 +1393,18 @@ class Project
             $gbCount = false;
             $gbList = null;
             if ($this->appContext->userIsConnected()) {
-                $juser = $this->appContext->getUserSession();
-                $usr_login = $juser->login;
-                $daogb = \jDao::get('lizmap~geobookmark');
+                $jUser = $this->appContext->getUserSession();
+                $usrLogin = $jUser->login;
+                $daoGb = \jDao::get('lizmap~geobookmark');
                 $conditions = \jDao::createConditions();
-                $conditions->addCondition('login', '=', $usr_login);
+                $conditions->addCondition('login', '=', $usrLogin);
                 $conditions->addCondition(
                     'map',
                     '=',
                     $this->repository->getKey().':'.$this->getKey()
                 );
-                $gbList = $daogb->findBy($conditions);
-                $gbCount = $daogb->countBy($conditions);
+                $gbList = $daoGb->findBy($conditions);
+                $gbCount = $daoGb->countBy($conditions);
             }
             $tpl = new \jTpl();
             $tpl->assign('gbCount', $gbCount);

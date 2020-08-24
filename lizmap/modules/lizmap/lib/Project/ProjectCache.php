@@ -36,9 +36,9 @@ class ProjectCache
      * Construct the object.
      *
      * @param string                  $file       The full path of the project
-     * @param App\appContextInterface $appContext The interface to call Jalix
+     * @param App\AppContextInterface $appContext The interface to call Jelix
      */
-    public function __construct($file, App\appContextInterface $appContext)
+    public function __construct($file, App\AppContextInterface $appContext)
     {
         $this->file = $file;
         $this->appContext = $appContext;
