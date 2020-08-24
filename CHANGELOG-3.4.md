@@ -51,6 +51,7 @@ New features:
   directory. He should create a `my-packages/composer.json`.
 - Send user info to QGIS Server through parameters to get access control
   performed by Lizmap plugin as a QGIS Server plugin
+- Restrict filter by user on edition only, based on lizmap plugin config
 
 
 - Lizmap does not support anymore Internet Explorer (11 and lower)
