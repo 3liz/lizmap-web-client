@@ -25,7 +25,7 @@ class Project
      */
     protected $qgis;
     /**
-     * @var object CFG project JSON
+     * @var projectConfig CFG project JSON
      */
     protected $cfg;
 
@@ -185,7 +185,7 @@ class Project
      * @param App\AppContextInterface $jelix    the instance of jelixInfos
      * @param mixed                   $services
      */
-    public function __construct($key, $rep, App\appContextInterface $appContext, $services)
+    public function __construct($key, \lizmapRepository $rep, App\appContextInterface $appContext, \lizmapServices $services)
     {
         $this->key = $key;
         $this->repository = $rep;
@@ -258,7 +258,7 @@ class Project
      * @param mixed $key
      * @param mixed $rep
      */
-    protected function readProject($key, $rep)
+    protected function readProject($key, \lizmapRepository $rep)
     {
         $qgs_path = $this->getQgisPath();
 
@@ -572,7 +572,7 @@ class Project
         return false;
     }
 
-    public function &getEditionLayers()
+    public function getEditionLayers()
     {
         return $this->cfg->getEditableProperty('editionLayers');
     }
@@ -858,10 +858,10 @@ class Project
         return $gkey;
     }
 
-    protected function readPrintCapabilities($qgsLoad, $cfg)
+    protected function readPrintCapabilities(qgisProject $qgsLoad, projectConfig $cfg)
     {
         $printTemplates = array();
-        $options = $cfg->getProp('options');
+        $options = $cfg->getProperty('options');
         if ($options && $options->print == 'True') {
             $printTemplates = $qgsLoad->getPrintTemplates();
         }
@@ -869,7 +869,7 @@ class Project
         return $printTemplates;
     }
 
-    protected function readLocateByLayers($xml, $cfg)
+    protected function readLocateByLayers(qgisProject $xml, projectConfig $cfg)
     {
         $locateByLayer = array();
         $locateByLayer = $cfg->getEditableProperty('locateByLayer');
@@ -880,7 +880,7 @@ class Project
         return $locateByLayer;
     }
 
-    protected function readFormFilterLayers($xml, $cfg)
+    protected function readFormFilterLayers(qgisProject $xml, projectConfig $cfg)
     {
         $formFilterLayers = $cfg->getProperty('formFilterLayer');
 
@@ -891,7 +891,7 @@ class Project
         return $formFilterLayers;
     }
 
-    protected function readEditionLayers($xml, $cfg)
+    protected function readEditionLayers(qgisProject $xml, projectConfig $cfg)
     {
         $editionLayers = $cfg->getEditableProperty('editionLayers');
 
@@ -914,9 +914,9 @@ class Project
         return $editionLayers;
     }
 
-    protected function readAttributeLayers($xml, $cfg)
+    protected function readAttributeLayers(qgisProject $xml, projectConfig $cfg)
     {
-        $attributeLayers = $cfg->getEditableProp('attributeLayers');
+        $attributeLayers = $cfg->getProperty('attributeLayers');
 
         if ($attributeLayers) {
             $xml->readAttributeLayers($attributeLayers);
@@ -933,7 +933,7 @@ class Project
      *
      * @return int[]
      */
-    protected function readLayersOrder($xml, $cfg)
+    protected function readLayersOrder(qgisProject $xml, projectConfig $cfg)
     {
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }

@@ -4,6 +4,9 @@ namespace Lizmap\Project;
 
 class ProjectConfig
 {
+    /**
+     * @var object
+     */
     protected $data;
 
     public function __construct($cfgFile)
@@ -18,7 +21,7 @@ class ProjectConfig
     /**
      * Return the config file as an array.
      *
-     * @return array
+     * @return object
      */
     public function getData()
     {

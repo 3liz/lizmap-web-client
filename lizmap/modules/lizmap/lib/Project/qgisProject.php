@@ -12,6 +12,8 @@
 
 namespace Lizmap\Project;
 
+use Lizmap\App;
+
 class QgisProject
 {
     /**
@@ -80,7 +82,7 @@ class QgisProject
         'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
     /**
-     * @var AppContextInterface
+     * @var App\AppContextInterface
      */
     protected $appContext;
 
@@ -90,7 +92,7 @@ class QgisProject
      * @param string $file  : the QGIS project path
      * @param mixed  $jelix
      */
-    public function __construct($file, $jelix)
+    public function __construct($file, App\AppContextInterface $jelix)
     {
         if (!$this->appContext) {
             $this->appContext = $jelix;
