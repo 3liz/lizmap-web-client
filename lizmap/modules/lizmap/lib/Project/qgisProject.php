@@ -187,6 +187,175 @@ class QgisProject
         return $this->themes;
     }
 
+    public function setPropertiesAfterRead(projectConfig $cfg)
+    {
+        $this->setShortNames($cfg);
+        $this->setLayerOpacity($cfg);
+        $this->setLayerGroupData($cfg);
+        $this->setLayerShowFeatureCount($cfg);
+        $this->unsetPropAfterRead($cfg);
+    }
+
+    /**
+     * Set layers' shortname with XML data.
+     *
+     * @param projectConfig $qgsXml
+     */
+    protected function setShortNames(projectConfig $cfg)
+    {
+        $shortNames = $this->xpathQuery('//maplayer/shortname');
+        $layers = $cfg->getProperty('layers');
+        if ($shortNames) {
+            foreach ($shortNames as $sname) {
+                $sname = (string) $sname;
+                $xmlLayer = $this->xpathQuery("//maplayer[shortname='{$sname}']");
+                if (!$xmlLayer) {
+                    continue;
+                }
+                $xmlLayer = $xmlLayer[0];
+                $name = (string) $xmlLayer->layername;
+                if ($layers && property_exists($layers, $name)) {
+                    $layers->{$name}->shortname = $sname;
+                }
+            }
+        }
+        $cfg->setProperty('layers', $layers);
+    }
+
+    /**
+     * Set layers' opacity with XML data.
+     *
+     * @param projectConfig $qgsXml
+     */
+    protected function setLayerOpacity(projectConfig $cfg)
+    {
+        $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
+        $layers = $cfg->getProperty('layers');
+        if ($layerWithOpacities) {
+            foreach ($layerWithOpacities as $layerWithOpacitiy) {
+                $name = (string) $layerWithOpacitiy->layername;
+                if ($layers && property_exists($layers, $name)) {
+                    $opacity = (float) $layerWithOpacitiy->layerOpacity;
+                    $layers->{$name}->opacity = $opacity;
+                }
+            }
+        }
+        $cfg->setProperty('layers', $layers);
+    }
+
+    /**
+     * Set layers' group infos.
+     *
+     * @param projectConfig $qgsXml
+     */
+    protected function setLayerGroupData(projectConfig $cfg)
+    {
+        $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+        $layers = $cfg->getProperty('layers');
+        if ($groupsWithShortName) {
+            foreach ($groupsWithShortName as $group) {
+                $name = (string) $group['name'];
+                $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
+                if ($shortNameProperty && count($shortNameProperty) > 0) {
+                    $shortNameProperty = $shortNameProperty[0];
+                    $sname = (string) $shortNameProperty['value'];
+                    if ($layers && property_exists($layers, $name)) {
+                        $layers->{$name}->shortname = $sname;
+                    }
+                }
+            }
+        }
+        $groupsMutuallyExclusive = $this->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
+        if ($groupsMutuallyExclusive) {
+            foreach ($groupsMutuallyExclusive as $group) {
+                $name = (string) $group['name'];
+                if ($layers && property_exists($layers, $name)) {
+                    $layers->{$name}->smutuallyExclusive = 'True';
+                }
+            }
+        }
+        $cfg->setProperty('layers', $layers);
+    }
+
+    /**
+     * Set layers' last infos.
+     *
+     * @param projectConfig $qgsXml
+     */
+    protected function setLayerShowFeatureCount(projectConfig $cfg)
+    {
+        $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        if ($layersWithShowFeatureCount) {
+            foreach ($layersWithShowFeatureCount as $layer) {
+                $name = (string) $layer['name'];
+                $cfgLayers = $cfg->getProperty('layers');
+                if ($cfgLayers && property_exists($cfgLayers, $name)) {
+                    $cfgLayers->{$name}->showFeatureCont = 'True';
+                }
+            }
+        }
+        $cfg->setProperty('layers', $cfgLayers);
+    }
+
+    /**
+     * Set/Unset some properties after reading the config file.
+     *
+     * @param projectConfig $qgsXml
+     */
+    protected function unsetPropAfterRead(projectConfig $cfg)
+    {
+        //remove plugin layer
+        $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
+        if ($pluginLayers) {
+            foreach ($pluginLayers as $layer) {
+                $name = (string) $layer->layername;
+                $layers = $cfg->getProperty('layers');
+                if ($layers && property_exists($layers, $name)) {
+                    $cfg->unsetProp('layers', $name);
+                }
+            }
+        }
+        //unset cache for editionLayers
+        $eLayers = $cfg->getProperty('editionLayers');
+        $layers = $cfg->getProperty('layers');
+        if ($eLayers) {
+            foreach ($eLayers as $key => $obj) {
+                if (property_exists($layers, $key)) {
+                    $layers->{$key}->cached = 'False';
+                    $layers->{$key}->clientCacheExpiration = 0;
+                    if (property_exists($layers->{$key}, 'cacheExpiration')) {
+                        unset($layers->{$key}->cacheExpiration);
+                    }
+                    $cfg->setProperty('layers', $layers);
+                }
+            }
+        }
+        //unset cache for loginFilteredLayers
+        $loginFiltered = $cfg->getProperty('loginFilteredLayers');
+        $layers = $cfg->getProperty('layers');
+        if ($loginFiltered) {
+            foreach ($loginFiltered as $key => $obj) {
+                if (property_exists($layers, $key)) {
+                    $layers->{$key}->cached = 'False';
+                    $layers->{$key}->clientCacheExpiration = 0;
+                    if (property_exists($layers->{$key}, 'cacheExpiration')) {
+                        unset($layers->{$key}->cacheExpiration);
+                    }
+                }
+            }
+        }
+        //unset displayInLegend for geometryType none or unknown
+        foreach ($layers as $key => $obj) {
+            if (property_exists($layers->{$key}, 'geometryType') &&
+                 ($layers->{$key}->geometryType == 'none' ||
+                     $layers->{$key}->geometryType == 'unknown')
+            ) {
+                $layers->{$key}->displayInLegend = 'False';
+            }
+        }
+        $cfg->setProperty('layers', $layers);
+    }
+
     /**
      * @param $layerId
      *
@@ -669,7 +838,7 @@ class QgisProject
      *
      * @return int[]
      */
-    protected function readLayersOrder($xml, $layers)
+    public function readLayersOrder($xml, $layers)
     {
         $layersOrder = array();
         if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
