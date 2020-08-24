@@ -21,9 +21,9 @@ class Project
      */
     protected $repository;
     /**
-     * @var projectXML QGIS project XML
+     * @var qgisProject QGIS project XML
      */
-    protected $xml;
+    protected $qgis;
     /**
      * @var object CFG project JSON
      */
@@ -209,7 +209,7 @@ class Project
         }
 
         try {
-            $this->xml = new qgisProject($file, $this->appContext);
+            $this->qgis = new qgisProject($file, $this->appContext);
         } catch (\UnknownLizmapProjectException $e) {
             throw $e;
         }
@@ -267,7 +267,7 @@ class Project
             throw new \UnknownLizmapProjectException("Files of project {$key} does not exists");
         }
 
-        $qgsXml = $this->xml;
+        $qgsXml = $this->qgis;
         $configOptions = $this->cfg->getEditableProperty('options');
 
         // Complete data
@@ -309,11 +309,7 @@ class Project
             )
         );
 
-        $this->cfg->setShortNames($qgsXml);
-        $this->cfg->setLayerOpacity($qgsXml);
-        $this->cfg->setLayerGroupData($qgsXml);
-        $this->cfg->setLayerShowFeatureCount($qgsXml);
-        $this->cfg->unsetPropAfterRead($qgsXml);
+        $this->qgis->setPropertiesAfterRead($this->cfg);
 
         $this->printCapabilities = $this->readPrintCapabilities($qgsXml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($qgsXml, $this->cfg);
@@ -939,7 +935,7 @@ class Project
      */
     protected function readLayersOrder($xml, $cfg)
     {
-        return $this->xml->readLayersOrder($xml, $this->getLayers());
+        return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }
 
     /**
@@ -1031,13 +1027,13 @@ class Project
         $configJson->options->qgisServerVersion = $services->qgisServerVersion;
 
         // Update config with layer relations
-        $relations = $this->xml->getRelations();
+        $relations = $this->qgis->getRelations();
         if ($relations) {
             $configJson->relations = $relations;
         }
 
         // Update config with project themes
-        $themes = $this->xml->getThemes();
+        $themes = $this->qgis->getThemes();
         if ($themes) {
             $configJson->themes = $themes;
         }
@@ -1276,7 +1272,7 @@ class Project
 
         $metadataTpl = new \jTpl();
         // Get the WMS information
-        $wmsInfo = $this->xml->getWMSInformation();
+        $wmsInfo = $this->qgis->getWMSInformation();
         // WMS GetCapabilities Url
         $wmsGetCapabilitiesUrl = $this->appContext->aclCheck(
             'lizmap.tools.displayGetCapabilitiesLinks',
@@ -1284,11 +1280,11 @@ class Project
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {
-            $wmsGetCapabilitiesUrl = $this->xml->getData('wmsGetCapabilitiesUrl');
-            $wmtsGetCapabilitiesUrl = $this->xml->getData('wmtsGetCapabilitiesUrl');
+            $wmsGetCapabilitiesUrl = $this->qgis->getData('wmsGetCapabilitiesUrl');
+            $wmtsGetCapabilitiesUrl = $this->qgis->getData('wmtsGetCapabilitiesUrl');
         }
         $metadataTpl->assign(array_merge(array(
-            'repositoryLabel' => $this->xml->getData('label'),
+            'repositoryLabel' => $this->qgis->getData('label'),
             'repository' => $this->repository->getKey(),
             'project' => $this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,

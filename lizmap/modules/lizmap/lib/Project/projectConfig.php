@@ -39,6 +39,13 @@ class ProjectConfig
         return null;
     }
 
+    public function setProperty($prop, $value)
+    {
+        if (property_exists($this->data, $prop)) {
+            $this->data->{$prop} = $value;
+        }
+    }
+
     /**
      * Return a reference to a property that can be edited.
      *
@@ -53,148 +60,12 @@ class ProjectConfig
         return null;
     }
 
-    /**
-     * Set layers' shortname with XML data.
-     *
-     * @param qgisProject $qgsXml
-     */
-    public function setShortNames($qgsXml)
+    public function unsetProp($propName, $propName2 = '')
     {
-        $shortNames = $qgsXml->xpathQuery('//maplayer/shortname');
-        if ($shortNames) {
-            foreach ($shortNames as $sname) {
-                $sname = (string) $sname;
-                $xmlLayer = $qgsXml->xpathQuery("//maplayer[shortname='{$sname}']");
-                if (!$xmlLayer) {
-                    continue;
-                }
-                $xmlLayer = $xmlLayer[0];
-                $name = (string) $xmlLayer->layername;
-                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
-                    $this->data->layers->{$name}->shortname = $sname;
-                }
-            }
-        }
-    }
-
-    /**
-     * Set layers' opacity with XML data.
-     *
-     * @param qgisProject $qgsXml
-     */
-    public function setLayerOpacity($qgsXml)
-    {
-        $layerWithOpacities = $qgsXml->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
-        if ($layerWithOpacities) {
-            foreach ($layerWithOpacities as $layerWithOpacitiy) {
-                $name = (string) $layerWithOpacitiy->layername;
-                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
-                    $opacity = (float) $layerWithOpacitiy->layerOpacity;
-                    $this->data->layers->{$name}->opacity = $opacity;
-                }
-            }
-        }
-    }
-
-    /**
-     * Set layers' group infos.
-     *
-     * @param qgisProject $qgsXml
-     */
-    public function setLayerGroupData($qgsXml)
-    {
-        $groupsWithShortName = $qgsXml->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName) {
-            foreach ($groupsWithShortName as $group) {
-                $name = (string) $group['name'];
-                $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if ($shortNameProperty && count($shortNameProperty) > 0) {
-                    $shortNameProperty = $shortNameProperty[0];
-                    $sname = (string) $shortNameProperty['value'];
-                    if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
-                        $this->data->layers->{$name}->shortname = $sname;
-                    }
-                }
-            }
-        }
-        $groupsMutuallyExclusive = $qgsXml->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
-        if ($groupsMutuallyExclusive) {
-            foreach ($groupsMutuallyExclusive as $group) {
-                $name = (string) $group['name'];
-                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
-                    $this->data->layers->{$name}->smutuallyExclusive = 'True';
-                }
-            }
-        }
-    }
-
-    /**
-     * Set layers' last infos.
-     *
-     * @param qgisProject $qgsXml
-     */
-    public function setLayerShowFeatureCount($qgsXml)
-    {
-        $layersWithShowFeatureCount = $qgsXml->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
-        if ($layersWithShowFeatureCount) {
-            foreach ($layersWithShowFeatureCount as $layer) {
-                $name = (string) $layer['name'];
-                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
-                    $this->data->layers->{$name}->showFeatureCont = 'True';
-                }
-            }
-        }
-    }
-
-    /**
-     * Set/Unset some properties after reading the config file.
-     *
-     * @param mixed $qgsXml
-     */
-    public function unsetPropAfterRead($qgsXml)
-    {
-        //remove plugin layer
-        $pluginLayers = $qgsXml->xpathQuery('//maplayer[type="plugin"]');
-        if ($pluginLayers) {
-            foreach ($pluginLayers as $layer) {
-                $name = (string) $layer->layername;
-                if (property_exists($this->data, 'layers') && property_exists($this->data->layers, $name)) {
-                    unset($this->data->layers->{$name});
-                }
-            }
-        }
-        //unset cache for editionLayers
-        if (property_exists($this->data, 'editionLayers')) {
-            foreach ($this->data->editionLayers as $key => $obj) {
-                if (property_exists($this->data->layers, $key)) {
-                    $this->data->layers->{$key}->cached = 'False';
-                    $this->data->layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($this->data->layers->{$key}, 'cacheExpiration')) {
-                        unset($this->data->layers->{$key}->cacheExpiration);
-                    }
-                }
-            }
-        }
-        //unset cache for loginFilteredLayers
-        if (property_exists($this->data, 'loginFilteredLayers')) {
-            foreach ($this->data->loginFilteredLayers as $key => $obj) {
-                if (property_exists($this->data->layers, $key)) {
-                    $this->data->layers->{$key}->cached = 'False';
-                    $this->data->layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($this->data->layers->{$key}, 'cacheExpiration')) {
-                        unset($this->data->layers->{$key}->cacheExpiration);
-                    }
-                }
-            }
-        }
-        //unset displayInLegend for geometryType none or unknown
-        foreach ($this->data->layers as $key => $obj) {
-            if (property_exists($this->data->layers->{$key}, 'geometryType') &&
-                 ($this->data->layers->{$key}->geometryType == 'none' ||
-                     $this->data->layers->{$key}->geometryType == 'unknown')
-            ) {
-                $this->data->layers->{$key}->displayInLegend = 'False';
-            }
+        if (isset($this->data->{$propName}) && $propName2 == '') {
+            unset($this->data->{$propName});
+        } elseif (isset($this->data->{$propName}) && property_exists($this->data->{$propName}, $propName2)) {
+            unset($this->data->{$propName}, $propName2);
         }
     }
 
