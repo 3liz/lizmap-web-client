@@ -106,7 +106,6 @@ class QgisProject
         // to avoid collision in the cache engine
         $data = false;
         $cache = new projectCache($file, $this->appContext);
-        $this->xml = simplexml_load_file($file);
 
         try {
             $data = $cache->retrieveProjectData();
@@ -924,8 +923,7 @@ class QgisProject
             throw new \Exception('The QGIS project '.basename($qgsPath).' does not exist!');
         }
 
-        $this->path = $qgsPath;
-        $qgsXml = $this->xml;
+        $qgsXml = simplexml_load_file($qgsPath);
         // Build data
         $this->data = array(
         );

@@ -49,20 +49,6 @@ class ProjectConfig
         }
     }
 
-    /**
-     * Return a reference to a property that can be edited.
-     *
-     * @param string $propName The property to get
-     */
-    public function &getEditableProperty($propName)
-    {
-        if (property_exists($this->data, $propName)) {
-            return $this->data->{$propName};
-        }
-
-        return null;
-    }
-
     public function unsetProp($propName, $propName2 = '')
     {
         if (isset($this->data->{$propName}) && $propName2 == '') {
