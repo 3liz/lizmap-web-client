@@ -77,6 +77,11 @@ class qgisExpressionUtils
 
     static public function evaluateExpressions($layer, $expressions, $form_feature=null)
     {
+        // Update expressions with filter by user
+        $updatedExp = array();
+        foreach( $expressions as $k => $exp) {
+            $updatedExp[$k] = self::updateExpressionByUser($layer, $exp);
+        }
         // Evaluate the expression by qgis
         $project = $layer->getProject();
         $plugins = $project->getQgisServerPlugins();
@@ -86,7 +91,7 @@ class qgisExpressionUtils
                 'request' => 'Evaluate',
                 'map' => $project->getRelativeQgisPath(),
                 'layer' => $layer->getName(),
-                'expressions' => json_encode($expressions),
+                'expressions' => json_encode($updatedExp),
             );
             if ($form_feature) {
                 $params['feature'] = json_encode($form_feature);
@@ -127,7 +132,7 @@ class qgisExpressionUtils
                 'request' => 'getFeatureWithFormScope',
                 'map' => $project->getRelativeQgisPath(),
                 'layer' => $layer->getName(),
-                'filter' => $expression,
+                'filter' =>  self::updateExpressionByUser($layer, $expression),
                 'form_feature' => json_encode($form_feature),
                 'fields' => implode(',', $fields)
             );
@@ -209,6 +214,12 @@ class qgisExpressionUtils
         $lproj = lizmap::getProject($repository.'~'.$project);
 
         $layer = $lproj->getLayer($privateData['liz_layerId']);
+
+        // Update expressions with filter by user
+        $updatedExp = array();
+        foreach( $expressions as $k => $exp) {
+            $updatedExp[$k] = self::updateExpressionByUser($layer, $exp);
+        }
 
         $form_feature = array(
             'type' => 'Feature',
