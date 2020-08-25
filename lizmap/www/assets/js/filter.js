@@ -521,7 +521,7 @@ var lizLayerFilterTool = function() {
         }
         filterConfig[field_item.order]['allchecked'] = allchecked;
         filterConfig[field_item.order]['nonechecked'] = nonechecked;
-        filterConfig[field_item.order]['selected'] = clist;
+        //filterConfig[field_item.order]['selected'] = clist;
         var filter = null;
         var field = field_item['field'];
         if(clist.length){
@@ -534,14 +534,21 @@ var lizLayerFilterTool = function() {
                     lk = 'ILIKE';
                 }
                 for(var i in clist){
-                    var cval = clist[i];
+                    var cval = encodeURIComponent(clist[i]);
                     filter+= sep + '"' + field + '"' + " " + lk + " '%" + cval + "%' ";
                     // if postgresql use ILIKE instead for WMS filtered requests
                     sep = ' AND ';
                 }
                 filter+= ' ) ';
             } else {
-                filter = '"' + field + '"' + " IN ( '" + clist.join("' , '") + "' ) ";
+                var sep = '';
+                filter = '"' + field + '"' + " IN ( ";
+                for(var i in clist){
+                    var cval = encodeURIComponent(clist[i]);
+                    filter+= sep + " '" + cval + "' ";
+                    sep = ',';
+                }
+                filter+= ' ) ';
             }
         }
         filterConfig[field_item.order]['filter'] = filter;
@@ -662,6 +669,7 @@ var lizLayerFilterTool = function() {
         }
         var field = field_item['field'];
         if(val){
+            val = encodeURIComponent(val);
             filter = '"' + field + '"' + " " + lk + " '%" + val + "%'";
         }
 
