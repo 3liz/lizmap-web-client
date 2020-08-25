@@ -12,8 +12,6 @@
 
 namespace Lizmap\Project;
 
-use Lizmap\App;
-
 class QgisProject
 {
     /**
@@ -82,55 +80,24 @@ class QgisProject
         'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
     /**
-     * @var App\AppContextInterface
-     */
-    protected $appContext;
-
-    /**
      * constructor.
      *
      * @param string $file  : the QGIS project path
      * @param mixed  $jelix
+     * @param mixed  $data
      */
-    public function __construct($file, App\AppContextInterface $jelix)
+    public function __construct($file, $data = false)
     {
-        if (!$this->appContext) {
-            $this->appContext = $jelix;
-        }
         // Verifying if the files exist
         if (!file_exists($file)) {
             throw new \UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
         }
 
-        // For the cache key, we use the full path of the project file
-        // to avoid collision in the cache engine
-        $data = false;
-        $cache = new projectCache($file, $this->appContext);
-
-        try {
-            $data = $cache->retrieveProjectData();
-        } catch (\Exception $e) {
-            // if qgisprojects profile does not exist, or if there is an
-            // other error about the cache, let's log it
-            \jLog::logEx($e, 'error');
-        }
-
-        if ($data === false ||
-            $data['qgsmtime'] < filemtime($file)) {
+        if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             $this->readXmlProject($file);
-            $data['qgsmtime'] = filemtime($file);
-            foreach ($this->cachedProperties as $prop) {
-                $data[$prop] = $this->{$prop};
-            }
-
-            try {
-                $cache->storeProjectData($data);
-            } catch (\Exception $e) {
-                \jLog::logEx($e, 'error');
-            }
         } else {
             foreach ($this->cachedProperties as $prop) {
                 $this->{$prop} = $data[$prop];
@@ -138,6 +105,19 @@ class QgisProject
         }
 
         $this->path = $file;
+    }
+
+    public function getCacheData()
+    {
+        $data = array();
+        foreach ($this->cachedProperties as $prop) {
+            if (!isset($this->{$prop})) {
+                continue;
+            }
+            $data[$prop] = $this->{$prop};
+        }
+
+        return $data;
     }
 
     public function getData($key)
@@ -1193,7 +1173,7 @@ class QgisProject
         foreach ($xmlLayers as $xmlLayer) {
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
-                $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project), $this->appContext);
+                $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project));
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
                 $layer['embedded'] = 1;
                 $layer['projectPath'] = (string) $attributes->project;
