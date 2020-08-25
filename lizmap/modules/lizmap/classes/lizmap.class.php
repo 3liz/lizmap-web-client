@@ -9,6 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+/**
+ * @deprecated
+ */
 class UnknownLizmapProjectException extends Exception
 {
 }
@@ -104,6 +108,7 @@ class lizmap
     /**
      * Get the list of properties for a generic repository.
      * This method shouldn't be used, you should use lizmapRepository::getProperties() instead.
+     *
      * @deprecated
      */
     public static function getRepositoryProperties()
@@ -116,6 +121,7 @@ class lizmap
     /**
      * Get the list of properties options for a generic repository.
      * This method shouldn't be used, you should use lizmapRepository::getPropertiesOptions() instead.
+     *
      * @deprecated
      */
     public static function getRepositoryPropertiesOptions()
@@ -299,15 +305,14 @@ class lizmap
     }
 
     /**
-     * Uptade a repository
+     * Uptade a repository.
      *
-     * @param string $key the repository name
-     * @param array $data the repository data
+     * @param string $key  the repository name
+     * @param array  $data the repository data
      *
      * @return bool false if the repository corresponding to $key cannot be found
-     * or if there is no valid entry in $data
+     *              or if there is no valid entry in $data
      */
-
     public static function updateRepository($key, $data)
     {
         if (!key_exists($key, self::$repositoryInstances)) {
@@ -320,6 +325,7 @@ class lizmap
 
         $modified = $rep->update($data, $ini);
         unset($ini);
+
         return $modified;
     }
 
