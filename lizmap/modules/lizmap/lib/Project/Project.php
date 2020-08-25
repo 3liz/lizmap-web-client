@@ -186,10 +186,10 @@ class Project
 
         // Verifying if the files exist
         if (!file_exists($file)) {
-            throw new \UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
+            throw new UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
         }
         if (!file_exists($file.'.cfg')) {
-            throw new \UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
+            throw new UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
         }
 
         $this->cacheHandler = new ProjectCache($file, $this->appContext);
@@ -202,13 +202,13 @@ class Project
             // have a kind of lock to avoid this issue.
             try {
                 $this->cfg = new ProjectConfig($file.'.cfg');
-            } catch (\UnknownLizmapProjectException $e) {
+            } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
 
             try {
                 $this->qgis = new QgisProject($file);
-            } catch (\UnknownLizmapProjectException $e) {
+            } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
             $this->readProject($key, $rep);
@@ -236,13 +236,13 @@ class Project
 
                 try {
                     $this->cfg = new ProjectConfig($file.'.cfg', $data);
-                } catch (\UnknownLizmapProjectException $e) {
+                } catch (UnknownLizmapProjectException $e) {
                     throw $e;
                 }
 
                 try {
                     $this->qgis = new QgisProject($file, $data);
-                } catch (\UnknownLizmapProjectException $e) {
+                } catch (UnknownLizmapProjectException $e) {
                     throw $e;
                 }
             }

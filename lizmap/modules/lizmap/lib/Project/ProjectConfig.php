@@ -52,6 +52,9 @@ class ProjectConfig
         if ($data === null) {
             $fileContent = file_get_contents($cfgFile);
             $this->cfg = json_decode($fileContent);
+            if (!$this->cfg) {
+                throw new UnknownLizmapProjectException('The file '.$cfgFile.' cannot be decoded.');
+            }
         } else {
             foreach ($data as $prop => $value) {
                 if (array_key_exists($this->cachedProperties, $prop)) {
