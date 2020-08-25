@@ -137,6 +137,11 @@ class Project
     protected $useLayerIDs = false;
 
     /**
+     * @var array
+     */
+    protected $layers = array();
+
+    /**
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
@@ -217,6 +222,17 @@ class Project
             foreach ($this->cachedProperties as $prop) {
                 if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
+                }
+                foreach ($this->layers as $index => $layer) {
+                    if ($layer['embedded'] == '1' && $layer['qgsmtime'] < filemtime($layer['file'])) {
+                        $qgsProj = new QgisProject($layer['file']);
+                        $newLayer = $qgsProj->getLayerDefinition($layer['id']);
+                        $newLayer['qsgmtime'] = filemtime($layer['file']);
+                        $newLayer['file'] = $layer['file'];
+                        $newLayer['embedded'] = 1;
+                        $newLayer['projectPath'] = $layer['projectPath'];
+                        $this->layers[$index] = $newLayer;
+                    }
                 }
 
                 try {

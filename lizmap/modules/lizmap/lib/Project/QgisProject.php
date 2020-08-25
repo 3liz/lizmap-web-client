@@ -1173,8 +1173,11 @@ class QgisProject
         foreach ($xmlLayers as $xmlLayer) {
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
-                $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project));
+                $xmlFile = realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project);
+                $qgsProj = new QgisProject($xmlFile);
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
+                $layer['qsgmtime'] = filemtime($xmlFile);
+                $layer['file'] = $xmlFile;
                 $layer['embedded'] = 1;
                 $layer['projectPath'] = (string) $attributes->project;
                 $layers[] = $layer;
