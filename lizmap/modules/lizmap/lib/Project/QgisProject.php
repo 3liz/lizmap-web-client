@@ -89,7 +89,7 @@ class QgisProject
     {
         // Verifying if the files exist
         if (!file_exists($file)) {
-            throw new \UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
+            throw new UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
         }
 
         if ($data === false) {
