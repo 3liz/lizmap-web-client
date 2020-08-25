@@ -188,38 +188,47 @@ class Project
             throw new \UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
         }
 
-        try {
-            $this->cfg = new ProjectConfig($file.'.cfg');
-        } catch (\UnknownLizmapProjectException $e) {
-            throw $e;
-        }
-
-        try {
-            $this->qgis = new QgisProject($file, $this->appContext);
-        } catch (\UnknownLizmapProjectException $e) {
-            throw $e;
-        }
         $this->cacheHandler = new ProjectCache($file, $this->appContext);
 
         $data = $this->cacheHandler->retrieveProjectData();
 
-        if ($data === false ||
-            !isset($data['format_version']) ||
-            $data['format_version'] != self::CACHE_FORMAT_VERSION
-        ) {
+        if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
+            try {
+                $this->cfg = new ProjectConfig($file.'.cfg');
+            } catch (\UnknownLizmapProjectException $e) {
+                throw $e;
+            }
+
+            try {
+                $this->qgis = new QgisProject($file);
+            } catch (\UnknownLizmapProjectException $e) {
+                throw $e;
+            }
             $this->readProject($key, $rep);
-            $data['format_version'] = self::CACHE_FORMAT_VERSION;
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
             }
+            $data = array_merge($data, $this->cfg->getCacheData(), $this->qgis->getCacheData());
             $this->cacheHandler->storeProjectData($data);
         } else {
             foreach ($this->cachedProperties as $prop) {
                 if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
+                }
+
+                try {
+                    $this->cfg = new ProjectConfig($file.'.cfg', $data);
+                } catch (\UnknownLizmapProjectException $e) {
+                    throw $e;
+                }
+
+                try {
+                    $this->qgis = new QgisProject($file, $data);
+                } catch (\UnknownLizmapProjectException $e) {
+                    throw $e;
                 }
             }
         }
@@ -238,15 +247,8 @@ class Project
      * @param mixed $key
      * @param mixed $rep
      */
-    protected function readProject($key, \lizmapRepository $rep)
+    protected function readProject($key, \LizmapRepository $rep)
     {
-        $qgsPath = $this->getQgisPath();
-
-        if (!file_exists($qgsPath) ||
-            !file_exists($qgsPath.'.cfg')) {
-            throw new \UnknownLizmapProjectException("Files of project {$key} does not exists");
-        }
-
         $qgsXml = $this->qgis;
         $configOptions = $this->cfg->getProperty('options');
 
@@ -291,12 +293,19 @@ class Project
 
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
-        $this->printCapabilities = $this->readPrintCapabilities($qgsXml, $this->cfg);
-        $this->locateByLayer = $this->readLocateByLayers($qgsXml, $this->cfg);
-        $this->formFilterLayers = $this->readFormFilterLayers($qgsXml, $this->cfg);
-        $this->editionLayers = $this->readEditionLayers($qgsXml, $this->cfg);
-        $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
-        $this->layersOrder = $this->readLayersOrder($qgsXml, $this->cfg);
+        $props = array(
+            'printCapabilities',
+            'locateByLayer',
+            'formFilterLayers',
+            'editionLayers',
+            'layersOrder',
+            'attributeLayers',
+        );
+        foreach ($props as $prop) {
+            $method = 'read'.ucfirst($prop);
+            $this->prop = $this->{$method}($qgsXml, $this->cfg);
+            $this->cfg->setProperty($prop, $this->{$prop});
+        }
     }
 
     public function getQgisPath()
