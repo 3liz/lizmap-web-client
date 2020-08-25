@@ -222,29 +222,35 @@ class Project
                 if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
                 }
-                foreach ($this->layers as $index => $layer) {
-                    if ($layer['embedded'] == '1' && $layer['qgsmtime'] < filemtime($layer['file'])) {
-                        $qgsProj = new QgisProject($layer['file']);
-                        $newLayer = $qgsProj->getLayerDefinition($layer['id']);
-                        $newLayer['qsgmtime'] = filemtime($layer['file']);
-                        $newLayer['file'] = $layer['file'];
-                        $newLayer['embedded'] = 1;
-                        $newLayer['projectPath'] = $layer['projectPath'];
-                        $this->layers[$index] = $newLayer;
-                    }
+            }
+            $rewriteCache = false;
+            foreach ($this->layers as $index => $layer) {
+                if ($layer['embedded'] == '1' && $layer['qgsmtime'] < filemtime($layer['file'])) {
+                    $qgsProj = new QgisProject($layer['file']);
+                    $newLayer = $qgsProj->getLayerDefinition($layer['id']);
+                    $newLayer['qsgmtime'] = filemtime($layer['file']);
+                    $newLayer['file'] = $layer['file'];
+                    $newLayer['embedded'] = 1;
+                    $newLayer['projectPath'] = $layer['projectPath'];
+                    $this->layers[$index] = $newLayer;
+                    $data['layers'][$index] = $newLayer;
+                    $rewriteCache = true;
                 }
+            }
+            if ($rewriteCache) {
+                $this->cacheHandler->storeProjectData($data);
+            }
 
-                try {
-                    $this->cfg = new ProjectConfig($file.'.cfg', $data);
-                } catch (UnknownLizmapProjectException $e) {
-                    throw $e;
-                }
+            try {
+                $this->cfg = new ProjectConfig($file.'.cfg', $data);
+            } catch (UnknownLizmapProjectException $e) {
+                throw $e;
+            }
 
-                try {
-                    $this->qgis = new QgisProject($file, $data);
-                } catch (UnknownLizmapProjectException $e) {
-                    throw $e;
-                }
+            try {
+                $this->qgis = new QgisProject($file, $data);
+            } catch (UnknownLizmapProjectException $e) {
+                throw $e;
             }
         }
 
@@ -317,7 +323,7 @@ class Project
         );
         foreach ($props as $prop) {
             $method = 'read'.ucfirst($prop);
-            $this->prop = $this->{$method}($qgsXml, $this->cfg);
+            $this->{$prop} = $this->{$method}($qgsXml, $this->cfg);
             $this->cfg->setProperty($prop, $this->{$prop});
         }
     }
