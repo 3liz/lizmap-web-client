@@ -72,7 +72,7 @@ class Project
      *
      * @var null|int
      */
-    protected $qgisProjectVersion;
+    protected $QgisProjectVersion;
 
     /**
      * @var array contains WMS info
@@ -146,7 +146,7 @@ class Project
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'themes', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
-        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion', );
+        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'QgisProjectVersion', );
 
     /**
      * @var string
@@ -157,7 +157,7 @@ class Project
      * version of the format of data stored in the cache.
      *
      * This number should be increased each time you change the structure of the
-     * properties of qgisProject (ex: adding some new data properties into the $layers).
+     * properties of QgisProject (ex: adding some new data properties into the $layers).
      * So you'll be sure that the cache will be updated when Lizmap code source
      * is updated on a server
      */
@@ -174,9 +174,8 @@ class Project
      * @param string                  $key        : the project name
      * @param \LizmapRepository       $rep        : the repository
      * @param App\AppContextInterface $appContext the instance of jelixInfos
-     * @param mixed                   $services
      */
-    public function __construct($key, \LizmapRepository $rep, App\appContextInterface $appContext, \lizmapServices $services)
+    public function __construct($key, \LizmapRepository $rep, App\AppContextInterface $appContext, \LizmapServices $services)
     {
         $this->key = $key;
         $this->repository = $rep;
@@ -260,8 +259,7 @@ class Project
     /**
      * Read the qgis files.
      *
-     * @param mixed $key
-     * @param mixed $rep
+     * @param string $key
      */
     protected function readProject($key, \LizmapRepository $rep)
     {
@@ -439,7 +437,7 @@ class Project
      */
     public function getQgisServerPlugins()
     {
-        $qgisServer = new \qgisServer();
+        $qgisServer = new \QgisServer();
 
         return $qgisServer->getPlugins($this);
     }
@@ -863,7 +861,7 @@ class Project
         return $gKey;
     }
 
-    protected function readPrintCapabilities(qgisProject $qgsLoad, projectConfig $cfg)
+    protected function readPrintCapabilities(QgisProject $qgsLoad, ProjectConfig $cfg)
     {
         $printTemplates = array();
         $options = $cfg->getProperty('options');
@@ -874,7 +872,7 @@ class Project
         return $printTemplates;
     }
 
-    protected function readLocateByLayers(qgisProject $xml, projectConfig $cfg)
+    protected function readLocateByLayers(QgisProject $xml, ProjectConfig $cfg)
     {
         $locateByLayer = array();
         $locateByLayer = $cfg->getProperty('locateByLayer');
@@ -885,7 +883,7 @@ class Project
         return $locateByLayer;
     }
 
-    protected function readFormFilterLayers(qgisProject $xml, projectConfig $cfg)
+    protected function readFormFilterLayers(QgisProject $xml, ProjectConfig $cfg)
     {
         $formFilterLayers = $cfg->getProperty('formFilterLayer');
 
@@ -896,7 +894,7 @@ class Project
         return $formFilterLayers;
     }
 
-    protected function readEditionLayers(qgisProject $xml, projectConfig $cfg)
+    protected function readEditionLayers(QgisProject $xml, ProjectConfig $cfg)
     {
         $editionLayers = $cfg->getProperty('editionLayers');
 
@@ -919,7 +917,7 @@ class Project
         return $editionLayers;
     }
 
-    protected function readAttributeLayers(qgisProject $xml, projectConfig $cfg)
+    protected function readAttributeLayers(QgisProject $xml, ProjectConfig $cfg)
     {
         $attributeLayers = $cfg->getProperty('attributeLayers');
 
@@ -938,7 +936,7 @@ class Project
      *
      * @return int[]
      */
-    protected function readLayersOrder(qgisProject $xml, projectConfig $cfg)
+    protected function readLayersOrder(QgisProject $xml, ProjectConfig $cfg)
     {
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }
@@ -1239,7 +1237,7 @@ class Project
     /**
      * @throws jExceptionSelector
      *
-     * @return lizmapMapDockItem[]
+     * @return \LizmapMapDockItem[]
      */
     public function getDefaultDockable()
     {
@@ -1254,7 +1252,7 @@ class Project
         if ($services->projectSwitcher) {
             $projectsTpl = new \jTpl();
             $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'projects',
                 $this->appContext->getLocale('view~default.repository.list.title'),
                 $projectsTpl->fetch('view~map_projects'),
@@ -1265,7 +1263,7 @@ class Project
         $switcherTpl = new \jTpl();
         $switcherTpl->assign(array(
             'layerExport' => $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()), ));
-        $dockable[] = new \lizmapMapDockItem(
+        $dockable[] = new \LizmapMapDockItem(
             'switcher',
             $this->appContext->getLocale('view~map.switchermenu.title'),
             $switcherTpl->fetch('view~map_switcher'),
@@ -1294,7 +1292,7 @@ class Project
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
             'wmtsGetCapabilitiesUrl' => $wmtsGetCapabilitiesUrl,
         ), $wmsInfo));
-        $dockable[] = new \lizmapMapDockItem(
+        $dockable[] = new \LizmapMapDockItem(
             'metadata',
             $this->appContext->getLocale('view~map.metadata.link.label'),
             $metadataTpl->fetch('view~map_metadata'),
@@ -1303,7 +1301,7 @@ class Project
 
         if ($this->hasEditionLayers()) {
             $tpl = new \jTpl();
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'edition',
                 $this->appContext->getLocale('view~edition.navbar.title'),
                 $tpl->fetch('view~map_edition'),
@@ -1320,7 +1318,7 @@ class Project
      * @throws jException
      * @throws jExceptionSelector
      *
-     * @return lizmapMapDockItem[]
+     * @return \LizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
@@ -1332,7 +1330,7 @@ class Project
             $tpl = new \jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
             $layerExport = $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ? 'layer-export' : '';
-            $dock = new \lizmapMapDockItem(
+            $dock = new \LizmapMapDockItem(
                 'selectiontool',
                 $this->appContext->getLocale('view~map.selectiontool.navbar.title'),
                 '<lizmap-selection-tool '.$layerExport.'></lizmap-selection-tool>',
@@ -1346,7 +1344,7 @@ class Project
 
         if ($this->hasLocateByLayer()) {
             $tpl = new \jTpl();
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'locate',
                 $this->appContext->getLocale('view~map.locatemenu.title'),
                 $tpl->fetch('view~map_locate'),
@@ -1358,7 +1356,7 @@ class Project
             && $configOptions->geolocation == 'True') {
             $tpl = new \jTpl();
             $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'geolocation',
                 $this->appContext->getLocale('view~map.geolocate.navbar.title'),
                 $tpl->fetch('view~map_geolocation'),
@@ -1369,7 +1367,7 @@ class Project
         if (property_exists($configOptions, 'print')
             && $configOptions->print == 'True') {
             $tpl = new \jTpl();
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'print',
                 $this->appContext->getLocale('view~map.print.navbar.title'),
                 $tpl->fetch('view~map_print'),
@@ -1380,7 +1378,7 @@ class Project
         if (property_exists($configOptions, 'measure')
             && $configOptions->measure == 'True') {
             $tpl = new \jTpl();
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'measure',
                 $this->appContext->getLocale('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
@@ -1390,7 +1388,7 @@ class Project
 
         if ($this->hasTooltipLayers()) {
             $tpl = new \jTpl();
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'tooltip-layer',
                 $this->appContext->getLocale('view~map.tooltip.navbar.title'),
                 $tpl->fetch('view~map_tooltip'),
@@ -1402,7 +1400,7 @@ class Project
 
         if ($this->hasTimemanagerLayers()) {
             $tpl = new \jTpl();
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'timemanager',
                 $this->appContext->getLocale('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
@@ -1444,7 +1442,7 @@ class Project
                 'project' => $this->getKey(),
                 'gbContent' => $gbContent,
             ));
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'permaLink',
                 $this->appContext->getLocale('view~map.permalink.navbar.title'),
                 $tpl->fetch('view~map_permalink'),
@@ -1455,7 +1453,7 @@ class Project
         if (property_exists($configOptions, 'draw')
             && $configOptions->draw == 'True') {
             $tpl = new \jTpl();
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'draw',
                 $this->appContext->getLocale('view~map.draw.navbar.title'),
                 $tpl->fetch('view~map_draw'),
@@ -1469,7 +1467,7 @@ class Project
     /**
      * @throws jExceptionSelector
      *
-     * @return lizmapMapDockItem[]
+     * @return \LizmapMapDockItem[]
      */
     public function getDefaultBottomDockable()
     {
@@ -1479,7 +1477,7 @@ class Project
         if ($this->hasAttributeLayers(true)) {
             $form = $this->appContext->createJelixForm('view~attribute_layers_option');
             $assign = array('form' => $form);
-            $dockable[] = new \lizmapMapDockItem(
+            $dockable[] = new \LizmapMapDockItem(
                 'attributeLayers',
                 $this->appContext->getLocale('view~map.attributeLayers.navbar.title'),
                 array('view~map_attributeLayers', $assign),

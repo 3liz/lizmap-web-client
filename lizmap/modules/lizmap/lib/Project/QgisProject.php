@@ -20,7 +20,7 @@ class QgisProject
     protected $path;
 
     /**
-     * @var SimpleXMLElement QGIS project XML
+     * @var \SimpleXMLElement QGIS project XML
      */
     protected $xml;
 
@@ -82,8 +82,7 @@ class QgisProject
     /**
      * constructor.
      *
-     * @param string $file  : the QGIS project path
-     * @param mixed  $jelix
+     * @param string $file : the QGIS project path
      * @param mixed  $data
      */
     public function __construct($file, $data = false)
@@ -168,7 +167,7 @@ class QgisProject
         return $this->themes;
     }
 
-    public function setPropertiesAfterRead(projectConfig $cfg)
+    public function setPropertiesAfterRead(ProjectConfig $cfg)
     {
         $this->setShortNames($cfg);
         $this->setLayerOpacity($cfg);
@@ -180,9 +179,9 @@ class QgisProject
     /**
      * Set layers' shortname with XML data.
      *
-     * @param projectConfig $qgsXml
+     * @param ProjectConfig $qgsXml
      */
-    protected function setShortNames(projectConfig $cfg)
+    protected function setShortNames(ProjectConfig $cfg)
     {
         $shortNames = $this->xpathQuery('//maplayer/shortname');
         $layers = $cfg->getProperty('layers');
@@ -206,9 +205,9 @@ class QgisProject
     /**
      * Set layers' opacity with XML data.
      *
-     * @param projectConfig $qgsXml
+     * @param ProjectConfig $qgsXml
      */
-    protected function setLayerOpacity(projectConfig $cfg)
+    protected function setLayerOpacity(ProjectConfig $cfg)
     {
         $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
         $layers = $cfg->getProperty('layers');
@@ -227,9 +226,9 @@ class QgisProject
     /**
      * Set layers' group infos.
      *
-     * @param projectConfig $qgsXml
+     * @param ProjectConfig $qgsXml
      */
-    protected function setLayerGroupData(projectConfig $cfg)
+    protected function setLayerGroupData(ProjectConfig $cfg)
     {
         $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
         $layers = $cfg->getProperty('layers');
@@ -261,9 +260,9 @@ class QgisProject
     /**
      * Set layers' last infos.
      *
-     * @param projectConfig $qgsXml
+     * @param ProjectConfig $qgsXml
      */
-    protected function setLayerShowFeatureCount(projectConfig $cfg)
+    protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
         $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
         if ($layersWithShowFeatureCount) {
@@ -281,9 +280,9 @@ class QgisProject
     /**
      * Set/Unset some properties after reading the config file.
      *
-     * @param projectConfig $qgsXml
+     * @param ProjectConfig $qgsXml
      */
-    protected function unsetPropAfterRead(projectConfig $cfg)
+    protected function unsetPropAfterRead(ProjectConfig $cfg)
     {
         //remove plugin layer
         $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
@@ -360,7 +359,7 @@ class QgisProject
     /**
      * @param $layerId
      *
-     * @return null|qgisMapLayer|qgisVectorLayer
+     * @return null|\QgisMapLayer|\QgisVectorLayer
      */
     public function getLayer($layerId)
     {
@@ -372,10 +371,10 @@ class QgisProject
             // get first key found in the filtered layers
             $k = key($layers);
             if ($layers[$k]['type'] == 'vector') {
-                return new \qgisVectorLayer($this, $layers[$k]);
+                return new \QgisVectorLayer($this, $layers[$k]);
             }
 
-            return new \qgisMapLayer($this, $layers[$k]);
+            return new \QgisMapLayer($this, $layers[$k]);
         }
 
         return null;
@@ -384,7 +383,7 @@ class QgisProject
     /**
      * @param string $key
      *
-     * @return null|qgisMapLayer|qgisVectorLayer
+     * @return null|\QgisMapLayer|\QgisVectorLayer
      */
     public function getLayerByKeyword($key)
     {
@@ -396,10 +395,10 @@ class QgisProject
             // get first key found in the filtered layers
             $k = key($layers);
             if ($layers[$k]['type'] == 'vector') {
-                return new \qgisVectorLayer($this, $layers[$k]);
+                return new \QgisVectorLayer($this, $layers[$k]);
             }
 
-            return new \qgisMapLayer($this, $layers[$k]);
+            return new \QgisMapLayer($this, $layers[$k]);
         }
 
         return null;
@@ -408,7 +407,7 @@ class QgisProject
     /**
      * @param string $key
      *
-     * @return qgisMapLayer[]|qgisVectorLayer[]
+     * @return \QgisMapLayer[]|\QgisVectorLayer[]
      */
     public function findLayersByKeyword($key)
     {
@@ -420,9 +419,9 @@ class QgisProject
         if ($foundLayers) {
             foreach ($foundLayers as $layer) {
                 if ($layer['type'] == 'vector') {
-                    $layers[] = new \qgisVectorLayer($this, $layer);
+                    $layers[] = new \QgisVectorLayer($this, $layer);
                 } else {
-                    $layers[] = new \qgisMapLayer($this, $layer);
+                    $layers[] = new \QgisMapLayer($this, $layer);
                 }
             }
         }
@@ -446,10 +445,10 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
-     * @param string           $layerId
+     * @param \SimpleXMLElement $xml
+     * @param string            $layerId
      *
-     * @return SimpleXMLElement[]
+     * @return \SimpleXMLElement[]
      */
     protected function getXmlLayer2($xml, $layerId)
     {
@@ -813,7 +812,7 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      * @param $cfg
      * @param mixed $layers
      *
@@ -1029,7 +1028,7 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      *
      * @return string
      */
@@ -1043,7 +1042,7 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      *
      * @return array
      */
@@ -1059,7 +1058,7 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      *
      * @return null|array[]
      */
@@ -1098,7 +1097,7 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      *
      * @return null|array[]
      */
@@ -1144,7 +1143,7 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      *
      * @return bool
      */
@@ -1156,9 +1155,9 @@ class QgisProject
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      *
-     * @throws Exception
+     * @throws \Exception
      *
      * @return array[] list of layers. Each item is a list of layer properties
      */
