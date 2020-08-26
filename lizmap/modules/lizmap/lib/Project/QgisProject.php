@@ -82,13 +82,12 @@ class QgisProject
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');//, 'xml');
+        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
     /**
      * constructor.
      *
      * @param string $file : the QGIS project path
-     * @param \LizmapServices $services
      * @param mixed  $data
      */
     public function __construct($file, \LizmapServices $services, $data = false)
@@ -105,12 +104,6 @@ class QgisProject
             $this->readXmlProject($file);
         } else {
             foreach ($this->cachedProperties as $prop) {
-                if ($prop == 'xml') {
-                    $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><root></root>');
-                    array_walk_recursive($data['xml'], array($xml,'addChild'));
-                    $this->$prop = $xml;
-                    continue ;
-                }
                 $this->{$prop} = $data[$prop];
             }
         }
@@ -119,16 +112,11 @@ class QgisProject
         $this->path = $file;
     }
 
-    public function getCacheData()
+    public function getCacheData($data)
     {
-        $data = array();
         foreach ($this->cachedProperties as $prop) {
-            if (!isset($this->{$prop})) {
+            if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
-            }
-            if ($prop == 'xml') {
-                $data[$prop] = json_decode(json_encode($this->{$prop}));
-                continue ;
             }
             $data[$prop] = $this->{$prop};
         }
