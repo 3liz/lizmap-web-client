@@ -74,18 +74,24 @@ class QgisProject
     protected $layers = array();
 
     /**
+     * @var \LizmapServices
+     */
+    protected $services;
+
+    /**
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');//, 'xml');
 
     /**
      * constructor.
      *
      * @param string $file : the QGIS project path
+     * @param \LizmapServices $services
      * @param mixed  $data
      */
-    public function __construct($file, $data = false)
+    public function __construct($file, \LizmapServices $services, $data = false)
     {
         // Verifying if the files exist
         if (!file_exists($file)) {
@@ -99,10 +105,17 @@ class QgisProject
             $this->readXmlProject($file);
         } else {
             foreach ($this->cachedProperties as $prop) {
+                if ($prop == 'xml') {
+                    $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><root></root>');
+                    array_walk_recursive($data['xml'], array($xml,'addChild'));
+                    $this->$prop = $xml;
+                    continue ;
+                }
                 $this->{$prop} = $data[$prop];
             }
         }
 
+        $this->services = $services;
         $this->path = $file;
     }
 
@@ -112,6 +125,10 @@ class QgisProject
         foreach ($this->cachedProperties as $prop) {
             if (!isset($this->{$prop})) {
                 continue;
+            }
+            if ($prop == 'xml') {
+                $data[$prop] = json_decode(json_encode($this->{$prop}));
+                continue ;
             }
             $data[$prop] = $this->{$prop};
         }
@@ -273,8 +290,8 @@ class QgisProject
                     $cfgLayers->{$name}->showFeatureCont = 'True';
                 }
             }
+            $cfg->setProperty('layers', $cfgLayers);
         }
-        $cfg->setProperty('layers', $cfgLayers);
     }
 
     /**
@@ -291,7 +308,7 @@ class QgisProject
                 $name = (string) $layer->layername;
                 $layers = $cfg->getProperty('layers');
                 if ($layers && property_exists($layers, $name)) {
-                    $cfg->unsetProp('layers', $name);
+                    $cfg->unsetProperty('layers', $name);
                 }
             }
         }
@@ -902,7 +919,8 @@ class QgisProject
             throw new \Exception('The QGIS project '.basename($qgsPath).' does not exist!');
         }
 
-        $qgsXml = simplexml_load_file($qgsPath);
+        $this->xml = simplexml_load_file($qgsPath);
+        $qgsXml = $this->xml;
         // Build data
         $this->data = array(
         );
@@ -1173,7 +1191,7 @@ class QgisProject
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
                 $xmlFile = realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project);
-                $qgsProj = new QgisProject($xmlFile);
+                $qgsProj = new QgisProject($xmlFile, $this->services);
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
                 $layer['qsgmtime'] = filemtime($xmlFile);
                 $layer['file'] = $xmlFile;
