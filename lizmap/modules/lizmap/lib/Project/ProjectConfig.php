@@ -7,7 +7,7 @@ class ProjectConfig
     /**
      * @var object
      */
-    protected $cfg;
+    protected $cfgContent;
 
     /**
      * @var ProjectCache
@@ -49,23 +49,24 @@ class ProjectConfig
      */
     protected $options;
 
-    protected $cachedProperties = array('layersOrder', 'printCapabilities', 'locateByLayer',
-        'formFilterLayers', 'editionLayers', 'attributeLayers', 'cfg', 'options');
+    protected $cachedProperties = array('layersOrder', 'locateByLayer', 'formFilterLayers', 'editionLayers',
+        'attributeLayers', 'cfgContent', 'options', );
 
     public function __construct($cfgFile, $data = null)
     {
         if ($data === null) {
             $fileContent = file_get_contents($cfgFile);
-            $this->cfg = json_decode($fileContent);
-            if ($this->cfg === null) {
+            $this->cfgContent = json_decode($fileContent);
+            if ($this->cfgContent === null) {
                 throw new UnknownLizmapProjectException('The file '.$cfgFile.' cannot be decoded.');
             }
         } else {
             foreach ($data as $prop => $value) {
                 if (in_array($prop, $this->cachedProperties)) {
-                    if ($prop == 'cfg') {
-                        $this->{$prop} = clone $value;
-                        continue ;
+                    if ($prop == 'cfgContent') {
+                        $this->{$prop} = json_decode(json_encode($value));
+
+                        continue;
                     }
                     $this->{$prop} = $value;
                 }
@@ -80,24 +81,24 @@ class ProjectConfig
      */
     public function getData()
     {
-        return $this->cfg;
+        return $this->cfgContent;
     }
 
     /**
      * Return the properties to store in the cache.
      *
+     * @param mixed $data
+     *
      * @return array
      */
-    public function getCacheData()
+    public function getCacheData($data)
     {
-        $data = array();
-
         foreach ($this->cachedProperties as $prop) {
-            if (!isset($this->{$prop})) {
+            if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
             }
-            if ($prop == 'cfg') {
-                $data['cfg'] = $this->cfg;
+            if ($prop == 'cfgContent') {
+                $data['cfgContent'] = json_decode(json_encode($this->cfgContent), true);
             } else {
                 $data[$prop] = $this->{$prop};
             }
@@ -113,11 +114,11 @@ class ProjectConfig
      */
     public function getProperty($propName)
     {
-        if (property_exists($this, $propName) && isset($this->$propName)) {
+        if (property_exists($this, $propName) && isset($this->{$propName})) {
             return $this->{$propName};
         }
-        if (property_exists($this->cfg, $propName)) {
-            return $this->cfg->$propName;
+        if (property_exists($this->cfgContent, $propName)) {
+            return $this->cfgContent->{$propName};
         }
 
         return null;
@@ -126,19 +127,19 @@ class ProjectConfig
     public function setProperty($prop, $value)
     {
         if (property_exists($this, $prop)) {
-            $this->prop = $value;
+            $this->{$prop} = $value;
         }
-        if (property_exists($this->cfg, $prop)) {
-            $this->cfg->{$prop} = $value;
+        if (property_exists($this->cfgContent, $prop)) {
+            $this->cfgContent->{$prop} = $value;
         }
     }
 
     public function unsetProperty($propName, $propName2 = '')
     {
-        if (isset($this->cfg->{$propName}) && $propName2 == '') {
-            unset($this->cfg->{$propName});
-        } elseif (isset($this->cfg->{$propName}) && property_exists($this->cfg->{$propName}, $propName2)) {
-            unset($this->cfg->{$propName}, $propName2);
+        if (isset($this->cfgContent->{$propName}) && $propName2 == '') {
+            unset($this->cfgContent->{$propName});
+        } elseif (isset($this->cfgContent->{$propName}) && property_exists($this->cfgContent->{$propName}, $propName2)) {
+            unset($this->cfgContent->{$propName}, $propName2);
         }
     }
 
@@ -191,8 +192,8 @@ class ProjectConfig
             return null;
         }
 
-        if (property_exists($this->cfg->layers, $name)) {
-            return $this->cfg->layers->{$name};
+        if (property_exists($this->cfgContent->layers, $name)) {
+            return $this->cfgContent->layers->{$name};
         }
 
         return null;
@@ -210,7 +211,7 @@ class ProjectConfig
             return null;
         }
 
-        foreach ($this->cfg->layers as $layer) {
+        foreach ($this->cfgContent->layers as $layer) {
             if (!property_exists($layer, 'shortname')) {
                 continue;
             }
@@ -234,7 +235,7 @@ class ProjectConfig
             return null;
         }
 
-        foreach ($this->cfg->layers as $layer) {
+        foreach ($this->cfgContent->layers as $layer) {
             if (!property_exists($layer, 'title')) {
                 continue;
             }
@@ -258,7 +259,7 @@ class ProjectConfig
             return null;
         }
 
-        foreach ($this->cfg->layers as $layer) {
+        foreach ($this->cfgContent->layers as $layer) {
             if (!property_exists($layer, 'id')) {
                 continue;
             }
@@ -283,11 +284,11 @@ class ProjectConfig
         }
 
         // typeName is layerName
-        if (property_exists($this->cfg->layers, $typeName)) {
-            return $this->cfg->layers->{$typeName};
+        if (property_exists($this->cfgContent->layers, $typeName)) {
+            return $this->cfgContent->layers->{$typeName};
         }
         // typeName is cleanName or shortName
-        foreach ($this->cfg->layers as $layer) {
+        foreach ($this->cfgContent->layers as $layer) {
             if (str_replace(' ', '_', $layer->name) == $typeName) {
                 return $layer;
             }
@@ -304,7 +305,7 @@ class ProjectConfig
 
     public function getEditionLayerByName($name)
     {
-        $editionLayers = $this->cfg->editionLayers;
+        $editionLayers = $this->cfgContent->editionLayers;
         if ($editionLayers && property_exists($editionLayers, $name)) {
             return $editionLayers->{$name};
         }
@@ -319,7 +320,7 @@ class ProjectConfig
      */
     public function getEditionLayerByLayerId($layerId)
     {
-        $editionLayers = $this->cfg->editionLayers;
+        $editionLayers = $this->cfgContent->editionLayers;
         foreach ($editionLayers as $layer) {
             if (!property_exists($layer, 'layerId')) {
                 continue;

@@ -152,11 +152,16 @@ class Project
     protected $options;
 
     /**
+     * @var mixed
+     */
+    protected $cfgContent;
+
+    /**
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'themes', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
-        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'options', 'QgisProjectVersion');//, 'xml');
+        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfgContent', 'options', 'QgisProjectVersion', );
 
     /**
      * @var string
@@ -205,8 +210,6 @@ class Project
         $this->cacheHandler = new ProjectCache($file, $this->appContext);
 
         $data = $this->cacheHandler->retrieveProjectData();
-
-        // file_put_contents(__DIR__.'/../../../../../tests/units/tmp/data.log', json_encode($data, JSON_PRETTY_PRINT), FILE_APPEND);
         if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
@@ -226,7 +229,7 @@ class Project
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
             }
-            $data = array_merge(array('data' => $data), $this->cfg->getCacheData(), $this->qgis->getCacheData());
+            $data = array_merge($data, $this->qgis->getCacheData($data), $this->cfg->getCacheData($data));
             $this->cacheHandler->storeProjectData($data);
         } else {
             foreach ($this->cachedProperties as $prop) {
@@ -251,6 +254,7 @@ class Project
             if ($rewriteCache) {
                 $this->cacheHandler->storeProjectData($data);
             }
+
             try {
                 $this->cfg = new ProjectConfig($file.'.cfg', $data);
             } catch (UnknownLizmapProjectException $e) {
@@ -432,6 +436,7 @@ class Project
         if (isset($this->WMSInformation) && count($this->WMSInformation) > 1) {
             return $this->WMSInformation;
         }
+
         return $this->qgis->getWMSInformation();
     }
 
@@ -488,7 +493,7 @@ class Project
      */
     public function getQgisServerPlugins()
     {
-        $qgisServer = new \QgisServer();
+        $qgisServer = new \qgisServer();
 
         return $qgisServer->getPlugins($this);
     }
