@@ -91,7 +91,7 @@ class ProjectCache
         } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            \jLog::logEx($e, 'error');
+            $this->appContext->logException($e, 'error');
         }
 
         return $data;
@@ -108,9 +108,9 @@ class ProjectCache
             $data['qgsmtime'] = filemtime($this->file);
             $data['qgscfgmtime'] = filemtime($this->file.'.cfg');
             $data['format_version'] = self::CACHE_FORMAT_VERSION;
-            \jCache::set($this->fileKey, $data, null, $this->profile);
+            $this->appContext->setCache($this->fileKey, $data, null, $this->profile);
         } catch (\Exception $e) {
-            \jLog::logEx($e, 'error');
+            $this->appContext->logException($e, 'error');
         }
     }
 
@@ -120,11 +120,11 @@ class ProjectCache
     public function clearCache()
     {
         try {
-            \jCache::delete($this->fileKey, $this->profile);
+            $this->appContext->clearCache($this->fileKey, $this->profile);
         } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            \jLog::logEx($e, 'error');
+            $this->appContext->logException($e, 'error');
         }
     }
 
