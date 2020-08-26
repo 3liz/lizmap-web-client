@@ -44,20 +44,29 @@ class ProjectConfig
      */
     protected $attributeLayers;
 
+    /**
+     * @var mixed
+     */
+    protected $options;
+
     protected $cachedProperties = array('layersOrder', 'printCapabilities', 'locateByLayer',
-        'formFilterLayers', 'editionLayers', 'attributeLayers', 'cfg', );
+        'formFilterLayers', 'editionLayers', 'attributeLayers', 'cfg', 'options');
 
     public function __construct($cfgFile, $data = null)
     {
         if ($data === null) {
             $fileContent = file_get_contents($cfgFile);
             $this->cfg = json_decode($fileContent);
-            if (!$this->cfg) {
+            if ($this->cfg === null) {
                 throw new UnknownLizmapProjectException('The file '.$cfgFile.' cannot be decoded.');
             }
         } else {
             foreach ($data as $prop => $value) {
-                if (array_key_exists($this->cachedProperties, $prop)) {
+                if (in_array($prop, $this->cachedProperties)) {
+                    if ($prop == 'cfg') {
+                        $this->{$prop} = clone $value;
+                        continue ;
+                    }
                     $this->{$prop} = $value;
                 }
             }
@@ -104,11 +113,11 @@ class ProjectConfig
      */
     public function getProperty($propName)
     {
-        if (property_exists($this, $propName)) {
+        if (property_exists($this, $propName) && isset($this->$propName)) {
             return $this->{$propName};
         }
         if (property_exists($this->cfg, $propName)) {
-            return $this->cfg->propName;
+            return $this->cfg->$propName;
         }
 
         return null;
@@ -124,7 +133,7 @@ class ProjectConfig
         }
     }
 
-    public function unsetProp($propName, $propName2 = '')
+    public function unsetProperty($propName, $propName2 = '')
     {
         if (isset($this->cfg->{$propName}) && $propName2 == '') {
             unset($this->cfg->{$propName});

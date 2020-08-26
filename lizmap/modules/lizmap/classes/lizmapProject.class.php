@@ -21,7 +21,7 @@ use Lizmap\Project;
 class lizmapProject
 {
     /**
-     * @var project
+     * @var Project\Project
      */
     protected $proj;
 
@@ -29,29 +29,22 @@ class lizmapProject
      * constructor.
      *
      * @param string           $key      : the project name
-     * @param lizmapRepository $rep      : the repository
+     * @param LizmapRepository $rep      : the repository
      * @param mixed            $context
      * @param mixed            $services
      */
     public function __construct($key, $rep, $context, $services)
     {
-        $this->proj = new \Lizmap\Project\project($key, $rep, $context, $services);
+        try {
+            $this->proj = new \Lizmap\Project\Project($key, $rep, $context, $services);
+        } catch (Project\UnknownLizmapProjectException $e) {
+            throw $e;
+        }
     }
 
     public function clearCache()
     {
         $this->proj->clearCache();
-    }
-
-    /**
-     * Read the qgis files.
-     *
-     * @param mixed $key
-     * @param mixed $rep
-     */
-    protected function readProject($key, $rep)
-    {
-        $this->proj->readProject($key, $rep);
     }
 
     public function getQgisPath()
@@ -277,53 +270,6 @@ class lizmapProject
     public function getLayerNameByIdFromConfig($layerId)
     {
         return $this->proj->getLayerNameByIdFromConfig($layerId);
-    }
-
-    protected function readPrintCapabilities($qgsLoad, $cfg)
-    {
-        return $this->proj->readPrintCapabilities($qgsLoad, $cfg);
-    }
-
-    /**
-     * @param SimpleXMLElement $xml
-     * @param string           $layerId
-     *
-     * @return SimpleXMLElement[]
-     */
-    protected function getXmlLayer2($xml, $layerId)
-    {
-        return $this->proj->getXmlLayer2($xml, $layerId);
-    }
-
-    protected function readLocateByLayers($xml, $cfg)
-    {
-        return $this->proj->readLocateByLayers($xml, $cfg);
-    }
-
-    protected function readFormFilterLayers($xml, $cfg)
-    {
-        return $this->proj->readFormFilterLayers($xml, $cfg);
-    }
-
-    protected function readEditionLayers($xml, $cfg)
-    {
-        return $this->proj->readEditionLayers($xml, $cfg);
-    }
-
-    protected function readAttributeLayers($xml, $cfg)
-    {
-        return $this->proj->readAttributeLayers($xml, $cfg);
-    }
-
-    /**
-     * @param SimpleXMLElement $xml
-     * @param $cfg
-     *
-     * @return int[]
-     */
-    protected function readLayersOrder($xml, $cfg)
-    {
-        return $this->proj->readLayersOrder($xml, $cfg);
     }
 
     /**

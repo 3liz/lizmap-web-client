@@ -132,11 +132,6 @@ class Project
     protected $attributeLayers = array();
 
     /**
-     * @var array
-     */
-    protected $layers;
-
-    /**
      * @var bool
      */
     protected $useLayerIDs = false;
@@ -147,11 +142,21 @@ class Project
     protected $layers = array();
 
     /**
+     * @var null
+     */
+    protected $xml;
+
+    /**
+     * @var array
+     */
+    protected $options;
+
+    /**
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'themes', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
-        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'QgisProjectVersion', );
+        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'options', 'QgisProjectVersion');//, 'xml');
 
     /**
      * @var string
@@ -201,6 +206,7 @@ class Project
 
         $data = $this->cacheHandler->retrieveProjectData();
 
+        // file_put_contents(__DIR__.'/../../../../../tests/units/tmp/data.log', json_encode($data, JSON_PRETTY_PRINT), FILE_APPEND);
         if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
@@ -212,7 +218,7 @@ class Project
             }
 
             try {
-                $this->qgis = new QgisProject($file);
+                $this->qgis = new QgisProject($file, $services);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -220,7 +226,7 @@ class Project
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
             }
-            $data = array_merge($data, $this->cfg->getCacheData(), $this->qgis->getCacheData());
+            $data = array_merge(array('data' => $data), $this->cfg->getCacheData(), $this->qgis->getCacheData());
             $this->cacheHandler->storeProjectData($data);
         } else {
             foreach ($this->cachedProperties as $prop) {
@@ -230,8 +236,8 @@ class Project
             }
             $rewriteCache = false;
             foreach ($this->layers as $index => $layer) {
-                if ($layer['embedded'] == '1' && $layer['qgsmtime'] < filemtime($layer['file'])) {
-                    $qgsProj = new QgisProject($layer['file']);
+                if (array_key_exists('embedded', $layer) && $layer['embedded'] == '1' && $layer['qgsmtime'] < filemtime($layer['file'])) {
+                    $qgsProj = new QgisProject($layer['file'], $services);
                     $newLayer = $qgsProj->getLayerDefinition($layer['id']);
                     $newLayer['qsgmtime'] = filemtime($layer['file']);
                     $newLayer['file'] = $layer['file'];
@@ -245,7 +251,6 @@ class Project
             if ($rewriteCache) {
                 $this->cacheHandler->storeProjectData($data);
             }
-
             try {
                 $this->cfg = new ProjectConfig($file.'.cfg', $data);
             } catch (UnknownLizmapProjectException $e) {
@@ -253,7 +258,7 @@ class Project
             }
 
             try {
-                $this->qgis = new QgisProject($file, $data);
+                $this->qgis = new QgisProject($file, $services, $data);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -277,6 +282,7 @@ class Project
         $qgsXml = $this->qgis;
         $configOptions = $this->cfg->getProperty('options');
 
+        $this->options = $configOptions;
         // Complete data
         $this->data['repository'] = $rep->getKey();
         $this->data['id'] = $key;
@@ -290,9 +296,9 @@ class Project
         $this->data['bbox'] = implode(', ', $configOptions->bbox);
 
         // Update WMSInformation
-        // $this->WMSInformation = array($this->xml->getWMSInformation(), 'ProjectCrs' => $this->data['proj']);
+        // $this->WMSInformation = array($this->qgis->getWMSInformation(), 'ProjectCrs' => $this->data['proj']);
         $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
-        $this->WMSInformation = array_merge($this->xml->getWMSInformation(), $this->WMSInformation);
+        $this->WMSInformation = array_merge($this->qgis->getWMSInformation(), $this->WMSInformation);
 
         // get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = \jUrl::getFull(
@@ -322,7 +328,7 @@ class Project
 
         $props = array(
             'printCapabilities',
-            'locateByLayer',
+            'locateByLayers',
             'formFilterLayers',
             'editionLayers',
             'layersOrder',
@@ -403,22 +409,22 @@ class Project
             return $this->data[$key];
         }
 
-        return $this->xml->getData($key);
+        return $this->qgis->getData($key);
     }
 
     public function getProj4($authId)
     {
-        return $this->xml->getProj4($authId);
+        return $this->qgis->getProj4($authId);
     }
 
     public function getAllProj4()
     {
-        return $this->xml->getAllProj4();
+        return $this->qgis->getAllProj4();
     }
 
     public function getCanvasColor()
     {
-        return $this->xml->getCanvasColor();
+        return $this->qgis->getCanvasColor();
     }
 
     public function getWMSInformation()
@@ -426,7 +432,7 @@ class Project
         if (isset($this->WMSInformation) && count($this->WMSInformation) > 1) {
             return $this->WMSInformation;
         }
-        return $this->xml->getWMSInformation();
+        return $this->qgis->getWMSInformation();
     }
 
     public function hasLocateByLayer()
@@ -994,6 +1000,11 @@ class Project
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }
 
+    public function getLayerNameByIdFromConfig($layerId)
+    {
+        return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->layers);
+    }
+
     /**
      * @deprecated
      *
@@ -1350,7 +1361,7 @@ class Project
     /**
      * @throws jExceptionSelector
      *
-     * @return \LizmapMapDockItem[]
+     * @return \lizmapMapDockItem[]
      */
     public function getDefaultDockable()
     {
@@ -1365,7 +1376,7 @@ class Project
         if ($services->projectSwitcher) {
             $projectsTpl = new \jTpl();
             $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'projects',
                 $this->appContext->getLocale('view~default.repository.list.title'),
                 $projectsTpl->fetch('view~map_projects'),
@@ -1376,7 +1387,7 @@ class Project
         $switcherTpl = new \jTpl();
         $switcherTpl->assign(array(
             'layerExport' => $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()), ));
-        $dockable[] = new \LizmapMapDockItem(
+        $dockable[] = new \lizmapMapDockItem(
             'switcher',
             $this->appContext->getLocale('view~map.switchermenu.title'),
             $switcherTpl->fetch('view~map_switcher'),
@@ -1405,7 +1416,7 @@ class Project
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
             'wmtsGetCapabilitiesUrl' => $wmtsGetCapabilitiesUrl,
         ), $wmsInfo));
-        $dockable[] = new \LizmapMapDockItem(
+        $dockable[] = new \lizmapMapDockItem(
             'metadata',
             $this->appContext->getLocale('view~map.metadata.link.label'),
             $metadataTpl->fetch('view~map_metadata'),
@@ -1414,7 +1425,7 @@ class Project
 
         if ($this->hasEditionLayers()) {
             $tpl = new \jTpl();
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'edition',
                 $this->appContext->getLocale('view~edition.navbar.title'),
                 $tpl->fetch('view~map_edition'),
@@ -1431,7 +1442,7 @@ class Project
      * @throws jException
      * @throws jExceptionSelector
      *
-     * @return \LizmapMapDockItem[]
+     * @return \lizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
@@ -1443,7 +1454,7 @@ class Project
             $tpl = new \jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
             $layerExport = $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ? 'layer-export' : '';
-            $dock = new \LizmapMapDockItem(
+            $dock = new \lizmapMapDockItem(
                 'selectiontool',
                 $this->appContext->getLocale('view~map.selectiontool.navbar.title'),
                 '<lizmap-selection-tool '.$layerExport.'></lizmap-selection-tool>',
@@ -1457,7 +1468,7 @@ class Project
 
         if ($this->hasLocateByLayer()) {
             $tpl = new \jTpl();
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'locate',
                 $this->appContext->getLocale('view~map.locatemenu.title'),
                 $tpl->fetch('view~map_locate'),
@@ -1469,7 +1480,7 @@ class Project
             && $configOptions->geolocation == 'True') {
             $tpl = new \jTpl();
             $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'geolocation',
                 $this->appContext->getLocale('view~map.geolocate.navbar.title'),
                 $tpl->fetch('view~map_geolocation'),
@@ -1480,7 +1491,7 @@ class Project
         if (property_exists($configOptions, 'print')
             && $configOptions->print == 'True') {
             $tpl = new \jTpl();
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'print',
                 $this->appContext->getLocale('view~map.print.navbar.title'),
                 $tpl->fetch('view~map_print'),
@@ -1491,7 +1502,7 @@ class Project
         if (property_exists($configOptions, 'measure')
             && $configOptions->measure == 'True') {
             $tpl = new \jTpl();
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'measure',
                 $this->appContext->getLocale('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
@@ -1501,7 +1512,7 @@ class Project
 
         if ($this->hasTooltipLayers()) {
             $tpl = new \jTpl();
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'tooltip-layer',
                 $this->appContext->getLocale('view~map.tooltip.navbar.title'),
                 $tpl->fetch('view~map_tooltip'),
@@ -1513,7 +1524,7 @@ class Project
 
         if ($this->hasTimemanagerLayers()) {
             $tpl = new \jTpl();
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'timemanager',
                 $this->appContext->getLocale('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
@@ -1555,7 +1566,7 @@ class Project
                 'project' => $this->getKey(),
                 'gbContent' => $gbContent,
             ));
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'permaLink',
                 $this->appContext->getLocale('view~map.permalink.navbar.title'),
                 $tpl->fetch('view~map_permalink'),
@@ -1566,7 +1577,7 @@ class Project
         if (property_exists($configOptions, 'draw')
             && $configOptions->draw == 'True') {
             $tpl = new \jTpl();
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'draw',
                 $this->appContext->getLocale('view~map.draw.navbar.title'),
                 $tpl->fetch('view~map_draw'),
@@ -1580,7 +1591,7 @@ class Project
     /**
      * @throws jExceptionSelector
      *
-     * @return \LizmapMapDockItem[]
+     * @return \lizmapMapDockItem[]
      */
     public function getDefaultBottomDockable()
     {
@@ -1590,7 +1601,7 @@ class Project
         if ($this->hasAttributeLayers(true)) {
             $form = $this->appContext->createJelixForm('view~attribute_layers_option');
             $assign = array('form' => $form);
-            $dockable[] = new \LizmapMapDockItem(
+            $dockable[] = new \lizmapMapDockItem(
                 'attributeLayers',
                 $this->appContext->getLocale('view~map.attributeLayers.navbar.title'),
                 array('view~map_attributeLayers', $assign),
