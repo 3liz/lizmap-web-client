@@ -913,7 +913,7 @@ class Project
                 $spatialiteExt = $this->getSpatialiteExtension();
             }
             if (!$spatialiteExt) {
-                \jLog::log('Spatialite is not available', 'error');
+                $this->appContext->logMessage('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
             }
         } else {
