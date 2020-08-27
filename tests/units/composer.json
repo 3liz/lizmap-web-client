@@ -12,7 +12,8 @@
         "phpunit/phpunit": "^5.7.27"
     },
     "autoload": {
-        "classmap": ["../../lizmap/modules/lizmap/classes/" ]
+        "classmap": ["../../lizmap/modules/lizmap/classes/" ],
+        "psr-4": {"Lizmap\\": "../../lizmap/modules/lizmap/lib/"}
     },
     "minimum-stability": "stable"
 }
