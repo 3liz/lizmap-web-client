@@ -407,6 +407,16 @@ class Project
         return $this->cfg->getProperty('layers');
     }
 
+    public function getLayer($layerId)
+    {
+        return $this->qgis->getLayer($layerId, $this->objToArray($this->getLayers()));
+    }
+
+    public function getXmlLayer($layerId)
+    {
+        return $this->qgis->getXmlLayer($layerId);
+    }
+
     public function getData($key)
     {
         if (array_key_exists($key, $this->data)) {
@@ -754,6 +764,11 @@ class Project
         }
 
         return $ret;
+    }
+
+    protected function objToArray($obj)
+    {
+        return json_decode(json_encode($obj), true);
     }
 
     /**

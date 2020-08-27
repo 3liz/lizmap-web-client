@@ -92,6 +92,16 @@ class lizmapProject
         return $this->proj->getLayers();
     }
 
+    public function getLayer($layerId)
+    {
+        return $this->proj->getLayer($layerId);
+    }
+
+    public function getXmlLayer($layerId)
+    {
+        return $this->proj->getXmlLayer($layerId);
+    }
+
     public function findLayerByAnyName($name)
     {
         return $this->proj->findLayerByAnyName($name);
