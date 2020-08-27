@@ -344,7 +344,7 @@ class QgisProject
     /**
      * @param $layerId
      *
-     * @return null|int|string
+     * @return null|array|string
      */
     public function getLayerDefinition($layerId)
     {
@@ -363,23 +363,24 @@ class QgisProject
 
     /**
      * @param $layerId
+     * @param mixed $layers
      *
-     * @return null|\QgisMapLayer|\QgisVectorLayer
+     * @return null|\qgisMapLayer|\qgisVectorLayer
      */
-    public function getLayer($layerId)
+    public function getLayer($layerId, $layers)
     {
         /** @var array[] $layers */
-        $layers = array_filter($this->layers, function ($layer) use ($layerId) {
+        $layersFiltered = array_filter($layers, function ($layer) use ($layerId) {
             return $layer['id'] == $layerId;
         });
-        if (count($layers)) {
+        if (count($layersFiltered)) {
             // get first key found in the filtered layers
-            $k = key($layers);
+            $k = key($layersFiltered);
             if ($layers[$k]['type'] == 'vector') {
-                return new \QgisVectorLayer($this, $layers[$k]);
+                return new \qgisVectorLayer($this, $layers[$k]);
             }
 
-            return new \QgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($this, $layers[$k]);
         }
 
         return null;
@@ -388,7 +389,7 @@ class QgisProject
     /**
      * @param string $key
      *
-     * @return null|\QgisMapLayer|\QgisVectorLayer
+     * @return null|\qgisMapLayer|\qgisVectorLayer
      */
     public function getLayerByKeyword($key)
     {
@@ -400,10 +401,10 @@ class QgisProject
             // get first key found in the filtered layers
             $k = key($layers);
             if ($layers[$k]['type'] == 'vector') {
-                return new \QgisVectorLayer($this, $layers[$k]);
+                return new \qgisVectorLayer($this, $layers[$k]);
             }
 
-            return new \QgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($this, $layers[$k]);
         }
 
         return null;
@@ -412,7 +413,7 @@ class QgisProject
     /**
      * @param string $key
      *
-     * @return \QgisMapLayer[]|\QgisVectorLayer[]
+     * @return \qgisMapLayer[]|\qgisVectorLayer[]
      */
     public function findLayersByKeyword($key)
     {
@@ -424,9 +425,9 @@ class QgisProject
         if ($foundLayers) {
             foreach ($foundLayers as $layer) {
                 if ($layer['type'] == 'vector') {
-                    $layers[] = new \QgisVectorLayer($this, $layer);
+                    $layers[] = new \qgisVectorLayer($this, $layer);
                 } else {
-                    $layers[] = new \QgisMapLayer($this, $layer);
+                    $layers[] = new \qgisMapLayer($this, $layer);
                 }
             }
         }
@@ -447,6 +448,55 @@ class QgisProject
         }
 
         return $ret;
+    }
+
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     *
+     * @deprecated
+     *
+     * @param mixed $layerId
+     *
+     * @return SimpleXMLElement[]
+     */
+    public function getXmlLayer($layerId)
+    {
+        $layer = $this->getLayerDefinition($layerId);
+        if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
+            $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']), $this->services);
+
+            return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
+        }
+
+        return $this->getXml()->xpath("//maplayer[id='{$layerId}']");
+    }
+
+    /**
+     * temporary function to read xml for some methods that relies on
+     * xml data that are not yet stored in the cache.
+     *
+     * @return SimpleXMLElement
+     *
+     * @deprecated
+     */
+    protected function getXml()
+    {
+        if ($this->xml) {
+            return $this->xml;
+        }
+        $qgs_path = $this->path;
+        if (!file_exists($qgs_path)) {
+            throw new \Exception('The QGIS project '.$qgs_path.' does not exist!');
+        }
+        $xml = simplexml_load_file($qgs_path);
+        if ($xml === false) {
+            throw new \Exception('The QGIS project '.$qgs_path.' has invalid content!');
+        }
+        $this->xml = $xml;
+
+        return $xml;
     }
 
     /**
