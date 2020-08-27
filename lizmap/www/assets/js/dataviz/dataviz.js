@@ -266,13 +266,15 @@ var lizDataviz = function() {
     }
 
     function resizePlot(id){
-        var d3 = Plotly.d3;
-        var gd = d3.select('#'+id)
-        .style({
-            width: '100%',
-            margin: '0px'
-        });
-        Plotly.Plots.resize(gd.node());
+       // d3.select causes an error if the selector parameter is not a correct CSS one
+       try {
+           var gd = d3.select('#' + id)
+               .style({
+                   width: '100%',
+                   margin: '0px'
+               });
+           Plotly.Plots.resize(gd.node());
+       } catch (e) {}
     }
 
     function getPlotIdByContainerId(id){
