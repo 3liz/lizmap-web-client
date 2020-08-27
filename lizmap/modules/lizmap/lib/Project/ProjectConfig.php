@@ -157,7 +157,7 @@ class ProjectConfig
     public function findLayerByAnyName($name)
     {
         // name null or empty string
-        if ($name == null || empty($name)) {
+        if ($name == null || empty($name) || !isset($this->cfgContent->layers)) {
             return null;
         }
 
@@ -311,7 +311,7 @@ class ProjectConfig
 
     public function getEditionLayerByName($name)
     {
-        $editionLayers = $this->cfgContent->editionLayers;
+        $editionLayers = $this->editionLayers;
         if ($editionLayers && property_exists($editionLayers, $name)) {
             return $editionLayers->{$name};
         }
@@ -326,7 +326,10 @@ class ProjectConfig
      */
     public function getEditionLayerByLayerId($layerId)
     {
-        $editionLayers = $this->cfgContent->editionLayers;
+        $editionLayers = $this->editionLayers;
+        if (!$editionLayers) {
+            return null;
+        }
         foreach ($editionLayers as $layer) {
             if (!property_exists($layer, 'layerId')) {
                 continue;
