@@ -933,7 +933,16 @@ class lizmapProject extends qgisProject
         return $this->cfg->loginFilteredLayers->{$ln};
     }
 
-    public function getLoginFilters($layers)
+    /**
+     * Get login filters, get expressions for layers based on login filtered
+     * config.
+     *
+     * @param Array[string] $layers : layers' name list
+     * @param boolean       $edition : get login filters for edition
+     *
+     * @return array
+     */
+    public function getLoginFilters($layers, $edition=false)
     {
         $filters = array();
 
@@ -953,6 +962,14 @@ class lizmapProject extends qgisProject
             // Get config
             $loginFilteredConfig = $this->getLoginFilteredConfig($lname);
             if ($loginFilteredConfig == Null) {
+                continue;
+            }
+
+            // If login filter is configured for edition only and the expression
+            // is not requested for edition, do not return expression
+            if (property_exists($loginFilteredConfig, 'edition_only') &&
+                $this->optionToBoolean($loginFilteredConfig->edition_only) &&
+                !$edition) {
                 continue;
             }
 
