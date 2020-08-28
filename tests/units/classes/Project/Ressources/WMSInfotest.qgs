@@ -1,0 +1,128 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis projectname="" version="3.4.6-Madeira">
+  <homePath path=""/>
+  <title></title>
+  <properties>
+    
+    <WMSOnlineResource type="QString"></WMSOnlineResource>
+    <WMSFees type="QString">conditions unknown</WMSFees>
+    <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
+    <WFSLayers type="QStringList">
+      <value>edition_polygon_34db893a_6765_42e5_aa9a_712b69e30dc2</value>
+      <value>events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101</value>
+      <value>tramstop_4cdf2dad_6f48_4491_b318_693cc9184208</value>
+    </WFSLayers>
+    <Paths>
+      <Absolute type="bool">false</Absolute>
+    </Paths>
+    <WMTSUrl type="QString"></WMTSUrl>
+    <WMSExtent type="QStringList">
+      <value>390483.99668047408340499</value>
+      <value>5375009.91444000415503979</value>
+      <value>477899.4732063576229848</value>
+      <value>5436768.56305211596190929</value>
+    </WMSExtent>
+    <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
+    <WMSPrecision type="QString">8</WMSPrecision>
+    <WMSImageQuality type="int">90</WMSImageQuality>
+    <WCSUrl type="QString"></WCSUrl>
+    <WMSRequestDefinedDataSources type="bool">false</WMSRequestDefinedDataSources>
+    <Gui>
+      <SelectionColorAlphaPart type="int">150</SelectionColorAlphaPart>
+      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
+      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
+      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
+      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
+      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+    </Gui>
+    <WFSUrl type="QString"></WFSUrl>
+    <WMSContactMail type="QString"></WMSContactMail>
+    <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
+    <WFSTLayers>
+      <Insert type="QStringList"/>
+      <Delete type="QStringList"/>
+      <Update type="QStringList"/>
+    </WFSTLayers>
+    <WMSKeywordList type="QStringList">
+      <value></value>
+    </WMSKeywordList>
+    <WMSUrl type="QString"></WMSUrl>
+    <WMSRestrictedLayers type="QStringList"/>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
+    <WMSServiceAbstract type="QString"></WMSServiceAbstract>
+    <WMSContactOrganization type="QString"></WMSContactOrganization>
+    <WMTSJpegLayers>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+      <Group type="QStringList"/>
+    </WMTSJpegLayers>
+    <Measure>
+      <Ellipsoid type="QString">WGS84</Ellipsoid>
+    </Measure>
+    <WMSRestrictedComposers type="QStringList"/>
+    <Measurement>
+      <AreaUnits type="QString">m2</AreaUnits>
+      <DistanceUnits type="QString">meters</DistanceUnits>
+    </Measurement>
+    <WMSRootName type="QString"></WMSRootName>
+    <WMSAddWktGeometry type="bool">true</WMSAddWktGeometry>
+    <WMSCrsList type="QStringList">
+      <value>EPSG:4326</value>
+      <value>EPSG:3857</value>
+    </WMSCrsList>
+    <WMSContactPosition type="QString"></WMSContactPosition>
+    <WMTSPngLayers>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+      <Group type="QStringList"/>
+    </WMTSPngLayers>
+    <Variables>
+      <variableNames type="QStringList"/>
+      <variableValues type="QStringList"/>
+    </Variables>
+    <WMTSMinScale type="int">5000</WMTSMinScale>
+    <WMSContactPhone type="QString"></WMSContactPhone>
+    <WCSLayers type="QStringList"/>
+    <WFSLayersPrecision>
+      <montpellier_events20190220151015448 type="int">8</montpellier_events20190220151015448>
+      <events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101 type="int">8</events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101>
+      <tramstop_4cdf2dad_6f48_4491_b318_693cc9184208 type="int">8</tramstop_4cdf2dad_6f48_4491_b318_693cc9184208>
+      <edition_polygon_34db893a_6765_42e5_aa9a_712b69e30dc2 type="int">8</edition_polygon_34db893a_6765_42e5_aa9a_712b69e30dc2>
+    </WFSLayersPrecision>
+    <WMSServiceTitle type="QString">Touristic events around Montpellier, France</WMSServiceTitle>
+    <WMTSLayers>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+      <Group type="QStringList"/>
+    </WMTSLayers>
+    <WMSContactPerson type="QString"></WMSContactPerson>
+    <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
+  </properties>
+  <visibility-presets/>
+  <transformContext/>
+  <projectMetadata>
+    <identifier></identifier>
+    <parentidentifier></parentidentifier>
+    <language></language>
+    <type></type>
+    <title></title>
+    <abstract></abstract>
+    <contact>
+      <name></name>
+      <organization></organization>
+      <position></position>
+      <voice></voice>
+      <fax></fax>
+      <email></email>
+      <role></role>
+    </contact>
+    <links/>
+    <author></author>
+    <creation>2000-01-01T00:00:00</creation>
+  </projectMetadata>
+  <Annotations/>
+  <Layouts/>
+</qgis>
