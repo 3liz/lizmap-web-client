@@ -246,6 +246,12 @@ export default class Digitizing {
         drawStyles.temporary.defaultStyle.fillColor = color;
         drawStyles.temporary.defaultStyle.strokeColor = color;
 
+        // Refresh layer
+        this._drawLayer.redraw(true);
+        
+        // Save color
+        localStorage.setItem('drawColor', this._drawColor);
+
         mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
@@ -258,56 +264,6 @@ export default class Digitizing {
 
     get featureDrawnVisibility() {
         return this._featureDrawnVisibility;
-    }
-
-    get featureDrawnSLD() {
-        if(this.featureDrawn){
-            const style = this.featureDrawn.layer.styleMap.styles.default.defaultStyle;
-            let symbolizer = '';
-            let strokeAndFill =     `<Stroke>
-                                        <SvgParameter name="stroke">${style.strokeColor}</SvgParameter>
-                                        <SvgParameter name="stroke-opacity">${style.strokeOpacity}</SvgParameter>
-                                        <SvgParameter name="stroke-width">${style.strokeWidth}</SvgParameter>
-                                    </Stroke>
-                                    <Fill>
-                                        <SvgParameter name="fill">${style.fillColor}</SvgParameter>
-                                        <SvgParameter name="fill-opacity">${style.fillOpacity}</SvgParameter>
-                                    </Fill>`;
-
-            // We consider LINESTRING and POLYGON together currently
-            if (this.featureDrawn.geometry.CLASS_NAME === 'OpenLayers.Geometry.Point'){
-                symbolizer = `<PointSymbolizer>
-                                <Graphic>
-                                    <Mark>
-                                        <WellKnownName>circle</WellKnownName>
-                                        ${strokeAndFill}
-                                    </Mark>
-                                    <Size>${2 * style.pointRadius}</Size>
-                                </Graphic>
-                            </PointSymbolizer>`;
-
-            }else{
-                symbolizer =    `<PolygonSymbolizer>
-                                    ${strokeAndFill}
-                                </PolygonSymbolizer>`;
-
-            }
-            return `<?xml version="1.0" encoding="UTF-8"?>
-                    <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" 
-                        xmlns:ogc="http://www.opengis.net/ogc" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" 
-                        xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" 
-                        xmlns:se="http://www.opengis.net/se">
-                        <UserStyle>
-                            <FeatureTypeStyle>
-                                <Rule>
-                                    ${symbolizer}
-                                </Rule>
-                            </FeatureTypeStyle>
-                        </UserStyle>
-                    </StyledLayerDescriptor>`;
-        }
-        return null;
     }
 
     get isEdited() {
@@ -339,6 +295,57 @@ export default class Digitizing {
         }
     }
 
+    // Get SLD for featureDrawn[index]
+    getFeatureDrawnSLD(index) {
+        if (this.featureDrawn[index]) {
+            const style = this.featureDrawn[index].layer.styleMap.styles.default.defaultStyle;
+            let symbolizer = '';
+            let strokeAndFill = `<Stroke>
+                                        <SvgParameter name="stroke">${style.strokeColor}</SvgParameter>
+                                        <SvgParameter name="stroke-opacity">${style.strokeOpacity}</SvgParameter>
+                                        <SvgParameter name="stroke-width">${style.strokeWidth}</SvgParameter>
+                                    </Stroke>
+                                    <Fill>
+                                        <SvgParameter name="fill">${style.fillColor}</SvgParameter>
+                                        <SvgParameter name="fill-opacity">${style.fillOpacity}</SvgParameter>
+                                    </Fill>`;
+
+            // We consider LINESTRING and POLYGON together currently
+            if (this.featureDrawn[index].geometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
+                symbolizer = `<PointSymbolizer>
+                                <Graphic>
+                                    <Mark>
+                                        <WellKnownName>circle</WellKnownName>
+                                        ${strokeAndFill}
+                                    </Mark>
+                                    <Size>${2 * style.pointRadius}</Size>
+                                </Graphic>
+                            </PointSymbolizer>`;
+
+            } else {
+                symbolizer = `<PolygonSymbolizer>
+                                    ${strokeAndFill}
+                                </PolygonSymbolizer>`;
+
+            }
+            return `<?xml version="1.0" encoding="UTF-8"?>
+                    <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" 
+                        xmlns:ogc="http://www.opengis.net/ogc" 
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" 
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" 
+                        xmlns:se="http://www.opengis.net/se">
+                        <UserStyle>
+                            <FeatureTypeStyle>
+                                <Rule>
+                                    ${symbolizer}
+                                </Rule>
+                            </FeatureTypeStyle>
+                        </UserStyle>
+                    </StyledLayerDescriptor>`;
+        }
+        return null;
+    }
+
     toggleFeatureDrawnVisibility() {
         this._featureDrawnVisibility = !this._featureDrawnVisibility;
 
@@ -368,9 +375,6 @@ export default class Digitizing {
         if (this.featureDrawn){
             localStorage.setItem('drawLayer', formatWKT.write(this.featureDrawn));
         }
-
-        // Save color
-        localStorage.setItem('drawColor', this._drawColor);
     }
 
     loadFeatureDrawnToMap() {
