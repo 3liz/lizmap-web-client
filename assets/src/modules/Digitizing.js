@@ -58,24 +58,6 @@ export default class Digitizing {
             'select': drawStyleSelect
         });
 
-        const onDrawFeatureAdded = (feature) => {
-            /**
-             * @todo Ne gère que si il ya a seulement 1 géométrie
-             */
-            if (feature.layer) {
-                if (feature.layer.features.length > 1) {
-                    feature.layer.destroyFeatures(feature.layer.features.shift());
-                }
-            }
-
-            // Save features drawn in localStorage
-            this.saveFeatureDrawn();
-
-            mainEventDispatcher.dispatch('digitizing.featureDrawn');
-
-            this.toolSelected = 'deactivate';
-        };
-
         this._drawLayer = new OpenLayers.Layer.Vector(
             'drawLayer', {
                 styleMap: drawStyleMap
@@ -83,10 +65,12 @@ export default class Digitizing {
         );
 
         this._drawLayer.events.on({
-            'afterfeaturemodified': () => {
-                this.isEdited = false;
-            },
-            'featureadded': onDrawFeatureAdded
+            'featureadded': () => {
+                // Save features drawn in localStorage
+                this.saveFeatureDrawn();
+
+                mainEventDispatcher.dispatch('digitizing.featureDrawn');
+            }
         });
 
         mainLizmap.lizmap3.map.addLayer(this._drawLayer);
@@ -111,7 +95,6 @@ export default class Digitizing {
             this._drawLayer,
             OpenLayers.Handler.Point,
             {
-                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     'activate': drawAndGetFeatureInfoMutuallyExclusive,
@@ -128,7 +111,6 @@ export default class Digitizing {
             this._drawLayer,
             OpenLayers.Handler.Path,
             {
-                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     'activate': drawAndGetFeatureInfoMutuallyExclusive,
@@ -145,7 +127,6 @@ export default class Digitizing {
             this._drawLayer,
             OpenLayers.Handler.Polygon,
             {
-                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     'activate': drawAndGetFeatureInfoMutuallyExclusive,
@@ -160,7 +141,7 @@ export default class Digitizing {
          */
         this._drawBoxLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 4, irregular: true }, 'featureAdded': onDrawFeatureAdded }
+            { handlerOptions: { sides: 4, irregular: true }}
         );
 
         /**
@@ -169,7 +150,7 @@ export default class Digitizing {
          */
         this._drawCircleLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 40 }, 'featureAdded': onDrawFeatureAdded }
+            { handlerOptions: { sides: 40 } }
         );
 
         /**
@@ -178,15 +159,13 @@ export default class Digitizing {
          */
         this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
-            'featureAdded': onDrawFeatureAdded, styleMap: drawStyleMap,
+            styleMap: drawStyleMap,
             handlerOptions: { freehand: true }
         });
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
 
-        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer,
-            {standalone: true}
-        );
+        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer);
 
         // Add draw and modification controls to map
         mainLizmap.lizmap3.map.addControls(this._drawCtrls);
@@ -240,7 +219,9 @@ export default class Digitizing {
             }
 
             // Disable edition when tool changes
-            this.isEdited = false;
+            if (this._toolSelected !== this._tools[0]){
+                this.isEdited = false;
+            }
 
             mainEventDispatcher.dispatch('digitizing.toolSelected');
         }
@@ -267,7 +248,7 @@ export default class Digitizing {
 
     get featureDrawn() {
         if (this._drawLayer.features.length){
-            return this._drawLayer.features[0];
+            return this._drawLayer.features;
         }
         return null;
     }
@@ -331,15 +312,15 @@ export default class Digitizing {
     }
 
     set isEdited(edited) {
-        if(this._isEdited != edited){
+        if(this._isEdited !== edited){
             this._isEdited = edited;
 
             if (this._isEdited) {
                 this._editCtrl.activate();
-                this._editCtrl.selectFeature(this.featureDrawn);
+                this.toolSelected = 'deactivate';
             } else {
-                this.saveFeatureDrawn();
                 this._editCtrl.deactivate();
+                this.saveFeatureDrawn();
             }
 
             mainEventDispatcher.dispatch('digitizing.edit');
