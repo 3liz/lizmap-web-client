@@ -128,7 +128,10 @@ class lizMapCtrl extends jController
 
         // the html response
         $rep = $this->getResponse('htmlmap');
-        $rep->addJSLink(jUrl::get('view~translate:index'));
+        // Get Lizmap version from project.xml
+        $xmlLoad = simplexml_load_file(jApp::appPath('project.xml'));
+        $version = (string) $xmlLoad->info->version;
+        $rep->addJSLink((jUrl::get('view~translate:index')).'?v='.$version.'&lang='.jApp::config()->locale);
 
         $this->repositoryKey = $lrep->getKey();
         $this->projectKey = $lproj->getKey();
