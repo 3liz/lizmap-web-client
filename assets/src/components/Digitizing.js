@@ -117,7 +117,6 @@ export default class Digitizing extends HTMLElement {
                     <span class="file-name"></span>
                 </div>
             </div>
-            
         </div>`;
 
         render(mainTemplate(), this);

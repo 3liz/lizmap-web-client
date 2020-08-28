@@ -171,8 +171,8 @@ export default class Digitizing {
         mainLizmap.lizmap3.map.addControls(this._drawCtrls);
         mainLizmap.lizmap3.map.addControl(this._editCtrl);
 
-        // Display saved feature if any
-        this.savedFeatureDrawnToMap();
+        // Load and display saved feature if any
+        this.loadFeatureDrawnToMap();
     }
 
     get drawLayer(){
@@ -361,7 +361,7 @@ export default class Digitizing {
         localStorage.setItem('drawColor', this._drawColor);
     }
 
-    savedFeatureDrawnToMap() {
+    loadFeatureDrawnToMap() {
         const formatWKT = new OpenLayers.Format.WKT();
 
         const drawLayerWKT = localStorage.getItem('drawLayer');
