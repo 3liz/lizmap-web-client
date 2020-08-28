@@ -65,6 +65,9 @@ export default class Digitizing {
         );
 
         this._drawLayer.events.on({
+            'afterfeaturemodified': () => {
+                this.isEdited = false;
+            },
             'featureadded': () => {
                 // Save features drawn in localStorage
                 this.saveFeatureDrawn();
@@ -316,14 +319,23 @@ export default class Digitizing {
             this._isEdited = edited;
 
             if (this._isEdited) {
+                // Automatically edit the feature if unique
+                if(this.featureDrawn.length === 1){
+                    this._editCtrl.standalone = true;
+                    this._editCtrl.selectFeature(this.featureDrawn[0]);
+                }else{
+                    this._editCtrl.standalone = false;
+                }
                 this._editCtrl.activate();
                 this.toolSelected = 'deactivate';
+
+                mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
                 this._editCtrl.deactivate();
                 this.saveFeatureDrawn();
-            }
 
-            mainEventDispatcher.dispatch('digitizing.edit');
+                mainEventDispatcher.dispatch('digitizing.editionEnds');
+            }
         }
     }
 

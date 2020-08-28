@@ -130,7 +130,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawn', 'digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.edit', 'digitizing.erase', 'digitizing.drawColor']
+            ['digitizing.featureDrawn', 'digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erase', 'digitizing.drawColor']
         );
     }
 
