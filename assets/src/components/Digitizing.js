@@ -91,7 +91,7 @@ export default class Digitizing extends HTMLElement {
                         <li>
                             <a href="#" @click=${() => mainLizmap.digitizing.download('geojson')}>GeoJSON</a>
                         </li>
-                        <li class="${mainLizmap.digitizing.featureDrawn && mainLizmap.digitizing.featureDrawn.geometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon' ? 'hide' : '' /* GPX does not handle polygon*/}">
+                        <li>
                             <a href="#" @click=${() => mainLizmap.digitizing.download('gpx')}>GPX</a>
                         </li>
                         <li>
