@@ -439,60 +439,63 @@ export default class Digitizing {
         reader.onload = ((aThis) => {
             return (e) => {
                 const fileContent = e.target.result;
-                let OL6feature;
+                let OL6features;
 
                 // Handle GeoJSON, GPX or KML strings
                 try {
                     if (fileContent[0] === '{') {
-                        OL6feature = (new GeoJSON()).readFeatures(fileContent);
+                        OL6features = (new GeoJSON()).readFeatures(fileContent);
                     } else if (fileContent.slice(0, 4) === '<gpx') {
-                        OL6feature = (new GPX()).readFeatures(fileContent);
+                        OL6features = (new GPX()).readFeatures(fileContent);
 
                     } else if (fileContent.slice(0, 4) === '<kml') {
-                        OL6feature = (new KML()).readFeatures(fileContent);
+                        OL6features = (new KML()).readFeatures(fileContent);
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
                 }
 
-                if (OL6feature){
-                    // Erase previous feature
+                if (OL6features){
+                    const OL2Features = [];
+
+                    // Erase previous features
                     aThis.erase();
 
-                    // If there are multiple features we only take the first and inform user
-                    if(OL6feature.length > 1){
-                        lizMap.addMessage(lizDict['digitizing.import.inform.singleFeature'], 'info', true)
-                    }
+                    for (const OL6feature of OL6features) {
+                        // Draw loaded features
+                        const importedGeom = OL6feature.getGeometry();
+                        const importedGeomType = importedGeom.getType();
 
-                    // Draw loaded feature
-                    const importedGeom = OL6feature[0].getGeometry();
-                    const importedGeomType = importedGeom.getType();
+                        // Convert from EPSG:4326 to current projection
+                        importedGeom.transform('EPSG:4326', mainLizmap.projection);
+                        const importedGeomCoordinates = importedGeom.getCoordinates();
 
-                    // Convert from EPSG:4326 to current projection
-                    importedGeom.transform('EPSG:4326', mainLizmap.projection);
-                    const importedGeomCoordinates = importedGeom.getCoordinates();
+                        const importedGeomAsArrayOfPoints = [];
+                        let geomToDraw;
 
-                    const importedGeomAsArrayOfPoints = [];
-                    let geomToDraw;
+                        if (importedGeomType === 'Point') {
+                            geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
+                        } else if (importedGeomType === 'LineString') {
+                            for (const coordinate of importedGeomCoordinates) {
+                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
 
-                    if (importedGeomType === 'Point') {
-                        geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
-                    }else if (importedGeomType === 'LineString'){
-                        for (const coordinate of importedGeomCoordinates) {
-                            importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
+                        } else if (importedGeomType === 'Polygon') {
+                            for (const coordinate of importedGeomCoordinates[0]) {
+                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
                         }
 
-                        geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
-                    } else if (importedGeomType === 'Polygon') {
-                        for (const coordinate of importedGeomCoordinates[0]) {
-                            importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                        if (geomToDraw) {
+                            OL2Features.push(new OpenLayers.Feature.Vector(geomToDraw));
                         }
-
-                        geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
                     }
 
-                    if(geomToDraw){
-                        this._drawLayer.addFeatures(new OpenLayers.Feature.Vector(geomToDraw));
+                    if (OL2Features){
+                        this._drawLayer.addFeatures(OL2Features);
                         this._drawLayer.redraw(true);
                     }
                 }
