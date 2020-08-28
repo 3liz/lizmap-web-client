@@ -374,43 +374,46 @@ export default class Digitizing {
 
     download(format){
         if (this.featureDrawn){
-            // Create OL6 feature with OL2 feature coordinates
-            const featureGeometry = this.featureDrawn.geometry;
-            let OL6feature;
+            const OL6Allfeatures = [];
 
-            if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point'){
-                OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
-            }
-            else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString'){
-                let coordinates = [];
-                for (const component of featureGeometry.components) {
-                    coordinates.push([component.x, component.y]);
-                }
-                OL6feature = new Feature(new LineString(coordinates));
-            }
-            else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon'){
-                let coordinates = [];
-                for (const component of featureGeometry.components[0].components) {
-                    coordinates.push([component.x, component.y]);
-                }
-                OL6feature = new Feature(new Polygon([coordinates]));
-            }
+            // Create OL6 features with OL2 features coordinates
+            for (const featureDrawn of this.featureDrawn) {
+                const featureGeometry = featureDrawn.geometry;
+                let OL6feature;
 
-            // Reproject to EPSG:4326
-            OL6feature.getGeometry().transform(mainLizmap.projection, 'EPSG:4326');
+                if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
+                    OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
+                }
+                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
+                    let coordinates = [];
+                    for (const component of featureGeometry.components) {
+                        coordinates.push([component.x, component.y]);
+                    }
+                    OL6feature = new Feature(new LineString(coordinates));
+                }
+                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
+                    let coordinates = [];
+                    for (const component of featureGeometry.components[0].components) {
+                        coordinates.push([component.x, component.y]);
+                    }
+                    OL6feature = new Feature(new Polygon([coordinates]));
+                }
+
+                // Reproject to EPSG:4326
+                OL6feature.getGeometry().transform(mainLizmap.projection, 'EPSG:4326');
+
+                OL6Allfeatures.push(OL6feature);
+            }
 
             if(format === 'geojson'){
-                const geoJSON = (new GeoJSON()).writeFeature(OL6feature);
-
+                const geoJSON = (new GeoJSON()).writeFeatures(OL6Allfeatures);
                 this._downloadString(geoJSON, 'application/geo+json', 'export.geojson');
             }
             else if(format === 'gpx'){
-                const gpx = (new GPX()).writeFeatures([OL6feature]);
-
+                const gpx = (new GPX()).writeFeatures(OL6Allfeatures);
                 this._downloadString(gpx, 'application/gpx+xml', 'export.gpx');
             } else if (format === 'kml') {
-                const kml = (new KML()).writeFeatures([OL6feature]);
-
+                const kml = (new KML()).writeFeatures(OL6Allfeatures);
                 this._downloadString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
             }
         }
