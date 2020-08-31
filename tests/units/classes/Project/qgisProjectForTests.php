@@ -30,11 +30,31 @@ class qgisProjectForTests extends QgisProject
 
     public function readThemesForTests($xml)
     {
-        return ($this->readThemes($xml));
+        return $this->readThemes($xml);
     }
 
     public function readRelationsForTests($xml)
     {
-        return ($this->readRelations($xml));
+        return $this->readRelations($xml);
+    }
+
+    public function setShortNamesForTest($cfg)
+    {
+        return $this->setShortNames($cfg);
+    }
+
+    public function setLayerOpacityForTest($cfg)
+    {
+        return $this->setLayerOpacity($cfg);
+    }
+    
+    public function setXml($xml)
+    {
+        $this->xml = $xml;
+    }
+
+    public function setLayers($layers)
+    {
+        $this->layers = $layers;
     }
 }

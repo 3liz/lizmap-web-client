@@ -92,11 +92,6 @@ class QgisProject
      */
     public function __construct($file, \LizmapServices $services, $data = false)
     {
-        // Verifying if the files exist
-        if (!file_exists($file)) {
-            throw new UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
-        }
-
         if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should

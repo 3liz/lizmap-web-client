@@ -1,0 +1,25 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.10.5-A Coruña" projectname="Montpellier - Transports">
+  <maplayer simplifyLocal="1" simplifyMaxScale="1" autoRefreshEnabled="0" readOnly="0" autoRefreshTime="0" geometry="Point" refreshOnNotifyMessage="" hasScaleBasedVisibilityFlag="0" maxScale="-4.65661e-10" minScale="1e+8" type="vector" labelsEnabled="1" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" styleCategories="AllStyleCategories">
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <layername>not opacity</layername>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks/>
+        <checkConfiguration/>
+      </geometryOptions>
+  </maplayer>
+  <maplayer simplifyLocal="1" simplifyMaxScale="1" autoRefreshEnabled="0" readOnly="0" autoRefreshTime="0" geometry="Point" refreshOnNotifyMessage="" hasScaleBasedVisibilityFlag="0" maxScale="-4.65661e-10" minScale="1e+8" type="vector" labelsEnabled="1" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" styleCategories="AllStyleCategories">
+        <customproperties/>
+        <blendMode>0</blendMode>
+        <layername>montpellier_events</layername>
+        <featureBlendMode>0</featureBlendMode>
+        <layerOpacity>0.85</layerOpacity>
+        <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+          <activeChecks/>
+          <checkConfiguration/>
+        </geometryOptions>
+  </maplayer>
+</qgis>
