@@ -372,7 +372,7 @@ class lizmapProject extends qgisProject
             }
         }
 
-        $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
         if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount) > 0) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
