@@ -17,8 +17,10 @@ export default class Digitizing {
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
+        this._repoAndProjectString = lizUrls.params.repository + '_' + lizUrls.params.project;
+
         // Set draw color to value in local storage if any or default (red)
-        this._drawColor = localStorage.getItem('drawColor') || '#ff0000';
+        this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
 
         this._featureDrawnVisibility = true;
 
@@ -162,9 +164,10 @@ export default class Digitizing {
          */
         this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
-            styleMap: drawStyleMap,
-            handlerOptions: { freehand: true }
-        });
+                styleMap: drawStyleMap,
+                handlerOptions: { freehand: true }
+            }
+        );
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
 
@@ -250,7 +253,7 @@ export default class Digitizing {
         this._drawLayer.redraw(true);
         
         // Save color
-        localStorage.setItem('drawColor', this._drawColor);
+        localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
 
         mainEventDispatcher.dispatch('digitizing.drawColor');
     }
@@ -361,7 +364,7 @@ export default class Digitizing {
     erase() {
         this._drawLayer.destroyFeatures();
 
-        localStorage.removeItem('drawLayer');
+        localStorage.removeItem(this._repoAndProjectString + '_drawLayer');
 
         this.isEdited = false;
 
@@ -373,14 +376,14 @@ export default class Digitizing {
 
         // Save features in WKT format
         if (this.featureDrawn){
-            localStorage.setItem('drawLayer', formatWKT.write(this.featureDrawn));
+            localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.write(this.featureDrawn));
         }
     }
 
     loadFeatureDrawnToMap() {
         const formatWKT = new OpenLayers.Format.WKT();
 
-        const drawLayerWKT = localStorage.getItem('drawLayer');
+        const drawLayerWKT = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
 
         if (drawLayerWKT){
             this._drawLayer.addFeatures(formatWKT.read(drawLayerWKT));
