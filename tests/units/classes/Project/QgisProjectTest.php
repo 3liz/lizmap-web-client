@@ -3,6 +3,7 @@
 require('qgisProjectForTests.php');
 
 use Lizmap\Project;
+use Lizmap\Project\QgisProject;
 use PHPUnit\Framework\TestCase;
 
 class QgisProjectTest extends TestCase
@@ -178,5 +179,69 @@ class QgisProjectTest extends TestCase
         $testQgis = new qgisProjectForTests();
         $relations = $testQgis->readRelationsForTests($xml);
         $this->assertEquals($expectedRelations, $relations);
+    }
+
+    public function testCacheConstruct()
+    {
+        $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
+            'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');
+        $data = array();
+        $emptyData = array();
+        foreach ($cachedProperties as $prop) {
+            $data[$prop] = 'some stuff about'.$prop;
+        }
+        $services = new lizmapServices('', '', false, '');
+        $testQgis = new Project\QgisProject(null, $services, $data);
+        $this->assertEquals($data, $testQgis->getCacheData($emptyData));
+    }
+    
+    public function testSetLayerOpacity()
+    {
+        $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
+        $json = json_decode(file_get_contents($file));
+        $expectedLayer = clone $json->layers;
+        $expectedLayer->montpellier_events->opacity = (float)0.85;
+        $cfg = new Project\ProjectConfig(null, array('cfgContent' => array('layers' => $json->layers)));
+        $testProj = new qgisProjectForTests();
+        $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
+        $testProj->setLayerOpacityForTest($cfg);
+        $this->assertEquals($expectedLayer, $cfg->getProperty('layers'));
+    }
+
+    public function getLayerData()
+    {
+        $layers = array(
+            'montpellier' => array(
+                'name' => 'Montpellier',
+                'id' => '42',
+            ),
+            'test' => array(
+                'name' => 'test',
+                'id' => '21',
+            )
+        );
+        return array(
+            array($layers, '42', 'montpellier'),
+            array($layers, '21', 'test'),
+            array($layers, '38', null),
+            array($layers, null, null),
+            array(array(), null, null),
+            array(array(), '', null)
+        );
+    }
+
+    /**
+     * @dataProvider getLayerData
+     */
+    public function testGetLayerDefinition($layers, $id, $key)
+    {
+        $testProj = new qgisProjectForTests();
+        $testProj->setLayers($layers);
+        $layer = $testProj->getLayerDefinition($id);
+        if (isset($key)) {
+            $this->assertEquals($layers[$key], $layer);
+        } else {
+            $this->assertNull($layer);
+        }
     }
 }
