@@ -27,7 +27,7 @@
      id="g8"
      transform="translate(0.05084746,-1027.6758)">
     <path
-       style="fill:#e5e5e5;stroke:#424242;stroke-width:0.95975173;stroke-dasharray:1.91950336, 0.95975168"
+       style="fill:#e5e5e5;stroke:currentColor;stroke-width:0.95975173;stroke-dasharray:1.91950336, 0.95975168"
        id="path2"
        d="M 1.4798758,1029.842 H 22.520123 v 19.0402 H 1.4798758 Z" />
   </g>
