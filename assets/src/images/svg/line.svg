@@ -30,7 +30,7 @@
        style="stroke-linecap:round"
        id="g10" />
     <path
-       style="fill:none;stroke:#424242;stroke-width:0.61000001;stroke-linejoin:round;stroke-dasharray:2.44, 0.61;stroke-dashoffset:6.00390005"
+       style="fill:none;stroke:currentColor;stroke-width:0.7;stroke-linejoin:round;stroke-dasharray:2.44, 0.61;stroke-dashoffset:6.00390005"
        id="path12"
        d="m 12.38,1033.8 -8.7746,-0.6615 2.1195,7.8585" />
   </g>

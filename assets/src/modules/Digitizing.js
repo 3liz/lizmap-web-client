@@ -17,8 +17,10 @@ export default class Digitizing {
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
+        this._repoAndProjectString = lizUrls.params.repository + '_' + lizUrls.params.project;
+
         // Set draw color to value in local storage if any or default (red)
-        this._drawColor = localStorage.getItem('drawColor') || '#ff0000';
+        this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
 
         this._featureDrawnVisibility = true;
 
@@ -31,7 +33,7 @@ export default class Digitizing {
             fillOpacity: 0.2,
             strokeColor: this._drawColor,
             strokeOpacity: 1,
-            strokeWidth: 2
+            strokeWidth: 3
         });
 
         const drawStyleTemp = new OpenLayers.Style({
@@ -58,24 +60,6 @@ export default class Digitizing {
             'select': drawStyleSelect
         });
 
-        const onDrawFeatureAdded = (feature) => {
-            /**
-             * @todo Ne gère que si il ya a seulement 1 géométrie
-             */
-            if (feature.layer) {
-                if (feature.layer.features.length > 1) {
-                    feature.layer.destroyFeatures(feature.layer.features.shift());
-                }
-            }
-
-            // Save features drawn in localStorage
-            this.saveFeatureDrawn();
-
-            mainEventDispatcher.dispatch('digitizing.featureDrawn');
-
-            this.toolSelected = 'deactivate';
-        };
-
         this._drawLayer = new OpenLayers.Layer.Vector(
             'drawLayer', {
                 styleMap: drawStyleMap
@@ -83,10 +67,12 @@ export default class Digitizing {
         );
 
         this._drawLayer.events.on({
-            'afterfeaturemodified': () => {
-                this.isEdited = false;
-            },
-            'featureadded': onDrawFeatureAdded
+            'featureadded': () => {
+                // Save features drawn in localStorage
+                this.saveFeatureDrawn();
+
+                mainEventDispatcher.dispatch('digitizing.featureDrawn');
+            }
         });
 
         mainLizmap.lizmap3.map.addLayer(this._drawLayer);
@@ -111,7 +97,6 @@ export default class Digitizing {
             this._drawLayer,
             OpenLayers.Handler.Point,
             {
-                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     'activate': drawAndGetFeatureInfoMutuallyExclusive,
@@ -128,7 +113,6 @@ export default class Digitizing {
             this._drawLayer,
             OpenLayers.Handler.Path,
             {
-                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     'activate': drawAndGetFeatureInfoMutuallyExclusive,
@@ -145,7 +129,6 @@ export default class Digitizing {
             this._drawLayer,
             OpenLayers.Handler.Polygon,
             {
-                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     'activate': drawAndGetFeatureInfoMutuallyExclusive,
@@ -160,7 +143,7 @@ export default class Digitizing {
          */
         this._drawBoxLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 4, irregular: true }, 'featureAdded': onDrawFeatureAdded }
+            { handlerOptions: { sides: 4, irregular: true }}
         );
 
         /**
@@ -169,7 +152,7 @@ export default class Digitizing {
          */
         this._drawCircleLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 40 }, 'featureAdded': onDrawFeatureAdded }
+            { handlerOptions: { sides: 40 } }
         );
 
         /**
@@ -178,22 +161,29 @@ export default class Digitizing {
          */
         this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
-            'featureAdded': onDrawFeatureAdded, styleMap: drawStyleMap,
-            handlerOptions: { freehand: true }
-        });
+                styleMap: drawStyleMap,
+                handlerOptions: { freehand: true }
+            }
+        );
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
 
         this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer,
-            {standalone: true}
+            {
+                clickout: false,
+                eventListeners: {
+                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
+                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
+                }
+            }
         );
 
         // Add draw and modification controls to map
         mainLizmap.lizmap3.map.addControls(this._drawCtrls);
         mainLizmap.lizmap3.map.addControl(this._editCtrl);
 
-        // Display saved feature if any
-        this.savedFeatureDrawnToMap();
+        // Load and display saved feature if any
+        this.loadFeatureDrawnToMap();
     }
 
     get drawLayer(){
@@ -240,7 +230,9 @@ export default class Digitizing {
             }
 
             // Disable edition when tool changes
-            this.isEdited = false;
+            if (this._toolSelected !== this._tools[0]){
+                this.isEdited = false;
+            }
 
             mainEventDispatcher.dispatch('digitizing.toolSelected');
         }
@@ -262,12 +254,18 @@ export default class Digitizing {
         drawStyles.temporary.defaultStyle.fillColor = color;
         drawStyles.temporary.defaultStyle.strokeColor = color;
 
+        // Refresh layer
+        this._drawLayer.redraw(true);
+        
+        // Save color
+        localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
+
         mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
     get featureDrawn() {
         if (this._drawLayer.features.length){
-            return this._drawLayer.features[0];
+            return this._drawLayer.features;
         }
         return null;
     }
@@ -276,11 +274,41 @@ export default class Digitizing {
         return this._featureDrawnVisibility;
     }
 
-    get featureDrawnSLD() {
-        if(this.featureDrawn){
-            const style = this.featureDrawn.layer.styleMap.styles.default.defaultStyle;
+    get isEdited() {
+        return this._isEdited;
+    }
+
+    set isEdited(edited) {
+        if(this._isEdited !== edited){
+            this._isEdited = edited;
+
+            if (this._isEdited) {
+                // Automatically edit the feature if unique
+                if(this.featureDrawn.length === 1){
+                    this._editCtrl.standalone = true;
+                    this._editCtrl.selectFeature(this.featureDrawn[0]);
+                }else{
+                    this._editCtrl.standalone = false;
+                }
+                this._editCtrl.activate();
+                this.toolSelected = 'deactivate';
+
+                mainEventDispatcher.dispatch('digitizing.editionBegins');
+            } else {
+                this._editCtrl.deactivate();
+                this.saveFeatureDrawn();
+
+                mainEventDispatcher.dispatch('digitizing.editionEnds');
+            }
+        }
+    }
+
+    // Get SLD for featureDrawn[index]
+    getFeatureDrawnSLD(index) {
+        if (this.featureDrawn[index]) {
+            const style = this.featureDrawn[index].layer.styleMap.styles.default.defaultStyle;
             let symbolizer = '';
-            let strokeAndFill =     `<Stroke>
+            let strokeAndFill = `<Stroke>
                                         <SvgParameter name="stroke">${style.strokeColor}</SvgParameter>
                                         <SvgParameter name="stroke-opacity">${style.strokeOpacity}</SvgParameter>
                                         <SvgParameter name="stroke-width">${style.strokeWidth}</SvgParameter>
@@ -291,7 +319,7 @@ export default class Digitizing {
                                     </Fill>`;
 
             // We consider LINESTRING and POLYGON together currently
-            if (this.featureDrawn.geometry.CLASS_NAME === 'OpenLayers.Geometry.Point'){
+            if (this.featureDrawn[index].geometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
                 symbolizer = `<PointSymbolizer>
                                 <Graphic>
                                     <Mark>
@@ -302,8 +330,8 @@ export default class Digitizing {
                                 </Graphic>
                             </PointSymbolizer>`;
 
-            }else{
-                symbolizer =    `<PolygonSymbolizer>
+            } else {
+                symbolizer = `<PolygonSymbolizer>
                                     ${strokeAndFill}
                                 </PolygonSymbolizer>`;
 
@@ -326,26 +354,6 @@ export default class Digitizing {
         return null;
     }
 
-    get isEdited() {
-        return this._isEdited;
-    }
-
-    set isEdited(edited) {
-        if(this._isEdited != edited){
-            this._isEdited = edited;
-
-            if (this._isEdited) {
-                this._editCtrl.activate();
-                this._editCtrl.selectFeature(this.featureDrawn);
-            } else {
-                this.saveFeatureDrawn();
-                this._editCtrl.deactivate();
-            }
-
-            mainEventDispatcher.dispatch('digitizing.edit');
-        }
-    }
-
     toggleFeatureDrawnVisibility() {
         this._featureDrawnVisibility = !this._featureDrawnVisibility;
 
@@ -359,9 +367,12 @@ export default class Digitizing {
     }
 
     erase() {
+        if (!confirm(lizDict['digitizing.confirme.erase'])){
+            return false;
+        }
         this._drawLayer.destroyFeatures();
 
-        localStorage.removeItem('drawLayer');
+        localStorage.removeItem(this._repoAndProjectString + '_drawLayer');
 
         this.isEdited = false;
 
@@ -373,17 +384,14 @@ export default class Digitizing {
 
         // Save features in WKT format
         if (this.featureDrawn){
-            localStorage.setItem('drawLayer', formatWKT.write(this.featureDrawn));
+            localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.write(this.featureDrawn));
         }
-
-        // Save color
-        localStorage.setItem('drawColor', this._drawColor);
     }
 
-    savedFeatureDrawnToMap() {
+    loadFeatureDrawnToMap() {
         const formatWKT = new OpenLayers.Format.WKT();
 
-        const drawLayerWKT = localStorage.getItem('drawLayer');
+        const drawLayerWKT = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
 
         if (drawLayerWKT){
             this._drawLayer.addFeatures(formatWKT.read(drawLayerWKT));
@@ -393,43 +401,46 @@ export default class Digitizing {
 
     download(format){
         if (this.featureDrawn){
-            // Create OL6 feature with OL2 feature coordinates
-            const featureGeometry = this.featureDrawn.geometry;
-            let OL6feature;
+            const OL6Allfeatures = [];
 
-            if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point'){
-                OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
-            }
-            else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString'){
-                let coordinates = [];
-                for (const component of featureGeometry.components) {
-                    coordinates.push([component.x, component.y]);
-                }
-                OL6feature = new Feature(new LineString(coordinates));
-            }
-            else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon'){
-                let coordinates = [];
-                for (const component of featureGeometry.components[0].components) {
-                    coordinates.push([component.x, component.y]);
-                }
-                OL6feature = new Feature(new Polygon([coordinates]));
-            }
+            // Create OL6 features with OL2 features coordinates
+            for (const featureDrawn of this.featureDrawn) {
+                const featureGeometry = featureDrawn.geometry;
+                let OL6feature;
 
-            // Reproject to EPSG:4326
-            OL6feature.getGeometry().transform(mainLizmap.projection, 'EPSG:4326');
+                if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
+                    OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
+                }
+                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
+                    let coordinates = [];
+                    for (const component of featureGeometry.components) {
+                        coordinates.push([component.x, component.y]);
+                    }
+                    OL6feature = new Feature(new LineString(coordinates));
+                }
+                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
+                    let coordinates = [];
+                    for (const component of featureGeometry.components[0].components) {
+                        coordinates.push([component.x, component.y]);
+                    }
+                    OL6feature = new Feature(new Polygon([coordinates]));
+                }
+
+                // Reproject to EPSG:4326
+                OL6feature.getGeometry().transform(mainLizmap.projection, 'EPSG:4326');
+
+                OL6Allfeatures.push(OL6feature);
+            }
 
             if(format === 'geojson'){
-                const geoJSON = (new GeoJSON()).writeFeature(OL6feature);
-
+                const geoJSON = (new GeoJSON()).writeFeatures(OL6Allfeatures);
                 this._downloadString(geoJSON, 'application/geo+json', 'export.geojson');
             }
             else if(format === 'gpx'){
-                const gpx = (new GPX()).writeFeatures([OL6feature]);
-
+                const gpx = (new GPX()).writeFeatures(OL6Allfeatures);
                 this._downloadString(gpx, 'application/gpx+xml', 'export.gpx');
             } else if (format === 'kml') {
-                const kml = (new KML()).writeFeatures([OL6feature]);
-
+                const kml = (new KML()).writeFeatures(OL6Allfeatures);
                 this._downloadString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
             }
         }
@@ -455,60 +466,63 @@ export default class Digitizing {
         reader.onload = ((aThis) => {
             return (e) => {
                 const fileContent = e.target.result;
-                let OL6feature;
+                let OL6features;
 
                 // Handle GeoJSON, GPX or KML strings
                 try {
                     if (fileContent[0] === '{') {
-                        OL6feature = (new GeoJSON()).readFeatures(fileContent);
+                        OL6features = (new GeoJSON()).readFeatures(fileContent);
                     } else if (fileContent.slice(0, 4) === '<gpx') {
-                        OL6feature = (new GPX()).readFeatures(fileContent);
+                        OL6features = (new GPX()).readFeatures(fileContent);
 
                     } else if (fileContent.slice(0, 4) === '<kml') {
-                        OL6feature = (new KML()).readFeatures(fileContent);
+                        OL6features = (new KML()).readFeatures(fileContent);
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
                 }
 
-                if (OL6feature){
-                    // Erase previous feature
+                if (OL6features){
+                    const OL2Features = [];
+
+                    // Erase previous features
                     aThis.erase();
 
-                    // If there are multiple features we only take the first and inform user
-                    if(OL6feature.length > 1){
-                        lizMap.addMessage(lizDict['digitizing.import.inform.singleFeature'], 'info', true)
-                    }
+                    for (const OL6feature of OL6features) {
+                        // Draw loaded features
+                        const importedGeom = OL6feature.getGeometry();
+                        const importedGeomType = importedGeom.getType();
 
-                    // Draw loaded feature
-                    const importedGeom = OL6feature[0].getGeometry();
-                    const importedGeomType = importedGeom.getType();
+                        // Convert from EPSG:4326 to current projection
+                        importedGeom.transform('EPSG:4326', mainLizmap.projection);
+                        const importedGeomCoordinates = importedGeom.getCoordinates();
 
-                    // Convert from EPSG:4326 to current projection
-                    importedGeom.transform('EPSG:4326', mainLizmap.projection);
-                    const importedGeomCoordinates = importedGeom.getCoordinates();
+                        const importedGeomAsArrayOfPoints = [];
+                        let geomToDraw;
 
-                    const importedGeomAsArrayOfPoints = [];
-                    let geomToDraw;
+                        if (importedGeomType === 'Point') {
+                            geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
+                        } else if (importedGeomType === 'LineString') {
+                            for (const coordinate of importedGeomCoordinates) {
+                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
 
-                    if (importedGeomType === 'Point') {
-                        geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
-                    }else if (importedGeomType === 'LineString'){
-                        for (const coordinate of importedGeomCoordinates) {
-                            importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
+                        } else if (importedGeomType === 'Polygon') {
+                            for (const coordinate of importedGeomCoordinates[0]) {
+                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
                         }
 
-                        geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
-                    } else if (importedGeomType === 'Polygon') {
-                        for (const coordinate of importedGeomCoordinates[0]) {
-                            importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                        if (geomToDraw) {
+                            OL2Features.push(new OpenLayers.Feature.Vector(geomToDraw));
                         }
-
-                        geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
                     }
 
-                    if(geomToDraw){
-                        this._drawLayer.addFeatures(new OpenLayers.Feature.Vector(geomToDraw));
+                    if (OL2Features){
+                        this._drawLayer.addFeatures(OL2Features);
                         this._drawLayer.redraw(true);
                     }
                 }

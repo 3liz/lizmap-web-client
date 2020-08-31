@@ -4063,8 +4063,17 @@ var lizMap = function() {
       if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
         const formatWKT = new OpenLayers.Format.WKT();
 
-        printParams['map0:HIGHLIGHT_GEOM'] = formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn);
-        printParams['map0:HIGHLIGHT_SYMBOL'] = lizMap.mainLizmap.digitizing.featureDrawnSLD;
+        const highlightGeom = [];
+        const highlightSymbol = [];
+
+        for (let index = 0; index < lizMap.mainLizmap.digitizing.featureDrawn.length; index++) {
+          highlightGeom.push(formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn[index]));
+          highlightSymbol.push(lizMap.mainLizmap.digitizing.getFeatureDrawnSLD(index));
+          
+        }
+
+        printParams['map0:HIGHLIGHT_GEOM'] = highlightGeom.join(';');
+        printParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
       }
       
       downloadFile(url, printParams);
