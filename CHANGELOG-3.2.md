@@ -1,7 +1,10 @@
 Changelog 3.2
 =============
 
-Version 3.2.16 (next)
+Version 3.2.17 (next)
+---------------------
+
+Version 3.2.16
 ---------------------
 
 - Update some libraries to fix some bugs :
