@@ -168,7 +168,15 @@ export default class Digitizing {
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
 
-        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer, { clickout: false});
+        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer,
+            {
+                clickout: false,
+                eventListeners: {
+                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
+                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
+                }
+            }
+        );
 
         // Add draw and modification controls to map
         mainLizmap.lizmap3.map.addControls(this._drawCtrls);
