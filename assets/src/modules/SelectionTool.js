@@ -15,15 +15,15 @@ export default class SelectionTool {
 
         this._bufferLayer = new OpenLayers.Layer.Vector(
             'selectionBufferLayer', {
-            styleMap: new OpenLayers.StyleMap({
-                fillColor: 'white',
-                fillOpacity: 0,
-                strokeColor: 'blue',
-                strokeOpacity: 1,
-                strokeWidth: 2,
-                strokeDashstyle: 'longdash'
-            })
-        });
+                styleMap: new OpenLayers.StyleMap({
+                    fillColor: 'white',
+                    fillOpacity: 0,
+                    strokeColor: 'blue',
+                    strokeOpacity: 1,
+                    strokeWidth: 2,
+                    strokeDashstyle: 'longdash'
+                })
+            });
 
         mainLizmap.lizmap3.map.addLayer(this._bufferLayer);
 
