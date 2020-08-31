@@ -33,7 +33,7 @@ export default class Digitizing {
             fillOpacity: 0.2,
             strokeColor: this._drawColor,
             strokeOpacity: 1,
-            strokeWidth: 2
+            strokeWidth: 3
         });
 
         const drawStyleTemp = new OpenLayers.Style({
@@ -67,9 +67,6 @@ export default class Digitizing {
         );
 
         this._drawLayer.events.on({
-            'afterfeaturemodified': () => {
-                this.isEdited = false;
-            },
             'featureadded': () => {
                 // Save features drawn in localStorage
                 this.saveFeatureDrawn();
@@ -171,7 +168,7 @@ export default class Digitizing {
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
 
-        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer);
+        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer, { clickout: false});
 
         // Add draw and modification controls to map
         mainLizmap.lizmap3.map.addControls(this._drawCtrls);
