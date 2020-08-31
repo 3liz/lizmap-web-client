@@ -463,7 +463,7 @@ export default class Digitizing {
     import(file){
         const reader = new FileReader();
 
-        reader.onload = ((aThis) => {
+        reader.onload = (() => {
             return (e) => {
                 const fileContent = e.target.result;
                 let OL6features;
@@ -484,9 +484,6 @@ export default class Digitizing {
 
                 if (OL6features){
                     const OL2Features = [];
-
-                    // Erase previous features
-                    aThis.erase();
 
                     for (const OL6feature of OL6features) {
                         // Draw loaded features
