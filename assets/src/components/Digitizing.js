@@ -24,7 +24,7 @@ export default class Digitizing extends HTMLElement {
 
         const mainTemplate = () => html`
         <div class="digitizing">
-            <div class="digitizing-buttons btn-group">
+            <div class="digitizing-buttons btn-group" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                     <svg>
                         <use xlink:href="#pencil"></use>
@@ -65,7 +65,7 @@ export default class Digitizing extends HTMLElement {
                     </li>
                 </ul>
             </div>
-            <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
+            <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value} data-original-title="${lizDict['digitizing.toolbar.color']}">
             <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()} data-original-title="${lizDict['attributeLayers.btn.edit.title']}">
                 <svg>
                     <use xlink:href="#edit"/>
@@ -122,7 +122,7 @@ export default class Digitizing extends HTMLElement {
         render(mainTemplate(), this);
 
         // Add tooltip on buttons
-        $('.digitizing .btn', this).tooltip({
+        $('.digitizing-buttons, .digitizing .btn', this).tooltip({
             placement: 'top'
         });
 
