@@ -108,7 +108,7 @@ export default class Digitizing extends HTMLElement {
                             (event) => 
                                     {
                                         if (event.target.files.length > 0){
-                                            event.target.parentElement.nextElementSibling.textContent = event.target.files[0].name;
+                                            event.target.parentElement.parentElement.querySelector('.file-name').textContent = event.target.files[0].name;
                                             mainLizmap.digitizing.import(event.target.files[0]);
                                         }
                                     }
