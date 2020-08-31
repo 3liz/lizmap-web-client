@@ -71,7 +71,7 @@ export default class Digitizing extends HTMLElement {
                     <use xlink:href="#edit"/>
                 </svg>
             </button>
-            <button type="button" class="digitizing-erase btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.erase()} data-original-title="${lizDict['attributeLayers.btn.delete.title']}">
+            <button type="button" class="digitizing-erase btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.erase()} data-original-title="${lizDict['digitizing.toolbar.erase']}">
                 <svg>
                     <use xlink:href="#eraser"/>
                 </svg>
