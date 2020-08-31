@@ -126,4 +126,57 @@ class QgisProjectTest extends TestCase
         $testQgis = new qgisProjectForTests();
         $this->assertFalse($testQgis->readUseLayersIDsTest($xml));
     }
+
+    public function testReadThemes()
+    {
+        $expectedThemes = array(
+            'Administrative' => array(
+                'layers' => array(
+                    'SousQuartiers20160121124316563' => array(
+                        'style' => 'default',
+                        'expanded' => '1'
+                    ),
+                    'VilleMTP_MTP_Quartiers_2011_432620130116112610876' => array(
+                        'style' => 'default',
+                        'expanded' => '0'
+                    )
+                ),
+                'expandedGroupNode' => array(
+                    'datalayers/Buildings',
+                    'Overview',
+                    'datalayers/Bus',
+                    'datalayers'
+                )
+            )
+        );
+        $file = __DIR__.'/Ressources/themes.qgs';
+        $xml = simplexml_load_file($file);
+        $testQgis = new qgisProjectForTests();
+        $themes = $testQgis->readThemesForTests($xml);
+        $this->assertEquals($expectedThemes, $themes);
+    }
+
+    public function testReadRelations()
+    {
+        $expectedRelations = array(
+            'VilleMTP_MTP_Quartiers_2011_432620130116112610876' => array(
+                array('referencingLayer' => 'SousQuartiers20160121124316563',
+                'referencedField' => 'QUARTMNO',
+                'referencingField' => 'QUARTMNO'
+                )
+            ),
+            'tramstop20150328114203878' => array(
+                array('referencingLayer' => 'jointure_tram_stop20150328114216806',
+                'referencedField' => 'osm_id',
+                'referencingField' => 'stop_id'
+              ),
+            ),
+            'pivot' => array()
+        );
+        $file = __DIR__.'/Ressources/relations.qgs';
+        $xml = simplexml_load_file($file);
+        $testQgis = new qgisProjectForTests();
+        $relations = $testQgis->readRelationsForTests($xml);
+        $this->assertEquals($expectedRelations, $relations);
+    }
 }

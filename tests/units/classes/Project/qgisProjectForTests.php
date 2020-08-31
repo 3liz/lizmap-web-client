@@ -27,4 +27,14 @@ class qgisProjectForTests extends QgisProject
     {
         return $this->readUseLayerIDs($xml);
     }
+
+    public function readThemesForTests($xml)
+    {
+        return ($this->readThemes($xml));
+    }
+
+    public function readRelationsForTests($xml)
+    {
+        return ($this->readRelations($xml));
+    }
 }
