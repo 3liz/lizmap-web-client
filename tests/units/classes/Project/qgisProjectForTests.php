@@ -57,4 +57,14 @@ class qgisProjectForTests extends QgisProject
     {
         $this->layers = $layers;
     }
+
+    public function readEditionLayersForTest($eLayer)
+    {
+        return $this->readEditionLayers($eLayer);
+    }
+
+    public function readAttributeLayersForTest($aLayer)
+    {
+        return $this->readAttributeLayers($aLayer);
+    }
 }

@@ -828,7 +828,7 @@ class QgisProject
         }
     }
 
-    public function readEditionLayers(&$editionLayers)
+    public function readEditionLayers($editionLayers)
     {
         foreach ($editionLayers as $key => $obj) {
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
@@ -844,7 +844,7 @@ class QgisProject
         }
     }
 
-    public function readAttributeLayers(&$attributeLayers)
+    public function readAttributeLayers($attributeLayers)
     {
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {

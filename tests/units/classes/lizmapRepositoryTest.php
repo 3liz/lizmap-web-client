@@ -43,7 +43,6 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
                 'allowUserDefinedThemes' => true,
             ),
         );
-        print_r(realpath(__DIR__.'/../tmp/'));
 
         return array(
             array($repo1, 'test', realpath(__DIR__.'/../tmp/config'), $repo1['repository:test']['path'].'/'),
