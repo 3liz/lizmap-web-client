@@ -502,7 +502,13 @@ class QgisProject
      */
     protected function getXmlLayer2($xml, $layerId)
     {
-        return $xml->xpath("//maplayer[id='{$layerId}']");
+        $layerList = $xml->xpath("//maplayer");
+        foreach ($layerList as $layer) {
+            if ((string)$layer->id === $layerId) {
+                return $layer;
+            }
+        }
+        return null;
     }
 
     /**
