@@ -244,4 +244,72 @@ class QgisProjectTest extends TestCase
             $this->assertNull($layer);
         }
     }
+
+    public function getReadEditionLayersData()
+    {
+        $intraELayer = '{
+            "anno_point": {
+                "layerId": "anno_point20140627181806369",
+                "geometryType": "point",
+                "capabilities": {
+                    "createFeature": "True",
+                    "modifyAttribute": "True",
+                    "modifyGeometry": "True",
+                    "deleteFeature": "True"
+                },
+                "acl": "",
+                "order": 0
+            }
+        }';
+        $eLayer = json_decode($intraELayer);
+        return array(
+            array('montpellier', (object)array()),
+            array('montpellier_intranet', $eLayer)
+        );
+    }
+
+    /**
+     * @dataProvider getReadEditionLayersData
+     */
+    public function testReadEditionLayers($fileName, $expectedELayer)
+    {
+        $file = __DIR__.'/Ressources/'.$fileName.'.qgs';
+        $eLayers = json_decode(file_get_contents($file.'.cfg'))->editionLayers;
+        $testProj = new qgisProjectForTests();
+        $testProj->setXml(simplexml_load_file($file));
+        $testProj->readEditionLayersForTest($eLayers);
+        $this->assertEquals($expectedELayer, $eLayers);
+    }
+
+    public function testReadAttributeLayer()
+    {
+        $table = '<attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;field_communes&quot;" sortOrder="1">
+          <columns>
+            <column type="field" hidden="0" width="100" name="nid"/>
+            <column type="field" hidden="0" width="371" name="titre"/>
+            <column type="field" hidden="1" width="-1" name="vignette_src"/>
+            <column type="field" hidden="1" width="-1" name="vignette_alt"/>
+            <column type="field" hidden="0" width="226" name="field_date"/>
+            <column type="field" hidden="1" width="-1" name="description"/>
+            <column type="field" hidden="0" width="190" name="field_communes"/>
+            <column type="field" hidden="0" width="234" name="field_lieu"/>
+            <column type="field" hidden="0" width="100" name="field_access"/>
+            <column type="field" hidden="0" width="166" name="field_thematique"/>
+            <column type="field" hidden="1" width="-1" name="x"/>
+            <column type="field" hidden="1" width="-1" name="y"/>
+            <column type="field" hidden="0" width="186" name="url"/>
+            <column type="actions" hidden="1" width="-1"/>
+            <column type="field" hidden="0" width="-1" name="fid"/>
+          </columns>
+        </attributetableconfig>';
+
+        $file = __DIR__.'/Ressources/events.qgs';
+        $aLayer = json_decode(file_get_contents($file.'.cfg'))->attributeLayers;
+        $xml = simplexml_load_string($table);
+        $testProj = new qgisProjectForTests();
+        $testProj->setXml(simplexml_load_file($file));
+        $testProj->readAttributeLayersForTest($aLayer);
+        $xml = json_decode(str_replace('@', '', json_encode($xml)));
+        $this->assertEquals($xml, $aLayer->montpellier_events->attributetableconfig);
+    }
 }
