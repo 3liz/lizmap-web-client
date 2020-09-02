@@ -476,42 +476,6 @@ var lizDataviz = function() {
 
     }
 
-    // Find plots for non spatial layers wich are children of given plot id
-    function getChildTablePlots(layerId) {
-        var children = [];
-        if (!('relations' in lizMap.config) || !(layerId in lizMap.config.relations)) {
-            return children;
-        }
-        var getLayerConfig = lizMap.getLayerConfigById(layerId);
-        if (!getLayerConfig) {
-            return children;
-        }
-        var plotLayers = lizMap.config.datavizLayers.layers;
-        var lrelations = lizMap.config.relations[layerId];
-        for (var x in lrelations) {
-            var rel = lrelations[x];
-            // Id of the layer which is the child of layerId
-            var children_layer_id = rel.referencingLayer;
-            for ( var i in plotLayers) {
-                if (plotLayers[i].layer_id==children_layer_id) {
-                    var child_plot_config = plotLayers[i];
-                    var child_plot_id = child_plot_config.plot_id;
-                    // Check child layer is non spatial
-                    // And if we must take the visibility into account
-                    var c_getLayerConfig = lizMap.getLayerConfigById(children_layer_id);
-                    if (
-                        c_getLayerConfig && c_getLayerConfig[1].geometryType == 'none'
-                        && 'display_when_layer_visible' in child_plot_config.plot
-                        && optionToBoolean(child_plot_config.plot.display_when_layer_visible)
-                    ) {
-                        children.push(child_plot_id);
-                    }
-                }
-            }
-        }
-        return children;
-    }
-
     lizMap.events.on({
         'uicreated':function(evt){
             if( 'datavizLayers' in lizMap.config ){
@@ -546,23 +510,6 @@ var lizDataviz = function() {
                 var showPlot = (
                     layer.getVisibility() && layer.inRange
                 );
-
-                // Get non spatial children layers
-                var children = getChildTablePlots(layerId);
-                for (var c in children) {
-                    var child_id = children[c];
-                    var child_html_id = 'dataviz_plot_' + child_id;
-                    showPlot = (
-                        showPlot
-                        && dv.plots[child_id]['json']
-                        && 'data' in dv.plots[child_id]['json']
-                        && dv.plots[child_id]['json']['data'] && dv.plots[child_id]['json']['data'].length > 0
-                    );
-                    $('#' + child_html_id + '_container').toggle(showPlot);
-                    if(showPlot){
-                        resizePlot(child_html_id);
-                    }
-                }
             }
         }
     });
