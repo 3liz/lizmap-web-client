@@ -399,8 +399,9 @@ export default class Digitizing {
         }
     }
 
-    download(format){
-        if (this.featureDrawn){
+    // Return feature drawn in GeoJSON, GPX or KML
+    getFeatureDrawnInFormat(format = 'geojson'){
+        if (this.featureDrawn) {
             const OL6Allfeatures = [];
 
             // Create OL6 features with OL2 features coordinates
@@ -432,18 +433,31 @@ export default class Digitizing {
                 OL6Allfeatures.push(OL6feature);
             }
 
-            if(format === 'geojson'){
-                const geoJSON = (new GeoJSON()).writeFeatures(OL6Allfeatures);
-                this._downloadString(geoJSON, 'application/geo+json', 'export.geojson');
+            if (format === 'geojson') {
+                return (new GeoJSON()).writeFeatures(OL6Allfeatures);
             }
-            else if(format === 'gpx'){
-                const gpx = (new GPX()).writeFeatures(OL6Allfeatures);
-                this._downloadString(gpx, 'application/gpx+xml', 'export.gpx');
+            else if (format === 'gpx') {
+                return (new GPX()).writeFeatures(OL6Allfeatures);
             } else if (format === 'kml') {
-                const kml = (new KML()).writeFeatures(OL6Allfeatures);
-                this._downloadString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
+                return (new KML()).writeFeatures(OL6Allfeatures);
             }
         }
+        return null;
+    }
+
+    // Download drawn features in GeoJSON, GPX or KML
+    download(format){
+        const formatMimeTypeMap = {
+            'geojson': 'application/geo+json',
+            'gpx': 'application/gpx+xml',
+            'kml': 'application/vnd.google-earth.kml+xml'
+        };
+
+        if (!Object.keys(formatMimeTypeMap).includes(format)){
+            return;
+        }
+
+        this._downloadString(this.getFeatureDrawnInFormat(format), formatMimeTypeMap['format'], 'export.' + format);
     }
 
     _downloadString(text, fileType, fileName) {
