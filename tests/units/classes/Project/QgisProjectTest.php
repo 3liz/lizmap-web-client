@@ -312,4 +312,38 @@ class QgisProjectTest extends TestCase
         $xml = json_decode(str_replace('@', '', json_encode($xml)));
         $this->assertEquals($xml, $aLayer->montpellier_events->attributetableconfig);
     }
+
+    public function getShortNamesData()
+    {
+        $dir = __DIR__.'/Ressources/Projs/';
+        return array(
+            array($dir.'test_project.qgs', 'testlayer', 'layer_with_short_name'),
+            array($dir.'Project1.qgs', 'points', 'PointsLayerShortName'),
+            array($dir.'test_project_use_layer_ids.qgs', 'testlayer', 'layer_with_short_name'),
+            array($dir.'test_project_use_layer_ids.qgs', 'wrong_layer_name', null),
+        );
+    }
+
+    /**
+     * @dataProvider getShortNamesData
+     */
+    public function testSetShortNames($file, $lname, $sname)
+    {
+        $layers = array(
+            $lname => array(
+                'name' => $lname,
+                'id' => $lname,
+            )
+        );
+        $testProj = new qgisProjectForTests();
+        $testProj->setXml(simplexml_load_file($file));
+        $cfg = new Project\ProjectConfig(null, array('cfgContent' => array('layers' => $layers)));
+        $testProj->setShortNamesForTest($cfg);
+        $layer = $cfg->getProperty('layers');
+        if ($sname) {
+            $this->assertEquals($sname, $layer->$lname->shortname);
+        } else {
+            $this->assertObjectNotHasAttribute('shortname', $layer->$lname);
+        }
+    }
 }
