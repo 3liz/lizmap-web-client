@@ -2,6 +2,8 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
 import Feature from 'ol/Feature';
 
+import GeometryCollection from 'ol/geom/GeometryCollection';
+
 import Point from 'ol/geom/Point';
 import LineString from 'ol/geom/LineString';
 import Polygon from 'ol/geom/Polygon';
@@ -400,46 +402,54 @@ export default class Digitizing {
     }
 
     // Return feature drawn in GeoJSON, GPX or KML
-    getFeatureDrawnInFormat(format = 'geojson'){
+    // Optional featureCollection parameter allows to return a geometryCollection
+    // with GeoJSON when set to false
+    getFeatureDrawnInFormat(format = 'geojson', featureCollection = true){
         if (this.featureDrawn) {
-            const OL6Allfeatures = [];
+            const OL6AllGeoms = [];
+            const OL6AllFeatures = [];
 
             // Create OL6 features with OL2 features coordinates
             for (const featureDrawn of this.featureDrawn) {
                 const featureGeometry = featureDrawn.geometry;
-                let OL6feature;
+                let OL6Geom;
 
                 if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
-                    OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
+                    OL6Geom = new Point([featureGeometry.x, featureGeometry.y]);
                 }
                 else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
                     let coordinates = [];
                     for (const component of featureGeometry.components) {
                         coordinates.push([component.x, component.y]);
                     }
-                    OL6feature = new Feature(new LineString(coordinates));
+                    OL6Geom = new LineString(coordinates);
                 }
                 else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
                     let coordinates = [];
                     for (const component of featureGeometry.components[0].components) {
                         coordinates.push([component.x, component.y]);
                     }
-                    OL6feature = new Feature(new Polygon([coordinates]));
+                    OL6Geom = new Polygon([coordinates]);
                 }
 
                 // Reproject to EPSG:4326
-                OL6feature.getGeometry().transform(mainLizmap.projection, 'EPSG:4326');
+                OL6Geom.transform(mainLizmap.projection, 'EPSG:4326');
 
-                OL6Allfeatures.push(OL6feature);
+                OL6AllGeoms.push(OL6Geom);
+                OL6AllFeatures.push(new Feature(OL6Geom));
             }
 
             if (format === 'geojson') {
-                return (new GeoJSON()).writeFeatures(OL6Allfeatures);
+                if (featureCollection){
+                    return (new GeoJSON()).writeFeatures(OL6AllFeatures);
+                }else{
+                    return (new GeoJSON()).writeGeometry(new GeometryCollection(OL6AllGeoms));
+                }
             }
             else if (format === 'gpx') {
-                return (new GPX()).writeFeatures(OL6Allfeatures);
+                return (new GPX()).writeFeatures(OL6AllFeatures);
             } else if (format === 'kml') {
-                return (new KML()).writeFeatures(OL6Allfeatures);
+                return (new KML()).writeFeatures(OL6AllFeatures);
             }
         }
         return null;
