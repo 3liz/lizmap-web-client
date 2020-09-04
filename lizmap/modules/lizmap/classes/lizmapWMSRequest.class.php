@@ -29,7 +29,6 @@ class lizmapWMSRequest extends lizmapOGCRequest
     {
         $params = parent::parameters();
 
-
         // Filter data by login if necessary
         // as configured in the plugin for login filtered layers.
 
@@ -59,7 +58,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
         // merge client filter parameter
         $clientFilter = $this->param('filter');
-        if ($clientFilter != Null && !empty($clientFilter)) {
+        if ($clientFilter != null && !empty($clientFilter)) {
             $cfexp = explode(';', $clientFilter);
             foreach ($cfexp as $a) {
                 $b = explode(':', $a);
@@ -291,7 +290,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         }
 
         // Get remote data
-        $response = $this->request(True);
+        $response = $this->request(true);
 
         return (object) array(
             'code' => $response->code,
@@ -303,10 +302,11 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getfeatureinfo()
     {
-        $queryLayers =  $this->param('query_layers');
+        $queryLayers = $this->param('query_layers');
         // QUERY_LAYERS is mandatory
-        if(!$queryLayers) {
+        if (!$queryLayers) {
             jMessage::add('The QUERY_LAYERS parameter is missing.', 'MissingParameterValue');
+
             return $this->serviceException();
         }
 
@@ -332,20 +332,19 @@ class lizmapWMSRequest extends lizmapOGCRequest
         foreach ($externalWMSConfigLayers as $configLayer) {
             $url = $configLayer->externalAccess->url;
             if (!preg_match('/\?/', $url)) {
-                $url.='?';
-            }
-            else if (!preg_match('/&$/', $url)) {
-                $url.='&';
+                $url .= '?';
+            } elseif (!preg_match('/&$/', $url)) {
+                $url .= '&';
             }
 
             $externalWMSLayerParams = array_merge(array(), $this->params);
-            if(array_key_exists('map', $externalWMSLayerParams)) {
+            if (array_key_exists('map', $externalWMSLayerParams)) {
                 unset($externalWMSLayerParams['map']);
             }
-            if(array_key_exists('filter', $externalWMSLayerParams)) {
+            if (array_key_exists('filter', $externalWMSLayerParams)) {
                 unset($externalWMSLayerParams['filter']);
             }
-            if(array_key_exists('selection', $externalWMSLayerParams)) {
+            if (array_key_exists('selection', $externalWMSLayerParams)) {
                 unset($externalWMSLayerParams['selection']);
             }
 
@@ -365,8 +364,6 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $rep .= $this->gfiGmlToHtml($data, $configLayer);
         }
 
-
-
         $toHtml = ($this->param('info_format') == 'text/html');
         if ($toHtml) {
             $this->params['info_format'] = 'text/xml';
@@ -382,7 +379,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $this->params['with_geometry'] = 'true';
 
         // Get remote data
-        $response = $this->request(True);
+        $response = $this->request(true);
         $code = $response->code;
         $mime = $response->mime;
         $data = $response->data;
@@ -405,7 +402,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
     {
 
         // Get remote data
-        $response = $this->request(True);
+        $response = $this->request(true);
 
         return (object) array(
             'code' => $response->code,
@@ -427,7 +424,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         jEvent::notify('BeforePdfCreation', $eventParams);
 
         // Get remote data
-        $response = $this->request(True);
+        $response = $this->request(true);
 
         return (object) array(
             'code' => $response->code,
@@ -470,9 +467,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
                 $errorlist[] = $error;
             }
             $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
-            $errormsg.= '\n'.http_build_query($gfiparams);
-            $errormsg.= '\n'.$xmldata;
-            $errormsg.= '\n'.implode('\n', $errorlist);
+            $errormsg .= '\n'.http_build_query($gfiparams);
+            $errormsg .= '\n'.$xmldata;
+            $errormsg .= '\n'.implode('\n', $errorlist);
             jLog::log($errormsg, 'error');
             // return empty html string
             return '';
@@ -536,7 +533,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $layerTitle = $configLayer->title;
             $layerId = $configLayer->id;
 
-            if($layer->Feature && count($layer->Feature) > 0) {
+            if ($layer->Feature && count($layer->Feature) > 0) {
                 $content = array_merge(
                     $content,
                     $this->gfiVectorXmlToHtml($layerId, $layerName, $layerTitle, $layer, $configLayer, $filterFid)
@@ -557,12 +554,12 @@ class lizmapWMSRequest extends lizmapOGCRequest
     /**
      * gfiVectorXmlToHtml : return Vector HTML for the getFeatureInfo XML.
      *
-     * @param string $layerId
-     * @param string $layerName
-     * @param string $layerTitle
+     * @param string           $layerId
+     * @param string           $layerName
+     * @param string           $layerTitle
      * @param SimpleXmlElement $layer
-     * @param Object $configLayer
-     * @param Array $filterFid
+     * @param object           $configLayer
+     * @param array            $filterFid
      *
      * @return array Vector features Info in HTML format
      */
@@ -730,13 +727,12 @@ class lizmapWMSRequest extends lizmapOGCRequest
         return $content;
     }
 
-
     /**
      * gfiRasterXmlToHtml : return Raster HTML for the getFeatureInfo XML.
      *
-     * @param string $layerId
-     * @param string $layerName
-     * @param string $layerTitle
+     * @param string           $layerId
+     * @param string           $layerName
+     * @param string           $layerTitle
      * @param SimpleXmlElement $layer
      *
      * @return array Raster feature Info in HTML format
@@ -756,6 +752,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $tpl->assign('layerName', $layerName);
         $tpl->assign('layerId', $layerId);
         $tpl->assign('popupContent', $popupRasterContent);
+
         return $tpl->fetch('view~popup', 'html');
     }
 
@@ -790,8 +787,8 @@ class lizmapWMSRequest extends lizmapOGCRequest
     /**
      * gfiGmlToHtml : return HTML for the getFeatureInfo GML.
      *
-     * @param string $gmldata GML data from getFeatureInfo
-     * @param Object $configLayer
+     * @param string $gmldata     GML data from getFeatureInfo
+     * @param object $configLayer
      *
      * @return string feature Info in HTML format
      */
@@ -807,9 +804,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
                 $errorlist[] = $error;
             }
             $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
-            $errormsg.= '\n'.http_build_query($this->params);
-            $errormsg.= '\n'.$xmldata;
-            $errormsg.= '\n'.implode('\n', $errorlist);
+            $errormsg .= '\n'.http_build_query($this->params);
+            $errormsg .= '\n'.$xmldata;
+            $errormsg .= '\n'.implode('\n', $errorlist);
             jLog::log($errormsg, 'error');
             // return empty html string
             return '';
@@ -847,5 +844,4 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
         return $HTMLResponse;
     }
-
 }

@@ -9,7 +9,7 @@
  */
 class qgisLayerDbFieldsInfo
 {
-    /** @var  jDbConnection */
+    /** @var jDbConnection */
     protected $cnx;
 
     /**
@@ -49,6 +49,7 @@ class qgisLayerDbFieldsInfo
             && $ut != 'decimal') {
             return $this->cnx->quote($value);
         }
+
         return $value;
     }
 
