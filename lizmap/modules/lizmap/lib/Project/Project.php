@@ -17,7 +17,7 @@ use Lizmap\App;
 class Project
 {
     /**
-     * @var \LizmapRepository
+     * @var Repository
      */
     protected $repository;
     /**
@@ -187,10 +187,10 @@ class Project
      * constructor.
      *
      * @param string                  $key        : the project name
-     * @param \LizmapRepository       $rep        : the repository
+     * @param Repository       $rep        : the repository
      * @param App\AppContextInterface $appContext the instance of jelixInfos
      */
-    public function __construct($key, \LizmapRepository $rep, App\AppContextInterface $appContext, \LizmapServices $services)
+    public function __construct($key, Repository $rep, App\AppContextInterface $appContext, \LizmapServices $services)
     {
         $this->key = $key;
         $this->repository = $rep;
@@ -283,7 +283,7 @@ class Project
      *
      * @param string $key
      */
-    protected function readProject($key, \LizmapRepository $rep)
+    protected function readProject($key, Repository $rep)
     {
         $qgsXml = $this->qgis;
         $configOptions = $this->cfg->getProperty('options');
