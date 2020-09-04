@@ -272,7 +272,7 @@ var lizLayerActionButtons = function() {
                             }
                         });
 
-                        // Handle layers visibility, style and expanded states.
+                        // Handle layers visibility and style states.
                         if ('layers' in themeSelected){
                             for (var layerId in themeSelected.layers) {
 
@@ -311,34 +311,9 @@ var lizLayerActionButtons = function() {
                                             );
                                         }
                                     }
-
-                                    // Expanded
-                                    if ('expanded' in themeSelected.layers[layerId]) {
-                                        var layerExpanded = themeSelected.layers[layerId]['expanded'];
-
-                                        if (layerExpanded === '0') {
-                                            $('#switcher-layers #layer-' + layerConfig.cleanname + '.expanded a.expander').click();
-                                        }
-                                        else if (layerExpanded === '1') {
-                                            $('#switcher-layers #layer-' + layerConfig.cleanname + '.collapsed a.expander').click();
-                                        }
-                                    }
                                 }
                             }
                         }
-                        // Groups in expandedGroupNode are expanded, others are collapsed
-                        var expandedGroupNode = [];
-                        if ('expandedGroupNode' in themeSelected){
-                            expandedGroupNode = themeSelected.expandedGroupNode;
-                        }
-                        $('#switcher-layers .liz-group').each(function () {
-                            var groupName = $(this).attr('id').split('group-')[1];
-                            if ($.inArray(groupName, expandedGroupNode) !== -1){
-                                $('#switcher-layers #group-' + groupName + '.collapsed a.expander').click();
-                            }else{
-                                $('#switcher-layers #group-' + groupName + '.expanded a.expander').click();
-                            }
-                        });
 
                         // Trigger map theme event
                         lizMap.events.triggerEvent("mapthemechanged",
