@@ -26,16 +26,16 @@ class lizmapOGCRequest
 
     protected $tplExceptions;
 
-    static public function build($project, $params, $requestXml = Null)
+    public static function build($project, $params, $requestXml = null)
     {
-        $service = Null;
-        $request = Null;
+        $service = null;
+        $request = null;
 
         // Check request XML
         if ($requestXml && substr(trim($requestXml), 0, 1) == '<') {
             $requestXml = trim($requestXml);
         } else {
-            $requestXml = Null;
+            $requestXml = null;
         }
 
         // Parse request XML
@@ -48,7 +48,7 @@ class lizmapOGCRequest
                     $service = strtoupper($xml['service']);
                 }
             } else {
-                $requestXml = Null;
+                $requestXml = null;
             }
         }
 
@@ -61,25 +61,27 @@ class lizmapOGCRequest
             }
         }
 
-        if ($service == Null) {
-            return Null;
+        if ($service == null) {
+            return null;
         }
         $params['service'] = $service;
-        if ($request !== Null) {
+        if ($request !== null) {
             $params['request'] = $request;
         }
         if ($service == 'WMS') {
             return new lizmapWMSRequest($project, $params, $requestXml);
-        } else if ($service == 'WMTS') {
+        }
+        if ($service == 'WMTS') {
             return new lizmapWMTSRequest($project, $params, $requestXml);
-        } else if ($service == 'WFS') {
+        }
+        if ($service == 'WFS') {
             return new lizmapWFSRequest($project, $params, $requestXml);
-        // Not yet
+            // Not yet
         //} else if ($service == 'WCS') {
         //    return new lizmapWCSRequest($project, $params, $requestXml)
         }
 
-        return Null;
+        return null;
     }
 
     /**
@@ -88,9 +90,8 @@ class lizmapOGCRequest
      * @param lizmapProject $project    the project has a lizmapProject Class
      * @param array         $params     the params array
      * @param string        $requestXml the params array
-     *
      */
-    public function __construct($project, $params, $requestXml=Null)
+    public function __construct($project, $params, $requestXml = null)
     {
         //print_r( $project != null );
         $this->project = $project;
@@ -130,18 +131,19 @@ class lizmapOGCRequest
     public function parameters()
     {
         // Check if a user is authenticated
-        if ( !jAuth::isConnected() ) {
+        if (!jAuth::isConnected()) {
             // return empty header array
             return array_merge($this->params, array(
                 'Lizmap_User' => '',
-                'Lizmap_User_Groups' => ''
+                'Lizmap_User_Groups' => '',
             ));
         }
         $user = jAuth::getUserSession();
         $userGroups = jAcl2DbUserGroup::getGroups();
+
         return array_merge($this->params, array(
             'Lizmap_User' => $user->login,
-            'Lizmap_User_Groups' => implode(', ', $userGroups)
+            'Lizmap_User_Groups' => implode(', ', $userGroups),
         ));
     }
 
@@ -165,15 +167,13 @@ class lizmapOGCRequest
     {
         $url = $this->services->wmsServerURL.'';
         if (!preg_match('/\?/', $url)) {
-            $url.='?';
-        }
-        else if (!preg_match('/&$/', $url)) {
-            $url.='&';
+            $url .= '?';
+        } elseif (!preg_match('/&$/', $url)) {
+            $url .= '&';
         }
 
         return $url.$this->buildQuery($this->parameters());
     }
-
 
     protected function buildQuery($params)
     {
@@ -182,22 +182,22 @@ class lizmapOGCRequest
         // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
         $a = array('+', '_', '.', '-');
         $b = array('%20', '%5F', '%2E', '%2D');
+
         return str_replace($a, $b, $bparams);
     }
 
-    protected function request($post=False)
+    protected function request($post = false)
     {
         $querystring = $this->constructUrl();
 
         $options = array();
-        if ($this->requestXml !== Null) {
+        if ($this->requestXml !== null) {
             $options = array(
                 'method' => 'post',
                 'headers' => array('Content-Type' => 'text/xml'),
                 'body' => $this->requestXml,
             );
-        }
-        else if ($post) {
+        } elseif ($post) {
             $options = array('method' => 'post');
         }
 
@@ -264,7 +264,7 @@ class lizmapOGCRequest
         // invalid cache
         if ($cached !== false &&
             $cached['mtime'] < $this->project->getFileTime() &&
-            ( !array_key_exists('ctime', $cached) ||
+            (!array_key_exists('ctime', $cached) ||
               $cached['ctime'] < $this->project->getCfgFileTime())
             ) {
             $cached = false;
@@ -306,5 +306,4 @@ class lizmapOGCRequest
             'cached' => $cached,
         );
     }
-
 }

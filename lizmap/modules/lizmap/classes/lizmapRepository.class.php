@@ -59,13 +59,12 @@ class lizmapRepository
     /**
      * lizmapRepository Constructor
      * Do not call it, if you want to instanciate a lizmapRepository, you should
-     * do it with the lizmapServices::getLizmapRepository method
+     * do it with the lizmapServices::getLizmapRepository method.
      *
-     * @param string $key the name of the repository
-     * @param array $data the repository data
+     * @param string $key     the name of the repository
+     * @param array  $data    the repository data
      * @param string $varPath the configuration files folder path
      */
-
     public function __construct($key, $data, $varPath)
     {
         $properties = self::getProperties();
@@ -136,14 +135,13 @@ class lizmapRepository
     }
 
     /**
-     * Update a repository in a jIniFilemodifier object
+     * Update a repository in a jIniFilemodifier object.
      *
-     * @param array $data the repository data
-     * @param jIniFileModifier $ini the object to edit the ini file
+     * @param array            $data the repository data
+     * @param jIniFileModifier $ini  the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */
-
     public function update($data, $ini)
     {
         // Set section
@@ -181,6 +179,7 @@ class lizmapRepository
             throw $e;
         } catch (Exception $e) {
             jLog::logEx($e, 'error');
+
             return null;
         }
 

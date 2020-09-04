@@ -74,7 +74,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         // Get client exp_filter parameter
         $clientExpFilter = $this->param('exp_filter');
-        if ($clientExpFilter != Null && !empty($clientExpFilter)) {
+        if ($clientExpFilter != null && !empty($clientExpFilter)) {
             $expFilters[] = $clientExpFilter;
         }
 
@@ -90,7 +90,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         // Update propertyname parameter
         $propertyName = $this->param('propertyname');
-        if ($propertyName != Null && !empty($propertyName)) {
+        if ($propertyName != null && !empty($propertyName)) {
             $propertyName = trim($propertyName).",${attribute}";
             $params['propertyname'] = $propertyName;
         }
@@ -181,9 +181,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
                         $errorlist[] = $error;
                     }
                     $errormsg = 'An error has been raised when loading DescribeFeatureType:';
-                    $errormsg.= '\n'.http_build_query($this->params);
-                    $errormsg.= '\n'.$data;
-                    $errormsg.= '\n'.implode('\n', $errorlist);
+                    $errormsg .= '\n'.http_build_query($this->params);
+                    $errormsg .= '\n'.$data;
+                    $errormsg .= '\n'.implode('\n', $errorlist);
                     jLog::log($errormsg, 'error');
                     $go = false;
                 }
@@ -217,7 +217,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
     public function getfeature()
     {
-        if ($this->requestXml !== Null) {
+        if ($this->requestXml !== null) {
             return $this->getfeatureQgis();
         }
 
@@ -290,7 +290,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         // Else pass query to QGIS Server
         // Get remote data
-        $response = $this->request(True);
+        $response = $this->request(true);
         $code = $response->code;
         $mime = $response->mime;
         $data = $response->data;
@@ -599,6 +599,8 @@ class lizmapWFSRequest extends lizmapOGCRequest
     /**
      * @param string        $sql
      * @param jDbConnection $cnx
+     * @param mixed         $typename
+     * @param mixed         $geometryname
      *
      * @return string
      */
