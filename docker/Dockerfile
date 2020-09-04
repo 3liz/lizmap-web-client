@@ -3,9 +3,6 @@ FROM ${REGISTRY_PREFIX}alpine:3.10
 MAINTAINER David Marteau <david.marteau@3liz.com>
 LABEL Description="Lizmap web client" Vendor="3liz.org"
 
-ARG lizmap_wps_version=master
-ARG lizmap_wps_git=https://github.com/3liz/lizmap-wps-web-client-module.git
-
 RUN apk update && apk upgrade
 RUN apk --no-cache add git fcgi php7 php7-fpm \
     php7-tokenizer \
@@ -41,11 +38,6 @@ RUN echo "installing lizmap from given package" \
     && mv lizmap_web_client /www \
     && mv /www/lizmap/var/config /www/lizmap/var/config.dist \
     && mv /www/lizmap/www /www/lizmap/www.dist
-
-# Install lizmap wps
-RUN git clone --branch $lizmap_wps_version --depth=1 $lizmap_wps_git lizmap-wps \
-    && mv lizmap-wps/wps /www/lizmap/lizmap-modules/wps \
-    && rm -rf lizmap-wps
 
 COPY factory.manifest /build.manifest
 COPY lizmapConfig.ini.php.dist localconfig.ini.php.dist /www/lizmap/var/config.dist/
