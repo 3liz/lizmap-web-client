@@ -49,6 +49,8 @@ class datavizPlot
     protected $stacked;
     protected $horizontal;
 
+    protected $theme;
+
     /**
      * datavizPlot constructor.
      *
@@ -81,6 +83,12 @@ class datavizPlot
             return false;
         }
         $this->lproj = $lproj;
+
+        // Get main dataviz config
+        $dv = new datavizConfig($repository, $project);
+        $config = $dv->getConfig();
+        $this->theme = $config['dataviz']['theme'];
+
         // Parse plot config
         $this->parsePlotConfig($plotConfig);
 
@@ -953,7 +961,7 @@ class datavizPlotPie extends datavizPlot
 
     protected function getTraceTemplate()
     {
-        return array(
+        $template = array (
             'type' => 'pie',
             'name' => '',
             'values' => array(),
@@ -962,11 +970,17 @@ class datavizPlotPie extends datavizPlot
             'hovertemplate' => "%{label}<br>%{value:.1f}<br>%{percent:,.0%}",
             'textinfo' => 'value',
             'texttemplate' => '%{value:.1f}',
+            //'textposition' => 'inside',
+            'insidetextorientation' => 'horizontal',
             'opacity' => null,
             'hole' => '0.4',
             'automargin' => true,
             'sort' => false // slices will be sort by X data
         );
+        if ($this->theme == 'dark') {
+            $template['outsidetextfont'] = array ('color'=> 'white');
+        }
+        return $template;
     }
 }
 
@@ -1030,7 +1044,8 @@ class datavizPlotSunburst extends datavizPlot
 
     protected function getTraceTemplate()
     {
-        return array(
+
+        $template = array(
             'type' => 'sunburst',
             'name' => '',
             'values' => array(),
@@ -1043,6 +1058,10 @@ class datavizPlotSunburst extends datavizPlot
             'texttemplate' => '%{value:.1f}',
             'opacity' => null,
         );
+        if ($this->theme == 'dark') {
+            $template['outsidetextfont'] = array ('color'=> 'white');
+        }
+        return $template;
     }
 }
 
