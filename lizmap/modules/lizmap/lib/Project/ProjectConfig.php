@@ -63,11 +63,11 @@ class ProjectConfig
         } else {
             foreach ($data as $prop => $value) {
                 if (in_array($prop, $this->cachedProperties)) {
-                    if ($prop == 'cfgContent') {
-                        $this->{$prop} = json_decode(json_encode($value));
+                    // if ($prop == 'cfgContent') {
+                    //     $this->{$prop} = json_decode(json_encode($value));
 
-                        continue;
-                    }
+                    //     continue;
+                    // }
                     $this->{$prop} = $value;
                 }
             }
@@ -96,9 +96,9 @@ class ProjectConfig
         foreach ($this->cachedProperties as $prop) {
             if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
-            }
-            if ($prop == 'cfgContent') {
-                $data['cfgContent'] = json_decode(json_encode($this->cfgContent), true);
+            // }
+            // if ($prop == 'cfgContent') {
+            //     $data['cfgContent'] = json_decode(json_encode($this->cfgContent), true);
             } else {
                 $data[$prop] = $this->{$prop};
             }
@@ -134,12 +134,18 @@ class ProjectConfig
         }
     }
 
-    public function unsetProperty($propName, $propName2 = '')
+    public function unsetProperty($propName, $propName2 = '', $propName3 = '')
     {
-        if (isset($this->cfgContent->{$propName}) && $propName2 == '') {
-            unset($this->cfgContent->{$propName});
-        } elseif (isset($this->cfgContent->{$propName}) && property_exists($this->cfgContent->{$propName}, $propName2)) {
-            unset($this->cfgContent->{$propName}, $propName2);
+        $rootProp = $this->cfgContent;
+        if (in_array($propName, $this->cachedProperties)) {
+            $rootProp = $this->$propName;
+        }
+        if (isset($rootProp->{$propName}) && $propName2 == '') {
+            unset($rootProp->{$propName});
+        } elseif (isset($rootProp->{$propName}) && property_exists($rootProp->{$propName}, $propName2) && $propName3 == '') {
+            unset($rootProp->{$propName}->$propName2);
+        } elseif (isset($rootProp->{$propName}) && property_exists($rootProp->{$propName}, $propName2) && property_exists($rootProp->$propName->$propName2, $propName3)) {
+            unset($rootProp->$propName->$propName2->$propName3);
         }
     }
 
