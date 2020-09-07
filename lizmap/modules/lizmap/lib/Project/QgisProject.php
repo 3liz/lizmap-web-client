@@ -367,7 +367,7 @@ class QgisProject
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
-    public function getLayer($layerId)
+    public function getLayer($layerId, $proj)
     {
         /** @var array[] $layers */
         $layersFiltered = array_filter($this->layers, function ($layer) use ($layerId) {
@@ -377,10 +377,10 @@ class QgisProject
             // get first key found in the filtered layers
             $k = key($layersFiltered);
             if ($this->layers[$k]['type'] == 'vector') {
-                return new \qgisVectorLayer($this, $this->layers[$k]);
+                return new \qgisVectorLayer($proj, $this->layers[$k]);
             }
 
-            return new \qgisMapLayer($this, $this->layers[$k]);
+            return new \qgisMapLayer($proj, $this->layers[$k]);
         }
 
         return null;
@@ -391,7 +391,7 @@ class QgisProject
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
-    public function getLayerByKeyword($key)
+    public function getLayerByKeyword($key, $proj)
     {
         /** @var array[] $layers */
         $layers = array_filter($this->layers, function ($layer) use ($key) {
@@ -401,10 +401,10 @@ class QgisProject
             // get first key found in the filtered layers
             $k = key($layers);
             if ($layers[$k]['type'] == 'vector') {
-                return new \qgisVectorLayer($this, $layers[$k]);
+                return new \qgisVectorLayer($proj, $layers[$k]);
             }
 
-            return new \qgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($proj, $layers[$k]);
         }
 
         return null;
@@ -415,7 +415,7 @@ class QgisProject
      *
      * @return \qgisMapLayer[]|\qgisVectorLayer[]
      */
-    public function findLayersByKeyword($key)
+    public function findLayersByKeyword($key, $proj)
     {
         /** @var array[] $foundLayers */
         $foundLayers = array_filter($this->layers, function ($layer) use ($key) {
@@ -425,9 +425,9 @@ class QgisProject
         if ($foundLayers) {
             foreach ($foundLayers as $layer) {
                 if ($layer['type'] == 'vector') {
-                    $layers[] = new \qgisVectorLayer($this, $layer);
+                    $layers[] = new \qgisVectorLayer($proj, $layer);
                 } else {
-                    $layers[] = new \qgisMapLayer($this, $layer);
+                    $layers[] = new \qgisMapLayer($proj, $layer);
                 }
             }
         }
