@@ -56,20 +56,28 @@ class lizmapRepository
     // The configuration files folder path
     private $varPath = '';
 
+    protected $services;
+
+    protected $appContext;
+
     /**
      * lizmapRepository Constructor
      * Do not call it, if you want to instanciate a lizmapRepository, you should
-     * do it with the lizmapServices::getLizmapRepository method
+     * do it with the lizmapServices::getLizmapRepository method.
      *
-     * @param string $key the name of the repository
-     * @param array $data the repository data
-     * @param string $varPath the configuration files folder path
+     * @param string         $key      the name of the repository
+     * @param array          $data     the repository data
+     * @param string         $varPath  the configuration files folder path
+     * @param lizmapServices $services
+     * @param Lizmap\App\AppContextInterface
+     * @param mixed $appContext
      */
-
-    public function __construct($key, $data, $varPath)
+    public function __construct($key, $data, $varPath, $services, $appContext)
     {
         $properties = self::getProperties();
         $this->varPath = $varPath;
+        $this->services = $services;
+        $this->appContext = $appContext;
 
         // Set each property
         foreach ($properties as $property) {
@@ -136,14 +144,13 @@ class lizmapRepository
     }
 
     /**
-     * Update a repository in a jIniFilemodifier object
+     * Update a repository in a jIniFilemodifier object.
      *
-     * @param array $data the repository data
-     * @param jIniFileModifier $ini the object to edit the ini file
+     * @param array            $data the repository data
+     * @param jIniFileModifier $ini  the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */
-
     public function update($data, $ini)
     {
         // Set section
@@ -169,18 +176,19 @@ class lizmapRepository
         return $modified;
     }
 
-    public function getProject($key, $context, $services)
+    public function getProject($key)
     {
         if (isset($this->projectInstances[$key])) {
             return $this->projectInstances[$key];
         }
 
         try {
-            $proj = new lizmapProject($key, $this, $context, $services);
+            $proj = new lizmapProject($key, $this, $this->appContext, $this->services);
         } catch (UnknownLizmapProjectException $e) {
             throw $e;
         } catch (Exception $e) {
             jLog::logEx($e, 'error');
+
             return null;
         }
 
@@ -189,7 +197,7 @@ class lizmapRepository
         return $proj;
     }
 
-    public function getProjects($context, $services)
+    public function getProjects()
     {
         $projects = array();
         $dir = $this->getPath();
@@ -212,7 +220,7 @@ class lizmapRepository
                     $proj = null;
                     if (in_array($qgsFile.'.cfg', $cfgFiles)) {
                         try {
-                            $proj = $this->getProject(substr($qgsFile, 0, -4), $context, $services);
+                            $proj = $this->getProject(substr($qgsFile, 0, -4));
                             if ($proj != null) {
                                 $projects[] = $proj;
                             }

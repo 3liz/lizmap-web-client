@@ -65,7 +65,7 @@ class lizmap
             $globalConfig = jApp::config();
             $ldapEnabled = jApp::isModuleEnabled('ldapdao');
             $varPath = jApp::varPath();
-            self::$lizmapServicesInstance = new lizmapServices($lizmapConfigTab, $globalConfig, $ldapEnabled, $varPath);
+            self::$lizmapServicesInstance = new lizmapServices($lizmapConfigTab, $globalConfig, $ldapEnabled, $varPath, self::getAppContext());
         }
 
         return self::$lizmapServicesInstance;
@@ -369,7 +369,7 @@ class lizmap
             return null;
         }
 
-        return $rep->getProject($matches['proj'], self::getAppContext(), self::getServices());
+        return $rep->getProject($matches['proj']);
     }
 
     /**
