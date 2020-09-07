@@ -227,7 +227,9 @@ class Project
             }
             $this->readProject($key, $rep);
             foreach ($this->cachedProperties as $prop) {
-                $data[$prop] = $this->{$prop};
+                if (isset($this->$prop) && !empty($this->$prop)) {
+                    $data[$prop] = $this->{$prop};
+                }
             }
             $data = array_merge($data, $this->qgis->getCacheData($data), $this->cfg->getCacheData($data));
             $this->cacheHandler->storeProjectData($data);
@@ -399,12 +401,12 @@ class Project
 
     public function getLayerByKeyword($key)
     {
-        return $this->qgis->getLayerByKeyword($key);
+        return $this->qgis->getLayerByKeyword($key, $this);
     }
 
     public function findLayersByKeyword($key)
     {
-        return $this->qgis->findLayersByKeyword($key);
+        return $this->qgis->findLayersByKeyword($key, $this);
     }
 
     public function getKey()
@@ -444,7 +446,7 @@ class Project
 
     public function getLayer($layerId)
     {
-        return $this->qgis->getLayer($layerId);
+        return $this->qgis->getLayer($layerId, $this);
     }
 
     public function getXmlLayer($layerId)
