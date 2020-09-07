@@ -21,7 +21,8 @@ New features:
     - Add digitizing (draw) + redlining
     - Qgis theme switcher on a map
     - Improvements in the geolocation feature
-    - angle measurement tool
+    - Angle measurement tool
+    ![Angle measurement tool](https://user-images.githubusercontent.com/2145040/92402502-f4bceb00-f12f-11ea-8e1a-57e4b9841233.gif "Angle measurement tool")
     - Display mouse position in QGIS project's projection
 - Editor:
    - split tool
