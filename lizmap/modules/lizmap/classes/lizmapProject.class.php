@@ -25,6 +25,7 @@ class lizmapProject
      */
     protected $proj;
 
+    const CACHE_FORMAT_VERSION=1;
     /**
      * constructor.
      *
@@ -45,6 +46,41 @@ class lizmapProject
     public function clearCache()
     {
         $this->proj->clearCache();
+    }
+
+    public function getPath()
+    {
+        return $this->proj->getPath();
+    }
+
+    public function getQgisProjectVersion()
+    {
+        return $this->proj->getQgisProjectVersion();
+    }
+
+    public function getRelations()
+    {
+        return $this->proj->getRelations();
+    }
+
+    public function getThemes()
+    {
+        return $this->proj->getThemes();
+    }
+
+    public function getLayerDefinition($layerId)
+    {
+        return $this->proj->getLayerDefinition($layerId);
+    }
+
+    public function getLayerByKeyword($key)
+    {
+        return $this->proj->getLayerByKeyword($key);
+    }
+
+    public function findLayersByKeyword($key)
+    {
+        return $this->proj->findLayersByKeyword($key);
     }
 
     public function getQgisPath()

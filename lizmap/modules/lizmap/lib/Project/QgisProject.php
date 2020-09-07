@@ -367,20 +367,20 @@ class QgisProject
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
-    public function getLayer($layerId, $layers)
+    public function getLayer($layerId)
     {
         /** @var array[] $layers */
-        $layersFiltered = array_filter($layers, function ($layer) use ($layerId) {
+        $layersFiltered = array_filter($this->layers, function ($layer) use ($layerId) {
             return $layer['id'] == $layerId;
         });
         if (count($layersFiltered)) {
             // get first key found in the filtered layers
             $k = key($layersFiltered);
-            if ($layers[$k]['type'] == 'vector') {
-                return new \qgisVectorLayer($this, $layers[$k]);
+            if ($this->layers[$k]['type'] == 'vector') {
+                return new \qgisVectorLayer($this, $this->layers[$k]);
             }
 
-            return new \qgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($this, $this->layers[$k]);
         }
 
         return null;

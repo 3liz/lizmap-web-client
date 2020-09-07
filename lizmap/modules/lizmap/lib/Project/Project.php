@@ -372,6 +372,41 @@ class Project
         return $mapParam;
     }
 
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    public function getQgisProjectVersion()
+    {
+        return $this->qgis->getQgisProjectVersion();
+    }
+
+    public function getRelations()
+    {
+        return $this->qgis->getRelations();
+    }
+
+    public function getThemes()
+    {
+        return $this->qgis->getThemes();
+    }
+
+    public function getLayerDefinition($layerId)
+    {
+        return $this->qgis->getLayerDefinition($layerId);
+    }
+
+    public function getLayerByKeyword($key)
+    {
+        return $this->qgis->getLayerByKeyword($key);
+    }
+
+    public function findLayersByKeyword($key)
+    {
+        return $this->qgis->findLayersByKeyword($key);
+    }
+
     public function getKey()
     {
         return $this->key;
@@ -409,7 +444,7 @@ class Project
 
     public function getLayer($layerId)
     {
-        return $this->qgis->getLayer($layerId, $this->objToArray($this->getLayers()));
+        return $this->qgis->getLayer($layerId);
     }
 
     public function getXmlLayer($layerId)
@@ -621,10 +656,10 @@ class Project
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
-                            $this->cfg->unsetProperty('editionLayers->'.$key.'->acl');
+                            $this->cfg->unsetProperty('editionLayers', $key, 'acl');
                         } else {
                             // No match found, we deactivate the edition layer
-                            $this->cfg->unsetProperty('editionLayers->'.$key);
+                            $this->cfg->unsetProperty('editionLayers', $key);
                         }
                     }
                 } else {
