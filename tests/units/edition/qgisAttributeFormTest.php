@@ -55,6 +55,8 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo', $element->getHtmlId());
         $this->assertEquals('foo', $element->getParentId());
 
+        $this->assertEquals(0, count($element->getGroupVisibilityExpressions()));
+
         $cc = $element->getChildrenBeforeTab()[0];
 
         $this->assertEquals(0, count($cc->getChildrenBeforeTab()));
@@ -122,6 +124,8 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo', $element->getHtmlId());
         $this->assertEquals('foo', $element->getParentId());
 
+        $this->assertEquals(1, count($element->getGroupVisibilityExpressions()));
+
         $c = $element->getChildrenBeforeTab()[0];
 
         $this->assertEquals(3, count($c->getChildrenBeforeTab()));
@@ -184,7 +188,7 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
             <attributeEditorField showLabel="1" index="1" name="name"/>
             <attributeEditorField showLabel="1" index="2" name="description"/>
           </attributeEditorContainer>
-          <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Other" groupBox="1" columnCount="0">
+          <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="1" visibilityExpression="&quot;name&quot; IS NOT NULL AND &quot;name&quot; &lt;> \'\'" name="Other" groupBox="1" columnCount="0">
             <attributeEditorField showLabel="1" index="4" name="date"/>
             <attributeEditorField showLabel="1" index="5" name="type"/>
             <attributeEditorField showLabel="1" index="3" name="user"/>
@@ -210,6 +214,9 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($element->hasChildren());
         $this->assertEquals('foo', $element->getHtmlId());
         $this->assertEquals('foo', $element->getParentId());
+
+        $groupVisibilityExpressions = $element->getGroupVisibilityExpressions();
+        $this->assertEquals(4, count($groupVisibilityExpressions));
 
         $photogroup = $element->getTabChildren()[1];
 
@@ -277,6 +284,9 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo-tab0-group1', $tab2->getHtmlId());
         $this->assertEquals('foo-tab0', $tab2->getParentId());
 
+        $this->assertTrue(array_key_exists($tab2->getHtmlId(), $groupVisibilityExpressions));
+        $this->assertNotEquals('', $groupVisibilityExpressions[$tab2->getHtmlId()]);
+        $this->assertEquals('"name" IS NOT NULL AND "name" <> \'\'', $groupVisibilityExpressions[$tab2->getHtmlId()]);
 
         $cc = $tab1->getChildrenBeforeTab()[0];
 

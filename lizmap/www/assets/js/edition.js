@@ -1490,9 +1490,17 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
             }
 
-
-            // Activate form tabs based on QGIS drag&drop form layout mode
-            form.children('ul.nav-tabs').find('li:first a').click().blur();
+            // Check tabs visibility
+            if (form.children('ul.nav-tabs').find('li:visible').length == 0 ) {
+                // No tabs visible, hide the tab content
+                $('#'+form.attr('id')+'-tab-content').hide();
+            } else {
+                // Activate form tabs based on QGIS drag&drop form layout mode
+                form.children('ul.nav-tabs').find('li:first a').click().blur();
+            }
+            // Handle group visibilities based on QGIS drag&drop form layout mode
+            handleGroupVisibilities( form );
+            // Display label for futur action without bootstrap control-label class
             $('#'+form.attr('id')+'_liz_future_action_label').removeClass('control-label');
 
             // Handle JS events on form (submit, etc.)
@@ -1574,6 +1582,109 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 lizMap.events.triggerEvent(
                     'lizmapeditionformclosed'
                 );
+            }
+        }
+    }
+
+    function dynamicGroupVisibilities( form ){
+        var tForm = jFormsJQ.getForm(form.attr('id'));
+
+        var token = tForm.element.elements['__JFORMS_TOKEN__'];
+        if (typeof token == "undefined" ) {
+            token = '';
+        }
+        else
+            token = token.value;
+
+        var param = {
+            '__form': tForm.selector,
+            '__formid' : tForm.formId,
+            '__JFORMS_TOKEN__' : token
+        };
+
+        var dependencies = tForm.groupDependencies;
+        for(var i=0, len=dependencies.length; i< len; i++) {
+            var depName = dependencies[i];
+            param[depName] = jFormsJQ.getValue(tForm.element.elements[depName]);
+        }
+
+        jQuery.post(jFormsJQ.groupVisibilitiesUrl, param,
+            function(data){
+                for (groupId in data) {
+                    var group = $('#'+groupId);
+                    if (group.hasClass('tab-pane')) {
+                        // group is tab content
+                        // so manage tab visibility
+                        var tab = form.children('ul.nav-tabs').find('li a[href="#'+groupId+'"]');
+                        var tabParent = tab.parent();
+                        if (data[groupId]) {
+                            // tab has to be visible
+                            if (!tabParent.is(':visible')) {
+                                tabParent.show();
+                            }
+                            var tabContent = $('#'+form.attr('id')+'-tab-content');
+                            if (tabContent.is(':hidden')) {
+                                // the tab content has to be displaied
+                                // because at least one tab is visible
+                                tabContent.show();
+                                tab.click().blur();
+                            }
+                        } else {
+                            // tab will be hidden
+                            if (!tabParent.hasClass('active')) {
+                                // it is not the active one
+                                // just hide it
+                                tabParent.hide();
+                            } else {
+                                if (tabParent.prev(':visible').length > 0) {
+                                    // the previous tab is visible
+                                    // it can become the new active
+                                    tabParent.prev().children('a').first().click().blur();
+                                    tabParent.hide();
+                                } else if (tabParent.next(':visible').length > 0) {
+                                    // the next tab is visible
+                                    // it can become the new active
+                                    tabParent.next().children('a').first().click().blur();
+                                    tabParent.hide();
+                                } else {
+                                    // no siblings tabs are visible
+                                    // hide the tab content
+                                    tabParent.hide();
+                                    $('#'+form.attr('id')+'-tab-content').hide();
+                                }
+                            }
+                        }
+                    } else {
+                        // for other groups just hide or show
+                        if (data[groupId]) {
+                            group.show();
+                        } else {
+                            group.hide();
+                        }
+                    }
+                }
+            }, "json");
+    }
+
+    function handleGroupVisibilities( form ){
+        // use jFormsJQ
+        var tForm = jFormsJQ.getForm(form.attr('id'));
+
+        // get group dependencies
+        if (!tForm.groupDependencies)
+            return;
+        var dependencies = tForm.groupDependencies;
+
+        // the form has some dependencies : we put a listener
+        // on these dependencies, so when these dependencies
+        // change, we retrieve the new group visibilities
+        for(var i=0, len=dependencies.length; i< len; i++) {
+            var depName = dependencies[i];
+            elt = form.find('#'+form.attr('id')+'_'+depName);
+            if (elt.length != 0) {
+                elt.change(function() {
+                    dynamicGroupVisibilities(form);
+                });
             }
         }
     }
@@ -1747,7 +1858,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         var gColumn = eform.find('input[name="liz_geometryColumn"]').val();
 
         // Set hidden geometry field
-        eform.find('input[name="'+gColumn+'"]').val(geom);
+        eform.find('input[name="'+gColumn+'"]').val(geom).change();
         // dispatch event
         var formFeatureId = eform.find('input[name="liz_featureId"]').val();
         var formLayerId = eform.find('input[name="liz_layerId"]').val();
