@@ -765,6 +765,28 @@ class qgisProject
                         }
                     }
 
+                    if (isset($xmlLayer->constraintExpressions->constraint)) {
+                        foreach($xmlLayer->constraintExpressions->constraint as $constraint) {
+                            $f = (string) $constraint['field'];
+                            $c = array(
+                                'constraints' => 0,
+                                'notNull' => false,
+                                'unique' => false,
+                                'exp' => false
+                            );
+                            if (array_key_exists($f, $constraints)) {
+                                $c = $constraints[$f];
+                            }
+                            $exp_val = (string) $constraint['exp'];
+                            if ($exp_val !== '') {
+                                $c['exp'] = true;
+                                $c['exp_value'] = $exp_val;
+                                $c['exp_desc'] = (string) $constraint['desc'];
+                            }
+                            $constraints[$f] = $c;
+                        }
+                    }
+
                     $layer['fields'] = $fields;
                     $layer['aliases'] = $aliases;
                     $layer['defaults'] = $defaults;

@@ -15,7 +15,9 @@
 
 {if $attributeEditorForm}
 
-    {fetchtpl 'view~edition_form_container', array('container'=>$attributeEditorForm)}
+    {fetchtpl 'view~edition_form_container',
+            array('container'=>$attributeEditorForm,
+                  'groupVisibilities'=>$groupVisibilities)}
 
 {else}
     {formcontrols $fieldNames}

@@ -52,6 +52,7 @@ New features:
 - Send user info to QGIS Server through parameters to get access control
   performed by Lizmap plugin as a QGIS Server plugin
 - Restrict filter by user on edition only, based on lizmap plugin config
+- Use QGIS expression in Lizmap edition, needs Lizmap plugin installed as a QGIS Server plugin
 
 
 - Lizmap does not support anymore Internet Explorer (11 and lower)
