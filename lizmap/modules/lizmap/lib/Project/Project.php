@@ -1017,8 +1017,7 @@ class Project
                 $spatialiteExt = $this->getSpatialiteExtension();
             }
             if (!$spatialiteExt) {
-                \jLog::log('Spatialite is not available', 'error');
-                // method gets a reference
+                $this->appContext->logMessage('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
                 // so we can ste the data here
                 $this->cfg->setProperty('EditionLayers', $editionLayers);
