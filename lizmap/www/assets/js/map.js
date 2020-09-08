@@ -4763,7 +4763,7 @@ var lizMap = function() {
           }
       };
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.send($.param(parameters));
+      xhr.send($.param(parameters, true));
    }
 
   /**
