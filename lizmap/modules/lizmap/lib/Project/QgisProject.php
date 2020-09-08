@@ -99,7 +99,9 @@ class QgisProject
             $this->readXmlProject($file);
         } else {
             foreach ($this->cachedProperties as $prop) {
-                $this->{$prop} = $data[$prop];
+                if (isset($data[$prop])) {
+                    $this->{$prop} = $data[$prop];
+                }
             }
         }
 

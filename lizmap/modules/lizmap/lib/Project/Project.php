@@ -526,9 +526,9 @@ class Project
     {
         $options = $this->getOptions();
         $atlas = $this->cfg->getProperty('atlas');
-        if ((property_exists($options, 'atlasEnabled') and $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+        if ((property_exists($options, 'atlasEnabled') && $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
             or
-            ($atlas and property_exists($atlas, 'layers') and is_array($atlas) and count($atlas) > 0)) { // Multiple atlas
+            ($atlas && property_exists($atlas, 'layers') && is_array($atlas) && count($atlas) > 0)) { // Multiple atlas
             return true;
         }
 
