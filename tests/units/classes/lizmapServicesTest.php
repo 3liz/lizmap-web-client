@@ -32,7 +32,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
                 'adminContactEmail' => $email_test, ),
         );
 
-        $testLizmapServices = new lizmapServices($ini_tab, array(), true, '');
+        $testLizmapServices = new lizmapServices($ini_tab, array(), true, '', null, null);
         $this->assertEquals($expected_email, $testLizmapServices->adminContactEmail);
         unset($testLizmapServices);
     }
@@ -56,10 +56,10 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
                 'webmasterEmail' => $email_test, ),
         );
 
-        $testLizmapServices = new lizmapServices($ini_tab, array(), true, '');
+        $testLizmapServices = new lizmapServices($ini_tab, array(), true, '', null);
         $this->assertEquals('', $testLizmapServices->adminSenderEmail);
         unset($testLizmapServices);
-        $testLizmapServices = new lizmapServices(array(), $ini_tab2, true, '');
+        $testLizmapServices = new lizmapServices(array(), $ini_tab2, true, '', null);
         $this->assertEquals($expected_email, $testLizmapServices->adminSenderEmail);
         unset($testLizmapServices);
     }
@@ -92,7 +92,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
                 'registrationEnabled' => $allowValue, ),
         );
 
-        $testLizmapServices = new lizmapServices(array(), (object) $ini_tab, $isUsingLdap, '');
+        $testLizmapServices = new lizmapServices(array(), (object) $ini_tab, $isUsingLdap, '', null);
         $this->assertEquals($expectedResult, $testLizmapServices->allowUserAccountRequests);
         unset($testLizmapServices);
     }
@@ -117,7 +117,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
             'hideSensitiveServicesProperties' => $testValue,
         );
 
-        $testLizmapServices = new LizmapServices($ini_tab, array(), false, '');
+        $testLizmapServices = new LizmapServices($ini_tab, array(), false, '', null);
         $this->assertEquals($expectedReturnValue, $testLizmapServices->HideSensitiveProperties());
         unset($testLizmapServices);
     }
@@ -125,6 +125,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
     public function getRootRepositoriesData()
     {
         $path = realpath(__DIR__.'/../../../');
+
         return array(
             array($path.'/tests/qgis-projects', $path.'/lizmap/var/', $path.'/tests/qgis-projects/'),
             array('', $path.'/lizmap/var/', ''),
@@ -150,7 +151,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
                 'rootRepositories' => $testIniValue, ),
         );
 
-        $testLizmapServices = new LizmapServices($ini_tab, array(), false, $testVarPathValue);
+        $testLizmapServices = new LizmapServices($ini_tab, array(), false, $testVarPathValue, null);
         $this->assertEquals($expectedReturnValue, $testLizmapServices->getRootRepositories());
         unset($testLizmapServices);
     }
@@ -199,7 +200,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
      */
     public function testModifyGlobal($globalConfig, $newConfig, $changedProperty, $changedValue, $expectedReturnValue)
     {
-        $testLizmapServices = new LizmapServices(array(), (object) $globalConfig, false, '');
+        $testLizmapServices = new LizmapServices(array(), (object) $globalConfig, false, '', null);
         $this->assertEquals($expectedReturnValue, $testLizmapServices->modify($newConfig));
         if ($changedProperty) {
             $this->assertEquals($changedValue, $testLizmapServices->{$changedProperty});
@@ -252,7 +253,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
      */
     public function testModifyLocal($localConfig, $newConfig, $changedProperty, $changedValue, $expectedReturnValue)
     {
-        $testLizmapServices = new LizmapServices($localConfig, null, false, '');
+        $testLizmapServices = new LizmapServices($localConfig, null, false, '', null);
         $this->assertEquals($expectedReturnValue, $testLizmapServices->modify($newConfig));
         if (isset($changedProperty)) {
             $this->assertEquals($changedValue, $testLizmapServices->{$changedProperty});
@@ -272,16 +273,17 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
         $ini2 = array();
         $liveIni = array(
             'webmasterEmail' => 'test.test@test.com',
-            'webmasterName' => 'Adrien'
+            'webmasterName' => 'Adrien',
         );
         $evalTab1 = array(
             'appName' => 'Lizmap',
-            'debugMode' => false
+            'debugMode' => false,
         );
         $evalTab2 = array(
             'adminSenderEmail' => 'test.test@test.com',
-            'adminSenderName' => 'Adrien'
+            'adminSenderName' => 'Adrien',
         );
+
         return array(
             array($ini1, $ini1, null, 'services', false),
             array($evalTab1, $ini1_1, null, 'services', true),
@@ -318,14 +320,14 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
             'cacheRedisPort',
         );
 
-        $testLizmapServices = new LizmapServices(array('hideSensitiveServicesProperties' => $hide), (object) array(), false, '');
+        $testLizmapServices = new LizmapServices(array('hideSensitiveServicesProperties' => $hide), (object) array(), false, '', null);
 
         foreach ($defaultPropList as $prop) {
             $testLizmapServices->{$prop} = '';
         }
 
         foreach ($dataModification as $key => $val) {
-            $testLizmapServices->$key = $val;
+            $testLizmapServices->{$key} = $val;
         }
 
         $ini = new jIniFileModifier($iniPath);
@@ -348,52 +350,55 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
             'repository:test' => array(
                 'label' => 'Test',
                 'path' => '/path/to/test',
-                'allowUserDefinedThemes' => '1'
-            )
+                'allowUserDefinedThemes' => '1',
+            ),
         );
         $repo2 = array(
             'repository:test' => array(
                 'path' => '/path/to/test',
-                'allowUserDefinedThemes' => '1'
-            )
+                'allowUserDefinedThemes' => '1',
+            ),
         );
         $repo3 = array(
             'repository:' => array(
                 'label' => 'Test',
                 'path' => '/path/to/test',
-                'allowUserDefinedThemes' => ''
-            )
+                'allowUserDefinedThemes' => '',
+            ),
         );
+
         return array(
             array($repo1, 'test', true),
             array($repo1, null, false),
             array($repo2, 'test', true),
             array($repo3, '', false),
-            array($repo3, null, false)
+            array($repo3, null, false),
         );
     }
 
     /**
      * @dataProvider getRepoData
+     *
+     * @param mixed $repoInfos
+     * @param mixed $key
+     * @param mixed $expectedReturnValue
      */
-
     public function testGetLizmapRepository($repoInfos, $key, $expectedReturnValue)
     {
-        $testLizmapServices = new lizmapServices($repoInfos, (object)array(), true, '');
+        $testLizmapServices = new lizmapServices($repoInfos, (object) array(), true, '', null);
         $repo = $testLizmapServices->getLizmapRepository($key);
-        $this->assertEquals($expectedReturnValue, (bool)$repo);
+        $this->assertEquals($expectedReturnValue, (bool) $repo);
         if ($expectedReturnValue === false) {
-            return ;
+            return;
         }
         $this->assertEquals($key, $repo->getKey());
         $properties = lizmapRepository::getProperties();
         foreach ($properties as $prop) {
             if (!isset($repoInfos['repository:'.$key][$prop])) {
-                continue ;
+                continue;
             }
             $this->assertEquals($repoInfos['repository:'.$key][$prop], $repo->getData($prop));
         }
-        unset($testLizmapServices);
-        unset($repo);
+        unset($testLizmapServices, $repo);
     }
 }

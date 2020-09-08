@@ -33,11 +33,20 @@ class lizmap
      */
     protected static $repositoryInstances = array();
 
-    // lizmapServices instance
+    /**
+     * @var lizmapServices The lizmapServices instance for the singleton
+     */
     protected static $lizmapServicesInstance = null;
 
-    // lizmapLogConfigInstance
+    /**
+     * @var lizmapLogConfig The lizmapLogConfig instance for the singleton
+     */
     protected static $lizmapLogConfigInstance = null;
+
+    /**
+     * @var lizmapJelixContext The jelixContext instance for the singleton
+     */
+    protected static $appContext = null;
 
     /**
      * this is a static class, so private constructor.
@@ -56,10 +65,19 @@ class lizmap
             $globalConfig = jApp::config();
             $ldapEnabled = jApp::isModuleEnabled('ldapdao');
             $varPath = jApp::varPath();
-            self::$lizmapServicesInstance = new lizmapServices($lizmapConfigTab, $globalConfig, $ldapEnabled, $varPath);
+            self::$lizmapServicesInstance = new lizmapServices($lizmapConfigTab, $globalConfig, $ldapEnabled, $varPath, self::getAppContext());
         }
 
         return self::$lizmapServicesInstance;
+    }
+
+    public static function getAppContext()
+    {
+        if (!self::$appContext) {
+            self::$appContext = new \Lizmap\App\JelixContext();
+        }
+
+        return self::$appContext;
     }
 
     public static function saveServices()

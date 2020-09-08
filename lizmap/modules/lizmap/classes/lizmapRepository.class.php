@@ -56,20 +56,28 @@ class lizmapRepository
     // The configuration files folder path
     private $varPath = '';
 
+    protected $services;
+
+    protected $appContext;
+
     /**
      * lizmapRepository Constructor
      * Do not call it, if you want to instanciate a lizmapRepository, you should
-     * do it with the lizmapServices::getLizmapRepository method
+     * do it with the lizmapServices::getLizmapRepository method.
      *
-     * @param string $key the name of the repository
-     * @param array $data the repository data
-     * @param string $varPath the configuration files folder path
+     * @param string         $key      the name of the repository
+     * @param array          $data     the repository data
+     * @param string         $varPath  the configuration files folder path
+     * @param lizmapServices $services
+     * @param Lizmap\App\AppContextInterface
+     * @param mixed $appContext
      */
-
-    public function __construct($key, $data, $varPath)
+    public function __construct($key, $data, $varPath, $services, $appContext)
     {
         $properties = self::getProperties();
         $this->varPath = $varPath;
+        $this->services = $services;
+        $this->appContext = $appContext;
 
         // Set each property
         foreach ($properties as $property) {
@@ -136,14 +144,13 @@ class lizmapRepository
     }
 
     /**
-     * Update a repository in a jIniFilemodifier object
+     * Update a repository in a jIniFilemodifier object.
      *
-     * @param array $data the repository data
-     * @param jIniFileModifier $ini the object to edit the ini file
+     * @param array            $data the repository data
+     * @param jIniFileModifier $ini  the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */
-
     public function update($data, $ini)
     {
         // Set section
@@ -152,7 +159,7 @@ class lizmapRepository
         $modified = false;
         // Modify the ini data for the repository
         foreach ($data as $k => $v) {
-            if (in_array($k, self::$properties)) {
+            if (in_array($k, self::getProperties())) {
                 // Set values in ini file
                 $ini->setValue($k, $v, $section);
                 // Modify lizmapConfigData
@@ -176,11 +183,12 @@ class lizmapRepository
         }
 
         try {
-            $proj = new lizmapProject($key, $this);
+            $proj = new lizmapProject($key, $this, $this->appContext, $this->services);
         } catch (UnknownLizmapProjectException $e) {
             throw $e;
         } catch (Exception $e) {
             jLog::logEx($e, 'error');
+
             return null;
         }
 

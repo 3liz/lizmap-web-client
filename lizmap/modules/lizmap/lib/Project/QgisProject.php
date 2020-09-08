@@ -74,6 +74,11 @@ class QgisProject
     protected $layers = array();
 
     /**
+     * @var \LizmapServices
+     */
+    protected $services;
+
+    /**
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
@@ -85,7 +90,7 @@ class QgisProject
      * @param string $file : the QGIS project path
      * @param mixed  $data
      */
-    public function __construct($file, $data = false)
+    public function __construct($file, \LizmapServices $services, $data = false)
     {
         // Verifying if the files exist
         if (!file_exists($file)) {
@@ -103,14 +108,14 @@ class QgisProject
             }
         }
 
+        $this->services = $services;
         $this->path = $file;
     }
 
-    public function getCacheData()
+    public function getCacheData($data)
     {
-        $data = array();
         foreach ($this->cachedProperties as $prop) {
-            if (!isset($this->{$prop})) {
+            if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
             }
             $data[$prop] = $this->{$prop};
@@ -145,7 +150,7 @@ class QgisProject
 
     public function getProj4($authId)
     {
-        if (!array_key_exists($authId, $this->data)) {
+        if (!array_key_exists($authId, $this->allProj4)) {
             return null;
         }
 
@@ -273,8 +278,8 @@ class QgisProject
                     $cfgLayers->{$name}->showFeatureCont = 'True';
                 }
             }
+            $cfg->setProperty('layers', $cfgLayers);
         }
-        $cfg->setProperty('layers', $cfgLayers);
     }
 
     /**
@@ -291,7 +296,7 @@ class QgisProject
                 $name = (string) $layer->layername;
                 $layers = $cfg->getProperty('layers');
                 if ($layers && property_exists($layers, $name)) {
-                    $cfg->unsetProp('layers', $name);
+                    $cfg->unsetProperty('layers', $name);
                 }
             }
         }
@@ -339,7 +344,7 @@ class QgisProject
     /**
      * @param $layerId
      *
-     * @return null|int|string
+     * @return null|array|string
      */
     public function getLayerDefinition($layerId)
     {
@@ -358,23 +363,24 @@ class QgisProject
 
     /**
      * @param $layerId
+     * @param mixed $layers
      *
-     * @return null|\QgisMapLayer|\QgisVectorLayer
+     * @return null|\qgisMapLayer|\qgisVectorLayer
      */
-    public function getLayer($layerId)
+    public function getLayer($layerId, $proj)
     {
         /** @var array[] $layers */
-        $layers = array_filter($this->layers, function ($layer) use ($layerId) {
+        $layersFiltered = array_filter($this->layers, function ($layer) use ($layerId) {
             return $layer['id'] == $layerId;
         });
-        if (count($layers)) {
+        if (count($layersFiltered)) {
             // get first key found in the filtered layers
-            $k = key($layers);
-            if ($layers[$k]['type'] == 'vector') {
-                return new \QgisVectorLayer($this, $layers[$k]);
+            $k = key($layersFiltered);
+            if ($this->layers[$k]['type'] == 'vector') {
+                return new \qgisVectorLayer($proj, $this->layers[$k]);
             }
 
-            return new \QgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($proj, $this->layers[$k]);
         }
 
         return null;
@@ -383,9 +389,9 @@ class QgisProject
     /**
      * @param string $key
      *
-     * @return null|\QgisMapLayer|\QgisVectorLayer
+     * @return null|\qgisMapLayer|\qgisVectorLayer
      */
-    public function getLayerByKeyword($key)
+    public function getLayerByKeyword($key, $proj)
     {
         /** @var array[] $layers */
         $layers = array_filter($this->layers, function ($layer) use ($key) {
@@ -395,10 +401,10 @@ class QgisProject
             // get first key found in the filtered layers
             $k = key($layers);
             if ($layers[$k]['type'] == 'vector') {
-                return new \QgisVectorLayer($this, $layers[$k]);
+                return new \qgisVectorLayer($proj, $layers[$k]);
             }
 
-            return new \QgisMapLayer($this, $layers[$k]);
+            return new \qgisMapLayer($proj, $layers[$k]);
         }
 
         return null;
@@ -407,9 +413,9 @@ class QgisProject
     /**
      * @param string $key
      *
-     * @return \QgisMapLayer[]|\QgisVectorLayer[]
+     * @return \qgisMapLayer[]|\qgisVectorLayer[]
      */
-    public function findLayersByKeyword($key)
+    public function findLayersByKeyword($key, $proj)
     {
         /** @var array[] $foundLayers */
         $foundLayers = array_filter($this->layers, function ($layer) use ($key) {
@@ -419,9 +425,9 @@ class QgisProject
         if ($foundLayers) {
             foreach ($foundLayers as $layer) {
                 if ($layer['type'] == 'vector') {
-                    $layers[] = new \QgisVectorLayer($this, $layer);
+                    $layers[] = new \qgisVectorLayer($proj, $layer);
                 } else {
-                    $layers[] = new \QgisMapLayer($this, $layer);
+                    $layers[] = new \qgisMapLayer($proj, $layer);
                 }
             }
         }
@@ -442,6 +448,55 @@ class QgisProject
         }
 
         return $ret;
+    }
+
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     *
+     * @deprecated
+     *
+     * @param mixed $layerId
+     *
+     * @return SimpleXMLElement[]
+     */
+    public function getXmlLayer($layerId)
+    {
+        $layer = $this->getLayerDefinition($layerId);
+        if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
+            $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']), $this->services);
+
+            return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
+        }
+
+        return $this->getXml()->xpath("//maplayer[id='{$layerId}']");
+    }
+
+    /**
+     * temporary function to read xml for some methods that relies on
+     * xml data that are not yet stored in the cache.
+     *
+     * @return SimpleXMLElement
+     *
+     * @deprecated
+     */
+    protected function getXml()
+    {
+        if ($this->xml) {
+            return $this->xml;
+        }
+        $qgs_path = $this->path;
+        if (!file_exists($qgs_path)) {
+            throw new \Exception('The QGIS project '.$qgs_path.' does not exist!');
+        }
+        $xml = simplexml_load_file($qgs_path);
+        if ($xml === false) {
+            throw new \Exception('The QGIS project '.$qgs_path.' has invalid content!');
+        }
+        $this->xml = $xml;
+
+        return $xml;
     }
 
     /**
@@ -731,7 +786,7 @@ class QgisProject
         }
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
-            $xmlLayer = $this->getXmlLayer2($this->data, $v->layerId);
+            $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
             if (count($xmlLayer) == 0) {
                 continue;
             }
@@ -775,7 +830,7 @@ class QgisProject
     public function readEditionLayers(&$editionLayers)
     {
         foreach ($editionLayers as $key => $obj) {
-            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
             if (count($layerXml) == 0) {
                 continue;
             }
@@ -792,7 +847,7 @@ class QgisProject
     {
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {
-            $layerXml = $this->getXmlLayer2($this->data, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
             if (count($layerXml) == 0) {
                 continue;
             }
@@ -902,7 +957,8 @@ class QgisProject
             throw new \Exception('The QGIS project '.basename($qgsPath).' does not exist!');
         }
 
-        $qgsXml = simplexml_load_file($qgsPath);
+        $this->xml = simplexml_load_file($qgsPath);
+        $qgsXml = $this->xml;
         // Build data
         $this->data = array(
         );
@@ -1173,7 +1229,7 @@ class QgisProject
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
                 $xmlFile = realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project);
-                $qgsProj = new QgisProject($xmlFile);
+                $qgsProj = new QgisProject($xmlFile, $this->services);
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
                 $layer['qsgmtime'] = filemtime($xmlFile);
                 $layer['file'] = $xmlFile;
