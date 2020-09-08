@@ -190,7 +190,7 @@ class QgisProjectTest extends TestCase
         foreach ($cachedProperties as $prop) {
             $data[$prop] = 'some stuff about'.$prop;
         }
-        $services = new lizmapServices('', '', false, '');
+        $services = new lizmapServices('', '', false, '', '');
         $testQgis = new Project\QgisProject(null, $services, $data);
         $this->assertEquals($data, $testQgis->getCacheData($emptyData));
     }
@@ -201,7 +201,7 @@ class QgisProjectTest extends TestCase
         $json = json_decode(file_get_contents($file));
         $expectedLayer = clone $json->layers;
         $expectedLayer->montpellier_events->opacity = (float)0.85;
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => array('layers' => $json->layers)));
+        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object)array('layers' => $json->layers)));
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
         $testProj->setLayerOpacityForTest($cfg);
@@ -330,14 +330,14 @@ class QgisProjectTest extends TestCase
     public function testSetShortNames($file, $lname, $sname)
     {
         $layers = array(
-            $lname => array(
+            $lname => (object)array(
                 'name' => $lname,
                 'id' => $lname,
             )
         );
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file($file));
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => array('layers' => $layers)));
+        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object)array('layers' => (object)$layers)));
         $testProj->setShortNamesForTest($cfg);
         $layer = $cfg->getProperty('layers');
         if ($sname) {
