@@ -117,14 +117,14 @@ class qgisForm implements qgisFormControlsInterface
             // get field edit type
             $edittype = null;
             if ($edittypesXml) {
-                $edittype = $edittypesXml->xpath("edittype[@name='${fieldName}']");
+                $edittype = $edittypesXml->xpath("edittype[@name='{$fieldName}']");
                 if ($edittype && count($edittype) != 0) {
                     $edittype = $edittype[0];
                 } else {
                     $edittype = null;
                 }
             } elseif ($fieldConfigurationXml) {
-                $fieldConfiguration = $fieldConfigurationXml->xpath("field[@name='${fieldName}']");
+                $fieldConfiguration = $fieldConfigurationXml->xpath("field[@name='{$fieldName}']");
                 if ($fieldConfiguration && count($fieldConfiguration) !== 0) {
                     $fieldConfiguration = $fieldConfiguration[0];
                     $editWidgetXml = $fieldConfiguration->editWidget;
@@ -184,7 +184,7 @@ class qgisForm implements qgisFormControlsInterface
                         );
 
                         // editable
-                        $editableFieldXml = $layerXml->xpath("editable/field[@name='${fieldName}']");
+                        $editableFieldXml = $layerXml->xpath("editable/field[@name='{$fieldName}']");
                         if ($editableFieldXml && count($editableFieldXml) !== 0) {
                             $editableFieldXml = $editableFieldXml[0];
                             $edittype['editable'] = (int) $editableFieldXml->attributes()->editable;
@@ -460,6 +460,25 @@ class qgisForm implements qgisFormControlsInterface
     }
 
     /**
+     * Converts the datetime to the format specified in the qgis Project.
+     *
+     * @param string $value The datetime to convert
+     * @param object $edittype The format of the date
+     */
+    public function convertDateTimeToFormat($value, $edittype)
+    {
+        if (!property_exists($edittype, 'options') || !property_exists($edittype->options, 'field_format')) {
+            return $value;
+        }
+        $dateTab = explode('-', $value);
+        $value = $edittype->options->field_format;
+        $value = str_replace('yyyy', $dateTab[0], $value);
+        $value = str_replace('MM', $dateTab[1], $value);
+
+        return str_replace('dd', $dateTab[2], $value);
+    }
+
+    /**
      * Save the form to the database.
      *
      * @param null|mixed $feature
@@ -564,6 +583,10 @@ class qgisForm implements qgisFormControlsInterface
                 $values[$ref] = 'NULL';
 
                 continue;
+            }
+
+            if ($this->formControls[$ref]->fieldEditType == 'DateTime') {
+                $value = $this->convertDateTimeToFormat($value, $this->formControls[$ref]->getEditType());
             }
 
             switch ($this->formControls[$ref]->fieldDataType) {
