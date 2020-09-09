@@ -40,15 +40,21 @@ lizMap.events.on({
                             let customLabels = '';
 
                             for(const label of t.labels){
-                                customLabels += `<input type="text" size="15" name="${label.id}" placeholder="${label.text}" value="${label.text}">`;
+                                customLabels += `<input type="text" class="atlasprint-custom-labels" size="15" data-print-id="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`;
                             }
                             const customLabelsTool = `<div class="toggle-custom-labels-view"><button><i class="icon-cog" title="${lizDict['print.customLabels.tooltip']}"></i></button><div>${customLabels}</div></div>`;
 
-                            $(this).append('<a class="lizmap-atlasprint-link" href="' + url + '" target="_blank" title="' + lizDict['attributeLayers.toolbar.btn.data.export.title'] + ' ' + t.title + '"><span class="icon"></span>' + t.title + '</a>' + customLabelsTool + '<br>');
+                            $(this).append('<a class="lizmap-atlasprint-link" data-href="' + url + '" href="' + url + '" target="_blank" title="' + lizDict['attributeLayers.toolbar.btn.data.export.title'] + ' ' + t.title + '"><span class="icon"></span>' + t.title + '</a>' + customLabelsTool + '<br>');
 
                             // Activate toggle on custom labels button
                             $('.toggle-custom-labels-view > button').click(function () {
                                 $(this).next().toggle();
+                            });
+
+                            // Activate URL rewrite when user modify custom labels value
+                            $('.atlasprint-custom-labels').on('input', function(){
+                                const atlasPrintLink = $(this).parents('.toggle-custom-labels-view').prev();
+                                atlasPrintLink.attr('href', atlasPrintLink.data('href') + '&' + $(this).data('print-id') + '=' + $(this).val());
                             });
 
                             // Add tooltips
