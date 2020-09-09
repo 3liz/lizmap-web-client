@@ -2619,13 +2619,13 @@ a.lizmap-atlasprint-link span.icon{
   display: none;
   position: absolute;
   bottom: 30px;
-  left: -90px;
+  left: -100px;
   padding: 5px;
   border: 1px solid black;
   background: rgb(240, 240, 240);
 }
 
-.toggle-custom-labels-view > div > input{
+.atlasprint-custom-labels{
   width: unset;
 }
 
