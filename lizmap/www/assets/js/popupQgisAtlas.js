@@ -58,7 +58,14 @@ lizMap.events.on({
                             // Activate URL rewrite when user modify custom labels value
                             $('.atlasprint-custom-labels').on('input', function(){
                                 const atlasPrintLink = $(this).parents('.toggle-custom-labels-view').prev();
-                                atlasPrintLink.attr('href', atlasPrintLink.data('href') + '&' + $(this).data('print-id') + '=' + encodeURIComponent($(this).val()));
+
+                                let customLabelsParams = '';
+
+                                $('.atlasprint-custom-labels').each(function(){
+                                    customLabelsParams += '&' + $(this).data('print-id') + '=' + encodeURIComponent($(this).val());
+                                });
+
+                                atlasPrintLink.attr('href', atlasPrintLink.data('href') + customLabelsParams);
                             });
 
                             // Add tooltips
