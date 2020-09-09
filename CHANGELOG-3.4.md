@@ -48,6 +48,8 @@ New features:
     the attribute table for columns with ValueMap widget
   - allow the use of the lizmap javascript script also for numeric columns 
 - improvement in Timemanager
+- Atlas print in popup : you can now define values for custom fields
+![Atlas print in popup](https://user-images.githubusercontent.com/2145040/92587962-a9721c00-f298-11ea-9d13-4b58d477986b.gif "Atlas print in popup")
 - Map themes - check layer legend checkbox even if not in scale range
 - Expose QGIS themes in Lizmap JSON config
 - BAN Search - Add lon and lat parameters to prefer local search around map initial extent center
