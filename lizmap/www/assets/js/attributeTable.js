@@ -1285,6 +1285,20 @@ var lizAttributeTable = function() {
 
                 return false;
             }
+            
+            function valueMapInAttributeTable( aName, data, type, full, meta ){
+            // Translate field ( language translation OR code->label translation )
+                var colMeta = meta.settings.aoColumns[meta.col];
+                var colName = colMeta.mData
+                var translation_dict = null;
+                var tdata = data;
+                if(data || data === 0)
+                    tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
+                if( tdata === null )
+                    tdata = data;
+                
+                return tdata;
+            }
 
             function createDatatableColumns(aName, atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes){
                 var columns = [];
@@ -1337,9 +1351,11 @@ var lizAttributeTable = function() {
                             case 'unsignedInt':
                             case 'long':
                             case 'unsignedLong':
-                                colConf['mRender'] = function( data, type, full, meta ){
-                                    return parseInt(data);
-                                }
+                                colConf['mRender'] = function(data, type, full, meta ){
+                                    // Translate field ( language translation OR code->label translation )
+                                    return valueMapInAttributeTable( aName, data, type, full, meta );  
+                                };
+                                
                                 colConf['className'] = 'text-right';
                                 break;
                             case 'decimal':
@@ -1355,14 +1371,7 @@ var lizAttributeTable = function() {
                             default:
                                 colConf['mRender'] = function( data, type, full, meta ){
                                     // Translate field ( language translation OR code->label translation )
-                                    var colMeta = meta.settings.aoColumns[meta.col];
-                                    var colName = colMeta.mData
-                                    var translation_dict = null;
-                                    var tdata = data;
-                                    if(data)
-                                        tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
-                                    if( tdata === null )
-                                        tdata = data;
+                                    var tdata = valueMapInAttributeTable( aName, data, type, full, meta );
 
                                     // Replace media and URL with links
                                     if( !tdata || !( typeof tdata === 'string') )
