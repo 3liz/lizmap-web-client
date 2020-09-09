@@ -40,7 +40,11 @@ lizMap.events.on({
                             let customLabels = '';
 
                             for(const label of t.labels){
-                                customLabels += `<input type="text" class="atlasprint-custom-labels" size="15" data-print-id="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`;
+                                if (label.htmlState){
+                                    customLabels += `<textarea class="atlasprint-custom-labels" cols="15" data-print-id="${label.id}" name="${label.id}" placeholder="${label.text}">${label.text}</textarea>`;
+                                }else{
+                                    customLabels += `<input type="text" class="atlasprint-custom-labels" size="15" data-print-id="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`;
+                                }
                             }
                             const customLabelsTool = `<div class="toggle-custom-labels-view"><button><i class="icon-cog" title="${lizDict['print.customLabels.tooltip']}"></i></button><div>${customLabels}</div></div>`;
 
@@ -54,7 +58,7 @@ lizMap.events.on({
                             // Activate URL rewrite when user modify custom labels value
                             $('.atlasprint-custom-labels').on('input', function(){
                                 const atlasPrintLink = $(this).parents('.toggle-custom-labels-view').prev();
-                                atlasPrintLink.attr('href', atlasPrintLink.data('href') + '&' + $(this).data('print-id') + '=' + $(this).val());
+                                atlasPrintLink.attr('href', atlasPrintLink.data('href') + '&' + $(this).data('print-id') + '=' + encodeURIComponent($(this).val()));
                             });
 
                             // Add tooltips
