@@ -282,7 +282,7 @@ class qgisForm implements qgisFormControlsInterface
         $privateData['liz_geometryColumn'] = $this->dbFieldsInfo->geometryColumn;
 
         $privateData['qgis_controls'] = array();
-        foreach($this->formControls as $fieldName => $formControl) {
+        foreach ($this->formControls as $fieldName => $formControl) {
             $privateData['qgis_controls'][$formControl->ref] = array(
               'fieldName' => $formControl->fieldName,
               'defaultValue' => $formControl->defaultValue,
@@ -308,7 +308,7 @@ class qgisForm implements qgisFormControlsInterface
             $privateData['qgis_groupDependencies'] = array();
         }
 
-        $form->getContainer()->privateData = array_merge($form->getContainer()->privateData , $privateData);
+        $form->getContainer()->privateData = array_merge($form->getContainer()->privateData, $privateData);
     }
 
     /**
@@ -593,7 +593,8 @@ class qgisForm implements qgisFormControlsInterface
             $results = qgisExpressionUtils::evaluateExpressions(
                 $this->layer,
                 $constraintExpressions,
-                $form_feature);
+                $form_feature
+            );
 
             if (!$results) {
                 // Evaluation failed
@@ -605,7 +606,7 @@ class qgisForm implements qgisFormControlsInterface
                     continue;
                 }
                 $constraints = $this->getConstraints($fieldName);
-                if ( $constraints['exp_desc'] !== '' ) {
+                if ($constraints['exp_desc'] !== '') {
                     $form->setErrorOn($fieldName, $constraints['exp_desc']);
                 } else {
                     $form->setErrorOn($fieldName, jLocale::get('view~edition.message.error.constraint', array($constraints['exp_value'])));
@@ -615,6 +616,25 @@ class qgisForm implements qgisFormControlsInterface
         }
 
         return $check;
+    }
+
+    /**
+     * Converts the datetime to the format specified in the qgis Project.
+     *
+     * @param string $value The datetime to convert
+     * @param object $edittype The format of the date
+     */
+    public function convertDateTimeToFormat($value, $edittype)
+    {
+        if (!property_exists($edittype, 'options') || !property_exists($edittype->options, 'field_format')) {
+            return $value;
+        }
+        $dateTab = explode('-', $value);
+        $value = $edittype->options->field_format;
+        $value = str_replace('yyyy', $dateTab[0], $value);
+        $value = str_replace('MM', $dateTab[1], $value);
+        $value = str_replace('dd', $dateTab[2], $value);
+        return $value;
     }
 
     /**
@@ -722,6 +742,10 @@ class qgisForm implements qgisFormControlsInterface
                 $values[$ref] = 'NULL';
 
                 continue;
+            }
+
+            if ($this->formControls[$ref]->fieldEditType == 'DateTime') {
+                $value = $this->convertDateTimeToFormat($value, $this->formControls[$ref]->getEditType());
             }
 
             switch ($this->formControls[$ref]->fieldDataType) {

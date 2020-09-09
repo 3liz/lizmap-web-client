@@ -311,7 +311,6 @@ class qgisFormControl
         } else {
             $markup = 'hidden';
         }
-
         // Create the control
         switch ($markup) {
             case 'input':
@@ -520,7 +519,7 @@ class qgisFormControl
 
         // Hint based on constraints
         if ($constraints !== null && $constraints['exp']) {
-            if ( $constraints['exp_desc'] !== '' ) {
+            if ($constraints['exp_desc'] !== '') {
                 $this->ctrl->hint = $constraints['exp_desc'];
             } else {
                 $this->ctrl->hint = jLocale::get('view~edition.message.hint.constraint', array($constraints['exp_value']));
@@ -898,5 +897,10 @@ class qgisFormControl
     {
         // Change field name to choice for files upload control
         return $this->isUploadControl() ? $this->ref.'_choice' : $this->ref;
+    }
+
+    public function getEditType()
+    {
+        return $this->edittype;
     }
 }
