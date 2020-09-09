@@ -22,7 +22,7 @@ lizMap.events.on({
                     var t = lizMap.config.printTemplates[i];
                     if('atlas' in t){
                         if(layerId == t.atlas.coverageLayer){
-                        // Build URL
+                            // Build URL
                             var url = OpenLayers.Util.urlAppend(
                                 lizUrls.wms,
                                 OpenLayers.Util.getParameterString(lizUrls.params)
@@ -35,8 +35,24 @@ lizMap.events.on({
                             url += '&TEMPLATE='+t.title;
                             url += '&LAYER='+layerName;
                             url += '&EXP_FILTER=$id IN ('+fid+')';
-                            $(this).append('<a class="lizmap-atlasprint-link" href="'+url+'" target="_blank" title="' + lizDict['attributeLayers.toolbar.btn.data.export.title'] + ' ' + t.title + '"><span class="icon"></span>'+t.title+'</a></br>');
-                            $(this).find('a.lizmap-atlasprint-link').tooltip();
+
+                            // Add button and div to set custom labels
+                            let customLabels = '';
+
+                            for(const label of t.labels){
+                                customLabels += `<input type="text" size="15" name="${label.id}" placeholder="${label.text}" value="${label.text}">`;
+                            }
+                            const customLabelsTool = `<div class="toggle-custom-labels-view"><button><i class="icon-cog" title="${lizDict['print.customLabels.tooltip']}"></i></button><div>${customLabels}</div></div>`;
+
+                            $(this).append('<a class="lizmap-atlasprint-link" href="' + url + '" target="_blank" title="' + lizDict['attributeLayers.toolbar.btn.data.export.title'] + ' ' + t.title + '"><span class="icon"></span>' + t.title + '</a>' + customLabelsTool + '<br>');
+
+                            // Activate toggle on custom labels button
+                            $('.toggle-custom-labels-view > button').click(function () {
+                                $(this).next().toggle();
+                            });
+
+                            // Add tooltips
+                            $(this).find('a.lizmap-atlasprint-link, .toggle-custom-labels-view button i').tooltip();
                         }
                     }
                 }
