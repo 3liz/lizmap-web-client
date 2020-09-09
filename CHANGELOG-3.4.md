@@ -43,6 +43,10 @@ New features:
     - Add new user layout option && replace resizePlot by responsive cfg && UI improvements
     - Add mode bar: zoom in, out & export to PNG
     - Add the resizePlot function back
+- improvement in Attribute Table view
+  - a lizmap javascript script to show description labels instead of values in
+    the attribute table for columns with ValueMap widget
+  - allow the use of the lizmap javascript script also for numeric columns 
 - improvement in Timemanager
 - Map themes - check layer legend checkbox even if not in scale range
 - Expose QGIS themes in Lizmap JSON config
