@@ -82,7 +82,7 @@ class QgisProject
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', 'xml');
 
     /**
      * constructor.
@@ -327,12 +327,14 @@ class QgisProject
             }
         }
         //unset displayInLegend for geometryType none or unknown
-        foreach ($layers as $key => $obj) {
-            if (property_exists($layers->{$key}, 'geometryType') &&
-                 ($layers->{$key}->geometryType == 'none' ||
-                     $layers->{$key}->geometryType == 'unknown')
-            ) {
-                $layers->{$key}->displayInLegend = 'False';
+        if ($layers) {
+            foreach ($layers as $key => $obj) {
+                if (property_exists($layers->{$key}, 'geometryType') &&
+                    ($layers->{$key}->geometryType == 'none' ||
+                        $layers->{$key}->geometryType == 'unknown')
+                ) {
+                    $layers->{$key}->displayInLegend = 'False';
+                }
             }
         }
         $cfg->setProperty('layers', $layers);

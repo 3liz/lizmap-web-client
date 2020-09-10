@@ -349,7 +349,8 @@ class Project
 
     public function getQgisPath()
     {
-        if (!$this->file) {
+        $path = $this->repository->getPath();
+        if (!$this->file && $path != '' && $path != false) {
             $this->file = realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
         }
 
@@ -527,8 +528,7 @@ class Project
         $options = $this->getOptions();
         $atlas = $this->cfg->getProperty('atlas');
         if ((property_exists($options, 'atlasEnabled') && $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
-            or
-            ($atlas && property_exists($atlas, 'layers') && is_array($atlas) && count($atlas) > 0)) { // Multiple atlas
+            || ($atlas && property_exists($atlas, 'layers') && is_array($atlas) && count($atlas) > 0)) { // Multiple atlas
             return true;
         }
 
@@ -561,8 +561,8 @@ class Project
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
             foreach ($attributeLayers as $key => $obj) {
-                if ($onlyDisplayedLayers && !property_exists($obj, 'hideLayer') ||
-                    strtolower($obj->hideLayer) != 'true') {
+                if (($onlyDisplayedLayers && !property_exists($obj, 'hideLayer'))
+                || (property_exists($obj, 'hideLayer') && strtolower($obj->hideLayer) != 'true')) {
                     $hasDisplayedLayer = true;
                 }
             }
