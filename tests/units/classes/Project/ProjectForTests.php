@@ -1,14 +1,18 @@
 <?php
 
-require('testContext.php');
+require('TestContext.php');
 
 use Lizmap\Project;
 
 class ProjectForTests extends Project\Project
 {
-    public function __construct()
+    public function __construct($appContext = null)
     {
-        $this->appContext = new testContext();
+        if ($appContext) {
+            $this->appContext = $appContext;
+        } else {
+            $this->appContext = new testContext();
+        }
     }
 
     public function setRepo($rep)
