@@ -4,16 +4,26 @@ use Lizmap\App\AppContextInterface;
 
 class testContext implements AppContextInterface
 {
+    protected $result = array();
+
     public function appConfig()
     {
     }
 
     public function aclCheck($role, $resource = null)
     {
+        if (array_key_exists($role, $this->result)) {
+            return $this->result[$role];
+        }
+        return true;
     }
 
     public function aclUserGroupsId()
     {
+        if (array_key_exists('groups', $this->result)) {
+            return $this->result['groups'];
+        }
+        return null;
     }
 
     public function aclUserGroupsInfo()
@@ -86,5 +96,10 @@ class testContext implements AppContextInterface
     
     public function getFullUrl($selector, $params = array())
     {
+    }
+
+    public function setResult($result)
+    {
+        $this->result = $result;
     }
 }

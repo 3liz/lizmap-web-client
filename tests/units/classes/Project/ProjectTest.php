@@ -124,4 +124,83 @@ class ProjectTest extends TestCase
         $proj->setCfg($config);
         $this->assertEquals($expectedReturn, $proj->hasAttributeLayers($only));
     }
+
+    public function getEditionLayersData()
+    {
+        $eLayers = (object)array(
+            'layer1' => (object)array(
+                'acl' => '',
+                'order' => 0
+            ),
+            'layer2' => (object)array(
+                'acl' => 'group1, other',
+                'order' => 0
+            ),
+            'layer3' => (object)array(
+                'acl' => 'group2, other',
+                'order' => 0
+            ),
+        );
+        $acl1 = array(
+            'lizmap.tools.edition.use' => true,
+            'lizmap.admin.repositories.delete' => false,
+            'groups' => array('group1')
+        );
+        $acl2 = array('lizmap.tools.edition.use' => false);
+        $acl3 = array(
+            'lizmap.tools.edition.use' => true,
+            'lizmap.admin.repositories.delete' => true,
+            'groups' => array('none')
+        );
+        $acl4 = array(
+            'lizmap.tools.edition.use' => true,
+            'lizmap.admin.repositories.delete' => false,
+            'groups' => array('none')
+        );
+        $unset1 = array(
+            'layer2' => false,
+            'layer3' => true,
+        );
+        $unset3 = array(
+            'layer2' => false,
+            'layer3' => false,
+        );
+        $unset4 = array(
+            'layer2' => true,
+            'layer3' => true,
+        );
+        return array(
+            array($eLayers, $acl1, $unset1, true),
+            array($eLayers, $acl2, array(), false),
+            array($eLayers, $acl3, $unset3, true),
+            array($eLayers, $acl4, $unset4, true),
+        );
+    }
+
+    /**
+     * @dataProvider getEditionLayersData
+     */
+    public function testHasEditionLayers($editionLayers, $acl, $unset, $expectedRet)
+    {
+        $eLayers = clone $editionLayers;
+        foreach ($editionLayers as $key => $obj) {
+            $eLayers->$key = clone $obj;
+        }
+        $config = new Project\ProjectConfig(null, array('editionLayers' => $eLayers));
+        $rep = new lizmapRepository(null, array(), null, null, null);
+        $context = new testContext();
+        $context->setResult($acl);
+        $proj = new ProjectForTests($context);
+        $proj->setRepo($rep);
+        $proj->setCfg($config);
+        $this->assertEquals($expectedRet, $proj->hasEditionLayers());
+        $eLayer = $proj->getEditionLayers();
+        foreach ($unset as $key => $value) {
+            if ($value) {
+                $this->assertFalse(isset($eLayer->$key));
+            } else {
+                $this->assertFalse(isset($eLayer->$key->acl));
+            }
+        }
+    }
 }

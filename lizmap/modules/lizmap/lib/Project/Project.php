@@ -643,18 +643,17 @@ class Project
             if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
                 return false;
             }
-
             $count = 0;
             foreach ($editionLayers as $key => $eLayer) {
                 // Check if user groups intersects groups allowed by project editor
                 // If user is admin, no need to check for given groups
-                if (property_exists($eLayer, 'acl') and $eLayer->acl) {
+                if (property_exists($eLayer, 'acl') && $eLayer->acl) {
                     // Check if configured groups white list and authenticated user groups list intersects
                     $editionGroups = $eLayer->acl;
                     $editionGroups = array_map('trim', explode(',', $editionGroups));
-                    if (is_array($editionGroups) and count($editionGroups) > 0) {
+                    if (is_array($editionGroups) && count($editionGroups) > 0) {
                         $userGroups = $this->appContext->aclUserGroupsId();
-                        if (array_intersect($editionGroups, $userGroups) or $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
+                        if (array_intersect($editionGroups, $userGroups) || $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
