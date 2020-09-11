@@ -419,12 +419,6 @@ var lizMap = function() {
     map.setCenter(center);
     map.baseLayer.redraw();
 
-    var slider = $('#navbar .slider');
-    if ( slider.is(':visible') && ($('#navbar').height()+150 > $('#map').height() || mCheckMobile()) )
-      slider.hide();
-    else if ( !slider.is(':visible') && $('#navbar').height()+200 < $('#map').height() && !mCheckMobile() )
-      slider.show();
-
     updateMiniDockSize();
   }
 
