@@ -1,6 +1,6 @@
 ---
 # Qgis server
-qgis_server_version: "3.4"
+qgis_server_version: "3.10"
 qgis_server_name: qgis
 qgis_server_port: 8200
 qgis_set_real_ip: 127.0.0.1
@@ -43,9 +43,9 @@ qgis_install_source: repository
 
 # deb file should be in the files/ directory at top directory of lizmap-box
 qgis_deb: "qgis.deb"
-qgis_repository_debian: 'http://qgis.org/debian-ltr'
-qgis_repository_debian_key: "51F523511C7028C3"
-qgis_repository_debian_key_url: "https://qgis.org/downloads/qgis-2019.gpg.key"
+qgis_repository_debian: 'https://qgis.org/debian-ltr'
+qgis_repository_debian_key: "F7E06F06199EF2F2"
+qgis_repository_debian_key_url: "https://qgis.org/downloads/qgis-2020.gpg.key"
 
 qgis_config_simplifyLocal: 'false'  # default in qgis:  true
 qgis_config_warnOldProjectVersion: 'false'  # default in qgis: true

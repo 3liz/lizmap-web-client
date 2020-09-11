@@ -26,7 +26,7 @@ vagrant_web_port: 8136
 #lizmap_ldapdao_enabled: false
 
 ## Qgis server
-# qgis_server_version: "3.4"
+# qgis_server_version: "3.10"
 # qgis_num_workers: 4
 # qgis_server_log_level: 1
 
@@ -46,7 +46,7 @@ vagrant_web_port: 8136
 #    repository: https://github.com/3liz/qgis-atlasprint
 #    version: v1.2.2
 
-#qgis_repository_debian_key: '51F523511C7028C3'
+#qgis_repository_debian_key: 'F7E06F06199EF2F2'
 
 ## Postgresql
 # postgresql_install: true
