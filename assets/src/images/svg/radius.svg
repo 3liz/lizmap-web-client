@@ -38,7 +38,7 @@
        stroke-width=".99914849"
        stroke-dashoffset=".1684487"
        stroke-dasharray="1.99829691 .99914846"
-       stroke="#424242"
+       stroke="currentColor"
        r="10.500425"
        fill="none"
        cy="1040.3622"

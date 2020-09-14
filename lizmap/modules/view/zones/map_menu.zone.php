@@ -25,7 +25,7 @@ class map_menuZone extends jZone
 
         // Get lizmapProject class
         $assign = array(
-            'display_home'=> !$services->onlyMaps,
+            'display_home' => !$services->onlyMaps,
             'edition' => false,
             'measure' => false,
             'locate' => false,

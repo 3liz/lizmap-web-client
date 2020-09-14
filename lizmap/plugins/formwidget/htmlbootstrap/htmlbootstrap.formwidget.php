@@ -18,17 +18,25 @@ class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
     public function outputHeader($builder)
     {
         $conf = jApp::config()->urlengine;
+        $form = $builder->getForm();
+        $privateData = $form->getContainer()->privateData;
+        $groupDependencies = array();
+        if (array_key_exists('qgis_groupDependencies', $privateData)) {
+            $groupDependencies = $privateData['qgis_groupDependencies'];
+        }
         // no scope into an anonymous js function, because jFormsJQ.tForm is used by other generated source code
         echo '<script type="text/javascript">
 //<![CDATA[
 jFormsJQ.selectFillUrl=\''.jUrl::get('jelix~jforms:getListData').'\';
+jFormsJQ.groupVisibilitiesUrl=\''.jUrl::get('lizmap~edition:getGroupVisibilities').'\';
 jFormsJQ.config = {locale:'.$builder->escJsStr(jApp::config()->locale).
             ',basePath:'.$builder->escJsStr($conf['basePath']).
             ',jqueryPath:'.$builder->escJsStr($conf['jqueryPath']).
             ',jqueryFile:'.$builder->escJsStr(jApp::config()->jquery['jquery']).
             ',jelixWWWPath:'.$builder->escJsStr($conf['jelixWWWPath']).'};
-jFormsJQ.tForm = new jFormsJQForm(\''.$builder->getName().'\',\''.$builder->getForm()->getSelector().'\',\''.$builder->getForm()->getContainer()->formId.'\');
+jFormsJQ.tForm = new jFormsJQForm(\''.$builder->getName().'\',\''.$form->getSelector().'\',\''.$form->getContainer()->formId.'\');
 jFormsJQ.tForm.setErrorDecorator(new '.$builder->getOption('errorDecorator').'());
+jFormsJQ.tForm.groupDependencies = '.json_encode($groupDependencies).';
 jFormsJQ.declareForm(jFormsJQ.tForm);
 //]]>
 </script>';

@@ -254,7 +254,16 @@ class lizmapProject
         return $this->proj->getLoginFilteredConfig($layername);
     }
 
-    public function getLoginFilters($layers)
+    /**
+     * Get login filters, get expressions for layers based on login filtered
+     * config.
+     *
+     * @param Array[string] $layers : layers' name list
+     * @param boolean       $edition : get login filters for edition
+     *
+     * @return array
+     */
+    public function getLoginFilters($layers, $edition=false)
     {
         return $this->proj->getLoginFilters($layers);
     }

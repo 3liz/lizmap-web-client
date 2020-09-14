@@ -419,12 +419,6 @@ var lizMap = function() {
     map.setCenter(center);
     map.baseLayer.redraw();
 
-    var slider = $('#navbar .slider');
-    if ( slider.is(':visible') && ($('#navbar').height()+150 > $('#map').height() || mCheckMobile()) )
-      slider.hide();
-    else if ( !slider.is(':visible') && $('#navbar').height()+200 < $('#map').height() && !mCheckMobile() )
-      slider.show();
-
     updateMiniDockSize();
   }
 
@@ -3162,8 +3156,12 @@ var lizMap = function() {
               parentDiv.append(childPopup);
 
               // Handle compact-tables/explode-tables behaviour
-              $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
-                  language: { url: lizUrls["dataTableLanguage"] }
+              $('.lizmapPopupChildren .popupAllFeaturesCompact table').each(function(){
+                if (!$.fn.dataTable.isDataTable($(this))) {
+                  $(this).DataTable({
+                    language: { url: lizUrls["dataTableLanguage"] }
+                  });
+                }
               });
 
               $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
@@ -4063,8 +4061,17 @@ var lizMap = function() {
       if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
         const formatWKT = new OpenLayers.Format.WKT();
 
-        printParams['map0:HIGHLIGHT_GEOM'] = formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn);
-        printParams['map0:HIGHLIGHT_SYMBOL'] = lizMap.mainLizmap.digitizing.featureDrawnSLD;
+        const highlightGeom = [];
+        const highlightSymbol = [];
+
+        for (let index = 0; index < lizMap.mainLizmap.digitizing.featureDrawn.length; index++) {
+          highlightGeom.push(formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn[index]));
+          highlightSymbol.push(lizMap.mainLizmap.digitizing.getFeatureDrawnSLD(index));
+          
+        }
+
+        printParams['map0:HIGHLIGHT_GEOM'] = highlightGeom.join(';');
+        printParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
       }
       
       downloadFile(url, printParams);
@@ -4750,7 +4757,7 @@ var lizMap = function() {
           }
       };
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.send($.param(parameters));
+      xhr.send($.param(parameters, true));
    }
 
   /**

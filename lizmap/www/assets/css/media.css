@@ -167,3 +167,9 @@ only screen and (                   max-device-height : 640px) {
 @media screen and (min-width: 1024px){
   /* some CSS here */
 }
+
+@media screen and (max-width: 900px), screen and (max-height: 400px){
+  #navbar .slider{
+    display: none;
+  }
+}

@@ -21,7 +21,8 @@ New features:
     - Add digitizing (draw) + redlining
     - Qgis theme switcher on a map
     - Improvements in the geolocation feature
-    - angle measurement tool
+    - Angle measurement tool
+    ![Angle measurement tool](https://user-images.githubusercontent.com/2145040/92402502-f4bceb00-f12f-11ea-8e1a-57e4b9841233.gif "Angle measurement tool")
     - Display mouse position in QGIS project's projection
 - Editor:
    - split tool
@@ -42,7 +43,13 @@ New features:
     - Add new user layout option && replace resizePlot by responsive cfg && UI improvements
     - Add mode bar: zoom in, out & export to PNG
     - Add the resizePlot function back
+- improvement in Attribute Table view
+  - a lizmap javascript script to show description labels instead of values in
+    the attribute table for columns with ValueMap widget
+  - allow the use of the lizmap javascript script also for numeric columns 
 - improvement in Timemanager
+- Atlas print in popup : you can now define values for custom fields
+![Atlas print in popup](https://user-images.githubusercontent.com/2145040/92587962-a9721c00-f298-11ea-9d13-4b58d477986b.gif "Atlas print in popup")
 - Map themes - check layer legend checkbox even if not in scale range
 - Expose QGIS themes in Lizmap JSON config
 - BAN Search - Add lon and lat parameters to prefer local search around map initial extent center
@@ -51,6 +58,8 @@ New features:
   directory. He should create a `my-packages/composer.json`.
 - Send user info to QGIS Server through parameters to get access control
   performed by Lizmap plugin as a QGIS Server plugin
+- Restrict filter by user on edition only, based on lizmap plugin config
+- Use QGIS expression in Lizmap edition, needs Lizmap plugin installed as a QGIS Server plugin
 
 
 - Lizmap does not support anymore Internet Explorer (11 and lower)

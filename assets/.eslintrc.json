@@ -1,0 +1,26 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "jquery": true
+    },
+    "extends": ["eslint:recommended"],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly",
+        "OpenLayers": "readonly",
+        "lizMap": "readonly",
+        "lizDict": "readonly",
+        "lizUrls": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error", 4, {
+                "SwitchCase": 1, "ignoredNodes": ["TemplateLiteral *"]
+            }
+        ]
+    }
+}

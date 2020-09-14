@@ -19,6 +19,9 @@ class qgisAttributeEditorElement
     protected $_isGroupBox = false;
     protected $_isTabPanel = false;
 
+    protected $_isVisibilityExpressionEnabled = false;
+    protected $_visibilityExpression = '';
+
     protected $attributes = array();
 
     protected $childrenBeforeTab = array();
@@ -63,6 +66,11 @@ class qgisAttributeEditorElement
                     $this->_isTabPanel = true;
                     $this->htmlId = $parentId.'-tab'.$idx;
                 }
+            }
+
+            if ($this->getAttribute('visibilityExpressionEnabled') === '1') {
+                $this->_isVisibilityExpressionEnabled = true;
+                $this->_visibilityExpression = $this->getAttribute('visibilityExpression');
             }
 
             $childIdx = 0;
@@ -146,6 +154,20 @@ class qgisAttributeEditorElement
         return $this->_isTabPanel;
     }
 
+    public function isVisibilityExpressionEnabled()
+    {
+        return ($this->_isVisibilityExpressionEnabled &&
+                $this->_visibilityExpression !== '');
+    }
+
+    public function visibilityExpression()
+    {
+        if ($this->isVisibilityExpressionEnabled()) {
+            return $this->_visibilityExpression;
+        } else {
+            return null;
+        }
+    }
 
     /**
      * @return qgisAttributeEditorElement[]
@@ -209,6 +231,47 @@ class qgisAttributeEditorElement
                 $fields[] = $child->getName();
             }
         }
+
         return $fields;
+    }
+
+    public function getGroupVisibilityExpressions()
+    {
+        $expressions = array();
+        if (!$this->hasChildren()) {
+            return $expressions;
+        }
+
+        foreach ($this->getChildrenBeforeTab() as $child) {
+            if ($child->isGroupBox()) {
+                if ($child->isVisibilityExpressionEnabled()) {
+                    $expressions[$child->getHtmlId()] = $child->visibilityExpression();
+                } else {
+                    $expressions[$child->getHtmlId()] = '';
+                }
+                $expressions = array_merge($expressions, $child->getGroupVisibilityExpressions());
+            }
+        }
+
+        foreach ($this->getTabChildren() as $child) {
+            if ($child->isVisibilityExpressionEnabled()) {
+                $expressions[$child->getHtmlId()] = $child->visibilityExpression();
+            } else {
+                $expressions[$child->getHtmlId()] = '';
+            }
+            $expressions = array_merge($expressions, $child->getGroupVisibilityExpressions());
+        }
+
+        foreach ($this->getChildrenAfterTab() as $child) {
+            if ($child->isGroupBox()) {
+                if ($child->isVisibilityExpressionEnabled()) {
+                    $expressions[$child->getHtmlId()] = $child->visibilityExpression();
+                } else {
+                    $expressions[$child->getHtmlId()] = '';
+                }
+                $expressions = array_merge($expressions, $child->getGroupVisibilityExpressions());
+            }
+        }
+        return $expressions;
     }
 }
