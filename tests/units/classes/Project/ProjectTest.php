@@ -268,4 +268,51 @@ class ProjectTest extends TestCase
         $filters = $proj->getLoginFilters(array('edition_line'));
         $this->assertEquals($expectedFilters, $filters);
     }
+
+    public function getGoogleData()
+    {
+        $options1 = (object)array(
+            'googleStreets' => 'False',
+            'googleSatellite' => 'False',
+            'googleTerrain' => 'False',
+        );
+        $options2 = (object)array(
+            'googleStreets' => 'False',
+            'googleSatellite' => 'True',
+            'googleTerrain' => 'False',
+        );
+        $options3 = (object)array(
+            'googleStreets' => 'true',
+            'googleSatellite' => 'True',
+            'googleTerrain' => 'true',
+            'googleKey' => 'gKey'
+        );
+        $options4 = (object)array(
+            'noGoogleProp' => 'true'
+        );
+        $options5 = (object)array(
+            'noGoogleProp' => 'true',
+            'externalSearch' => 'google',
+            'googleKey' => 'gKey'
+        );
+        return array(
+            array($options1, false, ''),
+            array($options2, true, ''),
+            array($options3, true, 'gKey'),
+            array($options4, false, ''),
+            array($options5, true, 'gKey'),
+        );
+    }
+
+    /**
+     * @dataProvider getGoogleData
+     */
+    public function testGoogle($options, $needGoogle, $gKey)
+    {
+        $config = new Project\ProjectConfig(null, array('options' => $options));
+        $proj = new ProjectForTests();
+        $proj->setCfg($config);
+        $this->assertEquals($needGoogle, $proj->needsGoogle());
+        $this->assertEquals($gKey, $proj->getGoogleKey());
+    }
 }
