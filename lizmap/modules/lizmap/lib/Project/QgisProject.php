@@ -92,11 +92,6 @@ class QgisProject
      */
     public function __construct($file, \LizmapServices $services, $data = false)
     {
-        // Verifying if the files exist
-        if (!file_exists($file)) {
-            throw new UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
-        }
-
         if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
@@ -507,7 +502,13 @@ class QgisProject
      */
     protected function getXmlLayer2($xml, $layerId)
     {
-        return $xml->xpath("//maplayer[id='{$layerId}']");
+        $layerList = $xml->xpath("//maplayer");
+        foreach ($layerList as $layer) {
+            if ((string)$layer->id === $layerId) {
+                return $layer;
+            }
+        }
+        return null;
     }
 
     /**
@@ -827,7 +828,7 @@ class QgisProject
         }
     }
 
-    public function readEditionLayers(&$editionLayers)
+    public function readEditionLayers($editionLayers)
     {
         foreach ($editionLayers as $key => $obj) {
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
@@ -843,7 +844,7 @@ class QgisProject
         }
     }
 
-    public function readAttributeLayers(&$attributeLayers)
+    public function readAttributeLayers($attributeLayers)
     {
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {
