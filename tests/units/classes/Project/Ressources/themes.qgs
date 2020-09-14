@@ -1,0 +1,17 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.10.5-A Coruña" projectname="Montpellier - Transports">
+  <visibility-presets>
+    <visibility-preset has-expanded-info="1" name="Administrative">
+      <layer visible="1" id="SousQuartiers20160121124316563" expanded="1" style="default"/>
+      <expanded-legend-nodes id="SousQuartiers20160121124316563"/>
+      <layer visible="1" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" expanded="0" style="default"/>
+      <expanded-legend-nodes id="VilleMTP_MTP_Quartiers_2011_432620130116112610876"/>
+      <expanded-group-nodes>
+        <expanded-group-node id="datalayers/Buildings"/>
+        <expanded-group-node id="Overview"/>
+        <expanded-group-node id="datalayers/Bus"/>
+        <expanded-group-node id="datalayers"/>
+      </expanded-group-nodes>
+    </visibility-preset>
+  </visibility-presets>
+</qgis>
