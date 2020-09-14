@@ -963,7 +963,7 @@ class Project
         );
 
         foreach ($googleProps as $google) {
-            if (property_exists($configOptions, $google) && $configOptions->{$google}) {
+            if (property_exists($configOptions, $google) && $this->optionToBoolean($configOptions->{$google})) {
                 return true;
             }
         }
