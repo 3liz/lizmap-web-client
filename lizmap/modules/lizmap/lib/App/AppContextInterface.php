@@ -201,4 +201,19 @@ interface AppContextInterface
      * @return \jFormsBase
      */
     public function createJelixForm($formSel, $formId = null);
+
+    /**
+     * Returns the URL corresponding to the Jelix Selector
+     *
+     * @param string $selector The Jelix selector
+     */
+    public function getUrl($selector);
+
+    /**
+     * Returns the absolute Url
+     *
+     * @param string $selector The Jelix selector of the Url
+     * @param array an associative array with the parameters of the Url
+     */
+    public function getFullUrl($selector, $params = array());
 }

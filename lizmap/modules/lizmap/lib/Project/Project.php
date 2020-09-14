@@ -307,7 +307,7 @@ class Project
         $this->WMSInformation = array_merge($this->qgis->getWMSInformation(), $this->WMSInformation);
 
         // get WMS getCapabilities full URL
-        $this->data['wmsGetCapabilitiesUrl'] = \jUrl::getFull(
+        $this->data['wmsGetCapabilitiesUrl'] = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array(
                 'repository' => $rep->getKey(),
@@ -319,7 +319,7 @@ class Project
         );
 
         // get WMTS getCapabilities full URL
-        $this->data['wmtsGetCapabilitiesUrl'] = \jUrl::getFull(
+        $this->data['wmtsGetCapabilitiesUrl'] = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array(
                 'repository' => $rep->getKey(),
@@ -1234,12 +1234,12 @@ class Project
                 'service' => $configJson->options->externalSearch,
             );
             if ($configJson->options->externalSearch == 'nominatim') {
-                $externalSearch['url'] = \jUrl::get('lizmap~osm:nominatim');
+                $externalSearch['url'] = $this->appContext->getUrl('lizmap~osm:nominatim');
             } elseif ($configJson->options->externalSearch == 'ban') {
                 $externalSearch = array(
                     'type' => 'BAN',
                     'service' => 'lizmapBan',
-                    'url' => \jUrl::get('lizmap~ban:search'),
+                    'url' => $this->appContext->getUrl('lizmap~ban:search'),
                 );
             }
             $configJson->options->searches[] = (object) $externalSearch;
@@ -1251,7 +1251,7 @@ class Project
             $configJson->options->searches[] = (object) array(
                 'type' => 'QuickFinder',
                 'service' => 'lizmapQuickFinder',
-                'url' => \jUrl::get('lizmap~search:get'),
+                'url' => $this->appContext->getUrl('lizmap~search:get'),
             );
         }
         // Events to get additional searches
