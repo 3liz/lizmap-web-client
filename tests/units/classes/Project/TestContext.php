@@ -32,10 +32,18 @@ class testContext implements AppContextInterface
 
     public function UserIsConnected()
     {
+        if (array_key_exists('userIsConnected', $this->result)) {
+            return $this->result['userIsConnected'];
+        }
+        return false;
     }
 
     public function getUserSession()
     {
+        if (array_key_exists('userSession', $this->result)) {
+            return $this->result['userSession'];
+        }
+        return null;
     }
 
     public function getCache($key, $profile = '')

@@ -203,4 +203,69 @@ class ProjectTest extends TestCase
             }
         }
     }
+
+    public function getLoginFilteredData()
+    {
+        $layers = (object)array(
+            'layer1' => (object)array(
+                'name' => 'layer1',
+                'typeName' => 'layer1'
+            )
+        );
+        $lfLayers = (object)array(
+            'layer1' => 'layer1'
+        );
+        return array(
+            array($lfLayers, $layers, 'layer1', 'layer1'),
+            array($lfLayers, $layers, null, null),
+            array($lfLayers, $layers, 'layer3', null),
+        );
+    }
+
+    /**
+     * @dataProvider getLoginFilteredData
+     */
+    public function testGetLoginFilteredConfig($lfLayers, $layers, $ln, $expectedLn)
+    {
+        $config = new Project\ProjectConfig(null, array('cfgContent' => (object)array('loginFilteredLayers' => $lfLayers, 'layers' => $layers)));
+        $proj = new ProjectForTests();
+        $proj->setCfg($config);
+        $this->assertEquals($expectedLn, $proj->getLoginFilteredConfig($ln));
+    }
+
+    public function getFiltersData()
+    {
+        $aclData1 = array(
+            'userIsConnected' => true,
+            'userSession' => (object)array('login' => 'admin'),
+            'groups' => array('admin', 'groups', 'lizmap')
+        );
+        $aclData2 = array(
+            'userIsConnected' => false,
+        );
+        $filter1 = '"group" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
+        $filter2 = '"group" = \'all\'';
+        return array(
+            array($aclData1, $filter1),
+            array($aclData2, $filter2),
+        );
+    }
+
+    /**
+     * @dataProvider getFiltersData
+     */
+    public function testGetLoginFilters($aclData, $expectedFilters)
+    {
+        $file = __DIR__.'/Ressources/montpellier_filtered.qgs.cfg';
+        $expectedFilters = array(
+            'edition_line' => array_merge(json_decode(file_get_contents($file), true)['loginFilteredLayers']['edition_line'], array('layername' => 'edition_line', 'filter' => $expectedFilters))
+        );
+        $config = new Project\ProjectConfig($file);
+        $context = new testContext();
+        $context->setResult($aclData);
+        $proj = new ProjectForTests($context);
+        $proj->setCfg($config);
+        $filters = $proj->getLoginFilters(array('edition_line'));
+        $this->assertEquals($expectedFilters, $filters);
+    }
 }

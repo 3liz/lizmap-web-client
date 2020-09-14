@@ -710,7 +710,7 @@ class Project
      */
     public function hasLoginFilteredLayers()
     {
-        $login = $this->cfg->getProperty('loginFilteredLayers');
+        $login = (array)$this->cfg->getProperty('loginFilteredLayers');
         if ($login && is_array($login) && count($login)) {
             return true;
         }
@@ -801,7 +801,7 @@ class Project
             }
 
             $filters[$layerName] = array_merge(
-                $loginFilteredConfig,
+                (array)$loginFilteredConfig,
                 array('filter' => $filter, 'layername' => $lName)
             );
         }
