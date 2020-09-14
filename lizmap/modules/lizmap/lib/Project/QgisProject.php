@@ -82,7 +82,7 @@ class QgisProject
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', 'xml');
+        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
     /**
      * constructor.
@@ -99,7 +99,7 @@ class QgisProject
             $this->readXmlProject($file);
         } else {
             foreach ($this->cachedProperties as $prop) {
-                if (isset($data[$prop])) {
+                if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
                 }
             }

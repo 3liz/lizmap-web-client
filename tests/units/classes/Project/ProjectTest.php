@@ -7,18 +7,6 @@ use Lizmap\Project;
 
 class ProjectTest extends TestCase
 {
-    protected $qgis_default;
-
-    public function setUp()
-    {
-        $data = array(
-            'WMSInformation' => array(),
-            'xml' => new SimpleXMLElement('<root></root>'),
-            'layers' => array(),
-        );
-        $this->qgis_default = new Project\QgisProject(__FILE__, new lizmapServices(null, null, false, '', ''), $data);
-    }
-
     public function testReadProject()
     {
         $props = array(
@@ -29,12 +17,18 @@ class ProjectTest extends TestCase
             'proj' => 'EPSG:4242',
             'bbox' => '42.42, 21.21, 20.2, 48.84'
         );
+        $data = array(
+            'WMSInformation' => array(),
+            'layers' => array(),
+        );
+        $qgis_default = new QgisProjectForTests(true, $data);
+        $qgis_default->setXml(new SimpleXMLElement('<root></root>'));
         $rep = new lizmapRepository('key', array(), null, null, null);
         $proj = new ProjectForTests();
         $cfg = json_decode(file_get_contents(__DIR__.'/Ressources/readProject.qgs.cfg'));
         $config = new Project\ProjectConfig('', array('cfgContent' => $cfg, 'options' => $cfg->options));
         $proj->setCfg($config);
-        $proj->setQgis($this->qgis_default);
+        $proj->setQgis($qgis_default);
         $proj->readProjectForTest('test', $rep);
         foreach ($props as $prop => $expectedValue) {
             $this->assertEquals($expectedValue, $proj->getData($prop));

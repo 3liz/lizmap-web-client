@@ -4,8 +4,11 @@ use Lizmap\Project\QgisProject;
 
 class qgisProjectForTests extends QgisProject
 {
-    public function __construct()
+    public function __construct($original = false, $data = array())
     {
+        if ($original) {
+            parent::__construct(__FILE__, new lizmapServices(null, null, false, '', ''), $data);
+        }
     }
 
     public function readWMSInfoTest($xml)

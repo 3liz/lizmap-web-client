@@ -104,6 +104,7 @@ class ProjectCache
      */
     public function storeProjectData($data)
     {
+        file_put_contents(__DIR__.'/cache.log', json_encode($data, JSON_PRETTY_PRINT));
         try {
             $data['qgsmtime'] = filemtime($this->file);
             $data['qgscfgmtime'] = filemtime($this->file.'.cfg');
