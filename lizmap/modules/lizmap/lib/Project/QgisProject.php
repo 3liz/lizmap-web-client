@@ -211,7 +211,7 @@ class QgisProject
     {
         $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
         $layers = $cfg->getProperty('layers');
-        if ($layerWithOpacities) {
+        if ($layerWithOpacities && count($layerWithOpacities)) {
             foreach ($layerWithOpacities as $layerWithOpacitiy) {
                 $name = (string) $layerWithOpacitiy->layername;
                 if ($layers && property_exists($layers, $name)) {
@@ -265,12 +265,12 @@ class QgisProject
     protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
         $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
-        if ($layersWithShowFeatureCount) {
+        if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount)) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
                 $cfgLayers = $cfg->getProperty('layers');
                 if ($cfgLayers && property_exists($cfgLayers, $name)) {
-                    $cfgLayers->{$name}->showFeatureCont = 'True';
+                    $cfgLayers->{$name}->showFeatureCount = 'True';
                 }
             }
             $cfg->setProperty('layers', $cfgLayers);
@@ -286,7 +286,7 @@ class QgisProject
     {
         //remove plugin layer
         $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
-        if ($pluginLayers) {
+        if ($pluginLayers && count($pluginLayers)) {
             foreach ($pluginLayers as $layer) {
                 $name = (string) $layer->layername;
                 $layers = $cfg->getProperty('layers');
