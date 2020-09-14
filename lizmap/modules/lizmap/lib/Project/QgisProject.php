@@ -264,7 +264,7 @@ class QgisProject
      */
     protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
-        $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
         if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount)) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
@@ -359,6 +359,7 @@ class QgisProject
     /**
      * @param $layerId
      * @param mixed $layers
+     * @param mixed $proj
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
@@ -383,6 +384,7 @@ class QgisProject
 
     /**
      * @param string $key
+     * @param mixed  $proj
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
@@ -407,6 +409,7 @@ class QgisProject
 
     /**
      * @param string $key
+     * @param mixed  $proj
      *
      * @return \qgisMapLayer[]|\qgisVectorLayer[]
      */
@@ -502,12 +505,13 @@ class QgisProject
      */
     protected function getXmlLayer2($xml, $layerId)
     {
-        $layerList = $xml->xpath("//maplayer");
+        $layerList = $xml->xpath('//maplayer');
         foreach ($layerList as $layer) {
-            if ((string)$layer->id === $layerId) {
+            if ((string) $layer->id === $layerId) {
                 return $layer;
             }
         }
+
         return null;
     }
 

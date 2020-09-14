@@ -227,7 +227,7 @@ class Project
             }
             $this->readProject($key, $rep);
             foreach ($this->cachedProperties as $prop) {
-                if (isset($this->$prop) && !empty($this->$prop)) {
+                if (isset($this->{$prop}) && !empty($this->{$prop})) {
                     $data[$prop] = $this->{$prop};
                 }
             }
@@ -740,7 +740,16 @@ class Project
         return $login->{$ln};
     }
 
-    public function getLoginFilters($layers)
+    /**
+     * Get login filters, get expressions for layers based on login filtered
+     * config.
+     *
+     * @param Array[string] $layers  : layers' name list
+     * @param bool          $edition : get login filters for edition
+     *
+     * @return array
+     */
+    public function getLoginFilters($layers, $edition = false)
     {
         $filters = array();
 
@@ -760,6 +769,14 @@ class Project
             // Get config
             $loginFilteredConfig = $this->getLoginFilteredConfig($lName);
             if ($loginFilteredConfig == null) {
+                continue;
+            }
+
+            // If login filter is configured for edition only and the expression
+            // is not requested for edition, do not return expression
+            if (property_exists($loginFilteredConfig, 'edition_only') &&
+                $this->optionToBoolean($loginFilteredConfig->edition_only) &&
+                !$edition) {
                 continue;
             }
 
