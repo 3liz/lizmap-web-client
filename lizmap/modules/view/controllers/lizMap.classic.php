@@ -17,7 +17,8 @@ class lizMapCtrl extends jController
     protected $projectKey;
 
     /**
-     * Used to pass project Object (no need to rebuild it)
+     * Used to pass project Object (no need to rebuild it).
+     *
      * @var lizmapProject
      */
     protected $projectObj;
@@ -156,7 +157,7 @@ class lizMapCtrl extends jController
         $rep->addJSLink($confDate['default']);
         if (isset($confDate['default.js'])) {
             $js = $confDate['default.js'];
-            foreach($js as $file) {
+            foreach ($js as $file) {
                 $file = str_replace('$lang', jLocale::getCurrentLang(), $file);
                 if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
                     continue;
@@ -436,7 +437,7 @@ class lizMapCtrl extends jController
 
         // legend = legend open at startup
         $l = $this->intParam('l', 1);
-        if ($l == 0  ||
+        if ($l == 0 ||
             (
                 property_exists($pOptions, 'hideLegend')
                 && $pOptions->hideLegend == 'True'

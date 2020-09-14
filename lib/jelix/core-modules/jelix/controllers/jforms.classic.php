@@ -53,6 +53,9 @@ class jformsCtrl extends jController {
             }
         }
 
+        // event so the form can be prepared correctly for forms made dynamically
+        jEvent::notify('jformsPrepareToFillDynamicList', array('form' => $form, 'controlRef' => $this->param('__ref')));
+
         // retrieve the control to fill
         $control = $form->getControl($this->param('__ref'));
         if (!$control || ! ($control instanceof jFormsControlDatasource)) {

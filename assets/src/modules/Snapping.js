@@ -151,8 +151,8 @@ export default class Snapping {
     }
 
     set snapLayersRefreshable(refreshable) {
-            this._snapLayersRefreshable = refreshable;
-            mainEventDispatcher.dispatch('snapping.refreshable');
+        this._snapLayersRefreshable = refreshable;
+        mainEventDispatcher.dispatch('snapping.refreshable');
     }
 
     get active() {

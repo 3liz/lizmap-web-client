@@ -2609,6 +2609,26 @@ a.lizmap-atlasprint-link span.icon{
   margin-right:7px;
 }
 
+.toggle-custom-labels-view{
+  margin-left: 5px;
+  display: inline-block;
+  position: relative;
+}
+
+.toggle-custom-labels-view > div{
+  display: none;
+  position: absolute;
+  bottom: 30px;
+  left: -100px;
+  padding: 5px;
+  border: 1px solid black;
+  background: rgb(240, 240, 240);
+}
+
+.atlasprint-custom-labels{
+  width: unset;
+}
+
 input[type="file"].jforms-ctrl-upload {
   height:auto;
 }

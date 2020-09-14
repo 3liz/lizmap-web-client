@@ -194,7 +194,7 @@ class serviceCtrl extends jController
                 // Add WWW-Authenticate header only for external clients
                 // To avoid web browser to ask for login/password when session expires
                 // In browser, Lizmap UI sends full service URL in referer
-                $addwww = False;
+                $addwww = false;
                 $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
                 if (!empty($referer)) {
                     $referer_parse = parse_url($referer);
@@ -202,17 +202,16 @@ class serviceCtrl extends jController
                         $referer_domain = $referer_parse['host'];
                         $domain = jApp::coord()->request->getDomainName();
                         if (!empty($domain) and $referer_domain != $domain) {
-                            $addwww = True;
+                            $addwww = true;
                         }
                     }
-                }else{
-                    $addwww = True;
+                } else {
+                    $addwww = true;
                 }
                 // Add WWW-Authenticate header
                 if ($addwww) {
                     $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
                 }
-
             } elseif ($code == 'ProjectNotDefined') {
                 $rep->setHttpStatus(404, 'Not Found');
             } elseif ($code == 'RepositoryNotDefined') {
@@ -290,8 +289,8 @@ class serviceCtrl extends jController
         $this->params = $params;
 
         // Get the optionnal filter token
-        if (isset($params['filtertoken']) &&
-            isset($params['request']) &&
+        if (isset($params['filtertoken'], $params['request'])
+             &&
             in_array(strtolower($params['request']), array('getmap', 'getfeature', 'getprint', 'getfeatureinfo'))
         ) {
             $tokens = $params['filtertoken'];
@@ -644,6 +643,7 @@ class serviceCtrl extends jController
 
         if ($result->code >= 400) {
             $rep->content = $result->data;
+
             return $rep;
         }
 

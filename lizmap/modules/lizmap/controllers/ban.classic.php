@@ -58,6 +58,7 @@ class banCtrl extends jController
         $var = json_decode($content);
         if ($var === null) {
             $rep->content = '[]';
+
             return $rep;
         }
         $obj = $var->features;
@@ -67,7 +68,7 @@ class banCtrl extends jController
         $res['layer_name'] = 'ban';
         $res['srid'] = 'EPSG:4326';
         $res['features'] = array();
-        foreach($obj as $key){
+        foreach ($obj as $key) {
             /*
             $lat = $key->geometry->coordinates[1];
             $lon = $key->geometry->coordinates[0];
@@ -87,7 +88,7 @@ class banCtrl extends jController
             $d = array();
             $d['label'] = $display_name;
             $d['geometry'] = 'POINT('.$lon.' '.$lat.')';
-            array_push($res['features'],$d);
+            array_push($res['features'], $d);
         }
 
         $rep->content = json_encode(array('ban' => $res));
@@ -95,4 +96,3 @@ class banCtrl extends jController
         return $rep;
     }
 }
-

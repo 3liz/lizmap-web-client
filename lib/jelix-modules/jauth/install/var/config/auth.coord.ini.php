@@ -60,6 +60,12 @@ enable_after_login_override = off
 ; says if after_logout can be overloaded by a "auth_url_return" parameter in the url/form for the login
 enable_after_logout_override = off
 
+; list of domains allowed for url indicated into auth_url_return.
+; should be a string for a single domain
+url_return_external_allowed_domains=
+; or a list like that:
+;url_return_external_allowed_domains[]=
+
 ;============ Parameters for the persistance of the authentification
 
 ; enable the persistance of the authentification between two sessions

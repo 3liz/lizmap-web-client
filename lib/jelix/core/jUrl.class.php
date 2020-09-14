@@ -6,7 +6,7 @@
 * @contributor Thibault Piront (nuKs)
 * @contributor Loic Mathaud
 * @contributor Hadrien Lanneau
-* @copyright   2005-2013 Laurent Jouanneau
+* @copyright   2005-2020 Laurent Jouanneau
 * @copyright   2007 Thibault Piront
 * @copyright   2006 Loic Mathaud, 2010 Hadrien Lanneau
 * Some parts of this file are took from an experimental branch of the Copix project (CopixUrl.class.php, Copix 2.3dev20050901, http://www.copix.org),
@@ -321,4 +321,35 @@ class jUrl extends jUrlBase {
         }
     }
 
+    /**
+     * tells if the given url is for the current application or if it matches
+     * given authorized domains
+     *
+     * @param string $url
+     * @param string[] $authorizedDomains
+     * @return boolean
+     */
+    public static function isUrlFromApp($url, $authorizedDomains=array())
+    {
+        $res = @parse_url($url);
+        if (!$res) {
+            return false;
+        }
+        $req = jApp::coord()->request;
+        if (isset($res['host']) && $res['host'] != '') {
+            if ($res['host'] != $req->getDomainName()) {
+                if (!count($authorizedDomains)) {
+                    return false;
+                }
+                if (!in_array($res['host'], $authorizedDomains)) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        $basePath = jApp::urlBasePath();
+        $path = (isset($res['path']) && $res['path'] != '' ? $res['path']: '/');
+        $path = rtrim($path, '/').'/';
+        return (strpos($path, $basePath) === 0);
+    }
 }
