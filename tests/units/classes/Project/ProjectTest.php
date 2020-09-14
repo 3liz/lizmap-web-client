@@ -315,4 +315,56 @@ class ProjectTest extends TestCase
         $this->assertEquals($needGoogle, $proj->needsGoogle());
         $this->assertEquals($gKey, $proj->getGoogleKey());
     }
+
+    public function getCheckAclData()
+    {
+        $result1 = array('lizmap.repositories.view' => false);
+        $result2 = array(
+            'lizmap.repositories.view' => true,
+            'userIsConnected' => false,
+        );
+        $result3 = array(
+            'lizmap.repositories.view' => true,
+            'userIsConnected' => true,
+            'lizmap.admin.repositories.delete' => false,
+            'groups' => array('group1', 'group2'),
+        );
+        $result4 = array(
+            'lizmap.repositories.view' => true,
+            'userIsConnected' => true,
+            'lizmap.admin.repositories.delete' => true,
+        );
+        $options1 = (object)array(
+            'acl' => array('none'),
+        );
+        $options2 = (object)array(
+            'acl' => '',
+        );
+        $options3 = (object)array(
+            'acl' => array('group1'),
+        );
+        return array(
+            array($result1, (object)array(), false),
+            array($result2, $options2, true),
+            array($result2, $options1, false),
+            array($result3, $options1, false),
+            array($result3, $options3, true),
+            array($result4, $options1, true),
+        );
+    }
+
+    /**
+     * @dataProvider getCheckAclData
+     */
+    public function testCheckAcl($aclData, $options, $expectedRet)
+    {
+        $rep = new lizmapRepository('key', array(), null, null, null);
+        $context = new testContext();
+        $context->setResult($aclData);
+        $config = new Project\ProjectConfig(null, array('options' => $options));
+        $proj = new ProjectForTests($context);
+        $proj->setRepo($rep);
+        $proj->setCfg($config);
+        $this->assertEquals($expectedRet, $proj->checkAcl());
+    }
 }
