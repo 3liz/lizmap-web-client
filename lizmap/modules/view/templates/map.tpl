@@ -67,6 +67,7 @@
         <button id="overview-toggle" class="btn" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
       </div>
       <div id="mouseposition-bar">
+        <lizmap-go-to-coordinates></lizmap-go-to-coordinates>
         <span style="display:none;">{@view~map.mouseposition.hover@}</span>
         <span id="mouseposition" title="{@view~map.mouseposition.hover@}"></span>
         <select title="{@view~map.mouseposition.select@}">
