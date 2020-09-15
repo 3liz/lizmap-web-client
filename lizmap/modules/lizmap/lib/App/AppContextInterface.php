@@ -27,6 +27,13 @@ interface AppContextInterface
     public function appConfig();
 
     /**
+     * Returns the configuration file path.
+     *
+     * @param string $file The configuration file
+     */
+    public function appConfigPath($file = '');
+
+    /**
      * says if the current user has the given right.
      *
      * @param string $right    the key of the right to check
@@ -191,6 +198,14 @@ interface AppContextInterface
     public function getJelixDao($daoKey, $profile = '');
 
     /**
+     * Creates a new Record in the Dao.
+     *
+     * @param string $dao     The Jelix dao selector
+     * @param string $profile The profile to use
+     */
+    public function createDaoRecord($dao, $profile = '');
+
+    /**
      * Gets the form object corresponding to the given selector.
      *
      * specific to Jelix
@@ -203,17 +218,25 @@ interface AppContextInterface
     public function createJelixForm($formSel, $formId = null);
 
     /**
-     * Returns the URL corresponding to the Jelix Selector
+     * Returns the URL corresponding to the Jelix Selector.
      *
      * @param string $selector The Jelix selector
      */
     public function getUrl($selector);
 
     /**
-     * Returns the absolute Url
+     * Returns the absolute Url.
      *
      * @param string $selector The Jelix selector of the Url
      * @param array an associative array with the parameters of the Url
+     * @param mixed $params
      */
     public function getFullUrl($selector, $params = array());
+
+    /**
+     * Returns a the IniFileModifier corresponding to the ini file.
+     *
+     * @param string $ini The ini file
+     */
+    public function getIniModifier($ini);
 }

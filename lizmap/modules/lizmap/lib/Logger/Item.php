@@ -12,11 +12,10 @@
 
 namespace Lizmap\Logger;
 
+use Lizmap\App;
+
 class Item
 {
-    // Lizmap log configuration file path (relative to the path folder)
-    private $config = 'config/lizmapLogConfig.ini.php';
-
     // log item properties
     private static $properties = array(
         'label',
@@ -28,21 +27,6 @@ class Item
 
     // Log key
     private $key = '';
-
-    // Log label
-    private $label = '';
-
-    // If a counter must be increased for this item
-    private $logCounter = '';
-
-    // If a new line must be added in the detail log
-    private $logDetail = '';
-
-    // If user IP address must be logged in the detail log
-    private $logIp = '';
-
-    // If an email must be sent to the admin contact
-    private $logEmail = '';
 
     private $data = array();
 
@@ -57,21 +41,24 @@ class Item
         'email',
     );
 
+    protected $context;
+
     /**
-     * Construct the object, you should use the lizmapLogConfig::getLogItem() method
+     * Construct the object, you should use the Log\Config::getLogItem() method
      * which will call this constructor.
      *
      * @param string $key            the name of the item
      * @param array  $readConfigPath the array containing the fields of lizmapLogConfig.ini.php
      */
-    public function __construct($key, $readConfigPath)
+    public function __construct($key, $readConfigPath, App\AppContextInterface $appContext)
     {
         $section = 'item:'.$key;
+        $this->appContext = $appContext;
 
         // Set each property
         foreach (self::$properties as $property) {
             if (isset($readConfigPath[$property])) {
-                $this->data[$property] = $readConfigPath[$property];
+                $this->data[$property] = $readConfigPath[$section][$property];
             } else {
                 return null;
             }
@@ -86,14 +73,6 @@ class Item
     public function getKey()
     {
         return $this->key;
-    }
-
-    /**
-     * @return string[] list of properties name
-     */
-    public function getProperties()
-    {
-        return self::$properties;
     }
 
     /**
@@ -138,8 +117,8 @@ class Item
     public function update($data)
     {
         // Get access to the ini file
-        $iniFile = \jApp::configPath('lizmapLogConfig.ini.php');
-        $ini = new \jIniFileModifier($iniFile);
+        $iniFile = $this->appContext->appConfigPath('lizmapLogConfig.ini.php');
+        $ini = $this->appContext->getIniModifier($iniFile);
 
         // Set section
         $section = 'item:'.$this->key;
@@ -195,7 +174,7 @@ class Item
      */
     public function increaseLogCounter($repository = '', $project = '', $profile = 'lizlog')
     {
-        $dao = \jDao::get('lizmap~logCounter', $profile);
+        $dao = $this->appContext->getJelixDao('lizmap~logCounter', $profile);
 
         if ($rec = $dao->getDistinctCounter($this->key, $repository, $project)) {
             ++$rec->counter;
@@ -203,7 +182,7 @@ class Item
             try {
                 $dao->update($rec);
             } catch (\Exception $e) {
-                \jLog::log('Error while updating a line in log_counter :'.$e->getMessage());
+                $this->appContext->logMessage('Error while updating a new line in log_counter :'.$e->getMessage());
             }
         } else {
             $rec = \jDao::createRecord('lizmap~logCounter', $profile);
@@ -219,7 +198,7 @@ class Item
             try {
                 $dao->insert($rec);
             } catch (\Exception $e) {
-                \jLog::log('Error while inserting a new line in log_counter :'.$e->getMessage());
+                $this->appContext->logMessage('Error while inserting a new line in log_counter :'.$e->getMessage());
             }
         }
     }
