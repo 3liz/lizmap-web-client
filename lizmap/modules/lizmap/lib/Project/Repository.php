@@ -108,6 +108,9 @@ class Repository
         if (strstr($this->data['path'], './')) {
             $path = realpath($this->data['path']).'/';
         }
+        if ($path === '/') {
+            return false;
+        }
         if (file_exists($path)) {
             $this->data['path'] = $path;
         } else {

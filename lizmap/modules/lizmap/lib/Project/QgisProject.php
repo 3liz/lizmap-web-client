@@ -99,7 +99,9 @@ class QgisProject
             $this->readXmlProject($file);
         } else {
             foreach ($this->cachedProperties as $prop) {
-                $this->{$prop} = $data[$prop];
+                if (array_key_exists($prop, $data)) {
+                    $this->{$prop} = $data[$prop];
+                }
             }
         }
 
@@ -325,12 +327,14 @@ class QgisProject
             }
         }
         //unset displayInLegend for geometryType none or unknown
-        foreach ($layers as $key => $obj) {
-            if (property_exists($layers->{$key}, 'geometryType') &&
-                 ($layers->{$key}->geometryType == 'none' ||
-                     $layers->{$key}->geometryType == 'unknown')
-            ) {
-                $layers->{$key}->displayInLegend = 'False';
+        if ($layers) {
+            foreach ($layers as $key => $obj) {
+                if (property_exists($layers->{$key}, 'geometryType') &&
+                    ($layers->{$key}->geometryType == 'none' ||
+                        $layers->{$key}->geometryType == 'unknown')
+                ) {
+                    $layers->{$key}->displayInLegend = 'False';
+                }
             }
         }
         $cfg->setProperty('layers', $layers);
