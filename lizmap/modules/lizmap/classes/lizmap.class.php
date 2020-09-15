@@ -10,6 +10,8 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
+use Lizmap\Logger;
+
 /**
  * @deprecated
  */
@@ -381,7 +383,7 @@ class lizmap
     {
         if (!self::$lizmapLogConfigInstance) {
             $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
-            self::$lizmapLogConfigInstance = new lizmapLogConfig($readConfigPath);
+            self::$lizmapLogConfigInstance = new Log\Config($readConfigPath);
         }
 
         return self::$lizmapLogConfigInstance;

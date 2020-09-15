@@ -9,7 +9,10 @@
  *
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapLogListener extends jEventListener
+
+namespace Lizmap\Logger;
+
+class Listener extends \jEventListener
 {
     /**
      * When a user logs in.
@@ -45,7 +48,7 @@ class lizmapLogListener extends jEventListener
         $key = $event->getParam('key');
 
         // Build data array from event params
-        $logConfig = lizmap::getLogConfig();
+        $logConfig = \lizmap::getLogConfig();
         $logItem = $logConfig->getLogItem($key);
         $data = array();
         if ($logItem) {
@@ -70,7 +73,7 @@ class lizmapLogListener extends jEventListener
     {
 
         // Get log item properties
-        $logConfig = lizmap::getLogConfig();
+        $logConfig = \lizmap::getLogConfig();
         $logItem = $logConfig->getLogItem($key);
         
         // Optionnaly log detail
@@ -78,7 +81,7 @@ class lizmapLogListener extends jEventListener
 
             // user who modified the line
             if (!array_key_exists('user', $data)) {
-                $juser = jAuth::getUserSession();
+                $juser = \jAuth::getUserSession();
                 $data['user'] = $juser->login;
             }
 
@@ -114,11 +117,11 @@ class lizmapLogListener extends jEventListener
      */
     private function sendEmail($key, $data)
     {
-        $services = lizmap::getServices();
+        $services = \lizmap::getServices();
         // Build subject and body
-        $subject = '['.$services->appName.'] '.jLocale::get('admin~admin.logs.email.subject');
+        $subject = '['.$services->appName.'] '.\jLocale::get('admin~admin.logs.email.subject');
 
-        $body = jLocale::get("admin~admin.logs.email.${key}.body");
+        $body = \jLocale::get("admin~admin.logs.email.${key}.body");
 
         foreach ($data as $k => $v) {
             if (empty($v)) {

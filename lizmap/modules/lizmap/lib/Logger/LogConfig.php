@@ -9,7 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapLogConfig
+
+ namespace Lizmap\Logger;
+
+class Config
 {
     // Lizmap log configuration data
     private $data = array();
@@ -58,7 +61,7 @@ class lizmapLogConfig
             if (!key_exists('item:'.$key, $this->data)) {
                 return null;
             }
-            $this->logItems[$key] = new lizmapLogItem($key, $this->data['item:'.$key]);
+            $this->logItems[$key] = new Item($key, $this->data['item:'.$key]);
         }
 
         return $this->logItems[$key];
@@ -129,8 +132,8 @@ class lizmapLogConfig
     public function save($ini = null)
     {
         if (!$ini) {
-            $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
-            $ini = new jIniFileModifier($iniFile);
+            $iniFile = \jApp::configPath('lizmapLogConfig.ini.php');
+            $ini = new \jIniFileModifier($iniFile);
         }
         foreach ($this->properties as $prop) {
             if ($this->{$prop} !== '' && $this->{$prop} !== null) {
