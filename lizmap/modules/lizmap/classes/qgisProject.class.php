@@ -9,6 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+/**
+ * @deprecated
+ */
 class qgisProject
 {
     /**
@@ -575,7 +579,7 @@ class qgisProject
                     $layerObj = $layer->attributes();
                     $themes[(string) $themeObj->name]['layers'][(string) $layerObj->id] = array(
                         'style' => (string) $layerObj->style,
-                        'expanded' => (string) $layerObj->expanded
+                        'expanded' => (string) $layerObj->expanded,
                     );
                 }
 
@@ -585,6 +589,7 @@ class qgisProject
                     $themes[(string) $themeObj->name]['expandedGroupNode'][] = (string) $expandedGroupNodeObj->id;
                 }
             }
+
             return $themes;
         }
 
@@ -766,13 +771,13 @@ class qgisProject
                     }
 
                     if (isset($xmlLayer->constraintExpressions->constraint)) {
-                        foreach($xmlLayer->constraintExpressions->constraint as $constraint) {
+                        foreach ($xmlLayer->constraintExpressions->constraint as $constraint) {
                             $f = (string) $constraint['field'];
                             $c = array(
                                 'constraints' => 0,
                                 'notNull' => false,
                                 'unique' => false,
-                                'exp' => false
+                                'exp' => false,
                             );
                             if (array_key_exists($f, $constraints)) {
                                 $c = $constraints[$f];
