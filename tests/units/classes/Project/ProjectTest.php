@@ -23,7 +23,7 @@ class ProjectTest extends TestCase
         );
         $qgis_default = new QgisProjectForTests(true, $data);
         $qgis_default->setXml(new SimpleXMLElement('<root></root>'));
-        $rep = new lizmapRepository('key', array(), null, null, null);
+        $rep = new Project\Repository('key', array(), null, null, null);
         $proj = new ProjectForTests();
         $cfg = json_decode(file_get_contents(__DIR__.'/Ressources/readProject.qgs.cfg'));
         $config = new Project\ProjectConfig('', array('cfgContent' => $cfg, 'options' => $cfg->options));
@@ -49,7 +49,7 @@ class ProjectTest extends TestCase
      */
     public function testGetQgisPath($repPath, $key, $expectedPath)
     {
-        $rep = new lizmapRepository($key, array('path' => $repPath), null, null, null);
+        $rep = new Project\Repository($key, array('path' => $repPath), null, null, null);
         $proj = new ProjectForTests();
         $proj->setRepo($rep);
         $proj->setKey($key);
@@ -72,7 +72,7 @@ class ProjectTest extends TestCase
     {
         $services = new lizmapServices(array('services' => array('relativeWMSPath' => $relative, 'rootRepositories' => $root)), null, false, null, null);
         $proj = new ProjectForTests();
-        $proj->setRepo(new lizmapRepository(null, array('path' => ''), null, null, null));
+        $proj->setRepo(new Project\Repository(null, array('path' => ''), null, null, null));
         $proj->setServices($services);
         $proj->setFile($file);
         $path = $proj->getRelativeQgisPath();
@@ -181,7 +181,7 @@ class ProjectTest extends TestCase
             $eLayers->$key = clone $obj;
         }
         $config = new Project\ProjectConfig(null, array('editionLayers' => $eLayers));
-        $rep = new lizmapRepository(null, array(), null, null, null);
+        $rep = new Project\Repository(null, array(), null, null, null);
         $context = new testContext();
         $context->setResult($acl);
         $proj = new ProjectForTests($context);
@@ -352,7 +352,7 @@ class ProjectTest extends TestCase
      */
     public function testCheckAcl($aclData, $options, $expectedRet)
     {
-        $rep = new lizmapRepository('key', array(), null, null, null);
+        $rep = new Project\Repository('key', array(), null, null, null);
         $context = new testContext();
         $context->setResult($aclData);
         $config = new Project\ProjectConfig(null, array('options' => $options));
