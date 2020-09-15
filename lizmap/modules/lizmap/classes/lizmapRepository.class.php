@@ -3,15 +3,16 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2020 3liz
  *
- * @see      http://3liz.com
+ * @see      https://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
 /**
  * @deprecated
+ * @see \Lizmap\Project\Repository
  */
 class lizmapRepository
 {
