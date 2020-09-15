@@ -36,10 +36,10 @@ export default class GoToCoordinates extends HTMLElement {
         // Display
         const mainTemplate = () => html`
         <div class="form-inline">
-            <input type="number" step="any" class="input-mini" placeholder="latitude" @input=${(event) => this._latitude = event.target.value}>
-            <input type="number" step="any" class="input-mini" placeholder="longitude" @input=${(event) => this._longitude = event.target.value}>
-            <button class="btn btn-mini" @click=${() => this._zoomToCoords()}><i class="icon-zoom-in"></i></button>
-            <button class="btn btn-mini" @click=${() => this._centerToCoords()}><i class="icon-screenshot"></i></button>
+            <input type="number" step="any" class="input-mini" placeholder="${lizDict['latitude']}" @input=${(event) => this._latitude = event.target.value}>
+            <input type="number" step="any" class="input-mini" placeholder="${lizDict['longitude']}" @input=${(event) => this._longitude = event.target.value}>
+            <button class="btn btn-mini" title="${lizDict['attributeLayers.btn.zoom.title']}" @click=${() => this._zoomToCoords()}><i class="icon-zoom-in"></i></button>
+            <button class="btn btn-mini" title="${lizDict['attributeLayers.btn.center.title']}" @click=${() => this._centerToCoords()}><i class="icon-screenshot"></i></button>
         </div>`;
 
         render(mainTemplate(), this);
