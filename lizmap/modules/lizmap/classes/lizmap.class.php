@@ -383,7 +383,7 @@ class lizmap
     {
         if (!self::$lizmapLogConfigInstance) {
             $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
-            self::$lizmapLogConfigInstance = new Log\Config($readConfigPath);
+            self::$lizmapLogConfigInstance = new Log\Config($readConfigPath, self::getAppContext());
         }
 
         return self::$lizmapLogConfigInstance;

@@ -10,6 +10,7 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
+use Lizmap\App;
 use Lizmap\Logger as Log;
 
 class lizmapLogItem
@@ -46,9 +47,9 @@ class lizmapLogItem
      * @param string $key            the name of the item
      * @param array  $readConfigPath the array containing the fields of lizmapLogConfig.ini.php
      */
-    public function __construct($key, $readConfigPath)
+    public function __construct($key, $readConfigPath, App\AppContextInterface $appContext)
     {
-        $this->item = new Log\Item($key, $readConfigPath);
+        $this->item = new Log\Item($key, $readConfigPath, $appContext);
     }
 
     /**
@@ -64,7 +65,7 @@ class lizmapLogItem
      */
     public function getProperties()
     {
-        return $this->item->getProperties();
+        return $this->properties;
     }
 
     /**

@@ -12,6 +12,8 @@
 
 namespace Lizmap\Logger;
 
+use Lizmap\App;
+
 class Config
 {
     // Lizmap log configuration data
@@ -31,9 +33,12 @@ class Config
     // database profile
     private $profile = '';
 
-    public function __construct($readConfigPath)
+    protected $appContext;
+
+    public function __construct($readConfigPath, App\AppContextInterface $appContext)
     {
         $this->data = $readConfigPath;
+        $this->appContext = $appContext;
 
         // set generic parameters
         foreach ($this->properties as $prop) {
@@ -61,7 +66,7 @@ class Config
             if (!key_exists('item:'.$key, $this->data)) {
                 return null;
             }
-            $this->logItems[$key] = new Item($key, $this->data['item:'.$key]);
+            $this->logItems[$key] = new Item($key, $this->data['item:'.$key], $this->context);
         }
 
         return $this->logItems[$key];
@@ -132,8 +137,8 @@ class Config
     public function save($ini = null)
     {
         if (!$ini) {
-            $iniFile = \jApp::configPath('lizmapLogConfig.ini.php');
-            $ini = new \jIniFileModifier($iniFile);
+            $iniFile = $this->appContext->appConfigPath('lizmapLogConfig.ini.php');
+            $ini = $this->appContext->getIniModifier($iniFile);
         }
         foreach ($this->properties as $prop) {
             if ($this->{$prop} !== '' && $this->{$prop} !== null) {
