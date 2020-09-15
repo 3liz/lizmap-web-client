@@ -3,9 +3,9 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2020 3liz
  *
- * @see      http://3liz.com
+ * @see      https://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
@@ -14,8 +14,6 @@ namespace Lizmap\Project;
 
 class Repository
 {
-    // Lizmap configuration file path (relative to the path folder)
-    private $config = 'config/lizmapConfig.ini.php';
 
     /**
      * services properties.
@@ -44,15 +42,24 @@ class Repository
         ),
     );
 
-    // Lizmap repository key
-    private $key = '';
-    // Lizmap repository configuration data
-    private $data = array();
     /**
-     * @var lizmapProject[] list of projects. keys are projects names
+     * Lizmap repository key
+     */
+    private $key = '';
+
+    /**
+     * Lizmap repository configuration data
+     */
+    private $data = array();
+
+    /**
+     * @var Project[] list of projects. keys are projects names
      */
     protected $projectInstances = array();
-    // The configuration files folder path
+
+    /**
+     * The configuration files folder path
+     */
     private $varPath = '';
 
     protected $services;
@@ -61,14 +68,14 @@ class Repository
 
     /**
      * lizmapRepository Constructor
-     * Do not call it, if you want to instanciate a lizmapRepository, you should
-     * do it with the lizmapServices::getLizmapRepository method
+     *
+     * Do not call it directly. Prefer to call `lizmapServices::getLizmapRepository()` instead.
      *
      * @param string $key the name of the repository
      * @param array $data the repository data
      * @param string $varPath the configuration files folder path
      * @param \lizmapServices $services
-     * @param Lizmap\App\AppContextInterface $appContext
+     * @param \Lizmap\App\AppContextInterface $appContext
      */
     public function __construct($key, $data, $varPath, $services, $appContext)
     {
@@ -86,11 +93,17 @@ class Repository
         $this->key = $key;
     }
 
+    /**
+     * @return string the technical name of the repository
+     */
     public function getKey()
     {
         return $this->key;
     }
 
+    /**
+     * @return false|string the path of the repository
+     */
     public function getPath()
     {
         if ($this->data['path'] == '') {
@@ -145,10 +158,10 @@ class Repository
     }
 
     /**
-     * Update a repository in a jIniFilemodifier object
+     * Update a repository in a ini content
      *
      * @param array $data the repository data
-     * @param jIniFileModifier $ini the object to edit the ini file
+     * @param \jIniFileModifier $ini the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */
@@ -185,11 +198,11 @@ class Repository
         }
 
         try {
-            $proj = new Project($key, $this, $this->context, $this->services);
+            $proj = new Project($key, $this, $this->appContext, $this->services);
         } catch (UnknownLizmapProjectException $e) {
             throw $e;
         } catch (\Exception $e) {
-            \jLog::logEx($e, 'error');
+            $this->appContext->logException($e, 'error');
             return null;
         }
 
@@ -226,9 +239,9 @@ class Repository
                                 $projects[] = $proj;
                             }
                         } catch (UnknownLizmapProjectException $e) {
-                            \jLog::logEx($e, 'error');
+                            $this->appContext->logException($e, 'error');
                         } catch (\Exception $e) {
-                            \jLog::logEx($e, 'error');
+                            $this->appContext->logException($e, 'error');
                         }
                     }
                 }
