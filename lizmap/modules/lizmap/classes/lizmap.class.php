@@ -10,7 +10,7 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-use Lizmap\Logger;
+use Lizmap\Logger as Log;
 
 /**
  * @deprecated
@@ -396,7 +396,7 @@ class lizmap
      */
     public static function getLogItemProperties()
     {
-        return lizmapLogItem::getSProperties();
+        return Log\Item::getSProperties();
     }
 
     /**

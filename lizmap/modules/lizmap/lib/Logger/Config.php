@@ -10,7 +10,7 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
- namespace Lizmap\Logger;
+namespace Lizmap\Logger;
 
 class Config
 {
