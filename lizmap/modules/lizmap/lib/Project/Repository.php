@@ -67,9 +67,8 @@ class Repository
      * @param string $key the name of the repository
      * @param array $data the repository data
      * @param string $varPath the configuration files folder path
-     * @param lizmapServices $services
-     * @param Lizmap\App\AppContextInterface
-     * @param mixed $appContext
+     * @param \lizmapServices $services
+     * @param Lizmap\App\AppContextInterface $appContext
      */
     public function __construct($key, $data, $varPath, $services, $appContext)
     {
@@ -176,14 +175,14 @@ class Repository
         return $modified;
     }
 
-    public function getProject($key, $context, $services)
+    public function getProject($key)
     {
         if (isset($this->projectInstances[$key])) {
             return $this->projectInstances[$key];
         }
 
         try {
-            $proj = new Project($key, $this, $context, $services);
+            $proj = new Project($key, $this, $this->context, $this->services);
         } catch (UnknownLizmapProjectException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -196,7 +195,7 @@ class Repository
         return $proj;
     }
 
-    public function getProjects($context, $services)
+    public function getProjects()
     {
         $projects = array();
         $dir = $this->getPath();
@@ -219,7 +218,7 @@ class Repository
                     $proj = null;
                     if (in_array($qgsFile.'.cfg', $cfgFiles)) {
                         try {
-                            $proj = $this->getProject(substr($qgsFile, 0, -4), $context, $services);
+                            $proj = $this->getProject(substr($qgsFile, 0, -4));
                             if ($proj != null) {
                                 $projects[] = $proj;
                             }
