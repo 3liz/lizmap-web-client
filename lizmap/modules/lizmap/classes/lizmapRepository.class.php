@@ -99,13 +99,13 @@ class lizmapRepository
         return $this->repo->update($data, $ini);
     }
 
-    public function getProject($key, $context, $services)
+    public function getProject($key)
     {
-        return $this->repo->getProject($key, $context, $services);
+        return $this->repo->getProject($key);
     }
 
-    public function getProjects($context, $services)
+    public function getProjects()
     {
-        return $this->repo->getProjects($context, $services);
+        return $this->repo->getProjects();
     }
 }
