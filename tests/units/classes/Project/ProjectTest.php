@@ -38,7 +38,7 @@ class ProjectTest extends TestCase
     public function getQgisPathData()
     {
         return array(
-            array('/srv/lzm/tests/qgis-projects/demoqgis', 'montpellier', '/srv/lzm/tests/qgis-projects/demoqgis/montpellier.qgs'),
+            array(__DIR__.'/../../../qgis-projects/demoqgis', 'montpellier', realpath(__DIR__.'/../../../qgis-projects/demoqgis/montpellier.qgs')),
             array('/srv/lzm/tests/qgis-projects/notexisting', 'montpellier', false),
             array(__DIR__.'/../false', 'montpellier', false),
         );
