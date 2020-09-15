@@ -349,8 +349,9 @@ class Project
 
     public function getQgisPath()
     {
-        if (!$this->file) {
-            $this->file = realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
+        $path = $this->repository->getPath();
+        if (!$this->file && $path != '' && $path != false) {
+            $this->file = $path.$this->key.'.qgs';
         }
 
         return $this->file;
@@ -526,9 +527,8 @@ class Project
     {
         $options = $this->getOptions();
         $atlas = $this->cfg->getProperty('atlas');
-        if ((property_exists($options, 'atlasEnabled') and $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
-            or
-            ($atlas and property_exists($atlas, 'layers') and is_array($atlas) and count($atlas) > 0)) { // Multiple atlas
+        if ((property_exists($options, 'atlasEnabled') && $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+            || ($atlas && property_exists($atlas, 'layers') && is_array($atlas) && count($atlas) > 0)) { // Multiple atlas
             return true;
         }
 
@@ -561,8 +561,8 @@ class Project
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
             foreach ($attributeLayers as $key => $obj) {
-                if ($onlyDisplayedLayers && !property_exists($obj, 'hideLayer') ||
-                    strtolower($obj->hideLayer) != 'true') {
+                if (($onlyDisplayedLayers && !property_exists($obj, 'hideLayer'))
+                || (property_exists($obj, 'hideLayer') && strtolower($obj->hideLayer) != 'true')) {
                     $hasDisplayedLayer = true;
                 }
             }
@@ -643,18 +643,17 @@ class Project
             if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
                 return false;
             }
-
             $count = 0;
             foreach ($editionLayers as $key => $eLayer) {
                 // Check if user groups intersects groups allowed by project editor
                 // If user is admin, no need to check for given groups
-                if (property_exists($eLayer, 'acl') and $eLayer->acl) {
+                if (property_exists($eLayer, 'acl') && $eLayer->acl) {
                     // Check if configured groups white list and authenticated user groups list intersects
                     $editionGroups = $eLayer->acl;
                     $editionGroups = array_map('trim', explode(',', $editionGroups));
-                    if (is_array($editionGroups) and count($editionGroups) > 0) {
+                    if (is_array($editionGroups) && count($editionGroups) > 0) {
                         $userGroups = $this->appContext->aclUserGroupsId();
-                        if (array_intersect($editionGroups, $userGroups) or $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
+                        if (array_intersect($editionGroups, $userGroups) || $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
                             // User group(s) correspond to the groups given for this edition layer
                             // or user is admin
                             ++$count;
@@ -711,7 +710,7 @@ class Project
      */
     public function hasLoginFilteredLayers()
     {
-        $login = $this->cfg->getProperty('loginFilteredLayers');
+        $login = (array)$this->cfg->getProperty('loginFilteredLayers');
         if ($login && is_array($login) && count($login)) {
             return true;
         }
@@ -802,7 +801,7 @@ class Project
             }
 
             $filters[$layerName] = array_merge(
-                $loginFilteredConfig,
+                (array)$loginFilteredConfig,
                 array('filter' => $filter, 'layername' => $lName)
             );
         }
@@ -964,7 +963,7 @@ class Project
         );
 
         foreach ($googleProps as $google) {
-            if (property_exists($configOptions, $google) && $configOptions->{$google}) {
+            if (property_exists($configOptions, $google) && $this->optionToBoolean($configOptions->{$google})) {
                 return true;
             }
         }

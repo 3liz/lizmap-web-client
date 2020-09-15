@@ -138,7 +138,7 @@ class ProjectConfig
     {
         $rootProp = $this->cfgContent;
         if (in_array($propName, $this->cachedProperties)) {
-            $rootProp = $this->$propName;
+            $rootProp = $this;
         }
         if (isset($rootProp->{$propName}) && $propName2 == '') {
             unset($rootProp->{$propName});

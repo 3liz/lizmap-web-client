@@ -30,7 +30,7 @@ class lizmapProject
      * constructor.
      *
      * @param string           $key      : the project name
-     * @param LizmapRepository $rep      : the repository
+     * @param Project\Repository $rep      : the repository
      * @param mixed            $context
      * @param mixed            $services
      */
