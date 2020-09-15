@@ -9,7 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapLogItem
+
+namespace Lizmap\Logger;
+
+class Item
 {
     // Lizmap log configuration file path (relative to the path folder)
     private $config = 'config/lizmapLogConfig.ini.php';
@@ -135,8 +138,8 @@ class lizmapLogItem
     public function update($data)
     {
         // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = \jApp::configPath('lizmapLogConfig.ini.php');
+        $ini = new \jIniFileModifier($iniFile);
 
         // Set section
         $section = 'item:'.$this->key;
@@ -167,8 +170,8 @@ class lizmapLogItem
      */
     public function insertLogDetail($data, $profile = 'lizlog')
     {
-        $dao = jDao::get('lizmap~logDetail', $profile);
-        $rec = jDao::createRecord('lizmap~logDetail', $profile);
+        $dao = \jDao::get('lizmap~logDetail', $profile);
+        $rec = \jDao::createRecord('lizmap~logDetail', $profile);
         // Set the value for each column
         foreach (self::$recordKeys as $k) {
             if (array_key_exists($k, $data)) {
@@ -178,8 +181,8 @@ class lizmapLogItem
 
         try {
             $dao->insert($rec);
-        } catch (Exception $e) {
-            jLog::log('Error while inserting a new line in log_detail :'.$e->getMessage());
+        } catch (\Exception $e) {
+            \jLog::log('Error while inserting a new line in log_detail :'.$e->getMessage());
         }
     }
 
@@ -192,18 +195,18 @@ class lizmapLogItem
      */
     public function increaseLogCounter($repository = '', $project = '', $profile = 'lizlog')
     {
-        $dao = jDao::get('lizmap~logCounter', $profile);
+        $dao = \jDao::get('lizmap~logCounter', $profile);
 
         if ($rec = $dao->getDistinctCounter($this->key, $repository, $project)) {
             ++$rec->counter;
 
             try {
                 $dao->update($rec);
-            } catch (Exception $e) {
-                jLog::log('Error while updating a line in log_counter :'.$e->getMessage());
+            } catch (\Exception $e) {
+                \jLog::log('Error while updating a line in log_counter :'.$e->getMessage());
             }
         } else {
-            $rec = jDao::createRecord('lizmap~logCounter', $profile);
+            $rec = \jDao::createRecord('lizmap~logCounter', $profile);
             $rec->key = $this->key;
             if ($repository) {
                 $rec->repository = $repository;
@@ -215,8 +218,8 @@ class lizmapLogItem
 
             try {
                 $dao->insert($rec);
-            } catch (Exception $e) {
-                jLog::log('Error while inserting a new line in log_counter :'.$e->getMessage());
+            } catch (\Exception $e) {
+                \jLog::log('Error while inserting a new line in log_counter :'.$e->getMessage());
             }
         }
     }
