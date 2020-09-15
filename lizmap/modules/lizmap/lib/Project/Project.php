@@ -351,7 +351,7 @@ class Project
     {
         $path = $this->repository->getPath();
         if (!$this->file && $path != '' && $path != false) {
-            $this->file = realpath($path).'/'.$this->key.'.qgs';
+            $this->file = $path.$this->key.'.qgs';
         }
 
         return $this->file;

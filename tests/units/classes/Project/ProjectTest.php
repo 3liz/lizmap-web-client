@@ -21,7 +21,7 @@ class ProjectTest extends TestCase
             'WMSInformation' => array(),
             'layers' => array(),
         );
-        $qgis_default = new QgisProjectForTests(true, $data);
+        $qgis_default = new QgisProjectForTests($data);
         $qgis_default->setXml(new SimpleXMLElement('<root></root>'));
         $rep = new Project\Repository('key', array(), null, null, null);
         $proj = new ProjectForTests();

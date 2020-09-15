@@ -4,10 +4,10 @@ use Lizmap\Project\QgisProject;
 
 class qgisProjectForTests extends QgisProject
 {
-    public function __construct($original = false, $data = array())
+    public function __construct($data = null)
     {
-        if ($original) {
-            parent::__construct(__FILE__, new lizmapServices(null, null, false, '', ''), $data);
+        if ($data) {
+            parent::__construct(null, new lizmapServices(null, null, false, '', ''), $data);
         }
     }
 
