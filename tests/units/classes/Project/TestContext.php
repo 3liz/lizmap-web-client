@@ -12,6 +12,10 @@ class testContext implements AppContextInterface
 
     public function appConfigPath($file = '')
     {
+        if (array_key_exists('configPath', $this->result)) {
+            return $this->result['configPath'];
+        }
+        return null;
     }
 
     public function aclCheck($role, $resource = null)
@@ -96,10 +100,16 @@ class testContext implements AppContextInterface
 
     public function getJelixDao($daoKey, $profile = '')
     {
+        if (array_key_exists('getDao', $this->result)) {
+            return $this->result['getDao'];
+        }
     }
 
     public function createDaoRecord($dao, $profile = '')
     {
+        if (array_key_exists('createDaoRecord', $this->result)) {
+            return $this->result['createDaoRecord'];
+        }
     }
 
     public function createJelixForm($formSel, $formId = null)
@@ -119,7 +129,20 @@ class testContext implements AppContextInterface
         $this->result = $result;
     }
 
+    public function getResult()
+    {
+        return $this->result;
+    }
+
     public function getIniModifier($ini)
+    {
+        if (array_key_exists('ini', $this->result)) {
+            return $this->result['ini'];
+        }
+        return null;
+    }
+
+    public function insert($record)
     {
     }
 }
