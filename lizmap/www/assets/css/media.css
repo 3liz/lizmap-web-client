@@ -220,4 +220,60 @@ only screen and (                   max-device-height : 640px) {
   #headermenu.mobile #auth form#nominatim-search{
     right: 65px;
   }
+
+  #mapmenu{
+    width: 80%;
+  }
+
+  #mapmenu > div{
+    width: unset;
+    display: flex;
+  }
+
+  #mapmenu > div > ul{
+    margin: 0 10px;
+    width: 100%;
+    background-color: #F0F0F0;
+  }
+
+  #mapmenu > div > ul li{
+    background: #444444;
+    border-radius: 6px;
+    margin-top: 15px;
+  }
+
+  #mapmenu > div > ul li:last-child{
+    margin-bottom: 15px;
+  }
+
+  #mapmenu .nav-list > li > a{
+    width: unset;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.4em;
+    color: white;
+    padding: .5em;
+  }
+
+  #mapmenu .nav-list > li.active > a{
+    background-color: initial;
+  }
+
+  #mapmenu .nav-list > li > a .icon{
+    display: none;
+  }
+
+  #mapmenu .menu-title{
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  #docks-wrapper{
+    left: -1px;
+    width: 80%;
+  }
+
+  /*TODO
+  Cacher
+  */
 }
