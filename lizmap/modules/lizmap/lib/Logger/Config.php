@@ -66,7 +66,7 @@ class Config
             if (!key_exists('item:'.$key, $this->data)) {
                 return null;
             }
-            $this->logItems[$key] = new Item($key, $this->data['item:'.$key], $this->context);
+            $this->logItems[$key] = new Item($key, $this->data['item:'.$key], $this->appContext);
         }
 
         return $this->logItems[$key];
