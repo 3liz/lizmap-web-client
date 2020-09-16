@@ -52,15 +52,12 @@ class Item
      */
     public function __construct($key, $readConfigPath, App\AppContextInterface $appContext)
     {
-        $section = 'item:'.$key;
         $this->appContext = $appContext;
 
         // Set each property
         foreach (self::$properties as $property) {
             if (isset($readConfigPath[$property])) {
                 $this->data[$property] = $readConfigPath[$property];
-            } else {
-                return null;
             }
         }
 
@@ -123,6 +120,9 @@ class Item
         // Set section
         $section = 'item:'.$this->key;
 
+        if ($data === null) {
+            return false;
+        }
         // Modify the ini data for the repository
         foreach ($data as $k => $v) {
             if (in_array($k, self::$properties)) {
@@ -151,6 +151,11 @@ class Item
     {
         $dao = $this->appContext->getJelixDao('lizmap~logDetail', $profile);
         $rec = $this->appContext->createDaoRecord('lizmap~logDetail', $profile);
+
+        if (!$data) {
+            return ;
+        }
+
         // Set the value for each column
         foreach (self::$recordKeys as $k) {
             if (array_key_exists($k, $data)) {
@@ -161,7 +166,7 @@ class Item
         try {
             $dao->insert($rec);
         } catch (\Exception $e) {
-            \jLog::log('Error while inserting a new line in log_detail :'.$e->getMessage());
+            $this->appContext->logMessage('Error while inserting a new line in log_detail :'.$e->getMessage());
         }
     }
 
