@@ -10,6 +10,10 @@ class testContext implements AppContextInterface
     {
     }
 
+    public function appConfigPath($file = '')
+    {
+    }
+
     public function aclCheck($role, $resource = null)
     {
         if (array_key_exists($role, $this->result)) {
@@ -94,6 +98,10 @@ class testContext implements AppContextInterface
     {
     }
 
+    public function createDaoRecord($dao, $profile = '')
+    {
+    }
+
     public function createJelixForm($formSel, $formId = null)
     {
     }
@@ -109,5 +117,9 @@ class testContext implements AppContextInterface
     public function setResult($result)
     {
         $this->result = $result;
+    }
+
+    public function getIniModifier($ini)
+    {
     }
 }

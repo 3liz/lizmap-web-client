@@ -58,7 +58,7 @@ class Item
         // Set each property
         foreach (self::$properties as $property) {
             if (isset($readConfigPath[$property])) {
-                $this->data[$property] = $readConfigPath[$section][$property];
+                $this->data[$property] = $readConfigPath[$property];
             } else {
                 return null;
             }
@@ -149,8 +149,8 @@ class Item
      */
     public function insertLogDetail($data, $profile = 'lizlog')
     {
-        $dao = \jDao::get('lizmap~logDetail', $profile);
-        $rec = \jDao::createRecord('lizmap~logDetail', $profile);
+        $dao = $this->appContext->getJelixDao('lizmap~logDetail', $profile);
+        $rec = $this->appContext->createDaoRecord('lizmap~logDetail', $profile);
         // Set the value for each column
         foreach (self::$recordKeys as $k) {
             if (array_key_exists($k, $data)) {
@@ -185,7 +185,7 @@ class Item
                 $this->appContext->logMessage('Error while updating a new line in log_counter :'.$e->getMessage());
             }
         } else {
-            $rec = \jDao::createRecord('lizmap~logCounter', $profile);
+            $rec = $this->appContext->createDaoRecord('lizmap~logCounter', $profile);
             $rec->key = $this->key;
             if ($repository) {
                 $rec->repository = $repository;

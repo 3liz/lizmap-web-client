@@ -1,7 +1,19 @@
 <?php
 
-class lizmapLogConfigTest extends PHPUnit_Framework_TestCase
+use Lizmap\Logger as Log;
+
+class ConfigTest extends PHPUnit_Framework_TestCase
 {
+    protected $context = null;
+
+    public function setUp()
+    {
+        if ($this->context) {
+            return ;
+        }
+        $this->context = new testContext();
+    }
+
     public function getTestModifyData()
     {
         $data1 = array(
@@ -38,7 +50,7 @@ class lizmapLogConfigTest extends PHPUnit_Framework_TestCase
 
     public function testModify($data, $newData, $expectedReturnValue)
     {
-        $testLizmapLogConfig = new lizmapLogConfig($data);
+        $testLizmapLogConfig = new Log\Config($data, $this->context);
         $this->assertEquals($expectedReturnValue, $testLizmapLogConfig->modify($newData));
         unset($testLizmapLogConfig);
     }
@@ -75,11 +87,11 @@ class lizmapLogConfigTest extends PHPUnit_Framework_TestCase
 
     public function testSave($data, $expectedData, $changedProp, $changedValue, $expectedReturnValue)
     {
-        $iniFile = __DIR__.'/../tmp/logConfig.ini.php';
+        $iniFile = __DIR__.'/../../tmp/logConfig.ini.php';
         file_put_contents($iniFile, '');
 
         $ini = new jIniFileModifier($iniFile);
-        $testLizmapLogConfig = new lizmapLogConfig($data);
+        $testLizmapLogConfig = new Log\Config($data, $this->context);
         if ($changedProp) {
             $data['general'][$changedProp] = $changedValue;
         }
@@ -128,7 +140,7 @@ class lizmapLogConfigTest extends PHPUnit_Framework_TestCase
 
     public function testGetLogItemList($data, $expectedList)
     {
-        $testLizmapLogConfig = new lizmapLogConfig($data);
+        $testLizmapLogConfig = new Log\Config($data, $this->context);
         $list = $testLizmapLogConfig->getLogItemList();
         $this->assertEquals($expectedList, $list);
         unset($testLizmapLogConfig);
@@ -165,13 +177,13 @@ class lizmapLogConfigTest extends PHPUnit_Framework_TestCase
 
     public function testGetLogItem($data, $key, $valid)
     {
-        $testLizmapLogConfig = new lizmapLogConfig($data);
+        $testLizmapLogConfig = new Log\Config($data, $this->context);
         $item = $testLizmapLogConfig->getLogItem($key);
         if (!$valid) {
             $this->assertEquals(null, $item);
             return ;
         }
-        $expectedItem = new lizmapLogItem($key, $data['item:'.$key]);
+        $expectedItem = new Log\Item($key, $data['item:'.$key], $this->context);
         $item2 = $testLizmapLogConfig->getLogItem($key);
         $this->assertEquals($expectedItem, $item);
         $this->assertSame($item, $item2);
