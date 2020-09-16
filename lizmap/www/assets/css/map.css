@@ -82,6 +82,11 @@ body {
   background:rgba(0,0,0,0.7);
   overflow: auto;
 }
+
+#mapmenu .menu-title{
+  display: none;
+}
+
 #mapmenu > div {
   width: 30px;
   height: auto;
