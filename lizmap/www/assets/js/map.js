@@ -6137,6 +6137,12 @@ var lizMap = function() {
             lizMap.events.triggerEvent(lizmapEvent, { 'id': id });
           return false;
         });
+
+        // Hide mapmenu when menu item is clicked in mobile context
+        $('#mapmenu ul').on('click', 'li > a', function () {
+          $('#mapmenu').addClass('mobile-closed');
+        });
+
         // Show layer switcher
         $('#button-switcher').click();
         updateContentSize();

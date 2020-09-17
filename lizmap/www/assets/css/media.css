@@ -250,7 +250,7 @@ only screen and (                   max-device-height : 640px) {
     width: unset;
     text-align: center;
     font-weight: bold;
-    font-size: 1.4em;
+    font-size: 1.2em;
     color: white;
     padding: .5em;
   }
@@ -273,7 +273,7 @@ only screen and (                   max-device-height : 640px) {
     width: 80%;
   }
 
-  /*TODO
-  Cacher
-  */
+  #mapmenu.mobile-closed{
+    left: -80%;
+  }
 }
