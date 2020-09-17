@@ -265,6 +265,7 @@ only screen and (                   max-device-height : 640px) {
   #mapmenu .menu-title{
     display: inline-block;
     margin-left: 10px;
+    text-transform: capitalize;
   }
 
   #docks-wrapper{
@@ -334,5 +335,9 @@ only screen and (                   max-device-height : 640px) {
   /* The last one should go the other direction */
   #menuToggle.opened span:nth-child(3){
     transform: rotate(-45deg) translate(0, -1px);
+  }
+
+  #content.mobile #mini-dock{
+    left: 0;
   }
 }
