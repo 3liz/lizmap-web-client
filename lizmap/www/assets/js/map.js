@@ -6138,9 +6138,14 @@ var lizMap = function() {
           return false;
         });
 
+        // Toggle menu visibility
+        $('#menuToggle').click(function(){
+          $(this).toggleClass('opened');
+        });
+
         // Hide mapmenu when menu item is clicked in mobile context
-        $('#mapmenu ul').on('click', 'li > a', function () {
-          $('#mapmenu').addClass('mobile-closed');
+        $('#menuToggle:visible ~ #mapmenu ul').on('click', 'li > a', function () {
+          $('#menuToggle').removeClass('opened');
         });
 
         // Show layer switcher
