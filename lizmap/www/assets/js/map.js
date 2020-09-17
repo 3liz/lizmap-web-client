@@ -5350,7 +5350,7 @@ var lizMap = function() {
       var dockli = '';
       dockli+='<li class="'+dname+' nav-'+dtype+'">';
       dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'" data-container="#content">';
-      dockli+='       <span class="icon"><i class="'+dicon+' icon-white"></i></span>';
+      dockli += '       <span class="icon"><i class="' + dicon + ' icon-white"></i></span><span class="menu-title">' + dname +'</span>';
       dockli+='   </a>';
       dockli+='</li>';
       $('#mapmenu div ul li.nav-'+dtype+':last').after(dockli);
