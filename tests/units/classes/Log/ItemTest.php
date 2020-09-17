@@ -51,48 +51,6 @@ class ItemTest extends TestCase
         }
     }
 
-    public function getUpdateData()
-    {
-        $data1 = array(
-            'label' => 'test',
-            'logCounter' => 'counter',
-            'logDetail' => 'detail',
-            'logIp' => 'Ip',
-            'logEmail' => 'Email',
-        );
-        $data2 = array(
-            'label' => 'label'
-        );
-        return array(
-            array($data1, true),
-            array($data2, true),
-            array(array(), false),
-            array(null, false),
-        );
-    }
-
-    /**
-     * @dataProvider getUpdateData
-     */
-    public function testUpdate($data, $expectedRet)
-    {
-        file_put_contents(realpath(__DIR__.'/../../tmp').'/logitem.ini', '');
-        $context = array(
-            'configPath' => realpath(__DIR__.'/../../tmp').'/logitem.ini',
-            'ini' => new jIniFileModifier(realpath(__DIR__.'/../../tmp').'/logitem.ini')
-        );
-        $testContext = new testContext();
-        $testContext->setResult($context);
-        $item = new Log\Item('test', array('label' => 'test'), $testContext);
-        $this->assertEquals($expectedRet, $item->update($data));
-        if (!$data) {
-            return ;
-        }
-        foreach ($data as $prop => $value) {
-            $this->assertEquals($value, $context['ini']->getValue($prop, 'item:test'));
-        }
-    }
-
     public function getLogDetailData()
     {
         $data1 = array(

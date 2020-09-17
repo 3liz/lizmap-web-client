@@ -48,16 +48,16 @@ class Item
      * which will call this constructor.
      *
      * @param string $key            the name of the item
-     * @param array  $readConfigPath the array containing the fields of lizmapLogConfig.ini.php
+     * @param array  $iniSection the array containing the fields of lizmapLogConfig.ini.php
      */
-    public function __construct($key, $readConfigPath, App\AppContextInterface $appContext)
+    public function __construct($key, $iniSection, App\AppContextInterface $appContext)
     {
         $this->appContext = $appContext;
 
         // Set each property
         foreach (self::$properties as $property) {
-            if (isset($readConfigPath[$property])) {
-                $this->data[$property] = $readConfigPath[$property];
+            if (isset($iniSection[$property])) {
+                $this->data[$property] = $iniSection[$property];
             }
         }
 
@@ -104,47 +104,18 @@ class Item
         return $this->data[$key];
     }
 
-    /**
-     * Update the data for the log item in the ini file.
-     *
-     * @param mixed $data
-     *
-     * @return bool true if there were some modifications
-     */
-    public function update($data)
+    public function setProperty($prop, $value)
     {
-        // Get access to the ini file
-        $iniFile = $this->appContext->appConfigPath('lizmapLogConfig.ini.php');
-        $ini = $this->appContext->getIniModifier($iniFile);
-
-        // Set section
-        $section = 'item:'.$this->key;
-
-        if ($data === null) {
-            return false;
+        if (!in_array($prop, self::$properties)) {
+            return ;
         }
-        // Modify the ini data for the repository
-        foreach ($data as $k => $v) {
-            if (in_array($k, self::$properties)) {
-                // Set values in ini file
-                $ini->setValue($k, $v, $section);
-                // Modify lizmapConfigData
-                $this->data[$k] = $v;
-            }
-        }
-        $modified = $ini->isModified();
-        // Save the ini file
-        if ($modified) {
-            $ini->save();
-        }
-
-        return $modified;
+        $this->data[$prop] = $value;
     }
 
     /**
      * Insert a new line of log for this item.
      *
-     * @param array $data    list of details to save
+     * @param array $data    list of details to save, the keys should be one of the RecordKeys (The key field is mandatory)
      * @param mixed $profile
      */
     public function insertLogDetail($data, $profile = 'lizlog')
