@@ -270,9 +270,6 @@ class JelixContext implements AppContextInterface
 
     public function getIniModifier($ini)
     {
-        if (array_key_exists('ini', $this->result)) {
-            return $this->result['ini'];
-        }
-        return null;
+        return new jIniFileModifier($ini);
     }
 }

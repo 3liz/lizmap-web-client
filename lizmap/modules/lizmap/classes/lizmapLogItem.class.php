@@ -13,6 +13,9 @@
 use Lizmap\App;
 use Lizmap\Logger as Log;
 
+/**
+ * @deprecated
+ */
 class lizmapLogItem
 {
     // log item properties

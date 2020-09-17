@@ -33,12 +33,24 @@ class Config
     // database profile
     private $profile = '';
 
+    // The location of the ini file
+    protected $file;
+
     protected $appContext;
 
-    public function __construct($readConfigPath, App\AppContextInterface $appContext)
+    protected $itemProperties = array(
+        'label',
+        'logCounter',
+        'logDetail',
+        'logIp',
+        'logEmail',
+    );
+
+    public function __construct($readConfigPath, App\AppContextInterface $appContext, $iniFilePath)
     {
         $this->data = $readConfigPath;
         $this->appContext = $appContext;
+        $this->file = $iniFilePath;
 
         // set generic parameters
         foreach ($this->properties as $prop) {
@@ -92,11 +104,21 @@ class Config
     }
 
     /**
+     * Save the properties of a log Item in the ini file
+     */
+    public function updateItem($key)
+    {
+        foreach ($this->itemProperties as $prop) {
+            $this->data['item:'.$key][$prop] = $this->getLogItem($key)->getData($prop);
+        }
+    }
+
+    /**
      * Modify the general options.
      *
-     * @param array $data array containing the global config data
+     * @param array $data associative array containing the global config data
      */
-    public function modify($data)
+    protected function modify($data)
     {
         $modified = false;
         if (!$data) {
@@ -119,8 +141,12 @@ class Config
      * @param array      $data array containing the data of the general options
      * @param null|mixed $ini
      */
-    public function update($data, $ini = null)
+    public function update($profile, $active, $ini = null)
     {
+        $data = array(
+            'profile' => $profile,
+            'active' => $active
+        );
         $modified = $this->modify($data);
         if ($modified) {
             $modified = $this->save($ini);
@@ -137,14 +163,21 @@ class Config
     public function save($ini = null)
     {
         if (!$ini) {
-            $iniFile = $this->appContext->appConfigPath('lizmapLogConfig.ini.php');
-            $ini = $this->appContext->getIniModifier($iniFile);
+            $ini = $this->appContext->getIniModifier($this->file);
         }
-        foreach ($this->properties as $prop) {
-            if ($this->{$prop} !== '' && $this->{$prop} !== null) {
-                $ini->setValue($prop, $this->{$prop}, 'general');
-            } else {
-                $ini->removeValue($prop, 'general');
+
+        foreach ($this->data as $section => $props) {
+            if ($section !== 'general' && !strstr($section, 'item:')) {
+                continue ;
+            }
+            foreach ($props as $prop => $value) {
+                if ($section === 'general' && in_array($prop, $this->properties) || in_array($prop, $this->itemProperties)) {
+                    if ($this->{$prop} !== '' && $this->{$prop} !== null) {
+                        $ini->setValue($prop, $value, $section);
+                    } else {
+                        $ini->removeValue($prop, $section);
+                    }
+                }
             }
         }
 

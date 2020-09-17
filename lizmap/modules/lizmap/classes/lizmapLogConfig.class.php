@@ -12,6 +12,9 @@
 
 use Lizmap\Logger as Log;
 
+/**
+ * @deprecated
+ */
 class lizmapLogConfig
 {
     /**
