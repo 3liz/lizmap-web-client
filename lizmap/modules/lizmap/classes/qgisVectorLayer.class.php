@@ -171,7 +171,7 @@ class qgisVectorLayer extends qgisMapLayer
             'dbname', 'service', 'host', 'port', 'user', 'password',
             'sslmode', 'key', 'estimatedmetadata', 'selectatid',
             'srid', 'type', 'checkPrimaryKeyUnicity',
-            'table', 'geocol', 'sql', 'schema', 'tablename'
+            'table', 'geocol', 'sql', 'schema', 'tablename',
         );
 
         foreach ($parameters as $param) {
@@ -852,7 +852,7 @@ class qgisVectorLayer extends qgisMapLayer
         $dbFieldsInfo = $this->getDbFieldsInfo();
 
         $results = array();
-        $one = $dbFieldsInfo->getSQLRefEquality($fkey,(int) $fval);
+        $one = $dbFieldsInfo->getSQLRefEquality($fkey, (int) $fval);
         foreach ($pvals as $pval) {
             $two = $dbFieldsInfo->getSQLRefEquality($pkey, (int) $pval);
 

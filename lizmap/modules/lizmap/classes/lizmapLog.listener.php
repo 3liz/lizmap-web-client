@@ -72,7 +72,7 @@ class lizmapLogListener extends jEventListener
         // Get log item properties
         $logConfig = lizmap::getLogConfig();
         $logItem = $logConfig->getLogItem($key);
-        
+
         // Optionnaly log detail
         if ($logItem->getData('logDetail')) {
 

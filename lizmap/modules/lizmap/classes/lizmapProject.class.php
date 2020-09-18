@@ -207,7 +207,7 @@ class lizmapProject extends qgisProject
             }
         } else {
             foreach ($this->cachedProperties as $prop) {
-                if(array_key_exists($prop, $data)){
+                if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
                 }
             }
@@ -667,10 +667,11 @@ class lizmapProject extends qgisProject
 
     public function getFormFilterLayersConfig()
     {
-        $config = Null;
+        $config = null;
         if (property_exists($this->cfg, 'formFilterLayers')) {
             $config = $this->cfg->formFilterLayers;
         }
+
         return $config;
     }
 
@@ -916,13 +917,13 @@ class lizmapProject extends qgisProject
     public function getLoginFilteredConfig($layername)
     {
         if (!$this->hasLoginFilteredLayers()) {
-            return Null;
+            return null;
         }
 
         $ln = $layername;
         // In case $layername is a WFS TypeName
         $layerByTypeName = $this->findLayerByTypeName($layername);
-        if($layerByTypeName){
+        if ($layerByTypeName) {
             $ln = $layerByTypeName->name;
         }
 
@@ -937,12 +938,12 @@ class lizmapProject extends qgisProject
      * Get login filters, get expressions for layers based on login filtered
      * config.
      *
-     * @param Array[string] $layers : layers' name list
-     * @param boolean       $edition : get login filters for edition
+     * @param Array[string] $layers  : layers' name list
+     * @param bool          $edition : get login filters for edition
      *
      * @return array
      */
-    public function getLoginFilters($layers, $edition=false)
+    public function getLoginFilters($layers, $edition = false)
     {
         $filters = array();
 
@@ -955,13 +956,13 @@ class lizmapProject extends qgisProject
 
             // In case $layername is a WFS TypeName
             $layerByTypeName = $this->findLayerByTypeName($layername);
-            if($layerByTypeName){
+            if ($layerByTypeName) {
                 $lname = $layerByTypeName->name;
             }
 
             // Get config
             $loginFilteredConfig = $this->getLoginFilteredConfig($lname);
-            if ($loginFilteredConfig == Null) {
+            if ($loginFilteredConfig == null) {
                 continue;
             }
 
@@ -1024,7 +1025,7 @@ class lizmapProject extends qgisProject
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
-            'locale' => jApp::config()->locale
+            'locale' => jApp::config()->locale,
         );
         foreach ($this->cfg->datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
@@ -1091,29 +1092,29 @@ class lizmapProject extends qgisProject
                 $plotConf['plot']['colorfield2'] = $lc->colorfield2;
             }
 
-            $display_legend = True;
+            $display_legend = true;
             if (property_exists($lc, 'display_legend')) {
                 $display_legend = $this->optionToBoolean($lc->display_legend);
             }
             $plotConf['plot']['display_legend'] = $display_legend;
 
-            $stacked = False;
+            $stacked = false;
             if (property_exists($lc, 'stacked')) {
                 $stacked = $this->optionToBoolean($lc->stacked);
             }
             $plotConf['plot']['stacked'] = $stacked;
 
-            $horizontal = False;
+            $horizontal = false;
             if (property_exists($lc, 'horizontal')) {
                 $horizontal = $this->optionToBoolean($lc->horizontal);
             }
             $plotConf['plot']['horizontal'] = $horizontal;
 
-            if (property_exists($lc, 'html_template') and !empty($lc->html_template) ) {
+            if (property_exists($lc, 'html_template') and !empty($lc->html_template)) {
                 $plotConf['plot']['html_template'] = $lc->html_template;
             }
 
-            if (property_exists($lc, 'display_when_layer_visible') and !empty($lc->display_when_layer_visible) ) {
+            if (property_exists($lc, 'display_when_layer_visible') and !empty($lc->display_when_layer_visible)) {
                 $plotConf['plot']['display_when_layer_visible'] = $lc->display_when_layer_visible;
             }
 
@@ -1149,7 +1150,6 @@ class lizmapProject extends qgisProject
             }
 
             $config['layers'][$order] = $plotConf;
-
         }
         if (empty($config['layers'])) {
             return false;
@@ -1157,7 +1157,7 @@ class lizmapProject extends qgisProject
 
         $config['dataviz'] = array(
             'location' => 'dock',
-            'theme' => 'dark'
+            'theme' => 'dark',
         );
         if (property_exists($this->cfg->options, 'datavizLocation')
             and in_array($this->cfg->options->datavizLocation, array('dock', 'bottomdock', 'right-dock'))
@@ -1500,12 +1500,13 @@ class lizmapProject extends qgisProject
      */
     protected function getXmlLayer2($xml, $layerId)
     {
-        $layerList = $xml->xpath("//maplayer");
+        $layerList = $xml->xpath('//maplayer');
         foreach ($layerList as $layer) {
-            if ((string)$layer->id === $layerId) {
+            if ((string) $layer->id === $layerId) {
                 return $layer;
             }
         }
+
         return null;
     }
 
@@ -1887,7 +1888,7 @@ class lizmapProject extends qgisProject
         $configJson->qgisServerPlugins = $qplugins;
 
         // Check layers group visibility
-        $userGroups = Array('');
+        $userGroups = array('');
         if (jAuth::isConnected()) {
             $userGroups = jAcl2DbUserGroup::getGroups();
         }
@@ -1899,14 +1900,16 @@ class lizmapProject extends qgisProject
             }
             if ($obj->group_visibility === '') {
                 unset($obj->group_visibility);
+
                 continue;
             }
             // get group visibility as trimed array
             $group_visibility = array_map('trim', explode(',', $obj->group_visibility));
-            $layerToKeep = False;
+            $layerToKeep = false;
             foreach ($userGroups as $group) {
-                if (in_array($group, $group_visibility)){
-                    $layerToKeep = True;
+                if (in_array($group, $group_visibility)) {
+                    $layerToKeep = true;
+
                     break;
                 }
             }
@@ -1915,19 +1918,19 @@ class lizmapProject extends qgisProject
             }
             unset($obj->group_visibility);
         }
-        foreach($layersToRemove as $key => $obj) {
+        foreach ($layersToRemove as $key => $obj) {
             // locateByLayer
             if (property_exists($configJson->locateByLayer, $key)) {
                 unset($configJson->locateByLayer->{$key});
             }
             // locateByLayer vectorjoins
-            foreach($configJson->locateByLayer as $o) {
+            foreach ($configJson->locateByLayer as $o) {
                 if (!property_exists($o, 'vectorjoins')) {
                     continue;
                 }
                 $vectorjoinsToKeep = array();
-                foreach($o->vectorjoins as $i=>$v) {
-                    if($v->joinLayerId != $obj->id) {
+                foreach ($o->vectorjoins as $i => $v) {
+                    if ($v->joinLayerId != $obj->id) {
                         $vectorjoinsToKeep[] = $o;
                     }
                 }
@@ -1948,7 +1951,7 @@ class lizmapProject extends qgisProject
             // datavizLayers
             if (property_exists($configJson, 'datavizLayers')) {
                 $dvlLayers = $configJson->datavizLayers['layers'];
-                foreach($dvlLayers as $o=>$c) {
+                foreach ($dvlLayers as $o => $c) {
                     if ($c['layer_id'] == $obj->id) {
                         unset($configJson->datavizLayers['layers'][$o]);
                     }
@@ -1966,7 +1969,7 @@ class lizmapProject extends qgisProject
             }
             // multi-atlas
             // formFilterLayers
-            foreach($configJson->formFilterLayers as $o=>$c) {
+            foreach ($configJson->formFilterLayers as $o => $c) {
                 if ($c['layerId'] = $obj->id) {
                     unset($configJson->formFilterLayers[$o]);
                 }
@@ -1975,13 +1978,13 @@ class lizmapProject extends qgisProject
             if (array_key_exists($key, $configJson->relations)) {
                 unset($configJson->relations->{$key});
             }
-            foreach($configJson->relations as $k => $layerRelations) {
+            foreach ($configJson->relations as $k => $layerRelations) {
                 if ($k == 'pivot') {
                     continue;
                 }
                 $relationsToKeep = array();
-                foreach($layerRelations as $r) {
-                    if($r['referencingLayer'] != $obj->id) {
+                foreach ($layerRelations as $r) {
+                    if ($r['referencingLayer'] != $obj->id) {
                         $relationsToKeep[] = $r;
                     }
                 }
@@ -1993,7 +1996,7 @@ class lizmapProject extends qgisProject
             }
             // printTemplates
             $printTemplatesToKeep = array();
-            foreach($configJson->printTemplates as $printTemplate) {
+            foreach ($configJson->printTemplates as $printTemplate) {
                 if (array_key_exists('atlas', $printTemplate) &&
                     array_key_exists('coverageLayer', $printTemplate['atlas']) &&
                     $printTemplate['atlas']['coverageLayer'] != $obj->id) {
@@ -2134,7 +2137,7 @@ class lizmapProject extends qgisProject
         if ($this->hasAttributeLayers()) {
             $tpl = new jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
-            $layerExport = jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ? "layer-export" : "";
+            $layerExport = jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ? 'layer-export' : '';
             $dock = new lizmapMapDockItem(
                 'selectiontool',
                 jLocale::get('view~map.selectiontool.navbar.title'),
