@@ -242,8 +242,12 @@ only screen and (                   max-device-height : 640px) {
   #mapmenu > div > ul li{
     background: #444444;
     border-radius: 6px;
-    margin-top: 15px;
+    margin-top: 10px;
     padding-left: 15px;
+  }
+
+  #mapmenu > div > ul li.active{
+    background-color: #006dcc;
   }
 
   #mapmenu > div > ul li:last-child{
@@ -268,9 +272,21 @@ only screen and (                   max-device-height : 640px) {
     text-transform: capitalize;
   }
 
+  #map-content{
+    margin-left: 0;
+  }
+
+  #content #dock{
+    background-color: #4A4A4A;
+  }
+
   #docks-wrapper{
     left: -1px;
     width: 80%;
+  }
+
+  #bottom-dock{
+    border-left: 0;
   }
 
   #menuToggle.opened ~ #mapmenu{
@@ -340,4 +356,54 @@ only screen and (                   max-device-height : 640px) {
   #content.mobile #mini-dock{
     left: 0;
   }
+
+  /* Overload dock icons. TODO : change sprite with SVG */
+  #mapmenu .nav-list > li.home.active .icon {
+  background-position: -25px 0px;
+  }
+  #mapmenu .nav-list > li.projects.active .icon {
+    background-position: -925px 0px;
+  }
+  #mapmenu .nav-list > li.metadata.active .icon {
+    background-position: -125px 0px;
+  }
+  #mapmenu .nav-list > li.switcher.active .icon {
+    background-position: -75px 0px;
+  }
+  #mapmenu .nav-list > li.legend.active .icon {
+    background-position: -75px 0px;
+  }
+  #mapmenu .nav-list > li.locate.active .icon {
+    background-position: -175px 0px;
+  }
+  #mapmenu .nav-list > li.print.active .icon {
+    background-position: -375px 0px;
+  }
+  #mapmenu .nav-list > li.measure.active .icon {
+    background-position: -275px 0px;
+  }
+  #mapmenu .nav-list > li.edition.active .icon {
+    background-position: -475px 0px;
+  }
+  #mapmenu .nav-list > li.geolocation.active .icon {
+    background-position: -325px 0px;
+  }
+  #mapmenu .nav-list > li.attributeLayers.active .icon {
+    background-position: -525px 0px;
+  }
+  #mapmenu .nav-list > li.permaLink.active .icon {
+    background-position: -675px 0px;
+  }
+  #mapmenu .nav-list > li.tooltip-layer.active .icon {
+    background-position: -775px 0px;
+  }
+  #mapmenu .nav-list > li.timemanager.active .icon {
+    background-position: -625px 0px;
+  }
+
+  .nav .active > a .icon-white, .nav li > a:hover .icon-white, .nav li > a:focus .icon-white {
+    background-image: url(images/glyphicons-halflings-white.png);
+  }
+
+
 }

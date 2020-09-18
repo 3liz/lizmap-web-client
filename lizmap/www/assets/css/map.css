@@ -135,22 +135,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 #mapmenu .nav-list > li.metadata a:hover .icon {
   background-position: -100px 0px;
 }
-/*
-#mapmenu .nav-list > li.map .icon {
-  background-position: -40px -40px;
-}
-#mapmenu .nav-list > li.map.active .icon,
-#mapmenu .nav-list > li.map a:hover .icon {
-  background-position: -40px -60px;
-}
-#mapmenu .nav-list > li.legend .icon {
-  background-position: -40px -80px;
-}
-#mapmenu .nav-list > li.legend.active .icon,
-#mapmenu .nav-list > li.legend a:hover .icon {
-  background-position: -40px -100px;
-}
-*/
+
 #mapmenu .nav-list > li.switcher .icon {
   background-position: -75px 0px;
 }
