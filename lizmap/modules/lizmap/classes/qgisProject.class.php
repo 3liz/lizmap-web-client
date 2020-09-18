@@ -563,7 +563,7 @@ class qgisProject
         $xmlThemes = $xml->xpath('//visibility-presets');
         $themes = array();
 
-        if($xmlThemes){
+        if ($xmlThemes) {
             foreach ($xmlThemes[0] as $theme) {
                 $themeObj = $theme->attributes();
                 if (!array_key_exists((string) $themeObj->name, $themes)) {
@@ -575,7 +575,7 @@ class qgisProject
                     $layerObj = $layer->attributes();
                     $themes[(string) $themeObj->name]['layers'][(string) $layerObj->id] = array(
                         'style' => (string) $layerObj->style,
-                        'expanded' => (string) $layerObj->expanded
+                        'expanded' => (string) $layerObj->expanded,
                     );
                 }
 
@@ -585,6 +585,7 @@ class qgisProject
                     $themes[(string) $themeObj->name]['expandedGroupNode'][] = (string) $expandedGroupNodeObj->id;
                 }
             }
+
             return $themes;
         }
 
