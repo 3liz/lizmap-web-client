@@ -304,7 +304,6 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   padding-bottom: 5px;
 
   height: 100%;
-  box-sizing: border-box;
 }
 
 #content.mobile #dock{
@@ -1415,6 +1414,10 @@ transform: none !important;
   left: 30px;
   width: calc(100% - 30px);
   height: 100%;
+}
+
+#docks-wrapper > div{
+  box-sizing: border-box;
 }
 
 #switcher {
