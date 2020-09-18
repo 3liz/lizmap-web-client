@@ -17,17 +17,17 @@ class qgisVectorLayer extends qgisMapLayer
     protected $fields = array();
 
     /**
-     * @var string[]  list of aliases name for each fields
+     * @var string[] list of aliases name for each fields
      */
     protected $aliases = array();
 
     /**
-     * @var string[]  list of default value (as QGIS expressions) for each fields
+     * @var string[] list of default value (as QGIS expressions) for each fields
      */
     protected $defaultValues = array();
 
     /**
-     * @var string[]  list of constraints for each fields (type of contraints and if it is notNull, unique and/or expression contraint)
+     * @var string[] list of constraints for each fields (type of contraints and if it is notNull, unique and/or expression contraint)
      */
     protected $constraints = array();
 
@@ -81,7 +81,8 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * list of aliases
+     * list of aliases.
+     *
      * @return string[]
      */
     public function getAliasFields()
@@ -90,7 +91,7 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * List of default values for each fields
+     * List of default values for each fields.
      *
      * Values are QGIS expressions or may be null when no default value is given
      *
@@ -102,21 +103,24 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * Get the QGIS expression of the default value of the given field
+     * Get the QGIS expression of the default value of the given field.
      *
      * @param string $fieldName
-     * @return string|null null if there is no default value
+     *
+     * @return null|string null if there is no default value
      */
     public function getDefaultValue($fieldName)
     {
         if (isset($this->defaultValues[$fieldName])) {
             return $this->defaultValues[$fieldName];
         }
+
         return null;
     }
 
     /**
-     * list of constraints
+     * list of constraints.
+     *
      * @return string[]
      */
     public function getConstraintsList()
@@ -125,9 +129,10 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * Get the QGIS constraints of the given field
+     * Get the QGIS constraints of the given field.
      *
      * @param string $fieldName
+     *
      * @return string[] the constraints of the field
      */
     public function getConstraints($fieldName)
@@ -135,12 +140,13 @@ class qgisVectorLayer extends qgisMapLayer
         if (isset($this->constraints[$fieldName])) {
             return $this->constraints[$fieldName];
         }
+
         return array(
-                    'constraints' => 0,
-                    'notNull' => false,
-                    'unique' => false,
-                    'exp' => false
-                );
+            'constraints' => 0,
+            'notNull' => false,
+            'unique' => false,
+            'exp' => false,
+        );
     }
 
     public function getWfsFields()
@@ -227,17 +233,17 @@ class qgisVectorLayer extends qgisMapLayer
                 );
             }
             if (!empty($dtParams->schema)) {
-                $jdbParams['search_path'] = '"'.$dtParams->schema . '",public';
+                $jdbParams['search_path'] = '"'.$dtParams->schema.'",public';
             }
         } elseif ($this->provider == 'ogr'
-            and preg_match('#(gpkg|sqlite)$#', $dtParams->dbname ) ) {
-                $spatialiteExt = $this->project->getSpatialiteExtension();
-                $repository = $this->project->getRepository();
-                $jdbParams = array(
-                    'driver' => 'sqlite3',
-                    'database' => realpath($repository->getPath().$dtParams->dbname),
-                    'extensions' => $spatialiteExt
-                );
+            and preg_match('#(gpkg|sqlite)$#', $dtParams->dbname)) {
+            $spatialiteExt = $this->project->getSpatialiteExtension();
+            $repository = $this->project->getRepository();
+            $jdbParams = array(
+                'driver' => 'sqlite3',
+                'database' => realpath($repository->getPath().$dtParams->dbname),
+                'extensions' => $spatialiteExt,
+            );
         } else {
             return null;
         }
@@ -270,7 +276,7 @@ class qgisVectorLayer extends qgisMapLayer
             return $this->connection;
         }
 
-        if ($this->provider != 'spatialite' && $this->provider != 'postgres' and !( preg_match('#layername=#', $this->datasource ) ) ) {
+        if ($this->provider != 'spatialite' && $this->provider != 'postgres' and !(preg_match('#layername=#', $this->datasource))) {
             jLog::log('Unknown provider "'.$this->provider.'" to get connection!', 'error');
 
             return null;
@@ -465,7 +471,6 @@ class qgisVectorLayer extends qgisMapLayer
             $prop = $dataFields[$field];
             if ($prop->hasDefault && $prop->default != '' &&
                 !in_array($prop->default, $values)) {
-
                 $provider = $this->getProvider();
                 $cnx = null;
                 if ($provider == 'postgres') {

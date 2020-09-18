@@ -198,10 +198,10 @@ var lizMap = function() {
         return '';
     }
 
-    theCleanName = performCleanName( aName );
+    var theCleanName = performCleanName( aName );
     if ( (theCleanName in cleanNameMap) && cleanNameMap[theCleanName] != aName ){
-        i = 1;
-        nCleanName = theCleanName+i;
+        var i = 1;
+        var nCleanName = theCleanName+i;
         while( (nCleanName in cleanNameMap) && cleanNameMap[nCleanName] != aName ){
           i += 1;
           nCleanName = theCleanName+i;
@@ -418,12 +418,6 @@ var lizMap = function() {
     map.updateSize();
     map.setCenter(center);
     map.baseLayer.redraw();
-
-    var slider = $('#navbar .slider');
-    if ( slider.is(':visible') && ($('#navbar').height()+150 > $('#map').height() || mCheckMobile()) )
-      slider.hide();
-    else if ( !slider.is(':visible') && $('#navbar').height()+200 < $('#map').height() && !mCheckMobile() )
-      slider.show();
 
     updateMiniDockSize();
   }
@@ -850,7 +844,7 @@ var lizMap = function() {
       if ( layerConfig.groupAsLayer == 'True' )
         layerConfig.type = 'layer';
 
-      var wmsStyles = $.map(layer.styles, function( s, i ){
+      var wmsStyles = $.map(layer.styles, function(s){
           return s.name;
       });
       if ( wmsStyles.length != 0 ) {
@@ -1118,7 +1112,7 @@ var lizMap = function() {
 
     function truncateWithEllipsis(str,n){
       return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
-    };
+    }
 
     html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
     html += '<span class="label" title="'+truncateWithEllipsis($('<div>'+nodeConfig.abstract+'</div>').text(),50)+'">'+nodeConfig.title+'</span>';
@@ -1141,7 +1135,6 @@ var lizMap = function() {
       html += '<td></td>';
     }
 
-    var removeCache = '';
     if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options)){
       html += '<td><button class="btn removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
     }
@@ -1265,8 +1258,6 @@ var lizMap = function() {
     // This avoid the request of each singlettile layer 2 times on startup
     updateContentSize();
 
-    var res = extent.getHeight()/$('#map').height();
-
     var scales = [];
     var resolutions = [];
     if ('resolutions' in config.options)
@@ -1277,7 +1268,7 @@ var lizMap = function() {
       return Number(b) - Number(a);
     });
     // remove duplicate scales
-    nScales = [];
+    var nScales = [];
     while (scales.length != 0){
       var scale = scales.pop(0);
       if ($.inArray( scale, nScales ) == -1 )
@@ -1298,7 +1289,7 @@ var lizMap = function() {
         ]
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
         ,eventListeners:{
-         zoomend: function(evt){
+         zoomend: function(){
   // private treeTable
   var options = {
     childPrefix : "child-of-"
@@ -1306,19 +1297,7 @@ var lizMap = function() {
 
   function childrenOf(node) {
     return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  };
-
-  function descendantsOf(node) {
-    var descendants = [];
-    var children = [];
-    if (node && node[0])
-      children = childrenOf(node);
-    for (var i=0, len=children.length; i<len; i++) {
-      descendants.push(children[i]);
-      descendants = descendants.concat(descendantsOf([children[i]]));
-    }
-    return descendants;
-  };
+  }
 
   function parentOf(node) {
     if (node.length == 0 )
@@ -1333,7 +1312,7 @@ var lizMap = function() {
     }
 
     return null;
-  };
+  }
 
   function ancestorsOf(node) {
     var ancestors = [];
@@ -1341,7 +1320,7 @@ var lizMap = function() {
       ancestors[ancestors.length] = node[0];
     }
     return ancestors;
-  };
+  }
            //layer visibility
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
@@ -1408,7 +1387,7 @@ var lizMap = function() {
   /**
    * Get features for locate by layer tool
    */
-  function updateLocateFeatureList(aName, aJoinField, aJoinValue) {
+  function updateLocateFeatureList(aName) {
     var locate = config.locateByLayer[aName];
     // clone features reference
     var features = {};
@@ -1430,8 +1409,8 @@ var lizMap = function() {
     // filter by vector joins
     if ( 'vectorjoins' in locate && locate.vectorjoins.length != 0 ) {
         var vectorjoins = locate.vectorjoins;
-        for ( i=0, len =vectorjoins.length; i< len; i++) {
-            vectorjoin = vectorjoins[i];
+        for ( var i=0, len =vectorjoins.length; i< len; i++) {
+            var vectorjoin = vectorjoins[i];
             var jName = vectorjoin.joinLayer;
             if ( jName in config.locateByLayer ) {
                 var jLocate = config.locateByLayer[jName];
@@ -1574,7 +1553,7 @@ var lizMap = function() {
       var features = data.features;
       if( locate.crs != 'EPSG:4326' && features.length != 0) {
           // load projection to be sure to have the definition
-          loadProjDefinition( locate.crs, function( aProj ) {
+          loadProjDefinition( locate.crs, function() {
               // in QGIS server > 2.14 GeoJSON is in EPSG:4326
               if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
                 locate.crs = 'EPSG:4326';
@@ -1850,7 +1829,7 @@ var lizMap = function() {
 
   function childrenOf(node) {
     return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  };
+  }
 
   function descendantsOf(node) {
     var descendants = [];
@@ -1862,7 +1841,7 @@ var lizMap = function() {
       descendants = descendants.concat(descendantsOf([children[i]]));
     }
     return descendants;
-  };
+  }
 
   function parentOf(node) {
     if (node.length == 0 )
@@ -1877,7 +1856,7 @@ var lizMap = function() {
     }
 
     return null;
-  };
+  }
 
   function ancestorsOf(node) {
     var ancestors = [];
@@ -1885,7 +1864,7 @@ var lizMap = function() {
       ancestors[ancestors.length] = node[0];
     }
     return ancestors;
-  };
+  }
 
     // activate checkbox buttons
     $('#switcher button.checkbox')
@@ -2233,11 +2212,6 @@ var lizMap = function() {
         })
       }));
 
-        // Lizmap URL
-        var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
-
         var featureTypes = getVectorLayerFeatureTypes();
         if (featureTypes.length == 0 ){
           config.locateByLayer = {};
@@ -2253,7 +2227,7 @@ var lizMap = function() {
                 else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
                     lname = shortNameMap[typeName];
                 else {
-                    for (lbl in config.locateByLayer) {
+                    for (var lbl in config.locateByLayer) {
                         if (lbl.split(' ').join('_') == typeName) {
                             lname = lbl;
                             break;
@@ -2267,7 +2241,7 @@ var lizMap = function() {
 
             var locate = config.locateByLayer[lname];
             locate['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
-            loadProjDefinition( locate.crs, function( aProj ) {
+            loadProjDefinition( locate.crs, function() {
                 new OpenLayers.Projection(locate.crs);
             });
             var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
@@ -2634,8 +2608,6 @@ var lizMap = function() {
       if ( $('#permalink').length == 0 )
         return;
 
-    var configOptions = config.options;
-
     var pLink = new OpenLayers.Control.Permalink(
       'permalink',
       null,
@@ -2742,7 +2714,7 @@ var lizMap = function() {
       if ( !('request_params' in lConfig)
         || lConfig['request_params'] == null )
           continue;
-      var requestParams = lConfig['request_params'];
+
       if ( ('filter' in lConfig['request_params'])
         && lConfig['request_params']['filter'] != null
         && lConfig['request_params']['filter'] != "" ) {
@@ -3081,14 +3053,12 @@ var lizMap = function() {
           var popupId = getLayerId[0] + '_' + getLayerId[1];
           var layerId = getLayerId[0];
           var fid = getLayerId[1];
-          var layerName=getLayerId[0].split(/[0-9]/)[0];
 
           var getLayerConfig = lizMap.getLayerConfigById( layerId );
 
           // verifiying  related children objects
           if ( !getLayerConfig )
               return true;
-          var layerConfig = getLayerConfig[1];
           var featureType = getLayerConfig[0];
 
           // We do not want to deactivate the display of filtered children dataviz
@@ -3104,7 +3074,7 @@ var lizMap = function() {
               // Where there is all plots
               var plotLayers = lizMap.config.datavizLayers.layers;
               var lrelations = lizMap.config.relations[layerId];
-              nbPlotByLayer = 1;
+              var nbPlotByLayer = 1;
               for(var x in lrelations){
                   var rel = lrelations[x];
                   // Id of the layer which is the child of layerId
@@ -3115,11 +3085,11 @@ var lizMap = function() {
                   for ( var i in plotLayers) {
                       if(plotLayers[i].layer_id==getChildrenId)
                       {
-                          plot_config=plotLayers[i];
+                          var plot_config=plotLayers[i];
                           if('popup_display_child_plot' in plot_config
                             && plot_config.popup_display_child_plot == "True"
                           ){
-                            plot_id=plotLayers[i].plot_id;
+                            var plot_id=plotLayers[i].plot_id;
                             popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
                             // Be sure the id is unique ( popup can be displayed in atlas tool too)
                             popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
@@ -3129,7 +3099,7 @@ var lizMap = function() {
                                 popupId,
                                 false
                             );
-                            html = '<div class="lizmapPopupChildren lizdataviz">';
+                            var html = '<div class="lizmapPopupChildren lizdataviz">';
                             html+= '<h4>'+ plot_config.title+'</h4>';
                             html+= phtml
                             html+= '</div>';
@@ -3186,8 +3156,12 @@ var lizMap = function() {
               parentDiv.append(childPopup);
 
               // Handle compact-tables/explode-tables behaviour
-              $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
-                  language: { url: lizUrls["dataTableLanguage"] }
+              $('.lizmapPopupChildren .popupAllFeaturesCompact table').each(function(){
+                if (!$.fn.dataTable.isDataTable($(this))) {
+                  $(this).DataTable({
+                    language: { url: lizUrls["dataTableLanguage"] }
+                  });
+                }
               });
 
               $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
@@ -3225,7 +3199,6 @@ var lizMap = function() {
       $(selector).each(function(){
         var self = $(this);
         var val = self.val();
-        var eHtml = '';
         var fid = val.split('.').pop();
         var layerId = val.replace( '.' + fid, '' );
 
@@ -3243,7 +3216,6 @@ var lizMap = function() {
 
         // Display related children objects
         var relations = config.relations[layerId];
-        var featureId = featureType + '.' + fid;
         var popupMaxFeatures = 10;
         if ( 'popupMaxFeatures' in layerConfig && !isNaN(parseInt(layerConfig.popupMaxFeatures)) )
             popupMaxFeatures = parseInt(layerConfig.popupMaxFeatures);
@@ -3537,7 +3509,6 @@ var lizMap = function() {
         $('#'+popupContainerId+' div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
             var self = $(this);
             var val = self.val();
-            var eHtml = '';
             var fid = val.split('.').pop();
             var layerId = val.replace( '.' + fid, '' );
             var aConfig = lizMap.getLayerConfigById( layerId );
@@ -3837,7 +3808,7 @@ var lizMap = function() {
           mAddMessage(lizDict['print.activate'],'info',true).addClass('print');
           layer.setVisibility(true);
         },
-        "deactivate": function(evt) {
+        "deactivate": function() {
           layer.setVisibility(false);
           $('#message .print').remove();
           this.layout = null;
@@ -4001,7 +3972,6 @@ var lizMap = function() {
           $.each( pTableVectorLayers, function( i, layerId ){
               var aConfig = getLayerConfigById( layerId );
               if( aConfig ) {
-                  var layerName = aConfig[0];
                   var layerConfig = aConfig[1];
                   if( ( layerConfig.geometryType == "none" || layerConfig.geometryType == "unknown" || layerConfig.geometryType == "" ) ) {
                       if ( 'shortname' in layerConfig && layerConfig.shortname != '' )
@@ -4091,8 +4061,17 @@ var lizMap = function() {
       if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
         const formatWKT = new OpenLayers.Format.WKT();
 
-        printParams['map0:HIGHLIGHT_GEOM'] = formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn);
-        printParams['map0:HIGHLIGHT_SYMBOL'] = lizMap.mainLizmap.digitizing.featureDrawnSLD;
+        const highlightGeom = [];
+        const highlightSymbol = [];
+
+        for (let index = 0; index < lizMap.mainLizmap.digitizing.featureDrawn.length; index++) {
+          highlightGeom.push(formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn[index]));
+          highlightSymbol.push(lizMap.mainLizmap.digitizing.getFeatureDrawnSLD(index));
+          
+        }
+
+        printParams['map0:HIGHLIGHT_GEOM'] = highlightGeom.join(';');
+        printParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
       }
       
       downloadFile(url, printParams);
@@ -4152,7 +4131,7 @@ var lizMap = function() {
             else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
                 lname = shortNameMap[typeName];
             else {
-                for (ttl in config.tooltipLayers) {
+                for (var ttl in config.tooltipLayers) {
                     if (ttl.split(' ').join('_') == typeName) {
                         lname = ttl;
                         break;
@@ -4231,7 +4210,7 @@ var lizMap = function() {
             fillColor: "transparent"
         }
     });
-    tooltipControl.addInfoPopup = function(feature, evt) {
+    tooltipControl.addInfoPopup = function(feature) {
         var lname = $('#tooltip-layer-list').val();//feature.layer.name.split("@")[1];
         var lconfig = lizMap.config.layers[lname];
         if( !(lname in lizMap.config.layers) )
@@ -4248,7 +4227,7 @@ var lizMap = function() {
         var cAliases = lconfig['alias'];
         var html = '<div id="tooltipPopupContent">';
         html+= '<table class="lizmapPopupTable">';
-        for (a in feature.attributes){
+        for (var a in feature.attributes){
             // Do no show hiddenfields
             if( ($.inArray(a, hiddenFields) > -1) )
                 continue;
@@ -4639,9 +4618,6 @@ var lizMap = function() {
     var format =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
     capabilities = format.read(aData);
 
-    var format = new OpenLayers.Format.XML();
-    composers = format.read(aData).getElementsByTagName('ComposerTemplate');
-
     var capability = capabilities.capability;
     if (!capability) {
       $('#map').html('SERVICE NON DISPONIBLE!');
@@ -4781,7 +4757,7 @@ var lizMap = function() {
           }
       };
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.send($.param(parameters));
+      xhr.send($.param(parameters, true));
    }
 
   /**
@@ -4818,12 +4794,6 @@ var lizMap = function() {
 
       // Set export format
       getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
-
-      // Build WFS url
-      var exportUrl = OpenLayers.Util.urlAppend(
-          getFeatureUrlData['url'],
-          OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
-      );
 
       // Download file
       downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
@@ -4883,7 +4853,6 @@ var lizMap = function() {
         typeName = configLayer.shortname;
       else if ( 'typename' in configLayer && configLayer.typename != '' )
           typeName = configLayer.typename;
-      var layerName = cleanName(aName);
 
       var wfsOptions = {
           'SERVICE':'WFS'
@@ -4969,8 +4938,8 @@ var lizMap = function() {
   function getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack) {
       // Set function parameters if not given
       aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
-      aFeatureId = typeof aFeatureId !== 'undefined' ?  aFeatureId : null;
-      geometryName = typeof geometryName !== 'undefined' ?  geometryName : null;
+      aFeatureID = typeof aFeatureID !== 'undefined' ? aFeatureID : null;
+      aGeometryName = typeof aGeometryName !== 'undefined' ? aGeometryName : null;
       restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
       startIndex = typeof startIndex !== 'undefined' ?  startIndex : null;
       maxFeatures = typeof maxFeatures !== 'undefined' ?  maxFeatures : null;
@@ -5022,7 +4991,7 @@ var lizMap = function() {
           // verifying the feature CRS
           if( !aConfig.featureCrs && data.features.length != 0) {
               // load projection to be sure to have the definition
-              lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
+              lizMap.loadProjDefinition( aConfig.crs, function() {
                   // in QGIS server > 2.14 GeoJSON is in EPSG:4326
                   if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
                       aConfig['featureCrs'] = 'EPSG:4326';
@@ -5089,9 +5058,6 @@ var lizMap = function() {
 
   function zoomToFeature( featureType, fid, zoomAction ){
       zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
-
-      var layerConfig = config.layers[featureType];
-      var featureId = featureType + '.' + fid;
 
       var proj = new OpenLayers.Projection(config.layers[featureType].crs);
       if( config.layers[featureType].featureCrs )
@@ -5693,11 +5659,11 @@ var lizMap = function() {
     },
 
 
-    launchEdition: function( aLayerId, aFid) {
+    launchEdition: function() {
         return false;
     },
 
-    deleteEditionFeature: function( aLayerId, aFid, aMessage, aCallback ){
+    deleteEditionFeature: function(){
         return false;
     },
 
@@ -5852,7 +5818,7 @@ var lizMap = function() {
         var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
         wmtsCapabilities = wmtsFormat.read(wmtsCapaData);
         if ('exceptionReport' in wmtsCapabilities) {
-          wmtsElem = $('#metadata-wmts-getcapabilities-url');
+          var wmtsElem = $('#metadata-wmts-getcapabilities-url');
           if (wmtsElem.length != 0) {
             wmtsElem.before('<i title="' + wmtsCapabilities.exceptionReport.exceptions[0].texts[0] + '" class="icon-warning-sign"></i>&nbsp;');
           }
@@ -6222,9 +6188,7 @@ var lizMap = function() {
  * but after this file
  */
 lizMap.events.on({
-    'treecreated':function(evt){
-    }
-    ,'mapcreated':function(evt){
+    'mapcreated':function(evt){
       // Add empty baselayer to the map
       if ( ('emptyBaselayer' in evt.config.options)
          && evt.config.options.emptyBaselayer == 'True') {
@@ -6757,8 +6721,6 @@ lizMap.events.on({
           evt.map.allOverlays = false;
        }
       } catch(e) {
-         //problems with google
-         var myError = e;
        }
      }
 
@@ -6780,7 +6742,7 @@ lizMap.events.on({
         }
 
         // Add lizmap external baselayers
-        for (id in evt.config['lizmapExternalBaselayers']) {
+        for (var id in evt.config['lizmapExternalBaselayers']) {
 
           var layerConfig = evt.config['lizmapExternalBaselayers'][id];
 

@@ -84,7 +84,7 @@ DOCDIR=../../docs/
 DOC_CONFIG_FILE=../../phpdoc.dist.xml
 DOC_CACHE_FOLDER=$(DOCDIR).phpdoc/
 
-.PHONY: debug build tests clean check-release check-registry check-factory stage package deploy_download deploy_download_stable saas_package trigger_ci saas_release
+.PHONY: debug build tests clean check-release check-registry check-factory stage package deploy_download deploy_download_stable saas_package saas_release
 .PHONY: local_saas_package docker-build docker-build-ci docker-tag docker-deliver docker-clean docker-clean-all docker-release docker-hub docker-run
 
 debug:
@@ -211,9 +211,6 @@ saas_package: $(GENERIC_PACKAGE_DIR)
 
 saas_deploy_snap:
 	saasv2_deploy_to_snap $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest
-
-trigger_ci:
-	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x -F variables[SAAS_LZMPACK_VERSION]=$(SAAS_LZMPACK_VERSION)
 
 saas_release: check-release
 	saasv2_release_package $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest

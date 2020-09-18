@@ -30,7 +30,7 @@
        style="stroke-linecap:round"
        id="g76" />
     <ellipse
-       style="fill:#424242;stroke:#424242;stroke-width:0.45078;stroke-linejoin:round;stroke-dashoffset:5.06459999"
+       style="fill:currentColor;stroke:currentColor;stroke-width:0.45078;stroke-linejoin:round;stroke-dashoffset:5.06459999"
        id="ellipse78"
        ry="2.5581"
        rx="2.5316"

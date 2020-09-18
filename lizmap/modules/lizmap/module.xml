@@ -17,6 +17,7 @@
     <autoload>
         <class name="lizmap" file="classes/lizmap.class.php"/>
         <class name="lizmapLogItem" file="classes/lizmapLogItem.class.php"/>
+        <class name="lizmapLogConfig" file="classes/lizmapLogConfig.class.php"/>
         <class name="lizmapOGCRequest" file="classes/lizmapOGCRequest.class.php"/>
         <class name="qgisProject" file="classes/qgisProject.class.php"/>
         <class name="lizmapProject" file="classes/lizmapProject.class.php"/>
@@ -26,6 +27,7 @@
         <class name="lizmapWFSRequest" file="classes/lizmapWFSRequest.class.php"/>
         <class name="lizmapWMTSRequest" file="classes/lizmapWMTSRequest.class.php"/>
         <class name="lizmapTiler" file="classes/lizmapTiler.class.php"/>
+        <class name="lizmapWkt" file="classes/lizmapWkt.class.php"/>
         <class name="qgisMapLayer" file="classes/qgisMapLayer.class.php"/>
         <class name="qgisVectorLayerDatasource" file="classes/qgisVectorLayerDatasource.class.php"/>
         <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php"/>
@@ -35,6 +37,8 @@
         <class name="qgisLayerDbFieldsInfo" file="classes/qgisLayerDbFieldsInfo.class.php"/>
         <class name="qgisFormControlsInterface" file="classes/qgisFormControlsInterface.php"/>
         <class name="lizmapServices" file="classes/lizmapServices.class.php"/>
+        <class name="qgisFormValueRelationDynamicDatasource" file="classes/qgisFormValueRelationDynamicDatasource.class.php"/>
+        <class name="qgisExpressionUtils" file="classes/qgisExpressionUtils.class.php"/>
         <namespacePathMap name="Lizmap" dir="lib"/>
     </autoload>
 </module>

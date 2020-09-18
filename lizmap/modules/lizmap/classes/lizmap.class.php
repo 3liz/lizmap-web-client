@@ -29,11 +29,11 @@ class lizmap
      */
     protected static $repositoryInstances = array();
 
-    // log items
-    protected static $logItems = array();
-
-    // lizmapServices counter
+    // lizmapServices instance
     protected static $lizmapServicesInstance = null;
+
+    // lizmapLogConfigInstance
+    protected static $lizmapLogConfigInstance = null;
 
     /**
      * this is a static class, so private constructor.
@@ -103,17 +103,25 @@ class lizmap
 
     /**
      * Get the list of properties for a generic repository.
+     * This method shouldn't be used, you should use lizmapRepository::getProperties() instead.
+     * @deprecated
      */
     public static function getRepositoryProperties()
     {
+        trigger_error('This method is deprecated. Please use the lizmapRepository::getProperties() method.', E_DEPRECATED);
+
         return lizmapRepository::$properties;
     }
 
     /**
      * Get the list of properties options for a generic repository.
+     * This method shouldn't be used, you should use lizmapRepository::getPropertiesOptions() instead.
+     * @deprecated
      */
     public static function getRepositoryPropertiesOptions()
     {
+        trigger_error('This method is deprecated. Please use the lizmapRepository::getPropertiesOptions() method.', E_DEPRECATED);
+
         return lizmapRepository::$propertiesOptions;
     }
 
@@ -139,9 +147,9 @@ class lizmap
         }
 
         // reconstruct form fields based on repositoryPropertyList
-        $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
+        $propertiesOptions = lizmapRepository::getPropertiesOptions();
 
-        foreach (lizmap::getRepositoryProperties() as $k) {
+        foreach (lizmapRepository::getProperties() as $k) {
             $ctrl = null;
             if ($propertiesOptions[$k]['fieldType'] == 'checkbox') {
                 $ctrl = new jFormsControlCheckbox($k);
@@ -190,7 +198,7 @@ class lizmap
             $form->addControl($ctrl);
         }
         if ($rep) {
-            foreach ($rep->getProperties() as $k) {
+            foreach (lizmapRepository::getProperties() as $k) {
                 $v = $rep->getData($k);
                 if ($k == 'path' && $rootRepositories != '' &&
                     substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
@@ -223,7 +231,8 @@ class lizmap
             return self::$repositoryInstances[$key];
         }
 
-        $rep = new lizmapRepository($key);
+        $services = self::getServices();
+        $rep = $services->getLizmapRepository($key);
         self::$repositoryInstances[$key] = $rep;
 
         return $rep;
@@ -245,8 +254,9 @@ class lizmap
             return null;
         }
 
-        $rep = new lizmapRepository($key);
-        $rep->update($data);
+        $services = self::getServices();
+        $rep = $services->getLizmapRepository($key);
+        self::updateRepository($key, $data);
         self::getRepositoryList();
         self::$repositoryInstances[$key] = $rep;
 
@@ -289,6 +299,31 @@ class lizmap
     }
 
     /**
+     * Uptade a repository
+     *
+     * @param string $key the repository name
+     * @param array $data the repository data
+     *
+     * @return bool false if the repository corresponding to $key cannot be found
+     * or if there is no valid entry in $data
+     */
+
+    public static function updateRepository($key, $data)
+    {
+        if (!key_exists($key, self::$repositoryInstances)) {
+            return false;
+        }
+
+        $iniFile = jApp::configPath('lizmapConfig.ini.php');
+        $ini = new jIniFileModifier($iniFile);
+        $rep = self::$repositoryInstances[$key];
+
+        $modified = $rep->update($data, $ini);
+        unset($ini);
+        return $modified;
+    }
+
+    /**
      * Get a project.
      *
      * @param string $key the project name
@@ -310,9 +345,7 @@ class lizmap
             return null;
         }
 
-        $proj = $rep->getProject($matches['proj']);
-
-        return $proj;
+        return $rep->getProject($matches['proj']);
     }
 
     /**
@@ -322,28 +355,12 @@ class lizmap
      */
     public static function getLogConfig()
     {
-        return jClasses::getService('lizmap~lizmapLogConfig');
-    }
-
-    /**
-     * Get a list of log items names.
-     *
-     * @return string[] list of names
-     */
-    public static function getLogItemList()
-    {
-        // read the lizmap log configuration file
-        $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
-        $logItemList = array();
-        foreach ($readConfigPath as $section => $data) {
-            $match = preg_match('#(^item:)#', $section, $matches);
-            if (isset($matches[0])) {
-                $logItemList[] = str_replace($matches[0], '', $section);
-            }
+        if (!self::$lizmapLogConfigInstance) {
+            $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
+            self::$lizmapLogConfigInstance = new lizmapLogConfig($readConfigPath);
         }
-        self::$logItems = $logItemList;
 
-        return self::$logItems;
+        return self::$lizmapLogConfigInstance;
     }
 
     /**
@@ -362,20 +379,31 @@ class lizmap
      * @param string $key Key of the log item to get
      *
      * @return lizmapLogItem
+     *
+     * @deprecated
      */
     public static function getLogItem($key)
     {
-        if (!in_array($key, self::$logItems)) {
-            if (!in_array($key, self::getLogItemList())) {
-                return null;
-            }
-        }
-
-        return new lizmapLogItem($key);
+        return self::getLogConfig()->getLogItem($key);
     }
 
-    /* Returns time spent in milliseconds from beginning of request
+    /**
+     * Get a list of log items names.
+     *
+     * @return string[] list of names
+     *
+     * @deprecated
+     */
+    public static function getLogItemList()
+    {
+        return self::getLogConfig()->getLogItemList();
+    }
+
+    /**
+     * Returns time spent in milliseconds from beginning of request.
+     *
      * @param string $label Name of the action to lo
+     * @param mixed  $start
      */
     public static function logMetric($label, $start = 'index')
     {

@@ -115,7 +115,6 @@ deploy-package-unstable:
   script:
     - make deploy_download
     - make saas_deploy_snap
-    - make trigger_ci
   environment:
     name: snap
   dependencies:
@@ -144,12 +143,28 @@ deploy-docker-unstable:
   tags:
     - infrav3
 
+deploy-quick-release:
+  stage: release
+  script:
+    - make saas_release DO_RELEASE=y
+  environment:
+    name: production
+  dependencies:
+    - package
+  only:
+    - /^release_.*$/
+  tags:
+    - fabric
+  except:
+    - tags
+  when: manual
+
+
 deploy-release:
   stage: release
   script:
     - make deploy_download_stable
     - make saas_release DO_RELEASE=y
-    - make trigger_ci
   environment:
     name: production
   dependencies:

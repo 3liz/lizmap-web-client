@@ -15,15 +15,15 @@ export default class SelectionTool {
 
         this._bufferLayer = new OpenLayers.Layer.Vector(
             'selectionBufferLayer', {
-            styleMap: new OpenLayers.StyleMap({
-                fillColor: 'white',
-                fillOpacity: 0,
-                strokeColor: 'blue',
-                strokeOpacity: 1,
-                strokeWidth: 2,
-                strokeDashstyle: 'longdash'
-            })
-        });
+                styleMap: new OpenLayers.StyleMap({
+                    fillColor: 'white',
+                    fillOpacity: 0,
+                    strokeColor: 'blue',
+                    strokeOpacity: 1,
+                    strokeWidth: 2,
+                    strokeDashstyle: 'longdash'
+                })
+            });
 
         mainLizmap.lizmap3.map.addLayer(this._bufferLayer);
 
@@ -86,7 +86,14 @@ export default class SelectionTool {
         mainEventDispatcher.addListener(
             () => {
                 if(this.isActive){
-                    const selectionFeature = mainLizmap.digitizing.featureDrawn;
+                    // We only handle a single drawn feature currently
+                    if (mainLizmap.digitizing.featureDrawn.length > 1){
+                        mainLizmap.digitizing.drawLayer.destroyFeatures(mainLizmap.digitizing.drawLayer.features.shift());
+
+                        mainLizmap.digitizing.saveFeatureDrawn();
+                    }
+
+                    const selectionFeature = mainLizmap.digitizing.featureDrawn[0];
 
                     if (selectionFeature){
                         // Handle buffer if any
@@ -111,7 +118,7 @@ export default class SelectionTool {
                     }
                 }
             },
-            ['digitizing.featureDrawn', 'digitizing.edit']
+            ['digitizing.featureDrawn', 'digitizing.editionEnds']
         );
 
         // Change buffer visibility on digitizing.featureDrawnVisibility event

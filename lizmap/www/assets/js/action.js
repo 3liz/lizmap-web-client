@@ -27,7 +27,7 @@ function getItemByName(layerId, name){
             ritem = item;
         }
     }
-    return item;
+    return ritem;
 }
 
 function getActionData(layerId, fid, name){
@@ -54,7 +54,7 @@ function getActionData(layerId, fid, name){
     var item = getItemByName(layerId, name);
     //console.log(item);
     if( 'options' in item && item.options != {} ) {
-        for( o in item.options) {
+        for(let o in item.options) {
             options[o] = item.options[o];
         }
     }
@@ -77,7 +77,7 @@ function getActionData(layerId, fid, name){
         if( features.length > 0
             && 'callbacks' in item
             && item.callbacks.length > 0 ) {
-            for( c in item.callbacks) {
+            for(let c in item.callbacks) {
                 var cb = item.callbacks[c];
                 var cmethod = cb['method'];
 
@@ -130,7 +130,6 @@ function addFeatures(layerId, item, data){
     var layer = lizMap.layers['actionLayer'];
 
     // Get layer projection
-    var lConfig = lizMap.getLayerConfigById( layerId )[1];
     var lcrs = 'EPSG:4326';
     var gFormat = new OpenLayers.Format.GeoJSON({
         externalProjection: lcrs,
@@ -147,14 +146,12 @@ function addFeatures(layerId, item, data){
     layer.addFeatures( tfeatures );
 
     return tfeatures;
-
-    return null;
 }
 
 function addActionButton(layerId, fid, item, popupitem){
 
     // Build item html
-    ihtml = '<button class="btn btn-mini popup-action" value="';
+    let ihtml = '<button class="btn btn-mini popup-action" value="';
     var btname = layerId + '.' + fid + '.' + item.name;
     ihtml+= btname;
     ihtml+= '" title="'+ item.title +'">';
@@ -176,8 +173,7 @@ function addActionButton(layerId, fid, item, popupitem){
     } );
 
     // Trigger action when clicking on button
-    $('div.lizmapPopupContent button.popup-action[value="'+ btname + '"]')
-    .click(function(){
+    $('div.lizmapPopupContent button.popup-action[value="'+ btname + '"]').click(function(){
         var val = $(this).val();
         var vals = val.split('.');
         var layerId = vals[0];
@@ -188,9 +184,7 @@ function addActionButton(layerId, fid, item, popupitem){
         getActionData(layerId, fid, name);
 
         return false;
-    })
-    // Add hover
-    .hover(
+    }).hover(// Add hover
         function(){ $(this).addClass('btn-primary'); },
         function(){ $(this).removeClass('btn-primary'); }
     )
@@ -200,15 +194,11 @@ function addActionButton(layerId, fid, item, popupitem){
 lizMap.events.on({
 
 
-    'uicreated': function(e){
-        //console.log('uicreated');
+    'uicreated': function(){
         createActionLayer();
     },
 
-    'lizmappopupdisplayed': function(e){
-        var hasButton = false;
-        var popup = e.popup;
-
+    'lizmappopupdisplayed': function(){
         // Add action buttons if needed
         $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
             // Get layer id and feature id
@@ -221,8 +211,6 @@ lizMap.events.on({
             var getLayerConfig = lizMap.getLayerConfigById( layerId );
             if ( !getLayerConfig )
                 return true;
-            var layerConfig = getLayerConfig[1];
-            var featureType = getLayerConfig[0];
 
             // Do nothing if layer is not found in action config
             if( !(layerId in actionConfig) ){

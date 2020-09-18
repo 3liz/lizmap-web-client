@@ -167,3 +167,57 @@ only screen and (                   max-device-height : 640px) {
 @media screen and (min-width: 1024px){
   /* some CSS here */
 }
+
+@media screen and (max-width: 900px), screen and (max-height: 400px){
+  #navbar .slider{
+    display: none;
+  }
+}
+/* smartphones, touchscreens */
+@media (hover: none) and (pointer: coarse) {
+  #navbar button.btn{
+    height : 40px;
+    width : 40px;
+    margin-bottom: 0.3em;
+  }
+
+  #navbar .btn.pan {
+  background-position : 5px -25px;
+  }
+  #navbar .btn.zoom {
+    background-position : -25px -25px;
+  }
+  #navbar .btn.zoom-extent {
+    background-position : -25px -55px;
+  }
+  #navbar .btn.zoom-out {
+    background-position : -25px 5px;
+  }
+  #navbar .btn.zoom-in {
+    background-position : 5px 5px;
+  }
+
+  #navbar .history button.btn{
+    width: 20px;
+  }
+
+  #navbar .btn.previous, #navbar .btn.next{
+    background-position-y: -87px;
+  }
+
+  #navbar .btn.previous.disabled{
+    background-position-y: -117px;
+  }
+
+  #navbar .btn.next.disabled{
+    background-position-y: -116px;
+  }
+
+  #navbar .btn.next, #navbar .btn.next.disabled{
+    background-position-x: -39px;
+  }
+
+  #headermenu.mobile #auth form#nominatim-search{
+    right: 65px;
+  }
+}

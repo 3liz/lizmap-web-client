@@ -25,7 +25,7 @@ php_version: "7.2"
 #lizmap_ldapdao_enabled: false
 
 ## Qgis server
-# qgis_server_version: "3.4"
+# qgis_server_version: "3.10"
 # qgis_num_workers: 4
 # qgis_server_log_level: 1
 
@@ -45,9 +45,9 @@ php_version: "7.2"
 #    repository: https://github.com/3liz/qgis-atlasprint
 #    version: v1.2.2
 
-# qgis_repository_debian: http://qgis.org/debian-ltr
-#qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
-#qgis_repository_debian_key_url: 'http://qgis.org/downloads/qgis-2017.gpg.key'
+# qgis_repository_debian: https://qgis.org/debian-ltr
+#qgis_repository_debian_key: 'F7E06F06199EF2F2'
+#qgis_repository_debian_key_url: 'https://qgis.org/downloads/qgis-2020.gpg.key'
 
 # postgresql_install: true
 # postgresql_apt_key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'

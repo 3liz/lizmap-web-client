@@ -40,7 +40,7 @@ class appCtrl extends jController
         $data['qgis_server'] = array();
         $params = array(
             'service' => 'WMS',
-            'request' => 'GetCapabilities'
+            'request' => 'GetCapabilities',
         );
         $url = lizmapProxy::constructUrl($params);
         list($resp, $mime, $code) = lizmapProxy::getRemoteData($url);
@@ -52,7 +52,7 @@ class appCtrl extends jController
             $data['qgis_server']['test'] = 'ERROR';
         }
         $data['qgis_server']['mime_type'] = $mime;
-        if ( jAcl2::check('lizmap.admin.access') ) {
+        if (jAcl2::check('lizmap.admin.access')) {
             $data['qgis_server']['http_code'] = $code;
             $data['qgis_server']['response'] = $resp;
         }

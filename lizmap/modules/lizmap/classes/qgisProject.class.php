@@ -93,6 +93,7 @@ class qgisProject
         // to avoid collision in the cache engine
         $data = false;
         $fileKey = jCache::normalizeKey($file);
+
         try {
             $data = jCache::get($fileKey, 'qgisprojects');
         } catch (Exception $e) {
@@ -129,6 +130,7 @@ class qgisProject
     public function clearCache()
     {
         $fileKey = jCache::normalizeKey($this->path);
+
         try {
             jCache::delete($fileKey, 'qgisprojects');
         } catch (Exception $e) {
@@ -734,32 +736,54 @@ class qgisProject
                     }
 
                     if (isset($xmlLayer->aliases->alias)) {
-                        foreach($xmlLayer->aliases->alias as $alias) {
+                        foreach ($xmlLayer->aliases->alias as $alias) {
                             $aliases[(string) $alias['field']] = (string) $alias['name'];
                         }
                     }
 
                     if (isset($xmlLayer->defaults->default)) {
-                        foreach($xmlLayer->defaults->default as $default) {
+                        foreach ($xmlLayer->defaults->default as $default) {
                             $defaults[(string) $default['field']] = (string) $default['expression'];
                         }
                     }
 
                     if (isset($xmlLayer->constraints->constraint)) {
-                        foreach($xmlLayer->constraints->constraint as $constraint) {
+                        foreach ($xmlLayer->constraints->constraint as $constraint) {
+                            $c = array(
+                                'constraints' => 0,
+                                'notNull' => false,
+                                'unique' => false,
+                                'exp' => false,
+                            );
+                            $c['constraints'] = (int) $constraint['constraints'];
+                            if ($c['constraints'] > 0) {
+                                $c['notNull'] = ((int) $constraint['notnull_strength'] > 0);
+                                $c['unique'] = ((int) $constraint['unique_strength'] > 0);
+                                $c['exp'] = ((int) $constraint['exp_strength'] > 0);
+                            }
+                            $constraints[(string) $constraint['field']] = $c;
+                        }
+                    }
+
+                    if (isset($xmlLayer->constraintExpressions->constraint)) {
+                        foreach($xmlLayer->constraintExpressions->constraint as $constraint) {
+                            $f = (string) $constraint['field'];
                             $c = array(
                                 'constraints' => 0,
                                 'notNull' => false,
                                 'unique' => false,
                                 'exp' => false
                             );
-                            $c['constraints'] = (int) $constraint['constraints'];
-                            if ( $c['constraints'] > 0 ) {
-                                $c['notNull'] = ((int) $constraint['notnull_strength'] > 0);
-                                $c['unique'] = ((int) $constraint['unique_strength'] > 0);
-                                $c['exp'] = ((int) $constraint['exp_strength'] > 0);
+                            if (array_key_exists($f, $constraints)) {
+                                $c = $constraints[$f];
                             }
-                            $constraints[(string) $constraint['field']] = $c;
+                            $exp_val = (string) $constraint['exp'];
+                            if ($exp_val !== '') {
+                                $c['exp'] = true;
+                                $c['exp_value'] = $exp_val;
+                                $c['exp_desc'] = (string) $constraint['desc'];
+                            }
+                            $constraints[$f] = $c;
                         }
                     }
 
