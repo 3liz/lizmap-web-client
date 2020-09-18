@@ -222,6 +222,7 @@ only screen and (                   max-device-height : 640px) {
   }
 
   #mapmenu{
+    z-index: 1101;
     width: 80%;
     left: -80%;
     transition: left 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
@@ -234,7 +235,7 @@ only screen and (                   max-device-height : 640px) {
   }
 
   #mapmenu > div > ul{
-    margin: 0 10px;
+    margin: 0 7px;
     width: 100%;
     background-color: #F0F0F0;
   }
@@ -283,6 +284,8 @@ only screen and (                   max-device-height : 640px) {
   #docks-wrapper{
     left: -1px;
     width: 80%;
+    padding-top: 52px;
+    height: calc(100% - 52px);
   }
 
   #bottom-dock{
@@ -296,9 +299,9 @@ only screen and (                   max-device-height : 640px) {
   #menuToggle{
     display: block;
     position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1031;
+    top: 5px;
+    left: 5px;
+    z-index: 9000;
     -webkit-user-select: none;
     user-select: none;
     padding: 10px;
@@ -405,5 +408,9 @@ only screen and (                   max-device-height : 640px) {
     background-image: url(images/glyphicons-halflings-white.png);
   }
 
+  #content #message.span6{
+    left: 60px;
+    width: calc(100% - 70px);
+  }
 
 }
