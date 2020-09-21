@@ -1,24 +1,24 @@
 <?php
 /**
-* Manage and give access to lizmap configuration.
-* @package   lizmap
-* @subpackage action
-* @author    3liz
-* @copyright 2017 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-class actionDatasource {
-
+ * Manage and give access to lizmap configuration.
+ *
+ * @author    3liz
+ * @copyright 2017 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class actionDatasource
+{
     protected $provider = 'postgres';
     private $status = false;
     private $errors = array();
-    private $repository = null;
-    private $project = null;
-    private $lproj = null;
-    private $config = null;
-    private $data = null;
+    private $repository;
+    private $project;
+    private $lproj;
+    private $config;
+    private $data;
 
     protected $blackSqlWords = array(
         ';',
@@ -31,20 +31,20 @@ class actionDatasource {
         '--',
         'truncate',
         'vacuum',
-        'create'
+        'create',
     );
 
-
-    function __construct( $repository, $project, $layerId ){
+    public function __construct($repository, $project, $layerId)
+    {
 
         // Check action config
         jClasses::inc('action~actionConfig');
         $dv = new actionConfig($repository, $project);
-        if(!$dv->getStatus()){
+        if (!$dv->getStatus()) {
             return $this->error($dv->getErrors());
         }
         $config = $dv->getConfig();
-        if( empty($config) ){
+        if (empty($config)) {
             return $this->error($dv->getErrors());
         }
 
@@ -53,36 +53,39 @@ class actionDatasource {
         $this->lproj = lizmap::getProject($repository.'~'.$project);
         $this->status = true;
         $this->config = $dv->getConfig();
-
     }
 
-    public function getStatus(){
+    public function getStatus()
+    {
         return $this->status;
     }
 
-    public function getErrors(){
+    public function getErrors()
+    {
         return $this->errors;
     }
 
-    protected function getData($sql){
-
+    protected function getData($sql)
+    {
         $data = array();
         $cnx = jDb::getConnection();
-        try{
-            $q = $cnx->query( $sql );
-            foreach( $q as $d){
+
+        try {
+            $q = $cnx->query($sql);
+            foreach ($q as $d) {
                 $data[] = $d;
             }
-        }catch(Exception $e){
+        } catch (Exception $e) {
             jLog::log($e->getMessage(), 'error');
             $this->errors = array(
-                'status'=>'error',
-                'title'=>'Invalid Query',
-                'detail'=>$e->getMessage()
+                'status' => 'error',
+                'title' => 'Invalid Query',
+                'detail' => $e->getMessage(),
             );
+
             return $this->errors;
         }
+
         return $data;
     }
-
 }

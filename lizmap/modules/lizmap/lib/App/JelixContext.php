@@ -1,6 +1,6 @@
 <?php
 /**
- * app context informations inside a Jelix environment
+ * app context informations inside a Jelix environment.
  *
  * @author    3liz
  * @copyright 2020 3liz
@@ -9,6 +9,7 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
 namespace Lizmap\App;
 
 class JelixContext implements AppContextInterface
@@ -24,8 +25,10 @@ class JelixContext implements AppContextInterface
     /**
      * says if the current user has the given right. Call jAcl2::check().
      *
-     * @param string $right the key of the right to check
+     * @param string $right    the key of the right to check
      * @param string $resource the id of a resource if any
+     * @param mixed  $role
+     *
      * @return bool The result of jAcl2::check()
      */
     public function aclCheck($role, $resource = null)
@@ -35,7 +38,7 @@ class JelixContext implements AppContextInterface
 
     /**
      * Retrieve the list of groups id, the current user is member of,
-     * in the acl system
+     * in the acl system.
      *
      * @return array list of group id (jAcl2DbUserGroup::getGroups() result)
      */
@@ -46,10 +49,11 @@ class JelixContext implements AppContextInterface
 
     /**
      * Retrieve the list of groups properties, the current user is member of,
-     * in the acl system
+     * in the acl system.
      *
      * @param string $login login of the user. if not given, the current user
      *                      is taken account
+     *
      * @return \Iterator a list of groups objects (dao records)
      */
     public function aclUserGroupsInfo($login = '')
@@ -58,9 +62,9 @@ class JelixContext implements AppContextInterface
     }
 
     /**
-     * Indicate if the current user is authenticated
+     * Indicate if the current user is authenticated.
      *
-     * @return bool Return the result of jAuth::isConnected().
+     * @return bool return the result of jAuth::isConnected()
      */
     public function UserIsConnected()
     {
@@ -68,9 +72,9 @@ class JelixContext implements AppContextInterface
     }
 
     /**
-     * Informations of the current authenticated user
+     * Informations of the current authenticated user.
      *
-     * @return object  the result of jAuth::getUserSession().
+     * @return object the result of jAuth::getUserSession()
      */
     public function getUserSession()
     {
@@ -80,8 +84,9 @@ class JelixContext implements AppContextInterface
     /**
      * get the cached value of the given key.
      *
-     * @param string $key the cache key
+     * @param string $key     the cache key
      * @param string $profile the name of the cache type
+     *
      * @return mixed the result given by jCache
      */
     public function getCache($key, $profile = '')
@@ -91,19 +96,23 @@ class JelixContext implements AppContextInterface
 
     /**
      * return the normalized value of a cache key, to be used with getCache.
+     *
      * @param string $key
+     *
      * @return string
      */
     public function normalizeCacheKey($key)
     {
         return \jCache::normalizeKey($key);
     }
+
     /**
      * Return the result of jProfile::createVirtualProfile.
      *
      * @param string $category The profile category to create
      * @param string $name     The profile name
      * @param array  $params   The parameters of the profile
+     *
      * @throws \Exception
      */
     public function createVirtualProfile($category, $name, $params)
@@ -118,6 +127,10 @@ class JelixContext implements AppContextInterface
      * @param string the profile name
      * @param bool If true and if the profile doesn't exist, throw an error
      * instead of getting the default profile
+     * @param mixed $category
+     * @param mixed $name
+     * @param mixed $noDefault
+     *
      * @return array properties
      */
     public function getProfile($category, $name = '', $noDefault = false)
@@ -130,6 +143,9 @@ class JelixContext implements AppContextInterface
      *
      * @param string The name of the event
      * @param array the parameters of the event
+     * @param mixed $name
+     * @param mixed $params
+     *
      * @return \jEvent
      */
     public function eventNotify($name, $params = array())
@@ -141,6 +157,7 @@ class JelixContext implements AppContextInterface
      * Return the connection to a Db by calling jDb::getConnection().
      *
      * @param string $profile The profile to use, if empty, use the default one
+     *
      * @return \jDbConnection
      */
     public function getDbConnection($profile = '')
@@ -148,12 +165,12 @@ class JelixContext implements AppContextInterface
         return \jDb::getConnection($profile);
     }
 
-
     /**
      * Get a string in a specific language.
      *
      * @param string $key The Jelix selector corresponding to the string
      *                    you want to get
+     *
      * @return string the translated string
      */
     public function getLocale($key)
@@ -165,18 +182,19 @@ class JelixContext implements AppContextInterface
      * Return the result of a jDao method.
      *
      * @param string $jSelector
-     * @param string $profile the profile name for the db connection
+     * @param string $profile   the profile name for the db connection
+     *
      * @return \jDaoFactoryBase
      */
-    public function getJelixDao($jSelector, $profile='')
+    public function getJelixDao($jSelector, $profile = '')
     {
         return \jDao::get($jSelector, $profile);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function createJelixForm($formSel, $formId=null)
+    public function createJelixForm($formSel, $formId = null)
     {
         return \jForms::create($formSel, $formId);
     }

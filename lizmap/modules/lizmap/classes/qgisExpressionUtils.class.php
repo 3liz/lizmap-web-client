@@ -9,16 +9,14 @@
  */
 class qgisExpressionUtils
 {
-
     /**
-     * Return criteria dependencies (fields) for a QGIS expression
+     * Return criteria dependencies (fields) for a QGIS expression.
      *
      * @param string $exp A QGIS expression string
      *
      * @return array The list of criteria dependencies
-     *
      */
-    static public function getCriteriaFromExpression($exp)
+    public static function getCriteriaFromExpression($exp)
     {
         if ($exp === null || trim($exp) === '') {
             return array();
@@ -27,18 +25,18 @@ class qgisExpressionUtils
         if (count($matches) < 2) {
             return array();
         }
+
         return array_values(array_unique($matches[1]));
     }
 
     /**
-     * Return criteria dependencies (fields) for QGIS expressions
+     * Return criteria dependencies (fields) for QGIS expressions.
      *
      * @param array $expressions list of QGIS expressions
      *
      * @return array The list of criteria dependencies
-     *
      */
-    static public function getCriteriaFromExpressions($expressions)
+    public static function getCriteriaFromExpressions($expressions)
     {
         $criteriaFrom = array();
         foreach ($expressions as $id => $exp) {
@@ -47,10 +45,11 @@ class qgisExpressionUtils
             }
             $criteriaFrom = array_merge($criteriaFrom, self::getCriteriaFromExpression($exp));
         }
+
         return array_values(array_unique($criteriaFrom));
     }
 
-    static public function updateExpressionByUser($layer, $expression)
+    public static function updateExpressionByUser($layer, $expression)
     {
         $project = $layer->getProject();
         $repository = $project->getRepository();
@@ -75,11 +74,11 @@ class qgisExpressionUtils
         return '('.$expression.') AND ('.$loginFilters[$layer->getName()].')';
     }
 
-    static public function evaluateExpressions($layer, $expressions, $form_feature=null)
+    public static function evaluateExpressions($layer, $expressions, $form_feature = null)
     {
         // Update expressions with filter by user
         $updatedExp = array();
-        foreach( $expressions as $k => $exp) {
+        foreach ($expressions as $k => $exp) {
             $updatedExp[$k] = self::updateExpressionByUser($layer, $exp);
         }
         // Evaluate the expression by qgis
@@ -108,7 +107,7 @@ class qgisExpressionUtils
                 // if (property_exists($json, 'errors')) {
                 // }
                 jLog::log($data, 'error');
-            } else if (property_exists($json, 'results') &&
+            } elseif (property_exists($json, 'results') &&
                 array_key_exists(0, $json->results)) {
                 // Get results
                 return $json->results[0];
@@ -117,12 +116,12 @@ class qgisExpressionUtils
                 jLog::log($data, 'error');
             }
         }
+
         return null;
     }
 
-    static public function getFeatureWithFormScope($layer, $expression, $form_feature, $fields)
+    public static function getFeatureWithFormScope($layer, $expression, $form_feature, $fields)
     {
-
         $project = $layer->getProject();
         $plugins = $project->getQgisServerPlugins();
         if (array_key_exists('Lizmap', $plugins)) {
@@ -132,9 +131,9 @@ class qgisExpressionUtils
                 'request' => 'getFeatureWithFormScope',
                 'map' => $project->getRelativeQgisPath(),
                 'layer' => $layer->getName(),
-                'filter' =>  self::updateExpressionByUser($layer, $expression),
+                'filter' => self::updateExpressionByUser($layer, $expression),
                 'form_feature' => json_encode($form_feature),
-                'fields' => implode(',', $fields)
+                'fields' => implode(',', $fields),
             );
 
             // Request getFeatureWithFormsScope
@@ -155,10 +154,9 @@ class qgisExpressionUtils
      * @param qgisAttributeEditorElement $attributeEditorForm
      * @param jFormsBase                 $form
      *
-     * @return array Visibilities, an associated array with group html id as key and boolean as value.
-     *
+     * @return array visibilities, an associated array with group html id as key and boolean as value
      */
-    static public function evaluateGroupVisibilities($attributeEditorForm, $form)
+    public static function evaluateGroupVisibilities($attributeEditorForm, $form)
     {
         // qgisForm::getAttributesEditorForm can return null
         if ($attributeEditorForm === null || $form === null) {
@@ -171,7 +169,7 @@ class qgisExpressionUtils
         $visibilities = array();
         $visibilityExpressions = $attributeEditorForm->getGroupVisibilityExpressions();
         foreach ($visibilityExpressions as $id => $exp) {
-            $visibilities[$id] = True;
+            $visibilities[$id] = true;
 
             if ($exp === null || trim($exp) === '') {
                 // Expression is empty
@@ -217,14 +215,14 @@ class qgisExpressionUtils
 
         // Update expressions with filter by user
         $updatedExp = array();
-        foreach( $expressions as $k => $exp) {
+        foreach ($expressions as $k => $exp) {
             $updatedExp[$k] = self::updateExpressionByUser($layer, $exp);
         }
 
         $form_feature = array(
             'type' => 'Feature',
             'geometry' => $geom,
-            'properties' => $values
+            'properties' => $values,
         );
 
         $params = array(
@@ -249,13 +247,13 @@ class qgisExpressionUtils
                 // if (property_exists($json, 'errors')) {
                 // }
                 jLog::log($data, 'error');
-            } else if (property_exists($json, 'results') &&
+            } elseif (property_exists($json, 'results') &&
                 array_key_exists(0, $json->results)) {
                 // Get results
                 $results = (array) $json->results[0];
                 foreach ($results as $id => $result) {
                     if ($result === 0) {
-                        $visibilities[$id] = False;
+                        $visibilities[$id] = false;
                     }
                 }
             } else {
@@ -267,7 +265,7 @@ class qgisExpressionUtils
         return $visibilities;
     }
 
-    static protected function request($params)
+    protected static function request($params)
     {
         $url = lizmapProxy::constructUrl($params, array('method' => 'post'));
         list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
