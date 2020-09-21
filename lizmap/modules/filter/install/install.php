@@ -1,17 +1,16 @@
 <?php
 /**
-* @package   lizmap
-* @subpackage filter
-* @author    3liz
-* @copyright 2017 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License
-*/
-
-
-class filterModuleInstaller extends jInstallerModule {
-
-    function install() {
+ * @author    3liz
+ * @copyright 2017 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License
+ */
+class filterModuleInstaller extends jInstallerModule
+{
+    public function install()
+    {
 
         // Copy CSS and JS assets
         //$this->copyDirectoryContent('www', jApp::wwwPath());

@@ -66,7 +66,7 @@ class serviceCtrl extends jController
         global $HTTP_RAW_POST_DATA;
         if (isset($HTTP_RAW_POST_DATA)) {
             $requestXml = $HTTP_RAW_POST_DATA;
-        } else if (isset($_SERVER['CONTENT_TYPE'])) {
+        } elseif (isset($_SERVER['CONTENT_TYPE'])) {
             $contentType = $_SERVER['CONTENT_TYPE'];
             if (strpos($contentType, 'text/xml') === 0) {
                 $requestXml = file('php://input');
@@ -75,7 +75,7 @@ class serviceCtrl extends jController
         }
 
         $ogcRequest = lizmapOGCRequest::build($this->project, $this->params, $requestXml);
-        if ($ogcRequest === Null) {
+        if ($ogcRequest === null) {
             // Error message
             jMessage::add('Service unknown or unsupported.', 'ServiceNotSupported');
 
@@ -138,7 +138,7 @@ class serviceCtrl extends jController
             return $this->GetTile($ogcRequest);
         }
 
-        if(!$request) {
+        if (!$request) {
             jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
         } else {
             jMessage::add('Request '.$request.' is not supported', 'OperationNotSupported');
@@ -349,6 +349,8 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory.
      *
+     * @param mixed $ogcRequest
+     *
      * @return jResponseBinary JSON configuration file for the specified project
      */
     protected function GetCapabilities($ogcRequest)
@@ -371,6 +373,8 @@ class serviceCtrl extends jController
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory.
+     *
+     * @param mixed $wmsRequest
      *
      * @return jResponseBinary text/xml Web Map Context
      */
@@ -395,6 +399,8 @@ class serviceCtrl extends jController
      * @urlparam string $SERVICE mandatory, has to be WMS
      * @urlparam string $REQUEST mandatory, has to be GetSchemaExtension
      *
+     * @param mixed $wmsRequest
+     *
      * @return jResponseBinary text/xml the WMS GetSchemaExtension 1.3.0 Schema Extension.
      */
     protected function GetSchemaExtension($wmsRequest)
@@ -417,6 +423,8 @@ class serviceCtrl extends jController
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
+     *
+     * @param mixed $wmsRequest
      *
      * @return jResponseBinary image rendered by the Map Server
      */
@@ -466,6 +474,8 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
+     * @param mixed $wmsRequest
+     *
      * @return jResponseBinary Image of the legend for 1 to n layers, returned by the Map Server
      */
     protected function GetLegendGraphics($wmsRequest)
@@ -487,6 +497,8 @@ class serviceCtrl extends jController
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
+     *
+     * @param mixed $wmsRequest
      *
      * @return jResponseBinary feature Info
      */
@@ -519,6 +531,8 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
+     * @param mixed $wmsRequest
+     *
      * @return jResponseBinary image rendered by the Map Server
      */
     protected function GetPrint($wmsRequest)
@@ -550,6 +564,8 @@ class serviceCtrl extends jController
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
+     *
+     * @param mixed $wmsRequest
      *
      * @return jResponseBinary image rendered by the Map Server
      */
@@ -584,6 +600,8 @@ class serviceCtrl extends jController
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
+     *
+     * @param mixed $wmsRequest
      *
      * @return jResponseBinary SLD Style XML
      */
@@ -628,6 +646,8 @@ class serviceCtrl extends jController
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
+     *
+     * @param mixed $wfsRequest
      *
      * @return jResponseBinary image rendered by the Map Server
      */
@@ -694,6 +714,8 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
+     * @param mixed $wfsRequest
+     *
      * @return jResponseBinary JSON content
      */
     protected function DescribeFeatureType($wfsRequest)
@@ -742,6 +764,8 @@ class serviceCtrl extends jController
     }
 
     /**
+     * @param mixed $wmtsRequest
+     *
      * @return jResponseBinary
      */
     protected function GetTile($wmtsRequest)

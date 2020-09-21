@@ -141,7 +141,7 @@ class datavizPlot
             }
             $str_y_fields = $plotConfig['plot']['y_field'];
             if (array_key_exists('y2_field', $plotConfig['plot'])) {
-                $str_y_fields.= ',' . $plotConfig['plot']['y2_field'];
+                $str_y_fields .= ','.$plotConfig['plot']['y2_field'];
             }
             $exp_y_fields = explode(',', $str_y_fields);
             if (count($exp_y_fields) > 0 and $exp_y_fields != array('')) {
@@ -286,14 +286,13 @@ class datavizPlot
 
     protected function getLayoutTemplate()
     {
-
         $layout = array(
             //'title' => $this->title,
             'showlegend' => $this->display_legend,
             'legend' => array(
                 'orientation' => 'h',
                 'x' => '-0.1',
-                'y' => '1.15'
+                'y' => '1.15',
             ),
             'autosize' => true,
             'plot_bgcolor' => 'rgba(0,0,0,0)',
@@ -307,16 +306,16 @@ class datavizPlot
             ),
             'xaxis' => array(
                 'tickfont' => array(
-                    'size' => 10
+                    'size' => 10,
                 ),
-                'automargin' => true
+                'automargin' => true,
             ),
             'yaxis' => array(
                 'tickfont' => array(
-                    'size' => 10
+                    'size' => 10,
                 ),
-                'automargin' => true
-            )
+                'automargin' => true,
+            ),
         );
 
         if ($this->type == 'pie' or $this->type == 'sunburst') {
@@ -324,13 +323,13 @@ class datavizPlot
             $layout['legend']['y'] = '-5';
         }
 
-        if ($this->type == 'bar'and count($this->y_fields) > 1 and $this->stacked) {
+        if ($this->type == 'bar' and count($this->y_fields) > 1 and $this->stacked) {
             $layout['barmode'] = 'stack';
         }
 
         if (!in_array($this->type, array('pie', 'bar'))) {
             if (count($this->x_fields) == 1) {
-                if (!array_key_exists('xaxis',$layout)) {
+                if (!array_key_exists('xaxis', $layout)) {
                     $layout['xaxis'] = array();
                 }
                 $layout['xaxis']['title'] = $this->getFieldAlias($this->x_fields[0]);
@@ -338,7 +337,7 @@ class datavizPlot
         }
         if (!in_array($this->type, array('pie', 'bar'))) {
             if (count($this->y_fields) == 1) {
-                if (!array_key_exists('yaxis',$layout)) {
+                if (!array_key_exists('yaxis', $layout)) {
                     $layout['yaxis'] = array();
                 }
                 $layout['yaxis']['title'] = $this->getFieldAlias($this->y_fields[0]);
@@ -713,19 +712,18 @@ class datavizPlot
                     $colors_before = array('white');
                     $vtotal = 0;
 
-                    foreach ($parents_distinct_values as $z=>$v) {
+                    foreach ($parents_distinct_values as $z => $v) {
                         $labels_before[] = $z;
                         $values_before[] = $v;
                         $parents_before[] = 'Total';
                         $colors_before[] = $parents_distinct_colors[$z];
-                        $vtotal+= $v;
-                    };
+                        $vtotal += $v;
+                    }
                     $values_before[0] = $vtotal;
                     $trace[$this->x_property_name] = array_merge($labels_before, $trace[$this->x_property_name]);
                     $trace[$this->y_property_name] = array_merge($values_before, $trace[$this->y_property_name]);
                     $trace[$this->z_property_name] = array_merge($parents_before, $trace[$this->z_property_name]);
                     $featcolors = array_merge($colors_before, $featcolors);
-
                 }
                 // set color
                 if (!empty($featcolors)) {
@@ -765,20 +763,18 @@ class datavizPlot
                                 array(
                                     'target' => $this->y_property_name,
                                     'func' => $this->aggregation,
-                                    'enabled' => true
-                                )
-                            )
-                        )
+                                    'enabled' => true,
+                                ),
+                            ),
+                        ),
                     );
                 }
-
 
                 $traces[] = $trace;
             }
 
             $this->traces = $traces;
             $this->data = $traces;
-
 
             return true;
         }
@@ -961,13 +957,13 @@ class datavizPlotPie extends datavizPlot
 
     protected function getTraceTemplate()
     {
-        $template = array (
+        $template = array(
             'type' => 'pie',
             'name' => '',
             'values' => array(),
             'labels' => array(),
             'hoverinfo' => 'label+value+percent',
-            'hovertemplate' => "%{label}<br>%{value:.1f}<br>%{percent:,.0%}",
+            'hovertemplate' => '%{label}<br>%{value:.1f}<br>%{percent:,.0%}',
             'textinfo' => 'value',
             'texttemplate' => '%{value:.1f}',
             //'textposition' => 'inside',
@@ -975,11 +971,12 @@ class datavizPlotPie extends datavizPlot
             'opacity' => null,
             'hole' => '0.4',
             'automargin' => true,
-            'sort' => false // slices will be sort by X data
+            'sort' => false, // slices will be sort by X data
         );
         if ($this->theme == 'dark') {
-            $template['outsidetextfont'] = array ('color'=> 'white');
+            $template['outsidetextfont'] = array('color' => 'white');
         }
+
         return $template;
     }
 }
@@ -1033,7 +1030,6 @@ class datavizPlotPolar extends datavizPlot
     }
 }
 
-
 class datavizPlotSunburst extends datavizPlot
 {
     public $type = 'sunburst';
@@ -1044,27 +1040,26 @@ class datavizPlotSunburst extends datavizPlot
 
     protected function getTraceTemplate()
     {
-
         $template = array(
             'type' => 'sunburst',
             'name' => '',
             'values' => array(),
             'labels' => array(),
             'parents' => array(),
-            'branchvalues'=> 'total',
+            'branchvalues' => 'total',
             //'hoverinfo' => "label+value",
-            'hovertemplate' => "%{label}<br>%{value:.1f}<br>%{percentEntry:,.0%}",
+            'hovertemplate' => '%{label}<br>%{value:.1f}<br>%{percentEntry:,.0%}',
             //'textinfo' => 'value',
             'texttemplate' => '%{value:.1f}',
             'opacity' => null,
         );
         if ($this->theme == 'dark') {
-            $template['outsidetextfont'] = array ('color'=> 'white');
+            $template['outsidetextfont'] = array('color' => 'white');
         }
+
         return $template;
     }
 }
-
 
 class datavizPlotHtml extends datavizPlot
 {
@@ -1072,7 +1067,7 @@ class datavizPlotHtml extends datavizPlot
 
     protected $x_property_name = 'x';
     protected $y_property_name = 'y';
-    protected $z_property_name = null;
+    protected $z_property_name;
 
     protected function getTraceTemplate()
     {
