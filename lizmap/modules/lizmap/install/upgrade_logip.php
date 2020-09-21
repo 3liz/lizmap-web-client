@@ -3,7 +3,7 @@
 class lizmapModuleUpgrader_logip extends jInstallerModule
 {
     public $targetVersions = array(
-        '3.2.9b1', '3.3.3b1', '3.4.0a1'
+        '3.2.9b1', '3.3.3b1', '3.4.0a1',
     );
     public $date = '2019-11-28';
 

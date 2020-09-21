@@ -53,7 +53,6 @@ class editionCtrl extends jController
     /** @var bool Filter override flag */
     private $loginFilteredOverride = false;
 
-
     /**
      * @var string error message during responses processing
      */
@@ -64,8 +63,8 @@ class editionCtrl extends jController
      */
     private $errorType = 'default';
 
-
-    protected function setErrorMessage($message, $type='default') {
+    protected function setErrorMessage($message, $type = 'default')
+    {
         $this->errorMessage = $message;
         $this->errorType = $type;
     }
@@ -900,9 +899,8 @@ class editionCtrl extends jController
         return $this->serviceAnswer();
     }
 
-
     /**
-     * Save a new feature, without redirecting to an HTML response
+     * Save a new feature, without redirecting to an HTML response.
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
@@ -915,12 +913,13 @@ class editionCtrl extends jController
     {
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
-        $rep->data = array('success' => true );
+        $rep->data = array('success' => true);
 
         // Get repository, project data and do some right checking
         if (!$this->getEditionParameters(true)) {
             $rep->data['success'] = false;
             $rep->data['message'] = $this->errorMessage;
+
             return $rep;
         }
 
@@ -929,6 +928,7 @@ class editionCtrl extends jController
         if (!$form) {
             $rep->data['success'] = false;
             $rep->data['message'] = jLocale::get('view~edition.message.error.form.get');
+
             return $rep;
         }
 
@@ -953,6 +953,7 @@ class editionCtrl extends jController
         } catch (Exception $e) {
             $rep->data['success'] = false;
             $rep->data['message'] = $e->getMessage();
+
             return $rep;
         }
 
@@ -969,6 +970,7 @@ class editionCtrl extends jController
         if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
             $rep->data['success'] = false;
             $rep->data['message'] = jLocale::get('view~edition.message.error.no.geometry');
+
             return $rep;
         }
 
@@ -976,7 +978,8 @@ class editionCtrl extends jController
         $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
         if ($event->allResponsesByKeyAreTrue('check') === false) {
             $rep->data['success'] = false;
-            $rep->data['message'] = "There are some errors in the form";
+            $rep->data['message'] = 'There are some errors in the form';
+
             return $rep;
         }
 
@@ -993,13 +996,13 @@ class editionCtrl extends jController
         // Some errors where encoutered
         if (!$check or !$pkvals) {
             $rep->data['success'] = false;
-            $rep->data['message'] = "Error during the save of the feature";
+            $rep->data['message'] = 'Error during the save of the feature';
+
             return $rep;
         }
 
         return $rep;
     }
-
 
     /**
      * Link features between 2 tables via pivot table.
@@ -1259,14 +1262,15 @@ class editionCtrl extends jController
     }
 
     /**
-    * web service for XHR request when group visibilities
-    * depending of the value of form controls.
-    */
+     * web service for XHR request when group visibilities
+     * depending of the value of form controls.
+     */
     public function getGroupVisibilities()
     {
         if (!$this->request->isPostMethod() || !$this->request->isAjax()) {
             $rep = $this->getResponse('text', true);
             $rep->setHttpStatus('405', 'Method Not Allowed');
+
             return $rep;
         }
 
@@ -1275,13 +1279,13 @@ class editionCtrl extends jController
         try {
             $form = jForms::get($this->param('__form'), $this->param('__formid'));
             if (!$form) {
-                throw new Exception ('dummy');
+                throw new Exception('dummy');
             }
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             $rep = $this->getResponse('text', true);
             $rep->setHttpStatus('422', 'Unprocessable entity');
             $rep->content = 'invalid form selector';
+
             return $rep;
         }
 
@@ -1291,7 +1295,8 @@ class editionCtrl extends jController
                 $rep = $this->getResponse('text', true);
                 $rep->setHttpStatus('422', 'Unprocessable entity');
                 $rep->content = 'invalid token';
-                jLog::logEx(new jException("jelix~formserr.invalid.token"), "error");
+                jLog::logEx(new jException('jelix~formserr.invalid.token'), 'error');
+
                 return $rep;
             }
         }
@@ -1320,6 +1325,7 @@ class editionCtrl extends jController
         // evaluate group visibilities
         $attributeEditorForm = $qgisForm->getAttributesEditorForm();
         $rep->data = qgisExpressionUtils::evaluateGroupVisibilities($attributeEditorForm, $form);
+
         return $rep;
     }
 }
