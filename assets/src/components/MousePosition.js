@@ -18,7 +18,7 @@ export default class MousePosition extends HTMLElement {
                     <input type="number" step="any" class="input-small" placeholder="latitude" .value=${lat}>
                 </div>
                 <div class="coords-unit">
-                    <select title="${lizDict['mouseposition.select']}">
+                    <select title="${lizDict['mouseposition.select']}" @change=${(event) => { this._displayUnit = event.target.value }}>
                         <option value="m">${lizDict['mouseposition.units.m']}</option>
                         <option value="f">${lizDict['mouseposition.units.f']}</option>
                         <option value="d">${lizDict['mouseposition.units.d']}</option>
@@ -26,6 +26,11 @@ export default class MousePosition extends HTMLElement {
                         <option value="dms">${lizDict['mouseposition.units.dms']}</option>
                     </select>
                 </div>`;
+    }
+
+    set _displayUnit(unit){
+        unit === 'm' ? this.numDigits = 0 : this.numDigits = 5;
+        this.displayUnit = unit;
     }
 
     redraw(evt){
