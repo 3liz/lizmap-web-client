@@ -42,7 +42,7 @@ class banCtrl extends jController
             $params['viewbox'] = $bbox;
             $bbox_split = explode(',', $bbox);
             if (count($bbox_split) == 4) {
-                $longitude = $bbox_split[0] + ($bbox_split[2] - $bbox_split[0]) / 2 ;
+                $longitude = $bbox_split[0] + ($bbox_split[2] - $bbox_split[0]) / 2;
                 $latitude = $bbox_split[1] + ($bbox_split[3] - $bbox_split[1]) / 2;
                 $params['lat'] = $latitude;
                 $params['lon'] = $longitude;

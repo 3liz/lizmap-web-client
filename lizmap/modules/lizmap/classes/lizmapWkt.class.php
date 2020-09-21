@@ -11,11 +11,11 @@ class lizmapWkt
 {
     /** @var regExes[] */
     protected static $regExes = array(
-            'typeStr' => '/^\s*(\w+)\s*(\w+)?\s*\(\s*(.*)\s*\)\s*$/',
-            'spaces' => '/\s+/',
-            'parenComma' => '/\)\s*,\s*\(/',
-            'doubleParenComma' => '/\)\s*\)\s*,\s*\(\s*\(/',  // can't use {2} here
-            'trimParens' => '/^\s*\(?(.*?)\)?\s*$/'
+        'typeStr' => '/^\s*(\w+)\s*(\w+)?\s*\(\s*(.*)\s*\)\s*$/',
+        'spaces' => '/\s+/',
+        'parenComma' => '/\)\s*,\s*\(/',
+        'doubleParenComma' => '/\)\s*\)\s*,\s*\(\s*\(/',  // can't use {2} here
+        'trimParens' => '/^\s*\(?(.*?)\)?\s*$/',
     );
 
     /**
@@ -23,10 +23,9 @@ class lizmapWkt
      *
      * @param string $wkt A WKT string
      *
-     * @return array|null The geometry as described in GeoJSON
-     *
+     * @return null|array The geometry as described in GeoJSON
      */
-    static public function parse($wkt)
+    public static function parse($wkt)
     {
         // Extracting geometry type, dimension and coordinates
         preg_match(self::$regExes['typeStr'], $wkt, $matches);
@@ -40,13 +39,13 @@ class lizmapWkt
         if (substr($geomType, -2) === 'zm') {
             $geomType = substr($geomType, 0, -2);
             $dim = 'zm';
-        } else if (substr($geomType, -2) === 'mz') {
+        } elseif (substr($geomType, -2) === 'mz') {
             $geomType = substr($geomType, 0, -2);
             $dim = 'mz';
-        } else if (substr($geomType, -1) === 'z') {
+        } elseif (substr($geomType, -1) === 'z') {
             $geomType = substr($geomType, 0, -1);
             $dim = 'z';
-        } else if (substr($geomType, -1) === 'm') {
+        } elseif (substr($geomType, -1) === 'm') {
             $geomType = substr($geomType, 0, -1);
             $dim = 'm';
         }
@@ -55,11 +54,9 @@ class lizmapWkt
         $coordinates = null;
         if ($geomType === 'point') {
             $coordinates = self::parsePoint($str);
-        }
-        else if ($geomType === 'linestring') {
+        } elseif ($geomType === 'linestring') {
             $coordinates = self::parseLineString($str);
-        }
-        else if ($geomType === 'polygon') {
+        } elseif ($geomType === 'polygon') {
             $coordinates = self::parsePolygon($str);
         }
 
@@ -70,14 +67,13 @@ class lizmapWkt
         $geometry = array();
         if ($geomType === 'point') {
             $geometry['type'] = 'Point';
-        }
-        else if ($geomType === 'linestring') {
+        } elseif ($geomType === 'linestring') {
             $geometry['type'] = 'LineString';
-        }
-        else if ($geomType === 'polygon') {
+        } elseif ($geomType === 'polygon') {
             $geometry['type'] = 'Polygon';
         }
         $geometry['coordinates'] = $coordinates;
+
         return $geometry;
     }
 
@@ -86,16 +82,17 @@ class lizmapWkt
      *
      * @param string $str A WKT fragment representing the Point
      *
-     * @return array|null The Point coordinates, array of coordinates
+     * @return null|array The Point coordinates, array of coordinates
      *
      * @protected
      */
-    static protected function parsePoint($str)
+    protected static function parsePoint($str)
     {
         $coords = preg_split(self::$regExes['spaces'], trim($str));
-        if (count($coords) < 2 || !is_numeric($coords[0]) ||  !is_numeric($coords[0])) {
+        if (count($coords) < 2 || !is_numeric($coords[0]) || !is_numeric($coords[0])) {
             return null;
         }
+
         return array(floatval($coords[0]), floatval($coords[1]));
     }
 
@@ -104,11 +101,11 @@ class lizmapWkt
      *
      * @param string $str A WKT fragment representing the LineString
      *
-     * @return array|null The LinString coordinates, array of Points
+     * @return null|array The LinString coordinates, array of Points
      *
      * @protected
      */
-    static protected function parseLineString($str)
+    protected static function parseLineString($str)
     {
         $components = array();
         $points = explode(',', trim($str));
@@ -119,6 +116,7 @@ class lizmapWkt
             }
             $components[] = $coords;
         }
+
         return $components;
     }
 
@@ -127,11 +125,11 @@ class lizmapWkt
      *
      * @param string $str A WKT fragment representing the Polygon
      *
-     * @return array|null The Polygon coordinates, array of LinearRings
+     * @return null|array The Polygon coordinates, array of LinearRings
      *
      * @protected
      */
-    static protected function parsePolygon($str)
+    protected static function parsePolygon($str)
     {
         $components = array();
         $rings = preg_split(self::$regExes['parenComma'], trim($str));
@@ -143,6 +141,7 @@ class lizmapWkt
             }
             $components[] = $linearring;
         }
+
         return $components;
     }
 }

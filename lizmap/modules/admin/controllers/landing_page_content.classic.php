@@ -28,8 +28,8 @@ class landing_page_contentCtrl extends jController
 
         // Get HTML content
         $HTMLContent = jFile::read(jApp::varPath('lizmap-theme-config/landing_page_content.html'));
-        if($HTMLContent){
-            $form->setData( "HTMLContent", $HTMLContent );
+        if ($HTMLContent) {
+            $form->setData('HTMLContent', $HTMLContent);
         }
 
         $tpl = new jTpl();
@@ -87,7 +87,7 @@ class landing_page_contentCtrl extends jController
         // Save HTML content
         $fileWriteOK = jFile::write(jApp::varPath('lizmap-theme-config/landing_page_content.html'), $form->getData('HTMLContent'));
 
-        if(!$fileWriteOK){
+        if (!$fileWriteOK) {
             // Errors : redirection
             $rep = $this->getResponse('redirect');
             $rep->action = 'landing_page_content:index';
@@ -101,7 +101,5 @@ class landing_page_contentCtrl extends jController
         $rep->action = 'landing_page_content:index';
 
         return $rep;
-
     }
-
 }
