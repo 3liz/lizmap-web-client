@@ -52,6 +52,15 @@ class lizmapRepository
      */
     protected $repo;
 
+    /**
+     * lizmapRepository Constructor
+     * Do not call it, if you want to instanciate a lizmapRepository, you should
+     * do it with the lizmapServices::getLizmapRepository method.
+     *
+     * @param string $key     the name of the repository
+     * @param array  $data    the repository data
+     * @param string $varPath the configuration files folder path
+     */
     public function __construct($key, $data, $varPath, $context, $services)
     {
         $this->repo = new \Lizmap\Project\Repository($key, $data, $varPath, $context, $services);
