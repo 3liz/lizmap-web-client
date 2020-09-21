@@ -21,8 +21,8 @@
   <div id="search">
     <div class="input-prepend">
       <button id="toggle-search" class="btn" type="button" data-toggle="tooltip"
-        title="{@default.header.search.toggleKeywordsTitle.title@}">T</button>
-      <input id="search-project" class="span2" data-toggle="tooltip" title="{@default.header.search.input.title@}"
+        title="{@view~default.header.search.toggleKeywordsTitle.title@}">T</button>
+      <input id="search-project" class="span2" data-toggle="tooltip" title="{@view~default.header.search.input.title@}"
         placeholder="{@view~map.search.nominatim.placeholder@}" type="text">
     </div>
     <div id="search-project-keywords">

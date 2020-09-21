@@ -11,34 +11,35 @@
  */
 class qgisVectorLayerDatasource
 {
-
     /**
      * @var array Regexes used to get datasource parameters
      */
     protected $datasourceRegexes = array(
-        "dbname" => "dbname='([^ ]+)' ",
-        "service" => "service='([^ ]+)' ",
-        "host" => "host=([^ ]+) port=",
-        "port" => "port=([0-9]+) ",
-        "user" => "user='([^ ]+)' ",
-        "password" => "password='([^ ]+)' ",
-        "sslmode" => "sslmode=([^ ]+) ",
-        "key" => "key='([^ ]+)' ",
-        "estimatedmetadata" => "estimatedmetadata=([^ ]+) ",
-        "selectatid" => "selectatid=([^ ]+) ",
-        "srid" => "srid=([0-9]+) ",
-        "type" => "type=([a-zA-Z]+) ",
-        "checkPrimaryKeyUnicity" => "checkPrimaryKeyUnicity='([0-1]+)' ",
-        "table" => ' table="(.+)" (\([^ ]+\) )?sql=',
-        "geocol" => '\(([^ ]+)\) sql=',
-        "sql" => " sql=(.*)$"
+        'dbname' => "dbname='([^ ]+)' ",
+        'service' => "service='([^ ]+)' ",
+        'host' => 'host=([^ ]+) port=',
+        'port' => 'port=([0-9]+) ',
+        'user' => "user='([^ ]+)' ",
+        'password' => "password='([^ ]+)' ",
+        'sslmode' => 'sslmode=([^ ]+) ',
+        'key' => "key='([^ ]+)' ",
+        'estimatedmetadata' => 'estimatedmetadata=([^ ]+) ',
+        'selectatid' => 'selectatid=([^ ]+) ',
+        'srid' => 'srid=([0-9]+) ',
+        'type' => 'type=([a-zA-Z]+) ',
+        'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)' ",
+        'table' => ' table="(.+)" (\([^ ]+\) )?sql=',
+        'geocol' => '\(([^ ]+)\) sql=',
+        'sql' => ' sql=(.*)$',
     );
 
     /**
      * constructor.
      *
      * @param lizmapProject|qgisProject $project
-     * @param array                     $propLayer list of properties values
+     * @param array                     $propLayer  list of properties values
+     * @param mixed                     $provider
+     * @param mixed                     $datasource
      */
     public function __construct($provider, $datasource)
     {
@@ -48,13 +49,11 @@ class qgisVectorLayerDatasource
 
     public function getDatasourceParameter($param)
     {
-
-        if( $this->provider == 'ogr' and preg_match('#layername=#', $this->datasource ) ){
+        if ($this->provider == 'ogr' and preg_match('#layername=#', $this->datasource)) {
             return $this->getDatasourceParameterOgr($param);
-        } else {
-            return $this->getDatasourceParameterSql($param);
         }
 
+        return $this->getDatasourceParameterSql($param);
     }
 
     private function getDatasourceParameterSql($param)
@@ -79,13 +78,14 @@ class qgisVectorLayerDatasource
                     $value = '';
                 }
             }
+
             return trim($value);
         }
 
         // For other parameters, use specific parameter regex
         $regex = $this->datasourceRegexes[$param];
         $test = preg_match(
-            '#' . $regex . '#s',
+            '#'.$regex.'#s',
             $this->datasource,
             $result
         );
@@ -109,6 +109,7 @@ class qgisVectorLayerDatasource
                 $value = $table;
             }
         }
+
         return trim($value);
     }
 
@@ -118,10 +119,10 @@ class qgisVectorLayerDatasource
         $dbname = $split[0];
         $table = str_replace('layername=', '', $split[1]);
         $sql = '';
-        if( count($split) == 3 ){
+        if (count($split) == 3) {
             $sql = str_replace('subset=', '', $split[2]);
         }
-        $ds = array (
+        $ds = array(
             'dbname' => $dbname,
             'service' => '',
             'host' => '',
@@ -137,10 +138,9 @@ class qgisVectorLayerDatasource
             'checkPrimaryKeyUnicity' => '',
             'table' => $table,
             'geocol' => 'geom',
-            'sql' => $sql
+            'sql' => $sql,
         );
 
         return trim($ds[$param]);
     }
-
 }
