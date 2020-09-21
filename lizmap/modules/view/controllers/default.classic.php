@@ -100,7 +100,7 @@ class defaultCtrl extends jController
 
         // Add custom HTML content at top of page
         $HTMLContent = jFile::read(jApp::varPath('lizmap-theme-config/landing_page_content.html'));
-        if($HTMLContent){
+        if ($HTMLContent) {
             $tpl = new jTpl();
             $rep->body->assign('landing_page_content', $tpl->fetchFromString($HTMLContent, 'html'));
         }

@@ -1,16 +1,16 @@
 <?php
 /**
- * Image upload controller for ckeditor
- * 
+ * Image upload controller for ckeditor.
+ *
  * @author    3liz
  * @copyright 2019 3liz
  *
- * @link      https://3liz.com
+ * @see      https://3liz.com
+ *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 class upload_imageCtrl extends jController
 {
-
     // Configure access via jacl2 rights management
     public $pluginParams = array(
         '*' => array('jacl2.right' => 'lizmap.admin.access'),
@@ -21,19 +21,20 @@ class upload_imageCtrl extends jController
         $rep = $this->getResponse('json');
         $rep->data = array(
             'error' => array(
-                'message' => $message
-            )
+                'message' => $message,
+            ),
         );
+
         return $rep;
     }
 
-    function uploadfile()
+    public function uploadfile()
     {
         $rep = $this->getResponse('json');
 
         $paramName = 'upload';
         $maxSize = 2 * 1024 * 1024; //Mb
-        $allowedMimeType = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
+        $allowedMimeType = array('image/jpg', 'image/jpeg', 'image/png', 'image/gif');
         $uploadPath = 'live/images/home/';
 
         $directoryPath = jApp::wwwPath($uploadPath);
@@ -80,16 +81,17 @@ class upload_imageCtrl extends jController
         // we receive a name, so probably $file['name'] is empty. In this case,
         // we should generate one instead of getting $file['name']
         $directoryPath .= $file['name'];
-        $webPath = jApp::urlBasePath() . $uploadPath . rawurlencode($file['name']);
+        $webPath = jApp::urlBasePath().$uploadPath.rawurlencode($file['name']);
 
         if (move_uploaded_file($file['tmp_name'], $directoryPath)) {
             $rep = $this->getResponse('json');
             $rep->data = array(
-                'url' => $webPath
+                'url' => $webPath,
             );
+
             return $rep;
-        } else {
-            return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.save'));
         }
+
+        return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.save'));
     }
 }

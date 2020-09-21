@@ -767,13 +767,13 @@ class qgisProject
                     }
 
                     if (isset($xmlLayer->constraintExpressions->constraint)) {
-                        foreach($xmlLayer->constraintExpressions->constraint as $constraint) {
+                        foreach ($xmlLayer->constraintExpressions->constraint as $constraint) {
                             $f = (string) $constraint['field'];
                             $c = array(
                                 'constraints' => 0,
                                 'notNull' => false,
                                 'unique' => false,
-                                'exp' => false
+                                'exp' => false,
                             );
                             if (array_key_exists($f, $constraints)) {
                                 $c = $constraints[$f];

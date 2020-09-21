@@ -33,7 +33,7 @@ class qgisServer
         $params = array(
             'service' => 'LIZMAP',
             'request' => 'GetServerSettings',
-            'map' => $project->getRelativeQgisPath()
+            'map' => $project->getRelativeQgisPath(),
         );
         $url = lizmapProxy::constructUrl($params);
         list($data, $mime, $code) = lizmapProxy::getRemoteData($url);

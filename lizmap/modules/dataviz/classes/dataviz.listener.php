@@ -21,8 +21,8 @@ class datavizListener extends jEventListener
                 $bp.'assets/js/dataviz/plotly-latest.min.js',
                 $bp.'assets/js/dataviz/dataviz.js',
             );
-            if (in_array($locale, array('de','el','es','fr','it','nl'))) {
-                $js[] = $bp . 'assets/js/dataviz/plotly-locale-' . $locale . '-latest.js';
+            if (in_array($locale, array('de', 'el', 'es', 'fr', 'it', 'nl'))) {
+                $js[] = $bp.'assets/js/dataviz/plotly-locale-'.$locale.'-latest.js';
             }
             $datavizConfig = array(
                 'url' => jUrl::get('dataviz~service:index', array('repository' => $event->repository, 'project' => $event->project)),
