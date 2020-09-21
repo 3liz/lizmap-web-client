@@ -77,6 +77,7 @@
           <option value="dms">{@view~map.mouseposition.units.dms@}</option>
         </select>
       </div>
+      <lizmap-mouse-position></lizmap-mouse-position>
     </div>
     <div id="attribution-box">
       <span id="attribution"></span>

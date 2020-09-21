@@ -18,12 +18,17 @@ export default class Lizmap {
             uicreated: () => {
                 this._lizmap3 = lizMap;
 
-                // Register projection if unknown
+                // Register projections if unknown
                 if (!getProjection(this.projection)) {
                     const proj = this.config.options.projection;
                     proj4.defs(proj.ref, proj.proj4);
-                    register(proj4);
                 }
+
+                if (!getProjection(this.config.options.qgisProjectProjection.ref)) {
+                    const proj = this.config.options.qgisProjectProjection;
+                    proj4.defs(proj.ref, proj.proj4);
+                }
+                register(proj4);
 
                 // Create Lizmap modules
                 this.map = new Map();
@@ -47,6 +52,10 @@ export default class Lizmap {
 
     get projection() {
         return this._lizmap3.map.getProjection();
+    }
+
+    get qgisProjectProjection(){
+        return this.config.options.qgisProjectProjection.ref;
     }
 
     get vectorLayerFeatureTypes() {

@@ -674,6 +674,7 @@ var lizMap = function() {
          var projection = new OpenLayers.Projection(proj.ref);
 
          // Copy QGIS project's projection
+         config.options.qgisProjectProjection = Object.assign({}, proj);
          qgisProjectProjection = projection;
 
          var projOSM = new OpenLayers.Projection('EPSG:3857');

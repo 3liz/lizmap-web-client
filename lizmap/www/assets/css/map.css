@@ -1875,6 +1875,10 @@ a.btn.btn-opacity-layer.active {
   font-size: 10px;
   float:right;
 }
+
+lizmap-mouse-position > div > input[type="number"]{
+  font-size: .7em;
+}
 /* Overview map */
 #overview-map{
   position:relative;
