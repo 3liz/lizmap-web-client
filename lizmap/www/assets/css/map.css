@@ -1875,10 +1875,19 @@ a.btn.btn-opacity-layer.active {
   font-size: 10px;
   float:right;
 }
-
-lizmap-mouse-position > div > input[type="number"]{
+lizmap-mouse-position{
+  display: flex;
+}
+lizmap-mouse-position > div.mouse-position > input[type="number"],
+lizmap-mouse-position > div.coords-unit > select{
   font-size: .7em;
 }
+lizmap-mouse-position > div.coords-unit > select{
+  width: auto;
+  margin: 0px;
+  padding: 0px;
+}
+
 /* Overview map */
 #overview-map{
   position:relative;
