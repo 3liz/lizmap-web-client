@@ -462,7 +462,7 @@ class qgisForm implements qgisFormControlsInterface
     /**
      * Converts the datetime to the format specified in the qgis Project.
      *
-     * @param string $value The datetime to convert
+     * @param string $value    The datetime to convert
      * @param object $edittype The format of the date
      */
     public function convertDateTimeToFormat($value, $edittype)
@@ -470,12 +470,46 @@ class qgisForm implements qgisFormControlsInterface
         if (!property_exists($edittype, 'options') || !property_exists($edittype->options, 'field_format')) {
             return $value;
         }
-        $dateTab = explode('-', $value);
-        $value = $edittype->options->field_format;
-        $value = str_replace('yyyy', $dateTab[0], $value);
-        $value = str_replace('MM', $dateTab[1], $value);
+        $dateFormat = $edittype->options->field_format;
+        // conversion from QGIS to PHP format
+        $format = array_reverse(array(
+            'd' => 'j',
+            'dd' => 'd',
+            'ddd' => 'D',
+            'dddd' => 'l',
+            'M' => 'n',
+            'MM' => 'm',
+            'MMM' => 'M',
+            'MMMM' => 'F',
+            'yy' => 'y',
+            'yyyy' => 'Y',
+            'H' => 'G',
+            'HH' => 'H',
+            'h' => 'G',
+            'hh' => 'H',
+            'AP' => 'A',
+            'ap' => 'a',
+            'm' => 'i',
+            'mm' => 'i',
+            'ss' => 's',
+            't' => 'T',
+        ));
+        $format12h = array('a', 'ap', 'A', 'AP');
+        foreach ($format12h as $am) {
+            if (strstr($dateFormat, $am)) {
+                $format['h'] = 'g';
+                $format['hh'] = 'h';
 
-        return str_replace('dd', $dateTab[2], $value);
+                break;
+            }
+        }
+        foreach ($format as $qgis => $php) {
+            $dateFormat = str_replace($qgis, $php, $dateFormat);
+        }
+
+        $date = new DateTime($value);
+
+        return $date->format($dateFormat);
     }
 
     /**
@@ -585,7 +619,9 @@ class qgisForm implements qgisFormControlsInterface
                 continue;
             }
 
-            if ($this->formControls[$ref]->fieldEditType == 'DateTime') {
+            $convertDate = array('date', 'time', 'datetime');
+
+            if (in_array(strtolower($this->formControls[$ref]->fieldEditType), $convertDate)) {
                 $value = $this->convertDateTimeToFormat($value, $this->formControls[$ref]->getEditType());
             }
 
