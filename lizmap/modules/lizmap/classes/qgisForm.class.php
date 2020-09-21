@@ -27,7 +27,7 @@ class qgisForm implements qgisFormControlsInterface
     protected $form_name;
 
     /**
-     * @var qgisAttributeEditorElement|null the qgis form element
+     * @var null|qgisAttributeEditorElement the qgis form element
      */
     protected $attributeEditorForm;
 
@@ -282,22 +282,21 @@ class qgisForm implements qgisFormControlsInterface
         $privateData['liz_geometryColumn'] = $this->dbFieldsInfo->geometryColumn;
 
         $privateData['qgis_controls'] = array();
-        foreach($this->formControls as $fieldName => $formControl) {
+        foreach ($this->formControls as $fieldName => $formControl) {
             $privateData['qgis_controls'][$formControl->ref] = array(
-              'fieldName' => $formControl->fieldName,
-              'defaultValue' => $formControl->defaultValue,
-              'fieldEditType' => $formControl->fieldEditType,
-              'fieldAlias' => $formControl->fieldAlias,
-              // 'rendererCategories' => $formControl->rendererCategories, // needs to be parsed
-              'fieldDataType' => $formControl->fieldDataType,
-              'isReadOnly' => $formControl->isReadOnly,
-              'required' => $formControl->required,
-              'valueRelationData' => $formControl->valueRelationData,
-              'relationReferenceData' => $formControl->relationReferenceData,
-              'uniqueValuesData' => $formControl->uniqueValuesData,
+                'fieldName' => $formControl->fieldName,
+                'defaultValue' => $formControl->defaultValue,
+                'fieldEditType' => $formControl->fieldEditType,
+                'fieldAlias' => $formControl->fieldAlias,
+                // 'rendererCategories' => $formControl->rendererCategories, // needs to be parsed
+                'fieldDataType' => $formControl->fieldDataType,
+                'isReadOnly' => $formControl->isReadOnly,
+                'required' => $formControl->required,
+                'valueRelationData' => $formControl->valueRelationData,
+                'relationReferenceData' => $formControl->relationReferenceData,
+                'uniqueValuesData' => $formControl->uniqueValuesData,
             );
         }
-
 
         $attributeEditorForm = $this->getAttributesEditorForm();
         if ($attributeEditorForm) {
@@ -308,7 +307,7 @@ class qgisForm implements qgisFormControlsInterface
             $privateData['qgis_groupDependencies'] = array();
         }
 
-        $form->getContainer()->privateData = array_merge($form->getContainer()->privateData , $privateData);
+        $form->getContainer()->privateData = array_merge($form->getContainer()->privateData, $privateData);
     }
 
     /**
@@ -341,12 +340,13 @@ class qgisForm implements qgisFormControlsInterface
         $results = qgisExpressionUtils::evaluateExpressions(
             $this->layer,
             array(
-                $fieldName => $expression
+                $fieldName => $expression,
             )
         );
         if ($results && property_exists($results, $fieldName)) {
-            return $results->$fieldName;
+            return $results->{$fieldName};
         }
+
         return null;
     }
 
@@ -402,6 +402,7 @@ class qgisForm implements qgisFormControlsInterface
 
         if ($attributeEditorForm && $attributeEditorForm->hasChildren()) {
             $this->attributeEditorForm = $attributeEditorForm;
+
             return $attributeEditorForm;
         }
 
@@ -514,7 +515,7 @@ class qgisForm implements qgisFormControlsInterface
         return $form;
     }
 
-    public function check($feature=null)
+    public function check($feature = null)
     {
         $form = $this->form;
 
@@ -588,12 +589,13 @@ class qgisForm implements qgisFormControlsInterface
             $form_feature = array(
                 'type' => 'Feature',
                 'geometry' => null,
-                'properties' => $values
+                'properties' => $values,
             );
             $results = qgisExpressionUtils::evaluateExpressions(
                 $this->layer,
                 $constraintExpressions,
-                $form_feature);
+                $form_feature
+            );
 
             if (!$results) {
                 // Evaluation failed
@@ -605,7 +607,7 @@ class qgisForm implements qgisFormControlsInterface
                     continue;
                 }
                 $constraints = $this->getConstraints($fieldName);
-                if ( $constraints['exp_desc'] !== '' ) {
+                if ($constraints['exp_desc'] !== '') {
                     $form->setErrorOn($fieldName, $constraints['exp_desc']);
                 } else {
                     $form->setErrorOn($fieldName, jLocale::get('view~edition.message.error.constraint', array($constraints['exp_value'])));
@@ -1138,18 +1140,17 @@ class qgisForm implements qgisFormControlsInterface
         ) {
             $filterExpression = $formControl->valueRelationData['filterExpression'];
             $criteriaFrom = array();
-            preg_match_all("/current_value\(\s*'([^)]*)'\s*\)/", $filterExpression, $matches);
-            if (count($matches)==2) {
+            preg_match_all("/current_value\\(\\s*'([^)]*)'\\s*\\)/", $filterExpression, $matches);
+            if (count($matches) == 2) {
                 $criteriaFrom = array_values(array_unique($matches[1]));
             }
-            if (preg_match("/\bcurrent_geometry\b/", $filterExpression) === 1) {
+            if (preg_match('/\\bcurrent_geometry\\b/', $filterExpression) === 1) {
                 $criteriaFrom[] = $this->dbFieldsInfo->geometryColumn;
             }
             if (count($criteriaFrom) !== 0) {
                 $dataSource->setCriteriaControls($criteriaFrom);
             }
         }
-
 
         $formControl->ctrl->datasource = $dataSource;
 

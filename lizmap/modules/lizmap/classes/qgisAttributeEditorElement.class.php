@@ -156,17 +156,17 @@ class qgisAttributeEditorElement
 
     public function isVisibilityExpressionEnabled()
     {
-        return ($this->_isVisibilityExpressionEnabled &&
-                $this->_visibilityExpression !== '');
+        return $this->_isVisibilityExpressionEnabled &&
+                $this->_visibilityExpression !== '';
     }
 
     public function visibilityExpression()
     {
         if ($this->isVisibilityExpressionEnabled()) {
             return $this->_visibilityExpression;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -272,6 +272,7 @@ class qgisAttributeEditorElement
                 $expressions = array_merge($expressions, $child->getGroupVisibilityExpressions());
             }
         }
+
         return $expressions;
     }
 }

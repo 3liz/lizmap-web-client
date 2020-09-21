@@ -1,6 +1,6 @@
 <?php
 /**
- * QGIS Form listener
+ * QGIS Form listener.
  *
  * @author    3liz
  * @copyright 2020 3liz
@@ -11,7 +11,6 @@
  */
 class qgisFormListener extends jEventListener
 {
-
     public function onjformsPrepareToFillDynamicList($event)
     {
         $form = $event->getParam('form');
@@ -28,5 +27,4 @@ class qgisFormListener extends jEventListener
 
         $qgisForm = new qgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()));
     }
-
 }

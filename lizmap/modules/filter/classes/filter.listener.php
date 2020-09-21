@@ -1,7 +1,9 @@
 <?php
-class filterListener extends jEventListener{
 
-    function ongetMapAdditions ($event) {
+class filterListener extends jEventListener
+{
+    public function ongetMapAdditions($event)
+    {
         $bp = jApp::config()->urlengine['basePath'];
 
         // Add JS and CSS for module
@@ -14,10 +16,10 @@ class filterListener extends jEventListener{
         $dv = new filterConfig($event->repository, $event->project);
 
         $filterConfigData = array(
-            'url'=>jUrl::get('filter~service:index', array('repository'=>$event->repository, 'project'=>$event->project ))
+            'url' => jUrl::get('filter~service:index', array('repository' => $event->repository, 'project' => $event->project)),
         );
         $jscode = array(
-            'var filterConfigData = ' . json_encode($filterConfigData) . ';'
+            'var filterConfigData = '.json_encode($filterConfigData).';',
         );
         // Filter config may be an empty array
         // This means no layers have been set up with the filter by form tool
@@ -25,24 +27,23 @@ class filterListener extends jEventListener{
         // Ex: timemanager uses the getMinAndMaxValues method of the service controller
         // We add JS and CSS files only if layers have been configured
         // But the filterConfigData url must be set before
-        if($dv->getStatus()){
+        if ($dv->getStatus()) {
             $js = array(
-                $bp.'assets/js/filter.js'
+                $bp.'assets/js/filter.js',
             );
             $css = array(
-                $bp.'assets/css/filter.css'
+                $bp.'assets/css/filter.css',
             );
 
             $filterConfig = $dv->getConfig();
-            $jscode[] = 'var filterConfig = ' . json_encode($filterConfig) . ';';
+            $jscode[] = 'var filterConfig = '.json_encode($filterConfig).';';
         }
         $event->add(
             array(
                 'js' => $js,
                 'jscode' => $jscode,
-                'css' => $css
+                'css' => $css,
             )
         );
     }
 }
-?>

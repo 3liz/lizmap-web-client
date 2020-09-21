@@ -1,6 +1,6 @@
 <?php
 
-require_once (JELIX_LIB_PATH.'forms/jFormsDatasource.class.php');
+require_once JELIX_LIB_PATH.'forms/jFormsDatasource.class.php';
 
 class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
 {
@@ -8,13 +8,15 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
     protected $ref;
     protected $emptyValue = false;
 
-    public function __construct($ref, $emptyValue) {
+    public function __construct($ref, $emptyValue)
+    {
         //$this->formid = $formid;
         $this->ref = $ref;
         $this->emptyValue = $emptyValue;
     }
 
-    public function getData($form) {
+    public function getData($form)
+    {
         $privateData = $form->getContainer()->privateData;
 
         $valueRelationData = $privateData['qgis_controls'][$this->ref]['valueRelationData'];
@@ -49,7 +51,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             $form_feature = array(
                 'type' => 'Feature',
                 'geometry' => $geom,
-                'properties' => $values
+                'properties' => $values,
             );
 
             // Get Feature With Forms Scope
@@ -62,7 +64,6 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
                 }
             }
         } else {
-
             $typename = $layer->getShortName();
             if ($typename === null || $typename === '') {
                 $typename = str_replace(' ', '_', $layer->getName());
@@ -108,9 +109,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             if ($this->emptyValue) {
                 $result[''] = '';
             }
-
         }
-
 
         // orderByValue
         if ($valueRelationData['orderByValue']) {
@@ -120,7 +119,8 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
         return $result;
     }
 
-    public function getLabel2($key, $form) {
+    public function getLabel2($key, $form)
+    {
         $privateData = $form->getContainer()->privateData;
 
         $valueRelationData = $privateData['qgis_controls'][$this->ref]['valueRelationData'];
@@ -138,7 +138,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
 
         $filter = '"'.$keyColumn.'" = ';
         if (is_numeric($key)) {
-            $filter .= "".$key;
+            $filter .= ''.$key;
         } else {
             $filter .= "'".addslashes($key)."'";
         }
