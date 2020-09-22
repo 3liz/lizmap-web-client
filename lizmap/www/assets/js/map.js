@@ -673,10 +673,6 @@ var lizMap = function() {
            Proj4js.defs[proj.ref]=proj.proj4;
          var projection = new OpenLayers.Projection(proj.ref);
 
-         // Copy QGIS project's projection
-         config.options.qgisProjectProjection = Object.assign({}, proj);
-         qgisProjectProjection = projection;
-
          var projOSM = new OpenLayers.Projection('EPSG:3857');
          proj.ref = 'EPSG:3857';
          proj.proj4 = Proj4js.defs['EPSG:3857'];
@@ -5860,6 +5856,11 @@ var lizMap = function() {
 
         // get and analyse tree
         var capability = capabilities.capability;
+
+        // Copy QGIS project's projection
+        config.options.qgisProjectProjection = Object.assign({}, config.options.projection);
+        qgisProjectProjection = new OpenLayers.Projection(config.options.projection.ref);
+
         beforeLayerTreeCreated();
         var firstLayer = capability.nestedLayers[0];
         getLayerTree(firstLayer, tree);
