@@ -1258,9 +1258,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             featureId: featureId
         }, function(data){
 
-            // Display the form
-            displayEditionForm( data );
-
             // Activate some controls
             if( !editCtrls )
                 return false;
@@ -1273,6 +1270,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             // Show edition tabs
             $('.edition-tabs').show();
+
+            // Display the form: after the previous show to be sure
+            // tabs visibility test (see: ) return correct response
+            // See "Check li (tabs) visibility" in displayEditionForm method
+            displayEditionForm( data );
 
             if( aCallback )
                 aCallback( editionLayer['id'], featureId );
@@ -1491,6 +1493,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             }
 
             // Check tabs visibility
+            // We need to force showing the container before testing li visibility
+            formContainer.show();
+            // Check li (tabs) visibility
             if (form.children('ul.nav-tabs').find('li:visible').length == 0 ) {
                 // No tabs visible, hide the tab content
                 $('#'+form.attr('id')+'-tab-content').hide();
