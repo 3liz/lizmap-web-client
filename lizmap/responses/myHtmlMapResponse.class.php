@@ -75,7 +75,7 @@ class myHtmlMapResponse extends jResponseHtml
         $this->addJSLink($bp.'assets/js/OpenLayers-2.13/OpenLayers.js');
         $this->addJSLink($bp.'assets/js/Proj4js/proj4js.min.js');
         $this->addJSLink(jApp::config()->jquery['jquery']);
-        $this->addJSLink($bp. 'assets/js/jquery/jquery-migrate-3.3.1.min.js');
+        $this->addJSLink($bp.'assets/js/jquery/jquery-migrate-3.3.1.min.js');
         $js = jApp::config()->jquery['jqueryui.js'];
         foreach ($js as $file) {
             $this->addJSLink($file);
