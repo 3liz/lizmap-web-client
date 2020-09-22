@@ -1878,8 +1878,12 @@ a.btn.btn-opacity-layer.active {
 lizmap-mouse-position{
   display: flex;
 }
-lizmap-mouse-position > div.mouse-position > input[type="number"],
-lizmap-mouse-position > div.coords-unit > select{
+lizmap-mouse-position > div.mouse-position{
+  flex-grow: 1;
+}
+lizmap-mouse-position > div.mouse-position input[type="number"],
+lizmap-mouse-position > div.mouse-position span,
+lizmap-mouse-position > div.coords-unit  select{
   font-size: .7em;
 }
 lizmap-mouse-position > div.coords-unit > select{
