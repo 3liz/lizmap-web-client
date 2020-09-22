@@ -8,12 +8,15 @@ export default class MousePosition extends HTMLElement {
         super();
 
         this._numDigits = 0;
+
+        // 'm', 'ft', 'us-ft','degrees', 'dm', 'dms'
         this._displayUnit = 'm';
+
+        // 'm', 'ft', 'us-ft', 'degrees'
+        this._qgisProjectProjectionUnits;
 
         this._lastLon;
         this._lastLat;
-
-        this._qgisProjectProjectionUnits;
     }
 
     // Render editablePositionTemplate and readonlyPositionTemplate apart because values change a lot
@@ -32,17 +35,17 @@ export default class MousePosition extends HTMLElement {
     mainTemplate(lon, lat){
         return html`
             <div class="mouse-position">
-                <div class="editable-position ${['m', 'd'].includes(this._displayUnit) ? '' : 'hide'}">${this.editablePositionTemplate(lon, lat)}</div>
-                <div class="readonly-position ${['m', 'd'].includes(this._displayUnit) ? 'hide' : ''}">${this.readonlyPositionTemplate(lon, lat)}</div>
+                <div class="editable-position ${['dm', 'dms'].includes(this._displayUnit) ? 'hide' : ''}">${this.editablePositionTemplate(lon, lat)}</div>
+                <div class="readonly-position ${['dm', 'dms'].includes(this._displayUnit) ? '' : 'hide'}">${this.readonlyPositionTemplate(lon, lat)}</div>
             </div>
             <div class="coords-unit">
                 <select title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
-                ${this._qgisProjectProjectionUnits === 'm' ? html`<option value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
-                ${this._qgisProjectProjectionUnits === 'f' ? html`<option value="f">${lizDict['mouseposition.units.f']}</option>` : ''}
-                ${['degrees', 'm'].includes(this._qgisProjectProjectionUnits) ? html`
-                    <option value="d">${lizDict['mouseposition.units.d']}</option>
+                ${this._qgisProjectProjectionUnits === 'm' ? html`<option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
+                ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`<option selected value="f">${lizDict['mouseposition.units.f']}</option>` : ''}
+                
+                    <option value="degrees">${lizDict['mouseposition.units.d']}</option>
                     <option value="dm">${lizDict['mouseposition.units.dm']}</option>
-                    <option value="dms">${lizDict['mouseposition.units.dms']}</option>` : ''}
+                    <option value="dms">${lizDict['mouseposition.units.dms']}</option>
                 </select>
             </div>`;
     }
@@ -75,19 +78,15 @@ export default class MousePosition extends HTMLElement {
     redraw(lon, lat){
         let lonLatToDisplay = [lon, lat];
 
-        // Display coordinates in QGIS project projection if in meter and meter chosen
-        if (this._qgisProjectProjectionUnits === 'm' && this._displayUnit === 'm') {
-            lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, mainLizmap.qgisProjectProjection);
+        // Display in degree, degree minute, degree minute second
+        if (['degrees', 'dm', 'dms'].includes(this._displayUnit)) {
+            // If map projection is not yet in degrees => reproject to EPSG:4326
+            if (mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees'){
+                lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, 'EPSG:4326');
+            }
 
-            render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
-                this.querySelector('.mouse-position > .editable-position'));
-
-        } // Display in degree, degree minute, degree minute second
-        else if (this._displayUnit.indexOf('d') === 0 && mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees') {
-            lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, 'EPSG:4326');
-
-            // If in degree, lon/lat are editable
-            if (this._displayUnit === 'd'){
+            // If in degrees, lon/lat are editable
+            if (this._displayUnit === 'degrees'){
                 render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
                     this.querySelector('.mouse-position > .editable-position'));
 
@@ -98,6 +97,11 @@ export default class MousePosition extends HTMLElement {
                 render(this.readonlyPositionTemplate(lonLatToDisplay[0], lonLatToDisplay[1]),
                     this.querySelector('.mouse-position > .readonly-position'));
             }
+        }else{
+            lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, mainLizmap.qgisProjectProjection);
+
+            render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
+                this.querySelector('.mouse-position > .editable-position'));
         }
     }
 
@@ -166,10 +170,8 @@ export default class MousePosition extends HTMLElement {
     connectedCallback() {
         // Init variables
         this._qgisProjectProjectionUnits = getProjection(mainLizmap.qgisProjectProjection).getUnits();
-        this._displayUnit = this._qgisProjectProjectionUnits;
-        if (this._qgisProjectProjectionUnits === 'degrees'){
-            this.displayUnit = 'd';
-        }
+        this.displayUnit = this._qgisProjectProjectionUnits;
+
         // Listen to mousemove event
         mainLizmap.lizmap3.map.events.register('mousemove', this, this._mousemove);
         // First render
