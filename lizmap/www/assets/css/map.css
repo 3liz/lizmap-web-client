@@ -1886,6 +1886,14 @@ lizmap-mouse-position > div.mouse-position span,
 lizmap-mouse-position > div.coords-unit  select{
   font-size: .7em;
 }
+lizmap-mouse-position input[type="number"]::-webkit-outer-spin-button,
+lizmap-mouse-position input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+lizmap-mouse-position input[type="number"] {
+    -moz-appearance: textfield;
+}
 lizmap-mouse-position > div.coords-unit > select{
   width: auto;
   margin: 0px;
