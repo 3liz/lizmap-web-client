@@ -84,13 +84,15 @@ export default class MousePosition extends HTMLElement {
         unit === 'm' ? this._numDigits = 0 : this._numDigits = 5;
         this._displayUnit = unit;
 
-        render(this.mainTemplate(this._longitude, this._latitude), this);
+        if (this._longitude && this._latitude){
+            this.redraw(this._longitude, this._latitude);
+            render(this.mainTemplate(this._longitude, this._latitude), this);
+        }
     }
 
     // Callback to map's mousemove event
     _mousemove(evt){
         if (evt == null) {
-            this.reset();
             return;
         }else{
             const { lon, lat } = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy);
@@ -133,10 +135,6 @@ export default class MousePosition extends HTMLElement {
 
         this._lonInput = lonLatToDisplay[0];
         this._latInput = lonLatToDisplay[1];
-    }
-
-    reset(){
-
     }
 
     getFormattedLonLat (coordinate, axis, dmsOption) {
