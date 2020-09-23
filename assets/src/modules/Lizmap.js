@@ -67,10 +67,10 @@ export default class Lizmap {
     }
 
     /**
-     * @param {Array} coordinates - Point coordinates to center to.
+     * @param {Array} lonlat - lonlat to center to.
      */
-    set center(coordinates) {
-        this._lizmap3.map.setCenter(coordinates);
+    set center(lonlat) {
+        this._lizmap3.map.setCenter(lonlat);
     }
 
     /**
