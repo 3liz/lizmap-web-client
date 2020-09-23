@@ -15,15 +15,20 @@ export default class MousePosition extends HTMLElement {
         // 'm', 'ft', 'us-ft', 'degrees'
         this._qgisProjectProjectionUnits;
 
-        this._lastLon;
-        this._lastLat;
+        // lon/lat in map projection
+        this._longitude;
+        this._latitude;
+
+        // lon/lat in inputs (written when mouse move or by user)
+        this._lonInput;
+        this._latInput;
     }
 
     // Render editablePositionTemplate and readonlyPositionTemplate apart because values change a lot
     editablePositionTemplate(lon, lat){
         return html`
-            <input type="number" step="any" class="input-small" placeholder="longitude" .value=${lon}>
-            <input type="number" step="any" class="input-small" placeholder="latitude" .value=${lat}>`;
+            <input type="number" step="any" class="input-small" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lon}>
+            <input type="number" step="any" class="input-small" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lat}>`;
     }
 
     readonlyPositionTemplate(lon, lat) {
@@ -40,14 +45,36 @@ export default class MousePosition extends HTMLElement {
             </div>
             <div class="coords-unit">
                 <select title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
-                ${this._qgisProjectProjectionUnits === 'm' ? html`<option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
-                ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`<option selected value="f">${lizDict['mouseposition.units.f']}</option>` : ''}
+                    ${this._qgisProjectProjectionUnits === 'm' ? html`
+                    <option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
+                    ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`
+                    <option selected value="f">${lizDict['mouseposition.units.f']}</option>` : ''}
                 
                     <option value="degrees">${lizDict['mouseposition.units.d']}</option>
                     <option value="dm">${lizDict['mouseposition.units.dm']}</option>
                     <option value="dms">${lizDict['mouseposition.units.dms']}</option>
                 </select>
             </div>`;
+    }
+
+    _centerToCoords() {
+        if (this._lonInput && this._latInput) {
+            let lonlatInputInMapProj;
+
+            // If map projection is not yet in degrees => reproject to EPSG:4326
+            if (this._displayUnit === 'degrees' && mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees') {
+                lonlatInputInMapProj = transform([this._lonInput, this._latInput], 'EPSG:4326', mainLizmap.projection);
+            } else {
+                lonlatInputInMapProj = transform([this._lonInput, this._latInput], mainLizmap.qgisProjectProjection, mainLizmap.projection);
+            }
+
+            mainLizmap.center = lonlatInputInMapProj;
+            // Display point
+            const centerPoint = new OpenLayers.Geometry.Point(lonlatInputInMapProj[0], lonlatInputInMapProj[1]);
+            const locateLayer = mainLizmap.lizmap3.map.getLayersByName('locatelayer')[0];
+            locateLayer.removeAllFeatures();
+            locateLayer.addFeatures(new OpenLayers.Feature.Vector(centerPoint));
+        }
     }
 
     /**
@@ -57,7 +84,7 @@ export default class MousePosition extends HTMLElement {
         unit === 'm' ? this._numDigits = 0 : this._numDigits = 5;
         this._displayUnit = unit;
 
-        render(this.mainTemplate(this._lastLon, this._lastLat), this);
+        render(this.mainTemplate(this._longitude, this._latitude), this);
     }
 
     // Callback to map's mousemove event
@@ -68,8 +95,8 @@ export default class MousePosition extends HTMLElement {
         }else{
             const { lon, lat } = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy);
 
-            this._lastLon = lon;
-            this._lastLat = lat;
+            this._longitude = lon;
+            this._latitude = lat;
 
             this.redraw(lon, lat);
         }
@@ -103,6 +130,9 @@ export default class MousePosition extends HTMLElement {
             render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
                 this.querySelector('.mouse-position > .editable-position'));
         }
+
+        this._lonInput = lonLatToDisplay[0];
+        this._latInput = lonLatToDisplay[1];
     }
 
     reset(){
