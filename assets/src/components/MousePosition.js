@@ -27,8 +27,8 @@ export default class MousePosition extends HTMLElement {
     // Render editablePositionTemplate and readonlyPositionTemplate apart because values change a lot
     editablePositionTemplate(lon, lat){
         return html`
-            <input type="number" step="any" class="input-small" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lon}>
-            <input type="number" step="any" class="input-small" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lat}>`;
+            <input type="number" step="any" class="input-mini" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lon}>
+            <input type="number" step="any" class="input-mini" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lat}>`;
     }
 
     readonlyPositionTemplate(lon, lat) {
@@ -42,6 +42,7 @@ export default class MousePosition extends HTMLElement {
             <div class="mouse-position">
                 <div class="editable-position ${['dm', 'dms'].includes(this._displayUnit) ? 'hide' : ''}">${this.editablePositionTemplate(lon, lat)}</div>
                 <div class="readonly-position ${['dm', 'dms'].includes(this._displayUnit) ? '' : 'hide'}">${this.readonlyPositionTemplate(lon, lat)}</div>
+                <button class="btn btn-mini" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
             </div>
             <div class="coords-unit">
                 <select title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
@@ -75,6 +76,10 @@ export default class MousePosition extends HTMLElement {
             locateLayer.removeAllFeatures();
             locateLayer.addFeatures(new OpenLayers.Feature.Vector(centerPoint));
         }
+    }
+
+    _removeCenterPoint() {
+        mainLizmap.lizmap3.map.getLayersByName('locatelayer')[0].removeAllFeatures();
     }
 
     /**

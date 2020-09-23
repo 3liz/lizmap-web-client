@@ -1880,6 +1880,7 @@ lizmap-mouse-position{
 }
 lizmap-mouse-position > div.mouse-position{
   flex-grow: 1;
+  display: flex;
 }
 lizmap-mouse-position > div.mouse-position input[type="number"],
 lizmap-mouse-position > div.mouse-position span,
@@ -1894,8 +1895,11 @@ lizmap-mouse-position input[type="number"]::-webkit-inner-spin-button {
 lizmap-mouse-position input[type="number"] {
     -moz-appearance: textfield;
 }
+lizmap-mouse-position > div.mouse-position > button{
+  height: 30px;
+}
 lizmap-mouse-position > div.coords-unit > select{
-  width: auto;
+  width: 40px;
   margin: 0px;
   padding: 0px;
 }
