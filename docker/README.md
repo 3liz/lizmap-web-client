@@ -1,4 +1,4 @@
-# Lizmap web client Docker image with WPS support
+# Lizmap web client Docker image
 
 The container deploy one lizmap instance and may run php-fpm on commande line.
 (cf [docker/php](https://hub.docker.com/_/php/) )
@@ -6,7 +6,7 @@ The container deploy one lizmap instance and may run php-fpm on commande line.
 
 ## Configuration variables
 
-- LIZMAP\_WMSSERVERURL: URL of the OWS (WMS/WFS/WCS) service used by the WPS service 
+- LIZMAP\_WMSSERVERURL: URL of the OWS (WMS/WFS/WCS) service used
 - LIZMAP\_DEBUGMODE: Error level INFO/DEBUG/ERROR/WARNING
 - LIZMAP\_CACHESTORAGETYPE: Always Use 'redis'
 - LIZMAP\_CACHEREDISHOST: Redis host
