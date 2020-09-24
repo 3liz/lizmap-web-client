@@ -260,9 +260,9 @@ var lizDataviz = function() {
     }
 
     function resizePlot(id){
-       // d3.select causes an error if the selector parameter is not a correct CSS one
+       // Plotly.d3.select causes an error if the selector parameter is not a correct CSS one
        try {
-           var gd = d3.select('#' + id)
+           var gd = Plotly.d3.select('#' + id)
                .style({
                    width: '100%',
                    margin: '0px'
