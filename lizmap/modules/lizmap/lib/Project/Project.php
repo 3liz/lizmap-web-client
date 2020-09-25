@@ -1308,13 +1308,13 @@ class Project
             if (!property_exists($obj, 'group_visibility')) {
                 continue;
             }
-            if ($obj->group_visibility === '') {
+            if (empty($obj->group_visibility)) {
                 unset($obj->group_visibility);
 
                 continue;
             }
-            // get group visibility as trimed array
-            $groupVisibility = array_map('trim', explode(',', $obj->group_visibility));
+            // get group visibility as trimmed array
+            $groupVisibility = array_map('trim', $obj->group_visibility);
             $layerToKeep = false;
             foreach ($userGroups as $group) {
                 if (in_array($group, $groupVisibility)) {

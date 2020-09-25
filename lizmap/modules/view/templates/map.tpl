@@ -66,17 +66,7 @@
        <lizmap-scaleline title="{@view~map.overviewbar.scaletext.hover@}"></lizmap-scaleline>
         <button id="overview-toggle" class="btn" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
       </div>
-      <div id="mouseposition-bar">
-        <span style="display:none;">{@view~map.mouseposition.hover@}</span>
-        <span id="mouseposition" title="{@view~map.mouseposition.hover@}"></span>
-        <select title="{@view~map.mouseposition.select@}">
-          <option value="m">{@view~map.mouseposition.units.m@}</option>
-          <option value="f">{@view~map.mouseposition.units.f@}</option>
-          <option value="d">{@view~map.mouseposition.units.d@}</option>
-          <option value="dm">{@view~map.mouseposition.units.dm@}</option>
-          <option value="dms">{@view~map.mouseposition.units.dms@}</option>
-        </select>
-      </div>
+      <lizmap-mouse-position></lizmap-mouse-position>
     </div>
     <div id="attribution-box">
       <span id="attribution"></span>
