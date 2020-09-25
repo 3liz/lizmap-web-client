@@ -1851,30 +1851,47 @@ a.btn.btn-opacity-layer.active {
 }
 
 /* Mouse position */
-#mouseposition-bar {
-  font-size: 10px;
-  position:relative;
+lizmap-mouse-position{
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
   border : solid 1px #606060;
-  border-top : none;
-  padding: 0.2em;
-  padding-right: 0.1em;
-  padding-left:0.1em;
+  display: flex;
 }
-#mouseposition-bar > span {
-  display: inline-block;
-  width: 150px;
+lizmap-mouse-position > div.mouse-position{
+  flex-grow: 1;
+  display: flex;
   text-align: center;
 }
-#mouseposition-bar > select {
-  width: auto;
+lizmap-mouse-position > div.mouse-position input[type="number"],
+lizmap-mouse-position > div.mouse-position span,
+lizmap-mouse-position > div.coords-unit  select{
+  font-size: 10px;
+  margin-bottom: 0;
+}
+lizmap-mouse-position > div.mouse-position input[type="number"]{
+  padding: 2px;
+  text-align: center;
+  width: 57px;
+}
+lizmap-mouse-position input[type="number"]::-webkit-outer-spin-button,
+lizmap-mouse-position input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+lizmap-mouse-position input[type="number"] {
+    -moz-appearance: textfield;
+}
+lizmap-mouse-position > div.mouse-position > button{
+  height: 30px;
+}
+lizmap-mouse-position .readonly-position{
+  flex-grow: 1;
+}
+lizmap-mouse-position > div.coords-unit > select{
+  width: 65px;
   margin: 0px;
   padding: 0px;
-  height: 20px;
-  line-height:20px;
-  font-size: 10px;
-  float:right;
 }
+
 /* Overview map */
 #overview-map{
   position:relative;
