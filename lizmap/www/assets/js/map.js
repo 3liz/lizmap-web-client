@@ -673,9 +673,6 @@ var lizMap = function() {
            Proj4js.defs[proj.ref]=proj.proj4;
          var projection = new OpenLayers.Projection(proj.ref);
 
-         // Copy QGIS project's projection
-         qgisProjectProjection = projection;
-
          var projOSM = new OpenLayers.Projection('EPSG:3857');
          proj.ref = 'EPSG:3857';
          proj.proj4 = Proj4js.defs['EPSG:3857'];
@@ -2371,34 +2368,6 @@ var lizMap = function() {
 
       $('#overview-map').toggle();
       return false;
-    });
-
-    var mpUnitSelect = $('#mouseposition-bar > select');
-    var mapUnits = map.projection.getUnits();
-    if ( mapUnits == 'degrees' ) {
-      mpUnitSelect.find('option[value="m"]').remove();
-      mpUnitSelect.find('option[value="f"]').remove();
-    } else if ( mapUnits == 'm' ) {
-      mpUnitSelect.find('option[value="f"]').remove();
-    } else {
-      mpUnitSelect.find('option[value="m"]').remove();
-    }
-    var mousePosition = new OpenLayers.Control.lizmapMousePosition({
-        displayProjection: qgisProjectProjection,
-        displayUnit:mpUnitSelect.val(),
-        numDigits: 0,
-        prefix: '',
-        emptyString:$('#mouseposition').attr('title'),
-        div:document.getElementById('mouseposition')
-        });
-    map.addControl( mousePosition );
-    mpUnitSelect.change(function() {
-        var mpSelectVal = $(this).val();
-        if (mpSelectVal == 'm')
-          mousePosition.numDigits = 0;
-        else
-          mousePosition.numDigits = 5;
-        mousePosition.displayUnit = mpSelectVal;
     });
 
     if (config.options.hasOverview)
@@ -5859,6 +5828,11 @@ var lizMap = function() {
 
         // get and analyse tree
         var capability = capabilities.capability;
+
+        // Copy QGIS project's projection
+        config.options.qgisProjectProjection = Object.assign({}, config.options.projection);
+        qgisProjectProjection = new OpenLayers.Projection(config.options.projection.ref);
+
         beforeLayerTreeCreated();
         var firstLayer = capability.nestedLayers[0];
         getLayerTree(firstLayer, tree);
@@ -6596,7 +6570,7 @@ lizMap.events.on({
             matrixSet: "PM",
             style: "normal",
             projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="https://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://ign.fr/sites/all/themes/ign_portail/favicon.ico"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
             ,zoomOffset: options.zoomOffset
 
@@ -6632,7 +6606,7 @@ lizMap.events.on({
             matrixSet: "PM",
             style: "normal",
             projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="https://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://ign.fr/sites/all/themes/ign_portail/favicon.ico"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
             ,zoomOffset: options.zoomOffset
 
@@ -6668,7 +6642,7 @@ lizMap.events.on({
             matrixSet: "PM",
             style: "normal",
             projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="https://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://ign.fr/sites/all/themes/ign_portail/favicon.ico"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
             ,zoomOffset: options.zoomOffset
 
@@ -6705,7 +6679,7 @@ lizMap.events.on({
             style: "normal",
             format: "image/png",
             projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="https://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://ign.fr/sites/all/themes/ign_portail/favicon.ico"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
             ,zoomOffset: options.zoomOffset
 
