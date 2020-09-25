@@ -2737,3 +2737,7 @@ lizmap-scaleline .ol-scale-text{
   font-weight: bold;
   font-size: 0.8em;
 }
+
+lizmap-scaleline .ol-scale-singlebar{
+  height: 0;
+}
