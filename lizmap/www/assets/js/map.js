@@ -2370,34 +2370,6 @@ var lizMap = function() {
       return false;
     });
 
-    var mpUnitSelect = $('#mouseposition-bar > select');
-    var mapUnits = map.projection.getUnits();
-    if ( mapUnits == 'degrees' ) {
-      mpUnitSelect.find('option[value="m"]').remove();
-      mpUnitSelect.find('option[value="f"]').remove();
-    } else if ( mapUnits == 'm' ) {
-      mpUnitSelect.find('option[value="f"]').remove();
-    } else {
-      mpUnitSelect.find('option[value="m"]').remove();
-    }
-    var mousePosition = new OpenLayers.Control.lizmapMousePosition({
-        displayProjection: qgisProjectProjection,
-        displayUnit:mpUnitSelect.val(),
-        numDigits: 0,
-        prefix: '',
-        emptyString:$('#mouseposition').attr('title'),
-        div:document.getElementById('mouseposition')
-        });
-    map.addControl( mousePosition );
-    mpUnitSelect.change(function() {
-        var mpSelectVal = $(this).val();
-        if (mpSelectVal == 'm')
-          mousePosition.numDigits = 0;
-        else
-          mousePosition.numDigits = 5;
-        mousePosition.displayUnit = mpSelectVal;
-    });
-
     if (config.options.hasOverview)
       if(!mCheckMobile()) {
         $('#overview-map').show();

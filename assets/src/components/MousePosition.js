@@ -25,10 +25,9 @@ export default class MousePosition extends HTMLElement {
     }
 
     // Render editablePositionTemplate and readonlyPositionTemplate apart because values change a lot
+    // Don't add line break between <input>s or it adds a space in UI
     editablePositionTemplate(lon, lat){
-        return html`
-            <input type="number" step="any" class="input-mini" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lon}>
-            <input type="number" step="any" class="input-mini" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lat}>`;
+        return html`<input type="number" step="any" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lon}><input type="number" step="any" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lat}>`;
     }
 
     readonlyPositionTemplate(lon, lat) {
