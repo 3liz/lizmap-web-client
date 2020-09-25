@@ -1495,6 +1495,19 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Check tabs visibility
             // We need to force showing the container before testing li visibility
             formContainer.show();
+            var btn = $('#button-edition');
+            var dockVisible = btn.parent().hasClass('active');
+
+            if (form.length != 0) {
+                $('#button-edition').show();
+                if (!lizMap.checkMobile()) {
+                    if (!dockVisible)
+                        btn.click();
+                } else {
+                    if (dockVisible)
+                        btn.click();
+                }
+            }
             // Check li (tabs) visibility
             if (form.children('ul.nav-tabs').find('li:visible').length == 0 ) {
                 // No tabs visible, hide the tab content
