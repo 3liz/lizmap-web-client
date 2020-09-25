@@ -452,6 +452,10 @@ class qgisForm implements qgisFormControlsInterface
                 }
                 $form->setData($ref.'_hidden', $value);
             } else {
+                if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
+                    $date = new DateTime($value);
+                    $value = $date->format('Y-m-d H:i:s');
+                }
                 $form->setData($ref, $value);
             }
         }
