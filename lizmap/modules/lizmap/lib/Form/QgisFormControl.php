@@ -12,6 +12,8 @@
 
 namespace Lizmap\Form;
 
+use Lizmap\App;
+
 class QgisFormControl
 {
     public $ref = '';
@@ -171,6 +173,9 @@ class QgisFormControl
      */
     protected $widgetv2configAttr;
 
+    /** @var App\AppContextInterface */
+    protected $appContext;
+
     /**
      * Create an jForms control object based on a qgis edit widget.
      * And add it to the passed form.
@@ -183,7 +188,7 @@ class QgisFormControl
      * @param array               $constraints        the QGIS constraints
      * @param object              $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      */
-    public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue = null, $constraints = null, $rendererCategories = null)
+    public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue = null, $constraints = null, $rendererCategories = null, App\AppContextInterface $appContext)
     {
 
     // Add new editTypes naming convention since QGIS 2.4
@@ -215,6 +220,7 @@ class QgisFormControl
         // Set class attributes
         $this->ref = $ref;
         $this->fieldName = $ref;
+        $this->appContext = $appContext;
         if (is_string($aliasXml)) {
             $this->fieldAlias = $aliasXml;
         } elseif ($aliasXml and is_array($aliasXml) and count($aliasXml) != 0) {
@@ -343,59 +349,59 @@ class QgisFormControl
                 break;
 
             case 'menulist':
-                $this->ctrl = new\jFormsControlMenulist($this->ref);
+                $this->ctrl = new \jFormsControlMenulist($this->ref);
                 $this->fillControlDatasource();
 
                 break;
 
             case 'checkboxes':
-                $this->ctrl = new\jFormsControlCheckboxes($this->ref);
+                $this->ctrl = new \jFormsControlCheckboxes($this->ref);
                 $this->fillControlDatasource();
 
                 break;
 
             case 'hidden':
-                $this->ctrl = new\jFormsControlHidden($this->ref);
+                $this->ctrl = new \jFormsControlHidden($this->ref);
 
                 break;
 
             case 'checkbox':
-                $this->ctrl = new\jFormsControlCheckbox($this->ref);
+                $this->ctrl = new \jFormsControlCheckbox($this->ref);
                 $this->fillCheckboxValues();
 
                 break;
 
             case 'textarea':
-                $this->ctrl = new\jFormsControlTextarea($this->ref);
+                $this->ctrl = new \jFormsControlTextarea($this->ref);
 
                 break;
 
             case 'htmleditor':
-                $this->ctrl = new\jFormsControlHtmlEditor($this->ref);
+                $this->ctrl = new \jFormsControlHtmlEditor($this->ref);
 
                 break;
 
             case 'date':
-                $this->ctrl = new\jFormsControlDate($this->ref);
+                $this->ctrl = new \jFormsControlDate($this->ref);
 
                 break;
 
             case 'datetime':
-                $this->ctrl = new\jFormsControlDatetime($this->ref);
+                $this->ctrl = new \jFormsControlDatetime($this->ref);
 
                 break;
 
             case 'time':
-                //$this->ctrl = new\jFormsControlDatetime($this->ref);
-                $this->ctrl = new\jFormsControlInput($this->ref);
+                //$this->ctrl = new \jFormsControlDatetime($this->ref);
+                $this->ctrl = new \jFormsControlInput($this->ref);
 
                 break;
 
             case 'upload':
-                $choice = new\jFormsControlChoice($this->ref.'_choice');
+                $choice = new \jFormsControlChoice($this->ref.'_choice');
                 $choice->createItem('keep', 'keep');
                 $choice->createItem('update', 'update');
-                $upload = new\jFormsControlUpload($this->ref);
+                $upload = new \jFormsControlUpload($this->ref);
                 if ($this->fieldEditType === 'Photo') {
                     $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
                     $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
@@ -485,7 +491,7 @@ class QgisFormControl
                 break;
 
             default:
-                $this->ctrl = new\jFormsControlInput($this->ref);
+                $this->ctrl = new \jFormsControlInput($this->ref);
 
                 break;
         }
@@ -500,7 +506,7 @@ class QgisFormControl
             // Checkbox should not be required
             $this->required = false;
             // Set control
-            $this->ctrl = new\jFormsControlCheckbox($this->ref);
+            $this->ctrl = new \jFormsControlCheckbox($this->ref);
             // Check data list
             foreach ($data as $k => $v) {
                 $strK = strtolower($k);
@@ -526,7 +532,7 @@ class QgisFormControl
             if ($constraints['exp_desc'] !== '') {
                 $this->ctrl->hint = $constraints['exp_desc'];
             } else {
-                $this->ctrl->hint = \jLocale::get('view~edition.message.hint.constraint', array($constraints['exp_value']));
+                $this->ctrl->hint = $this->appContext->getLocale('view~edition.message.hint.constraint', array($constraints['exp_value']));
             }
         }
     }
