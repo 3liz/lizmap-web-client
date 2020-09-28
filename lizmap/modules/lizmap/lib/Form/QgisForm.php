@@ -1,6 +1,6 @@
 <?php
 /**
- * Create and set jForms form based on QGIS vector layer.
+ * Create and set \jForms form based on QGIS vector layer.
  *
  * @author    3liz
  * @copyright 2017 3liz
@@ -9,7 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class qgisForm implements qgisFormControlsInterface
+
+namespace Lizmap\Form;
+
+class QgisForm implements QgisFormControlsInterface
 {
     /**
      * @var qgisMapLayer|qgisVectorLayer
@@ -17,7 +20,7 @@ class qgisForm implements qgisFormControlsInterface
     protected $layer;
 
     /**
-     * @var jFormsBase
+     * @var \jFormsBase
      */
     protected $form;
 
@@ -27,7 +30,7 @@ class qgisForm implements qgisFormControlsInterface
     protected $form_name;
 
     /**
-     * @var null|qgisAttributeEditorElement the qgis form element
+     * @var null|\qgisAttributeEditorElement the qgis form element
      */
     protected $attributeEditorForm;
 
@@ -49,37 +52,37 @@ class qgisForm implements qgisFormControlsInterface
     /** @var qgisFormControl[] */
     protected $formControls = array();
 
-    /** @var jFormsPlugin[] */
+    /** @var \jFormsPlugin[] */
     protected $formPlugins = array();
 
     /**
      * qgisForm constructor.
      *
      * @param qgisMapLayer|qgisVectorLayer $layer
-     * @param jFormsBase                   $form
+     * @param \jFormsBase                   $form
      * @param string                       $featureId
      * @param bool                         $loginFilteredOverride
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct($layer, $form, $featureId, $loginFilteredOverride)
     {
         if ($layer->getType() != 'vector') {
-            throw new Exception('The layer "'.$layer->getName().'" is not a vector layer!');
+            throw new \Exception('The layer "'.$layer->getName().'" is not a vector layer!');
         }
         if (!$layer->isEditable()) {
-            throw new Exception('The layer "'.$layer->getName().'" is not an editable vector layer!');
+            throw new \Exception('The layer "'.$layer->getName().'" is not an editable vector layer!');
         }
 
         //Get the fields info
         $dbFieldsInfo = $layer->getDbFieldsInfo();
         // verifying db fields info
         if (!$dbFieldsInfo) {
-            throw new Exception('Can\'t get Db fields information for the layer "'.$layer->getName().'"!');
+            throw new \Exception('Can\'t get Db fields information for the layer "'.$layer->getName().'"!');
         }
 
         if (count($dbFieldsInfo->primaryKeys) == 0) {
-            throw new Exception('The layer "'.$layer->getName().'" has no primary keys. The edition tool needs a primary key on the table to be defined.');
+            throw new \Exception('The layer "'.$layer->getName().'" has no primary keys. The edition tool needs a primary key on the table to be defined.');
         }
 
         $this->layer = $layer;
@@ -228,7 +231,7 @@ class qgisForm implements qgisFormControlsInterface
             } elseif ($formControl->isUploadControl()) {
                 // Add Hidden Control for upload
                 // help to retrieve file path
-                $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
+                $hiddenCtrl = new \jFormsControlHidden($fieldName.'_hidden');
                 $form->addControl($hiddenCtrl);
                 $toDeactivate[] = $formControl->getControlName();
             } elseif ($formControl->fieldEditType === 'Color') {
@@ -301,7 +304,7 @@ class qgisForm implements qgisFormControlsInterface
         $attributeEditorForm = $this->getAttributesEditorForm();
         if ($attributeEditorForm) {
             $groupVisibilities = $attributeEditorForm->getGroupVisibilityExpressions();
-            $qgis_groupDependencies = qgisExpressionUtils::getCriteriaFromExpressions($groupVisibilities);
+            $qgis_groupDependencies = \qgisExpressionUtils::getCriteriaFromExpressions($groupVisibilities);
             $privateData['qgis_groupDependencies'] = array_intersect($qgis_groupDependencies, array_keys($this->dbFieldsInfo->dataFields));
         } else {
             $privateData['qgis_groupDependencies'] = array();
@@ -337,7 +340,7 @@ class qgisForm implements qgisFormControlsInterface
             }
         }
         // Evaluate the expression by qgis
-        $results = qgisExpressionUtils::evaluateExpressions(
+        $results = \qgisExpressionUtils::evaluateExpressions(
             $this->layer,
             array(
                 $fieldName => $expression,
@@ -380,7 +383,7 @@ class qgisForm implements qgisFormControlsInterface
     }
 
     /**
-     * @return null|qgisAttributeEditorElement
+     * @return null|\qgisAttributeEditorElement
      */
     public function getAttributesEditorForm()
     {
@@ -396,7 +399,7 @@ class qgisForm implements qgisFormControlsInterface
         if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
             $_attributeEditorForm = $layerXml->xpath('attributeEditorForm');
             if ($_attributeEditorForm && count($_attributeEditorForm)) {
-                $attributeEditorForm = new qgisAttributeEditorElement($this, $_attributeEditorForm[0], $this->form_name);
+                $attributeEditorForm = new \qgisAttributeEditorElement($this, $_attributeEditorForm[0], $this->form_name);
             }
         }
 
@@ -410,7 +413,7 @@ class qgisForm implements qgisFormControlsInterface
     }
 
     /**
-     * @return jFormsPlugin[]
+     * @return \jFormsPlugin[]
      */
     public function getFormPlugins()
     {
@@ -418,7 +421,7 @@ class qgisForm implements qgisFormControlsInterface
     }
 
     /**
-     * List of field name for a jForms form.
+     * List of field name for a \jForms form.
      *
      * @return string[]
      */
@@ -430,7 +433,7 @@ class qgisForm implements qgisFormControlsInterface
     }
 
     /**
-     * @return jFormsBase
+     * @return \jFormsBase
      */
     public function getForm()
     {
@@ -502,9 +505,9 @@ class qgisForm implements qgisFormControlsInterface
                     $path = explode('/', $value);
                     $filename = array_pop($path);
                     $filename = preg_replace('#_|-#', ' ', $filename);
-                    $ctrl->itemsNames['keep'] = jLocale::get('view~edition.upload.choice.keep').' '.$filename;
-                    $ctrl->itemsNames['update'] = jLocale::get('view~edition.upload.choice.update');
-                    $ctrl->itemsNames['delete'] = jLocale::get('view~edition.upload.choice.delete').' '.$filename;
+                    $ctrl->itemsNames['keep'] = \jLocale::get('view~edition.upload.choice.keep').' '.$filename;
+                    $ctrl->itemsNames['update'] = \jLocale::get('view~edition.upload.choice.update');
+                    $ctrl->itemsNames['delete'] = \jLocale::get('view~edition.upload.choice.delete').' '.$filename;
                 }
                 $form->setData($ref.'_hidden', $value);
             } else {
@@ -529,7 +532,7 @@ class qgisForm implements qgisFormControlsInterface
         $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
         if (strtolower($modifyGeometry) == 'true' && $form->getData($geometryColumn) == '') {
             $check = false;
-            $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.no.geometry'));
+            $form->setErrorOn($geometryColumn, \jLocale::get('view~edition.message.error.no.geometry'));
         }
 
         // Get values and form fields
@@ -559,7 +562,7 @@ class qgisForm implements qgisFormControlsInterface
                 continue;
             }
             // Control is an upload control
-            if ($jCtrl instanceof jFormsControlUpload) {
+            if ($jCtrl instanceof \jFormsControlUpload) {
                 $values[$fieldName] = $this->processUploadedFile($form, $fieldName, $cnx);
             } else {
 
@@ -591,7 +594,7 @@ class qgisForm implements qgisFormControlsInterface
                 'geometry' => null,
                 'properties' => $values,
             );
-            $results = qgisExpressionUtils::evaluateExpressions(
+            $results = \qgisExpressionUtils::evaluateExpressions(
                 $this->layer,
                 $constraintExpressions,
                 $form_feature
@@ -610,7 +613,7 @@ class qgisForm implements qgisFormControlsInterface
                 if ($constraints['exp_desc'] !== '') {
                     $form->setErrorOn($fieldName, $constraints['exp_desc']);
                 } else {
-                    $form->setErrorOn($fieldName, jLocale::get('view~edition.message.error.constraint', array($constraints['exp_value'])));
+                    $form->setErrorOn($fieldName, \jLocale::get('view~edition.message.error.constraint', array($constraints['exp_value'])));
                 }
                 $check = false;
             }
@@ -629,7 +632,7 @@ class qgisForm implements qgisFormControlsInterface
     public function saveToDb($feature = null)
     {
         if (!$this->dbFieldsInfo) {
-            throw new Exception('Save to database can\'t be done for the layer "'.$this->layer->getName().'"!');
+            throw new \Exception('Save to database can\'t be done for the layer "'.$this->layer->getName().'"!');
         }
 
         // Update or Insert
@@ -688,10 +691,10 @@ class qgisForm implements qgisFormControlsInterface
         }
 
         if (count($fields) == 0) {
-            jLog::log('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !', 'error');
-            $this->form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save').' '.jLocale::get('view~edition.message.error.save.fields'));
+            \jLog::log('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !', 'error');
+            $this->form->setErrorOn($geometryColumn, \jLocale::get('view~edition.message.error.save').' '.\jLocale::get('view~edition.message.error.save.fields'));
 
-            throw new Exception(jLocale::get('view~edition.link.error.sql'));
+            throw new \Exception(\jLocale::get('view~edition.link.error.sql'));
         }
 
         $form = $this->form;
@@ -705,7 +708,7 @@ class qgisForm implements qgisFormControlsInterface
                 continue;
             }
             // Control is an upload control
-            if ($jCtrl instanceof jFormsControlUpload) {
+            if ($jCtrl instanceof \jFormsControlUpload) {
                 $values[$ref] = $this->processUploadedFile($form, $ref, $cnx);
 
                 continue;
@@ -730,7 +733,7 @@ class qgisForm implements qgisFormControlsInterface
                 case 'geometry':
                     try {
                         $value = $this->layer->getGeometryAsSql($value);
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $form->setErrorOn($geometryColumn, $e->getMessage());
 
                         return false;
@@ -808,7 +811,7 @@ class qgisForm implements qgisFormControlsInterface
                 'tablename' => $dtParams->tablename,
                 'schema' => $dtParams->schema,
             );
-            $event = jEvent::notify('LizmapEditionFeaturePreUpdateInsert', $eventParams);
+            $event = \jEvent::notify('LizmapEditionFeaturePreUpdateInsert', $eventParams);
             $additionnalValues = $event->getResponseByKey('values');
             if ($additionnalValues !== null) {
                 foreach ($additionnalValues as $additionnalValue) {
@@ -825,13 +828,13 @@ class qgisForm implements qgisFormControlsInterface
 
             // event to execute additional process on updated/inserted data
             $eventParams['pkVal'] = $pkVal;
-            jEvent::notify('LizmapEditionFeaturePostUpdateInsert', $eventParams);
+            \jEvent::notify('LizmapEditionFeaturePostUpdateInsert', $eventParams);
 
             return $pkVal;
-        } catch (Exception $e) {
-            $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save'));
-            jLog::log('An error has been raised when saving form data edition to db : ', 'error');
-            jLog::logEx($e, 'error');
+        } catch (\Exception $e) {
+            $form->setErrorOn($geometryColumn, \jLocale::get('view~edition.message.error.save'));
+            \jLog::log('An error has been raised when saving form data edition to db : ', 'error');
+            \jLog::logEx($e, 'error');
 
             return false;
         }
@@ -840,7 +843,7 @@ class qgisForm implements qgisFormControlsInterface
     }
 
     /**
-     * @param jFormsBase    $form
+     * @param \jFormsBase    $form
      * @param string        $ref
      * @param jDbConnection $cnx
      */
@@ -857,7 +860,7 @@ class qgisForm implements qgisFormControlsInterface
         $targetFullPath = $repPath.$targetPath;
         // Else use given root, but only if it is a child or brother of the repository path
         if (!empty($this->formControls[$ref]->DefaultRoot)) {
-            jFile::createDir($repPath.$this->formControls[$ref]->DefaultRoot); // Need to create it to then make the realpath checks
+            \jFile::createDir($repPath.$this->formControls[$ref]->DefaultRoot); // Need to create it to then make the realpath checks
             if (
                 (substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
                 or
@@ -923,7 +926,7 @@ class qgisForm implements qgisFormControlsInterface
     public function deleteFromDb($feature)
     {
         if (!$this->dbFieldsInfo) {
-            throw new Exception('Delete from database can\'t be done for the layer "'.$this->layer->getName().'"!');
+            throw new \Exception('Delete from database can\'t be done for the layer "'.$this->layer->getName().'"!');
         }
 
         $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
@@ -939,7 +942,7 @@ class qgisForm implements qgisFormControlsInterface
             'loginFilteredLayers' => $loginFilteredLayers,
             'pkVal' => $this->layer->getPrimaryKeyValues($feature),
         );
-        $event = jEvent::notify('LizmapEditionFeaturePreDelete', $eventParams);
+        $event = \jEvent::notify('LizmapEditionFeaturePreDelete', $eventParams);
         if ($event->allResponsesByKeyAreTrue('deleteIsAlreadyDone')) {
             return 1;
         }
@@ -947,7 +950,7 @@ class qgisForm implements qgisFormControlsInterface
             return 0;
         }
         $result = $this->layer->deleteFeature($feature, $loginFilteredLayers);
-        jEvent::notify('LizmapEditionFeaturePostDelete', $eventParams);
+        \jEvent::notify('LizmapEditionFeaturePostDelete', $eventParams);
 
         return $result;
     }
@@ -955,7 +958,7 @@ class qgisForm implements qgisFormControlsInterface
     /**
      * Dynamically update form by modifying the filter by login control.
      *
-     * @return jFormsBase modified form
+     * @return \jFormsBase modified form
      */
     public function updateFormByLogin()
     {
@@ -972,14 +975,14 @@ class qgisForm implements qgisFormControlsInterface
             }
 
             // Check if a user is authenticated
-            if (!jAuth::isConnected()) {
+            if (!\jAuth::isConnected()) {
                 $form->setData($attribute, 'all');
                 $form->setReadOnly($attribute, true);
 
                 return $form;
             }
 
-            $user = jAuth::getUserSession();
+            $user = \jAuth::getUserSession();
             if (!$this->loginFilteredOverride) {
                 $value = null;
                 if ($oldCtrl != null) {
@@ -992,16 +995,16 @@ class qgisForm implements qgisFormControlsInterface
                     $data[$user->login] = $user->login;
                     $value = $user->login;
                 } else {
-                    $userGroups = jAcl2DbUserGroup::getGroups();
+                    $userGroups = \jAcl2DbUserGroup::getGroups();
                     foreach ($userGroups as $uGroup) {
                         if ($uGroup != 'users' and substr($uGroup, 0, 7) != '__priv_') {
                             $data[$uGroup] = $uGroup;
                         }
                     }
                 }
-                $dataSource = new jFormsStaticDatasource();
+                $dataSource = new \jFormsStaticDatasource();
                 $dataSource->data = $data;
-                $ctrl = new jFormsControlMenulist($attribute);
+                $ctrl = new \jFormsControlMenulist($attribute);
                 $ctrl->required = true;
                 if ($oldCtrl != null) {
                     $ctrl->label = $oldCtrl->label;
@@ -1022,11 +1025,11 @@ class qgisForm implements qgisFormControlsInterface
 
                 $data = array();
                 if ($type == 'login') {
-                    $plugin = jApp::coord()->getPlugin('auth');
+                    $plugin = \jApp::coord()->getPlugin('auth');
                     if ($plugin->config['driver'] == 'Db') {
                         $authConfig = $plugin->config['Db'];
-                        $dao = jDao::get($authConfig['dao'], $authConfig['profile']);
-                        $cond = jDao::createConditions();
+                        $dao = \jDao::get($authConfig['dao'], $authConfig['profile']);
+                        $cond = \jDao::createConditions();
                         $cond->addItemOrder('login', 'asc');
                         $us = $dao->findBy($cond);
                         foreach ($us as $u) {
@@ -1034,7 +1037,7 @@ class qgisForm implements qgisFormControlsInterface
                         }
                     }
                 } else {
-                    $gp = jAcl2DbUserGroup::getGroupList();
+                    $gp = \jAcl2DbUserGroup::getGroupList();
                     foreach ($gp as $g) {
                         if ($g->id_aclgrp != 'users') {
                             $data[$g->id_aclgrp] = $g->id_aclgrp;
@@ -1042,9 +1045,9 @@ class qgisForm implements qgisFormControlsInterface
                     }
                 }
                 $data['all'] = 'all';
-                $dataSource = new jFormsStaticDatasource();
+                $dataSource = new \jFormsStaticDatasource();
                 $dataSource->data = $data;
-                $ctrl = new jFormsControlMenulist($attribute);
+                $ctrl = new \jFormsControlMenulist($attribute);
                 $ctrl->required = true;
                 if ($oldCtrl != null) {
                     $ctrl->label = $oldCtrl->label;
@@ -1082,13 +1085,13 @@ class qgisForm implements qgisFormControlsInterface
             $data[$v] = $v;
         }
 
-        $dataSource = new jFormsStaticDatasource();
+        $dataSource = new \jFormsStaticDatasource();
 
         // required
         if (array_key_exists('notNull', $formControl->uniqueValuesData)
             and $formControl->uniqueValuesData['notNull']
         ) {
-            jLog::log('notNull '.$formControl->uniqueValuesData['notNull'], 'error');
+            \jLog::log('notNull '.$formControl->uniqueValuesData['notNull'], 'error');
             $formControl->ctrl->required = true;
         }
         // combobox
@@ -1225,7 +1228,7 @@ class qgisForm implements qgisFormControlsInterface
 
         $wfsData = $result->data;
         if (property_exists($result, 'file') and $result->file and is_file($wfsData)) {
-            $wfsData = jFile::read($wfsData);
+            $wfsData = \jFile::read($wfsData);
         }
         $mime = $result->mime;
 
@@ -1242,7 +1245,7 @@ class qgisForm implements qgisFormControlsInterface
                     $data[(string) $feat->properties->{$keyColumn}] = $feat->properties->{$valueColumn};
                 }
             }
-            $dataSource = new jFormsStaticDatasource();
+            $dataSource = new \jFormsStaticDatasource();
 
             // required
             if (!$formControl->valueRelationData['allowNull']) {
@@ -1382,12 +1385,12 @@ class qgisForm implements qgisFormControlsInterface
         }
 
         // Perform request
-        $wfsRequest = new lizmapWFSRequest($project, $params);
+        $wfsRequest = new \lizmapWFSRequest($project, $params);
         $result = $wfsRequest->process();
 
         $wfsData = $result->data;
         if (property_exists($result, 'file') and $result->file and is_file($wfsData)) {
-            $wfsData = jFile::read($wfsData);
+            $wfsData = \jFile::read($wfsData);
         }
         $mime = $result->mime;
 
@@ -1404,7 +1407,7 @@ class qgisForm implements qgisFormControlsInterface
                     $data[(string) $feat->properties->{$referencedField}] = $feat->properties->{$previewField};
                 }
             }
-            $dataSource = new jFormsStaticDatasource();
+            $dataSource = new \jFormsStaticDatasource();
 
             // required
             if (!$formControl->relationReferenceData['allowNull']) {
@@ -1470,15 +1473,15 @@ class qgisForm implements qgisFormControlsInterface
                 }
 
                 // Check if a user is authenticated
-                $isConnected = jAuth::isConnected();
-                $cnx = jDb::getConnection($this->layer->getId());
+                $isConnected = \jAuth::isConnected();
+                $cnx = \jDb::getConnection($this->layer->getId());
                 if ($isConnected) {
-                    $user = jAuth::getUserSession();
+                    $user = \jAuth::getUserSession();
                     $login = $user->login;
                     if ($type == 'login') {
                         $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
                     } else {
-                        $userGroups = jAcl2DbUserGroup::getGroups();
+                        $userGroups = \jAcl2DbUserGroup::getGroups();
                         // Set XML Filter if getFeature request
                         $flatGroups = implode("' , '", $userGroups);
                         $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
