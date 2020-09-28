@@ -454,123 +454,18 @@ class qgisForm implements qgisFormControlsInterface
             } else {
                 if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
                     $edittype = $this->formControls[$ref]->getEditType();
-                    if (!$edittype || !property_exists($edittype, 'options')
-                        || !property_exists($edittype->options, 'field_format')) {
-                        break ;
+                    if ($edittype && property_exists($edittype, 'options')
+                            && property_exists($edittype->options, 'field_format')) {
+                        $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
+                        $date = DateTime::createFromFormat($format, $value);
+                        $value = $date->format('Y-m-d H:i:s');
                     }
-                    $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
-                    $date = DateTime::createFromFormat($format, $value);
-                    $value = $date->format('Y-m-d H:i:s');
                 }
                 $form->setData($ref, $value);
             }
         }
 
         return $form;
-    }
-
-    public function check($feature = null)
-    {
-        $form = $this->form;
-
-        $dataFields = $this->dbFieldsInfo->dataFields;
-        $geometryColumn = $this->dbFieldsInfo->geometryColumn;
-
-        // Jelix check
-        $check = $form->check();
-
-        // Geom check
-        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
-        if (strtolower($modifyGeometry) == 'true' && $form->getData($geometryColumn) == '') {
-            $check = false;
-            $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.no.geometry'));
-        }
-
-        // Get values and form fields
-        $values = array();
-        $formFields = array();
-        foreach ($dataFields as $fieldName => $prop) {
-            $values[$fieldName] = null;
-            $formFields[] = $fieldName;
-        }
-        if ($feature) {
-            $values = $this->layer->getDbFieldValues($feature);
-        }
-
-        // Get list of fields diplayed in form
-        // can be an empty list
-        $attributeEditorForm = $this->getAttributesEditorForm();
-        if ($attributeEditorForm) {
-            $formFields = $attributeEditorForm->getFields();
-        }
-
-        // Get values from form and get expressions
-        $constraintExpressions = array();
-        foreach ($formFields as $fieldName) {
-            $jCtrl = $form->getControl($fieldName);
-            // Field not in form
-            if ($jCtrl === null) {
-                continue;
-            }
-            // Control is an upload control
-            if ($jCtrl instanceof jFormsControlUpload) {
-                $values[$fieldName] = $this->processUploadedFile($form, $fieldName, $cnx);
-            } else {
-
-                // Get and filter the posted data foreach form control
-                $value = $form->getData($fieldName);
-
-                if (is_array($value)) {
-                    $value = '{'.implode(',', $value).'}';
-                }
-
-                if ($value === '') {
-                    $value = null;
-                }
-
-                $values[$fieldName] = $value;
-            }
-
-            // Get expression constraint
-            $constraints = $this->getConstraints($fieldName);
-            if ($constraints && $constraints['exp'] && $constraints['exp_value'] !== '') {
-                $constraintExpressions[$fieldName] = $constraints['exp_value'];
-            }
-        }
-
-        // Evaluate constraint expressions
-        if (count($constraintExpressions) > 0) {
-            $form_feature = array(
-                'type' => 'Feature',
-                'geometry' => null,
-                'properties' => $values,
-            );
-            $results = qgisExpressionUtils::evaluateExpressions(
-                $this->layer,
-                $constraintExpressions,
-                $form_feature
-            );
-
-            if (!$results) {
-                // Evaluation failed
-                return $check;
-            }
-            $results = (array) $results;
-            foreach ($results as $fieldName => $result) {
-                if ($result === 1) {
-                    continue;
-                }
-                $constraints = $this->getConstraints($fieldName);
-                if ($constraints['exp_desc'] !== '') {
-                    $form->setErrorOn($fieldName, $constraints['exp_desc']);
-                } else {
-                    $form->setErrorOn($fieldName, jLocale::get('view~edition.message.error.constraint', array($constraints['exp_value'])));
-                }
-                $check = false;
-            }
-        }
-
-        return $check;
     }
 
     public function getDateTimeConversionTab()
@@ -616,14 +511,16 @@ class qgisForm implements qgisFormControlsInterface
         foreach ($format as $qgis => $php) {
             $dateFormat = str_replace($qgis, $php, $dateFormat);
         }
+
         return $dateFormat;
     }
 
     /**
      * Converts the datetime to the format specified in the qgis Project.
      *
-     * @param string $value The datetime to convert
-     * @param object $edittype The format of the date
+     * @param string $value       The datetime to convert
+     * @param object $edittype    The format of the date
+     * @param mixed  $fieldFormat
      */
     public function convertDateTimeToFormat($value, $fieldFormat)
     {
@@ -747,7 +644,7 @@ class qgisForm implements qgisFormControlsInterface
                 $edittype = $this->formControls[$ref]->getEditType();
                 if (!$edittype || !property_exists($edittype, 'options')
                     || !property_exists($edittype->options, 'field_format')) {
-                    break ;
+                    break;
                 }
                 $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
             }
