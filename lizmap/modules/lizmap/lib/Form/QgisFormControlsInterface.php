@@ -7,7 +7,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-interface qgisFormControlsInterface
+
+namespace Lizmap\Form;
+
+interface QgisFormControlsInterface
 {
     /**
      * @return qgisFormControl[]

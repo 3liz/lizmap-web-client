@@ -9,12 +9,15 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class qgisFormControl
+
+namespace Lizmap\Form;
+
+class QgisFormControl
 {
     public $ref = '';
 
     /**
-     * @var jFormsControl
+     * @var\jFormsControl
      */
     public $ctrl;
 
@@ -242,7 +245,7 @@ class qgisFormControl
             $this->rendererCategories = $rendererCategories;
 
             // Get qgis edittype data
-            if ($this->edittype && ($this->edittype instanceof SimpleXMLElement)) {
+            if ($this->edittype && ($this->edittype instanceof \SimpleXMLElement)) {
                 // New QGIS 2.4 edittypes : use widgetv2type property
                 if (property_exists($this->edittype->attributes(), 'widgetv2type')) {
                     $this->widgetv2configAttr = $this->edittype->widgetv2config->attributes();
@@ -315,9 +318,9 @@ class qgisFormControl
         // Create the control
         switch ($markup) {
             case 'input':
-                $this->ctrl = new jFormsControlInput($this->ref);
+                $this->ctrl = new \jFormsControlInput($this->ref);
                 if ($this->fieldEditType === 15) {
-                    $this->ctrl->datatype = new jDatatypeDecimal();
+                    $this->ctrl->datatype = new \jDatatypeDecimal();
                     $attributes = $this->edittype->attributes();
                     if (property_exists($attributes, 'min')) {
                         $this->ctrl->datatype->addFacet('minValue', (float) $attributes->min);
@@ -327,7 +330,7 @@ class qgisFormControl
                     }
                 } elseif ($this->fieldEditType === 'Range' ||
                          $this->fieldEditType === 'EditRange') {
-                    $this->ctrl->datatype = new jDatatypeDecimal();
+                    $this->ctrl->datatype = new \jDatatypeDecimal();
                     $attributes = $this->widgetv2configAttr;
                     if (property_exists($attributes, 'Min')) {
                         $this->ctrl->datatype->addFacet('minValue', (float) $attributes->Min);
@@ -340,59 +343,59 @@ class qgisFormControl
                 break;
 
             case 'menulist':
-                $this->ctrl = new jFormsControlMenulist($this->ref);
+                $this->ctrl = new\jFormsControlMenulist($this->ref);
                 $this->fillControlDatasource();
 
                 break;
 
             case 'checkboxes':
-                $this->ctrl = new jFormsControlCheckboxes($this->ref);
+                $this->ctrl = new\jFormsControlCheckboxes($this->ref);
                 $this->fillControlDatasource();
 
                 break;
 
             case 'hidden':
-                $this->ctrl = new jFormsControlHidden($this->ref);
+                $this->ctrl = new\jFormsControlHidden($this->ref);
 
                 break;
 
             case 'checkbox':
-                $this->ctrl = new jFormsControlCheckbox($this->ref);
+                $this->ctrl = new\jFormsControlCheckbox($this->ref);
                 $this->fillCheckboxValues();
 
                 break;
 
             case 'textarea':
-                $this->ctrl = new jFormsControlTextarea($this->ref);
+                $this->ctrl = new\jFormsControlTextarea($this->ref);
 
                 break;
 
             case 'htmleditor':
-                $this->ctrl = new jFormsControlHtmlEditor($this->ref);
+                $this->ctrl = new\jFormsControlHtmlEditor($this->ref);
 
                 break;
 
             case 'date':
-                $this->ctrl = new jFormsControlDate($this->ref);
+                $this->ctrl = new\jFormsControlDate($this->ref);
 
                 break;
 
             case 'datetime':
-                $this->ctrl = new jFormsControlDatetime($this->ref);
+                $this->ctrl = new\jFormsControlDatetime($this->ref);
 
                 break;
 
             case 'time':
-                //$this->ctrl = new jFormsControlDatetime($this->ref);
-                $this->ctrl = new jFormsControlInput($this->ref);
+                //$this->ctrl = new\jFormsControlDatetime($this->ref);
+                $this->ctrl = new\jFormsControlInput($this->ref);
 
                 break;
 
             case 'upload':
-                $choice = new jFormsControlChoice($this->ref.'_choice');
+                $choice = new\jFormsControlChoice($this->ref.'_choice');
                 $choice->createItem('keep', 'keep');
                 $choice->createItem('update', 'update');
-                $upload = new jFormsControlUpload($this->ref);
+                $upload = new\jFormsControlUpload($this->ref);
                 if ($this->fieldEditType === 'Photo') {
                     $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
                     $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
@@ -482,7 +485,7 @@ class qgisFormControl
                 break;
 
             default:
-                $this->ctrl = new jFormsControlInput($this->ref);
+                $this->ctrl = new\jFormsControlInput($this->ref);
 
                 break;
         }
@@ -497,7 +500,7 @@ class qgisFormControl
             // Checkbox should not be required
             $this->required = false;
             // Set control
-            $this->ctrl = new jFormsControlCheckbox($this->ref);
+            $this->ctrl = new\jFormsControlCheckbox($this->ref);
             // Check data list
             foreach ($data as $k => $v) {
                 $strK = strtolower($k);
@@ -523,7 +526,7 @@ class qgisFormControl
             if ($constraints['exp_desc'] !== '') {
                 $this->ctrl->hint = $constraints['exp_desc'];
             } else {
-                $this->ctrl->hint = jLocale::get('view~edition.message.hint.constraint', array($constraints['exp_value']));
+                $this->ctrl->hint = \jLocale::get('view~edition.message.hint.constraint', array($constraints['exp_value']));
             }
         }
     }
@@ -543,39 +546,39 @@ class qgisFormControl
         }
 
         // Data type
-        if ($this->ctrl->datatype instanceof jDatatypeString) {
-            // let's change datatype when control has the default one, jDatatypeString
-            // we don't want to change datatype that are specific to a control type, like in jFormsControlHtmlEditor,
-            // jFormsControlDate etc..
+        if ($this->ctrl->datatype instanceof \jDatatypeString) {
+            // let's change datatype when control has the default one, \jDatatypeString
+            // we don't want to change datatype that are specific to a control type, like in\jFormsControlHtmlEditor,
+            //\jFormsControlDate etc..
 
             switch ($this->fieldDataType) {
                 case 'integer':
-                    $this->ctrl->datatype = new jDatatypeInteger();
+                    $this->ctrl->datatype = new \jDatatypeInteger();
 
                     break;
 
                 case 'float':
-                    $this->ctrl->datatype = new jDatatypeDecimal();
+                    $this->ctrl->datatype = new \jDatatypeDecimal();
 
                     break;
 
                 case 'date':
-                    $this->ctrl->datatype = new jDatatypeDate();
+                    $this->ctrl->datatype = new \jDatatypeDate();
 
                     break;
 
                 case 'datetime':
-                    $this->ctrl->datatype = new jDatatypeDateTime();
+                    $this->ctrl->datatype = new \jDatatypeDateTime();
 
                     break;
 
                 case 'time':
-                    $this->ctrl->datatype = new jDatatypeTime();
+                    $this->ctrl->datatype = new \jDatatypeTime();
 
                     break;
 
                 case 'boolean':
-                    $this->ctrl->datatype = new jDatatypeBoolean();
+                    $this->ctrl->datatype = new \jDatatypeBoolean();
 
                     break;
             }
@@ -586,7 +589,7 @@ class qgisFormControl
             if (array_key_exists('readonly', $this->qgisEdittypeMap[$this->fieldEditType]['jform'])) {
                 $this->isReadOnly = true;
             }
-            if ($this->edittype && ($this->edittype instanceof SimpleXMLElement)) {
+            if ($this->edittype && ($this->edittype instanceof \SimpleXMLElement)) {
                 $isEditable = true;
                 // Also use "editable" property
                 if (property_exists($this->edittype->attributes(), 'editable')) {
@@ -649,7 +652,7 @@ class qgisFormControl
     {
 
         // Create a datasource for some types : menulist
-        $dataSource = new jFormsStaticDatasource();
+        $dataSource = new \jFormsStaticDatasource();
 
         // Create an array of data specific for the qgis edittype
         $data = array();
@@ -680,7 +683,7 @@ class qgisFormControl
                 if ($this->fieldEditType === 'UniqueValuesEditable') {
                     $this->uniqueValuesData['editable'] = true;
                 }
-                if (($this->edittype instanceof SimpleXMLElement) && $this->edittype->widgetv2config) {
+                if (($this->edittype instanceof \SimpleXMLElement) && $this->edittype->widgetv2config) {
                     $this->uniqueValuesData['notNull'] = filter_var($this->widgetv2configAttr->notNull, FILTER_VALIDATE_BOOLEAN);
                     $this->uniqueValuesData['editable'] = filter_var($this->widgetv2configAttr->Editable, FILTER_VALIDATE_BOOLEAN);
                 } elseif (is_object($this->edittype)) {
@@ -704,7 +707,7 @@ class qgisFormControl
 
                 break;
             case 'ValueMap':
-                if ($this->edittype instanceof SimpleXMLElement) {
+                if ($this->edittype instanceof \SimpleXMLElement) {
                     foreach ($this->edittype->widgetv2config->xpath('value') as $value) {
                         $k = (string) $value->attributes()->key;
                         $v = (string) $value->attributes()->value;
@@ -807,7 +810,7 @@ class qgisFormControl
                 $filterExpression = (string) $this->widgetv2configAttr->FilterExpression;
                 $useCompleter = filter_var($this->widgetv2configAttr->UseCompleter, FILTER_VALIDATE_BOOLEAN);
                 $fieldEditable = true;
-                if (($this->edittype instanceof SimpleXMLElement) && property_exists($this->widgetv2configAttr, 'fieldEditable')) {
+                if (($this->edittype instanceof \SimpleXMLElement) && property_exists($this->widgetv2configAttr, 'fieldEditable')) {
                     $fieldEditable = filter_var($this->widgetv2configAttr->fieldEditable, FILTER_VALIDATE_BOOLEAN);
                 } elseif (is_object($this->edittype) && property_exists($this->edittype, 'editable')) {
                     $fieldEditable = filter_var($this->edittype->editable, FILTER_VALIDATE_BOOLEAN);
@@ -834,7 +837,7 @@ class qgisFormControl
                 $MapIdentification = filter_var($this->widgetv2configAttr->MapIdentification, FILTER_VALIDATE_BOOLEAN);
                 $chainFilters = false;
                 $filters = array();
-                if (($this->edittype instanceof SimpleXMLElement)) {
+                if (($this->edittype instanceof \SimpleXMLElement)) {
                     if (property_exists($this->edittype->widgetv2config, 'FilterFields')) {
                         foreach ($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
                             $filters[] = (string) $f->attributes()->name;
