@@ -799,7 +799,7 @@ var lizMap = function() {
              (('bingHybrid' in config.options) && config.options.bingHybrid == 'True' && ('bingKey' in config.options)) ||
              (('ignTerrain' in config.options) && config.options.ignTerrain == 'True' && ('ignKey' in config.options)) ||
              (('ignStreets' in config.options) && config.options.ignStreets == 'True') && ('ignKey' in config.options)) {
-           config.options.zoomLevelNumber = 19;
+           config.options.zoomLevelNumber = 23;
          }
          if ((('googleStreets' in config.options) && config.options.googleStreets == 'True') ||
              (('googleHybrid' in config.options) && config.options.googleHybrid == 'True') ||
@@ -7038,7 +7038,7 @@ lizMap.events.on({
         var options = {
           zoomOffset: 0,
           maxResolution:156543.03390625,
-          numZoomLevels:19
+          numZoomLevels:23
         };
         if (lOptions.zoomOffset != 0) {
           options.zoomOffset = lOptions.zoomOffset;
@@ -7071,7 +7071,7 @@ lizMap.events.on({
         var options = {
           zoomOffset: 0,
           maxResolution:156543.03390625,
-          numZoomLevels:19
+          numZoomLevels:23
         };
         if (lOptions.zoomOffset != 0) {
           options.zoomOffset = lOptions.zoomOffset;
@@ -7103,7 +7103,7 @@ lizMap.events.on({
         var options = {
           zoomOffset: 0,
           maxResolution:156543.03390625,
-          numZoomLevels:19
+          numZoomLevels:23
         };
         if (lOptions.zoomOffset != 0) {
           options.zoomOffset = lOptions.zoomOffset;
@@ -7247,7 +7247,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:19
+            numZoomLevels:23
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
@@ -7277,7 +7277,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:19
+            numZoomLevels:23
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
@@ -7307,7 +7307,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:19
+            numZoomLevels:23
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
