@@ -46,7 +46,7 @@ New features:
 - improvement in Attribute Table view
   - a lizmap javascript script to show description labels instead of values in
     the attribute table for columns with ValueMap widget
-  - allow the use of the lizmap javascript script also for numeric columns 
+  - allow the use of the lizmap javascript script also for numeric columns
 - improvement in Timemanager
 - Atlas print in popup : you can now define values for custom fields
 ![Atlas print in popup](https://user-images.githubusercontent.com/2145040/92587962-a9721c00-f298-11ea-9d13-4b58d477986b.gif "Atlas print in popup")
@@ -60,6 +60,8 @@ New features:
   performed by Lizmap plugin as a QGIS Server plugin
 - Restrict filter by user on edition only, based on lizmap plugin config
 - Use QGIS expression in Lizmap edition, needs Lizmap plugin installed as a QGIS Server plugin
+- Command lines
+  - A command line to request project WMS GetCapabilities to put project in QGIS Server cache
 
 
 - Lizmap does not support anymore Internet Explorer (11 and lower)
