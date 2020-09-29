@@ -49,6 +49,7 @@ class projectCtrl extends jControllerCmdLine
         if (!$nb || $nb < 1) {
             $rep->addContent("The number of loading iteration on each project has to be a number > 0!\n");
             $rep->setExitCode(1);
+
             return $rep;
         }
 
@@ -57,17 +58,17 @@ class projectCtrl extends jControllerCmdLine
 
         $repositories = lizmap::getRepositoryList();
         foreach ($repositories as $r) {
-            $rep->addContent("Enter the repository ".$r."\n");
+            $rep->addContent('Enter the repository '.$r."\n");
             $lrep = lizmap::getRepository($r);
             $lprojects = $lrep->getProjects();
 
             foreach ($lprojects as $p) {
-                $rep->addContent("Get the project ".$p->getData('id')."\n");
+                $rep->addContent('Get the project '.$p->getData('id')."\n");
                 // Get params
                 $params = array(
                     'map' => $p->getRelativeQgisPath(),
                     'service' => 'WMS',
-                    'request' => 'GetCapabilities'
+                    'request' => 'GetCapabilities',
                 );
 
                 // Build http params
@@ -90,23 +91,24 @@ class projectCtrl extends jControllerCmdLine
                     // Get remote data
                     list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
                     if (floor($code / 100) >= 5) {
-                        $nb_500 += 1;
-                    } else if (floor($code / 100) >= 4) {
-                        $nb_400 += 1;
+                        ++$nb_500;
+                    } elseif (floor($code / 100) >= 4) {
+                        ++$nb_400;
                     } else {
-                        $nb_success += 1;
+                        ++$nb_success;
                     }
-                    $i += 1;
+                    ++$i;
                 }
                 if ($nb_500) {
-                    $rep->addContent($nb_500." request(s) return error 500 for the project ".$p->getData('id')."\n");
-                } else if ($nb_400) {
-                    $rep->addContent($nb_400." request(s) return error 400 for the project ".$p->getData('id')."\n");
+                    $rep->addContent($nb_500.' request(s) return error 500 for the project '.$p->getData('id')."\n");
+                } elseif ($nb_400) {
+                    $rep->addContent($nb_400.' request(s) return error 400 for the project '.$p->getData('id')."\n");
                 } else {
-                    $rep->addContent($nb_success." request(s) return success for the project ".$p->getData('id')."\n");
+                    $rep->addContent($nb_success.' request(s) return success for the project '.$p->getData('id')."\n");
                 }
             }
         }
+
         return $rep;
     }
 }
