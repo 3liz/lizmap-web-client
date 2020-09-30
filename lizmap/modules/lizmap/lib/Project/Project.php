@@ -187,7 +187,7 @@ class Project
      * constructor.
      *
      * @param string                  $key        : the project name
-     * @param Repository       $rep        : the repository
+     * @param Repository              $rep        : the repository
      * @param App\AppContextInterface $appContext the instance of jelixInfos
      */
     public function __construct($key, Repository $rep, App\AppContextInterface $appContext, \LizmapServices $services)
@@ -710,7 +710,7 @@ class Project
      */
     public function hasLoginFilteredLayers()
     {
-        $login = (array)$this->cfg->getProperty('loginFilteredLayers');
+        $login = (array) $this->cfg->getProperty('loginFilteredLayers');
         if ($login && is_array($login) && count($login)) {
             return true;
         }
@@ -801,7 +801,7 @@ class Project
             }
 
             $filters[$layerName] = array_merge(
-                (array)$loginFilteredConfig,
+                (array) $loginFilteredConfig,
                 array('filter' => $filter, 'layername' => $lName)
             );
         }

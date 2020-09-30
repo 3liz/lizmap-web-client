@@ -96,12 +96,11 @@ class ProjectConfig
         foreach ($this->cachedProperties as $prop) {
             if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
-            // }
+                // }
             // if ($prop == 'cfgContent') {
             //     $data['cfgContent'] = json_decode(json_encode($this->cfgContent), true);
-            } else {
-                $data[$prop] = $this->{$prop};
             }
+            $data[$prop] = $this->{$prop};
         }
 
         return $data;
@@ -143,9 +142,9 @@ class ProjectConfig
         if (isset($rootProp->{$propName}) && $propName2 == '') {
             unset($rootProp->{$propName});
         } elseif (isset($rootProp->{$propName}) && property_exists($rootProp->{$propName}, $propName2) && $propName3 == '') {
-            unset($rootProp->{$propName}->$propName2);
-        } elseif (isset($rootProp->{$propName}) && property_exists($rootProp->{$propName}, $propName2) && property_exists($rootProp->$propName->$propName2, $propName3)) {
-            unset($rootProp->$propName->$propName2->$propName3);
+            unset($rootProp->{$propName}->{$propName2});
+        } elseif (isset($rootProp->{$propName}) && property_exists($rootProp->{$propName}, $propName2) && property_exists($rootProp->{$propName}->{$propName2}, $propName3)) {
+            unset($rootProp->{$propName}->{$propName2}->{$propName3});
         }
     }
 
