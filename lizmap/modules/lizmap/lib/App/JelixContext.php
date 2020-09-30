@@ -258,10 +258,10 @@ class JelixContext implements AppContextInterface
 
     /**
      * Stores a json encoded object in a file located in var/log
-     * Not really a Jelix Context but I'm using it a lot and it seems like a goos place for it
+     * Not really a Jelix Context but I'm using it a lot and it seems like a goos place for it.
      *
-     * @param string $file The name of the file where to put the json
-     * @param mixed $object The object to encode
+     * @param string $file   The name of the file where to put the json
+     * @param mixed  $object The object to encode
      */
     public function debugObject($file, $object)
     {
