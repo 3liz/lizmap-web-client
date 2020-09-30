@@ -12,6 +12,9 @@
 
 namespace Lizmap\Project;
 
+use Lizmap\App;
+use Lizmap\Form;
+
 class QgisProject
 {
     /**
@@ -85,12 +88,17 @@ class QgisProject
         'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
     /**
+     * @var App\AppContextInterface
+     */
+    protected $appContext;
+
+    /**
      * constructor.
      *
      * @param string $file : the QGIS project path
      * @param mixed  $data
      */
-    public function __construct($file, \LizmapServices $services, $data = false)
+    public function __construct($file, \LizmapServices $services, App\AppContextInterface $appContext, $data = false)
     {
         if ($data === false) {
             // FIXME reading XML could take time, so many process could
@@ -105,6 +113,7 @@ class QgisProject
             }
         }
 
+        $this->appContext = $appContext;
         $this->services = $services;
         $this->path = $file;
     }
@@ -467,7 +476,7 @@ class QgisProject
     {
         $layer = $this->getLayerDefinition($layerId);
         if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
-            $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']), $this->services);
+            $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']), $this->services, $this->appContext);
 
             return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
         }
@@ -849,6 +858,19 @@ class QgisProject
             if ($provider == 'spatialite') {
                 unset($editionLayers->{$key});
             }
+        }
+    }
+
+    public function readEditionForms($editionLayers, $proj)
+    {
+        foreach ($editionLayers as $key => $obj) {
+            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
+            if (count($layerXml) == 0) {
+                continue;
+            }
+            $layerXmlZero = $layerXml[0];
+            $formControl = $this->readFormControls($layerXmlZero, $obj->layerId, $proj);
+            file_put_contents(realpath(__DIR__.'/../../').'/forms/'.$proj->getKey().'.'.$obj->layerId.'.form.json', json_encode($formControl, JSON_PRETTY_PRINT));
         }
     }
 
@@ -1238,7 +1260,7 @@ class QgisProject
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
                 $xmlFile = realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project);
-                $qgsProj = new QgisProject($xmlFile, $this->services);
+                $qgsProj = new QgisProject($xmlFile, $this->services, $this->appContext);
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
                 $layer['qsgmtime'] = filemtime($xmlFile);
                 $layer['file'] = $xmlFile;
@@ -1361,5 +1383,233 @@ class QgisProject
         }
 
         return $layers;
+    }
+
+    protected function getValuesFromOptions($optionList, $name = true)
+    {
+        $values = array();
+    
+        foreach ($optionList->option as $v) {
+            if (!$name) {
+                $values[] = (string) $v->attributes()->value;
+            } else {
+                $values[] = (object) array(
+                    'key' => (string) $v->attributes()->name,
+                    'value' => (string) $v->attributes()->value,
+                );
+            }
+        }
+        return $values;
+    }
+
+    protected function getFieldConfiguration($layerXml)
+    {
+        $edittypes = array();
+        $fieldConfiguration = $layerXml->fieldConfiguration;
+        $fields = $fieldConfiguration->xpath('field');
+        foreach ($fields as $key => $field) {
+            $editWidget = $field->editWidget;
+            $fieldName = (string) $fields[$key]->attributes()->name;
+            $fieldEditType = (string) $editWidget->attributes()->type;
+            $options = $editWidget->config->Option;
+            $edittypes[$fieldName] = array();
+            // Option + Attributes
+            if (count((array)$options) > 2) {
+                \jLog::log('More than one Option found in the Qgis File for field '.$fieldName.', only the first will be read.', 'warning');
+            }
+            $fieldEditOptions = array();
+            foreach ($options->Option as $option) {
+                if ((string) $option->attributes()->type === 'List') {
+                    foreach ($option->Option as $l) {
+                        if ((string) $l->attributes()->type === 'Map') {
+                            $values = $this->getValuesFromOptions($l);
+                        } else {
+                            $values = $this->getValuesFromOptions($l, false);
+                        }
+                    }
+                    $fieldEditOptions[(string) $option->attributes()->name] = $values;
+                // Option with list of values as Map
+                } elseif ((string) $option->attributes()->type === 'Map') {
+                    $fieldEditOptions[(string) $option->attributes()->name] = $this->getValuesFromOptions($option);
+                    ;
+                // Option with string list of values
+                } elseif ((string) $option->attributes()->type === 'StringList') {
+                    $fieldEditOptions[(string) $option->attributes()->name] = $$this->getValuesFromOptions($option, false);
+                // Simple option
+                } else {
+                    $fieldEditOptions[(string) $option->attributes()->name] = (string) $option->attributes()->value;
+                }
+            }
+
+            $edittype =  array(
+                'type' => $fieldEditType,
+                'options' => (object) $fieldEditOptions,
+            );
+
+            // editable
+            $editableFieldXml = $layerXml->xpath("editable/field[@name='${fieldName}']");
+            if ($editableFieldXml && count($editableFieldXml)) {
+                $edittype['editable'] = (int) $editableFieldXml[0]->attributes()->editable;
+            } else {
+                $edittype['editable'] = 1;
+            }
+
+            $edittype = (object)$edittype;
+            $edittypes[$fieldName]['edittype'] = $edittype;
+            $edittypes[$fieldName]['widgetv2configAttr'] = $edittype->options;
+            $edittypes[$fieldName]['fieldEditType'] = $edittype->type;
+        }
+        return $edittypes;
+    }
+
+    protected function getEditType($layerXml)
+    {
+        $edittypes = $layerXml->edittypes;
+        $editTab = array();
+
+        foreach ($edittypes as $edittype) {
+            $attributes = $edittype->attributes();
+            $editTab[$attributes->name] = array();
+            $editTab[$attributes->name]['eddittype'] = $edittype;
+            if (property_exists($edittype->attributes(), 'widgetv2type')) {
+                $editTab[$attributes->name]['widgetv2configAttr'] = $edittype->widgetv2config->attributes();
+                $editTab[$attributes->name]['fieldEditType'] = (string) $edittype->attributes()->widgetv2type;
+            }
+            // Before QGIS 2.4
+            else {
+                $editTab[$attributes->name]['fieldEditType'] = (int) $edittype->attributes()->type;
+            }
+        }
+    }
+
+    protected function getDefaultValue($fieldName, $layer)
+    {
+        $expression = $layer->getDefaultValue($fieldName);
+        if ($expression === null || trim($expression) === '') {
+            return null;
+        }
+        if (is_numeric($expression)) {
+            return $expression;
+        }
+        if (preg_match("/^'.*'$/", $expression)) {
+            // it seems this is a simple string
+            $expression = trim($expression, "'");
+            // if there are some ' without a \, then probably we have a
+            // true expression, not a single string.
+            if (!preg_match("/(?<!\\\\)'/", $expression)) {
+                return str_replace("\\'", "'", $expression);
+            }
+        }
+        // Evaluate the expression by qgis
+        $results = \qgisExpressionUtils::evaluateExpressions(
+            $this->layer,
+            array(
+                $fieldName => $expression,
+            )
+        );
+        if ($results && property_exists($results, $fieldName)) {
+            return $results->{$fieldName};
+        }
+
+        return null;
+    }
+
+    protected function getMarkup($props)
+    {
+        $qgisEdittypeMap = Form\QgisFormControl::getEditTypeMap();
+        $edittype = $props['edittype'];
+        $fieldEditType = $props['fieldEditType'];
+        $widgetv2configAttr = $props['widgetv2configAttr'];
+
+        if ($fieldEditType === 12) {
+            $useHtml = 0;
+            if (property_exists($edittype->attributes(), 'UseHtml')) {
+                $useHtml = (int) filter_var((string) $edittype->attributes()->UseHtml, FILTER_VALIDATE_BOOLEAN);
+            }
+            $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][$useHtml];
+        } elseif ($fieldEditType === 'TextEdit') {
+            $isMultiLine = false;
+            if (property_exists($widgetv2configAttr, 'IsMultiline')) {
+                $isMultiLine = filter_var((string) $widgetv2configAttr->IsMultiline, FILTER_VALIDATE_BOOLEAN);
+            }
+
+            if (!$isMultiLine) {
+                $fieldEditType = 'LineEdit';
+                $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'];
+            } else {
+                $useHtml = 0;
+                if (property_exists($widgetv2configAttr, 'UseHtml')) {
+                    $useHtml = (int) filter_var((string) $widgetv2configAttr->UseHtml, FILTER_VALIDATE_BOOLEAN);
+                }
+                $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][$useHtml];
+            }
+        } elseif ($fieldEditType === 5) {
+            $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][0];
+        } elseif ($fieldEditType === 15) {
+            $allowMulti = (int) filter_var((string) $edittype->attributes()->allowMulti, FILTER_VALIDATE_BOOLEAN);
+            $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][$allowMulti];
+        } elseif ($fieldEditType === 'Range' || $fieldEditType === 'EditRange') {
+            $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][0];
+        } elseif ($fieldEditType === 'SliderRange' || $fieldEditType === 'DialRange') {
+            $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][1];
+        } elseif ($fieldEditType === 'ValueRelation') {
+            $allowMulti = (int) filter_var((string) $widgetv2configAttr->AllowMulti, FILTER_VALIDATE_BOOLEAN);
+            $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][$allowMulti];
+        } elseif ($fieldEditType === 'DateTime') {
+            $markup = 'date';
+            $display_format = $widgetv2configAttr->display_format;
+            // Use date AND time widget id type is DateTime and we find HH
+            if (preg_match('#HH#i', $display_format)) {
+                $markup = 'datetime';
+            }
+            // Use only time if field is only time
+            if (preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)) {
+                $markup = 'time';
+            }
+        } else {
+            $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'];
+        }
+   
+        return $markup;
+    }
+
+    public function readFormControls($layerXml, $layerId, $proj)
+    {
+        $props = null;
+
+        $layer = $this->getLayer($layerId, $proj);
+        if ($layer->getType() !== 'vector') {
+            return ;
+        }
+        $aliases = $layer->getAliasFields();
+
+        $categoriesXml = $layerXml->xpath('renderer-v2/categories');
+        if ($categoriesXml && count($categoriesXml) != 0) {
+            $categoriesXml = $categoriesXml[0];
+        } else {
+            $categoriesXml = null;
+        }
+        if ($layerXml->eddittype && count($layerXml->eddittypes)) {
+            $props = $this->getEditType($layerXml);
+        } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
+            $props = $this->getFieldConfiguration($layerXml);
+        } else {
+            return null;
+        }
+
+        foreach ($props as $fieldName => $prop) {
+            $alias = null;
+            if ($aliases && array_key_exists($fieldName, $aliases)) {
+                $alias = $aliases[$fieldName];
+            }
+            if ($alias && is_array($alias) && count($alias)) {
+                $props[$fieldName]['fieldAlias'] = (string) $alias[0]->attributes()->name;
+            } elseif (is_string($alias) || $alias && count($alias)) {
+                $props[$fieldName]['fieldAlias'] = $alias;
+            }
+            $props[$fieldName]['markup'] = $this->getMarkup($prop);
+        }
+
+        return $props;
     }
 }
