@@ -1,11 +1,14 @@
 <?php
 
-require('qgisProjectForTests.php');
+require 'qgisProjectForTests.php';
 
 use Lizmap\Project;
-use Lizmap\Project\QgisProject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class QgisProjectTest extends TestCase
 {
     public function arrayToXml(array $array, SimpleXMLElement &$xml)
@@ -30,16 +33,16 @@ class QgisProjectTest extends TestCase
     {
         $data = array(
             'mapcanvas' => array(
-                'destinationsrs' => array('spatialrefsys' => array('authid' => 'CRS4242'))
+                'destinationsrs' => array('spatialrefsys' => array('authid' => 'CRS4242')),
             ),
             'properties' => array(
                 'WMSServiceTitle' => 'title',
                 'WMSServiceAbstract' => 'abstract',
                 'WMSKeywordList' => array(
-                    'value' => array('key', 'word', 'WMS')
+                    'value' => array('key', 'word', 'WMS'),
                 ),
                 'WMSExtent' => array(
-                    'value' => array('42', '24', '21', '12')
+                    'value' => array('42', '24', '21', '12'),
                 ),
                 'WMSOnlineResource' => 'ressource',
                 'WMSContactMail' => 'test.mail@3liz.org',
@@ -74,8 +77,8 @@ class QgisProjectTest extends TestCase
                     'CanvasColorGreenPart' => '21',
                     'CanvasColorRedPart' => '42',
                     'CanvasColorBluePart' => '84',
-                )
-            )
+                ),
+            ),
         );
         $xml = new SimpleXMLElement('<qgis></qgis>');
         $this->arrayToXml($data, $xml);
@@ -88,19 +91,19 @@ class QgisProjectTest extends TestCase
         $data = array(
             array('spatialrefsys' => array(
                 'authid' => 'CRS1',
-                'proj4' =>'1'
+                'proj4' => '1',
             )),
             array('spatialrefsys' => array(
                 'authid' => 'CRS2',
-                'proj4' =>'2'
+                'proj4' => '2',
             )),
             array('spatialrefsys' => array(
                 'authid' => 'CRS3',
-                'proj4' =>'3'
+                'proj4' => '3',
             )),
             array('spatialrefsys' => array(
                 'authid' => 'CRS4',
-                'proj4' =>'4'
+                'proj4' => '4',
             )),
         );
         $expectedProj4 = array(
@@ -119,8 +122,8 @@ class QgisProjectTest extends TestCase
     {
         $data = array(
             'properties' => array(
-                'WMSUseLayerIDs' => 'false'
-            )
+                'WMSUseLayerIDs' => 'false',
+            ),
         );
         $xml = new SimpleXMLElement('<qgis></qgis>');
         $this->arrayToXml($data, $xml);
@@ -135,20 +138,20 @@ class QgisProjectTest extends TestCase
                 'layers' => array(
                     'SousQuartiers20160121124316563' => array(
                         'style' => 'default',
-                        'expanded' => '1'
+                        'expanded' => '1',
                     ),
                     'VilleMTP_MTP_Quartiers_2011_432620130116112610876' => array(
                         'style' => 'default',
-                        'expanded' => '0'
-                    )
+                        'expanded' => '0',
+                    ),
                 ),
                 'expandedGroupNode' => array(
                     'datalayers/Buildings',
                     'Overview',
                     'datalayers/Bus',
-                    'datalayers'
-                )
-            )
+                    'datalayers',
+                ),
+            ),
         );
         $file = __DIR__.'/Ressources/themes.qgs';
         $xml = simplexml_load_file($file);
@@ -162,17 +165,17 @@ class QgisProjectTest extends TestCase
         $expectedRelations = array(
             'VilleMTP_MTP_Quartiers_2011_432620130116112610876' => array(
                 array('referencingLayer' => 'SousQuartiers20160121124316563',
-                'referencedField' => 'QUARTMNO',
-                'referencingField' => 'QUARTMNO'
-                )
+                    'referencedField' => 'QUARTMNO',
+                    'referencingField' => 'QUARTMNO',
+                ),
             ),
             'tramstop20150328114203878' => array(
                 array('referencingLayer' => 'jointure_tram_stop20150328114216806',
-                'referencedField' => 'osm_id',
-                'referencingField' => 'stop_id'
-              ),
+                    'referencedField' => 'osm_id',
+                    'referencingField' => 'stop_id',
+                ),
             ),
-            'pivot' => array()
+            'pivot' => array(),
         );
         $file = __DIR__.'/Ressources/relations.qgs';
         $xml = simplexml_load_file($file);
@@ -184,24 +187,24 @@ class QgisProjectTest extends TestCase
     public function testCacheConstruct()
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-            'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');
+            'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
         $data = array();
         $emptyData = array();
         foreach ($cachedProperties as $prop) {
             $data[$prop] = 'some stuff about'.$prop;
         }
         $services = new lizmapServices('', '', false, '', '');
-        $testQgis = new Project\QgisProject(null, $services, $data);
+        $testQgis = new Project\QgisProject(null, $services, new TestContext(), $data);
         $this->assertEquals($data, $testQgis->getCacheData($emptyData));
     }
-    
+
     public function testSetLayerOpacity()
     {
         $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
         $json = json_decode(file_get_contents($file));
         $expectedLayer = clone $json->layers;
-        $expectedLayer->montpellier_events->opacity = (float)0.85;
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object)array('layers' => $json->layers)));
+        $expectedLayer->montpellier_events->opacity = (float) 0.85;
+        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object) array('layers' => $json->layers)));
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
         $testProj->setLayerOpacityForTest($cfg);
@@ -218,20 +221,25 @@ class QgisProjectTest extends TestCase
             'test' => array(
                 'name' => 'test',
                 'id' => '21',
-            )
+            ),
         );
+
         return array(
             array($layers, '42', 'montpellier'),
             array($layers, '21', 'test'),
             array($layers, '38', null),
             array($layers, null, null),
             array(array(), null, null),
-            array(array(), '', null)
+            array(array(), '', null),
         );
     }
 
     /**
      * @dataProvider getLayerData
+     *
+     * @param mixed $layers
+     * @param mixed $id
+     * @param mixed $key
      */
     public function testGetLayerDefinition($layers, $id, $key)
     {
@@ -262,14 +270,18 @@ class QgisProjectTest extends TestCase
             }
         }';
         $eLayer = json_decode($intraELayer);
+
         return array(
-            array('montpellier', (object)array()),
-            array('montpellier_intranet', $eLayer)
+            array('montpellier', (object) array()),
+            array('montpellier_intranet', $eLayer),
         );
     }
 
     /**
      * @dataProvider getReadEditionLayersData
+     *
+     * @param mixed $fileName
+     * @param mixed $expectedELayer
      */
     public function testReadEditionLayers($fileName, $expectedELayer)
     {
@@ -316,6 +328,7 @@ class QgisProjectTest extends TestCase
     public function getShortNamesData()
     {
         $dir = __DIR__.'/Ressources/Projs/';
+
         return array(
             array($dir.'test_project.qgs', 'testlayer', 'layer_with_short_name'),
             array($dir.'Project1.qgs', 'points', 'PointsLayerShortName'),
@@ -326,24 +339,28 @@ class QgisProjectTest extends TestCase
 
     /**
      * @dataProvider getShortNamesData
+     *
+     * @param mixed $file
+     * @param mixed $lname
+     * @param mixed $sname
      */
     public function testSetShortNames($file, $lname, $sname)
     {
         $layers = array(
-            $lname => (object)array(
+            $lname => (object) array(
                 'name' => $lname,
                 'id' => $lname,
-            )
+            ),
         );
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file($file));
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object)array('layers' => (object)$layers)));
+        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object) array('layers' => (object) $layers)));
         $testProj->setShortNamesForTest($cfg);
         $layer = $cfg->getProperty('layers');
         if ($sname) {
-            $this->assertEquals($sname, $layer->$lname->shortname);
+            $this->assertEquals($sname, $layer->{$lname}->shortname);
         } else {
-            $this->assertObjectNotHasAttribute('shortname', $layer->$lname);
+            $this->assertObjectNotHasAttribute('shortname', $layer->{$lname});
         }
     }
 }
