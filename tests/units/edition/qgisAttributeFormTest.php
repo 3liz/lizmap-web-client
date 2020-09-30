@@ -1,38 +1,48 @@
 <?php
 
+use Lizmap\Form;
 
-class dummyQgisFormControls implements qgisFormControlsInterface {
-
+class dummyQgisFormControls implements Form\QgisFormControlsInterface
+{
     /**
      * @return qgisFormControl[]
      */
-    public function getQgisControls() {
-        return [];
+    public function getQgisControls()
+    {
+        return array();
     }
 
     /**
      * @param string $name
-     * @return qgisFormControl|null null if the control does not exists
+     *
+     * @return null|qgisFormControl null if the control does not exists
      */
-    public function getQgisControl($name) {
+    public function getQgisControl($name)
+    {
         return null;
     }
 
     /**
-     * Return the control name for the jForms form
+     * Return the control name for the jForms form.
+     *
      * @param string $name the name of the qgis control
-     * @return null|string  null if the control does not exist
+     *
+     * @return null|string null if the control does not exist
      */
-    public function getFormControlName($name) {
+    public function getFormControlName($name)
+    {
         return $name;
     }
-
 }
 
-class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
-
-
-    function testSimpleContainer() {
+/**
+ * @internal
+ * @coversNothing
+ */
+class qgisAttributeFormTest extends PHPUnit_Framework_TestCase
+{
+    public function testSimpleContainer()
+    {
         $xml = '<attributeEditorForm>
             <attributeEditorField showLabel="1" index="0" name="pkuid"/>
             <attributeEditorField showLabel="1" index="1" name="name"/>
@@ -40,7 +50,7 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
       </attributeEditorForm>';
         $sXml = simplexml_load_string($xml);
         $controls = new dummyQgisFormControls();
-        $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0,0);
+        $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0, 0);
 
         $this->assertEquals(3, count($element->getFields()));
 
@@ -95,10 +105,10 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($cc->hasChildren());
         $this->assertEquals('foo-2', $cc->getHtmlId());
         $this->assertEquals('foo', $cc->getParentId());
-
     }
 
-    function testSimpleGroupBox() {
+    public function testSimpleGroupBox()
+    {
         $xml = '<attributeEditorForm>
            <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Generic" groupBox="1" columnCount="0">
             <attributeEditorField showLabel="1" index="0" name="pkuid"/>
@@ -108,7 +118,7 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
       </attributeEditorForm>';
         $sXml = simplexml_load_string($xml);
         $controls = new dummyQgisFormControls();
-        $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0,0);
+        $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0, 0);
 
         $this->assertEquals(3, count($element->getFields()));
 
@@ -180,7 +190,8 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo-group0', $cc->getParentId());
     }
 
-    function testTabAttributesForm() {
+    public function testTabAttributesForm()
+    {
         $xml = '<attributeEditorForm>
         <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Description" groupBox="0" columnCount="0">
           <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Generic" groupBox="1" columnCount="0">
@@ -200,7 +211,7 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
       </attributeEditorForm>';
         $sXml = simplexml_load_string($xml);
         $controls = new dummyQgisFormControls();
-        $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0,0);
+        $element = new qgisAttributeEditorElement($controls, $sXml, 'foo', 0, 0);
 
         $this->assertEquals(7, count($element->getFields()));
 
@@ -243,7 +254,6 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($cc->hasChildren());
         $this->assertEquals('foo-tab1-0', $cc->getHtmlId());
         $this->assertEquals('foo-tab1', $cc->getParentId());
-
 
         $tab = $element->getTabChildren()[0];
 
@@ -327,7 +337,6 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo-tab0-group0-2', $cc->getHtmlId());
         $this->assertEquals('foo-tab0-group0', $cc->getParentId());
 
-
         $cc = $tab2->getChildrenBeforeTab()[0];
 
         $this->assertEquals(0, count($cc->getChildrenBeforeTab()));
@@ -366,6 +375,5 @@ class qgisAttributeFormTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($cc->hasChildren());
         $this->assertEquals('foo-tab0-group1-2', $cc->getHtmlId());
         $this->assertEquals('foo-tab0-group1', $cc->getParentId());
-
     }
 }

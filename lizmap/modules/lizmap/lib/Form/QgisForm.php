@@ -64,7 +64,7 @@ class QgisForm implements QgisFormControlsInterface
      * qgisForm constructor.
      *
      * @param qgisMapLayer|qgisVectorLayer $layer
-     * @param \jFormsBase                   $form
+     * @param \jFormsBase                  $form
      * @param string                       $featureId
      * @param bool                         $loginFilteredOverride
      *
@@ -419,7 +419,7 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
-     * @return \jFormsPlugin[]
+     * @return array
      */
     public function getFormPlugins()
     {
@@ -849,7 +849,7 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
-     * @param \jFormsBase    $form
+     * @param \jFormsBase   $form
      * @param string        $ref
      * @param jDbConnection $cnx
      */
