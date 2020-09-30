@@ -64,7 +64,7 @@ class QgisFormControl
     public $DefaultRoot;
 
     // Table mapping QGIS and jelix forms
-    protected $qgisEdittypeMap = array(
+    protected static $qgisEdittypeMap = array(
         0 => array(
             'qgis' => array('name' => 'Line edit', 'description' => 'Simple edit box'),
             'jform' => array('markup' => 'input'),
@@ -129,6 +129,7 @@ class QgisFormControl
             'qgis' => array('name' => 'Relation reference', 'description' => 'Use relation to select value'),
             'jform' => array('markup' => 'menulist'),
         ),
+        'builded' => false
     );
 
     // Table to map arbitrary data types to expected ones
@@ -190,33 +191,6 @@ class QgisFormControl
      */
     public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue = null, $constraints = null, $rendererCategories = null, App\AppContextInterface $appContext)
     {
-
-    // Add new editTypes naming convention since QGIS 2.4
-        $this->qgisEdittypeMap['LineEdit'] = $this->qgisEdittypeMap[0];
-        $this->qgisEdittypeMap['UniqueValues'] = $this->qgisEdittypeMap[2];
-        $this->qgisEdittypeMap['UniqueValuesEditable'] = $this->qgisEdittypeMap[2];
-        $this->qgisEdittypeMap['ValueMap'] = $this->qgisEdittypeMap[3];
-        $this->qgisEdittypeMap['Classification'] = $this->qgisEdittypeMap[4];
-        $this->qgisEdittypeMap['Range'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['EditRange'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['SliderRange'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['CheckBox'] = $this->qgisEdittypeMap[7];
-        $this->qgisEdittypeMap['FileName'] = $this->qgisEdittypeMap[8];
-        $this->qgisEdittypeMap['Enumeration'] = $this->qgisEdittypeMap[-1];
-        $this->qgisEdittypeMap['Immutable'] = $this->qgisEdittypeMap[10];
-        $this->qgisEdittypeMap['Hidden'] = $this->qgisEdittypeMap[11];
-        $this->qgisEdittypeMap['TextEdit'] = $this->qgisEdittypeMap[12];
-        $this->qgisEdittypeMap['Calendar'] = $this->qgisEdittypeMap[13];
-        $this->qgisEdittypeMap['DateTime'] = $this->qgisEdittypeMap[13];
-        $this->qgisEdittypeMap['DialRange'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['ValueRelation'] = $this->qgisEdittypeMap[15];
-        $this->qgisEdittypeMap['UuidGenerator'] = $this->qgisEdittypeMap[16];
-        $this->qgisEdittypeMap['Photo'] = $this->qgisEdittypeMap[8];
-        $this->qgisEdittypeMap['WebView'] = $this->qgisEdittypeMap[0];
-        $this->qgisEdittypeMap['Color'] = $this->qgisEdittypeMap[0];
-        $this->qgisEdittypeMap['ExternalResource'] = $this->qgisEdittypeMap[17];
-        $this->qgisEdittypeMap['RelationReference'] = $this->qgisEdittypeMap[18];
-
         // Set class attributes
         $this->ref = $ref;
         $this->fieldName = $ref;
@@ -231,6 +205,10 @@ class QgisFormControl
         $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
 
         $this->defaultValue = $defaultValue;
+
+        if (!self::$qgisEdittypeMap['builded']) {
+            self::buildEditTypeMap();
+        }
 
         // An auto-increment field cannot be required!
         if (!$prop->autoIncrement) {
@@ -274,7 +252,7 @@ class QgisFormControl
                 if (property_exists($this->edittype->attributes(), 'UseHtml')) {
                     $useHtml = (int) filter_var((string) $this->edittype->attributes()->UseHtml, FILTER_VALIDATE_BOOLEAN);
                 }
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
+                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
             } elseif ($this->fieldEditType === 'TextEdit') {
                 $isMultiLine = false;
                 if (property_exists($this->widgetv2configAttr, 'IsMultiline')) {
@@ -283,26 +261,26 @@ class QgisFormControl
 
                 if (!$isMultiLine) {
                     $this->fieldEditType = 'LineEdit';
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
+                    $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
                 } else {
                     $useHtml = 0;
                     if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
                         $useHtml = (int) filter_var((string) $this->widgetv2configAttr->UseHtml, FILTER_VALIDATE_BOOLEAN);
                     }
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
+                    $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
                 }
             } elseif ($this->fieldEditType === 5) {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
             } elseif ($this->fieldEditType === 15) {
                 $allowMulti = (int) filter_var((string) $this->edittype->attributes()->allowMulti, FILTER_VALIDATE_BOOLEAN);
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
+                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
             } elseif ($this->fieldEditType === 'Range' || $this->fieldEditType === 'EditRange') {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
             } elseif ($this->fieldEditType === 'SliderRange' || $this->fieldEditType === 'DialRange') {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][1];
+                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][1];
             } elseif ($this->fieldEditType === 'ValueRelation') {
                 $allowMulti = (int) filter_var((string) $this->widgetv2configAttr->AllowMulti, FILTER_VALIDATE_BOOLEAN);
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
+                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
             } elseif ($this->fieldEditType === 'DateTime') {
                 $markup = 'date';
                 $display_format = $this->widgetv2configAttr->display_format;
@@ -315,7 +293,7 @@ class QgisFormControl
                     $markup = 'time';
                 }
             } else {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
+                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
             }
         } else {
             $markup = 'hidden';
@@ -537,6 +515,45 @@ class QgisFormControl
         }
     }
 
+    protected static function buildEditTypeMap()
+    {
+        // Add new editTypes naming convention since QGIS 2.4
+        self::$qgisEdittypeMap['LineEdit'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['UniqueValues'] = self::$qgisEdittypeMap[2];
+        self::$qgisEdittypeMap['UniqueValuesEditable'] = self::$qgisEdittypeMap[2];
+        self::$qgisEdittypeMap['ValueMap'] = self::$qgisEdittypeMap[3];
+        self::$qgisEdittypeMap['Classification'] = self::$qgisEdittypeMap[4];
+        self::$qgisEdittypeMap['Range'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['EditRange'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['SliderRange'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['CheckBox'] = self::$qgisEdittypeMap[7];
+        self::$qgisEdittypeMap['FileName'] = self::$qgisEdittypeMap[8];
+        self::$qgisEdittypeMap['Enumeration'] = self::$qgisEdittypeMap[-1];
+        self::$qgisEdittypeMap['Immutable'] = self::$qgisEdittypeMap[10];
+        self::$qgisEdittypeMap['Hidden'] = self::$qgisEdittypeMap[11];
+        self::$qgisEdittypeMap['TextEdit'] = self::$qgisEdittypeMap[12];
+        self::$qgisEdittypeMap['Calendar'] = self::$qgisEdittypeMap[13];
+        self::$qgisEdittypeMap['DateTime'] = self::$qgisEdittypeMap[13];
+        self::$qgisEdittypeMap['DialRange'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['ValueRelation'] = self::$qgisEdittypeMap[15];
+        self::$qgisEdittypeMap['UuidGenerator'] = self::$qgisEdittypeMap[16];
+        self::$qgisEdittypeMap['Photo'] = self::$qgisEdittypeMap[8];
+        self::$qgisEdittypeMap['WebView'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['Color'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['ExternalResource'] = self::$qgisEdittypeMap[17];
+        self::$qgisEdittypeMap['RelationReference'] = self::$qgisEdittypeMap[18];
+        self::$qgisEdittypeMap['builded'] = true;
+    }
+
+    public static function getEditTypeMap()
+    {
+        if (!self::$qgisEdittypeMap['builded']) {
+            self::buildEditTypeMap();
+        }
+        
+        return self::$qgisEdittypeMap;
+    }
+
     /*
     * Create an jForms control object based on a qgis edit widget.
     * @return object Jforms control object
@@ -592,7 +609,7 @@ class QgisFormControl
 
         // Read-only
         if ($this->fieldDataType != 'geometry') {
-            if (array_key_exists('readonly', $this->qgisEdittypeMap[$this->fieldEditType]['jform'])) {
+            if (array_key_exists('readonly', self::$qgisEdittypeMap[$this->fieldEditType]['jform'])) {
                 $this->isReadOnly = true;
             }
             if ($this->edittype && ($this->edittype instanceof \SimpleXMLElement)) {
