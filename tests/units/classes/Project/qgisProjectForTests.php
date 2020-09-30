@@ -7,7 +7,7 @@ class qgisProjectForTests extends QgisProject
     public function __construct($data = null)
     {
         if ($data) {
-            parent::__construct(null, new lizmapServices(null, null, false, '', ''), $data);
+            parent::__construct(null, new lizmapServices(null, null, false, '', ''), new TestContext(), $data);
         }
     }
 
@@ -50,7 +50,7 @@ class qgisProjectForTests extends QgisProject
     {
         return $this->setLayerOpacity($cfg);
     }
-    
+
     public function setXml($xml)
     {
         $this->xml = $xml;
