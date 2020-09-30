@@ -79,7 +79,6 @@ class QgisForm implements QgisFormControlsInterface
             throw new \Exception('The layer "'.$layer->getName().'" is not an editable vector layer!');
         }
 
-        $this->appContext = $appContext;
         //Get the fields info
         $dbFieldsInfo = $layer->getDbFieldsInfo();
         // verifying db fields info
@@ -95,7 +94,7 @@ class QgisForm implements QgisFormControlsInterface
         $this->form = $form;
         $this->featureId = $featureId;
         $this->loginFilteredOverride = $loginFilteredOverride;
-
+        $this->appContext = $appContext;
         $this->dbFieldsInfo = $dbFieldsInfo;
 
         $layerXml = $layer->getXmlLayer();

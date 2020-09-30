@@ -255,4 +255,16 @@ class JelixContext implements AppContextInterface
     {
         return \jUrl::getFull($selector, $params);
     }
+
+    /**
+     * Stores a json encoded object in a file located in var/log
+     * Not really a Jelix Context but I'm using it a lot and it seems like a goos place for it
+     *
+     * @param string $file The name of the file where to put the json
+     * @param mixed $object The object to encode
+     */
+    public function debugObject($file, $object)
+    {
+        file_put_contents(\jApp::varPath().'/log/'.$file.'.log', json_encode($object, JSON_PRETTY_PRINT));
+    }
 }
