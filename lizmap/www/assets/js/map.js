@@ -3110,9 +3110,13 @@ var lizMap = function() {
                   rConfigLayer.cleanname = clname;
               }
 
-              var resizeTablesButtons =
-                '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
-                '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
+              // Add buttons to toggle compact table mode if one exists in data
+              let resizeTablesButtons = '';
+              if (data.includes('popupAllFeaturesCompact')){
+                resizeTablesButtons =
+                  '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>' +
+                  '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
+              }
 
               var childPopup = $('<div class="lizmapPopupChildren ' + clname + '">' + resizeTablesButtons + data + '</div>');
 
