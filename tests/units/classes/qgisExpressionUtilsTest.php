@@ -72,4 +72,92 @@ class qgisExpressionUtilsTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(in_array('description', $dependencies));
     }
 
+    function testCurrentValueCriteriaFromExpression() {
+        $exp = '"old_name" = current_value(\'name\')';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('name', $dependencies));
+
+        $exp = '"old_name" = current_value(   \'name\')';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('name', $dependencies));
+
+        $exp = '"old_name" = current_value(\'name\'   )';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('name', $dependencies));
+
+        $exp = '"old_name" = current_value(   \'name\' )';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('name', $dependencies));
+
+        $exp = '"old_name" = my_current_value(\'name\')';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 0);
+
+        $exp = '"old_name" =current_value(\'name\')';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('name', $dependencies));
+
+        $exp = '"old_name" =current_value(\'name\')||\'test\'';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('name', $dependencies));
+
+        $exp = 'current_value(\'name\') IS NOT NULL AND current_value(\'name\') <> \'\'';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('name', $dependencies));
+
+
+        $exp = 'try( to_int( current_value(\'pkuid\') ), -1 ) >= 0';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('pkuid', $dependencies));
+
+        $exp = 'regexp_match( current_value(\'description\'), \'\\bphotos?\\b\' )';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 1);
+        $this->assertTrue(in_array('description', $dependencies));
+
+
+        $exp = 'current_value(\'name\') IS NOT NULL AND current_value(\'name\') <> \'\' AND try( to_int( current_value(\'pkuid\') ), -1 ) >= 0 AND regexp_match( current_value(\'description\'), \'\\bphotos?\\b\' )';
+        $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
+
+        $this->assertEquals(count($dependencies), 3);
+        $this->assertTrue(in_array('name', $dependencies));
+        $this->assertTrue(in_array('pkuid', $dependencies));
+        $this->assertTrue(in_array('description', $dependencies));
+    }
+
+    function testCurrentGeometry() {
+        $exp = '@current_geometry';
+        $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
+
+        $exp = 'my@current_geometry';
+        $this->assertFalse(qgisExpressionUtils::hasCurrentGeometry($exp));
+
+        $exp = ' @current_geometry ';
+        $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
+
+        $exp = 'intersects(@current_geometry, $geometry)';
+        $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
+
+        $exp = 'intersects(@current_geometry, $geometry) AND area(@current_geometry)>1000';
+        $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
+    }
+
 }

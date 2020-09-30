@@ -10,7 +10,7 @@
 class qgisExpressionUtils
 {
     /**
-     * Return criteria dependencies (fields) for a QGIS expression.
+     * Returns criteria dependencies (fields) for a QGIS expression.
      *
      * @param string $exp A QGIS expression string
      *
@@ -30,7 +30,7 @@ class qgisExpressionUtils
     }
 
     /**
-     * Return criteria dependencies (fields) for QGIS expressions.
+     * Returns criteria dependencies (fields) for QGIS expressions.
      *
      * @param array $expressions list of QGIS expressions
      *
@@ -47,6 +47,36 @@ class qgisExpressionUtils
         }
 
         return array_values(array_unique($criteriaFrom));
+    }
+
+    /**
+     * Returns criteria dependencies (fields) in current_value() for QGIS
+     * expression.
+     *
+     * @param string $exp A QGIS expression string
+     *
+     * @return array The list of criteria dependencies
+     */
+    public static function getCurrentValueCriteriaFromExpression($exp)
+    {
+        preg_match_all('/\\bcurrent_value\\(\\s*\'([^)]*)\'\\s*\\)/', $exp, $matches);
+        if (count($matches) == 2) {
+            return array_values(array_unique($matches[1]));
+        }
+
+        return array();
+    }
+
+    /**
+     * Returns true if @current_geometry is in the QGIS expression.
+     *
+     * @param string $exp A QGIS expression string
+     *
+     * @return bool @current_geometry is in the QGIS expression
+     */
+    public static function hasCurrentGeometry($exp)
+    {
+        return preg_match('/\\B@current_geometry\\b/', $exp) === 1;
     }
 
     public static function updateExpressionByUser($layer, $expression)

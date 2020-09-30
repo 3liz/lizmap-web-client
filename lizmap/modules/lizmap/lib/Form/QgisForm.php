@@ -1148,12 +1148,8 @@ class QgisForm implements QgisFormControlsInterface
              && $formControl->valueRelationData['filterExpression'] !== ''
         ) {
             $filterExpression = $formControl->valueRelationData['filterExpression'];
-            $criteriaFrom = array();
-            preg_match_all("/current_value\\(\\s*'([^)]*)'\\s*\\)/", $filterExpression, $matches);
-            if (count($matches) == 2) {
-                $criteriaFrom = array_values(array_unique($matches[1]));
-            }
-            if (preg_match('/\\bcurrent_geometry\\b/', $filterExpression) === 1) {
+            $criteriaFrom = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($filterExpression);
+            if (qgisExpressionUtils::hasCurrentGeometry($filterExpression)) {
                 $criteriaFrom[] = $this->dbFieldsInfo->geometryColumn;
             }
             if (count($criteriaFrom) !== 0) {
