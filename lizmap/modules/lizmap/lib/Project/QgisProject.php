@@ -1388,7 +1388,7 @@ class QgisProject
     protected function getValuesFromOptions($optionList, $name = true)
     {
         $values = array();
-    
+
         foreach ($optionList->option as $v) {
             if (!$name) {
                 $values[] = (string) $v->attributes()->value;
@@ -1399,6 +1399,7 @@ class QgisProject
                 );
             }
         }
+
         return $values;
     }
 
@@ -1414,7 +1415,7 @@ class QgisProject
             $options = $editWidget->config->Option;
             $edittypes[$fieldName] = array();
             // Option + Attributes
-            if (count((array)$options) > 2) {
+            if (count((array) $options) > 2) {
                 \jLog::log('More than one Option found in the Qgis File for field '.$fieldName.', only the first will be read.', 'warning');
             }
             $fieldEditOptions = array();
@@ -1431,17 +1432,17 @@ class QgisProject
                 // Option with list of values as Map
                 } elseif ((string) $option->attributes()->type === 'Map') {
                     $fieldEditOptions[(string) $option->attributes()->name] = $this->getValuesFromOptions($option);
-                    ;
+
                 // Option with string list of values
                 } elseif ((string) $option->attributes()->type === 'StringList') {
-                    $fieldEditOptions[(string) $option->attributes()->name] = $$this->getValuesFromOptions($option, false);
+                    $fieldEditOptions[(string) $option->attributes()->name] = ${$this}->getValuesFromOptions($option, false);
                 // Simple option
                 } else {
                     $fieldEditOptions[(string) $option->attributes()->name] = (string) $option->attributes()->value;
                 }
             }
 
-            $edittype =  array(
+            $edittype = array(
                 'type' => $fieldEditType,
                 'options' => (object) $fieldEditOptions,
             );
@@ -1454,11 +1455,12 @@ class QgisProject
                 $edittype['editable'] = 1;
             }
 
-            $edittype = (object)$edittype;
+            $edittype = (object) $edittype;
             $edittypes[$fieldName]['edittype'] = $edittype;
             $edittypes[$fieldName]['widgetv2configAttr'] = $edittype->options;
             $edittypes[$fieldName]['fieldEditType'] = $edittype->type;
         }
+
         return $edittypes;
     }
 
@@ -1569,7 +1571,7 @@ class QgisProject
         } else {
             $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'];
         }
-   
+
         return $markup;
     }
 
@@ -1579,7 +1581,7 @@ class QgisProject
 
         $layer = $this->getLayer($layerId, $proj);
         if ($layer->getType() !== 'vector') {
-            return ;
+            return;
         }
         $aliases = $layer->getAliasFields();
 
