@@ -46,16 +46,23 @@ class Config
         'logEmail',
     );
 
-    public function __construct($readConfigPath, App\AppContextInterface $appContext, $iniFilePath)
+    /**
+     * Constructs the object. This method shouldn't be called, you should call lizmap::getLogConfig() instead.
+     *
+     * @param array                   $configData  An array containing the ini file
+     * @param App\AppContextInterface $appContext  The context
+     * @param string                  $iniFilePath the path to the ini file folder
+     */
+    public function __construct($configData, App\AppContextInterface $appContext, $iniFilePath)
     {
-        $this->data = $readConfigPath;
+        $this->data = $configData;
         $this->appContext = $appContext;
         $this->file = $iniFilePath;
 
         // set generic parameters
         foreach ($this->properties as $prop) {
-            if (isset($readConfigPath['general'][$prop])) {
-                $this->{$prop} = $readConfigPath['general'][$prop];
+            if (isset($configData['general'][$prop])) {
+                $this->{$prop} = $configData['general'][$prop];
             }
         }
     }
@@ -104,7 +111,9 @@ class Config
     }
 
     /**
-     * Save the properties of a log Item in the ini file
+     * Save the properties of a log Item in the ini file.
+     *
+     * @param mixed $key
      */
     public function updateItem($key)
     {
@@ -138,14 +147,16 @@ class Config
     /**
      * Update the global config data. (modify and save).
      *
-     * @param array      $data array containing the data of the general options
+     * @param array      $data    array containing the data of the general options
      * @param null|mixed $ini
+     * @param mixed      $profile
+     * @param mixed      $active
      */
     public function update($profile, $active, $ini = null)
     {
         $data = array(
             'profile' => $profile,
-            'active' => $active
+            'active' => $active,
         );
         $modified = $this->modify($data);
         if ($modified) {
@@ -168,7 +179,7 @@ class Config
 
         foreach ($this->data as $section => $props) {
             if ($section !== 'general' && !strstr($section, 'item:')) {
-                continue ;
+                continue;
             }
             foreach ($props as $prop => $value) {
                 if ($section === 'general' && in_array($prop, $this->properties) || in_array($prop, $this->itemProperties)) {
