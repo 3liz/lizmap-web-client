@@ -14,7 +14,6 @@ namespace Lizmap\Project;
 
 class Repository
 {
-
     /**
      * services properties.
      */
@@ -43,12 +42,12 @@ class Repository
     );
 
     /**
-     * Lizmap repository key
+     * Lizmap repository key.
      */
     private $key = '';
 
     /**
-     * Lizmap repository configuration data
+     * Lizmap repository configuration data.
      */
     private $data = array();
 
@@ -58,7 +57,7 @@ class Repository
     protected $projectInstances = array();
 
     /**
-     * The configuration files folder path
+     * The configuration files folder path.
      */
     private $varPath = '';
 
@@ -67,14 +66,14 @@ class Repository
     protected $appContext;
 
     /**
-     * lizmapRepository Constructor
+     * lizmapRepository Constructor.
      *
      * Do not call it directly. Prefer to call `lizmapServices::getLizmapRepository()` instead.
      *
-     * @param string $key the name of the repository
-     * @param array $data the repository data
-     * @param string $varPath the configuration files folder path
-     * @param \lizmapServices $services
+     * @param string                          $key        the name of the repository
+     * @param array                           $data       the repository data
+     * @param string                          $varPath    the configuration files folder path
+     * @param \lizmapServices                 $services
      * @param \Lizmap\App\AppContextInterface $appContext
      */
     public function __construct($key, $data, $varPath, $services, $appContext)
@@ -83,7 +82,7 @@ class Repository
         $this->varPath = $varPath;
         $this->services = $services;
         $this->appContext = $appContext;
-        
+
         // Set each property
         foreach ($properties as $property) {
             if (array_key_exists($property, $data)) {
@@ -158,14 +157,13 @@ class Repository
     }
 
     /**
-     * Update a repository in a ini content
+     * Update a repository in a ini content.
      *
-     * @param array $data the repository data
-     * @param \jIniFileModifier $ini the object to edit the ini file
+     * @param array             $data the repository data
+     * @param \jIniFileModifier $ini  the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */
-
     public function update($data, $ini)
     {
         // Set section
@@ -203,6 +201,7 @@ class Repository
             throw $e;
         } catch (\Exception $e) {
             $this->appContext->logException($e, 'error');
+
             return null;
         }
 

@@ -25,14 +25,15 @@ class lizmapProject
      */
     protected $proj;
 
-    const CACHE_FORMAT_VERSION=1;
+    const CACHE_FORMAT_VERSION = 1;
+
     /**
      * constructor.
      *
-     * @param string           $key      : the project name
+     * @param string             $key      : the project name
      * @param Project\Repository $rep      : the repository
-     * @param mixed            $context
-     * @param mixed            $services
+     * @param mixed              $context
+     * @param mixed              $services
      */
     public function __construct($key, $rep, $context, $services)
     {
