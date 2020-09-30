@@ -455,7 +455,7 @@ class qgisForm implements qgisFormControlsInterface
                 if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
                     $edittype = $this->formControls[$ref]->getEditType();
                     if ($edittype && property_exists($edittype, 'options')
-                            && property_exists($edittype->options, 'field_format')) {
+                            && property_exists($edittype->options, 'field_format') && $value) {
                         $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
                         $date = DateTime::createFromFormat($format, $value);
                         $value = $date->format('Y-m-d H:i:s');
@@ -494,6 +494,13 @@ class qgisForm implements qgisFormControlsInterface
         ));
     }
 
+    /**
+     * Converts the format of a date from QGIS syntax to PHP syntax.
+     *
+     * @param string $fieldFormat The format to convert
+     *
+     * @return string The format converted
+     */
     public function convertQgisFormatToPHP($fieldFormat)
     {
         $dateFormat = $fieldFormat;
@@ -519,8 +526,9 @@ class qgisForm implements qgisFormControlsInterface
      * Converts the datetime to the format specified in the qgis Project.
      *
      * @param string $value       The datetime to convert
-     * @param object $edittype    The format of the date
-     * @param mixed  $fieldFormat
+     * @param string $fieldFormat The format in which to convert the date
+     *
+     * @return string The date converted
      */
     public function convertDateTimeToFormat($value, $fieldFormat)
     {
