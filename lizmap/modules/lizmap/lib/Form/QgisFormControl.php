@@ -129,7 +129,7 @@ class QgisFormControl
             'qgis' => array('name' => 'Relation reference', 'description' => 'Use relation to select value'),
             'jform' => array('markup' => 'menulist'),
         ),
-        'builded' => false
+        'builded' => false,
     );
 
     // Table to map arbitrary data types to expected ones
@@ -550,7 +550,7 @@ class QgisFormControl
         if (!self::$qgisEdittypeMap['builded']) {
             self::buildEditTypeMap();
         }
-        
+
         return self::$qgisEdittypeMap;
     }
 
