@@ -29,7 +29,7 @@ class qgisAttributeEditorElement
     protected $childrenAfterTab = array();
 
     public function __construct(
-        qgisFormControlsInterface $formControls,
+        Lizmap\Form\QgisFormControlsInterface $formControls,
         SimpleXMLElement $node,
         $parentId,
         $idx = 0,
