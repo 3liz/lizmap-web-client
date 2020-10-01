@@ -222,7 +222,7 @@ only screen and (                   max-device-height : 640px) {
   }
 
   #mapmenu{
-    z-index: 1101;
+    z-index: 5001;
     width: 80%;
     left: -80%;
     transition: left 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
@@ -231,7 +231,7 @@ only screen and (                   max-device-height : 640px) {
   #mapmenu > div{
     width: unset;
     display: flex;
-    top: 60px;
+    top: 45px;
   }
 
   #mapmenu > div > ul{
@@ -284,8 +284,8 @@ only screen and (                   max-device-height : 640px) {
   #docks-wrapper{
     left: -1px;
     width: 80%;
-    padding-top: 52px;
-    height: calc(100% - 52px);
+    padding-top: 45px;
+    box-sizing: border-box;
   }
 
   #bottom-dock{
@@ -299,12 +299,12 @@ only screen and (                   max-device-height : 640px) {
   #menuToggle{
     display: block;
     position: absolute;
-    top: 5px;
-    left: 5px;
+    top: 4px;
+    left: 4px;
     z-index: 9000;
     -webkit-user-select: none;
     user-select: none;
-    padding: 10px;
+    padding: 7px;
     border-radius: 8px;
     background: #3a3c3d;
     transition: padding 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
@@ -336,7 +336,7 @@ only screen and (                   max-device-height : 640px) {
   }
 
   #menuToggle.opened{
-    padding-right: 4px;
+    padding-right: 2px;
   }
 
   /* Transform all the slices of hamburger into a crossmark. */
@@ -413,4 +413,13 @@ only screen and (                   max-device-height : 640px) {
     width: calc(100% - 70px);
   }
 
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait){
+  #docks-wrapper{
+    flex-direction: column;
+  }
+  #sub-dock{
+    width: 100%;
+  }
 }
