@@ -413,6 +413,9 @@ only screen and (                   max-device-height : 640px) {
     width: calc(100% - 70px);
   }
 
+  #right-dock{
+    margin: 0;
+  }
 }
 
 @media (hover: none) and (pointer: coarse) and (orientation: portrait){
