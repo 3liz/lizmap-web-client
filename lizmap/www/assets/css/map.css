@@ -1140,6 +1140,7 @@ transform: none !important;
   margin-left: auto;
   width:30%;
   background: #4A4A4A;
+  position: relative;
 }
 
 #content.mobile #right-dock{
