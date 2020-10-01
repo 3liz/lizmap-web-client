@@ -103,9 +103,7 @@ class QgisForm implements QgisFormControlsInterface
         $toDeactivate = array();
         $toSetReadOnly = array();
         $json = file_get_contents(realpath(__DIR__.'/../..').'/forms/'.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
-        $this->appContext->debugObject('json', $json);
         $formInfos = json_decode($json);
-        $this->appContext->debugObject('form', $formInfos);
         foreach ($dataFields as $fieldName => $prop) {
 
             // faire qqch pour la geometry
@@ -113,7 +111,12 @@ class QgisForm implements QgisFormControlsInterface
 
             $constraints = $this->getConstraints($fieldName);
 
-            $formControl = new QgisFormControl($fieldName, $formInfos->{$fieldName}, $prop, $defaultValue, $constraints, $this->appContext);
+            if (property_exists($formInfos, $fieldName)) {
+                $formControl = new QgisFormControl($fieldName, $formInfos->{$fieldName}, $prop, $defaultValue, $constraints, $this->appContext);
+            } else {
+                // The geometry field is not present in the .XML
+                $formControl = new QgisFormControl($fieldName, null, $prop, null, $constraints, $this->appContext);
+            }
 
             if ($formControl->isUniqueValue()) {
                 $this->fillControlFromUniqueValues($fieldName, $formControl);
