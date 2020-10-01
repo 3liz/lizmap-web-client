@@ -313,10 +313,6 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   flex-grow: 1;
 }
 
-body.geolocation-minidock-active #content.mobile #dock{
-  height: 40%;
-}
-
 #dock.half {
 /*
   width:50%;

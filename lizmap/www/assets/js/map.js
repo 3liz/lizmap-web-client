@@ -2523,19 +2523,6 @@ var lizMap = function() {
         $('#button-geolocation').click();
         return false;
       });
-
-      lizMap.events.on({
-        minidockopened: function (e) {
-          if (e.id == 'geolocation') {
-            $('body').addClass('geolocation-minidock-active');
-          }
-        },
-        minidockclosed: function (e) {
-          if (e.id == 'geolocation') {
-            $('body').removeClass('geolocation-minidock-active');
-          }
-        }
-      });
     }
 
     if ( ('measure' in configOptions)
