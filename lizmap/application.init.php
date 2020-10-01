@@ -10,7 +10,7 @@
 
 $appPath = __DIR__.'/';
 require ($appPath.'vendor/autoload.php');
-require ($appPath.'../lib/jelix/init.php');
+
 if (file_exists($appPath.'my-packages/vendor/autoload.php')) {
     require ($appPath.'my-packages/vendor/autoload.php');
 }
@@ -23,3 +23,5 @@ jApp::initPaths(
     //$appPath.'scripts/'
 );
 jApp::setTempBasePath(realpath($appPath.'../temp/lizmap/').'/');
+
+require (__DIR__.'/vendor/jelix_app_path.php');
