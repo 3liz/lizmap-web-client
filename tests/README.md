@@ -22,12 +22,12 @@ You must set lizmap.local into your /etc/hosts
 127.0.0.1 lizmap.local
 ```
 
-Then, in your browser, go to `http://lizmap.local:8130/`.
+Then, in your browser, go to `http://lizmap.local:8130/`. (see below to change the port)
 
 If you want to use pgadmin or any other postgresql client, access credentials are:
 
 - host: `lizmap.local`
-- port: 8132
+- port: 8132 (see below to change the port)
 - database: `lizmap`
 - user: `lizmap`
 - password: `lizmap1234!`
@@ -62,6 +62,45 @@ Available commands:
 * `ldapreset` to reset the ldap content, and `ldapusers` to store some users for tests
 * `pgsql` to enter into the interactive command line of postgresql (psql)
 * `redis-cli` to enter into the interactive command line of Redis (redis-cli)
+
+
+Running different docker stack for each branch
+==============================================
+
+By default, name of containers are different for each branch, so you can build 
+and run a docker stack for each branch of the repository. Name of containers
+are made with the name of the current branch. You set a different name by creating
+an environment variable `LZMBRANCH` before running `run-docker` or `lizmap-ctl`.
+
+Example:
+
+```bash
+export LZMBRANCH=another-name
+
+./run-docker build
+./run-docker up -d
+./lizmap-ctl reset
+# etc...
+
+```
+
+
+Port to access to the postgresql server and the nginx server
+are the same on each branch, by default. So if you want to run different stack
+at the same time, you will have some error. You can modify these port by creating 
+some environment variable, `LZMPGPORT` and `LZMWEBPORT`.
+
+Example:
+
+```bash
+export LZMPGPORT=8150
+export LZMWEBPORT=8151
+
+./run-docker up -d
+
+# you can then open browser at http://localhost:8151/
+
+```
 
 Launching unit-tests
 ====================
