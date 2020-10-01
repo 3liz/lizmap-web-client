@@ -200,9 +200,10 @@ class QgisFormControl
         $this->defaultValue = $defaultValue;
         $propTab = array('edittype', 'fieldEditType', 'fieldAlias', 'widgetv2configAttr');
 
-        $this->appContext->debugObject('props', $properties);
         foreach ($propTab as $elem) {
-            $this->{$elem} = $properties->{$elem};
+            if ($properties && property_exists($properties, $elem)) {
+                $this->{$elem} = $properties->{$elem};
+            }
         }
 
         if (!self::$qgisEdittypeMap['builded']) {
@@ -223,9 +224,10 @@ class QgisFormControl
             $this->required = false;
         }
 
-        $markup = $properties->markup;
         if ($this->fieldDataType == 'geometry') {
             $markup = 'hidden';
+        } else {
+            $markup = $properties->markup;
         }
 
         // Create the control
