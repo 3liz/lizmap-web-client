@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-require('/www/lib/jelix/utils/jIniFileModifier.class.php');
+require('/www/lizmap/vendor/autoload.php');
 
 function load_include_config($varname, $iniFileModifier)
 {
@@ -31,7 +31,7 @@ $mainconfig->save();
 /**
  * lizmapConfig.ini.php
  */
-$lizmapConfig = new jIniFileModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
+$lizmapConfig = new \Jelix\IniFile\IniModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
 
 $lizmapConfig->setValue('wmsServerURL', getenv('LIZMAP_WMSSERVERURL'), 'services');
 $lizmapConfig->setValue('lizmapPluginAPIURL', getenv('LIZMAP_LIZMAPPLUGINAPIURL'), 'services');
@@ -66,7 +66,7 @@ $lizmapConfig->save();
 /**
  * localconfig.ini.php
  */
-$localConfig = new jIniFileModifier('/www/lizmap/var/config/localconfig.ini.php');
+$localConfig = new \Jelix\IniFile\IniModifier('/www/lizmap/var/config/localconfig.ini.php');
 
 // Let's modify the install configuration of jcommunity, to not create a default
 // admin account (no `defaultusers` parameter). We're relying on
