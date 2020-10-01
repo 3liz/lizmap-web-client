@@ -402,11 +402,6 @@ var lizLayerActionButtons = function() {
                 );
                 lizMap.map.zoomToExtent( lBounds );
 
-                // Close subdock and dock
-                if( lizMap.checkMobile() ){
-                    $('#hide-sub-dock').click();
-                    $('#button-switcher').click();
-                }
                 return false;
             });
 
@@ -477,11 +472,6 @@ var lizLayerActionButtons = function() {
                 // Blur dropdown or baselayer button
                 $('#switcher').click();
 
-                // Close subdock and dock
-                if( lizMap.checkMobile() ){
-                    $('#hide-sub-dock').click();
-                    $('#button-switcher').click();
-                }
                 return false;
             });
 
