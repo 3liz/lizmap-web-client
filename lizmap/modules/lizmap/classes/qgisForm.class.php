@@ -117,14 +117,14 @@ class qgisForm implements qgisFormControlsInterface
             // get field edit type
             $edittype = null;
             if ($edittypesXml) {
-                $edittype = $edittypesXml->xpath("edittype[@name='${fieldName}']");
+                $edittype = $edittypesXml->xpath("edittype[@name='{$fieldName}']");
                 if ($edittype && count($edittype) != 0) {
                     $edittype = $edittype[0];
                 } else {
                     $edittype = null;
                 }
             } elseif ($fieldConfigurationXml) {
-                $fieldConfiguration = $fieldConfigurationXml->xpath("field[@name='${fieldName}']");
+                $fieldConfiguration = $fieldConfigurationXml->xpath("field[@name='{$fieldName}']");
                 if ($fieldConfiguration && count($fieldConfiguration) !== 0) {
                     $fieldConfiguration = $fieldConfiguration[0];
                     $editWidgetXml = $fieldConfiguration->editWidget;
@@ -184,7 +184,7 @@ class qgisForm implements qgisFormControlsInterface
                         );
 
                         // editable
-                        $editableFieldXml = $layerXml->xpath("editable/field[@name='${fieldName}']");
+                        $editableFieldXml = $layerXml->xpath("editable/field[@name='{$fieldName}']");
                         if ($editableFieldXml && count($editableFieldXml) !== 0) {
                             $editableFieldXml = $editableFieldXml[0];
                             $edittype['editable'] = (int) $editableFieldXml->attributes()->editable;
@@ -452,11 +452,91 @@ class qgisForm implements qgisFormControlsInterface
                 }
                 $form->setData($ref.'_hidden', $value);
             } else {
+                if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
+                    $edittype = $this->formControls[$ref]->getEditType();
+                    if ($edittype && property_exists($edittype, 'options')
+                            && property_exists($edittype->options, 'field_format') && $value) {
+                        $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
+                        $date = DateTime::createFromFormat($format, $value);
+                        $value = $date->format('Y-m-d H:i:s');
+                    }
+                }
                 $form->setData($ref, $value);
             }
         }
 
         return $form;
+    }
+
+    public function getDateTimeConversionTab()
+    {
+        return array_reverse(array(
+            'd' => 'j',
+            'dd' => 'd',
+            'ddd' => 'D',
+            'dddd' => 'l',
+            'M' => 'n',
+            'MM' => 'm',
+            'MMM' => 'M',
+            'MMMM' => 'F',
+            'yy' => 'y',
+            'yyyy' => 'Y',
+            'H' => 'G',
+            'HH' => 'H',
+            'h' => 'G',
+            'hh' => 'H',
+            'AP' => 'A',
+            'ap' => 'a',
+            'm' => 'i',
+            'mm' => 'i',
+            'ss' => 's',
+            't' => 'T',
+        ));
+    }
+
+    /**
+     * Converts the format of a date from QGIS syntax to PHP syntax.
+     *
+     * @param string $fieldFormat The format to convert
+     *
+     * @return string The format converted
+     */
+    public function convertQgisFormatToPHP($fieldFormat)
+    {
+        $dateFormat = $fieldFormat;
+        // convertion from QGIS to PHP format
+        $format = $this->getDateTimeConversionTab();
+        $format12h = array('a', 'ap', 'A', 'AP');
+        foreach ($format12h as $am) {
+            if (strstr($dateFormat, $am)) {
+                $format['h'] = 'g';
+                $format['hh'] = 'h';
+
+                break;
+            }
+        }
+        foreach ($format as $qgis => $php) {
+            $dateFormat = str_replace($qgis, $php, $dateFormat);
+        }
+
+        return $dateFormat;
+    }
+
+    /**
+     * Converts the datetime to the format specified in the qgis Project.
+     *
+     * @param string $value       The datetime to convert
+     * @param string $fieldFormat The format in which to convert the date
+     *
+     * @return string The date converted
+     */
+    public function convertDateTimeToFormat($value, $fieldFormat)
+    {
+        $dateFormat = $this->convertQgisFormatToPHP($fieldFormat);
+
+        $date = new DateTime($value);
+
+        return $date->format($dateFormat);
     }
 
     /**
@@ -564,6 +644,17 @@ class qgisForm implements qgisFormControlsInterface
                 $values[$ref] = 'NULL';
 
                 continue;
+            }
+
+            $convertDate = array('date', 'time', 'datetime');
+
+            if (in_array(strtolower($this->formControls[$ref]->fieldEditType), $convertDate)) {
+                $edittype = $this->formControls[$ref]->getEditType();
+                if (!$edittype || !property_exists($edittype, 'options')
+                    || !property_exists($edittype->options, 'field_format')) {
+                    break;
+                }
+                $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
             }
 
             switch ($this->formControls[$ref]->fieldDataType) {
