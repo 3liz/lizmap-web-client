@@ -25,3 +25,13 @@ jApp::initPaths(
 jApp::setTempBasePath(realpath($appPath.'../temp/lizmap/').'/');
 
 require (__DIR__.'/vendor/jelix_app_path.php');
+
+
+jApp::declareModulesDir(array(
+                            __DIR__.'/modules/',
+                            __DIR__.'/lizmap-modules/',
+                            __DIR__.'/../extra-modules/',
+                        ));
+jApp::declarePluginsDir(array(
+                            __DIR__.'/plugins'
+                        ));

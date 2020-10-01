@@ -71,7 +71,7 @@ BUILD_ARGS += --build-arg REGISTRY_PREFIX=$(REGISTRY_PREFIX)
 #-------- build
 DIST=$(STAGE)/$(PACKAGE_NAME)
 
-FILES=lib lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRADE.md
+FILES=lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRADE.md
 
 FORBIDDEN_CONFIG_FILES := installer.ini.php liveconfig.ini.php localframework.ini.php lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
 EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions
