@@ -550,6 +550,7 @@ class qgisForm implements qgisFormControlsInterface
             $formFields = $attributeEditorForm->getFields();
         }
 
+        $cnx = $this->layer->getDatasourceConnection();
         // Get values from form and get expressions
         $constraintExpressions = array();
         foreach ($formFields as $fieldName) {
