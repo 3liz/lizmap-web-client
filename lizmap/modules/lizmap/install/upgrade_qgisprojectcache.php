@@ -10,7 +10,7 @@ class lizmapModuleUpgrader_qgisprojectcache extends jInstallerModule
     public function install()
     {
         if ($this->firstExec('cacheqgis')) {
-            $profiles = new jIniFileModifier(jApp::configPath('profiles.ini.php'));
+            $profiles = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('profiles.ini.php'));
             if (!$profiles->isSection('jcache:qgisprojects')) {
                 $profiles->setValues(array(
                     'enabled' => 1,
