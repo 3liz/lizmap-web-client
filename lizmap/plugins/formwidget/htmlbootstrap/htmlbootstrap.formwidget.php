@@ -10,10 +10,6 @@
  */
 class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
 {
-    /**
-     * @var \jelix\forms\Builder\HtmlBuilder
-     */
-    protected $builder;
 
     public function outputHeader($builder)
     {
@@ -43,14 +39,16 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         if ($builder->getOption('modal')) {
             echo '<div class="modal-body">';
         }
-        $this->builder = $builder;
     }
 
-    public function outputFooter()
+    /**
+     * @param \jelix\forms\Builder\HtmlBuilder $builder
+     */
+    public function outputFooter($builder)
     {
-        if ($this->builder->getOption('modal')) {
+        if ($builder->getOption('modal')) {
             echo '</div>';
         }
-        parent::outputFooter();
+        parent::outputFooter($builder);
     }
 }
