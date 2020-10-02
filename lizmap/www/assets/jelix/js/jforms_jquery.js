@@ -262,6 +262,8 @@ function jFormsJQForm(name, selector, id){
     this.errorDecorator =  new jFormsJQErrorDecoratorHtml();
     this.element = jQuery('#'+name).get(0);
 
+    // list of dependencies. Values are list of controls to update when a
+    // control (key is its name) is modified
     this.allDependencies = {};
     this.updateInProgress = false;
     this.controlsToUpdate = [];
@@ -300,9 +302,16 @@ jFormsJQForm.prototype={
         return null;
     },
 
+    /**
+     * declare a list as a dynamic list: its possible values change when an
+     * other control is modified.
+     * @param controlName name of the control corresponding to the html list to update
+     */
     declareDynamicFill : function (controlName) {
         var elt = this.element.elements[controlName];
         var ctrl = this.getControl(controlName);
+        // dependencies property contains name of controls that provide values
+        // used as criterion to retrieve list of values for controlName
         if (!ctrl.dependencies)
             return;
 
@@ -326,8 +335,24 @@ jFormsJQForm.prototype={
     },
 
     /**
-     * update the content of all elements which have the given control
-     * as a dependance
+     * update the given list that depends from an other control.
+     *
+     * Useful if you know that this list has changed at the backend side.
+     *
+     * @param controlName the name of the list to update
+     */
+    updateDynamicList : function(controlName) {
+        var ctrl = this.getControl(controlName);
+        if (!ctrl.dependencies) {
+            return;
+        }
+        this.controlsToUpdate.push(controlName);
+        this.dynamicFillAjax();
+    },
+
+    /**
+     * update the content of all elements which depends of the value of the given
+     * control
      * @param string controlName
      */
     updateLinkedElements : function (controlName) {
@@ -1013,6 +1038,24 @@ function jFormsJQControlIpv6(name, label) {
 jFormsJQControlIpv6.prototype.check = function (val, jfrm) {
     return (val.search(/^([a-f0-9]{1,4})(:([a-f0-9]{1,4})){7}$/i) != -1);
 };
+
+
+/**
+ * control for color code
+ */
+function jFormsJQControlColor(name, label) {
+    this.name = name;
+    this.label = label;
+    this.required = false;
+    this.errInvalid = '';
+    this.errRequired = '';
+    this.readOnly = false;
+};
+jFormsJQControlColor.prototype.check = function (val, jfrm) {
+    return (val.search(/^#[a-f0-9A-F]{6}$/) != -1);
+};
+
+
 
 /**
  * choice control

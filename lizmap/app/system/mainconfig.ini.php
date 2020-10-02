@@ -215,19 +215,10 @@ datetimepicker=default
 
 [htmleditors]
 default.engine.name=ckeditor
-default.config="assets/js/ckeditor5/ckeditor_lizmap.js"
-
 ckdefault.engine.name=ckeditor
-ckdefault.config="assets/js/ckeditor5/ckeditor_ckdefault.js"
-
 ckfull.engine.name=ckeditor
-ckfull.config="assets/js/ckeditor5/ckeditor_ckfull.js"
-
 ckbasic.engine.name=ckeditor
-ckbasic.config="assets/js/ckeditor5/ckeditor_ckbasic.js"
-
 ckfullandmedia.engine.name=ckeditor
-ckfullandmedia.config="assets/js/ckeditor5/ckeditor_ckfullandmedia.js"
 
 [modules]
 
@@ -303,16 +294,17 @@ useCollection=main
 jquery.js="assets/js/jquery/jquery-3.5.1.min.js"
 jqueryui.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
 jqueryui.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
+jquery_ui.require = jquery
 
-jforms_datepicker_default.require=jquery
+jforms_datepicker_default.require=jquery_ui
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js"
 jforms_datepicker_default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
-jforms_datepicker_default.js[]="assets/jelix/jquery//ui/i18n/jquery.ui.datepicker-$lang.js"
+jforms_datepicker_default.js[]="$jelix/jquery/ui/i18n/datepicker-$lang.js"
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
 jforms_datepicker_default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
 
-jforms_datetimepicker_default.require=jquery
+jforms_datetimepicker_default.require=jquery_ui
 jforms_datetimepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js"
 jforms_datetimepicker_default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
 jforms_datetimepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
@@ -322,20 +314,23 @@ jforms_datetimepicker_default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.cs
 
 jforms_htmleditor_default.js[]="assets/js/ckeditor5/ckeditor.js"
 jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
-jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
-jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
-jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
-jforms_htmleditor_default.require=
-jforms_htmleditor_default.skin.default=
+jforms_htmleditor_default.js[]="assets/js/ckeditor5/ckeditor_lizmap.js"
 
 jforms_htmleditor_ckdefault.js[]="assets/js/ckeditor5/ckeditor.js"
-jforms_htmleditor_ckdefault.require=
+jforms_htmleditor_ckdefault.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_ckdefault.js[]="assets/js/ckeditor5/ckeditor_lizmap.js"
 
 jforms_htmleditor_ckfull.js[]="assets/js/ckeditor5/ckeditor.js"
-jforms_htmleditor_ckfull.require=
+jforms_htmleditor_ckfull.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_ckfull.js[]="assets/js/ckeditor5/ckeditor_ckfull.js"
 
 jforms_htmleditor_ckbasic.js[]="assets/js/ckeditor5/ckeditor.js"
-jforms_htmleditor_ckbasic.require=
+jforms_htmleditor_ckbasic.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_ckbasic.js[]="assets/js/ckeditor5/ckeditor_ckbasic.js"
 
-jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor.js"
+
 jforms_htmleditor_ckfullandmedia.require=
+jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor.js"
+jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor_ckfullandmedia.js"
+
