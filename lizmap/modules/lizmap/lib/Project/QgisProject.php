@@ -1556,8 +1556,15 @@ class QgisProject
         $categoriesXml = $layerXml->xpath('renderer-v2/categories');
         if ($categoriesXml && count($categoriesXml) != 0) {
             $categoriesXml = $categoriesXml[0];
+            $data = array();
+            foreach ($categoriesXml as $category) {
+                $k = (string) $category->attributes()->label;
+                $v = (string) $category->attributes()->value;
+                $data[$v] = $k;
+            }
+            asort($data);
         } else {
-            $categoriesXml = null;
+            $data = null;
         }
         if ($layerXml->eddittype && count($layerXml->eddittypes)) {
             $props = $this->getEditType($layerXml);
@@ -1578,7 +1585,7 @@ class QgisProject
                 $props[$fieldName]['fieldAlias'] = $alias;
             }
             $props[$fieldName]['markup'] = $this->getMarkup($prop);
-            $props[$fieldName]['categories'] = $categoriesXml;
+            $props[$fieldName]['rendererCategories'] = $data;
         }
 
         return $props;
