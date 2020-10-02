@@ -34,7 +34,10 @@ jacl2db.installparam=defaultuser
 jauth.enabled=off
 jauthdb.enabled=off
 jcommunity.enabled=on
-jcommunity.installparam="defaultusers=lizmap~defaultusers.json;manualconfig"
+jcommunity.installparam[manualconfig]=on
+jcommunity.installparam[masteradmin]=off
+jcommunity.installparam[defaultusers]="lizmap~defaultusers.json"
+jcommunity.installparam[eps]="[index,admin]"
 admin.enabled=on
 dataviz.enabled=on
 filter.enabled=on
@@ -292,9 +295,10 @@ useCollection=main
 
 [webassets_main]
 jquery.js="assets/js/jquery/jquery-3.5.1.min.js"
-jqueryui.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
-jqueryui.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
-jquery_ui.require = jquery
+jquery_ui.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
+jquery_ui.css[]="assets/js/jqueryui-1.12.1/jquery-ui.min.css"
+jquery_ui.require=jquery
+
 
 jforms_datepicker_default.require=jquery_ui
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js"

@@ -86,7 +86,7 @@ function launchConfigure() {
 
 function launchInstaller() {
     php /srv/lzm/tests/docker-conf/phpfpm/initpgsql.php
-    su $APP_USER -c "php $APPDIR/install/installer.php"
+    su $APP_USER -c "php $APPDIR/install/installer.php -v"
 }
 
 function setRights() {

@@ -99,9 +99,9 @@ password_crypt_function=sha1
 ;password_salt = "salt_of_22_alphanumeric_characters_for_bcrypt_algo"
 
 ; name of the form for the jauthdb_admin module
-form = "lizmap~account_admin"
+form="lizmap~account_admin"
 ; name of the form for the user to modify its account data
-userform = "lizmap~account"
+userform="lizmap~account"
 
 ; path of the directory where to store files uploaded by the form (jauthdb_admin module)
 ; should be related to the var directory of the application
@@ -111,71 +111,71 @@ uploadsDirectory=
 
 [ldapdao]
 
-compatiblewithdb = on
+compatiblewithdb=on
 
 ; name of the dao to get user data
-dao = "lizmap~user"
+dao="lizmap~user"
 
 ; profile to use for jDb
-profile = "jauth"
+profile=jauth
 
 ; profile to use for ldap
-ldapprofile = "lizmapldap"
+ldapprofile=lizmapldap
 
 ; ldap needs clear password to connect, this is useless for our plugin
 ; except for the admin user.
 ; even if password_hash_method is activated, we set it to allow
 ; password storage migration
 ; @deprecated
-password_crypt_function = sha1
+password_crypt_function=sha1
 
 ; name of the form for the jauthdb_admin module
-form = "lizmap~account_admin"
+form="lizmap~account_admin"
 ; name of the form for the user to modify its account data
-userform = "lizmap~account"
+userform="lizmap~account"
 
 ; path of the directory where to store files uploaded by the form (jauthdb_admin module)
 ; should be related to the var directory of the application
-uploadsDirectory= ""
+uploadsDirectory=
 
 ;--- ldap parameters
 
 ; this is the jelix user that have admin rights. It will not be verified in the
 ; ldap
-jelixAdminLogin="admin"
+jelixAdminLogin=admin
 
 
 
 [multiauth]
-compatiblewithdb = on
+compatiblewithdb=on
 
 ; name of the dao to get user data
-dao = "lizmap~user"
+dao="lizmap~user"
 
 ; profile to use for jDb
-profile = "jauth"
+profile=jauth
 
 
-providers[]=ldap:multiauth_ldap
+providers[]="ldap:multiauth_ldap"
 providers[]=dbaccounts
 
 
 ; name of the form for the jauthdb_admin module
-form = "lizmap~account_admin"
+form="lizmap~account_admin"
 ; name of the form for the user to modify its account data
-userform = "lizmap~account"
+userform="lizmap~account"
 
 ; path of the directory where to store files uploaded by the form (jauthdb_admin module)
 ; should be related to the var directory of the application
-uploadsDirectory= ""
+uploadsDirectory=
 
 
 ; if password_hash_method is activated, we set it to allow
 ; password storage migration
 ; @deprecated
-password_crypt_function = sha1
+password_crypt_function=sha1
 
-automaticAccountCreation = on
+automaticAccountCreation=on
 
 ;------- parameters for the multiauth ldap plugin
 
