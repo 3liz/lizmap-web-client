@@ -1,6 +1,4 @@
 <div id="switcher-layers-container" class="switcher">
-    <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.legendmenu.title@}</span></span></h3>
-
     <div id="switcher-layers-actions">
         <button class="btn btn-mini" id="layers-unfold-all" title="{@view~map.switcher.layers.expand.title@}"><i class=
         "icon-resize-full icon-white"></i></button>

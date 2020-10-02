@@ -2523,19 +2523,6 @@ var lizMap = function() {
         $('#button-geolocation').click();
         return false;
       });
-
-      lizMap.events.on({
-        minidockopened: function (e) {
-          if (e.id == 'geolocation') {
-            $('body').addClass('geolocation-minidock-active');
-          }
-        },
-        minidockclosed: function (e) {
-          if (e.id == 'geolocation') {
-            $('body').removeClass('geolocation-minidock-active');
-          }
-        }
-      });
     }
 
     if ( ('measure' in configOptions)
@@ -5350,7 +5337,7 @@ var lizMap = function() {
       var dockli = '';
       dockli+='<li class="'+dname+' nav-'+dtype+'">';
       dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'" data-container="#content">';
-      dockli+='       <span class="icon"><i class="'+dicon+' icon-white"></i></span>';
+      dockli += '       <span class="icon"><i class="' + dicon + ' icon-white"></i></span><span class="menu-title">' + dname +'</span>';
       dockli+='   </a>';
       dockli+='</li>';
       $('#mapmenu div ul li.nav-'+dtype+':last').after(dockli);
@@ -6137,6 +6124,17 @@ var lizMap = function() {
             lizMap.events.triggerEvent(lizmapEvent, { 'id': id });
           return false;
         });
+
+        // Toggle menu visibility
+        $('#menuToggle').click(function(){
+          $(this).toggleClass('opened');
+        });
+
+        // Hide mapmenu when menu item is clicked in mobile context
+        $('#menuToggle:visible ~ #mapmenu ul').on('click', 'li > a', function () {
+          $('#menuToggle').removeClass('opened');
+        });
+
         // Show layer switcher
         $('#button-switcher').click();
         updateContentSize();
