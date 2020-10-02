@@ -220,4 +220,209 @@ only screen and (                   max-device-height : 640px) {
   #headermenu.mobile #auth form#nominatim-search{
     right: 65px;
   }
+
+  #mapmenu{
+    z-index: 5001;
+    width: 80%;
+    left: -80%;
+    transition: left 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
+  }
+
+  #mapmenu > div{
+    width: unset;
+    display: flex;
+    top: 45px;
+  }
+
+  #mapmenu > div > ul{
+    margin: 0 7px;
+    width: 100%;
+    background-color: #F0F0F0;
+  }
+
+  #mapmenu > div > ul li{
+    background: #444444;
+    border-radius: 6px;
+    margin-top: 10px;
+    padding-left: 15px;
+  }
+
+  #mapmenu > div > ul li.active{
+    background-color: #006dcc;
+  }
+
+  #mapmenu > div > ul li:last-child{
+    margin-bottom: 15px;
+  }
+
+  #mapmenu .nav-list > li > a{
+    width: unset;
+    text-align: left;
+    font-size: 1.2em;
+    color: white;
+    padding: .5em;
+  }
+
+  #mapmenu .nav-list > li.active > a{
+    background-color: initial;
+  }
+
+  #mapmenu .menu-title{
+    display: inline-block;
+    margin-left: 10px;
+    text-transform: capitalize;
+  }
+
+  #map-content{
+    margin-left: 0;
+  }
+
+  #content #dock{
+    background-color: #4A4A4A;
+  }
+
+  #docks-wrapper{
+    left: -1px;
+    width: 80%;
+    padding-top: 45px;
+    box-sizing: border-box;
+  }
+
+  #bottom-dock{
+    border-left: 0;
+  }
+
+  #menuToggle.opened ~ #mapmenu{
+    left: 0;
+  }
+
+  #menuToggle{
+    display: block;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 9000;
+    -webkit-user-select: none;
+    user-select: none;
+    padding: 7px;
+    border-radius: 8px;
+    background: #3a3c3d;
+    transition: padding 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
+  }
+
+  #menuToggle span{
+    display: block;
+    width: 33px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative;
+    background: white;
+    border-radius: 3px;
+    z-index: 1;
+    transform-origin: 4px 0px;
+    transition: transform 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
+  }
+
+  #menuToggle span:first-child{
+    transform-origin: 0% 0%;
+  }
+
+  #menuToggle span:nth-last-child(2){
+    transform-origin: 0% 100%;
+  }
+
+  #menuToggle span:last-child{
+    margin-bottom: 0;
+  }
+
+  #menuToggle.opened{
+    padding-right: 2px;
+  }
+
+  /* Transform all the slices of hamburger into a crossmark. */
+  #menuToggle.opened span{
+    opacity: 1;
+    transform: rotate(45deg) translate(0px, -5px);
+  }
+
+  /* Hide the middle one */
+  #menuToggle.opened span:nth-child(2){
+    opacity: 0;
+    transform: rotate(0deg) scale(0.2, 0.2);
+  }
+
+  /* The last one should go the other direction */
+  #menuToggle.opened span:nth-child(3){
+    transform: rotate(-45deg) translate(0, -1px);
+  }
+
+  #content.mobile #mini-dock{
+    left: 0;
+  }
+
+  /* Overload dock icons. TODO : change sprite with SVG */
+  #mapmenu .nav-list > li.home.active .icon {
+  background-position: -25px 0px;
+  }
+  #mapmenu .nav-list > li.projects.active .icon {
+    background-position: -925px 0px;
+  }
+  #mapmenu .nav-list > li.metadata.active .icon {
+    background-position: -125px 0px;
+  }
+  #mapmenu .nav-list > li.switcher.active .icon {
+    background-position: -75px 0px;
+  }
+  #mapmenu .nav-list > li.legend.active .icon {
+    background-position: -75px 0px;
+  }
+  #mapmenu .nav-list > li.locate.active .icon {
+    background-position: -175px 0px;
+  }
+  #mapmenu .nav-list > li.print.active .icon {
+    background-position: -375px 0px;
+  }
+  #mapmenu .nav-list > li.measure.active .icon {
+    background-position: -275px 0px;
+  }
+  #mapmenu .nav-list > li.edition.active .icon {
+    background-position: -475px 0px;
+  }
+  #mapmenu .nav-list > li.geolocation.active .icon {
+    background-position: -325px 0px;
+  }
+  #mapmenu .nav-list > li.attributeLayers.active .icon {
+    background-position: -525px 0px;
+  }
+  #mapmenu .nav-list > li.permaLink.active .icon {
+    background-position: -675px 0px;
+  }
+  #mapmenu .nav-list > li.tooltip-layer.active .icon {
+    background-position: -775px 0px;
+  }
+  #mapmenu .nav-list > li.timemanager.active .icon {
+    background-position: -625px 0px;
+  }
+
+  .nav .active > a .icon-white, .nav li > a:hover .icon-white, .nav li > a:focus .icon-white {
+    background-image: url(images/glyphicons-halflings-white.png);
+  }
+
+  #content #message.span6{
+    left: 60px;
+    width: calc(100% - 70px);
+  }
+
+  #right-dock{
+    margin: 0;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait){
+  #docks-wrapper{
+    flex-direction: column;
+  }
+  #sub-dock{
+    width: 100%;
+  }
 }
