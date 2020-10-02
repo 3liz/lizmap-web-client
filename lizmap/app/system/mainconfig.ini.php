@@ -13,8 +13,6 @@ timeZone="Europe/Paris"
 
 theme=default
 
-pluginsPath="app:plugins,lib:jelix-plugins,module:jacl2db/plugins"
-modulesPath="lib:jelix-admin-modules,lib:jelix-modules,app:modules,app:lizmap-modules,app:vendor/jelix/jcommunity-module/modules"
 
 ; the locales available in the application
 availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it_IT,ja_JP,nl_NL,pl_PL,pt_BR,pt_PT,ro_RO,ru_RU,sl_SI,sv_SE,sk_SK,uk_UA"
@@ -44,8 +42,6 @@ checkCacheFiletime=on
 force=off
 
 [urlengine]
-; name of url engine :  "simple", "basic_significant" or "significant"
-engine=basic_significant
 
 ; this is the url path to the jelix-www content (you can found this content in lib/jelix-www/)
 ; because the jelix-www directory is outside the yourapp/www/ directory, you should create a link to
@@ -71,16 +67,9 @@ multiview=off
 ; : basePath="/aaa/" )
 basePath=
 
-defaultEntrypoint=index
-
 ; leave empty to have jelix error messages
 ;notfoundAct=
 notfoundAct="jelix~error:notfound"
-
-; list of actions which require https protocol for the simple url engine
-; syntax of the list is the same as explained in the simple_urlengine_entrypoints
-simple_urlengine_https=
-
 
 ; this is the revision number to add to url of assets. If empty, no revision will be added.
 ; If "autoconfig", the revision number will be generated automatically each time
@@ -88,26 +77,6 @@ simple_urlengine_https=
 ; configuration, but it is the responsibility to the developer or the administrator
 ; to indicate a new one each time the application is deployed for example.
 assetsRevision = autoconfig
-
-[simple_urlengine_entrypoints]
-; parameters for the simple url engine. This is the list of entry points
-; with list of actions attached to each entry points
-
-; script_name_without_suffix = "list of action selectors separated by a space"
-; selector syntax :
-;   m~a@r    -> for the action "a" of the module "m" and for the request of type "r"
-;   m~*@r    -> for all actions of the module "m" and for the request of type "r"
-;   @r       -> for all actions for the request of type "r"
-
-index="@classic"
-admin="jacl2db~*@classic,jacl2db_admin~*@classic,jauthdb_admin~*@classic,master_admin~*@classic,admin~*@classic,jcommunity~*@classic"
-
-
-[basic_significant_urlengine_entrypoints]
-; for each entry point, it indicates if the entry point name
-; should be include in the url or not
-index=on
-admin=on
 
 [basic_significant_urlengine_aliases]
 auth=jcommunity
@@ -221,87 +190,58 @@ controls.datetime.months.labels=numbers
 datepicker=default
 datetimepicker=default
 
-[jquery]
-jquery="assets/js/jquery/jquery-3.5.1.min.js"
-jqueryui.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
-jqueryui.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
-
-[datepickers]
-default="$jelix/js/jforms/datepickers/default/init.js"
-default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
-default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
-default.js[]="$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js"
-default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
-default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
-
-[datetimepickers]
-default="$jelix/js/jforms/datepickers/default/init.js"
-default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
-default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
-default.js[]="$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js"
-default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
-default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
-
 [htmleditors]
 default.engine.name=ckeditor
-default.engine.file[]="assets/js/ckeditor5/ckeditor.js"
-default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
 default.config="assets/js/ckeditor5/ckeditor_lizmap.js"
-default.skin.default=
 
 ckdefault.engine.name=ckeditor
-ckdefault.engine.file[]="assets/js/ckeditor5/ckeditor.js"
-default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
 ckdefault.config="assets/js/ckeditor5/ckeditor_ckdefault.js"
 
 ckfull.engine.name=ckeditor
-ckfull.engine.file[]="assets/js/ckeditor5/ckeditor.js"
-default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
 ckfull.config="assets/js/ckeditor5/ckeditor_ckfull.js"
 
 ckbasic.engine.name=ckeditor
-ckbasic.engine.file[]="assets/js/ckeditor5/ckeditor.js"
-default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
 ckbasic.config="assets/js/ckeditor5/ckeditor_ckbasic.js"
 
 ckfullandmedia.engine.name=ckeditor
-ckfullandmedia.engine.file[]="assets/js/ckeditor5/ckeditor.js"
 ckfullandmedia.config="assets/js/ckeditor5/ckeditor_ckfullandmedia.js"
 
 [modules]
-jelix.access=1
 
-jacl.access=0
-jacldb.access=0
-jpref.access=0
-jsoap.access=0
-junittests.access=0
-jpref_admin.access=0
 
-jacl2.access=1
-jacl2db.access=1
 jacl2db.installparam=defaultuser
 
-jauth.access=0
-jauthdb.access=0
 
-jcommunity.access=1
 jcommunity.installparam="defaultusers=lizmap~defaultusers.json;manualconfig"
 
-admin.access=1
-dataviz.access=1
-filter.access=1
-action.access=1
-dynamicLayers.access=1
-lizmap.access=1
-proj4php.access=1
-view.access=1
 
 ldapdao.installparam=noconfigfile
 multiauth.installparam="noconfigfile;localconfig"
-
 ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
-
+jelix.enabled=on
+jacl.enabled=off
+jacldb.enabled=off
+jpref.enabled=off
+jsoap.enabled=off
+junittests.enabled=off
+jpref_admin.enabled=off
+jacl2.enabled=on
+jacl2db.enabled=on
+jauth.enabled=off
+jauthdb.enabled=off
+jcommunity.enabled=on
+admin.enabled=on
+dataviz.enabled=on
+filter.enabled=on
+action.enabled=on
+dynamicLayers.enabled=on
+lizmap.enabled=on
+proj4php.enabled=on
+view.enabled=on
+jacl2db_admin.enabled=on
+jauthdb_admin.enabled=on
+master_admin.enabled=on
+jelix.installparam[wwwfiles]=copy
 saml.installparam="localconfig"
 
 
@@ -320,6 +260,7 @@ verifyNickname=off
 useJAuthDbAdminRights=on
 ;disableJPref = on
 
+
 ;------- some parameters for the "saml" module
 [saml:sp]
 ; list of dao properties that can be used for mapping
@@ -331,3 +272,42 @@ daoPropertiesForMapping="login,email,firstname,lastname,phonenumber"
 cadastre=31
 adresse=32
 openads=33
+
+[webassets]
+useCollection=main
+[webassets_main]
+jquery.js="assets/js/jquery/jquery-3.5.1.min.js"
+jqueryui.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
+jqueryui.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
+
+jforms_datepicker_default.require=jquery
+jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js"
+jforms_datepicker_default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
+jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
+jforms_datepicker_default.js[]="assets/jelix/jquery//ui/i18n/jquery.ui.datepicker-$lang.js"
+jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
+jforms_datepicker_default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
+
+jforms_datetimepicker_default.require=jquery
+jforms_datetimepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js"
+jforms_datetimepicker_default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
+jforms_datetimepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
+jforms_datetimepicker_default.js[]="assets/jelix/jquery//ui/i18n/jquery.ui.datepicker-$lang.js"
+jforms_datetimepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
+jforms_datetimepicker_default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
+
+jforms_htmleditor_default.js[]="assets/js/ckeditor5/ckeditor.js"
+jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
+jforms_htmleditor_default.require=
+jforms_htmleditor_default.skin.default=
+jforms_htmleditor_ckdefault.js[]="assets/js/ckeditor5/ckeditor.js"
+jforms_htmleditor_ckdefault.require=
+jforms_htmleditor_ckfull.js[]="assets/js/ckeditor5/ckeditor.js"
+jforms_htmleditor_ckfull.require=
+jforms_htmleditor_ckbasic.js[]="assets/js/ckeditor5/ckeditor.js"
+jforms_htmleditor_ckbasic.require=
+jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor.js"
+jforms_htmleditor_ckfullandmedia.require=
