@@ -19,9 +19,65 @@ availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it
 ; the locale to fallback when the asked string doesn't exist in the current locale
 fallbackLocale=en_US
 
+[modules]
+jelix.enabled=on
+jelix.installparam[wwwfiles]=copy
+jacl.enabled=off
+jacldb.enabled=off
+jpref.enabled=off
+jsoap.enabled=off
+junittests.enabled=off
+jpref_admin.enabled=off
+jacl2.enabled=on
+jacl2db.enabled=on
+jacl2db.installparam=defaultuser
+jauth.enabled=off
+jauthdb.enabled=off
+jcommunity.enabled=on
+jcommunity.installparam="defaultusers=lizmap~defaultusers.json;manualconfig"
+admin.enabled=on
+dataviz.enabled=on
+filter.enabled=on
+action.enabled=on
+dynamicLayers.enabled=on
+lizmap.enabled=on
+proj4php.enabled=on
+view.enabled=on
+jacl2db_admin.enabled=on
+jauthdb_admin.enabled=on
+master_admin.enabled=on
+multiauth.installparam="noconfigfile;localconfig"
+ldapdao.installparam=noconfigfile
+ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
+
+
 [coordplugins]
 ;name = file_ini_name or 1
 autolocale=1
+
+[coordplugin_jacl2]
+; What to do if a right is required but the user has not this right
+; 1 = generate an error. This value should be set for web services (xmlrpc, jsonrpc...)
+; 2 = redirect to an action
+on_error=2
+
+; locale key for the error message when on_error=1
+error_message="jelix~errors.acl.action.right.needed"
+
+; action to execute on a missing authentification when on_error=2
+on_error_action="jcommunity~login:index"
+
+
+[coordplugin_autolocale]
+; activate the detection from a parameter given in the url
+enableUrlDetection=on
+
+; indicate the parameter name indicating the language/locale to use
+urlParamNameLanguage=lang
+
+
+; if no url parameter found, indicate to use one of the prefered language given by the browser
+useDefaultLanguageBrowser=on
 
 [tplplugins]
 defaultJformsBuilder=html
@@ -33,6 +89,7 @@ htmlsimple=simpleHtmlResponse
 
 [jResponseHtml]
 
+
 [error_handling]
 messageLogFormat="%date%\t[%code%]\t%msg%\t%file%\t%line%\n"
 errorMessage="An error occured. Sorry for the inconvenience."
@@ -40,6 +97,10 @@ errorMessage="An error occured. Sorry for the inconvenience."
 [compilation]
 checkCacheFiletime=on
 force=off
+
+[sessions]
+start=1
+
 
 [urlengine]
 
@@ -103,6 +164,10 @@ strict=errors.log
 ;metric=time.log
 auth=messages.log
 
+[mailLogger]
+email="root@localhost"
+emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
+
 [mailer]
 webmasterEmail="root@localhost"
 webmasterName=
@@ -136,48 +201,6 @@ smtpTimeout=10
 
 [acl2]
 driver=db
-
-[coordplugin_jacl2]
-; What to do if a right is required but the user has not this right
-; 1 = generate an error. This value should be set for web services (xmlrpc, jsonrpc...)
-; 2 = redirect to an action
-on_error=2
-
-; locale key for the error message when on_error=1
-error_message="jelix~errors.acl.action.right.needed"
-
-; action to execute on a missing authentification when on_error=2
-on_error_action="jcommunity~login:index"
-
-
-[coordplugin_autolocale]
-; activate the detection from a parameter given in the url
-enableUrlDetection=on
-
-; indicate the parameter name indicating the language/locale to use
-urlParamNameLanguage=lang
-
-
-; if no url parameter found, indicate to use one of the prefered language given by the browser
-useDefaultLanguageBrowser=on
-
-[sessions]
-; to disable sessions, set the following parameter to 0
-start=1
-; You can change the session name by setting the following parameter (only accepts alpha-numeric chars) :
-; name = "mySessionName"
-; Use alternative storage engines for sessions
-;
-; usage :
-;
-; storage = "files"
-; files_path = "app:var/sessions/"
-;
-; or
-;
-; storage = "dao"
-; dao_selector = "jelix~jsession"
-; dao_db_profile = ""
 
 
 [forms]
@@ -275,6 +298,7 @@ openads=33
 
 [webassets]
 useCollection=main
+
 [webassets_main]
 jquery.js="assets/js/jquery/jquery-3.5.1.min.js"
 jqueryui.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
@@ -303,11 +327,15 @@ jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
 jforms_htmleditor_default.js[]="assets/js/ckeditor5/translations/$lang.js"
 jforms_htmleditor_default.require=
 jforms_htmleditor_default.skin.default=
+
 jforms_htmleditor_ckdefault.js[]="assets/js/ckeditor5/ckeditor.js"
 jforms_htmleditor_ckdefault.require=
+
 jforms_htmleditor_ckfull.js[]="assets/js/ckeditor5/ckeditor.js"
 jforms_htmleditor_ckfull.require=
+
 jforms_htmleditor_ckbasic.js[]="assets/js/ckeditor5/ckeditor.js"
 jforms_htmleditor_ckbasic.require=
+
 jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor.js"
 jforms_htmleditor_ckfullandmedia.require=
