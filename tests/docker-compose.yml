@@ -3,7 +3,6 @@ services:
   pgsql:
     image: mdillon/postgis:11
     container_name: "lizmap${LZMBRANCH}_test_pgsql"
-    restart: always
     environment:
       POSTGRES_DB: lizmap
       POSTGRES_PASSWORD: lizmap1234!
