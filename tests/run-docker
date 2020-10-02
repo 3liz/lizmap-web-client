@@ -12,7 +12,7 @@ if [ "$CMD" == "" ]; then
 fi
 
 if [ "$LZMBRANCH" == "" ]; then
-  LZMBRANCH=$(git rev-parse --abbrev-ref HEAD)
+  export LZMBRANCH=$(git rev-parse --abbrev-ref HEAD)
 fi
 
 
