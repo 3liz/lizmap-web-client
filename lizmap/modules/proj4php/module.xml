@@ -10,6 +10,6 @@
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.6.2" maxversion="1.6.*"/>
+        <jelix minversion="1.6.2" maxversion="1.7.*"/>
     </dependencies>
 </module>
