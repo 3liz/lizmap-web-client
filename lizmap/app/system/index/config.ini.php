@@ -5,3 +5,6 @@
 [coordplugins]
 auth="index/auth.coord.ini.php"
 jacl2=1
+
+[jcommunity]
+loginResponse=htmlauth
