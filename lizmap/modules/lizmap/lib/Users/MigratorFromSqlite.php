@@ -106,7 +106,7 @@ class MigratorFromSqlite
     protected function createUsersTables()
     {
         // retrieve the configuration of jauth
-        $config = \jIniFile::read(\jApp::configPath('admin/auth.coord.ini.php'));
+        $config = \jIniFile::read(\jApp::appSystemPath('admin/auth.coord.ini.php'));
 
         // retrieve the driver used from the global configuration if exists
         if (isset(\jApp::config()->coordplugin_auth, \jApp::config()->coordplugin_auth['driver'])) {

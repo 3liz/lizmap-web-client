@@ -114,10 +114,10 @@ class lizmapRepository
     }
 
     /**
-     * Update a repository in a jIniFilemodifier object.
+     * Update a repository in a \Jelix\IniFile\IniModifier object.
      *
      * @param array            $data the repository data
-     * @param jIniFileModifier $ini  the object to edit the ini file
+     * @param \Jelix\IniFile\IniModifier $ini  the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */

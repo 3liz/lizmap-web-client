@@ -63,7 +63,7 @@ class lizmap
     public static function getServices()
     {
         if (!isset(self::$lizmapServicesInstance)) {
-            $lizmapConfigTab = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+            $lizmapConfigTab = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
             $globalConfig = jApp::config();
             $ldapEnabled = jApp::isModuleEnabled('ldapdao');
             $varPath = jApp::varPath();
@@ -84,8 +84,8 @@ class lizmap
 
     public static function saveServices()
     {
-        $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
-        $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
+        $ini = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('lizmapConfig.ini.php'));
+        $liveIni = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('liveconfig.ini.php'));
 
         $services = self::getServices();
         $services->saveIntoIni($ini, $liveIni);
@@ -306,8 +306,8 @@ class lizmap
         }
 
         // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = jApp::varConfigPath('lizmapConfig.ini.php');
+        $ini = new \Jelix\IniFile\IniModifier($iniFile);
 
         // Remove the section corresponding to the repository
         $section = 'repository:'.$key;
@@ -340,8 +340,8 @@ class lizmap
             return false;
         }
 
-        $iniFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = jApp::varConfigPath('lizmapConfig.ini.php');
+        $ini = new \Jelix\IniFile\IniModifier($iniFile);
         $rep = self::$repositoryInstances[$key];
 
         $modified = $rep->update($data, $ini);
