@@ -9,18 +9,7 @@
         <creator name="3liz" email="info@3liz.com"/>
         <homepageURL>http://3liz.com</homepageURL>
     </info>
-    <dependencies>
-        <jelix minversion="1.1.6" maxversion="1.6.*"/>
-    </dependencies>
-    <directories>
-        <config>./var/config/</config>
-        <log>./var/log/</log>
-        <var>./var/</var>
-        <www>./www/</www>
-        <temp>../temp/lizmap/</temp>
-    </directories>
-    <entrypoints>
-        <entry file="index.php" config="index/config.ini.php"/>
-        <entry file="admin.php" config="admin/config.ini.php" type="classic"/>
-    <entry file="script.php" config="cmdline/script.ini.php" type="cmdline"/></entrypoints>
+    
+    
+    
 </project>
