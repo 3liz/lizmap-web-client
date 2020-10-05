@@ -15,6 +15,7 @@ class testContext implements AppContextInterface
         if (array_key_exists($role, $this->result)) {
             return $this->result[$role];
         }
+
         return true;
     }
 
@@ -23,6 +24,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('groups', $this->result)) {
             return $this->result['groups'];
         }
+
         return null;
     }
 
@@ -35,6 +37,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('userIsConnected', $this->result)) {
             return $this->result['userIsConnected'];
         }
+
         return false;
     }
 
@@ -43,6 +46,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('userSession', $this->result)) {
             return $this->result['userSession'];
         }
+
         return null;
     }
 
@@ -101,7 +105,7 @@ class testContext implements AppContextInterface
     public function getUrl($selector)
     {
     }
-    
+
     public function getFullUrl($selector, $params = array())
     {
     }
@@ -109,5 +113,10 @@ class testContext implements AppContextInterface
     public function setResult($result)
     {
         $this->result = $result;
+    }
+
+    public function getFormPath()
+    {
+        return $this->result['path'];
     }
 }

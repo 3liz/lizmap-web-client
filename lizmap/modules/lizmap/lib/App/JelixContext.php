@@ -267,4 +267,20 @@ class JelixContext implements AppContextInterface
     {
         file_put_contents(\jApp::varPath().'/log/'.$file.'.log', json_encode($object, JSON_PRETTY_PRINT));
     }
+
+    public function getFormPath()
+    {
+        $tempPath = realpath(__DIR__.'/../../../../../temp/lizmap/');
+        if (!$tempPath) {
+            \jLog::log('The path to the forms location does not exists.');
+
+            return null;
+        }
+        $dir = $tempPath.'/forms/';
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+
+        return $dir;
+    }
 }

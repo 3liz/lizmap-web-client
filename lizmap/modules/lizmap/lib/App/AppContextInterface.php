@@ -217,4 +217,11 @@ interface AppContextInterface
      * @param mixed $params
      */
     public function getFullUrl($selector, $params = array());
+
+    /**
+     * Returns the path to the json form folder.
+     *
+     * @return string the path
+     */
+    public function getFormPath();
 }

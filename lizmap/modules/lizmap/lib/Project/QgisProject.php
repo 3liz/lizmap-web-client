@@ -870,7 +870,7 @@ class QgisProject
             }
             $layerXmlZero = $layerXml[0];
             $formControl = $this->readFormControls($layerXmlZero, $obj->layerId, $proj);
-            file_put_contents(realpath(__DIR__.'/../../').'/forms/'.$proj->getKey().'.'.$obj->layerId.'.form.json', json_encode($formControl, JSON_PRETTY_PRINT));
+            file_put_contents($this->appContext->getFormPath().$proj->getKey().'.'.$obj->layerId.'.form.json', json_encode($formControl, JSON_PRETTY_PRINT));
         }
     }
 
