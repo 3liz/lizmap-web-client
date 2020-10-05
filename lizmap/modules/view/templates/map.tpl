@@ -18,6 +18,12 @@
 
 <div id="content">
 
+  <div id="menuToggle">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
   <div id="mapmenu">
     {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable,'minidockable'=>$minidockable, 'bottomdockable'=>$bottomdockable, 'rightdockable'=>$rightdockable)}
   </div>
