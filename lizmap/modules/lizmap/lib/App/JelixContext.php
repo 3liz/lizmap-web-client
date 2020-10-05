@@ -267,4 +267,9 @@ class JelixContext implements AppContextInterface
     {
         file_put_contents(\jApp::varPath().'/log/'.$file.'.log', json_encode($object, JSON_PRETTY_PRINT));
     }
+
+    public function getFormPath()
+    {
+        return realpath(__DIR__.'/../../').'/forms/';
+    }
 }
