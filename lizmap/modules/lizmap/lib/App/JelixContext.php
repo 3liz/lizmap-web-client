@@ -283,4 +283,9 @@ class JelixContext implements AppContextInterface
     {
         return realpath(__DIR__.'/../../').'/forms/';
     }
+
+    public function getFormPath()
+    {
+        return realpath(__DIR__.'/../../').'/forms/';
+    }
 }
