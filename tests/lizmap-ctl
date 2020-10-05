@@ -3,6 +3,19 @@
 COMMAND="$1"
 shift
 
+if [ "$LZMBRANCH" == "" ]; then
+  LZMBRANCH=$(git rev-parse --abbrev-ref HEAD)
+fi
+
+if [ "$LZMPGPORT" == "" ]; then
+  export LZMPGPORT=8132
+fi
+
+if [ "$LZMWEBPORT" == "" ]; then
+  export LZMWEBPORT=8130
+fi
+
+
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
     echo "Possible commands: clean_tmp, reset, reset-sqlite, install, rights, composer_install, "
@@ -13,36 +26,36 @@ fi
 
 case $COMMAND in
     clean_tmp)
-        docker exec -t -i lizmap_test_php appctl.sh clean_tmp;;
+        docker exec -t -i lizmap_${LZMBRANCH}_test_php appctl.sh clean_tmp;;
     reset)
-        docker exec -t -i lizmap_test_php appctl.sh reset;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh reset;;
     reset-sqlite)
-        docker exec -t -i lizmap_test_php appctl.sh reset-sqlite;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh reset-sqlite;;
     install)
-        docker exec -t -i lizmap_test_php appctl.sh install;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh install;;
     rights)
-        docker exec -t -i lizmap_test_php appctl.sh rights;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh rights;;
     composer_install)
-        docker exec -t -i lizmap_test_php appctl.sh composer_install;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh composer_install;;
     composer_update)
-        docker exec -t -i lizmap_test_php appctl.sh composer_update;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh composer_update;;
     unittests)
-        docker exec -t -i lizmap_test_php appctl.sh unittests;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh unittests;;
     shell)
-       docker exec -it --user usertest lizmap_test_php  /bin/bash -l;;
+       docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shellroot)
-       docker exec -it lizmap_test_php  /bin/bash  -l;;
+       docker exec -it lizmap${LZMBRANCH}_test_php  /bin/bash  -l;;
     ldapreset)
-      docker exec -it lizmap_test_ldap /bin/ctl.sh reset
+      docker exec -it lizmap${LZMBRANCH}_test_ldap /bin/ctl.sh reset
       ;;
     ldapusers)
-       docker exec -it lizmap_test_ldap /bin/ctl.sh showusers
+       docker exec -it lizmap${LZMBRANCH}_test_ldap /bin/ctl.sh showusers
        ;;
     pgsql)
-       docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap_test_pgsql psql --username=lizmap lizmap
+       docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql psql --username=lizmap lizmap
        ;;
     redis-cli)
-      docker exec -it lizmap_test_redis redis-cli
+      docker exec -it lizmap${LZMBRANCH}_test_redis redis-cli
       ;;
     *)
         echo "wrong command"

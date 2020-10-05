@@ -1378,6 +1378,7 @@ var lizAttributeTable = function() {
                                         return tdata;
                                     if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
                                         var rdata = tdata;
+                                        var colMeta = meta.settings.aoColumns[meta.col];
                                         if( tdata.substr(0,7) == '/media/' )
                                             rdata = tdata.slice(1);
                                         return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
