@@ -85,8 +85,8 @@
 
 
 <div>
+    <a class="btn" href="{jurl 'admin~config:index'}">{@admin~admin.configuration.button.back.label@}</a>
     {formsubmit}
-  <a class="btn" href="{jurl 'admin~config:index'}">{@admin~admin.configuration.button.back.label@}</a>
 </div>
 
 {/form}
