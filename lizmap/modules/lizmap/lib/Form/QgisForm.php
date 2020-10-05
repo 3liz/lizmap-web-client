@@ -102,7 +102,8 @@ class QgisForm implements QgisFormControlsInterface
         $dataFields = $dbFieldsInfo->dataFields;
         $toDeactivate = array();
         $toSetReadOnly = array();
-        $json = file_get_contents(realpath(__DIR__.'/../..').'/forms/'.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
+        $formPath = $this->appContext->getFormPath();
+        $json = file_get_contents($formPath.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
         $formInfos = json_decode($json);
         foreach ($dataFields as $fieldName => $prop) {
 
