@@ -2916,7 +2916,7 @@ var lizMap = function() {
         return;
 
       // build selector
-      var selector = 'div.lizmapPopupContent > div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry';
+      var selector = 'div.lizmapPopupContent div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry';
       if ( containerId )
         selector = '#'+ containerId +' '+ selector;
       // get geometries and crs
