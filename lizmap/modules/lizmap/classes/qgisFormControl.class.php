@@ -296,14 +296,16 @@ class qgisFormControl
                 $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
             } elseif ($this->fieldEditType === 'DateTime') {
                 $markup = 'date';
-                $display_format = $this->widgetv2configAttr->display_format;
-                // Use date AND time widget id type is DateTime and we find HH
-                if (preg_match('#HH#i', $display_format)) {
-                    $markup = 'datetime';
-                }
-                // Use only time if field is only time
-                if (preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)) {
-                    $markup = 'time';
+                if (property_exists($widgetv2configAttr, 'display_format')) {
+                    $display_format = $this->widgetv2configAttr->display_format;
+                    // Use date AND time widget id type is DateTime and we find HH
+                    if (preg_match('#HH#i', $display_format)) {
+                        $markup = 'datetime';
+                    }
+                    // Use only time if field is only time
+                    if (preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)) {
+                        $markup = 'time';
+                    }
                 }
             } else {
                 $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
