@@ -652,11 +652,10 @@ class qgisForm implements qgisFormControlsInterface
 
             if (in_array(strtolower($this->formControls[$ref]->fieldEditType), $convertDate)) {
                 $edittype = $this->formControls[$ref]->getEditType();
-                if (!$edittype || !property_exists($edittype, 'options')
-                    || !property_exists($edittype->options, 'field_format')) {
-                    break;
+                if ($edittype && property_exists($edittype, 'options')
+                    && property_exists($edittype->options, 'field_format')) {
+                    $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
                 }
-                $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
             }
 
             switch ($this->formControls[$ref]->fieldDataType) {
