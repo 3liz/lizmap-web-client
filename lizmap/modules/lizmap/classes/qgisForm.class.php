@@ -470,9 +470,11 @@ class qgisForm implements qgisFormControlsInterface
 
     public function getDateTimeConversionTab()
     {
+        // 'ZZ' is not an actual PHP Format it's to avoid php format to be reconverted as if it was Qgis format
         return array_reverse(array(
+            'ZZ' => 'd',
             'd' => 'j',
-            'dd' => 'd',
+            'dd' => 'ZZ',
             'ddd' => 'D',
             'dddd' => 'l',
             'M' => 'n',
