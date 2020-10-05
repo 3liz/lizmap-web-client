@@ -26,6 +26,16 @@ build:
   tags:
     - fabric
 
+pages:
+  stage: deploy
+  script:
+    - make doc
+  #environment:
+  #  name: production ?
+  artifacts:
+    paths:
+      - docs
+
 tests:
   stage: tests
   script:
