@@ -235,7 +235,6 @@ interface AppContextInterface
     public function getFullUrl($selector, $params = array());
 
     /**
-<<<<<<< HEAD
      * Returns a the IniFileModifier corresponding to the ini file.
      *
      * @param string $ini The ini file
@@ -243,8 +242,6 @@ interface AppContextInterface
     public function getIniModifier($ini);
 
     /**
-=======
->>>>>>> uncontextualizing json folder for tests
      * Returns the path to the json form folder.
      *
      * @return string the path
