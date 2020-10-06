@@ -191,6 +191,20 @@ var lizLayerFilterTool = function() {
             return html;
         }
 
+        function checkResult(result){
+            if (!result) {
+                return false;
+            }
+            if ('status' in result && result['status'] == 'error') {
+                console.log(result.title + ': ' + result.detail);
+                return false;
+            }
+            if (result.length === 1 && !result[0].v) {
+                return false;
+            }
+            return true;
+        }
+
         // Get the HTML form element for the date field type
         function dateFormInput(field_item){
 
@@ -201,10 +215,7 @@ var lizLayerFilterTool = function() {
                 filter: ''
             };
             $.get(filterConfigData.url, sdata, function(result){
-                if( !result )
-                    return false;
-                if( 'status' in result && result['status'] == 'error' ){
-                    console.log(result.title + ': ' + result.detail);
+                if(!checkResult(result)){
                     return false;
                 }
 
@@ -264,12 +275,10 @@ var lizLayerFilterTool = function() {
                 filter: ''
             };
             $.get(filterConfigData.url, sdata, function(result){
-                if( !result )
-                    return false;
-                if( 'status' in result && result['status'] == 'error' ){
-                    console.log(result.title + ': ' + result.detail);
+                if (!checkResult(result)) {
                     return false;
                 }
+
                 for(var a in result){
                     var feat = result[a];
                     filterConfig[field_item.order]['min'] = Number(feat['min']);
@@ -301,16 +310,6 @@ var lizLayerFilterTool = function() {
 
         // Get the HTML form element for the text field type
         function textFormInput(field_item){
-            var html = '';
-            html+= getFormFieldHeader(field_item);
-            html+= '<div style="width: 100%;">'
-            html+= '<input id="liz-filter-field-text' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-text" value="" title="'+lizDict['filter.input.text.title']+'" placeholder="'+lizDict['filter.input.text.placeholder']+'">';
-            html+= '</div>'
-            html+= getFormFieldFooter(field_item);
-
-            $("#filter div.tree").append(html);
-            addFieldEvents(field_item);
-
             // Ajout des données d'autocompletion
             var field = field_item['field'];
             var sdata = {
@@ -320,12 +319,10 @@ var lizLayerFilterTool = function() {
                 filter: ''
             };
             $.get(filterConfigData.url, sdata, function(result){
-                if( !result )
-                    return false;
-                if( 'status' in result && result['status'] == 'error' ){
-                    console.log(result.title + ': ' + result.detail);
+                if (!checkResult(result)) {
                     return false;
                 }
+
                 var autocompleteData = [];
                 for(var a in result){
                     var feat = result[a];
@@ -333,6 +330,17 @@ var lizLayerFilterTool = function() {
                         continue;
                     autocompleteData.push(feat['v']);
                 }
+
+                var html = '';
+                html += getFormFieldHeader(field_item);
+                html += '<div style="width: 100%;">'
+                html += '<input id="liz-filter-field-text' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-text" value="" title="' + lizDict['filter.input.text.title'] + '" placeholder="' + lizDict['filter.input.text.placeholder'] + '">';
+                html += '</div>'
+                html += getFormFieldFooter(field_item);
+
+                $("#filter div.tree").append(html);
+                addFieldEvents(field_item);
+
                 $( "#liz-filter-field-text" + lizMap.cleanName(field_item.title) ).autocomplete({
                     source: autocompleteData,
                     autoFocus: false, // do not autofocus, because this prevents from searching with LIKE
@@ -350,21 +358,7 @@ var lizLayerFilterTool = function() {
         // possible format: checkboxes or select
         function uniqueValuesFormInput(field_item){
 
-            var html = '';
-            html+= getFormFieldHeader(field_item);
-            var lconfig_get = lizMap.getLayerConfigById(field_item.layerId);
-
-            if ( field_item.format == 'select' ) {
-                html+= '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select">';
-                html+= '<option value=""> --- </option>';
-                html+= '</select>';
-            }
-            html+= getFormFieldFooter(field_item);
-
-            $("#filter div.tree").append(html);
-
             // Get unique values data (and counters)
-            var field = field_item.field;
             var sdata = {
                 request: 'getUniqueValues',
                 layerId: field_item.layerId,
@@ -372,12 +366,22 @@ var lizLayerFilterTool = function() {
                 filter: ''
             };
             $.get(filterConfigData.url, sdata, function(result){
-                if( !result )
-                    return false;
-                if( 'status' in result && result['status'] == 'error' ){
-                    console.log(result.title + ': ' + result.detail);
+                if (!checkResult(result)) {
                     return false;
                 }
+
+                var html = '';
+                html += getFormFieldHeader(field_item);
+
+                if (field_item.format == 'select') {
+                    html += '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select">';
+                    html += '<option value=""> --- </option>';
+                    html += '</select>';
+                }
+                html += getFormFieldFooter(field_item);
+
+                $("#filter div.tree").append(html);
+                
                 if( !('items' in filterConfig[field_item.order]) )
                     filterConfig[field_item.order]['items'] = {};
                 for(var a in result){
