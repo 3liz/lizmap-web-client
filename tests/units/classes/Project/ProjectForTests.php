@@ -1,6 +1,6 @@
 <?php
 
-require('TestContext.php');
+require_once 'TestContext.php';
 
 use Lizmap\Project;
 
