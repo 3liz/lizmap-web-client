@@ -130,7 +130,7 @@ var lizLayerFilterTool = function() {
             var formFilterLayersSorted = [];
             for (var o in filterConfig) {
                 var field_item = filterConfig[o];
-                if( field_item.layerId == layerId ){
+                if( 'title' in field_item && field_item.layerId == layerId ){
                     formFilterLayersSorted.push(field_item);
                 }
             }
@@ -658,7 +658,7 @@ var lizLayerFilterTool = function() {
             var afilter = []
             for (var o in filterConfig) {
                 var field_item = filterConfig[o];
-                if(field_item['filter'] && field_item.layerId == layerId){
+                if( 'title' in field_item && field_item['filter'] && field_item.layerId == layerId){
                     afilter.push(field_item['filter']);
                 }
             }
@@ -759,7 +759,7 @@ var lizLayerFilterTool = function() {
             filterConfigData.deactivated = true;
             for (var o in filterConfig) {
                 var field_item = filterConfig[o];
-                if( field_item.layerId == layerId ){
+                if( 'title' in field_item && field_item.layerId == layerId ){
                     resetFormField(field_item.order);
                 }
             }
@@ -872,7 +872,7 @@ var lizLayerFilterTool = function() {
                     filterConfigData.deactivated = true;
                     for (var o in filterConfig) {
                         var field_item = filterConfig[o];
-                        if( !(field_item.layerId == layerId) ){
+                        if( !('title' in field_item) || field_item.layerId !== layerId ){
                             continue;
                         }
                         resetFormField(field_item.order);
