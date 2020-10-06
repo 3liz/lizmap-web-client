@@ -93,6 +93,7 @@ class testContext implements AppContextInterface
 
     public function eventNotify($eventName, $params = array())
     {
+        return new \jEvent('event');
     }
 
     public function getDbConnection($profile = '')
