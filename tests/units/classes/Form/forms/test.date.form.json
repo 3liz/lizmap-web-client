@@ -1,0 +1,38 @@
+{
+    "pkuid": {
+        "edittype": {
+            "type": "TextEdit",
+            "options": {},
+            "editable": 1
+        },
+        "widgetv2configAttr": {},
+        "fieldEditType": "TextEdit",
+        "fieldAlias": "",
+        "markup": "input",
+        "rendererCategories": null
+    },
+    "customdate": {
+        "edittype": {
+            "type": "DateTime",
+            "options": {
+                "allow_null": "true",
+                "calendar_popup": "true",
+                "display_format": "MM-d-yy",
+                "field_format": "MM-d-yy",
+                "field_iso_format": "false"
+            },
+            "editable": 1
+        },
+        "widgetv2configAttr": {
+            "allow_null": "true",
+            "calendar_popup": "true",
+            "display_format": "MM-d-yy",
+            "field_format": "MM-d-yy",
+            "field_iso_format": "false"
+        },
+        "fieldEditType": "DateTime",
+        "fieldAlias": "",
+        "markup": "date",
+        "rendererCategories": null
+    }
+}
