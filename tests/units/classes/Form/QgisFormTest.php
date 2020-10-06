@@ -55,10 +55,6 @@ class dummyForm
     }
 }
 
-/**
- * @internal
- * @coversNothing
- */
 class QgisFormTest extends TestCase
 {
     protected $appContext;
@@ -76,7 +72,6 @@ class QgisFormTest extends TestCase
         $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, null));
         $proj->setKey($ids[0]);
         $layer->setProject($proj);
-
         return $layer;
     }
 
@@ -127,8 +122,6 @@ class QgisFormTest extends TestCase
     public function testContruct($file, $fields)
     {
         $layer = $this->setUpEnv($file, $fields);
-        // Used to autoload jFormsControl*
-        // $formBase = jForms::create('view~edition');
         if (!$fields) {
             $this->expectException('Exception');
         }
@@ -251,7 +244,7 @@ class QgisFormTest extends TestCase
         foreach ($mockFuncs as $method) {
             if ($method === 'evaluateExpression') {
                 $formMock->method($method)->willReturn($evaluateExpression);
-            } elseif ($method === 'getConstraints') {
+            } else if ($method === 'getConstraints') {
                 $formMock->method($method)->willReturn($constraints);
             } else {
                 $formMock->method($method)->willReturn(null);
