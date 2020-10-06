@@ -112,6 +112,10 @@ class qgisVectorLayer extends qgisMapLayer
             'sql' => $dt[16],
         );
 
+        if ($ds['key'] === '""') {
+            $ds['key'] = '';
+        }
+
         $table = $ds['table'];
         $tableAlone = $table;
         $schema = '';
