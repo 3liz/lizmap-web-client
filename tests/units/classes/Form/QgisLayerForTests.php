@@ -20,8 +20,9 @@ class QgisLayerForTests extends qgisVectorLayer
         if (!$this->fields) {
             return null;
         }
-        return (object)array(
-            'dataFields' => (object)$this->fields,
+
+        return (object) array(
+            'dataFields' => (object) $this->fields,
             'primaryKeys' => array('pkuid'),
             'geometryColumn' => null,
         );
@@ -52,10 +53,16 @@ class QgisLayerForTests extends qgisVectorLayer
         if (isset($this->eCapabilities)) {
             return $this->eCapabilities;
         }
-        return (object)array('capabilities' => null);
+
+        return (object) array('capabilities' => null);
     }
 
     public function getDbFieldValues($feature)
+    {
+        return $this->dbFieldValues;
+    }
+
+    public function getDbFieldDistinctValues($feature)
     {
         return $this->dbFieldValues;
     }
