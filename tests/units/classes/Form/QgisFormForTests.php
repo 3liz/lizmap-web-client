@@ -33,6 +33,16 @@ class QgisFormForTests extends Form\QgisForm
     {
         return $this->getDefaultValue($fieldName);
     }
+
+    public function getFieldListForTests($geometryColumn, $insert)
+    {
+        return $this->getFieldList($geometryColumn, $insert);
+    }
+
+    public function fillControlFromUniqueValuesForTests($fieldName, $control)
+    {
+        return $this->fillControlFromUniqueValues($fieldName, $control);
+    }
 }
 
 class QgisFormForConstructTests extends Form\QgisForm

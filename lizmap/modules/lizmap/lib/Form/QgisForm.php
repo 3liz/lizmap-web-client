@@ -990,7 +990,7 @@ class QgisForm implements QgisFormControlsInterface
      * @param string          $fieldName   Name of QGIS field
      * @param QgisFormControl $formControl
      */
-    private function fillControlFromUniqueValues($fieldName, $formControl)
+    protected function fillControlFromUniqueValues($fieldName, $formControl)
     {
         $values = $this->layer->getDbFieldDistinctValues($fieldName);
 
@@ -1368,7 +1368,7 @@ class QgisForm implements QgisFormControlsInterface
         $lproj = $this->layer->getProject();
         $pConfig = $lproj->getFullCfg();
 
-        if ($lproj->hasLoginFilteredLayers() and $pConfig->loginFilteredLayers) {
+        if ($pConfig->loginFilteredLayers) {
             if (property_exists($pConfig->loginFilteredLayers, $layername)) {
                 $v = '';
                 $where = '';
@@ -1377,7 +1377,7 @@ class QgisForm implements QgisFormControlsInterface
 
                 // check filter type
                 if (property_exists($pConfig->loginFilteredLayers->{$layername}, 'filterPrivate')
-                     and $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True') {
+                     && $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True') {
                     $type = 'login';
                 }
 
