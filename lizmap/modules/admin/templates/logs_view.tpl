@@ -12,7 +12,7 @@
 
     <div class="form-actions">
       <a class="btn" href="{jurl 'admin~logs:counter'}">{@admin~admin.logs.view.button@}</a>
-      <a class="btn" href="{jurl 'admin~logs:emptyCounter'}" onclick="return confirm('{@admin~admin.logs.empty.confirm@}')">{@admin~admin.logs.empty.button@}</a>
+      <a class="btn" href="{jurl 'admin~logs:emptyCounter'}" onclick="return confirm(`{@admin~admin.logs.empty.confirm@}`)">{@admin~admin.logs.empty.button@}</a>
     </div>
 
   </div>
@@ -28,7 +28,7 @@
     <div class="form-actions">
       <a class="btn" href="{jurl 'admin~logs:detail'}">{@admin~admin.logs.view.button@}</a>
       <a class="btn" href="{jurl 'admin~logs:export'}">{@admin~admin.logs.export.button@}</a>
-      <a class="btn" href="{jurl 'admin~logs:emptyDetail'}" onclick="return confirm('{@admin~admin.logs.empty.confirm@}')">{@admin~admin.logs.empty.button@}</a>
+      <a class="btn" href="{jurl 'admin~logs:emptyDetail'}" onclick="return confirm(`{@admin~admin.logs.empty.confirm@}`)">{@admin~admin.logs.empty.button@}</a>
     </div>
 
   </div>
@@ -42,6 +42,6 @@
 <textarea rows="10" style="width:90%;">{if $errorLog != 'toobig'}{$errorLog}{else}{@admin~admin.logs.error.file.too.big@}{/if}</textarea>
 
     <div class="form-actions">
-      <a class="btn" href="{jurl 'admin~logs:eraseError'}" onclick="return confirm('{@admin~admin.logs.error.file.erase.confirm@}');">{@admin~admin.logs.error.file.erase@}</a>
+      <a class="btn" href="{jurl 'admin~logs:eraseError'}" onclick="return confirm(`{@admin~admin.logs.error.file.erase.confirm@}`);">{@admin~admin.logs.error.file.erase@}</a>
     </div>
   </div>

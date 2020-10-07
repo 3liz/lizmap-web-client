@@ -63,10 +63,10 @@
                 {/ifacl2}
                 <!-- Remove -->
                 {ifacl2 'lizmap.admin.repositories.delete'}
-                    <a class="btn" href="{jurl 'admin~maps:removeSection', array('repository'=>$repo->getKey())}" onclick="return confirm('{@admin~admin.configuration.button.remove.repository.confirm.label@}')">{@admin~admin.configuration.button.remove.repository.label@}</a>
+                    <a class="btn" href="{jurl 'admin~maps:removeSection', array('repository'=>$repo->getKey())}" onclick="return confirm(`{@admin~admin.configuration.button.remove.repository.confirm.label@}`)">{@admin~admin.configuration.button.remove.repository.label@}</a>
                 {/ifacl2}
                 {ifacl2 'lizmap.admin.repositories.delete'}
-                    <a class="btn" href="{jurl 'admin~maps:removeCache', array('repository'=>$repo->getKey())}" onclick="return confirm('{@admin~admin.cache.button.remove.repository.cache.confirm.label@}')">{@admin~admin.cache.button.remove.repository.cache.label@}</a>
+                    <a class="btn" href="{jurl 'admin~maps:removeCache', array('repository'=>$repo->getKey())}" onclick="return confirm(`{@admin~admin.cache.button.remove.repository.cache.confirm.label@}`)">{@admin~admin.cache.button.remove.repository.cache.label@}</a>
                 {/ifacl2}
             </div>
 
