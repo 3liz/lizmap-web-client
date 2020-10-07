@@ -167,7 +167,7 @@
         <help locale="admin~admin.form.admin_services.adminSenderName.help"/>
     </input>
 
-<submit ref="_submit">
-    <label locale="admin~admin.form.admin_services.submit.label"/>
-</submit>
+    <submit ref="_submit">
+        <label locale="admin~admin.form.admin_services.submit.label"/>
+    </submit>
 </form>
