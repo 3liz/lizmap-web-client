@@ -8,7 +8,7 @@ require_once 'QgisLayerForTests.php';
 require_once 'QgisFormForTests.php';
 require_once __DIR__.'/../Project/TestContext.php';
 require_once __DIR__.'/../Project/ProjectForTests.php';
-include __DIR__.'/../../../../lib/jelix/forms/jFormsBase.class.php';
+require_once __DIR__.'/../../../../lib/jelix/forms/jFormsBase.class.php';
 
 class dummyForm
 {
