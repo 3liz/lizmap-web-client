@@ -206,10 +206,7 @@ class QgisFormControl
             }
         }
 
-        if (!self::$qgisEdittypeMap['builded']) {
-            self::buildEditTypeMap();
-        }
-
+        $this->getEditTypeMap();
         // An auto-increment field cannot be required!
         if (!$prop->autoIncrement) {
             if ($prop->notNull) {
@@ -474,7 +471,7 @@ class QgisFormControl
             foreach ($typeTab as $type) {
                 if ($this->fieldDataType === strtolower($type)) {
                     if ($this->fieldDataType === 'float') {
-                        $class = '\jDataType'.'Decimal';
+                        $class = '\jDatatype'.'Decimal';
                     } else {
                         $class = '\jDatatype'.$type;
                     }
