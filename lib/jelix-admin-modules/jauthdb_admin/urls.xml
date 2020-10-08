@@ -2,6 +2,8 @@
 <suburls xmlns="http://jelix.org/ns/suburls/1.0">
     <url pathinfo="/users/"                  action="default:index"/>
 
+    <url pathinfo="/autocomplete"            action="default:getUserListForAutocomplete"/>
+
     <url pathinfo="/create-user"             action="default:create"
           actionoverride="default:precreate,default:savecreate"/>
 
