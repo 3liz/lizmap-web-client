@@ -53,7 +53,7 @@
     {/foreach}
      </select>
 
-    <input type="submit" value="{@jacl2db_admin~acl2.delete.button@}" />
+    <input type="submit" value="{@jacl2db_admin~acl2.delete.button@}" onclick="return confirm(`{@jacl2db_admin~acl2.delete.button.confirm.label@}`);"/>
 </fieldset>
 </form>
 {/ifacl2}
