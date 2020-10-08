@@ -145,6 +145,7 @@ class lizMapCtrl extends jController
         }
 
         // Add the jForms js
+        $lang = jLocale::getCurrentLang();
         $confUrlEngine = &jApp::config()->urlengine;
         $bp = $confUrlEngine['basePath'];
         $www = $confUrlEngine['jelixWWWPath'];
@@ -157,7 +158,7 @@ class lizMapCtrl extends jController
         if (isset($confDate['default.js'])) {
             $js = $confDate['default.js'];
             foreach ($js as $file) {
-                $file = str_replace('$lang', jLocale::getCurrentLang(), $file);
+                $file = str_replace('$lang', $lang, $file);
                 if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
                     continue;
                 }
