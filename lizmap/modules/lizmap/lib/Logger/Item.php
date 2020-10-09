@@ -144,9 +144,9 @@ class Item
     /**
      * Increase counter for this log item.
      *
-     * @param mixed $repository
-     * @param mixed $project
-     * @param mixed $profile
+     * @param string $repository
+     * @param string $project
+     * @param string $profile
      */
     public function increaseLogCounter($repository = '', $project = '', $profile = 'lizlog')
     {

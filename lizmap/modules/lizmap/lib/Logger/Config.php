@@ -16,17 +16,25 @@ use Lizmap\App;
 
 class Config
 {
-    // Lizmap log configuration data
+    /**
+     * Lizmap log configuration data.
+     *
+     * @var array
+     */
     private $data = array();
 
-    // general properties
+    /**
+     * general properties.
+     *
+     * @var array
+     */
     private $properties = array(
         'active',
         'profile',
     );
 
     /**
-     * @var array list of the logItems of the ini file
+     * @var Item[] list of log items of the ini file
      */
     protected $logItems = array();
 
@@ -71,6 +79,11 @@ class Config
         }
     }
 
+    /**
+     * @return string[]
+     *
+     * @deprecated
+     */
     public function getProperties()
     {
         return $this->properties;
@@ -81,7 +94,7 @@ class Config
      *
      * @param string $key Key of the log item to get
      *
-     * @return Log\Item
+     * @return Item
      */
     public function getLogItem($key)
     {
@@ -105,8 +118,8 @@ class Config
         $logItemList = array();
 
         foreach ($this->data as $section => $data) {
-            if (strstr($section, 'item:')) {
-                $logItemList[] = preg_replace('#(^item:)#', '', $section, 1);
+            if (preg_match('/^item:(.*)/', $section, $matches)) {
+                $logItemList[] = $matches[1];
             }
         }
 
@@ -120,8 +133,9 @@ class Config
      */
     public function updateItem($key)
     {
+        $item = $this->getLogItem($key);
         foreach (Item::getSProperties() as $prop) {
-            $this->data['item:'.$key][$prop] = $this->getLogItem($key)->getData($prop);
+            $this->data['item:'.$key][$prop] = $item->getData($prop);
         }
     }
 
