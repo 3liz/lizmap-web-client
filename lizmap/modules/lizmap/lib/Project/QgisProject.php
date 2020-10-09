@@ -869,8 +869,8 @@ class QgisProject
                 continue;
             }
             $layerXmlZero = $layerXml[0];
-            $formControl = $this->readFormControls($layerXmlZero, $obj->layerId, $proj);
-            file_put_contents($this->appContext->getFormPath().$proj->getKey().'.'.$obj->layerId.'.form.json', json_encode($formControl, JSON_PRETTY_PRINT));
+            $formControls = $this->readFormControls($layerXmlZero, $obj->layerId, $proj);
+            file_put_contents($this->appContext->getFormPath().$proj->getKey().'.'.$obj->layerId.'.form.json', json_encode($formControls, JSON_PRETTY_PRINT));
         }
     }
 
@@ -1483,6 +1483,7 @@ class QgisProject
                 $editTab[$attributes->name]['fieldEditType'] = (int) $edittype->attributes()->type;
             }
         }
+        return $editTab;
     }
 
     protected function getMarkup($props)
@@ -1550,8 +1551,17 @@ class QgisProject
 
         $layer = $this->getLayer($layerId, $proj);
         if ($layer->getType() !== 'vector') {
-            return;
+            return array();
         }
+
+        if ($layerXml->eddittype && count($layerXml->eddittypes)) {
+            $props = $this->getEditType($layerXml);
+        } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
+            $props = $this->getFieldConfiguration($layerXml);
+        } else {
+            return array();
+        }
+
         $aliases = $layer->getAliasFields();
 
         $categoriesXml = $layerXml->xpath('renderer-v2/categories');
@@ -1566,13 +1576,6 @@ class QgisProject
             asort($data);
         } else {
             $data = null;
-        }
-        if ($layerXml->eddittype && count($layerXml->eddittypes)) {
-            $props = $this->getEditType($layerXml);
-        } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
-            $props = $this->getFieldConfiguration($layerXml);
-        } else {
-            return null;
         }
 
         foreach ($props as $fieldName => $prop) {

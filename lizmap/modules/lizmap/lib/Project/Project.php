@@ -602,6 +602,8 @@ class Project
         $searchJDbName = 'jdb_'.$repository.'_'.$project;
         $this->appContext->createVirtualProfile('jdb', $searchJDbName, $jDbParams);
 
+        $searches = array();
+
         // Check FTS db ( tables and geometry storage
         try {
             $cnx = $this->appContext->getDbConnection($searchJDbName);
@@ -614,7 +616,6 @@ class Project
             ORDER BY priority
             ";
             $res = $cnx->query($sql);
-            $searches = array();
             foreach ($res as $item) {
                 $searches[$item->search_id] = array(
                     'search_name' => $item->search_name,
@@ -622,19 +623,17 @@ class Project
                     'srid' => $item->srid,
                 );
             }
-            if (count($searches) == 0) {
-                return false;
-            }
-
-            return array(
-                'jdb_profile' => $searchJDbName,
-                'searches' => $searches,
-            );
         } catch (\Exception $e) {
             return false;
         }
+        if (count($searches) == 0) {
+            return false;
+        }
 
-        return false;
+        return array(
+            'jdb_profile' => $searchJDbName,
+            'searches' => $searches,
+        );
     }
 
     public function hasEditionLayers()
@@ -744,7 +743,7 @@ class Project
      * Get login filters, get expressions for layers based on login filtered
      * config.
      *
-     * @param Array[string] $layers  : layers' name list
+     * @param string[] $layers  : layers' name list
      * @param bool          $edition : get login filters for edition
      *
      * @return array
@@ -999,7 +998,6 @@ class Project
 
     protected function readLocateByLayers(QgisProject $xml, ProjectConfig $cfg)
     {
-        $locateByLayer = array();
         $locateByLayer = $cfg->getProperty('locateByLayer');
         if ($locateByLayer) {
             // The method takes a reference
@@ -1035,7 +1033,7 @@ class Project
             }
             if (!$spatialiteExt) {
                 $this->appContext->logMessage('Spatialite is not available', 'error');
-                $xml->readEditionLayers($editionLayers, $this);
+                $xml->readEditionLayers($editionLayers);
                 // so we can ste the data here
                 $this->cfg->setProperty('EditionLayers', $editionLayers);
             }
@@ -1063,7 +1061,7 @@ class Project
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param \SimpleXMLElement $xml
      * @param $cfg
      *
      * @return int[]
@@ -1144,7 +1142,6 @@ class Project
     public function getUpdatedConfig()
     {
 
-        //FIXME: it's better to use clone keyword, isn't it?
         $configJson = $this->cfg->getData();
 
         // Add an option to display buttons to remove the cache for cached layer
