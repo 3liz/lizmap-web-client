@@ -99,7 +99,7 @@ class testContext implements AppContextInterface
     {
     }
 
-    public function getLocale($key)
+    public function getLocale($key, $variables = array())
     {
     }
 

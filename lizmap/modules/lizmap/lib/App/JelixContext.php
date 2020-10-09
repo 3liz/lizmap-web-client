@@ -227,9 +227,9 @@ class JelixContext implements AppContextInterface
      *
      * @return string the translated string
      */
-    public function getLocale($key)
+    public function getLocale($key, $variables=array())
     {
-        return \jLocale::get($key);
+        return \jLocale::get($key, $variables);
     }
 
     /**
