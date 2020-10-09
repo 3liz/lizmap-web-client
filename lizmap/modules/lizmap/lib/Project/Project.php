@@ -221,7 +221,7 @@ class Project
             }
 
             try {
-                $this->qgis = new QgisProject($file, $services);
+                $this->qgis = new QgisProject($file, $services, $this->appContext);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -242,7 +242,7 @@ class Project
             $rewriteCache = false;
             foreach ($this->layers as $index => $layer) {
                 if (array_key_exists('embedded', $layer) && $layer['embedded'] == '1' && $layer['qgsmtime'] < filemtime($layer['file'])) {
-                    $qgsProj = new QgisProject($layer['file'], $services);
+                    $qgsProj = new QgisProject($layer['file'], $services, $this->appContext);
                     $newLayer = $qgsProj->getLayerDefinition($layer['id']);
                     $newLayer['qsgmtime'] = filemtime($layer['file']);
                     $newLayer['file'] = $layer['file'];
@@ -264,7 +264,7 @@ class Project
             }
 
             try {
-                $this->qgis = new QgisProject($file, $services, $data);
+                $this->qgis = new QgisProject($file, $services, $appContext, $data);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -345,6 +345,7 @@ class Project
             $this->{$prop} = $this->{$method}($qgsXml, $this->cfg);
             $this->cfg->setProperty($prop, $this->{$prop});
         }
+        $this->qgis->readEditionForms($this->getEditionLayers(), $this);
     }
 
     public function getQgisPath()
@@ -1034,7 +1035,7 @@ class Project
             }
             if (!$spatialiteExt) {
                 $this->appContext->logMessage('Spatialite is not available', 'error');
-                $xml->readEditionLayers($editionLayers);
+                $xml->readEditionLayers($editionLayers, $this);
                 // so we can ste the data here
                 $this->cfg->setProperty('EditionLayers', $editionLayers);
             }
