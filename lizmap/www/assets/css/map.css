@@ -2520,7 +2520,7 @@ div.tooltip {
 
 /* Selection */
 
-.selectiontool-export button{
+.selectiontool-export button:disabled{
   pointer-events: none;
 }
 .selectiontool-export-formats{
