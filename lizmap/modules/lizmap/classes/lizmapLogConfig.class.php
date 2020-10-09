@@ -37,7 +37,7 @@ class lizmapLogConfig
      *
      * @param string $key Key of the log item to get
      *
-     * @return lizmapLogItem
+     * @return lizmapLogItem|Log\Item
      */
     public function getLogItem($key)
     {
