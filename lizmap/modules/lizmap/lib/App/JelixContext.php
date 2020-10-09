@@ -270,17 +270,6 @@ class JelixContext implements AppContextInterface
 
     public function getFormPath()
     {
-        $tempPath = realpath(__DIR__.'/../../../../../temp/lizmap/');
-        if (!$tempPath) {
-            \jLog::log('The path to the forms location does not exists.');
-
-            return null;
-        }
-        $dir = $tempPath.'/forms/';
-        if (!file_exists($dir)) {
-            mkdir($dir);
-        }
-
-        return $dir;
+        return \jApp::tempPath('lizmap-forms');
     }
 }
