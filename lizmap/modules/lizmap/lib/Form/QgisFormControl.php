@@ -185,12 +185,12 @@ class QgisFormControl
      * @param \SimpleXMLElement    $edittype           simplexml object corresponding to the QGIS edittype for this field
      * @param object              $prop               Jelix object with field properties (datatype, required, etc.)
      * @param array|object|string $aliasXml           simplexml object corresponding to the QGIS alias for this field
-     * @param string              $defaultValue       the QGIS expression of the default value
-     * @param array               $constraints        the QGIS constraints
+     * @param string|null              $defaultValue       the QGIS expression of the default value
+     * @param array|null               $constraints        the QGIS constraints
      * @param object              $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      * @param mixed               $properties
      */
-    public function __construct($ref, $properties, $prop, $defaultValue = null, $constraints = null, App\AppContextInterface $appContext)
+    public function __construct($ref, $properties, $prop, $defaultValue, $constraints, App\AppContextInterface $appContext)
     {
         // Set class attributes
         $this->ref = $ref;

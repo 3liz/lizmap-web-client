@@ -5,7 +5,7 @@ use Lizmap\Form;
 class dummyQgisFormControls implements Form\QgisFormControlsInterface
 {
     /**
-     * @return qgisFormControl[]
+     * @return Form\QgisFormControl[]
      */
     public function getQgisControls()
     {
@@ -15,7 +15,7 @@ class dummyQgisFormControls implements Form\QgisFormControlsInterface
     /**
      * @param string $name
      *
-     * @return null|qgisFormControl null if the control does not exists
+     * @return null|Form\QgisFormControl null if the control does not exists
      */
     public function getQgisControl($name)
     {

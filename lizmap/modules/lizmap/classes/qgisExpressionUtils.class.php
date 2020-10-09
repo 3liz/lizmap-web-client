@@ -188,7 +188,7 @@ class qgisExpressionUtils
      */
     public static function evaluateGroupVisibilities($attributeEditorForm, $form)
     {
-        // qgisForm::getAttributesEditorForm can return null
+        // QgisForm::getAttributesEditorForm can return null
         if ($attributeEditorForm === null || $form === null) {
             return array();
         }
