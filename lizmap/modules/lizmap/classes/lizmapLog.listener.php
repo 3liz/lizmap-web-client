@@ -78,7 +78,7 @@ class lizmapLogListener extends jEventListener
 
             // user who modified the line
             if (!array_key_exists('user', $data)) {
-                $juser = jAuth::getUserSession();
+                $juser = \jAuth::getUserSession();
                 $data['user'] = $juser->login;
             }
 
