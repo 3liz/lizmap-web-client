@@ -188,6 +188,13 @@ export default class SelectionTool {
         return this._exportFormats;
     }
 
+    // Selection is exportable if :
+    // - one single feature type is selected in list
+    // - there is at least one feature selected
+    get isExportable(){
+        return (this._allFeatureTypeSelected.length === 1 && this.selectedFeaturesCount);
+    }
+
     get selectedFeaturesCount() {
         let count = 0;
 
@@ -339,9 +346,9 @@ export default class SelectionTool {
     }
 
     export(format) {
-        if (format == 'GML') {
+        if (format === 'GML') {
             format = 'GML3';
         }
-        mainLizmap.lizmap3.exportVectorLayer(this.allFeatureTypeSelected, format, false);
+        mainLizmap.lizmap3.exportVectorLayer(this._allFeatureTypeSelected[0], format, false);
     }
 }
