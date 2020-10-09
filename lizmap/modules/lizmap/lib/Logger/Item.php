@@ -3,7 +3,7 @@
  * Manage and give access to lizmap log item.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2020 3liz
  *
  * @see      http://3liz.com
  *
@@ -47,7 +47,7 @@ class Item
      * Construct the object, you should use the Log\Config::getLogItem() method
      * which will call this constructor.
      *
-     * @param string $key            the name of the item
+     * @param string $key        the name of the item
      * @param array  $iniSection the array containing the fields of lizmapLogConfig.ini.php
      */
     public function __construct($key, $iniSection, App\AppContextInterface $appContext)
@@ -107,7 +107,7 @@ class Item
     public function setProperty($prop, $value)
     {
         if (!in_array($prop, self::$properties)) {
-            return ;
+            return;
         }
         $this->data[$prop] = $value;
     }
@@ -124,7 +124,7 @@ class Item
         $rec = $this->appContext->createDaoRecord('lizmap~logDetail', $profile);
 
         if (!$data) {
-            return ;
+            return;
         }
 
         // Set the value for each column
