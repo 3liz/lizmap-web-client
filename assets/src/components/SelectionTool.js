@@ -95,8 +95,10 @@ export default class SelectionTool extends HTMLElement {
         });
 
         // Export
-        $('.selectiontool-export-formats a.btn-export-selection', this).click(function() {
-            mainLizmap.selectionTool.export($(this).text());
+        this.querySelectorAll('.btn-export-selection').forEach(exportbtn => {
+            exportbtn.addEventListener('click', evt => {
+                mainLizmap.selectionTool.export(evt.target.text);
+            });
         });
 
         mainEventDispatcher.addListener(
