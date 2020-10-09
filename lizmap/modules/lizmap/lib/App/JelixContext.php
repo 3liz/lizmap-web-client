@@ -12,6 +12,8 @@
 
 namespace Lizmap\App;
 
+use jIniFileModifier;
+
 class JelixContext implements AppContextInterface
 {
     /**
@@ -20,6 +22,11 @@ class JelixContext implements AppContextInterface
     public function appConfig()
     {
         return \jApp::config();
+    }
+
+    public function appConfigPath($file = '')
+    {
+        return \jApp::configPath($file);
     }
 
     /**
@@ -238,6 +245,11 @@ class JelixContext implements AppContextInterface
         return \jDao::get($jSelector, $profile);
     }
 
+    public function createDaoRecord($dao, $profile = '')
+    {
+        return \jDao::createRecord($dao, $profile);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -254,5 +266,10 @@ class JelixContext implements AppContextInterface
     public function getFullUrl($selector, $params = array())
     {
         return \jUrl::getFull($selector, $params);
+    }
+
+    public function getIniModifier($ini)
+    {
+        return new jIniFileModifier($ini);
     }
 }
