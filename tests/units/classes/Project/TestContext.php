@@ -154,5 +154,11 @@ class testContext implements AppContextInterface
 
     public function insert($record)
     {
+
+    }
+
+    public function getFormPath()
+    {
+        return $this->result['path'];
     }
 }

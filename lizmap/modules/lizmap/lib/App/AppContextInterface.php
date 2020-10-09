@@ -239,4 +239,11 @@ interface AppContextInterface
      * @param string $ini The ini file
      */
     public function getIniModifier($ini);
+
+    /**
+     * Returns the path to the json form folder.
+     *
+     * @return string the path
+     */
+    public function getFormPath();
 }
