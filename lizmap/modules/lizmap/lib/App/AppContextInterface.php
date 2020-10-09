@@ -182,10 +182,11 @@ interface AppContextInterface
      *
      * @param string $key The key corresponding to the string
      *                    you want to get
+     * @param array $variables  values to replace in the localized string
      *
      * @return string the translated string
      */
-    public function getLocale($key);
+    public function getLocale($key, $variables=array());
 
     /**
      * Return a dao factory. Specific to Jelix.
