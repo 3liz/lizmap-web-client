@@ -198,7 +198,7 @@ class QgisFormControl
         $this->appContext = $appContext;
         $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
         $this->defaultValue = $defaultValue;
-        $propTab = array('edittype', 'fieldEditType', 'fieldAlias', 'widgetv2configAttr');
+        $propTab = array('edittype', 'fieldEditType', 'fieldAlias', 'widgetv2configAttr', 'rendererCategories');
 
         foreach ($propTab as $elem) {
             if ($properties && property_exists($properties, $elem)) {
@@ -230,8 +230,23 @@ class QgisFormControl
             $markup = $properties->markup;
         }
 
+        $controlNames = array('Menulist', 'Hidden', 'Checkboxes', 'Checkbox', 'Textarea', 'HtmlEditor', 'Date', 'Datetime');
+        $fillMethods = array('Menulist', 'Checkboxes', 'Checkbox');
+        foreach ($controlNames as $controlName) {
+            if (strtolower($controlName) === $markup) {
+                $class = '\jFormsControl'.$controlName;
+                $this->ctrl = new $class($this->ref);
+                if (in_array($controlName, $fillMethods)) {
+                    $this->fillControlDatasource();
+                }
+                $markup = null;
+            }
+        }
+
         // Create the control
         switch ($markup) {
+            case null:
+                break;
             case 'input':
                 $this->ctrl = new \jFormsControlInput($this->ref);
                 if ($this->fieldEditType === 15) {
@@ -257,49 +272,6 @@ class QgisFormControl
 
                 break;
 
-            case 'menulist':
-                $this->ctrl = new \jFormsControlMenulist($this->ref);
-                $this->fillControlDatasource();
-
-                break;
-
-            case 'checkboxes':
-                $this->ctrl = new \jFormsControlCheckboxes($this->ref);
-                $this->fillControlDatasource();
-
-                break;
-
-            case 'hidden':
-                $this->ctrl = new \jFormsControlHidden($this->ref);
-
-                break;
-
-            case 'checkbox':
-                $this->ctrl = new \jFormsControlCheckbox($this->ref);
-                $this->fillCheckboxValues();
-
-                break;
-
-            case 'textarea':
-                $this->ctrl = new \jFormsControlTextarea($this->ref);
-
-                break;
-
-            case 'htmleditor':
-                $this->ctrl = new \jFormsControlHtmlEditor($this->ref);
-
-                break;
-
-            case 'date':
-                $this->ctrl = new \jFormsControlDate($this->ref);
-
-                break;
-
-            case 'datetime':
-                $this->ctrl = new \jFormsControlDatetime($this->ref);
-
-                break;
-
             case 'time':
                 //$this->ctrl = new \jFormsControlDatetime($this->ref);
                 $this->ctrl = new \jFormsControlInput($this->ref);
@@ -307,95 +279,7 @@ class QgisFormControl
                 break;
 
             case 'upload':
-                $choice = new \jFormsControlChoice($this->ref.'_choice');
-                $choice->createItem('keep', 'keep');
-                $choice->createItem('update', 'update');
-                $upload = new \jFormsControlUpload($this->ref);
-                if ($this->fieldEditType === 'Photo') {
-                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
-                    $upload->capture = 'camera';
-                } elseif ($this->fieldEditType === 'ExternalResource') {
-                    $upload->accept = '';
-                    if (property_exists($this->widgetv2configAttr, 'FileWidgetFilter')) {
-                        //QFileDialog::getOpenFileName filter
-                        $FileWidgetFilter = $this->widgetv2configAttr->FileWidgetFilter;
-                        $FileWidgetFilter = explode(';;', $FileWidgetFilter);
-                        $accepts = array();
-                        $re = '/(\*\.\w{3,6})/';
-                        foreach ($FileWidgetFilter as $FileFilter) {
-                            $matches = array();
-                            if (preg_match_all($re, $FileFilter, $matches) == 1) {
-                                foreach (array_slice($matches, 1) as $m) {
-                                    $accepts[] = substr($m, 1);
-                                }
-                            }
-                        }
-                        if (count($accepts) > 0) {
-                            $upload->accept = implode(', ', array_unique($accepts));
-                        }
-                    }
-                    if (property_exists($this->widgetv2configAttr, 'DocumentViewer')
-                        && ($this->widgetv2configAttr->DocumentViewer === '1' || $this->widgetv2configAttr->DocumentViewer === 'true')) {
-                        if ($upload->accept != '') {
-                            $mimetypes = array();
-                            $accepts = explode(', ', $upload->accept);
-                            foreach ($accepts as $a) {
-                                if ($a == '.gif') {
-                                    $mimetypes[] = 'image/gif';
-                                } elseif ($a == '.png') {
-                                    $mimetypes[] = 'image/png';
-                                } elseif ($a == '.jpg' or $a == '.jpeg') {
-                                    if (!in_array('image/jpg', $mimetypes)) {
-                                        $mimetypes = array_merge($mimetypes, array('image/jpg', 'image/jpeg', 'image/pjpeg'));
-                                    }
-                                } elseif ($a == '.bm' or $a == '.bmp') {
-                                    if (!in_array('image/bmp', $mimetypes)) {
-                                        $mimetypes = array_merge($mimetypes, array('image/bmp', 'image/x-windows-bmp'));
-                                    }
-                                } elseif ($a == '.pbm') {
-                                    $mimetypes[] = 'image/x-portable-bitmap';
-                                } elseif ($a == '.pgm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/x-portable-graymap', 'image/x-portable-greymap'));
-                                } elseif ($a == '.ppm') {
-                                    $mimetypes[] = 'image/x-portable-pixmap';
-                                } elseif ($a == '.xbm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'));
-                                } elseif ($a == '.xpm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/xpm', 'image/x-xpixmap'));
-                                } elseif ($a == '.svg') {
-                                    $mimetypes[] = 'image/svg+xml';
-                                }
-                            }
-                            $upload->mimetype = array_unique($mimetypes);
-                        } else {
-                            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-                            $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
-                        }
-                        $upload->capture = 'camera';
-                    }
-                    if (property_exists($this->widgetv2configAttr, 'DefaultRoot')
-                        and (
-                          preg_match(
-                              '#^../media(/)?#',
-                              $this->widgetv2configAttr->DefaultRoot
-                          )
-                          or
-                          preg_match(
-                              '#^media(/)?#',
-                              $this->widgetv2configAttr->DefaultRoot
-                          )
-                        )
-                    ) {
-                        $this->DefaultRoot = $this->widgetv2configAttr->DefaultRoot.'/';
-                    } else {
-                        $this->DefaultRoot = '';
-                    }
-                }
-                $choice->addChildControl($upload, 'update');
-                $choice->createItem('delete', 'delete');
-                $choice->defaultValue = 'keep';
-                $this->ctrl = $choice;
+                $this->getUploadControl();
 
                 break;
 
@@ -444,6 +328,88 @@ class QgisFormControl
                 $this->ctrl->hint = $this->appContext->getLocale('view~edition.message.hint.constraint', array($constraints['exp_value']));
             }
         }
+    }
+
+    protected function getUploadControl()
+    {
+        $choice = new \jFormsControlChoice($this->ref.'_choice');
+        $choice->createItem('keep', 'keep');
+        $choice->createItem('update', 'update');
+        $upload = new \jFormsControlUpload($this->ref);
+        if ($this->fieldEditType === 'Photo') {
+            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+            $upload->accept = implode(', ', $upload->mimetype);
+            $upload->capture = 'camera';
+        } elseif ($this->fieldEditType === 'ExternalResource') {
+            $upload->accept = '';
+            if (property_exists($this->widgetv2configAttr, 'FileWidgetFilter')) {
+                //QFileDialog::getOpenFileName filter
+                $FileWidgetFilter = explode(';;', $this->widgetv2configAttr->FileWidgetFilter);
+                $accepts = array();
+                $re = '/(\*\.\w{3,6})/';
+                foreach ($FileWidgetFilter as $FileFilter) {
+                    $matches = array();
+                    if (preg_match_all($re, $FileFilter, $matches) == 1) {
+                        foreach (array_slice($matches, 1) as $m) {
+                            $accepts[] = substr($m, 1);
+                        }
+                    }
+                }
+                if (count($accepts) > 0) {
+                    $upload->accept = implode(', ', array_unique($accepts));
+                }
+            }
+            if (property_exists($this->widgetv2configAttr, 'DocumentViewer')
+                && ($this->widgetv2configAttr->DocumentViewer === '1' || $this->widgetv2configAttr->DocumentViewer === 'true')) {
+                if ($upload->accept != '') {
+                    $mimetypes = array();
+                    $accepts = explode(', ', $upload->accept);
+                    foreach ($accepts as $a) {
+                        $typeTab = array(
+                            '.gif' => 'image/gif',
+                            '.png' => 'image/png',
+                            '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                            '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                            '.bm' => array('image/bmp', 'image/x-windows-bmp'),
+                            '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
+                            '.pbm' => 'image/x-portable-bitmap',
+                            '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
+                            '.ppm' => 'image/x-portable-pixmap',
+                            '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
+                            '.xpm' => array('image/xpm', 'image/x-xpixmap'),
+                            '.svg' => 'image/svg+xml',
+                        );
+                        if (array_key_exists($a, $typeTab)) {
+                            if ((in_array($a, array('.jpg', '.jpeg')) && in_array('image/jpg', $mimetypes))
+                            || (in_array($a, array('.bm', '.bmp')) && in_array('image/bmp', $mimetypes))) {
+                                continue;
+                            }
+                            if (is_array($typeTab[$a])) {
+                                $mimetypes = array_merge($mimetypes, $typeTab[$a]);
+                            } else {
+                                $mimetypes[] = $typeTab[$a];
+                            }
+                        }
+                    }
+                    $upload->mimetype = array_unique($mimetypes);
+                } else {
+                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                }
+                $upload->capture = 'camera';
+            }
+            if (property_exists($this->widgetv2configAttr, 'DefaultRoot')
+                && (preg_match('#^../media(/)?#', $this->widgetv2configAttr->DefaultRoot)
+                    || preg_match('#^media(/)?#', $this->widgetv2configAttr->DefaultRoot))) {
+                $this->DefaultRoot = $this->widgetv2configAttr->DefaultRoot.'/';
+            } else {
+                $this->DefaultRoot = '';
+            }
+        }
+        $choice->addChildControl($upload, 'update');
+        $choice->createItem('delete', 'delete');
+        $choice->defaultValue = 'keep';
+        $this->ctrl = $choice;
     }
 
     protected static function buildEditTypeMap()
@@ -504,37 +470,16 @@ class QgisFormControl
             // let's change datatype when control has the default one, \jDatatypeString
             // we don't want to change datatype that are specific to a control type, like in\jFormsControlHtmlEditor,
             //\jFormsControlDate etc..
-
-            switch ($this->fieldDataType) {
-                case 'integer':
-                    $this->ctrl->datatype = new \jDatatypeInteger();
-
-                    break;
-
-                case 'float':
-                    $this->ctrl->datatype = new \jDatatypeDecimal();
-
-                    break;
-
-                case 'date':
-                    $this->ctrl->datatype = new \jDatatypeDate();
-
-                    break;
-
-                case 'datetime':
-                    $this->ctrl->datatype = new \jDatatypeDateTime();
-
-                    break;
-
-                case 'time':
-                    $this->ctrl->datatype = new \jDatatypeTime();
-
-                    break;
-
-                case 'boolean':
-                    $this->ctrl->datatype = new \jDatatypeBoolean();
-
-                    break;
+            $typeTab = array('Integer', 'float', 'Date', 'DateTime', 'Time', 'Boolean');
+            foreach ($typeTab as $type) {
+                if ($this->fieldDataType === strtolower($type)) {
+                    if ($this->fieldDataType === 'float') {
+                        $class = '\jDataType'.'Decimal';
+                    } else {
+                        $class = '\jDatatype'.$type;
+                    }
+                    $this->ctrl->datatype = new $class();
+                }
             }
         }
 
@@ -680,12 +625,7 @@ class QgisFormControl
             // Classification
             case 4:
             case 'Classification':
-                foreach ($this->rendererCategories as $category) {
-                    $k = (string) $category->attributes()->label;
-                    $v = (string) $category->attributes()->value;
-                    $data[$v] = $k;
-                }
-                asort($data);
+                $data = $this->rendererCategories;
 
                 break;
 
@@ -785,7 +725,7 @@ class QgisFormControl
                 break;
 
             case 'RelationReference':
-                $allowNull = filter_var($this->widgetv2configAttr->AllowNULL, FILTER_VALIDATE_BOOLEAN);
+                $allowNull = filter_var($this->widgetv2configAttr->AllowNull, FILTER_VALIDATE_BOOLEAN);
                 $orderByValue = filter_var($this->widgetv2configAttr->OrderByValue, FILTER_VALIDATE_BOOLEAN);
                 $Relation = (string) $this->widgetv2configAttr->Relation;
                 $MapIdentification = filter_var($this->widgetv2configAttr->MapIdentification, FILTER_VALIDATE_BOOLEAN);

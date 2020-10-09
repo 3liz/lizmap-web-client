@@ -272,4 +272,9 @@ class JelixContext implements AppContextInterface
     {
         return new jIniFileModifier($ini);
     }
+
+    public function getFormPath()
+    {
+        return \jApp::tempPath('lizmap-forms');
+    }
 }
