@@ -18,26 +18,6 @@ use Lizmap\Logger as Log;
  */
 class lizmapLogItem
 {
-    // log item properties
-    private static $properties = array(
-        'label',
-        'logCounter',
-        'logDetail',
-        'logIp',
-        'logEmail',
-    );
-
-    // log record keys
-    private static $recordKeys = array(
-        'key',
-        'user',
-        'content',
-        'repository',
-        'project',
-        'ip',
-        'email',
-    );
-
     /**
      * @var Log\Item
      */
@@ -68,7 +48,7 @@ class lizmapLogItem
      */
     public function getProperties()
     {
-        return $this->properties;
+        return Log\Item::getSProperties();
     }
 
     /**
@@ -76,7 +56,7 @@ class lizmapLogItem
      */
     public static function getSProperties()
     {
-        return self::$properties;
+        return Log\Item::getSProperties();
     }
 
     /**
@@ -119,7 +99,7 @@ class lizmapLogItem
      */
     public function insertLogDetail($data, $profile = 'lizlog')
     {
-        return $this->item->insertLogDetail($data, $profile);
+        $this->item->insertLogDetail($data, $profile);
     }
 
     /**

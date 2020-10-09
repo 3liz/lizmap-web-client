@@ -15,6 +15,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('configPath', $this->result)) {
             return $this->result['configPath'];
         }
+
         return null;
     }
 
@@ -23,6 +24,7 @@ class testContext implements AppContextInterface
         if (array_key_exists($role, $this->result)) {
             return $this->result[$role];
         }
+
         return true;
     }
 
@@ -31,6 +33,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('groups', $this->result)) {
             return $this->result['groups'];
         }
+
         return null;
     }
 
@@ -43,6 +46,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('userIsConnected', $this->result)) {
             return $this->result['userIsConnected'];
         }
+
         return false;
     }
 
@@ -51,6 +55,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('userSession', $this->result)) {
             return $this->result['userSession'];
         }
+
         return null;
     }
 
@@ -103,6 +108,8 @@ class testContext implements AppContextInterface
         if (array_key_exists('getDao', $this->result)) {
             return $this->result['getDao'];
         }
+
+        return null;
     }
 
     public function createDaoRecord($dao, $profile = '')
@@ -110,6 +117,8 @@ class testContext implements AppContextInterface
         if (array_key_exists('createDaoRecord', $this->result)) {
             return $this->result['createDaoRecord'];
         }
+
+        return null;
     }
 
     public function createJelixForm($formSel, $formId = null)
@@ -119,7 +128,7 @@ class testContext implements AppContextInterface
     public function getUrl($selector)
     {
     }
-    
+
     public function getFullUrl($selector, $params = array())
     {
     }
@@ -139,6 +148,7 @@ class testContext implements AppContextInterface
         if (array_key_exists('ini', $this->result)) {
             return $this->result['ini'];
         }
+
         return null;
     }
 

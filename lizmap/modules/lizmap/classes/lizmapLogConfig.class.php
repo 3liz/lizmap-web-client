@@ -22,9 +22,9 @@ class lizmapLogConfig
      */
     protected $config;
 
-    public function __construct($readConfigPath)
+    public function __construct($readConfigPath, $appContext, $iniFile)
     {
-        $this->config = new Log\Config($readConfigPath);
+        $this->config = new Log\Config($readConfigPath, $appContext, $iniFile);
     }
 
     public function getProperties()

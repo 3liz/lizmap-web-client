@@ -3,7 +3,7 @@
  * Manage and give access to lizmap log configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2020 3liz
  *
  * @see      http://3liz.com
  *
@@ -25,26 +25,30 @@ class Config
         'profile',
     );
 
-    // list of the logItems of the ini file
+    /**
+     * @var array list of the logItems of the ini file
+     */
     protected $logItems = array();
-    // If the log is active globally or not
+
+    /**
+     * @var string If the log is active globally or not
+     */
     private $active = '';
 
-    // database profile
+    /**
+     * @var string database profile
+     */
     private $profile = '';
 
-    // The location of the ini file
+    /**
+     * @var string The location of the ini file
+     */
     protected $file;
 
+    /**
+     * @var App\AppContextInterface
+     */
     protected $appContext;
-
-    protected $itemProperties = array(
-        'label',
-        'logCounter',
-        'logDetail',
-        'logIp',
-        'logEmail',
-    );
 
     /**
      * Constructs the object. This method shouldn't be called, you should call lizmap::getLogConfig() instead.
@@ -77,7 +81,7 @@ class Config
      *
      * @param string $key Key of the log item to get
      *
-     * @return lizmapLogItem
+     * @return Log\Item
      */
     public function getLogItem($key)
     {
@@ -101,9 +105,8 @@ class Config
         $logItemList = array();
 
         foreach ($this->data as $section => $data) {
-            $match = preg_match('#(^item:)#', $section, $matches);
-            if (isset($matches[0])) {
-                $logItemList[] = str_replace($matches[0], '', $section);
+            if (strstr($section, 'item:')) {
+                $logItemList[] = preg_replace('#(^item:)#', '', $section, 1);
             }
         }
 
@@ -117,7 +120,7 @@ class Config
      */
     public function updateItem($key)
     {
-        foreach ($this->itemProperties as $prop) {
+        foreach (Item::getSProperties() as $prop) {
             $this->data['item:'.$key][$prop] = $this->getLogItem($key)->getData($prop);
         }
     }
@@ -127,7 +130,7 @@ class Config
      *
      * @param array $data associative array containing the global config data
      */
-    protected function modify($data)
+    public function modify($data)
     {
         $modified = false;
         if (!$data) {
@@ -147,7 +150,6 @@ class Config
     /**
      * Update the global config data. (modify and save).
      *
-     * @param array      $data    array containing the data of the general options
      * @param null|mixed $ini
      * @param mixed      $profile
      * @param mixed      $active
@@ -182,7 +184,7 @@ class Config
                 continue;
             }
             foreach ($props as $prop => $value) {
-                if ($section === 'general' && in_array($prop, $this->properties) || in_array($prop, $this->itemProperties)) {
+                if ($section === 'general' && in_array($prop, $this->properties) || in_array($prop, Item::getSProperties())) {
                     if ($this->{$prop} !== '' && $this->{$prop} !== null) {
                         $ini->setValue($prop, $value, $section);
                     } else {
