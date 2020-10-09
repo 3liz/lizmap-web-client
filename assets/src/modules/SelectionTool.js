@@ -79,7 +79,7 @@ export default class SelectionTool {
 
         // List of WFS format
         this._exportFormats = mainLizmap.vectorLayerResultFormat.filter(
-            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.tagName)
+            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
         );
 
         // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
