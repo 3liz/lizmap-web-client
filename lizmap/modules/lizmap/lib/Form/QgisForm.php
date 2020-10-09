@@ -47,21 +47,21 @@ class QgisForm implements QgisFormControlsInterface
     protected $loginFilteredOverride = false;
 
     /**
-     * @var null|qgisLayerDbFieldsInfo
+     * @var null|\qgisLayerDbFieldsInfo
      */
     protected $dbFieldsInfo;
 
-    /** @var qgisFormControl[] */
+    /** @var QgisFormControl[] */
     protected $formControls = array();
 
-    /** @var \jFormsPlugin[] */
+    /** @var string[] */
     protected $formPlugins = array();
 
     /** @var App\AppContextInterface */
     protected $appContext;
 
     /**
-     * qgisForm constructor.
+     * QgisForm constructor.
      *
      * @param \qgisMapLayer|\qgisVectorLayer $layer
      * @param \jFormsBase                    $form
@@ -319,7 +319,7 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getFormPlugins()
     {
@@ -1201,7 +1201,7 @@ class QgisForm implements QgisFormControlsInterface
      * Get WFS data from a "Relation Reference" and fill the form control for a specific field.
      *
      * @param string          $fieldName   Name of QGIS field
-     * @param qgisFormControl $formControl
+     * @param QgisFormControl $formControl
      */
     private function fillControlFromRelationReference($fieldName, $formControl)
     {
