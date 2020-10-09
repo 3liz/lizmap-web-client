@@ -88,7 +88,29 @@ class lizmapLogItem
      */
     public function update($data)
     {
-        return $this->item->update($data);
+        // Get access to the ini file
+        $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
+        $ini = new jIniFileModifier($iniFile);
+
+        // Set section
+        $section = 'item:'.$this->item->getKey();
+
+        // Modify the ini data for the repository
+        foreach ($data as $k => $v) {
+            if (in_array($k, Log\Item::getSProperties())) {
+                // Set values in ini file
+                $ini->setValue($k, $v, $section);
+                // Modify lizmapConfigData
+                $this->item->setProperty($k, $v);
+            }
+        }
+        $modified = $ini->isModified();
+        // Save the ini file
+        if ($modified) {
+            $ini->save();
+        }
+
+        return $modified;
     }
 
     /**
