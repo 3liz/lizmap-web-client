@@ -12,6 +12,8 @@
 
 namespace Lizmap\App;
 
+use jIniFileModifier;
+
 class JelixContext implements AppContextInterface
 {
     /**
@@ -20,6 +22,11 @@ class JelixContext implements AppContextInterface
     public function appConfig()
     {
         return \jApp::config();
+    }
+
+    public function appConfigPath($file = '')
+    {
+        return \jApp::configPath($file);
     }
 
     /**
@@ -238,6 +245,11 @@ class JelixContext implements AppContextInterface
         return \jDao::get($jSelector, $profile);
     }
 
+    public function createDaoRecord($dao, $profile = '')
+    {
+        return \jDao::createRecord($dao, $profile);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -256,15 +268,9 @@ class JelixContext implements AppContextInterface
         return \jUrl::getFull($selector, $params);
     }
 
-    /**
-     * Stores a json encoded object in a file located in var/log
-     * Not really a Jelix Context but I'm using it a lot and it seems like a goos place for it.
-     *
-     * @param string $file   The name of the file where to put the json
-     * @param mixed  $object The object to encode
-     */
-    public function debugObject($file, $object)
+
+    public function getIniModifier($ini)
     {
-        file_put_contents(\jApp::varPath().'/log/'.$file.'.log', json_encode($object, JSON_PRETTY_PRINT));
+        return new jIniFileModifier($ini);
     }
 }
