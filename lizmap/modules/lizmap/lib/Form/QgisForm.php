@@ -17,7 +17,7 @@ use Lizmap\App;
 class QgisForm implements QgisFormControlsInterface
 {
     /**
-     * @var qgisMapLayer|qgisVectorLayer
+     * @var \qgisMapLayer|\qgisVectorLayer
      */
     protected $layer;
 
@@ -63,10 +63,10 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * qgisForm constructor.
      *
-     * @param qgisMapLayer|qgisVectorLayer $layer
-     * @param \jFormsBase                  $form
-     * @param string                       $featureId
-     * @param bool                         $loginFilteredOverride
+     * @param \qgisMapLayer|\qgisVectorLayer $layer
+     * @param \jFormsBase                    $form
+     * @param string                         $featureId
+     * @param bool                           $loginFilteredOverride
      *
      * @throws \Exception
      */
@@ -97,131 +97,26 @@ class QgisForm implements QgisFormControlsInterface
         $this->appContext = $appContext;
         $this->dbFieldsInfo = $dbFieldsInfo;
 
-        $layerXml = $layer->getXmlLayer();
-
-        $edittypesXml = $layerXml->edittypes;
-        if ($edittypesXml && count($edittypesXml) !== 0) {
-            $edittypesXml = $edittypesXml[0];
-        } else {
-            $edittypesXml = null;
-        }
-
-        $fieldConfigurationXml = $layerXml->fieldConfiguration;
-        if ($fieldConfigurationXml && count($fieldConfigurationXml) !== 0) {
-            $fieldConfigurationXml = $fieldConfigurationXml[0];
-        } else {
-            $fieldConfigurationXml = null;
-        }
-
-        $categoriesXml = $layerXml->xpath('renderer-v2/categories');
-        if ($categoriesXml && count($categoriesXml) != 0) {
-            $categoriesXml = $categoriesXml[0];
-        } else {
-            $categoriesXml = null;
-        }
-
         $eCapabilities = $layer->getEditionCapabilities();
         $capabilities = $eCapabilities->capabilities;
-        $aliases = $layer->getAliasFields();
         $dataFields = $dbFieldsInfo->dataFields;
         $toDeactivate = array();
         $toSetReadOnly = array();
+        $json = file_get_contents(realpath(__DIR__.'/../..').'/forms/'.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
+        $formInfos = json_decode($json);
         foreach ($dataFields as $fieldName => $prop) {
-            // get field edit type
-            $edittype = null;
-            if ($edittypesXml) {
-                $edittype = $edittypesXml->xpath("edittype[@name='${fieldName}']");
-                if ($edittype && count($edittype) != 0) {
-                    $edittype = $edittype[0];
-                } else {
-                    $edittype = null;
-                }
-            } elseif ($fieldConfigurationXml) {
-                $fieldConfiguration = $fieldConfigurationXml->xpath("field[@name='${fieldName}']");
-                if ($fieldConfiguration && count($fieldConfiguration) !== 0) {
-                    $fieldConfiguration = $fieldConfiguration[0];
-                    $editWidgetXml = $fieldConfiguration->editWidget;
-                    if ($editWidgetXml && count($editWidgetXml) !== 0) {
-                        $editWidgetXml = $editWidgetXml[0];
-                        // type
-                        $fieldEditType = (string) $editWidgetXml->attributes()->type;
-                        // options
-                        $fieldEditOptions = array();
-                        foreach ($editWidgetXml->config as $config) {
-                            foreach ($config->Option as $option) {
-                                foreach ($option->Option as $opt) {
-                                    // Option with list of values
-                                    if ((string) $opt->attributes()->type === 'List') {
-                                        $values = array();
-                                        foreach ($opt->Option as $l) {
-                                            if ((string) $l->attributes()->type === 'Map') {
-                                                foreach ($l->Option as $v) {
-                                                    $values[] = (object) array(
-                                                        'key' => (string) $v->attributes()->name,
-                                                        'value' => (string) $v->attributes()->value,
-                                                    );
-                                                }
-                                            } else {
-                                                $values[] = (string) $l->attributes()->value;
-                                            }
-                                        }
-                                        $fieldEditOptions[(string) $opt->attributes()->name] = $values;
-                                    // Option with list of values as Map
-                                    } elseif ((string) $opt->attributes()->type === 'Map') {
-                                        $values = array();
-                                        foreach ($opt->Option as $v) {
-                                            $values[] = (object) array(
-                                                'key' => (string) $v->attributes()->name,
-                                                'value' => (string) $v->attributes()->value,
-                                            );
-                                        }
-                                        $fieldEditOptions[(string) $opt->attributes()->name] = $values;
-                                    // Option with string list of values
-                                    } elseif ((string) $opt->attributes()->type === 'StringList') {
-                                        $values = array();
-                                        foreach ($opt->Option as $v) {
-                                            $values[] = (string) $v->attributes()->value;
-                                        }
-                                        $fieldEditOptions[(string) $opt->attributes()->name] = $values;
-                                    // Simple option
-                                    } else {
-                                        $fieldEditOptions[(string) $opt->attributes()->name] = (string) $opt->attributes()->value;
-                                    }
-                                }
-                            }
-                        }
 
-                        $edittype = array(
-                            'type' => $fieldEditType,
-                            'options' => (object) $fieldEditOptions,
-                        );
-
-                        // editable
-                        $editableFieldXml = $layerXml->xpath("editable/field[@name='${fieldName}']");
-                        if ($editableFieldXml && count($editableFieldXml) !== 0) {
-                            $editableFieldXml = $editableFieldXml[0];
-                            $edittype['editable'] = (int) $editableFieldXml->attributes()->editable;
-                        } else {
-                            $edittype['editable'] = 1;
-                        }
-
-                        $edittype = (object) $edittype;
-                    }
-                } else {
-                    $edittype = null;
-                }
-            }
-            // get field alias
-            $alias = null;
-            if ($aliases and array_key_exists($fieldName, $aliases)) {
-                $alias = $aliases[$fieldName];
-            }
-
+            // faire qqch pour la geometry
             $defaultValue = $this->getDefaultValue($fieldName);
 
             $constraints = $this->getConstraints($fieldName);
 
-            $formControl = new qgisFormControl($fieldName, $edittype, $prop, $alias, $defaultValue, $constraints, $categoriesXml, $this->appContext);
+            if (property_exists($formInfos, $fieldName)) {
+                $formControl = new QgisFormControl($fieldName, $formInfos->{$fieldName}, $prop, $defaultValue, $constraints, $this->appContext);
+            } else {
+                // The geometry field is not present in the .XML
+                $formControl = new QgisFormControl($fieldName, null, $prop, null, $constraints, $this->appContext);
+            }
 
             if ($formControl->isUniqueValue()) {
                 $this->fillControlFromUniqueValues($fieldName, $formControl);

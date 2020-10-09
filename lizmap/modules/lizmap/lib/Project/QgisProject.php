@@ -1485,38 +1485,6 @@ class QgisProject
         }
     }
 
-    protected function getDefaultValue($fieldName, $layer)
-    {
-        $expression = $layer->getDefaultValue($fieldName);
-        if ($expression === null || trim($expression) === '') {
-            return null;
-        }
-        if (is_numeric($expression)) {
-            return $expression;
-        }
-        if (preg_match("/^'.*'$/", $expression)) {
-            // it seems this is a simple string
-            $expression = trim($expression, "'");
-            // if there are some ' without a \, then probably we have a
-            // true expression, not a single string.
-            if (!preg_match("/(?<!\\\\)'/", $expression)) {
-                return str_replace("\\'", "'", $expression);
-            }
-        }
-        // Evaluate the expression by qgis
-        $results = \qgisExpressionUtils::evaluateExpressions(
-            $this->layer,
-            array(
-                $fieldName => $expression,
-            )
-        );
-        if ($results && property_exists($results, $fieldName)) {
-            return $results->{$fieldName};
-        }
-
-        return null;
-    }
-
     protected function getMarkup($props)
     {
         $qgisEdittypeMap = Form\QgisFormControl::getEditTypeMap();
@@ -1611,6 +1579,7 @@ class QgisProject
                 $props[$fieldName]['fieldAlias'] = $alias;
             }
             $props[$fieldName]['markup'] = $this->getMarkup($prop);
+            $props[$fieldName]['categories'] = $categoriesXml;
         }
 
         return $props;

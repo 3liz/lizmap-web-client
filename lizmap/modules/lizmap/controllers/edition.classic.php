@@ -9,6 +9,9 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Lizmap\Form;
+
 class editionCtrl extends jController
 {
     /** @var null|lizmapProject */
@@ -438,7 +441,7 @@ class editionCtrl extends jController
         $qgisForm = null;
 
         try {
-            $qgisForm = new qgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride);
+            $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
         } catch (Exception $e) {
             jMessage::add($e->getMessage(), 'error');
 
@@ -618,7 +621,7 @@ class editionCtrl extends jController
         $qgisForm = null;
 
         try {
-            $qgisForm = new qgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride);
+            $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
         } catch (Exception $e) {
             jMessage::add($e->getMessage(), 'error');
 
@@ -833,7 +836,7 @@ class editionCtrl extends jController
         $qgisForm = null;
 
         try {
-            $qgisForm = new qgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride);
+            $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
         } catch (Exception $e) {
             jMessage::add($e->getMessage(), 'error');
 
@@ -949,7 +952,7 @@ class editionCtrl extends jController
         $qgisForm = null;
 
         try {
-            $qgisForm = new qgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride);
+            $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
         } catch (Exception $e) {
             $rep->data['success'] = false;
             $rep->data['message'] = $e->getMessage();
@@ -1314,7 +1317,7 @@ class editionCtrl extends jController
         $lproj = lizmap::getProject($repository.'~'.$project);
         $layer = $lproj->getLayer($layerId);
 
-        $qgisForm = new qgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()));
+        $qgisForm = new Form\QgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()), lizmap::getAppContext());
 
         // Update form
         $dependencies = $privateData['qgis_groupDependencies'];

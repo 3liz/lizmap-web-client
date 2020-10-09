@@ -188,23 +188,23 @@ class QgisFormControl
      * @param string              $defaultValue       the QGIS expression of the default value
      * @param array               $constraints        the QGIS constraints
      * @param object              $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
+     * @param mixed               $properties
      */
-    public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue = null, $constraints = null, $rendererCategories = null, App\AppContextInterface $appContext)
+    public function __construct($ref, $properties, $prop, $defaultValue = null, $constraints = null, App\AppContextInterface $appContext)
     {
         // Set class attributes
         $this->ref = $ref;
         $this->fieldName = $ref;
         $this->appContext = $appContext;
-        if (is_string($aliasXml)) {
-            $this->fieldAlias = $aliasXml;
-        } elseif ($aliasXml and is_array($aliasXml) and count($aliasXml) != 0) {
-            $this->fieldAlias = (string) $aliasXml[0]->attributes()->name;
-        } elseif ($aliasXml and count($aliasXml) != 0) {
-            $this->fieldAlias = $aliasXml;
-        }
         $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
-
         $this->defaultValue = $defaultValue;
+        $propTab = array('edittype', 'fieldEditType', 'fieldAlias', 'widgetv2configAttr');
+
+        foreach ($propTab as $elem) {
+            if ($properties && property_exists($properties, $elem)) {
+                $this->{$elem} = $properties->{$elem};
+            }
+        }
 
         if (!self::$qgisEdittypeMap['builded']) {
             self::buildEditTypeMap();
@@ -224,79 +224,10 @@ class QgisFormControl
             $this->required = false;
         }
 
-        if ($this->fieldDataType != 'geometry') {
-            $this->edittype = $edittype;
-            $this->rendererCategories = $rendererCategories;
-
-            // Get qgis edittype data
-            if ($this->edittype && ($this->edittype instanceof \SimpleXMLElement)) {
-                // New QGIS 2.4 edittypes : use widgetv2type property
-                if (property_exists($this->edittype->attributes(), 'widgetv2type')) {
-                    $this->widgetv2configAttr = $this->edittype->widgetv2config->attributes();
-                    $this->fieldEditType = (string) $this->edittype->attributes()->widgetv2type;
-                }
-                // Before QGIS 2.4
-                else {
-                    $this->fieldEditType = (int) $this->edittype->attributes()->type;
-                }
-            } elseif ($this->edittype && is_object($this->edittype)) {
-                $this->widgetv2configAttr = $this->edittype->options;
-                $this->fieldEditType = $this->edittype->type;
-            } else {
-                $this->fieldEditType = 0;
-            }
-
-            // Get jform control type
-            if ($this->fieldEditType === 12) {
-                $useHtml = 0;
-                if (property_exists($this->edittype->attributes(), 'UseHtml')) {
-                    $useHtml = (int) filter_var((string) $this->edittype->attributes()->UseHtml, FILTER_VALIDATE_BOOLEAN);
-                }
-                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
-            } elseif ($this->fieldEditType === 'TextEdit') {
-                $isMultiLine = false;
-                if (property_exists($this->widgetv2configAttr, 'IsMultiline')) {
-                    $isMultiLine = filter_var((string) $this->widgetv2configAttr->IsMultiline, FILTER_VALIDATE_BOOLEAN);
-                }
-
-                if (!$isMultiLine) {
-                    $this->fieldEditType = 'LineEdit';
-                    $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
-                } else {
-                    $useHtml = 0;
-                    if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
-                        $useHtml = (int) filter_var((string) $this->widgetv2configAttr->UseHtml, FILTER_VALIDATE_BOOLEAN);
-                    }
-                    $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
-                }
-            } elseif ($this->fieldEditType === 5) {
-                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
-            } elseif ($this->fieldEditType === 15) {
-                $allowMulti = (int) filter_var((string) $this->edittype->attributes()->allowMulti, FILTER_VALIDATE_BOOLEAN);
-                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
-            } elseif ($this->fieldEditType === 'Range' || $this->fieldEditType === 'EditRange') {
-                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
-            } elseif ($this->fieldEditType === 'SliderRange' || $this->fieldEditType === 'DialRange') {
-                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][1];
-            } elseif ($this->fieldEditType === 'ValueRelation') {
-                $allowMulti = (int) filter_var((string) $this->widgetv2configAttr->AllowMulti, FILTER_VALIDATE_BOOLEAN);
-                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
-            } elseif ($this->fieldEditType === 'DateTime') {
-                $markup = 'date';
-                $display_format = $this->widgetv2configAttr->display_format;
-                // Use date AND time widget id type is DateTime and we find HH
-                if (preg_match('#HH#i', $display_format)) {
-                    $markup = 'datetime';
-                }
-                // Use only time if field is only time
-                if (preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)) {
-                    $markup = 'time';
-                }
-            } else {
-                $markup = self::$qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
-            }
-        } else {
+        if ($this->fieldDataType == 'geometry') {
             $markup = 'hidden';
+        } else {
+            $markup = $properties->markup;
         }
 
         // Create the control
