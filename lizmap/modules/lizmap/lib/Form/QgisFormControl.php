@@ -26,7 +26,7 @@ class QgisFormControl
     /**
      * Qgis edittype as a simpleXml object.
      *
-     * @var SimpleXMLElement
+     * @var \SimpleXMLElement
      */
     protected $edittype;
 
@@ -170,7 +170,7 @@ class QgisFormControl
     );
 
     /**
-     * @var SimpleXMLElement attributes on the widgetv2config element
+     * @var \SimpleXMLElement attributes on the widgetv2config element
      */
     protected $widgetv2configAttr;
 
@@ -182,7 +182,7 @@ class QgisFormControl
      * And add it to the passed form.
      *
      * @param string              $ref                name of the control
-     * @param SimpleXMLElement    $edittype           simplexml object corresponding to the QGIS edittype for this field
+     * @param \SimpleXMLElement    $edittype           simplexml object corresponding to the QGIS edittype for this field
      * @param object              $prop               Jelix object with field properties (datatype, required, etc.)
      * @param array|object|string $aliasXml           simplexml object corresponding to the QGIS alias for this field
      * @param string              $defaultValue       the QGIS expression of the default value

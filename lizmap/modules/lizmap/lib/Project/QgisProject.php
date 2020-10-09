@@ -470,7 +470,7 @@ class QgisProject
      *
      * @param mixed $layerId
      *
-     * @return SimpleXMLElement[]
+     * @return \SimpleXMLElement[]
      */
     public function getXmlLayer($layerId)
     {
@@ -488,7 +488,7 @@ class QgisProject
      * temporary function to read xml for some methods that relies on
      * xml data that are not yet stored in the cache.
      *
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      *
      * @deprecated
      */
@@ -1473,6 +1473,7 @@ class QgisProject
             $attributes = $edittype->attributes();
             $editTab[$attributes->name] = array();
             $editTab[$attributes->name]['eddittype'] = $edittype;
+            // New QGIS 2.4 edittypes : use widgetv2type property
             if (property_exists($edittype->attributes(), 'widgetv2type')) {
                 $editTab[$attributes->name]['widgetv2configAttr'] = $edittype->widgetv2config->attributes();
                 $editTab[$attributes->name]['fieldEditType'] = (string) $edittype->attributes()->widgetv2type;
