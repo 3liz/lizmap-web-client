@@ -8,6 +8,7 @@ Version 3.2.17
 - Remove wps module from docker image
 - Fix broken link to IGN image in attribution
 - Datepicker i18n,call getCurrentLang() once
+- Fix the user table name into the Sqlite to Postgresql migrator
 
 Version 3.2.16
 ---------------------
