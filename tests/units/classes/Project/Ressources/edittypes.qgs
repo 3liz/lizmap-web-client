@@ -1,0 +1,16 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis projectname="" version="3.4.6-Madeira">
+    <layer1>
+        <edittypes>
+            <edittype widgetv2type="TextEdit" name="name">
+                <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="ref">
+                <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="from">
+                <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+        </edittypes>
+    </layer1>
+</qgis>
