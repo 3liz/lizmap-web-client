@@ -9,6 +9,7 @@ Version 3.2.17
 - Fix broken link to IGN image in attribution
 - Datepicker i18n,call getCurrentLang() once
 - Fix the user table name into the Sqlite to Postgresql migrator
+- localization updated. New supported language: Slovak
 
 Version 3.2.16
 ---------------------
