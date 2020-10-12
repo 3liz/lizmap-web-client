@@ -1,8 +1,13 @@
 Changelog 3.2
 =============
 
-Version 3.2.17 (next)
+Version 3.2.17
 ---------------------
+
+- Treat PostGIS view datasource containing `key='""'` as `key=''`
+- Remove wps module from docker image
+- Fix broken link to IGN image in attribution
+- Datepicker i18n,call getCurrentLang() once
 
 Version 3.2.16
 ---------------------
