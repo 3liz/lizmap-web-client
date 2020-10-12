@@ -106,7 +106,7 @@ class MigratorFromSqlite
         // verify that the table already exists or not
         $db = \jDb::getConnection($profileName);
         $schema = $db->schema();
-        $table = $schema->getTable('jlx_users');
+        $table = $schema->getTable('jlx_user');
         if ($table) {
             return array($daoSelector, $profileName);
         }

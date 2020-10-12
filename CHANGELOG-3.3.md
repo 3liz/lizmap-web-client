@@ -1,9 +1,17 @@
 Changelog
 =========
 
-Version 3.3.11 (next)
+Version 3.3.11
 ---------------------
 
+- Fix QGIS custom dates in forms
+- Add zoomlevels to baselayers
+- Filter : assert filters have a title
+
+- Treat PostGIS view datasource containing `key='""'` as `key=''`
+- Remove wps module from docker image
+- Fix broken link to IGN image in attribution
+- Datepicker i18n,call getCurrentLang() once
 
 Version 3.3.10
 ---------------------
