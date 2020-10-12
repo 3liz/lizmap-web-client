@@ -69,10 +69,9 @@ export default class SelectionTool extends HTMLElement {
                         <i class="icon-filter"></i>
                     </button>
                     <lizmap-selection-invert></lizmap-selection-invert>
-                    ${this.hasAttribute('layer-export') ?
-                        html`
-                            <div class="btn-group dropup" role="group" >
-                            <button type="button" class="selectiontool-export btn btn-mini dropdown-toggle" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} data-toggle="dropdown" aria-expanded="false" title="${lizDict['switcher.layer.export.title']}">
+                    ${this.hasAttribute('layer-export') ? html`
+                        <div class="btn-group dropup selectiontool-export" role="group" data-original-title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}">
+                            <button type="button" class="btn btn-mini dropdown-toggle" ?disabled=${ !mainLizmap.selectionTool.isExportable } data-toggle="dropdown" aria-expanded="false">
                                 ${lizDict['switcher.layer.export.title']}
                             <span class="caret"></span>
                             </button>
@@ -91,13 +90,15 @@ export default class SelectionTool extends HTMLElement {
 
         // Add tooltip on buttons
         // TODO allow tooltip on disabled buttons : https://stackoverflow.com/a/19938049/2000654
-        $('.menu-content button, .selection-geom-operator', this).tooltip({
+        $('.menu-content button, .menu-content .selectiontool-export, .selection-geom-operator', this).tooltip({
             placement: 'top'
         });
 
         // Export
-        $('.selectiontool-export-formats a.btn-export-selection', this).click(function() {
-            mainLizmap.selectionTool.export($(this).text());
+        this.querySelectorAll('.btn-export-selection').forEach(exportbtn => {
+            exportbtn.addEventListener('click', evt => {
+                mainLizmap.selectionTool.export(evt.target.text);
+            });
         });
 
         mainEventDispatcher.addListener(

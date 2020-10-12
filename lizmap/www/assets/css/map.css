@@ -2520,6 +2520,9 @@ div.tooltip {
 
 /* Selection */
 
+.selectiontool-export button:disabled{
+  pointer-events: none;
+}
 .selectiontool-export-formats{
   left: auto;
   right: 0px;

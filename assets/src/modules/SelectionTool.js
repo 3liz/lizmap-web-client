@@ -79,7 +79,7 @@ export default class SelectionTool {
 
         // List of WFS format
         this._exportFormats = mainLizmap.vectorLayerResultFormat.filter(
-            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.tagName)
+            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
         );
 
         // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
@@ -186,6 +186,13 @@ export default class SelectionTool {
 
     get exportFormats() {
         return this._exportFormats;
+    }
+
+    // Selection is exportable if :
+    // - one single feature type is selected in list
+    // - there is at least one feature selected
+    get isExportable(){
+        return (this._allFeatureTypeSelected.length === 1 && this.selectedFeaturesCount);
     }
 
     get selectedFeaturesCount() {
@@ -339,9 +346,9 @@ export default class SelectionTool {
     }
 
     export(format) {
-        if (format == 'GML') {
+        if (format === 'GML') {
             format = 'GML3';
         }
-        mainLizmap.lizmap3.exportVectorLayer(this.allFeatureTypeSelected, format, false);
+        mainLizmap.lizmap3.exportVectorLayer(this._allFeatureTypeSelected[0], format, false);
     }
 }
