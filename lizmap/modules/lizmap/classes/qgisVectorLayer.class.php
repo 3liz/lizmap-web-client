@@ -231,6 +231,10 @@ class qgisVectorLayer extends qgisMapLayer
             );
         }
 
+        if ($ds['key'] === '""') {
+            $ds['key'] = '';
+        }
+
         $table = $ds['table'];
         $tableAlone = $table;
         $schema = '';
