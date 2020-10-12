@@ -1500,6 +1500,7 @@ class QgisProject
                 $editTab[$name]['fieldEditType'] = (int) $edittype->attributes()->type;
             }
         }
+
         return $editTab;
     }
 
