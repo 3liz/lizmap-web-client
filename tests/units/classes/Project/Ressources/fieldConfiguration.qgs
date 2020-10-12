@@ -1,0 +1,79 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis projectname="" version="3.4.6-Madeira">
+    <layer1>
+        <fieldConfiguration>
+            <field name="operator">
+            <editWidget type="TextEdit">
+                <config>
+                <Option type="Map">
+                    <Option value="0" type="QString" name="IsMultiline"/>
+                    <Option value="0" type="QString" name="UseHtml"/>
+                </Option>
+                </config>
+            </editWidget>
+            </field>
+            <field name="name">
+            <editWidget type="TextEdit">
+                <config>
+                <Option type="Map">
+                    <Option value="0" type="QString" name="IsMultiline"/>
+                    <Option value="0" type="QString" name="UseHtml"/>
+                </Option>
+                </config>
+            </editWidget>
+            </field>
+            <field name="ref">
+            <editWidget type="Hidden">
+                <config>
+                <Option/>
+                </config>
+            </editWidget>
+            </field>
+        </fieldConfiguration>
+        <editable>
+            <field editable="1" name="name"/>
+            <field editable="0" name="ref"/>
+            <field editable="0" name="operator"/>
+            <field editable="1" name="photo"/>
+            <field editable="1" name="pkuid"/>
+            <field editable="1" name="type"/>
+            <field editable="1" name="user"/>
+        </editable>
+    </layer1>
+    <layer2>
+        <fieldConfiguration>
+            <field name="operator">
+                <editWidget type="List">
+                    <config>
+                        <Option type="Map">
+                            <Option value="0" type="QString" name="IsMultiline"/>
+                            <Option value="0" type="QString" name="UseHtml"/>
+                        </Option>
+                    </config>
+                </editWidget>
+            </field>
+            <field name="list">
+                <editWidget type="List">
+                    <config>
+                        <Option type="notmap">
+                            <Option value="1" name="option1"/>
+                            <Option value="2" name="option2"/>
+                            <Option value="3" name="option3"/>
+                        </Option>
+                    </config>
+                </editWidget>
+            </field>
+            <field name="stringlist">
+                <editWidget type="StringList">
+                    <config>
+                        <Option type="notmap">
+                            <Option value="1" name="option1"/>
+                            <Option value="2" name="option2"/>
+                            <Option value="3" name="option3"/>
+                        </Option>
+                    </config>
+                </editWidget>
+            </field>
+        </fieldConfiguration>
+    </layer2>
+</qgis>

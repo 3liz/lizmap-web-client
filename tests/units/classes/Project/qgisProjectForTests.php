@@ -70,4 +70,14 @@ class qgisProjectForTests extends QgisProject
     {
         return $this->readAttributeLayers($aLayer);
     }
+
+    public function getFieldConfigurationForTests($layerXml)
+    {
+        return $this->getFieldConfiguration($layerXml);
+    }
+
+    public function getEditTypeForTest($layerXml)
+    {
+        return $this->getEditType($layerXml);
+    }
 }

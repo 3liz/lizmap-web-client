@@ -363,4 +363,134 @@ class QgisProjectTest extends TestCase
             $this->assertObjectNotHasAttribute('shortname', $layer->{$lname});
         }
     }
+
+    public function testGetFieldConfiguration()
+    {
+        $expectedEdittype = (object) array(
+            'operator' => (object) array(
+                'fieldEditType' => 'TextEdit',
+                'widgetv2configAttr' => (object) array(
+                    'UseHtml' => '0',
+                    'IsMultiline' => '0',
+                ),
+            ),
+            'name' => (object) array(
+                'fieldEditType' => 'TextEdit',
+                'widgetv2configAttr' => (object) array(
+                    'UseHtml' => '0',
+                    'IsMultiline' => '0',
+                ),
+            ),
+            'ref' => (object) array(
+                'fieldEditType' => 'Hidden',
+                'widgetv2configAttr' => (object) array(),
+            ),
+        );
+        $editable = array('name');
+        $qgis = new qgisProjectForTests();
+        $layers = simplexml_load_file(__DIR__.'/Ressources/fieldConfiguration.qgs');
+        $edittypes = $qgis->getFieldConfigurationForTests($layers->layer1);
+        $this->assertEquals(3, count($edittypes));
+        foreach ($edittypes as $fieldName => $options) {
+            $this->assertTrue(property_exists($expectedEdittype, $fieldName));
+            foreach ($options as $key => $opt) {
+                if ($key === 'edittype') {
+                    if (in_array($fieldName, $editable)) {
+                        $expectedEditable = '1';
+                    } else {
+                        $expectedEditable = '0';
+                    }
+                    $this->assertEquals($expectedEditable, $opt->editable);
+
+                    continue;
+                }
+                $this->assertTrue(property_exists($expectedEdittype->{$fieldName}, $key));
+                $this->assertEquals($expectedEdittype->{$fieldName}->{$key}, $opt);
+            }
+        }
+        $expectedEdittype = (object) array(
+            'operator' => (object) array(
+                'fieldEditType' => 'List',
+                'widgetv2configAttr' => (object) array(
+                    'UseHtml' => '0',
+                    'IsMultiline' => '0',
+                ),
+            ),
+            'list' => (object) array(
+                'fieldEditType' => 'List',
+                'widgetv2configAttr' => (object) array(
+                    'option1' => '1',
+                    'option2' => '2',
+                    'option3' => '3',
+                ),
+            ),
+            'stringlist' => (object) array(
+                'fieldEditType' => 'StringList',
+                'widgetv2configAttr' => (object) array(
+                    'option1' => '1',
+                    'option2' => '2',
+                    'option3' => '3',
+                ),
+            ),
+        );
+        $edittypes = $qgis->getFieldConfigurationForTests($layers->layer2);
+        $this->assertEquals(3, count($edittypes));
+        foreach ($edittypes as $fieldName => $options) {
+            $this->assertTrue(property_exists($expectedEdittype, $fieldName));
+            foreach ($options as $key => $opt) {
+                if ($key === 'edittype') {
+                    continue;
+                }
+                $this->assertTrue(property_exists($expectedEdittype->{$fieldName}, $key));
+                $this->assertEquals($expectedEdittype->{$fieldName}->{$key}, $opt);
+            }
+        }
+    }
+
+    public function testGetEditType()
+    {
+        $expectedEdittype = (object) array(
+            'name' => (object) array(
+                'fieldEditType' => 'TextEdit',
+                'widgetv2configAttr' => (object) array(
+                    'fieldEditable' => '1',
+                    'labelOnTop' => '0',
+                    'UseHtml' => '0',
+                    'IsMultiline' => '0',
+                ),
+            ),
+            'ref' => (object) array(
+                'fieldEditType' => 'TextEdit',
+                'widgetv2configAttr' => (object) array(
+                    'fieldEditable' => '1',
+                    'labelOnTop' => '0',
+                    'UseHtml' => '0',
+                    'IsMultiline' => '0',
+                ),
+            ),
+            'from' => (object) array(
+                'fieldEditType' => 'TextEdit',
+                'widgetv2configAttr' => (object) array(
+                    'fieldEditable' => '1',
+                    'labelOnTop' => '0',
+                    'UseHtml' => '0',
+                    'IsMultiline' => '0',
+                ),
+            ),
+        );
+        $qgis = new qgisProjectForTests();
+        $layer = simplexml_load_file(__DIR__.'/Ressources/edittypes.qgs');
+        $edittypes = $qgis->getEditTypeForTest($layer->layer1);
+        $this->assertEquals(3, count($edittypes));
+        foreach ($edittypes as $fieldName => $options) {
+            $this->assertTrue(property_exists($expectedEdittype, $fieldName));
+            foreach ($options as $key => $opt) {
+                if ($key === 'edittype') {
+                    continue;
+                }
+                $this->assertTrue(property_exists($expectedEdittype->{$fieldName}, $key));
+                $this->assertEquals($expectedEdittype->{$fieldName}->{$key}, $opt);
+            }
+        }
+    }
 }

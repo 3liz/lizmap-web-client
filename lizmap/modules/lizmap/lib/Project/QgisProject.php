@@ -1435,7 +1435,7 @@ class QgisProject
 
                 // Option with string list of values
                 } elseif ((string) $option->attributes()->type === 'StringList') {
-                    $fieldEditOptions[(string) $option->attributes()->name] = ${$this}->getValuesFromOptions($option, false);
+                    $fieldEditOptions[(string) $option->attributes()->name] = $this->getValuesFromOptions($option, false);
                 // Simple option
                 } else {
                     $fieldEditOptions[(string) $option->attributes()->name] = (string) $option->attributes()->value;
@@ -1464,23 +1464,40 @@ class QgisProject
         return $edittypes;
     }
 
+    protected function getTabFromAttributes($attributes)
+    {
+        $tab = array();
+
+        foreach ($attributes as $key => $value) {
+            $tab[(string) $key] = (string) $value;
+        }
+
+        return $tab;
+    }
+
     protected function getEditType($layerXml)
     {
-        $edittypes = $layerXml->edittypes;
+        $edittypes = $layerXml->xpath('.//edittypes');
+        $edittypes = $edittypes[0];
         $editTab = array();
 
-        foreach ($edittypes as $edittype) {
+        foreach ($edittypes->edittype as $edittype) {
             $attributes = $edittype->attributes();
-            $editTab[$attributes->name] = array();
-            $editTab[$attributes->name]['eddittype'] = $edittype;
-            // New QGIS 2.4 edittypes : use widgetv2type property
-            if (property_exists($edittype->attributes(), 'widgetv2type')) {
-                $editTab[$attributes->name]['widgetv2configAttr'] = $edittype->widgetv2config->attributes();
-                $editTab[$attributes->name]['fieldEditType'] = (string) $edittype->attributes()->widgetv2type;
+            $name = (string) $attributes->name;
+            $type = (string) $attributes->widgetv2type;
+            $editTab[$name] = array();
+            // foreach ($edittype as $key => $value) {
+            //     $editTab[$name]['edittype'][$key] = (object)$this->getTabFromAttributes($edittype->$key->attributes());
+            // }
+            $editTab[$name]['edittype'] = (object) $this->getTabFromAttributes($edittype->attributes());
+            $editTab[$name]['edittype']->widgetv2config = (object) $this->getTabFromAttributes($edittype->widgetv2config->attributes());
+            if ($type) {
+                $editTab[$name]['widgetv2configAttr'] = (object) $this->getTabFromAttributes($edittype->widgetv2config->attributes());
+                $editTab[$name]['fieldEditType'] = $type;
             }
             // Before QGIS 2.4
             else {
-                $editTab[$attributes->name]['fieldEditType'] = (int) $edittype->attributes()->type;
+                $editTab[$name]['fieldEditType'] = (int) $edittype->attributes()->type;
             }
         }
         return $editTab;
@@ -1576,6 +1593,14 @@ class QgisProject
             asort($data);
         } else {
             $data = null;
+        }
+        $edittypes = $layerXml->xpath('.//edittypes');
+        if ($edittypes && count($edittypes)) {
+            $props = $this->getEditType($layerXml);
+        } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
+            $props = $this->getFieldConfiguration($layerXml);
+        } else {
+            return null;
         }
 
         foreach ($props as $fieldName => $prop) {
