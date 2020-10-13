@@ -1485,7 +1485,8 @@ class QgisProject
             $type = (string) $attributes->widgetv2type;
             $editTab[$name] = array();
             $editTab[$name]['edittype'] = (object) $this->getTabFromAttributes($edittype->attributes());
-            $editTab[$name]['edittype']->widgetv2config = (object) $this->getTabFromAttributes($edittype->widgetv2config->attributes());
+            // This line should be useless but let's keep it commented in case something is broke
+            // $editTab[$name]['edittype']->widgetv2config = (object) $this->getTabFromAttributes($edittype->widgetv2config->attributes());
             if ($type) {
                 $editTab[$name]['widgetv2configAttr'] = (object) $this->getTabFromAttributes($edittype->widgetv2config->attributes());
                 $editTab[$name]['fieldEditType'] = $type;

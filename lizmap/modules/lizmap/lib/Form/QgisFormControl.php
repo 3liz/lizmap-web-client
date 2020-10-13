@@ -582,7 +582,7 @@ class QgisFormControl
                 if ($this->fieldEditType === 'UniqueValuesEditable') {
                     $this->uniqueValuesData['editable'] = true;
                 }
-                if (($this->edittype instanceof \SimpleXMLElement) && $this->edittype->widgetv2config) {
+                if (($this->edittype instanceof \SimpleXMLElement) && $this->widgetv2ConfigAttr) {
                     $this->uniqueValuesData['notNull'] = filter_var($this->widgetv2configAttr->notNull, FILTER_VALIDATE_BOOLEAN);
                     $this->uniqueValuesData['editable'] = filter_var($this->widgetv2configAttr->Editable, FILTER_VALIDATE_BOOLEAN);
                 } elseif (is_object($this->edittype)) {
@@ -607,7 +607,7 @@ class QgisFormControl
                 break;
             case 'ValueMap':
                 if ($this->edittype instanceof \SimpleXMLElement) {
-                    foreach ($this->edittype->widgetv2config->xpath('value') as $value) {
+                    foreach ($this->widgetv2ConfigAttr->xpath('value') as $value) {
                         $k = (string) $value->attributes()->key;
                         $v = (string) $value->attributes()->value;
                         $data[$v] = $k;
@@ -732,11 +732,11 @@ class QgisFormControl
                 $chainFilters = false;
                 $filters = array();
                 if (($this->edittype instanceof \SimpleXMLElement)) {
-                    if (property_exists($this->edittype->widgetv2config, 'FilterFields')) {
-                        foreach ($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
+                    if (property_exists($this->widgetv2ConfigAttr, 'FilterFields')) {
+                        foreach ($this->widgetv2ConfigAttr->FilterFields->children('field') as $f) {
                             $filters[] = (string) $f->attributes()->name;
                         }
-                        $chainFilters = filter_var($this->edittype->widgetv2config->FilterFields->attributes()->ChainFilters, FILTER_VALIDATE_BOOLEAN);
+                        $chainFilters = filter_var($this->widgetv2ConfigAttr->FilterFields->attributes()->ChainFilters, FILTER_VALIDATE_BOOLEAN);
                     }
                 } elseif (is_object($this->edittype)) {
                     if (property_exists($this->widgetv2configAttr, 'FilterFields')) {
