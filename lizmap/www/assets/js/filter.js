@@ -2,6 +2,12 @@ var lizLayerFilterTool = function() {
 
     lizMap.events.on({
         'uicreated':function(){
+        
+        // If filterConfig is empty, there is no filter set => hide filter tool
+        if (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0 ){
+            $('#mapmenu li.filter.nav-dock').addClass('hide');
+            return true;
+        }
 
         if (typeof variable != "undefined")
             return true;
