@@ -278,14 +278,4 @@ class JelixContext implements AppContextInterface
     {
         return \jApp::tempPath('lizmap-forms');
     }
-
-    public function getFormPath()
-    {
-        return realpath(__DIR__.'/../../').'/forms/';
-    }
-
-    public function getFormPath()
-    {
-        return realpath(__DIR__.'/../../').'/forms/';
-    }
 }
