@@ -137,7 +137,7 @@ class mediaCtrl extends jController
         // and in the media folder
         // accept ../media folder to centralize medias
         $repex = explode('/', $n_repositoryPath);
-        $pop = array_pop($repex);
+        array_pop($repex);
         $reptest = implode('/', $repex);
         if (!preg_match('#^'.$n_repositoryPath.'(/)?media/#', $n_abspath) &&
             !preg_match('#^'.$reptest.'(/)?media/#', $n_abspath)
@@ -320,8 +320,14 @@ class mediaCtrl extends jController
         $ok = true;
         // Only allow files within the repository for safety reasons
         // and in the media/themes/ folder
+        // accept ../media folder for CSS applying to all repositories in a same directory
+        $repex = explode('/', $n_repositoryPath);
+        array_pop($repex);
+        $reptest = implode('/', $repex);
         if (!preg_match('#^'.$n_repositoryPath.'(/)?media/themes/#', $n_abspath) &&
-            !preg_match('#^'.$n_repositoryPath.'(/)?media/js/#', $n_abspath)
+            !preg_match('#^'.$reptest.'(/)?media/themes/#', $n_abspath) &&
+            !preg_match('#^'.$n_repositoryPath.'(/)?media/js/#', $n_abspath) &&
+            !preg_match('#^'.$reptest.'(/)?media/js/#', $n_abspath)
         ) {
             $ok = false;
         }
