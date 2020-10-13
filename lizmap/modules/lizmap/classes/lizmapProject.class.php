@@ -935,22 +935,24 @@ class lizmapProject extends qgisProject
     }
 
     /**
-     * Get login filters, get expressions for layers based on login filtered
-     * config.
+     * Get login filtered configs with the build expressions.
      *
      * @param Array[string] $layers  : layers' name list
      * @param bool          $edition : get login filters for edition
      *
-     * @return array
+     * @return array the login filtered configs with build expressions
      */
     public function getLoginFilters($layers, $edition = false)
     {
+        // default result
         $filters = array();
 
+        // check if login filtered config exists in lizmap config
         if (!$this->hasLoginFilteredLayers()) {
             return $filters;
         }
 
+        // for each layer get login filtered config and build expression
         foreach ($layers as $layername) {
             $lname = $layername;
 
@@ -995,13 +997,39 @@ class lizmapProject extends qgisProject
                 }
             }
 
+            // build result by adding build expression to login filtered config
             $filters[$layername] = array_merge(
-                $loginFilteredConfig,
+                (array) $loginFilteredConfig,
                 array('filter' => $filter, 'layername' => $lname)
             );
         }
 
         return $filters;
+    }
+
+    /**
+     * Get login filtered config with the build expression.
+     *
+     * @param string $layerName : layer's name
+     * @param bool   $edition   : get login filters for edition
+     *
+     * @return array the login filtered config with build expression
+     */
+    public function getLoginFilter($layerName, $edition = false)
+    {
+        $loginFilters = $this->getLoginFilters(array($layerName), $edition);
+
+        // login filters array is empty
+        if (empty($loginFilters)) {
+            return array();
+        }
+
+        // layer not in login filters array
+        if (!array_key_exists($layerName, $loginFilters)) {
+            return array();
+        }
+
+        return $loginFilters[$layerName];
     }
 
     private function optionToBoolean($config_string)

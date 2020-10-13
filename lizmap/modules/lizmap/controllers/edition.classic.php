@@ -246,6 +246,15 @@ class editionCtrl extends jController
             } else {
                 $featureId = $typename.'.'.$featureId;
             }
+
+            $propertyName = array_merge(array(), $this->primaryKeys);
+            if (!$this->loginFilteredOverride) {
+                $loginFilteredConfig = $this->project->getLoginFilteredConfig($this->layer->getName());
+                if ($loginFilteredConfig && property_exists($loginFilteredConfig, 'filterAttribute')) {
+                    $propertyName[] = $loginFilteredConfig->filterAttribute;
+                }
+            }
+
             $wfsparams = array(
                 'SERVICE' => 'WFS',
                 'VERSION' => '1.0.0',
@@ -253,7 +262,7 @@ class editionCtrl extends jController
                 'TYPENAME' => $typename,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
-                'PROPERTYNAME' => implode(',', $this->primaryKeys),
+                'PROPERTYNAME' => implode(',', $propertyName),
                 'FEATUREID' => $featureId,
             );
 
@@ -353,6 +362,26 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
+        if (!$this->loginFilteredOverride) {
+            // Get filter by login
+            $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
+            if ($expByUser !== '') {
+                $results = qgisExpressionUtils::evaluateExpressions(
+                    $this->layer,
+                    array('filterByLogin' => $expByUser),
+                    $this->featureData->features[0]
+                );
+
+                if ($results &&
+                    property_exists($results, 'filterByLogin') &&
+                    $results->filterByLogin !== 1) {
+                    $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
+
+                    return $this->serviceAnswer();
+                }
+            }
+        }
+
         // Create form instance
         $form = jForms::create('view~edition', $this->featureId);
         if (!$form) {
@@ -407,6 +436,26 @@ class editionCtrl extends jController
             jMessage::add(jLocale::get('view~edition.message.error.feature.get'), 'featureNotFoundViaWfs');
 
             return $this->serviceAnswer();
+        }
+
+        if (!$this->loginFilteredOverride and $this->featureId and $this->featureData) {
+            // Get filter by login
+            $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
+            if ($expByUser !== '') {
+                $results = qgisExpressionUtils::evaluateExpressions(
+                    $this->layer,
+                    array('filterByLogin' => $expByUser),
+                    $this->featureData->features[0]
+                );
+
+                if ($results &&
+                    property_exists($results, 'filterByLogin') &&
+                    $results->filterByLogin !== 1) {
+                    $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
+
+                    return $this->serviceAnswer();
+                }
+            }
         }
 
         // Get the form instance
