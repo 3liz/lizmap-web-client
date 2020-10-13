@@ -1475,7 +1475,7 @@ class QgisProject
         return $tab;
     }
 
-    protected function getEditType($layerXml, $edittypes)
+    protected function getEditType($edittypes)
     {
         $editTab = array();
 
@@ -1587,7 +1587,7 @@ class QgisProject
         // <maplayer><map-layer-style-manager><map-layer-style><qgis/></map-layer-style></map-layer-style-manager></maplayer>
         $edittypes = $layerXml->xpath('.//edittypes');
         if ($edittypes && count($edittypes)) {
-            $props = $this->getEditType($layerXml, $edittypes[0]);
+            $props = $this->getEditType($edittypes[0]);
         } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
             $props = $this->getFieldConfiguration($layerXml);
         } else {
