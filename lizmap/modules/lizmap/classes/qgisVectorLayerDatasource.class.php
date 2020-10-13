@@ -28,7 +28,7 @@ class qgisVectorLayerDatasource
         'srid' => 'srid=([0-9]+) ',
         'type' => 'type=([a-zA-Z]+) ',
         'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)' ",
-        'table' => ' table="(.+)" (\([^ ]+\) )?sql=',
+        'table' => ' table="(.+)"',
         'geocol' => '\(([^ ]+)\) sql=',
         'sql' => ' sql=(.*)$',
     );
