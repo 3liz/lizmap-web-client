@@ -111,7 +111,7 @@ var lizTimemanager = function() {
 
                 // Remove filter
                 for(var layerName in lizMap.config.timemanagerLayers){
-                    lizLayerFilterTool.deactivateMaplayerFilter(layerName);
+                    lizMap.deactivateMaplayerFilter(layerName);
                     // Refresh plots and popups
                     lizMap.config.layers[layerName]['request_params']['filtertoken'] = null;
                     lizMap.events.triggerEvent("layerFilterParamChanged",
@@ -295,7 +295,7 @@ var lizTimemanager = function() {
                     buildDateFilter(config.timemanagerLayers[l], lowerBoundary, upperBoundary);
                     filter = config.timemanagerLayers[l]['filter'];
                     config.timemanagerLayers[l]['filter'] = filter;
-                    lizLayerFilterTool.triggerLayerFilter(l, filter);
+                    lizMap.triggerLayerFilter(l, filter);
                 }
             }
 
