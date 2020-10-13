@@ -55,7 +55,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             );
 
             // Get Feature With Forms Scope
-            $features = qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn));
+            $features = qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn), true);
             foreach ($features as $feat) {
                 if (property_exists($feat, 'properties')
                     and property_exists($feat->properties, $keyColumn)
