@@ -199,9 +199,6 @@ var lizLayerFilterTool = function() {
                 console.log(result.title + ': ' + result.detail);
                 return false;
             }
-            if (result.length === 1 && !result[0].v) {
-                return false;
-            }
             return true;
         }
 
