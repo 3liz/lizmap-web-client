@@ -1475,10 +1475,8 @@ class QgisProject
         return $tab;
     }
 
-    protected function getEditType($layerXml)
+    protected function getEditType($layerXml, $edittypes)
     {
-        $edittypes = $layerXml->xpath('.//edittypes');
-        $edittypes = $edittypes[0];
         $editTab = array();
 
         foreach ($edittypes->edittype as $edittype) {
@@ -1486,9 +1484,6 @@ class QgisProject
             $name = (string) $attributes->name;
             $type = (string) $attributes->widgetv2type;
             $editTab[$name] = array();
-            // foreach ($edittype as $key => $value) {
-            //     $editTab[$name]['edittype'][$key] = (object)$this->getTabFromAttributes($edittype->$key->attributes());
-            // }
             $editTab[$name]['edittype'] = (object) $this->getTabFromAttributes($edittype->attributes());
             $editTab[$name]['edittype']->widgetv2config = (object) $this->getTabFromAttributes($edittype->widgetv2config->attributes());
             if ($type) {
@@ -1572,14 +1567,6 @@ class QgisProject
             return array();
         }
 
-        if ($layerXml->eddittype && count($layerXml->eddittypes)) {
-            $props = $this->getEditType($layerXml);
-        } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
-            $props = $this->getFieldConfiguration($layerXml);
-        } else {
-            return array();
-        }
-
         $aliases = $layer->getAliasFields();
 
         $categoriesXml = $layerXml->xpath('renderer-v2/categories');
@@ -1595,13 +1582,15 @@ class QgisProject
         } else {
             $data = null;
         }
+        // <edittypes> can be a child of <maplayer>, but can be also elsewhere inside a
+        // <maplayer><map-layer-style-manager><map-layer-style><qgis/></map-layer-style></map-layer-style-manager></maplayer>
         $edittypes = $layerXml->xpath('.//edittypes');
         if ($edittypes && count($edittypes)) {
-            $props = $this->getEditType($layerXml);
+            $props = $this->getEditType($layerXml, $edittypes[0]);
         } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
             $props = $this->getFieldConfiguration($layerXml);
         } else {
-            return null;
+            return array();
         }
 
         foreach ($props as $fieldName => $prop) {

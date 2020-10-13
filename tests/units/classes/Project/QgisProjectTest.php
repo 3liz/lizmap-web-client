@@ -480,7 +480,8 @@ class QgisProjectTest extends TestCase
         );
         $qgis = new qgisProjectForTests();
         $layer = simplexml_load_file(__DIR__.'/Ressources/edittypes.qgs');
-        $edittypes = $qgis->getEditTypeForTest($layer->layer1);
+        $edittypesXml = $layer->xpath('.//edittypes');
+        $edittypes = $qgis->getEditTypeForTest($layer->layer1, $edittypesXml[0]);
         $this->assertEquals(3, count($edittypes));
         foreach ($edittypes as $fieldName => $options) {
             $this->assertTrue(property_exists($expectedEdittype, $fieldName));

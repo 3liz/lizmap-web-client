@@ -76,8 +76,8 @@ class qgisProjectForTests extends QgisProject
         return $this->getFieldConfiguration($layerXml);
     }
 
-    public function getEditTypeForTest($layerXml)
+    public function getEditTypeForTest($layerXml, $edittypes)
     {
-        return $this->getEditType($layerXml);
+        return $this->getEditType($layerXml, $edittypes);
     }
 }
