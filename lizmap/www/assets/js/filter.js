@@ -2,15 +2,14 @@ var lizLayerFilterTool = function() {
 
     lizMap.events.on({
         'uicreated':function(){
-        
+
+
         // If filterConfig is empty, there is no filter set => hide filter tool
-        if (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0 ){
+        if (!filterConfig || (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0) ){
             $('#mapmenu li.filter.nav-dock').addClass('hide');
             return true;
         }
 
-        if (typeof variable != "undefined")
-            return true;
 
         // Compute the HTML container for the form
         function getLayerFilterDockRoot(){
@@ -62,6 +61,9 @@ var lizLayerFilterTool = function() {
         }
 
         function addLayerFilterToolInterface(){
+            if (!filterConfig || (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0) ){
+                return false;
+            }
 
             // Build interface html code
             // Add dock
@@ -386,7 +388,7 @@ var lizLayerFilterTool = function() {
                 html += getFormFieldFooter(field_item);
 
                 $("#filter div.tree").append(html);
-                
+
                 if( !('items' in filterConfig[field_item.order]) )
                     filterConfig[field_item.order]['items'] = {};
                 for(var a in result){
@@ -675,7 +677,7 @@ var lizLayerFilterTool = function() {
 
             // Trigger the filter on the layer
             var layerName = filterConfigData.layerName;
-            triggerLayerFilter(layerName, filter);
+            lizMap.triggerLayerFilter(layerName, filter);
 
             getFeatureCount(filter);
 
@@ -685,78 +687,6 @@ var lizLayerFilterTool = function() {
 
             filterConfigData.filter = filter;
 
-        }
-
-
-        // Apply the global filter on the layer
-        function triggerLayerFilter(layername, filter){
-
-            // Get layer information
-            var layerN = layername;
-            var layer = null;
-            var layers = lizMap.map.getLayersByName( lizMap.cleanName(layername) );
-            if( layers.length == 1) {
-                layer = layers[0];
-            }
-            if(!layer)
-                return false;
-            if( layer.params) {
-                layerN = layer.params['LAYERS'];
-            }
-
-            // Add filter to the layer
-            if( !filter || filter == ''){
-                filter = null;
-                var lfilter = null;
-
-            }else{
-                var lfilter = layerN + ':' + filter;
-            }
-            layer.params['FILTER'] = lfilter;
-            if( !('request_params' in lizMap.config.layers[layername]) ){
-                lizMap.config.layers[layername]['request_params'] = {};
-            }
-
-            // Add WFS exp_filter param
-            lizMap.config.layers[layername]['request_params']['exp_filter'] = filter;
-
-            // Get WMS filter token ( used via GET in GetMap or GetPrint )
-            var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-            );
-            var sdata = {
-                service: 'WMS',
-                request: 'GETFILTERTOKEN',
-                typename: layername,
-                filter: lfilter
-            };
-            $.post(surl, sdata, function(result){
-                var filtertoken = result.token;
-                // Add OpenLayers layer parameter
-                delete layer.params['FILTER'];
-                layer.params['FILTERTOKEN'] = filtertoken
-                lizMap.config.layers[layername]['request_params']['filtertoken'] = filtertoken;
-
-                // Redraw openlayers layer
-                if( lizMap.config.layers[layername]['geometryType']
-                    && lizMap.config.layers[layername]['geometryType'] != 'none'
-                    && lizMap.config.layers[layername]['geometryType'] != 'unknown'
-                ){
-                    //layer.redraw(true);
-                    layer.redraw();
-                }
-
-                // Tell popup to be aware of the filter
-                lizMap.events.triggerEvent("layerFilterParamChanged",
-                    {
-                        'featureType': layername,
-                        'filter': lfilter,
-                        'updateDrawing': false
-                    }
-                );
-            });
-
-            return true;
         }
 
         // Deactivate the layer filter
@@ -776,7 +706,7 @@ var lizLayerFilterTool = function() {
 
             // Remove filter on map layers
             var layerName = filterConfigData.layerName;
-            deactivateMaplayerFilter(layerName);
+            lizMap.deactivateMaplayerFilter(layerName);
 
             // Refresh plots
             lizMap.events.triggerEvent("layerFilterParamChanged",
@@ -831,27 +761,6 @@ var lizLayerFilterTool = function() {
 
         }
 
-        function deactivateMaplayerFilter(layername){
-            // Get layer information
-            var layerN = layername;
-            var layer = null;
-            var layers = lizMap.map.getLayersByName( lizMap.cleanName(layername) );
-            if( layers.length == 1) {
-                layer = layers[0];
-            }
-
-            // Remove layer filter
-            delete layer.params['FILTER'];
-            delete layer.params['FILTERTOKEN'];
-            delete layer.params['EXP_FILTER'];
-            if( !('request_params' in lizMap.config.layers[layername]) ){
-                lizMap.config.layers[layername]['request_params'] = {};
-            }
-            lizMap.config.layers[layername]['request_params']['exp_filter'] = null;
-            lizMap.config.layers[layername]['request_params']['filtertoken'] = null;
-            lizMap.config.layers[layername]['request_params']['filter'] = null;
-            layer.redraw();
-        }
 
         // Removes the getFeatureInfo geometry
         function removeFeatureInfoGeometry(){
