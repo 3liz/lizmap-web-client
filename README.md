@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.2.16
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.2.17
 ==================================================================
 
 Lizmap web application, by 3LIZ.
