@@ -5718,6 +5718,34 @@ var lizMap = function() {
     },
 
     /**
+     * Method: getHashParamFromUrl
+     * Utility function to get searched key in URL's hash
+     * @param {string} hash_key - searched key in hash
+     * @return {string} value for searched key
+     * @example
+     * URL: https://liz.map/index.php/view/map/?repository=demo&project=cats#fid:v_cat20180426181713938.16,other_param:foo
+     * console.log(getHashParamFromUrl('fid'))
+     * returns 'v_cat20180426181713938.16'
+     */
+    getHashParamFromUrl: function (hash_key) {
+      var ret_val = null;
+      var hash = location.hash.replace('#', '');
+      var hash_items = hash.split(',');
+      for (var i in hash_items) {
+        var item = hash_items[i];
+        var param = item.split(':');
+        if (param.length == 2) {
+          var key = param[0];
+          var val = param[1];
+          if (key == hash_key) {
+            return val;
+          }
+        }
+      }
+      return ret_val;
+    },
+
+    /**
      * Method: init
      */
     init: function() {
