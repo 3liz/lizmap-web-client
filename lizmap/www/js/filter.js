@@ -193,11 +193,13 @@ var lizLayerFilterTool = function() {
 
         // Get the HTML form element for the date field type
         function dateFormInput(field_item){
+            // max_date = min_date when undefined
+            const max_date = ('max_date' in field_item) ? field_item.max_date : field_item.min_date;
 
             var sdata = {
                 request: 'getMinAndMaxValues',
                 layerId: field_item.layerId,
-                fieldname: field_item.min_date + ',' + field_item.max_date,
+                fieldname: field_item.min_date + ',' + max_date,
                 filter: ''
             };
             $.get(filterConfigData.url, sdata, function(result){
@@ -548,7 +550,7 @@ var lizLayerFilterTool = function() {
 
             // fields
             var startField = field_item.min_date;
-            var endField = field_item.max_date;
+            var endField = ('max_date' in field_item) ? field_item.max_date : field_item.min_date;
 
             // min date filter
             if(min_val && Date.parse(min_val)){
