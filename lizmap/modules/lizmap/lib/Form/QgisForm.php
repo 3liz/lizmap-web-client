@@ -105,7 +105,7 @@ class QgisForm implements QgisFormControlsInterface
         $formPath = $this->appContext->getFormPath();
         $json = file_get_contents($formPath.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
         if (!$json) {
-            throw new \Exception('Can\'t read the Json form file, try to clear you cache and reload the page');
+            throw new \Exception('Can\'t read the Json form file, try to clear your cache and reload the page.');
         }
         $formInfos = json_decode($json);
         foreach ($dataFields as $fieldName => $prop) {
