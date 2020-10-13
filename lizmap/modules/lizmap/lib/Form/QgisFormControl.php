@@ -796,4 +796,9 @@ class QgisFormControl
         // Change field name to choice for files upload control
         return $this->isUploadControl() ? $this->ref.'_choice' : $this->ref;
     }
+
+    public function getEditType()
+    {
+        return $this->edittype;
+    }
 }

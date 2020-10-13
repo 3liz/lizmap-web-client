@@ -128,7 +128,10 @@ class lizMapCtrl extends jController
 
         // the html response
         $rep = $this->getResponse('htmlmap');
-        $rep->addJSLink(jUrl::get('view~translate:index'));
+        // Get Lizmap version from project.xml
+        $xmlLoad = simplexml_load_file(jApp::appPath('project.xml'));
+        $version = (string) $xmlLoad->info->version;
+        $rep->addJSLink((jUrl::get('view~translate:index')).'?v='.$version.'&lang='.jApp::config()->locale);
 
         $this->repositoryKey = $lrep->getKey();
         $this->projectKey = $lproj->getKey();
@@ -158,7 +161,7 @@ class lizMapCtrl extends jController
         if (isset($confDate['default.js'])) {
             $js = $confDate['default.js'];
             foreach ($js as $file) {
-                $file = str_replace('$lang', jLocale::getCurrentLang(), $file);
+                $file = str_replace('$lang', $lang, $file);
                 if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
                     continue;
                 }
@@ -323,21 +326,42 @@ class lizMapCtrl extends jController
 
         // Override default theme with color set in admin panel
         if ($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/').'theme.css')) {
-            $css = '<style type="text/css">'.$cssContent.'</style>
-      ';
+            $css = '<style type="text/css">'.$cssContent.'</style>';
             $rep->addHeadContent($css);
         }
 
-        // Replace default theme by theme found in
-        // the repository folder media/themes/default/
+        // Override default theme by themes found in folder media/themes/...
+        // Theme name can be 'default' and apply to all projects in a repository
+        // or the project name and only apply to it
+        // Also if media/themes/default/css is found one directory above repositorie's one
+        // it will apply to all repositories
         if ($lrep->getData('allowUserDefinedThemes')) {
             $repositoryPath = $lrep->getPath();
             $cssArray = array('main', 'map', 'media');
             $themeArray = array('default', $project);
             foreach ($cssArray as $k) {
+                // Handle theme applying to all repositorie's projects in the same directory
+                $cssRelPath = '../media/themes/default/css/'.$k.'.css';
+                $cssPath = realpath($repositoryPath.$cssRelPath);
+                if (file_exists($cssPath)) {
+                    $cssUrl = jUrl::get(
+                        'view~media:getCssFile',
+                        array(
+                            'repository' => $lrep->getKey(),
+                            'project' => $project,
+                            'path' => $cssRelPath,
+                        )
+                    );
+                    //~ $rep->addCssLink( $cssUrl );
+                    // Use addHeadContent and not addCssLink to be sure it will be loaded after minified code
+                    $rep->addHeadContent('<link type="text/css" href="'.$cssUrl.'" rel="stylesheet" />');
+                }
+
+                // Handle themes applying to a repository (media/themes/default)
+                // or to a project (media/themes/PROJECT-NAME)
                 foreach ($themeArray as $theme) {
                     $cssRelPath = 'media/themes/'.$theme.'/css/'.$k.'.css';
-                    $cssPath = $lrep->getPath().'/'.$cssRelPath;
+                    $cssPath = realpath($repositoryPath.$cssRelPath);
                     if (file_exists($cssPath)) {
                         $cssUrl = jUrl::get(
                             'view~media:getCssFile',
