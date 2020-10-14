@@ -104,6 +104,9 @@ class QgisForm implements QgisFormControlsInterface
         $toSetReadOnly = array();
         $formPath = $this->appContext->getFormPath();
         $json = file_get_contents($formPath.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
+        if (!$json) {
+            throw new \Exception('Can\'t read the Json form file, try to clear your cache and reload the page.');
+        }
         $formInfos = json_decode($json);
         foreach ($dataFields as $fieldName => $prop) {
 
@@ -223,12 +226,8 @@ class QgisForm implements QgisFormControlsInterface
             }
         }
         // Evaluate the expression by qgis
-        $results = \qgisExpressionUtils::evaluateExpressions(
-            $this->layer,
-            array(
-                $fieldName => $expression,
-            )
-        );
+        $results = $this->evaluateExpression(array($fieldName => $expression));
+
         if ($results && property_exists($results, $fieldName)) {
             return $results->{$fieldName};
         }
@@ -369,8 +368,8 @@ class QgisForm implements QgisFormControlsInterface
             }
 
             if (($this->formControls[$ref]->fieldEditType === 7
-                or $this->formControls[$ref]->fieldEditType === 'CheckBox')
-                and $this->formControls[$ref]->fieldDataType === 'boolean') {
+                || $this->formControls[$ref]->fieldEditType === 'CheckBox')
+                && $this->formControls[$ref]->fieldDataType === 'boolean') {
                 $ctrl->setDataFromDao($value, 'boolean');
             } else {
                 $form->setData($ref, $value);
@@ -478,11 +477,7 @@ class QgisForm implements QgisFormControlsInterface
                 'geometry' => null,
                 'properties' => $values,
             );
-            $results = \qgisExpressionUtils::evaluateExpressions(
-                $this->layer,
-                $constraintExpressions,
-                $form_feature
-            );
+            $results = $this->evaluateExpression($constraintExpressions, $form_feature);
 
             if (!$results) {
                 // Evaluation failed
@@ -546,6 +541,7 @@ class QgisForm implements QgisFormControlsInterface
             throw new \Exception('Save to database can\'t be done for the layer "'.$this->layer->getName().'"!');
         }
 
+        $cnx = $this->layer->getDatasourceConnection();
         // Update or Insert
         $updateAction = false;
         $insertAction = false;
@@ -994,7 +990,7 @@ class QgisForm implements QgisFormControlsInterface
      * @param string          $fieldName   Name of QGIS field
      * @param QgisFormControl $formControl
      */
-    private function fillControlFromUniqueValues($fieldName, $formControl)
+    protected function fillControlFromUniqueValues($fieldName, $formControl)
     {
         $values = $this->layer->getDbFieldDistinctValues($fieldName);
 
@@ -1372,7 +1368,7 @@ class QgisForm implements QgisFormControlsInterface
         $lproj = $this->layer->getProject();
         $pConfig = $lproj->getFullCfg();
 
-        if ($lproj->hasLoginFilteredLayers() and $pConfig->loginFilteredLayers) {
+        if ($pConfig->loginFilteredLayers) {
             if (property_exists($pConfig->loginFilteredLayers, $layername)) {
                 $v = '';
                 $where = '';
@@ -1381,7 +1377,7 @@ class QgisForm implements QgisFormControlsInterface
 
                 // check filter type
                 if (property_exists($pConfig->loginFilteredLayers->{$layername}, 'filterPrivate')
-                     and $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True') {
+                     && $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True') {
                     $type = 'login';
                 }
 
@@ -1432,5 +1428,14 @@ class QgisForm implements QgisFormControlsInterface
         $forms[$sel] = 0;
 
         return $name;
+    }
+
+    public function evaluateExpression($expression, $form_feature = null)
+    {
+        return \qgisExpressionUtils::evaluateExpressions(
+            $this->layer,
+            $expression,
+            $form_feature
+        );
     }
 }
