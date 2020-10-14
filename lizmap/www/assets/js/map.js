@@ -4027,13 +4027,13 @@ var lizMap = function() {
         for (let index = 0; index < lizMap.mainLizmap.digitizing.featureDrawn.length; index++) {
           highlightGeom.push(formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn[index]));
           highlightSymbol.push(lizMap.mainLizmap.digitizing.getFeatureDrawnSLD(index));
-          
+
         }
 
         printParams['map0:HIGHLIGHT_GEOM'] = highlightGeom.join(';');
         printParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
       }
-      
+
       downloadFile(url, printParams);
       return false;
     });
@@ -5432,6 +5432,96 @@ var lizMap = function() {
     return ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3));
   }
 
+  function deactivateMaplayerFilter (layername) {
+    var layerN = layername;
+    var layer = null;
+    var layers = map.getLayersByName( cleanName(layername) );
+    if( layers.length == 1) {
+      layer = layers[0];
+    }
+
+    // Remove layer filter
+    delete layer.params['FILTER'];
+    delete layer.params['FILTERTOKEN'];
+    delete layer.params['EXP_FILTER'];
+    if( !('request_params' in config.layers[layername]) ){
+      config.layers[layername]['request_params'] = {};
+    }
+    config.layers[layername]['request_params']['exp_filter'] = null;
+    config.layers[layername]['request_params']['filtertoken'] = null;
+    config.layers[layername]['request_params']['filter'] = null;
+    layer.redraw();
+  }
+
+  function triggerLayerFilter (layername, filter) {
+      // Get layer information
+      var layerN = layername;
+      var layer = null;
+      var layers = map.getLayersByName( cleanName(layername) );
+      if( layers.length == 1) {
+        layer = layers[0];
+      }
+      if(!layer)
+          return false;
+      if( layer.params) {
+        layerN = layer.params['LAYERS'];
+      }
+
+      // Add filter to the layer
+      if( !filter || filter == ''){
+        filter = null;
+        var lfilter = null;
+
+      }else{
+        var lfilter = layerN + ':' + filter;
+      }
+      layer.params['FILTER'] = lfilter;
+      if( !('request_params' in config.layers[layername]) ){
+        config.layers[layername]['request_params'] = {};
+      }
+
+      // Add WFS exp_filter param
+      config.layers[layername]['request_params']['exp_filter'] = filter;
+
+      // Get WMS filter token ( used via GET in GetMap or GetPrint )
+      var surl = OpenLayers.Util.urlAppend(lizUrls.wms
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+      var sdata = {
+        service: 'WMS',
+        request: 'GETFILTERTOKEN',
+        typename: layername,
+        filter: lfilter
+      };
+      $.post(surl, sdata, function(result){
+        var filtertoken = result.token;
+        // Add OpenLayers layer parameter
+        delete layer.params['FILTER'];
+        layer.params['FILTERTOKEN'] = filtertoken
+        config.layers[layername]['request_params']['filtertoken'] = filtertoken;
+
+        // Redraw openlayers layer
+        if( config.layers[layername]['geometryType']
+          && config.layers[layername]['geometryType'] != 'none'
+          && config.layers[layername]['geometryType'] != 'unknown'
+        ){
+            //layer.redraw(true);
+          layer.redraw();
+        }
+
+        // Tell popup to be aware of the filter
+        lizMap.events.triggerEvent("layerFilterParamChanged",
+          {
+            'featureType': layername,
+            'filter': lfilter,
+            'updateDrawing': false
+          }
+        );
+      });
+
+      return true;
+  }
+
   // creating the lizMap object
   var obj = {
     /**
@@ -5716,6 +5806,54 @@ var lizMap = function() {
     addDock: function( dname, dlabel, dtype, dcontent, dicon){
       return addDock(dname, dlabel, dtype, dcontent, dicon);
     },
+
+    /**
+     * Method: getHashParamFromUrl
+     * Utility function to get searched key in URL's hash
+     * @param {string} hash_key - searched key in hash
+     * @return {string} value for searched key
+     * @example
+     * URL: https://liz.map/index.php/view/map/?repository=demo&project=cats#fid:v_cat20180426181713938.16,other_param:foo
+     * console.log(getHashParamFromUrl('fid'))
+     * returns 'v_cat20180426181713938.16'
+     */
+    getHashParamFromUrl: function (hash_key) {
+      var ret_val = null;
+      var hash = location.hash.replace('#', '');
+      var hash_items = hash.split(',');
+      for (var i in hash_items) {
+        var item = hash_items[i];
+        var param = item.split(':');
+        if (param.length == 2) {
+          var key = param[0];
+          var val = param[1];
+          if (key == hash_key) {
+            return val;
+          }
+        }
+      }
+      return ret_val;
+    },
+
+
+    /**
+     * Apply the global filter on a OpenLayer layer
+     * Only used by filter.js and timemanager.js
+     */
+    triggerLayerFilter: function (layername, filter) {
+      return triggerLayerFilter(layername, filter);
+    },
+
+    /**
+     * Deactivate the global filter on a OpenLayer layer
+     * Only used by filter.js and timemanager.js
+     */
+    deactivateMaplayerFilter: function (layername) {
+      // Get layer information
+      return deactivateMaplayerFilter(layername);
+    },
+
+
 
     /**
      * Method: init

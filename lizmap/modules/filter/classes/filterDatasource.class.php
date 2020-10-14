@@ -25,7 +25,7 @@ class filterDatasource
     private $config;
     private $data;
 
-    protected $blackSqlWords = array(
+    protected $blockSqlWords = array(
         ';',
         'select',
         'delete',
@@ -86,10 +86,10 @@ class filterDatasource
         if ($this->provider != 'postgres') {
             $filter = str_replace(' ILIKE ', ' LIKE ', $filter);
         }
-        $black_items = array();
+        $block_items = array();
 
-        if (preg_match('#'.implode('|', $this->blackSqlWords).'#i', $filter, $black_items)) {
-            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $black_items));
+        if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
+            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
 
             return null;
         }
