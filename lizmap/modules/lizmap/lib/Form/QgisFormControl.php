@@ -182,11 +182,11 @@ class QgisFormControl
      * And add it to the passed form.
      *
      * @param string              $ref                name of the control
-     * @param \SimpleXMLElement    $edittype           simplexml object corresponding to the QGIS edittype for this field
+     * @param \SimpleXMLElement   $edittype           simplexml object corresponding to the QGIS edittype for this field
      * @param object              $prop               Jelix object with field properties (datatype, required, etc.)
      * @param array|object|string $aliasXml           simplexml object corresponding to the QGIS alias for this field
-     * @param string|null              $defaultValue       the QGIS expression of the default value
-     * @param array|null               $constraints        the QGIS constraints
+     * @param null|string         $defaultValue       the QGIS expression of the default value
+     * @param null|array          $constraints        the QGIS constraints
      * @param object              $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      * @param mixed               $properties
      */
@@ -206,10 +206,7 @@ class QgisFormControl
             }
         }
 
-        if (!self::$qgisEdittypeMap['builded']) {
-            self::buildEditTypeMap();
-        }
-
+        $this->getEditTypeMap();
         // An auto-increment field cannot be required!
         if (!$prop->autoIncrement) {
             if ($prop->notNull) {
@@ -474,7 +471,7 @@ class QgisFormControl
             foreach ($typeTab as $type) {
                 if ($this->fieldDataType === strtolower($type)) {
                     if ($this->fieldDataType === 'float') {
-                        $class = '\jDataType'.'Decimal';
+                        $class = '\jDatatype'.'Decimal';
                     } else {
                         $class = '\jDatatype'.$type;
                     }

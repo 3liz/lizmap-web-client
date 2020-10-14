@@ -222,12 +222,13 @@ class JelixContext implements AppContextInterface
     /**
      * Get a string in a specific language.
      *
-     * @param string $key The Jelix selector corresponding to the string
-     *                    you want to get
+     * @param string $key       The Jelix selector corresponding to the string
+     *                          you want to get
+     * @param mixed  $variables
      *
      * @return string the translated string
      */
-    public function getLocale($key, $variables=array())
+    public function getLocale($key, $variables = array())
     {
         return \jLocale::get($key, $variables);
     }
