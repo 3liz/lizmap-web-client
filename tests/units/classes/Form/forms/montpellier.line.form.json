@@ -1,0 +1,78 @@
+{
+    "pkuid": {
+        "edittype": {
+            "type": "Hidden",
+            "options": {},
+            "editable": 1
+        },
+        "widgetv2configAttr": {},
+        "fieldEditType": "Hidden",
+        "fieldAlias": "",
+        "markup": "hidden",
+        "rendererCategories": {
+            "3": "difficult",
+            "1": "easy",
+            "2": "normal"
+        }
+    },
+    "label": {
+        "edittype": {
+            "type": "TextEdit",
+            "options": {
+                "IsMultiline": "0",
+                "UseHtml": "0"
+            },
+            "editable": 1
+        },
+        "widgetv2configAttr": {
+            "IsMultiline": "0",
+            "UseHtml": "0"
+        },
+        "fieldEditType": "TextEdit",
+        "fieldAlias": "",
+        "markup": "input",
+        "rendererCategories": {
+            "3": "difficult",
+            "1": "easy",
+            "2": "normal"
+        }
+    },
+    "description": {
+        "edittype": {
+            "type": "TextEdit",
+            "options": {
+                "IsMultiline": "1",
+                "UseHtml": "0"
+            },
+            "editable": 1
+        },
+        "widgetv2configAttr": {
+            "IsMultiline": "1",
+            "UseHtml": "0"
+        },
+        "fieldEditType": "TextEdit",
+        "fieldAlias": "",
+        "markup": "textarea",
+        "rendererCategories": {
+            "3": "difficult",
+            "1": "easy",
+            "2": "normal"
+        }
+    },
+    "difficulty": {
+        "edittype": {
+            "type": "Classification",
+            "options": {},
+            "editable": 1
+        },
+        "widgetv2configAttr": {},
+        "fieldEditType": "Classification",
+        "fieldAlias": "",
+        "markup": "menulist",
+        "rendererCategories": {
+            "3": "difficult",
+            "1": "easy",
+            "2": "normal"
+        }
+    }
+}

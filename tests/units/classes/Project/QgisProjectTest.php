@@ -1,6 +1,6 @@
 <?php
 
-require 'qgisProjectForTests.php';
+require_once 'qgisProjectForTests.php';
 
 use Lizmap\Project;
 use PHPUnit\Framework\TestCase;

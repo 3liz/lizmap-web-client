@@ -744,7 +744,7 @@ class Project
      * config.
      *
      * @param string[] $layers  : layers' name list
-     * @param bool          $edition : get login filters for edition
+     * @param bool     $edition : get login filters for edition
      *
      * @return array
      */
@@ -1141,7 +1141,6 @@ class Project
      */
     public function getUpdatedConfig()
     {
-
         $configJson = $this->cfg->getData();
 
         // Add an option to display buttons to remove the cache for cached layer
