@@ -416,6 +416,13 @@ only screen and (                   max-device-height : 640px) {
   #right-dock{
     margin: 0;
   }
+
+  .digitizing .btn {
+    width: 50px;
+    height: 50px;
+    box-sizing: border-box;
+    padding: 12px;
+  }
 }
 
 @media (hover: none) and (pointer: coarse) and (orientation: portrait){
