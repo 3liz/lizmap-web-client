@@ -2550,10 +2550,10 @@ lizmap-selection-invert svg {
 }
 
 .digitizing .btn {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   box-sizing: border-box;
-  padding: 10px;
+  padding: 5px;
 }
 
 .digitizing .dropdown-toggle{
