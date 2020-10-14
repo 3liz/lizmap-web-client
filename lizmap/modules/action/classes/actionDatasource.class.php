@@ -20,7 +20,7 @@ class actionDatasource
     private $config;
     private $data;
 
-    protected $blackSqlWords = array(
+    protected $blockSqlWords = array(
         ';',
         'select',
         'delete',

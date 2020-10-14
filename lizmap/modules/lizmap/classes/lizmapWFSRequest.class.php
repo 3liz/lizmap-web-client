@@ -25,7 +25,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
     protected $selectFields = array();
 
-    protected $blackSqlWords = array(
+    protected $blockSqlWords = array(
         ';',
         'select',
         'delete',
@@ -584,9 +584,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
     private function validateFilter($filter)
     {
-        $black_items = array();
-        if (preg_match('#'.implode('|', $this->blackSqlWords).'#i', $filter, $black_items)) {
-            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $black_items));
+        $block_items = array();
+        if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
+            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
 
             return false;
         }

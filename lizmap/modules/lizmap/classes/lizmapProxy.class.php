@@ -30,9 +30,9 @@ class lizmapProxy
         $data = array();
 
         // Filter and normalize the parameters of the request
-        $paramsBlacklist = array('module', 'action', 'c', 'repository', 'project');
+        $paramsBlocklist = array('module', 'action', 'c', 'repository', 'project');
         foreach ($params as $key => $val) {
-            if (!in_array(strtolower($key), $paramsBlacklist)) {
+            if (!in_array(strtolower($key), $paramsBlocklist)) {
                 $data[strtolower($key)] = $val;
             }
         }
