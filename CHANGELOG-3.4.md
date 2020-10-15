@@ -22,7 +22,6 @@ New features:
     - Qgis theme switcher on a map
     - Improvements in the geolocation feature
     - Angle measurement tool
-    ![Angle measurement tool](https://user-images.githubusercontent.com/2145040/92402502-f4bceb00-f12f-11ea-8e1a-57e4b9841233.gif "Angle measurement tool")
     - Display mouse position in QGIS project's projection
 - Editor:
    - split tool
@@ -49,7 +48,6 @@ New features:
   - allow the use of the lizmap javascript script also for numeric columns
 - improvement in Timemanager
 - Atlas print in popup : you can now define values for custom fields
-![Atlas print in popup](https://user-images.githubusercontent.com/2145040/92587962-a9721c00-f298-11ea-9d13-4b58d477986b.gif "Atlas print in popup")
 - Map themes - check layer legend checkbox even if not in scale range
 - Expose QGIS themes in Lizmap JSON config
 - BAN Search - Add lon and lat parameters to prefer local search around map initial extent center
