@@ -23,9 +23,6 @@ class myHtmlMapResponse extends jResponseHtml
 
         $this->title = '';
 
-        // Header
-        $this->addHttpHeader('x-ua-compatible', 'ie=edge');
-
         // CSS
         $css = jApp::config()->jquery['jqueryui.css'];
         foreach ($css as $file) {
