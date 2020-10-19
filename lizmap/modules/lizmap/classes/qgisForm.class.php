@@ -573,7 +573,6 @@ class qgisForm implements qgisFormControlsInterface
         // Get list of modified fields
         // can be an empty list
         $modifiedFields = array_keys($modifiedControls);
-        jLog::log(implode(', ', $modifiedFields), 'error');
 
         // Get list of fields which are not primary keys
         $fields = array();
