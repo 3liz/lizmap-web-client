@@ -545,10 +545,11 @@ class qgisForm implements qgisFormControlsInterface
      * Save the form to the database.
      *
      * @param null|mixed $feature
+     * @param array      $modifiedControls
      *
      * @return array|false|int value of primary key or false if an error occured
      */
-    public function saveToDb($feature = null)
+    public function saveToDb($feature = null, $modifiedControls = array())
     {
         if (!$this->dbFieldsInfo) {
             throw new Exception('Save to database can\'t be done for the layer "'.$this->layer->getName().'"!');
@@ -569,13 +570,10 @@ class qgisForm implements qgisFormControlsInterface
         $dataFields = $this->dbFieldsInfo->dataFields;
         $geometryColumn = $this->dbFieldsInfo->geometryColumn;
 
-        // Get list of fields diplayed in form
+        // Get list of modified fields
         // can be an empty list
-        $formFields = array();
-        $attributeEditorForm = $this->getAttributesEditorForm();
-        if ($attributeEditorForm) {
-            $formFields = $attributeEditorForm->getFields();
-        }
+        $modifiedFields = array_keys($modifiedControls);
+        jLog::log(implode(', ', $modifiedFields), 'error');
 
         // Get list of fields which are not primary keys
         $fields = array();
@@ -601,8 +599,8 @@ class qgisForm implements qgisFormControlsInterface
             // For other column than geometry does not add it
             // if it's column not in form
             if ($fieldName != $geometryColumn
-                && count($formFields) != 0
-                && !in_array($fieldName, $formFields)) {
+                && count($modifiedFields) != 0
+                && !in_array($fieldName, $modifiedFields)) {
                 continue;
             }
 
