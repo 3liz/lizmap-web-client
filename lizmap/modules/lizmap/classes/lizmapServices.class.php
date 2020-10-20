@@ -407,7 +407,7 @@ class lizmapServices
         if (array_key_exists($section, $this->data)) {
             $data = $this->data[$section];
         } else {
-            return false;
+            $data = array();
         }
 
         return new lizmapRepository($key, $data, $this->varPath);
