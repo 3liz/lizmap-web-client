@@ -7,9 +7,9 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/stale@v3.0.10
+    - uses: actions/stale@v3.0.12
       with:
-        repo-token: ${{ secrets.GH_TOKEN }}
+        repo-token: ${{ secrets.BOT_HUB_TOKEN }}
         days-before-stale: 180
         days-before-close: 15
         operations-per-run: 10
