@@ -629,6 +629,13 @@ class editionCtrl extends jController
         $eventParams['qgisForm'] = $qgisForm;
         jEvent::notify('LizmapEditionSaveGetQgisForm', $eventParams);
 
+        // SELECT data from the database and set the form data accordingly
+        // to check modified fields
+        if ($this->featureId) {
+            $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
+        }
+        // Track modified records
+        $form->initModifiedControlsList();
         // Get data from the request and set the form controls data accordingly
         $form->initFromRequest();
 
