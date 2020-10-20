@@ -1935,7 +1935,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         if ( feat == null ) {
             feat = new OpenLayers.Feature.Vector( );
         }
-        feat.fid = eform.find('input[name="liz_featureId"]').val();
+
+        // Get feature id
+        feat.fid = $('#edition-form-container form').find('input[name="liz_featureId"]').val();
         editionLayer.replaceFeature(feat);
         return feat;
     }
