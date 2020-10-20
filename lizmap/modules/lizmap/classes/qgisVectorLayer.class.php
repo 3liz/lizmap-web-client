@@ -782,7 +782,7 @@ class qgisVectorLayer extends qgisMapLayer
 
             return $pkvals;
         } catch (Exception $e) {
-            jLog::log('SQL = '.$sql);
+            jLog::log('SQL = '.$sql, 'error');
 
             throw $e;
         }
