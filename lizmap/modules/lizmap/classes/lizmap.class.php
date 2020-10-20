@@ -258,9 +258,9 @@ class lizmap
 
         $services = self::getServices();
         $rep = $services->getLizmapRepository($key);
+        self::$repositoryInstances[$key] = $rep;
         self::updateRepository($key, $data);
         self::getRepositoryList();
-        self::$repositoryInstances[$key] = $rep;
 
         return $rep;
     }
