@@ -584,6 +584,15 @@ class qgisForm implements qgisFormControlsInterface
                 $constraintExpressions[$fieldName] = $constraints['exp_value'];
             }
         }
+        // Get filter by login
+        $expByUserKey = 'filterByLogin';
+        $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
+        if ($expByUser !== '') {
+            while (array_key_exists($expByUserKey, $constraintExpressions)) {
+                $expByUserKey .= '@';
+            }
+            $constraintExpressions[$expByUserKey] = $expByUser;
+        }
 
         // Evaluate constraint expressions
         if (count($constraintExpressions) > 0) {
@@ -605,6 +614,15 @@ class qgisForm implements qgisFormControlsInterface
             $results = (array) $results;
             foreach ($results as $fieldName => $result) {
                 if ($result === 1) {
+                    continue;
+                }
+                if ($fieldName === $expByUserKey) {
+                    $project = $this->layer->getProject();
+                    $loginFilterConfig = $project->getLoginFilteredConfig($this->layer->getName());
+                    $form->setErrorOn($loginFilterConfig->filterAttribute, jLocale::get('view~edition.message.error.feature.editable'));
+
+                    $check = false;
+
                     continue;
                 }
                 $constraints = $this->getConstraints($fieldName);

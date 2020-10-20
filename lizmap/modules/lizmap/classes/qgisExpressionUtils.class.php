@@ -79,38 +79,72 @@ class qgisExpressionUtils
         return preg_match('/\\B@current_geometry\\b/', $exp) === 1;
     }
 
-    public static function updateExpressionByUser($layer, $expression)
+    /**
+     * Returns the expression used to filter by login the layer.
+     *
+     * @param qgisVectorLayer $layer   A QGIS vector layer
+     * @param bool            $edition It's for editon
+     *
+     * @return string the expression to filter by login the layer
+     */
+    public static function getExpressionByUser($layer, $edition = false)
     {
         $project = $layer->getProject();
         $repository = $project->getRepository();
         // No filter data by login rights
         if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $repository->getKey())) {
-            return $expression;
+            return '';
         }
 
         // get login filters
-        $loginFilters = $project->getLoginFilters(array($layer->getName()));
+        $loginFilter = $project->getLoginFilter($layer->getName(), $edition);
 
         // login filters array is empty
-        if (empty($loginFilters)) {
-            return $expression;
+        if (empty($loginFilter)) {
+            return '';
         }
 
         // layer not in login filters array
-        if (array_key_exists($layer->getName(), $loginFilters)) {
+        if (!array_key_exists('filter', $loginFilter)) {
+            return '';
+        }
+
+        return $loginFilter['filter'];
+    }
+
+    /**
+     * Returns the expression updated if filter by login is applied for the layer.
+     *
+     * @param qgisVectorLayer $layer      A QGIS vector layer
+     * @param string          $expresion  The expression to update
+     * @param bool            $edition    It's for editon
+     * @param mixed           $expression
+     *
+     * @return string the expression updated or not
+     */
+    public static function updateExpressionByUser($layer, $expression, $edition = false)
+    {
+        $expByUser = self::getExpressionByUser($layer, $edition);
+
+        if ($expByUser === '') {
             return $expression;
         }
 
-        return '('.$expression.') AND ('.$loginFilters[$layer->getName()].')';
+        return '('.$expression.') AND ('.$expByUser.')';
     }
 
+    /**
+     * Request QGIS Server and the lizmap plugin to evaluate QGIS expressions.
+     *
+     * @param qgisVectorLayer $layer        A QGIS vector layer
+     * @param array()         $expresions   The expressions' list to evaluate
+     * @param array()         $form_feature A feature to add to the evaluation context
+     * @param mixed           $expressions
+     *
+     * @return array() the results of expressions' evalutaion
+     */
     public static function evaluateExpressions($layer, $expressions, $form_feature = null)
     {
-        // Update expressions with filter by user
-        $updatedExp = array();
-        foreach ($expressions as $k => $exp) {
-            $updatedExp[$k] = self::updateExpressionByUser($layer, $exp);
-        }
         // Evaluate the expression by qgis
         $project = $layer->getProject();
         $plugins = $project->getQgisServerPlugins();
@@ -120,7 +154,7 @@ class qgisExpressionUtils
                 'request' => 'Evaluate',
                 'map' => $project->getRelativeQgisPath(),
                 'layer' => $layer->getName(),
-                'expressions' => json_encode($updatedExp),
+                'expressions' => json_encode($expressions),
             );
             if ($form_feature) {
                 $params['feature'] = json_encode($form_feature);
@@ -150,7 +184,19 @@ class qgisExpressionUtils
         return null;
     }
 
-    public static function getFeatureWithFormScope($layer, $expression, $form_feature, $fields)
+    /**
+     * Request QGIS Server to provide features with a form scope used for drilling down select.
+     *
+     * @param qgisVectorLayer $layer        A QGIS vector layer
+     * @param string          $expresion    The expressions' list to evaluate
+     * @param array()         $form_feature The feature in the form
+     * @param array()         $fields       List of requested fields
+     * @param bool            $edition      It's for editon
+     * @param mixed           $expression
+     *
+     * @return array() the features filtered with a form scope
+     */
+    public static function getFeatureWithFormScope($layer, $expression, $form_feature, $fields, $edition = false)
     {
         $project = $layer->getProject();
         $plugins = $project->getQgisServerPlugins();
@@ -161,7 +207,7 @@ class qgisExpressionUtils
                 'request' => 'getFeatureWithFormScope',
                 'map' => $project->getRelativeQgisPath(),
                 'layer' => $layer->getName(),
-                'filter' => self::updateExpressionByUser($layer, $expression),
+                'filter' => self::updateExpressionByUser($layer, $expression, $edition),
                 'form_feature' => json_encode($form_feature),
                 'fields' => implode(',', $fields),
             );
