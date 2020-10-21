@@ -78,6 +78,7 @@ class qgisVectorLayerDatasource
                     $value = '';
                 }
             }
+
             return trim($value);
         }
 
