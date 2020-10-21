@@ -458,7 +458,9 @@ class qgisForm implements qgisFormControlsInterface
                             && property_exists($edittype->options, 'field_format') && $value) {
                         $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
                         $date = DateTime::createFromFormat($format, $value);
-                        $value = $date->format('Y-m-d H:i:s');
+                        if ($date) {
+                            $value = $date->format('Y-m-d H:i:s');
+                        }
                     }
                 }
                 $form->setData($ref, $value);
