@@ -848,7 +848,7 @@ class qgisVectorLayer extends qgisMapLayer
     {
         $data = array(
             'status' => 'unrestricted',
-            'features'   => array()
+            'features' => array(),
         );
 
         $project = $this->getProject();
@@ -928,6 +928,7 @@ class qgisVectorLayer extends qgisMapLayer
         // Get data from layer
         $wfsData = json_decode($wfsData);
         $data['features'] = $wfsData->features;
+
         return $data;
     }
 
