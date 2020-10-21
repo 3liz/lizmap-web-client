@@ -844,6 +844,93 @@ class qgisVectorLayer extends qgisMapLayer
         }
     }
 
+    public function editableFeatures()
+    {
+        $data = array(
+            'status' => 'unrestricted',
+            'features'   => array()
+        );
+
+        $project = $this->getProject();
+        $rep = $project->getRepository();
+
+        // login filtered override
+        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $rep->getKey())) {
+            return $data;
+        }
+
+        // Get filter by login
+        $loginFilter = $project->getLoginFilter($this->getName(), true);
+        // login filters array is empty
+        if (empty($loginFilter)) {
+            return $data;
+        }
+
+        // layer not in login filters array
+        if (!array_key_exists('filter', $loginFilter)) {
+            return $data;
+        }
+
+        // Editable features are a restricted list
+        $data['status'] = 'restricted';
+
+        // Filter
+        $expByUser = $loginFilter['filter'];
+
+        // Typename
+        $typename = $this->getShortName();
+        if (!$typename) {
+            $typename = $this->getName();
+        }
+        $typename = str_replace(' ', '_', $typename);
+
+        $dbFieldsInfo = $this->getDbFieldsInfo();
+        $pKeys = $dbFieldsInfo->primaryKeys;
+        $properties = array_merge($pKeys, array($loginFilter['filterAttribute']));
+
+        $params = array(
+            'MAP' => $project->getPath(),
+            'SERVICE' => 'WFS',
+            'VERSION' => '1.0.0',
+            'REQUEST' => 'GetFeature',
+            'TYPENAME' => $typename,
+            'PROPERTYNAME' => implode(',', $properties),
+            'OUTPUTFORMAT' => 'GeoJSON',
+            'GEOMETRYNAME' => 'none',
+            'EXP_FILTER' => $expByUser,
+        );
+
+        // Perform request
+        $wfsRequest = new lizmapWFSRequest($project, $params);
+        $result = $wfsRequest->process();
+
+        // Check code
+        if (floor($result->code / 100) >= 4) {
+            return $data;
+        }
+
+        // Check mime/type
+        if (in_array(strtolower($result->mime), array('text/html', 'text/xml'))) {
+            return $data;
+        }
+
+        // Get data
+        $wfsData = $result->data;
+        if (property_exists($result, 'file') and $result->file and is_file($wfsData)) {
+            $wfsData = jFile::read($wfsData);
+        }
+
+        // Check data
+        if (!$wfsData) {
+            return $data;
+        }
+
+        // Get data from layer
+        $wfsData = json_decode($wfsData);
+        $data['features'] = $wfsData->features;
+        return $data;
+    }
+
     public function linkChildren($fkey, $fval, $pkey, $pvals)
     {
         // Get database connection object
