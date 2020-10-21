@@ -56,7 +56,7 @@ class qgisVectorLayer extends qgisMapLayer
     // Map data type as geometry type
     private $geometryDatatypeMap = array(
         'point', 'linestring', 'polygon', 'multipoint',
-        'multilinestring', 'multipolygon', 'geometrycollection', 'geometry', 'geography'
+        'multilinestring', 'multipolygon', 'geometrycollection', 'geometry', 'geography',
     );
 
     /**
