@@ -327,8 +327,8 @@ class lizMapCtrl extends jController
             $themeArray = array('default', $project);
             foreach ($cssArray as $k) {
                 // Handle theme applying to all repositorie's projects in the same directory
-                $cssRelPath = '../media/themes/default/css/' . $k . '.css';
-                $cssPath = realpath($repositoryPath . $cssRelPath);
+                $cssRelPath = '../media/themes/default/css/'.$k.'.css';
+                $cssPath = realpath($repositoryPath.$cssRelPath);
                 if (file_exists($cssPath)) {
                     $cssUrl = jUrl::get(
                         'view~media:getCssFile',
@@ -340,14 +340,14 @@ class lizMapCtrl extends jController
                     );
                     //~ $rep->addCssLink( $cssUrl );
                     // Use addHeadContent and not addCssLink to be sure it will be loaded after minified code
-                    $rep->addHeadContent('<link type="text/css" href="' . $cssUrl . '" rel="stylesheet" />');
+                    $rep->addHeadContent('<link type="text/css" href="'.$cssUrl.'" rel="stylesheet" />');
                 }
 
                 // Handle themes applying to a repository (media/themes/default)
                 // or to a project (media/themes/PROJECT-NAME)
                 foreach ($themeArray as $theme) {
                     $cssRelPath = 'media/themes/'.$theme.'/css/'.$k.'.css';
-                    $cssPath = realpath($repositoryPath . $cssRelPath);
+                    $cssPath = realpath($repositoryPath.$cssRelPath);
                     if (file_exists($cssPath)) {
                         $cssUrl = jUrl::get(
                             'view~media:getCssFile',
