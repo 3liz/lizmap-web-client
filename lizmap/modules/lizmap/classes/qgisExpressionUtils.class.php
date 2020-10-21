@@ -96,7 +96,7 @@ class qgisExpressionUtils
             return '';
         }
 
-        // get login filters
+        // get login filter
         $loginFilter = $project->getLoginFilter($layer->getName(), $edition);
 
         // login filters array is empty
