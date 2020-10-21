@@ -1122,24 +1122,6 @@ var lizAttributeTable = function() {
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
-                    // Check editable features
-                    if (canEdit || canDelete) {
-                        // Get editable features
-                        $.post(lizUrls.edition.replace('getFeature', 'editableFeatures'),{
-                          repository: lizUrls.params.repository,
-                          project: lizUrls.params.project,
-                          layerId: lConfig.id
-                        }, function(data){
-                            if ( 'success' in data &&
-                                 data['success'] &&
-                                 'status' in data &&
-                                 data['status'] == 'restricted' ) {
-                                console.log(data);
-                            }
-                        });
-
-                    }
-
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
                     var refillFeatures = false;
@@ -1196,6 +1178,34 @@ var lizAttributeTable = function() {
                                 const api = new $.fn.dataTable.Api(settings);
                                 const tableId = api.table().node().id;
                                 var featureType = tableId.split('attribute-layer-table-')[1];
+
+                                // Check editable features
+                                if (canEdit || canDelete) {
+                                    // Get editable features
+                                    $.post(lizUrls.edition.replace('getFeature', 'editableFeatures'), {
+                                        repository: lizUrls.params.repository,
+                                        project: lizUrls.params.project,
+                                        layerId: lConfig.id
+                                    }, function (data) {
+                                        if ('success' in data &&
+                                            data['success'] &&
+                                            'status' in data &&
+                                            data['status'] == 'restricted') {
+                                                let editableFeaturesId = [];
+
+                                                for (const feature of data.features) {
+                                                    editableFeaturesId.push('#' + feature.id.split('.')[1]);
+                                                }
+                                                // Disable edition and delete actions buttons when user has not those rights
+                                                api.table().cells(':not(' + editableFeaturesId.join(',') + ')', [2,3])
+                                                        .nodes()
+                                                        .to$()
+                                                        .children('button')
+                                                        .prop('disabled', true);
+                                        }
+                                    });
+                                }
+
                                 // Trigger event telling attribute table is ready
                                 lizMap.events.triggerEvent("attributeLayerContentReady",
                                     {
