@@ -1122,6 +1122,24 @@ var lizAttributeTable = function() {
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
+                    // Check editable features
+                    if (canEdit || canDelete) {
+                        // Get editable features
+                        $.post(lizUrls.edition.replace('getFeature', 'editableFeatures'),{
+                          repository: lizUrls.params.repository,
+                          project: lizUrls.params.project,
+                          layerId: lConfig.id
+                        }, function(data){
+                            if ( 'success' in data &&
+                                 data['success'] &&
+                                 'status' in data &&
+                                 data['status'] == 'restricted' ) {
+                                console.log(data);
+                            }
+                        });
+
+                    }
+
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
                     var refillFeatures = false;
@@ -1285,7 +1303,7 @@ var lizAttributeTable = function() {
 
                 return false;
             }
-            
+
             function valueMapInAttributeTable( aName, data, type, full, meta ){
             // Translate field ( language translation OR code->label translation )
                 var colMeta = meta.settings.aoColumns[meta.col];
@@ -1296,7 +1314,7 @@ var lizAttributeTable = function() {
                     tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
                 if( tdata === null )
                     tdata = data;
-                
+
                 return tdata;
             }
 
@@ -1353,9 +1371,9 @@ var lizAttributeTable = function() {
                             case 'unsignedLong':
                                 colConf['mRender'] = function(data, type, full, meta ){
                                     // Translate field ( language translation OR code->label translation )
-                                    return valueMapInAttributeTable( aName, data, type, full, meta );  
+                                    return valueMapInAttributeTable( aName, data, type, full, meta );
                                 };
-                                
+
                                 colConf['className'] = 'text-right';
                                 break;
                             case 'decimal':
