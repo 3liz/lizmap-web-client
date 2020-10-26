@@ -495,6 +495,7 @@ class qgisForm implements qgisFormControlsInterface
             'mm' => 'i',
             'ss' => 's',
             't' => 'T',
+            'Qt ISO Date' => 'c',
         ));
     }
 
