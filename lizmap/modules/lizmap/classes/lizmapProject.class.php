@@ -2364,6 +2364,43 @@ class lizmapProject extends qgisProject
         return false;
     }
 
+    /**
+     * Check acl rights on the project by given user.
+     *
+     * @param mixed $login Login of the user to test access
+     *
+     * @return bool true if the current user as rights on the project
+     *
+     * @since Jelix 1.6.29
+     */
+    public function checkAclByUser($login)
+    {
+
+        // Check right on repository
+        if (!jAcl2::checkByUser($login, 'lizmap.repositories.view', $this->repository->getKey())) {
+            return false;
+        }
+
+        // Check acl option is configured in project config
+        if (!property_exists($this->cfg->options, 'acl') || !is_array($this->cfg->options->acl) || empty($this->cfg->options->acl)) {
+            return true;
+        }
+
+        // Check user is admin -> ok, give permission
+        if (jAcl2::checkByUser($login, 'lizmap.admin.repositories.delete')) {
+            return true;
+        }
+
+        // Check if configured groups white list and authenticated user groups list intersects
+        $aclGroups = $this->cfg->options->acl;
+        $userGroups = jAcl2DbUserGroup::getGroupsIdByUser($login);
+        if (array_intersect($aclGroups, $userGroups)) {
+            return true;
+        }
+
+        return false;
+    }
+
     private $spatialiteExt;
 
     public function getSpatialiteExtension()
