@@ -601,7 +601,8 @@ class qgisForm implements qgisFormControlsInterface
             // if it's column not in form
             if ($fieldName != $geometryColumn
                 && count($modifiedFields) != 0
-                && !in_array($fieldName, $modifiedFields)) {
+                && !in_array($fieldName, $modifiedFields)
+                && !in_array($this->getFormControlName($fieldName), $modifiedFields)) {
                 continue;
             }
 
