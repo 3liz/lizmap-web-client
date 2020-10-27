@@ -23,7 +23,12 @@ class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         $confDate = &jApp::config()->datepickers;
         $datepicker_default_config = jApp::config()->forms['datepicker'];
 
-        $config = isset($this->ctrl->datepickerConfig) ? $this->ctrl->datepickerConfig : $datepicker_default_config;
+        if (isset($this->ctrl->datepickerConfig)  && $this->ctrl->datepickerConfig) {
+            $config = $this->ctrl->datepickerConfig;
+        }
+        else {
+            $config = $datepicker_default_config;
+        }
 
         if (isset($confDate[$config.'.js'])) {
             $js = $confDate[$config.'.js'];
@@ -63,8 +68,10 @@ class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         $this->commonJs();
 
         if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
-            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
-            $this->parentWidget->addJs('jelix_datepicker_'.$config."(c, jFormsJQ.config);\n");
+            $config = isset($ctrl->datepickerConfig) && $ctrl->datepickerConfig != '' ?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
+            if ($config) {
+                $this->parentWidget->addJs('jelix_datepicker_'.$config."(c, jFormsJQ.config);\n");
+            }
         }
     }
 
