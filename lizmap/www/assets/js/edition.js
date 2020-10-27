@@ -2071,7 +2071,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         ) {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-delete"';
                             eHtml+= ' value="'+val+'"';
-                            eHtml+= ' title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
+                            eHtml+= ' title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-trash"></i>&nbsp;</button>';
                         }
 
                         if( eHtml != '' ){
