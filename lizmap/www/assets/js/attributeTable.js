@@ -1174,10 +1174,8 @@ var lizAttributeTable = function() {
                         $( aTable ).dataTable( {
                              data: dataSet
                             ,columns: columns
-                            ,initComplete: function(settings, json) {
+                            , drawCallback(settings){
                                 const api = new $.fn.dataTable.Api(settings);
-                                const tableId = api.table().node().id;
-                                var featureType = tableId.split('attribute-layer-table-')[1];
 
                                 // Check editable features
                                 if (canEdit || canDelete) {
@@ -1191,20 +1189,25 @@ var lizAttributeTable = function() {
                                             data['success'] &&
                                             'status' in data &&
                                             data['status'] == 'restricted') {
-                                                let editableFeaturesId = [];
+                                            let editableFeaturesId = [];
 
-                                                for (const feature of data.features) {
-                                                    editableFeaturesId.push('#' + feature.id.split('.')[1]);
-                                                }
-                                                // Disable edition and delete actions buttons when user has not those rights
-                                                api.table().cells(':not(' + editableFeaturesId.join(',') + ')', [2,3])
-                                                        .nodes()
-                                                        .to$()
-                                                        .children('button')
-                                                        .prop('disabled', true);
+                                            for (const feature of data.features) {
+                                                editableFeaturesId.push('#' + feature.id.split('.')[1]);
+                                            }
+                                            // Disable edition and delete actions buttons when user has not those rights
+                                            api.table().cells(':not(' + editableFeaturesId.join(',') + ')', [2, 3])
+                                                .nodes()
+                                                .to$()
+                                                .children('button')
+                                                .prop('disabled', true);
                                         }
                                     });
                                 }
+                            }
+                            ,initComplete: function(settings, json) {
+                                const api = new $.fn.dataTable.Api(settings);
+                                const tableId = api.table().node().id;
+                                const featureType = tableId.split('attribute-layer-table-')[1];
 
                                 // Trigger event telling attribute table is ready
                                 lizMap.events.triggerEvent("attributeLayerContentReady",
