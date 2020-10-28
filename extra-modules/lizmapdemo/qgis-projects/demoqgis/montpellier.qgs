@@ -5186,7 +5186,7 @@ def my_form_open(dialog, layer, feature):
                 <Option value="0" type="QString" name="AllowMulti"/>
                 <Option value="0" type="QString" name="AllowNull"/>
                 <Option value="" type="QString" name="FilterExpression"/>
-                <Option value="OGC_FID" type="QString" name="Key"/>
+                <Option value="osm_id" type="QString" name="Key"/>
                 <Option value="tramstop20150328114203878" type="QString" name="Layer"/>
                 <Option value="1" type="QString" name="OrderByValue"/>
                 <Option value="1" type="QString" name="UseCompleter"/>
