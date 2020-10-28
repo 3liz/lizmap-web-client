@@ -382,6 +382,25 @@ class qgisForm implements qgisFormControlsInterface
     }
 
     /**
+     * Reset the form controls data to Null.
+     *
+     * @return object the Jelix jForm object
+     */
+    public function resetFormData()
+    {
+        if (!$this->dbFieldsInfo) {
+            return $this->form;
+        }
+
+        $form = $this->form;
+        $dataFields = $this->dbFieldsInfo->dataFields;
+        foreach ($dataFields as $ref => $prop) {
+            $form->setData($ref, Null);
+        }
+        return $form;
+    }
+
+    /**
      * Set the form controls data from the database default value.
      *
      * @return object the Jelix jForm object
