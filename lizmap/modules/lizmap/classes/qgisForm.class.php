@@ -514,7 +514,9 @@ class qgisForm implements qgisFormControlsInterface
                             && property_exists($edittype->options, 'field_format') && $value) {
                         $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
                         $date = DateTime::createFromFormat($format, $value);
-                        $value = $date->format('Y-m-d H:i:s');
+                        if ($date) {
+                            $value = $date->format('Y-m-d H:i:s');
+                        }
                     }
                 }
                 $form->setData($ref, $value);
@@ -778,7 +780,8 @@ class qgisForm implements qgisFormControlsInterface
             // if it's column not in form
             if ($fieldName != $geometryColumn
                 && count($modifiedFields) != 0
-                && !in_array($fieldName, $modifiedFields)) {
+                && !in_array($fieldName, $modifiedFields)
+                && !in_array($this->getFormControlName($fieldName), $modifiedFields)) {
                 continue;
             }
 

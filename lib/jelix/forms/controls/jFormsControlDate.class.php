@@ -16,6 +16,7 @@
  */
 class jFormsControlDate extends jFormsControl {
     public $type = 'date';
+    public $datepickerConfig = '';
 
     public function __construct($ref){
         $this->ref = $ref;
