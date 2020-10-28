@@ -280,9 +280,9 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
-        jForms::destroy('view~edition');
+        jForms::destroy('view~edition', $this->featureId);
         // Create form instance
-        $form = jForms::create('view~edition');
+        $form = jForms::create('view~edition', $this->featureId);
         $form->setData('liz_future_action', $this->param('liz_future_action', 'close'));
 
         // event to add custom field in the jForms form
@@ -605,9 +605,11 @@ class editionCtrl extends jController
         jEvent::notify('LizmapEditionSaveGetQgisForm', $eventParams);
 
         // SELECT data from the database and set the form data accordingly
-        // to check modified fields
+        // or reset form controls data to null to check modified fields
         if ($this->featureId) {
             $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
+        } else {
+            $form = $qgisForm->resetFormData();
         }
         // Track modified records
         $form->initModifiedControlsList();
