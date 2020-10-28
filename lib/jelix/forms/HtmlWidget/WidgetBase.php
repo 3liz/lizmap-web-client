@@ -257,7 +257,8 @@ abstract class WidgetBase implements WidgetInterface {
 
         if ($ctrl->type == 'output' || $ctrl->type == 'checkboxes' ||
             $ctrl->type == 'radiobuttons' || $ctrl->type == 'date' ||
-            $ctrl->type == 'datetime' || $ctrl->type == 'choice'){
+            $ctrl->type == 'datetime' || $ctrl->type == 'time' ||
+            $ctrl->type == 'choice') {
             $this->outputLabelAsTitle($label, $attr);
         }
         else if($ctrl->type != 'submit' && $ctrl->type != 'reset'){

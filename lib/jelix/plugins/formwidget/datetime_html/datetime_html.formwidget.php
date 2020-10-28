@@ -75,8 +75,22 @@ class datetime_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         $this->commonJs();
 
         if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
-            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
-            $this->parentWidget->addJs('jelix_datepicker_'.$config."(c, jFormsJQ.config);\n");
+
+            if (isset($ctrl->datepickerConfig) && $ctrl->datepickerConfig != '') {
+                $config = $ctrl->datepickerConfig;
+            }
+            else {
+                $config = jApp::config()->forms['datetimepicker'];
+                if (!isset(jApp::config()->datetimepickers[$config])) {
+                    // compatibility with 1.6.19-
+                    $config = jApp::config()->forms['datepicker'];
+                }
+
+            }
+            if ($config) {
+                $this->parentWidget->addJs('jelix_datepicker_'.$config."(c, jFormsJQ.config);\n");
+            }
+
         }
     }
 

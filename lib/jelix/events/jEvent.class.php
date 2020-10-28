@@ -96,6 +96,17 @@ class jEvent {
     }
 
     /**
+     * return all parameters
+     *
+     * @return array parameters
+     * @since 1.6.30
+     */
+    public function getParameters()
+    {
+        return $this->_params;
+    }
+
+    /**
      * Adds data in the responses list
      *
      * if it is an array, specific items can be retrieved with getResponseByKey()
