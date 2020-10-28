@@ -384,7 +384,7 @@ class qgisForm implements qgisFormControlsInterface
     /**
      * Reset the form controls data to Null.
      *
-     * @return object the Jelix jForm object
+     * @return jFormsBase the Jelix jForm object
      */
     public function resetFormData()
     {
@@ -403,7 +403,7 @@ class qgisForm implements qgisFormControlsInterface
     /**
      * Set the form controls data from the database default value.
      *
-     * @return object the Jelix jForm object
+     * @return jFormsBase the Jelix jForm object
      */
     public function setFormDataFromDefault()
     {
@@ -439,7 +439,7 @@ class qgisForm implements qgisFormControlsInterface
      *
      * @param mixed $feature
      *
-     * @return object the Jelix jForm object
+     * @return jFormsBase the Jelix jForm object
      */
     public function setFormDataFromFields($feature)
     {
