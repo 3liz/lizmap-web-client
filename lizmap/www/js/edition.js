@@ -1005,7 +1005,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]');
                 if( select.length == 1 ){
                     select.val(parentFeat.properties[relation.referencedField])
-                          .attr('disabled','disabled');
+                        .attr('disabled','disabled');
                     var hiddenInput = $('<input type="hidden"></input>')
                         .attr('id', select.attr('id')+'_hidden')
                         .attr('name', relation.referencingField)
@@ -1034,12 +1034,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             }
 
             // Create combobox based on RelationValue with fieldEditable
-            var selectComboboxes = $('#edition-form-container form select.combobox');
+            var selectComboboxes = $('#edition-form-container form select.combobox:not(:disabled)');
             for( var i=0, len=selectComboboxes.length; i<len; i++ ) {
                 var selectCombobox = $(selectComboboxes[i]);
                 activateCombobox(selectCombobox);
             }
-            var selectAutocompletes = $('#edition-form-container form select.autocomplete');
+            var selectAutocompletes = $('#edition-form-container form select.autocomplete:not(:disabled)');
             for( var i=0, len=selectAutocompletes.length; i<len; i++ ) {
                 var selectAutocomplete = $(selectAutocompletes[i]);
                 activateAutocomplete(selectAutocomplete);
