@@ -1377,33 +1377,38 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Manage child form
             if ( editionLayer['parent'] != null ){
                 var parentInfo = editionLayer['parent'];
-                var relationRefField = parentInfo['relation'].referencingField;
-                var parentFeatProp = parentInfo['feature'].properties[relationRefField];
+                var relation = parentInfo['relation'];
+                var relationRefField = relation.referencingField;
+                var parentFeatProp = parentInfo['feature'].properties[relation.referencedField];
 
                 var select = form.find('select[name="'+relationRefField+'"]');
                 if( select.length == 1 ){
+                    // Disable the select, the value will be stored in an hidden input
                     select.val(parentFeatProp)
                           .attr('disabled','disabled');
-                    // XXX this hidden field is not used anywhere. What is its purpose?
+                    // Create hidden input to store value because the select is disabled
                     var hiddenInput = $('<input type="hidden"></input>')
                         .attr('id', select.attr('id')+'_hidden')
                         .attr('name', relationRefField)
                         .attr('value', parentFeatProp);
                     form.find('div.jforms-hiddens').append(hiddenInput);
+                    // Disable required constraint
                     jFormsJQ.getForm(form.attr('id'))
                         .getControl(relationRefField)
                         .required=false;
                 } else {
                     var input = form.find('input[name="'+relationRefField+'"]');
                     if( input.length == 1 && input.attr('type') != 'hidden'){
+                        // Disable the select, the value will be stored in an hidden input
                         input.val(parentFeatProp)
                               .attr('disabled','disabled');
-                        // XXX this hidden field is not used anywhere. What is its purpose?
+                        // Create hidden input to store value because the select is disabled
                         var hiddenInput = $('<input type="hidden"></input>')
                             .attr('id', input.attr('id')+'_hidden')
                             .attr('name', relationRefField)
                             .attr('value', parentFeatProp);
                         form.find('div.jforms-hiddens').append(hiddenInput);
+                        // Disable required constraint
                         jFormsJQ.getForm($('#edition-form-container form').attr('id'))
                             .getControl(relationRefField)
                             .required=false;
@@ -1414,12 +1419,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             }
 
             // Create combobox based on RelationValue with fieldEditable
-            var selectComboboxes = form.find('select.combobox');
+            var selectComboboxes = form.find('select.combobox:not(:disabled)');
             for( var i=0, len=selectComboboxes.length; i<len; i++ ) {
                 var selectCombobox = $(selectComboboxes[i]);
                 activateCombobox(selectCombobox);
             }
-            var selectAutocompletes = form.find('select.autocomplete');
+            var selectAutocompletes = form.find('select.autocomplete:not(:disabled)');
             for( var i=0, len=selectAutocompletes.length; i<len; i++ ) {
                 var selectAutocomplete = $(selectAutocompletes[i]);
                 activateAutocomplete(selectAutocomplete);
