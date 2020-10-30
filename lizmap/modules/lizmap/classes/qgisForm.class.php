@@ -451,8 +451,9 @@ class qgisForm implements qgisFormControlsInterface
         $form = $this->form;
         $dataFields = $this->dbFieldsInfo->dataFields;
         foreach ($dataFields as $ref => $prop) {
-            $form->setData($ref, Null);
+            $form->setData($ref, null);
         }
+
         return $form;
     }
 
