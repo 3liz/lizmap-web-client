@@ -1022,19 +1022,21 @@ class editionCtrl extends jController
 
         // Check the form data and redirect if needed
         $check = $form->check();
-        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
-        if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
+
+        // event to add additionnal checks
+        $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('check') === false || !$check) {
             $rep->data['success'] = false;
-            $rep->data['message'] = jLocale::get('view~edition.message.error.no.geometry');
+            $rep->data['message'] = 'There are some errors in the form';
 
             return $rep;
         }
 
-        // event to add additionnal checks
-        $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
-        if ($event->allResponsesByKeyAreTrue('check') === false) {
+        // Check geometry
+        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
+        if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
             $rep->data['success'] = false;
-            $rep->data['message'] = 'There are some errors in the form';
+            $rep->data['message'] = jLocale::get('view~edition.message.error.no.geometry');
 
             return $rep;
         }
