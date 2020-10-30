@@ -189,6 +189,10 @@ class configCtrl extends jController
         ) {
                 $form->getControl('adminSenderEmail')->required = true;
             }
+            if (lizmap::getServices()->hideSensitiveProperties() && $form->getData('adminSenderEmail') === '') {
+                $form->getControl('allowUserAccountRequests')->setReadOnly();
+                $form->getControl('allowUserAccountRequests')->help = jLocale::get('admin~admin.config.services.allowUserAccountRequest.noemail');
+            }
             // Display form
             $tpl = new jTpl();
             $tpl->assign('form', $form);
