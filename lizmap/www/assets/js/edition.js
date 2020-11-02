@@ -2039,128 +2039,149 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     var hasButton = false;
                     var popup = e.popup;
                     var selector = 'div.lizmapPopupContent input.lizmap-popup-layer-feature-id';
-                    if ( e.containerId )
+                    if ( e.containerId ){
                         selector = '#'+ e.containerId +' '+ selector;
-                    // Add action buttons if needed
-                    $(selector).each(function(){
-                        var self = $(this);
-                        var val = self.val();
-                        var eHtml = '';
-                        var fid = val.split('.').pop();
-                        var layerId = val.replace( '.' + fid, '' );
-
-                        var layerConfig = lizMap.getLayerConfigById( layerId );
-
-                        // Edit button
-                        var eConfig = null;
-                        if( 'editionLayers' in config ) {
-                            eConfig = lizMap.getLayerConfigById(
-                                layerId,
-                                config.editionLayers,
-                                'layerId'
-                            );
-                        }
-
-                        if( eConfig &&
-                            ( eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True" )
-                            && self.next('span.popupButtonBar').find('button.popup-layer-feature-edit').length == 0
-                        ) {
-                            eHtml+= '<button class="btn btn-mini popup-layer-feature-edit"';
-                            eHtml+= ' value="'+val+'"';
-                            eHtml+= ' title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';
-                        }
-
-                        // Delete feature button
-                        if( eConfig && eConfig[1].capabilities.deleteFeature == "True"
-                            && self.next('span.popupButtonBar').find('button.popup-layer-feature-delete').length == 0
-                        ) {
-                            eHtml+= '<button class="btn btn-mini popup-layer-feature-delete"';
-                            eHtml+= ' value="'+val+'"';
-                            eHtml+= ' title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
-                        }
-
-                        if( eHtml != '' ){
-                            var popupButtonBar = self.next('span.popupButtonBar');
-                            if ( popupButtonBar.length != 0 ) {
-                                popupButtonBar.append(eHtml);
-                            } else {
-                                eHtml = '<span class="popupButtonBar">' + eHtml + '</span><br/>';
-                                self.after(eHtml);
-                            }
-                            self.find('button.btn').tooltip( {
-                                placement: 'bottom'
-                            } );
-                            hasButton = true;
-                            if( popup )
-                                popup.verifySize();
-                        }
-
-                        lizMap.events.triggerEvent("lizmappopuplayerfeaturedisplayed",
-                            {
-                                popup: popup,
-                                fid: fid,
-                                layerId: layerId,
-                                eConfig: eConfig,
-                                layerName : layerConfig[0],
-                                layerConfig: layerConfig[1],
-                                div : self.parent()
-                            }
-                        );
-
-                    });
-                    // Add interaction buttons
-                    if( hasButton ) {
-
-                        // edit
-                        $('div.lizmapPopupContent button.popup-layer-feature-edit')
-                        .unbind('click')
-                        .click(function(){
-                            var fid = $(this).val().split('.').pop();
-                            var layerId = $(this).val().replace( '.' + fid, '' );
-                            // launch edition
-                            lizMap.launchEdition( layerId, fid );
-
-                            // Remove map popup to avoid confusion
-                            if (lizMap.map.popups.length != 0)
-                                lizMap.map.removePopup( lizMap.map.popups[0] );
-
-                            return false;
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        )
-                        .tooltip();
-
-                        // delete
-                        $('div.lizmapPopupContent button.popup-layer-feature-delete')
-                        .unbind('click')
-                        .click(function(){
-                            var fid = $(this).val().split('.').pop();
-                            var layerId = $(this).val().replace( '.' + fid, '' );
-
-                            // remove Feature
-                            deleteEditionFeature( layerId, fid );
-
-                            // Remove map popup to avoid confusion
-                            if (lizMap.map.popups.length != 0)
-                                lizMap.map.removePopup( lizMap.map.popups[0] );
-
-                            return false;
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        )
-                        .tooltip();
-
-
-                        // Trigger event
-                        lizMap.events.triggerEvent("lizmappopupupdated",
-                            {'popup': popup}
-                        );
-
                     }
+
+                    // Get editable features
+                    $.post(lizUrls.edition.replace('getFeature', 'editableFeatures'), {
+                        repository: lizUrls.params.repository,
+                        project: lizUrls.params.project,
+                        layerId: $(selector).val().split('.')[0]
+                    }, function (data) {
+                        let editableFeaturesId = [];
+
+                        if ('success' in data &&
+                            data['success'] &&
+                            'status' in data &&
+                            data['status'] == 'restricted') {
+
+                            for (const feature of data.features) {
+                                editableFeaturesId.push(feature.id.split('.')[1]);
+                            }
+                        }
+
+                        // Add action buttons if needed
+                        $(selector).each(function () {
+                            var self = $(this);
+                            var val = self.val();
+                            var fid = val.split('.').pop();
+                            var layerId = val.replace('.' + fid, '');
+                            var layerConfig = lizMap.getLayerConfigById(layerId);
+
+                            if (editableFeaturesId.includes(fid)){
+                                var eHtml = '';
+
+                                // Edit button
+                                var eConfig = null;
+                                if ('editionLayers' in config) {
+                                    eConfig = lizMap.getLayerConfigById(
+                                        layerId,
+                                        config.editionLayers,
+                                        'layerId'
+                                    );
+                                }
+
+                                if (eConfig &&
+                                    (eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True")
+                                    && self.next('span.popupButtonBar').find('button.popup-layer-feature-edit').length == 0
+                                ) {
+                                    eHtml += '<button class="btn btn-mini popup-layer-feature-edit"';
+                                    eHtml += ' value="' + val + '"';
+                                    eHtml += ' title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';
+                                }
+
+                                // Delete feature button
+                                if (eConfig && eConfig[1].capabilities.deleteFeature == "True"
+                                    && self.next('span.popupButtonBar').find('button.popup-layer-feature-delete').length == 0
+                                ) {
+                                    eHtml += '<button class="btn btn-mini popup-layer-feature-delete"';
+                                    eHtml += ' value="' + val + '"';
+                                    eHtml += ' title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-trash"></i>&nbsp;</button>';
+                                }
+
+                                if (eHtml != '') {
+                                    var popupButtonBar = self.next('span.popupButtonBar');
+                                    if (popupButtonBar.length != 0) {
+                                        popupButtonBar.append(eHtml);
+                                    } else {
+                                        eHtml = '<span class="popupButtonBar">' + eHtml + '</span><br/>';
+                                        self.after(eHtml);
+                                    }
+                                    self.find('button.btn').tooltip({
+                                        placement: 'bottom'
+                                    });
+                                    hasButton = true;
+                                    if (popup)
+                                        popup.verifySize();
+                                }
+                            }
+
+                            lizMap.events.triggerEvent("lizmappopuplayerfeaturedisplayed",
+                                {
+                                    popup: popup,
+                                    fid: fid,
+                                    layerId: layerId,
+                                    eConfig: eConfig,
+                                    layerName: layerConfig[0],
+                                    layerConfig: layerConfig[1],
+                                    div: self.parent()
+                                }
+                            );
+                        });
+                        // Add interaction buttons
+                        if (hasButton) {
+                            // edit
+                            $('div.lizmapPopupContent button.popup-layer-feature-edit')
+                                .unbind('click')
+                                .click(function () {
+                                    var fid = $(this).val().split('.').pop();
+                                    var layerId = $(this).val().replace('.' + fid, '');
+                                    // launch edition
+                                    lizMap.launchEdition(layerId, fid);
+
+                                    // Remove map popup to avoid confusion
+                                    if (lizMap.map.popups.length != 0)
+                                        lizMap.map.removePopup(lizMap.map.popups[0]);
+
+                                    return false;
+                                })
+                                .hover(
+                                    function () { $(this).addClass('btn-primary'); },
+                                    function () { $(this).removeClass('btn-primary'); }
+                                )
+                                .tooltip();
+
+                            // delete
+                            $('div.lizmapPopupContent button.popup-layer-feature-delete')
+                                .unbind('click')
+                                .click(function () {
+                                    var fid = $(this).val().split('.').pop();
+                                    var layerId = $(this).val().replace('.' + fid, '');
+
+                                    // remove Feature
+                                    deleteEditionFeature(layerId, fid);
+
+                                    // Remove map popup to avoid confusion
+                                    if (lizMap.map.popups.length != 0)
+                                        lizMap.map.removePopup(lizMap.map.popups[0]);
+
+                                    return false;
+                                })
+                                .hover(
+                                    function () { $(this).addClass('btn-primary'); },
+                                    function () { $(this).removeClass('btn-primary'); }
+                                )
+                                .tooltip();
+
+
+                            // Trigger event
+                            lizMap.events.triggerEvent("lizmappopupupdated",
+                                { 'popup': popup }
+                            );
+
+                        }
+                    });
                 }
             });
 
