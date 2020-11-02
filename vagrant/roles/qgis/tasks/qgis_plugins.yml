@@ -21,21 +21,27 @@
 - set_fact:
     qgis_server_plugins: "{{ qgis2_server_plugins }}"
   when: qgis_server_version == "2.18"
+  tags: qgis,plugins
 
 - set_fact:
     qgis_server_plugins: "{{ qgis3_server_plugins }}"
-  when: qgis_server_version != "2.18"
+  when: qgis_server_version == "3.4"
+  tags: qgis,plugins
 
+- set_fact:
+    qgis_server_plugins: "{{ qgis310_server_plugins }}"
+  when: qgis_server_version != "2.18" and qgis_server_version != "3.4"
+  tags: qgis,plugins
 
 - name: Install QGIS server plugins from github
-  git: repo={{ item.value.repository }}
-    version={{ item.value.version }}
-    dest="{{ qgis_server_plugin_directory }}/{{ item.key }}"
-    depth=1
-    accept_hostkey=yes
+  unarchive:
+    src: "{{ item.value.repository }}/releases/download/{{ item.value.version }}/{{ item.key }}.{{ item.value.version }}.zip"
+    dest: "{{ qgis_server_plugin_directory }}/"
+    remote_src: yes
   with_dict: "{{ qgis_server_plugins }}"
   register: qgis_plugins_installed
   tags: qgis,plugins
+
 
 - name: Restart Supervisor Debian
   shell: echo "Restart Supervisor"
