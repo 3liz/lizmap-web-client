@@ -1,8 +1,15 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
-import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
-import GeoJSONWriter from 'jsts/org/locationtech/jts/io/GeoJSONWriter.js';
+import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
+
+import Feature from 'ol/Feature';
+
+import Point from 'ol/geom/Point';
+import LineString from 'ol/geom/LineString';
+import Polygon from 'ol/geom/Polygon';
+import LinearRing from 'ol/geom/LinearRing';
+
 
 export default class SelectionTool {
 
@@ -99,17 +106,66 @@ export default class SelectionTool {
                         // Handle buffer if any
                         this._bufferLayer.destroyFeatures();
                         if (this._bufferValue > 0) {
-                            const geoJSONParser = new OpenLayers.Format.GeoJSON();
-                            const drawGeoJSON = geoJSONParser.write(selectionFeature.geometry);
-                            const jstsGeoJSONReader = new GeoJSONReader();
-                            const jstsGeoJSONWriter = new GeoJSONWriter();
-                            const jstsGeom = jstsGeoJSONReader.read(drawGeoJSON);
+
+                            // Create OL6 features with OL2 features coordinates
+                            const featureGeometry = selectionFeature.geometry;
+                            let OL6feature;
+
+                            if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
+                                OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
+                            }
+                            else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
+                                let coordinates = [];
+                                for (const component of featureGeometry.components) {
+                                    coordinates.push([component.x, component.y]);
+                                }
+                                OL6feature = new Feature(new LineString(coordinates));
+                            }
+                            else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
+                                let coordinates = [];
+                                for (const component of featureGeometry.components[0].components) {
+                                    coordinates.push([component.x, component.y]);
+                                }
+                                OL6feature = new Feature(new Polygon([coordinates]));
+                            }
+
+                            // Reproject to QGIS project projection
+                            OL6feature.getGeometry().transform(mainLizmap.projection, mainLizmap.qgisProjectProjection);
+
+                            // Use jsts buffer method
+                            var parser = new OL3Parser();
+                            parser.inject(
+                                Point,
+                                LineString,
+                                Polygon,
+                                LinearRing
+                            );
+
+                            const jstsGeom = parser.read(OL6feature.getGeometry());
                             const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
-                            const bufferedDraw = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
+                            
+                            // OL6 buffered geom
+                            const bufferedGeom = parser.write(jstsbBufferedGeom);
+
+                            // Reproject back to map projection
+                            bufferedGeom.transform(mainLizmap.qgisProjectProjection, mainLizmap.projection);
+
+                            const bufferedGeomCoordinates = bufferedGeom.getCoordinates();
+
+                            const bufferedGeomAsArrayOfPoints = [];
+                            let geomToDraw;
+                            
+                            for (const coordinate of bufferedGeomCoordinates[0]) {
+                                bufferedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(bufferedGeomAsArrayOfPoints)]);
 
                             // Draw buffer
-                            this._bufferLayer.addFeatures(bufferedDraw);
-                            this._bufferLayer.redraw(true);
+                            if (geomToDraw){
+                                this._bufferLayer.addFeatures(new OpenLayers.Feature.Vector(geomToDraw));
+                                this._bufferLayer.redraw(true);
+                            }
                         }
 
                         for (const featureType of this.allFeatureTypeSelected) {
