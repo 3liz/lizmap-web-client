@@ -6,8 +6,8 @@
 # FCGI launcher
 
 [fcgi-program:qgis]
-command={{ qgis_server_fcgi_path }}
-socket=tcp://{{ qgis_fcgi_socket }}
+command={{ qgis_server_fcgi_path }}
+socket=tcp://{{ qgis_server_lists[qgis_selected_server].server_ip }}:{{ qgis_server_lists[qgis_selected_server].server_port }}
 process_name=worker_%(process_num)02d
 numprocs={{ qgis_num_workers }}      ; number of process to start
 autostart=true
@@ -17,5 +17,5 @@ stdout_logfile=/var/log/qgis/qgis-supervisor.log
 stdout_logfile_maxbytes=0   ; we use logrotate
 stdout_capture_maxbytes=1MB
 user={{ qgis_server_user }}
-environment=LC_ALL="{{ local_locale }}",LANG="{{ local_locale }}",HOME="{{ qgis_server_home }}",QGIS_SERVER_LOG_LEVEL={{ qgis_server_log_level }},QGIS_SERVER_LOG_STDERR=1,QGIS_PLUGINPATH="{{ qgis_server_plugin_directory }}",DISPLAY=":{{ xvfb_port }}",QGIS_OPTIONS_PATH="{{ qgis_server_config_directory }}",QGIS_CUSTOM_CONFIG_PATH="{{ qgis_server_config_directory }}",QGIS_AUTH_DB_DIR_PATH="{{ qgis_server_home }}"
+environment=LC_ALL="{{ local_locale }}",LANG="{{ local_locale }}",HOME="{{ qgis_server_home }}",QGIS_SERVER_LOG_LEVEL={{ qgis_server_log_level }},QGIS_SERVER_LOG_FILE="/var/log/qgis/qgis-server.log",QGIS_SERVER_LOG_STDERR=1,QGIS_PLUGINPATH="{{ qgis_server_plugin_directory }}",DISPLAY=":{{ xvfb_port }}",QGIS_OPTIONS_PATH="{{ qgis_server_config_directory }}",QGIS_CUSTOM_CONFIG_PATH="{{ qgis_server_config_directory }}",QGIS_AUTH_DB_DIR_PATH="{{ qgis_server_home }}",QGIS_SERVER_IGNORE_BAD_LAYERS="TRUE"{% if qgis_logging_tag_cluster != ""%},QGIS_LOGGING_TAG_CLUSTER="{{ qgis_logging_tag_cluster }}"{% endif %},GDAL_CACHEMAX="{{ gdal_cache_max }}"
 
