@@ -1,5 +1,13 @@
 ---
 
+- name: Create group for Qgis
+  group: name={{ qgis_server_group }} state=present
+  tags: qgis
+
+- name: Create user for Qgis
+  user: name={{ qgis_server_user }} group={{ qgis_server_group }}
+  tags: qgis
+
 - name: Add QGIS HOME directory
   file: path={{ qgis_server_home }} state=directory owner="{{ qgis_server_user }}" group="{{ qgis_server_group }}" mode="0775"
   tags: qgis
@@ -16,16 +24,19 @@
   tags: qgis
 
 # add qgis server config directory
-- name: Add qgis server config directory
+- name: Add qgis 2.18 server config directory
   file: path={{ qgis_server_home }}/.qgis2 mode=0775  state=directory group={{ qgis_server_group }}
+  when: qgis_server_version == "2.18"
   tags: qgis
 
 # supervisor config
 - name: Add supervisor config
-  template: src=qgis_supervisor_conf.j2 dest='{{ supervisor_config_directory }}/qgis-server.conf' mode=0644
+  template: src=qgis_supervisor_conf.j2 dest='{{ supervisor_config_directory }}/{{ qgis_supervisor_config_file }}' mode=0644
   notify:
     - restart supervisor
-  tags: qgis
+  tags:
+    - qgis
+    - qgis-supervisor
 
 # Debian : Install qgis-server from local package
 - name: Copy QGIS local package
@@ -45,9 +56,8 @@
 - name: Add QGIS repository key
   apt_key:
     id: "{{ qgis_repository_debian_key }}"
-    keyserver: keyserver.ubuntu.com
+    url: "{{ qgis_repository_debian_key_url }}"
     state: present
-    #url: "{{ qgis_repository_debian_key_url }}"
   when: qgis_install_source == 'repository'
   tags: qgis
 
@@ -57,8 +67,39 @@
   tags: qgis
 
 - name: Add QGIS repository
-  apt_repository: repo='deb {{ qgis_repository_debian }} {{ ansible_distribution_release|lower }} main' state=present
+  apt_repository: repo='deb {{ qgis_repository_debian }} {{ ansible_distribution_release|lower }} main' state=present
   when: qgis_install_source == 'repository'
+  tags: qgis
+
+- name: remove QGIS 2.18 repository
+  apt_repository: repo='deb http://qgis.org/debian-ltr-2.18 {{ ansible_distribution_release|lower }} main' state=absent
+  when: qgis_server_version != '2.18' and qgis_install_source == 'repository'
+  tags: qgis
+
+- name: Check version of already installed qgis
+  shell: "dpkg -s qgis-server | grep Version | cut -d: -f3 | cut -d. -f1"
+  when: qgis_server_version != '2.18' and qgis_install_source == 'repository'
+  ignore_errors: yes
+  register: check_qgis_version
+  tags: qgis
+
+- name: remove QGIS2 - Debian
+  apt:
+    pkg:
+      - libqgis-analysis2.18.28
+      - libqgis-core2.18.28
+      - libqgis-customwidgets
+      - libqgis-gui2.18.28
+      - libqgis-networkanalysis2.18.28
+      - libqgis-server2.18.28
+      - libqgispython2.18.28
+      - python-qgis
+      - python-qgis-common
+      - qgis-providers
+      - qgis-providers-common
+      - qgis-server
+    state: absent
+  when: qgis_server_version != '2.18' and qgis_install_source == 'repository' and check_qgis_version.rc is defined and check_qgis_version.rc == 0 and check_qgis_version.stdout is defined and check_qgis_version.stdout == '2'
   tags: qgis
 
 - name: Install QGIS from repository
@@ -73,12 +114,12 @@
   tags: qgis
 
 - name: Add QGIS config file
-  template: src=qgis_config.j2 dest='{{ qgis_server_config_directory }}/QGIS/QGIS2.ini' mode=0644
+  template: src=qgis_config.j2 dest='{{ qgis_server_config_directory }}/QGIS/QGIS2.ini' mode=0644
   when: qgis_server_version == "2.18"
   tags: qgis
 
 - name: Add QGIS config file
-  template: src=qgis3_config.j2 dest='{{ qgis_server_config_directory }}/QGIS/QGIS3.ini' mode=0644
+  template: src=qgis3_config.j2 dest='{{ qgis_server_config_directory }}/QGIS/QGIS3.ini' mode=0644
   when: qgis_server_version != "2.18"
   tags: qgis
 
