@@ -92,7 +92,7 @@ export default class SelectionTool {
         // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
         mainEventDispatcher.addListener(
             () => {
-                if(this.isActive){
+                if(this.isActive && mainLizmap.digitizing.featureDrawn){
                     // We only handle a single drawn feature currently
                     if (mainLizmap.digitizing.featureDrawn.length > 1){
                         mainLizmap.digitizing.drawLayer.destroyFeatures(mainLizmap.digitizing.drawLayer.features.shift());
