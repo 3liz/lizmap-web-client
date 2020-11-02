@@ -1065,6 +1065,83 @@ class editionCtrl extends jController
     }
 
     /**
+     * Editable features.
+     *
+     * @urlparam string $repository Lizmap Repository
+     * @urlparam string $project Name of the project
+     * @urlparam string $layerId Qgis id of the layer
+     *
+     * @return jResponseJson
+     */
+    public function editableFeatures()
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+        $rep->data = array('success' => false);
+
+        $project = $this->param('project');
+        $repository = $this->param('repository');
+        $layerId = $this->param('layerId');
+
+        if (!$project) {
+            $rep->data['message'] = jLocale::get('view~edition.message.error.parameter.project');
+
+            return $rep;
+        }
+
+        // Get repository data
+        $lrep = lizmap::getRepository($repository);
+        if (!$lrep) {
+            $rep->data['message'] = 'The repository '.strtoupper($repository).' does not exist !';
+
+            return $rep;
+        }
+
+        // Get the project data
+        $lproj = null;
+
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if (!$lproj) {
+                $rep->data['message'] = 'The lizmapProject '.strtoupper($project).' does not exist !';
+
+                return $rep;
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            $rep->data['message'] = 'The lizmapProject '.strtoupper($project).' does not exist !';
+
+            return $rep;
+        }
+
+        // Redirect if no rights to access this repository
+        if (!$lproj->checkAcl()) {
+            $rep->data['message'] = jLocale::get('view~default.repository.access.denied');
+
+            return $rep;
+        }
+
+        // Redirect if no rights to use the edition tool
+        if (!jAcl2::check('lizmap.tools.edition.use', $lrep->getKey())) {
+            $rep->data['message'] = jLocale::get('view~edition.access.denied');
+
+            return $rep;
+        }
+
+        $layer = $lproj->getLayer($layerId);
+        if (!$layer) {
+            $rep->data['message'] = jLocale::get('view~edition.message.error.layer.editable');
+
+            return $rep;
+        }
+
+        $rep->data['success'] = true;
+        $rep->data['message'] = 'Success';
+        $rep->data = array_merge($rep->data, $layer->editableFeatures());
+
+        return $rep;
+    }
+
+    /**
      * Link features between 2 tables via pivot table.
      *
      * @urlparam string $repository Lizmap Repository
