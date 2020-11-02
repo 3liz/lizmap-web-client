@@ -590,24 +590,19 @@ class qgisForm implements qgisFormControlsInterface
             if ($jCtrl === null) {
                 continue;
             }
-            // Control is an upload control
-            if ($jCtrl instanceof jFormsControlUpload) {
-                $values[$fieldName] = $this->processUploadedFile($form, $fieldName, $cnx);
-            } else {
 
-                // Get and filter the posted data foreach form control
-                $value = $form->getData($fieldName);
+            // Get and filter the posted data foreach form control
+            $value = $form->getData($fieldName);
 
-                if (is_array($value)) {
-                    $value = '{'.implode(',', $value).'}';
-                }
-
-                if ($value === '') {
-                    $value = null;
-                }
-
-                $values[$fieldName] = $value;
+            if (is_array($value)) {
+                $value = '{'.implode(',', $value).'}';
             }
+
+            if ($value === '') {
+                $value = null;
+            }
+
+            $values[$fieldName] = $value;
 
             // Get expression constraint
             $constraints = $this->getConstraints($fieldName);
