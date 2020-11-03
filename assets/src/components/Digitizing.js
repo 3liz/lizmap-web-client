@@ -25,10 +25,11 @@ export default class Digitizing extends HTMLElement {
         const mainTemplate = () => html`
         <div class="digitizing">
             <div class="digitizing-buttons btn-group" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
-                <a class="btn dropdown-toggle ${mainLizmap.digitizing.toolSelected !== 'deactivate' ? 'active btn-primary' : ''}" data-toggle="dropdown" href="#">
+                <a class="btn dropdown-toggle ${mainLizmap.digitizing.toolSelected !== 'deactivate' ? 'active btn-primary' : ''}" @click=${(event) => { if(mainLizmap.digitizing.toolSelected !== 'deactivate') {mainLizmap.digitizing.toolSelected = 'deactivate'; event.stopPropagation();}}} data-toggle="dropdown" href="#">
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
+                    <!-- Display selected tool -->
                     <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'point' ? '' : 'hidden'}">
                         <use xlink:href="#point"></use>
                     </svg>
