@@ -29,6 +29,8 @@ export default class Digitizing extends HTMLElement {
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
+                </a>
+                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
