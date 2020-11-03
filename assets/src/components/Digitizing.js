@@ -25,7 +25,7 @@ export default class Digitizing extends HTMLElement {
         const mainTemplate = () => html`
         <div class="digitizing">
             <div class="digitizing-buttons btn-group" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <a class="btn dropdown-toggle ${mainLizmap.digitizing.toolSelected !== 'deactivate' ? 'active btn-primary' : ''}" data-toggle="dropdown" href="#">
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
