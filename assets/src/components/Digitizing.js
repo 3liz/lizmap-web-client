@@ -4,8 +4,8 @@ import { html, render } from 'lit-html';
 import '../images/svg/point.svg';
 import '../images/svg/line.svg';
 import '../images/svg/polygon.svg';
-import '../images/svg/rectangle.svg';
-import '../images/svg/radius.svg';
+import '../images/svg/box.svg';
+import '../images/svg/circle.svg';
 import '../images/svg/freehand.svg';
 
 import '../images/svg/pencil.svg';
@@ -28,6 +28,24 @@ export default class Digitizing extends HTMLElement {
                 <a class="btn dropdown-toggle ${mainLizmap.digitizing.toolSelected !== 'deactivate' ? 'active btn-primary' : ''}" data-toggle="dropdown" href="#">
                     <svg>
                         <use xlink:href="#pencil"></use>
+                    </svg>
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'point' ? '' : 'hidden'}">
+                        <use xlink:href="#point"></use>
+                    </svg>
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'line' ? '' : 'hidden'}">
+                        <use xlink:href="#line"></use>
+                    </svg>
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'polygon' ? '' : 'hidden'}">
+                        <use xlink:href="#polygon"></use>
+                    </svg>
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'box' ? '' : 'hidden'}">
+                        <use xlink:href="#box"></use>
+                    </svg>
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'circle' ? '' : 'hidden'}">
+                        <use xlink:href="#circle"></use>
+                    </svg>
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'freehand' ? '' : 'hidden'}">
+                        <use xlink:href="#freehand"></use>
                     </svg>
                 </a>
                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -52,12 +70,12 @@ export default class Digitizing extends HTMLElement {
                     <br>
                     <li class="digitizing-box btn ${mainLizmap.digitizing.toolSelected === 'box' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'box'} data-original-title="${lizDict['digitizing.toolbar.box']}">
                         <svg>
-                            <use xlink:href="#rectangle"></use>
+                            <use xlink:href="#box"></use>
                         </svg>
                     </li>
                     <li class="digitizing-circle btn ${mainLizmap.digitizing.toolSelected === 'circle' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'circle'} data-original-title="${lizDict['digitizing.toolbar.circle']}">
                         <svg>
-                            <use xlink:href="#radius"></use>
+                            <use xlink:href="#circle"></use>
                         </svg>
                     </li>
                     <li class="digitizing-freehand btn ${mainLizmap.digitizing.toolSelected === 'freehand' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'freehand'} data-original-title="${lizDict['digitizing.toolbar.freehand']}">

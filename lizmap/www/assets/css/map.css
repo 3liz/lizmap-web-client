@@ -2573,6 +2573,13 @@ lizmap-selection-invert svg {
   height: 24px;
 }
 
+svg.digitizing-selected-tool{
+  width: 15px;
+  position: absolute;
+  bottom: -4px;
+  right: 1px;
+}
+
 .digitizing-toggle-visibility{
   vertical-align: top;
 }
