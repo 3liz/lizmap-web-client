@@ -184,6 +184,15 @@ export default class Digitizing {
 
         // Load and display saved feature if any
         this.loadFeatureDrawnToMap();
+
+        // Disable drawing tool when measure tool is activated
+        mainLizmap.lizmap3.events.on({
+            minidockopened: (e) => {
+                if (e.id == 'measure') {
+                    this.toolSelected = this._tools[0];
+                }
+            }
+        });
     }
 
     get drawLayer(){
