@@ -89,14 +89,15 @@ password=lizmap1234!
 Setting port numbers for services
 =================================
 
-You can modify port to access to the web server and/or the postgresql server,
-by creating some environment variable, `LZMWEBPORT` and `LZMPGPORT`.
+You can modify port to access to the web server, the postgresql server or QGIS Server,
+by creating some environment variable, `LZMWEBPORT`, `LZMPGPORT` or `LZMQGSRVPORT`.
 
 Example:
 
 ```bash
 export LZMPGPORT=8150
 export LZMWEBPORT=8151
+export LZMQGSRVPORT=8152
 
 ./run-docker up -d
 
