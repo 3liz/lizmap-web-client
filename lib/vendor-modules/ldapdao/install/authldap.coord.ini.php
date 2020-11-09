@@ -90,7 +90,7 @@ dao = "jauthdb~jelixuser"
 profile = "jauth"
 
 ; profile to use for ldap
-ldapprofile = ""
+ldapprofile = "ldapdao"
 
 ; ldap needs clear password to connect, this is useless for our plugin
 ; except for the admin user.

@@ -3,52 +3,37 @@
 * @author    Laurent Jouanneau
 */
 
+/**
+ * Installer for Jelix 1.7
+ */
+class ldapdaoModuleInstaller extends \Jelix\Installer\Module\Installer {
 
-class ldapdaoModuleInstaller extends jInstallerModule {
+    function install(\Jelix\Installer\Module\API\InstallHelpers $helpers) {
+        
+        // we should disable some rights
+        $daoright = jDao::get('jacl2db~jacl2rights', 'jacl2_profile');
+        $daoright->deleteByRole('auth.users.create');
+        $daoright->deleteByRole('auth.users.change.password');
+        $daoright->deleteByRole('auth.user.change.password');
+        //$daoright->deleteByRole('auth.users.delete');
 
-    function install() {
-        if (!$this->getParameter('noconfigfile')) {
-            $this->copyFile('authldap.coord.ini.php', 'config:authldap.coord.ini.php', false);
-        }
+        // allow the admin user to change his right
+        $authconfig = $helpers->getConfigIni()->getValue('auth','coordplugins');
+        $confIni = parse_ini_file(jApp::appSystemPath($authconfig), true);
+        $authConfig = jAuth::loadConfig($confIni);
 
-        if ($this->firstExec('acl2')) {
-            // we should disable some rights
-            $daoright = jDao::get('jacl2db~jacl2rights', 'jacl2_profile');
-            $daoright->deleteBySubject('auth.users.create');
-            $daoright->deleteBySubject('auth.users.change.password');
-            $daoright->deleteBySubject('auth.user.change.password');
-            //$daoright->deleteBySubject('auth.users.delete');
-
-            // allow the admin user to change his right
-            $confIni = parse_ini_file($this->getAuthConfFile(), true);
-            $authConfig = jAuth::loadConfig($confIni);
-            if (isset($authConfig['ldapdao'])) {
-                // authldap.coord.ini.php was already installed, we can take
-                // the admin user indicated into it
-                $jelixAdminUser = $authConfig['ldapdao']['jelixAdminLogin'];
-            }
-            else {
-                $jelixAdminUser = 'admin';
-            }
-            $userGroup = jDao::get('jacl2db~jacl2group', 'jacl2_profile')->getPrivateGroup($jelixAdminUser);
-            if ($userGroup) {
-                jAcl2DbManager::addRight($userGroup->id_aclgrp, 'auth.user.change.password');
-            }
-        }
-    }
-
-    protected function isJelix17() {
-        return method_exists('jApp', 'appConfigPath');
-    }
-
-    protected function getAuthConfFile() {
-        $authconfig = $this->config->getValue('auth','coordplugins');
-        if ($this->isJelix17()) {
-            $confPath = jApp::appConfigPath($authconfig);
+        if (isset($authConfig['ldapdao'])) {
+            // authldap.coord.ini.php was already installed, we can take
+            // the admin user indicated into it
+            $jelixAdminUser = $authConfig['ldapdao']['jelixAdminLogin'];
         }
         else {
-            $confPath = jApp::configPath($authconfig);
+            $jelixAdminUser = 'admin';
         }
-        return $confPath;
+        $userGroup = jDao::get('jacl2db~jacl2group', 'jacl2_profile')->getPrivateGroup($jelixAdminUser);
+        if ($userGroup) {
+            jAcl2DbManager::addRight($userGroup->id_aclgrp, 'auth.user.change.password');
+        }
+
     }
 }
