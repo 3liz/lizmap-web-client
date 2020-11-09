@@ -72,6 +72,8 @@ services:
       - ./qgis-server-plugins:/srv/qgis-server-plugins
       - ./wps-data:/srv/data
       - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
+    ports:
+      - ${LZMQGSRVPORT}:8080
 volumes:
   pg_data:
     name: "lizmap${LZMBRANCH}_pg_data"
