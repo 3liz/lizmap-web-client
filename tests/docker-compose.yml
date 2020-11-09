@@ -61,6 +61,7 @@ services:
     environment:
       PGSERVICEFILE: /srv/etc/pg_service.conf
       QGSRV_CACHE_ROOTDIR: /srv/projects
+      QGSRV_SERVER_PLUGINPATH: /srv/qgis-server-plugins
       QGSRV_CACHE_SIZE: '20'
       QGSRV_LOGGING_LEVEL: DEBUG
       QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
@@ -68,6 +69,7 @@ services:
       QGSRV_SERVER_WORKERS: 4
     volumes:
       - ./qgis-projects:/srv/projects
+      - ./qgis-server-plugins:/srv/qgis-server-plugins
       - ./wps-data:/srv/data
       - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
 volumes:
