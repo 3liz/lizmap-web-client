@@ -2049,6 +2049,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         project: lizUrls.params.project,
                         layerId: $(selector).val().split('.')[0]
                     }, function (data) {
+                        let hasRestriction = false;
                         let editableFeaturesId = [];
 
                         if ('success' in data &&
@@ -2056,6 +2057,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             'status' in data &&
                             data['status'] == 'restricted') {
 
+                            hasRestriction = true;
                             for (const feature of data.features) {
                                 editableFeaturesId.push(feature.id.split('.')[1]);
                             }
@@ -2069,7 +2071,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             var layerId = val.replace('.' + fid, '');
                             var layerConfig = lizMap.getLayerConfigById(layerId);
 
-                            if (editableFeaturesId.includes(fid)){
+                            if (!hasRestriction || editableFeaturesId.includes(fid)){
                                 var eHtml = '';
 
                                 // Edit button
