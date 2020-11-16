@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   pgsql:
-    image: mdillon/postgis:11
+    image: 3liz/postgis:9.5-2.3
     container_name: "lizmap${LZMBRANCH}_test_pgsql"
     environment:
       POSTGRES_DB: lizmap
