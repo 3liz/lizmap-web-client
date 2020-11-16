@@ -29,4 +29,9 @@ if [ "$LZMWEBPORT" == "" ]; then
 fi
 
 
+if [ "$LZMQGSRVVERSION" == "" ]; then
+  export LZMQGSRVVERSION=3.4
+fi
+
+
 docker-compose -p lizmap-${LZMBRANCH}-tests $CMD
