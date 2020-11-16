@@ -26,7 +26,7 @@ fi
 
 case $COMMAND in
     clean_tmp)
-        docker exec -t -i lizmap_${LZMBRANCH}_test_php appctl.sh clean_tmp;;
+        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh clean_tmp;;
     reset)
         docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh reset;;
     reset-sqlite)
