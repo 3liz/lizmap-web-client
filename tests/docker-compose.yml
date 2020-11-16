@@ -57,7 +57,7 @@ services:
       - lizmap
   map:
     container_name: "lizmap${LZMBRANCH}_test_qgis"
-    image: 3liz/qgis-map-server:3.4
+    image: 3liz/qgis-map-server:${LZMQGSRVVERSION}
     environment:
       PGSERVICEFILE: /srv/etc/pg_service.conf
       QGSRV_CACHE_ROOTDIR: /srv/projects
