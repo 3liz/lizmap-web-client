@@ -7,7 +7,6 @@
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -53,7 +52,6 @@ ALTER TABLE tests_projects.filter_layer_by_user_edition_only OWNER TO lizmap;
 --
 
 CREATE SEQUENCE tests_projects.filter_layer_by_user_edition_only_gid_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -75,7 +73,6 @@ ALTER SEQUENCE tests_projects.filter_layer_by_user_edition_only_gid_seq OWNED BY
 --
 
 CREATE SEQUENCE tests_projects.filter_layer_by_user_gid_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -109,7 +106,6 @@ ALTER TABLE tests_projects.layer_with_no_filter OWNER TO lizmap;
 --
 
 CREATE SEQUENCE tests_projects.layer_with_no_filter_gid_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
