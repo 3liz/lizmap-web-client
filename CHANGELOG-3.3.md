@@ -4,6 +4,8 @@ Changelog
 Version 3.3.12 (next)
 ---------------------
 
+- Add 'empty-data' class in auto popup when value is empty or NULL
+
 Version 3.3.11
 ---------------------
 
