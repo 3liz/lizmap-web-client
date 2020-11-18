@@ -72,6 +72,7 @@ function resetApp() {
     cleanTmp
     setRights
     launchInstaller
+    setupAdmin
 }
 
 
@@ -135,6 +136,21 @@ function composerUpdate() {
     fi
 }
 
+function setupAdmin() {
+    source=$LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE
+    if [ $source = "__random" ]; then
+        su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL"
+    elif [ $source = "__reset" ]; then
+        su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL"
+    elif [ -f $source ]; then
+        pass=$(cat $source)
+        su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL $pass"
+    else
+        echo '[ERROR] Invalid LIZMAP_ADMIN_DEFAULT_SOURCE'
+        return 1
+    fi
+}
+
 function launch() {
     if [ ! -f $APPDIR/var/config/profiles.ini.php ]; then
         cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
@@ -155,6 +171,7 @@ function launch() {
     launchInstaller
     setRights
     cleanTmp
+    setupAdmin
 }
 
 function launchUnitTests() {
