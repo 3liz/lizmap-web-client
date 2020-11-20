@@ -36,11 +36,6 @@ var lizMap = function() {
    */
   var map = null;
   /**
-   * PRIVATE Property: qgisProjectProjection
-   * {<OpenLayers.Projection>} The QGIS project's projection
-   */
-  var qgisProjectProjection = null;
-  /**
    * PRIVATE Property: baselayers
    * {Array(<OpenLayers.Layer>)} Ordered list of base layers
    */
@@ -5960,7 +5955,6 @@ var lizMap = function() {
 
         // Copy QGIS project's projection
         config.options.qgisProjectProjection = Object.assign({}, config.options.projection);
-        qgisProjectProjection = new OpenLayers.Projection(config.options.projection.ref);
 
         beforeLayerTreeCreated();
         var firstLayer = capability.nestedLayers[0];

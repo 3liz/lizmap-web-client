@@ -24,15 +24,6 @@ You must set lizmap.local into your /etc/hosts
 
 Then, in your browser, go to `http://lizmap.local:8130/`. (see below to change the port)
 
-If you want to use pgadmin or any other postgresql client, access credentials are:
-
-- host: `lizmap.local`
-- port: 8132 (see below to change the port)
-- database: `lizmap`
-- user: `lizmap`
-- password: `lizmap1234!`
-
-
 To stop containers:
 
 ```
@@ -63,6 +54,56 @@ Available commands:
 * `pgsql` to enter into the interactive command line of postgresql (psql)
 * `redis-cli` to enter into the interactive command line of Redis (redis-cli)
 
+Accessing to Postgresql
+=======================
+
+If you want to use pgadmin or any other postgresql client, access credentials from your
+computer are:
+
+- host: `localhost`
+- port: 8132 (see below to change the port)
+- database: `lizmap`
+- user: `lizmap`
+- password: `lizmap1234!`
+
+However, you must not indicate these credentials in your Qgis projects for tests,
+because host and port are different when accessing from your computer, and when
+accessing from one of the containers, like qgis or lizmap.
+
+A postgresql service named  `lizmapdb` is configured in containers. 
+So you must use it as access parameter in your qgis projects, with the database name `lizmap`.
+ 
+In order to set the service from Qgis Desktop, you must create the file 
+`~/.pg_service.conf` and put these parameters in it:
+
+```
+[lizmapdb]
+host=localhost
+port=8132
+user=lizmap
+password=lizmap1234!
+```
+
+
+
+Setting port numbers for services
+=================================
+
+You can modify port to access to the web server, the postgresql server or QGIS Server,
+by creating some environment variable, `LZMWEBPORT`, `LZMPGPORT` or `LZMQGSRVPORT`.
+
+Example:
+
+```bash
+export LZMPGPORT=8150
+export LZMWEBPORT=8151
+export LZMQGSRVPORT=8152
+
+./run-docker up -d
+
+# you can then open browser at http://localhost:8151/
+
+```
 
 Running different docker stack for each branch
 ==============================================
@@ -87,20 +128,8 @@ export LZMBRANCH=another-name
 
 Port to access to the postgresql server and the nginx server
 are the same on each branch, by default. So if you want to run different stack
-at the same time, you will have some error. You can modify these port by creating 
-some environment variable, `LZMPGPORT` and `LZMWEBPORT`.
-
-Example:
-
-```bash
-export LZMPGPORT=8150
-export LZMWEBPORT=8151
-
-./run-docker up -d
-
-# you can then open browser at http://localhost:8151/
-
-```
+at the same time, you will have some error. You must then change the port. See above.
+ 
 
 Launching unit-tests
 ====================
@@ -143,4 +172,5 @@ Testing qgis projects
 
 Put your projects into `tests/qgis_projects/rep1/` (replace `rep1` by the name 
 of your choice), and then you can declare `rep1` projects into the admin page
-of Lizmap, or in its `var/config/lizmapConfig.ini.php`
+of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
+

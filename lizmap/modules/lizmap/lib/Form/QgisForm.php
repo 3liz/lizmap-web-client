@@ -109,8 +109,6 @@ class QgisForm implements QgisFormControlsInterface
         }
         $formInfos = json_decode($json);
         foreach ($dataFields as $fieldName => $prop) {
-
-            // faire qqch pour la geometry
             $defaultValue = $this->getDefaultValue($fieldName);
 
             $constraints = $this->getConstraints($fieldName);
@@ -346,9 +344,29 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
+     * Reset the form controls data to Null.
+     *
+     * @return jFormsBase the Jelix jForm object
+     */
+    public function resetFormData()
+    {
+        if (!$this->dbFieldsInfo) {
+            return $this->form;
+        }
+
+        $form = $this->form;
+        $dataFields = $this->dbFieldsInfo->dataFields;
+        foreach ($dataFields as $ref => $prop) {
+            $form->setData($ref, null);
+        }
+
+        return $form;
+    }
+
+    /**
      * Set the form controls data from the database default value.
      *
-     * @return object the Jelix jForm object
+     * @return jFormsBase the Jelix jForm object
      */
     public function setFormDataFromDefault()
     {
@@ -384,7 +402,7 @@ class QgisForm implements QgisFormControlsInterface
      *
      * @param mixed $feature
      *
-     * @return object the Jelix jForm object
+     * @return jFormsBase the Jelix jForm object
      */
     public function setFormDataFromFields($feature)
     {
@@ -416,6 +434,17 @@ class QgisForm implements QgisFormControlsInterface
                 }
                 $form->setData($ref.'_hidden', $value);
             } else {
+                if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
+                    $edittype = $this->formControls[$ref]->getEditType();
+                    if ($edittype && property_exists($edittype, 'options')
+                            && property_exists($edittype->options, 'field_format') && $value) {
+                        $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
+                        $date = DateTime::createFromFormat($format, $value);
+                        if ($date) {
+                            $value = $date->format('Y-m-d H:i:s');
+                        }
+                    }
+                }
                 $form->setData($ref, $value);
             }
         }
@@ -469,6 +498,15 @@ class QgisForm implements QgisFormControlsInterface
                 $constraintExpressions[$fieldName] = $constraints['exp_value'];
             }
         }
+        // Get filter by login
+        $expByUserKey = 'filterByLogin';
+        $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
+        if ($expByUser !== '') {
+            while (array_key_exists($expByUserKey, $constraintExpressions)) {
+                $expByUserKey .= '@';
+            }
+            $constraintExpressions[$expByUserKey] = $expByUser;
+        }
 
         // Evaluate constraint expressions
         if (count($constraintExpressions) > 0) {
@@ -486,6 +524,15 @@ class QgisForm implements QgisFormControlsInterface
             $results = (array) $results;
             foreach ($results as $fieldName => $result) {
                 if ($result === 1) {
+                    continue;
+                }
+                if ($fieldName === $expByUserKey) {
+                    $project = $this->layer->getProject();
+                    $loginFilterConfig = $project->getLoginFilteredConfig($this->layer->getName());
+                    $form->setErrorOn($loginFilterConfig->filterAttribute, jLocale::get('view~edition.message.error.feature.editable'));
+
+                    $check = false;
+
                     continue;
                 }
                 $constraints = $this->getConstraints($fieldName);
@@ -509,11 +556,6 @@ class QgisForm implements QgisFormControlsInterface
         if ($jCtrl === null) {
             return null;
         }
-        // Control is an upload control
-        if ($jCtrl instanceof \jFormsControlUpload) {
-            return $this->processUploadedFile($form, $fieldName, $cnx);
-        }
-
         // Get and filter the posted data foreach form control
         $value = $form->getData($fieldName);
 
@@ -528,14 +570,88 @@ class QgisForm implements QgisFormControlsInterface
         return $value;
     }
 
+    public function getDateTimeConversionTab()
+    {
+        // 'ZZ' is not an actual PHP Format it's to avoid php format to be reconverted as if it was Qgis format
+        return array_reverse(array(
+            'ZZ' => 'd',
+            'd' => 'j',
+            'dd' => 'ZZ',
+            'ddd' => 'D',
+            'dddd' => 'l',
+            'M' => 'n',
+            'MM' => 'm',
+            'MMM' => 'M',
+            'MMMM' => 'F',
+            'yy' => 'y',
+            'yyyy' => 'Y',
+            'H' => 'G',
+            'HH' => 'H',
+            'h' => 'G',
+            'hh' => 'H',
+            'AP' => 'A',
+            'ap' => 'a',
+            'm' => 'i',
+            'mm' => 'i',
+            'ss' => 's',
+            't' => 'T',
+        ));
+    }
+
+    /**
+     * Converts the format of a date from QGIS syntax to PHP syntax.
+     *
+     * @param string $fieldFormat The format to convert
+     *
+     * @return string The format converted
+     */
+    public function convertQgisFormatToPHP($fieldFormat)
+    {
+        $dateFormat = $fieldFormat;
+        // convertion from QGIS to PHP format
+        $format = $this->getDateTimeConversionTab();
+        $format12h = array('a', 'ap', 'A', 'AP');
+        foreach ($format12h as $am) {
+            if (strstr($dateFormat, $am)) {
+                $format['h'] = 'g';
+                $format['hh'] = 'h';
+
+                break;
+            }
+        }
+        foreach ($format as $qgis => $php) {
+            $dateFormat = str_replace($qgis, $php, $dateFormat);
+        }
+
+        return $dateFormat;
+    }
+
+    /**
+     * Converts the datetime to the format specified in the qgis Project.
+     *
+     * @param string $value       The datetime to convert
+     * @param string $fieldFormat The format in which to convert the date
+     *
+     * @return string The date converted
+     */
+    public function convertDateTimeToFormat($value, $fieldFormat)
+    {
+        $dateFormat = $this->convertQgisFormatToPHP($fieldFormat);
+
+        $date = new DateTime($value);
+
+        return $date->format($dateFormat);
+    }
+
     /**
      * Save the form to the database.
      *
      * @param null|mixed $feature
+     * @param array      $modifiedControls
      *
      * @return array|false|int value of primary key or false if an error occured
      */
-    public function saveToDb($feature = null)
+    public function saveToDb($feature = null, $modifiedControls = array())
     {
         if (!$this->dbFieldsInfo) {
             throw new \Exception('Save to database can\'t be done for the layer "'.$this->layer->getName().'"!');
@@ -632,13 +748,9 @@ class QgisForm implements QgisFormControlsInterface
 
         $dataFields = $this->dbFieldsInfo->dataFields;
 
-        // Get list of fields diplayed in form
+        // Get list of modified fields
         // can be an empty list
-        $formFields = array();
-        $attributeEditorForm = $this->getAttributesEditorForm();
-        if ($attributeEditorForm) {
-            $formFields = $attributeEditorForm->getFields();
-        }
+        $modifiedFields = array_keys($modifiedControls);
 
         // Get list of fields which are not primary keys
         $fields = array();
@@ -664,8 +776,9 @@ class QgisForm implements QgisFormControlsInterface
             // For other column than geometry does not add it
             // if it's column not in form
             if ($fieldName != $geometryColumn
-                && count($formFields) != 0
-                && !in_array($fieldName, $formFields)) {
+                && count($modifiedFields) != 0
+                && !in_array($fieldName, $modifiedFields)
+                && !in_array($this->getFormControlName($fieldName), $modifiedFields)) {
                 continue;
             }
 
@@ -691,12 +804,22 @@ class QgisForm implements QgisFormControlsInterface
             return 'NULL';
         }
 
-        switch ($this->formControls[$ref]->fieldDataType) {
-            case 'geometry':
-                try {
-                    $value = $this->layer->getGeometryAsSql($value);
-                } catch (\Exception $e) {
-                    $form->setErrorOn($geometryColumn, $e->getMessage());
+            $convertDate = array('date', 'time', 'datetime');
+
+            if (in_array(strtolower($this->formControls[$ref]->fieldEditType), $convertDate)) {
+                $edittype = $this->formControls[$ref]->getEditType();
+                if ($edittype && property_exists($edittype, 'options')
+                    && property_exists($edittype->options, 'field_format')) {
+                    $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
+                }
+            }
+
+            switch ($this->formControls[$ref]->fieldDataType) {
+                case 'geometry':
+                    try {
+                        $value = $this->layer->getGeometryAsSql($value);
+                    } catch (Exception $e) {
+                        $form->setErrorOn($geometryColumn, $e->getMessage());
 
                     return false;
                 }

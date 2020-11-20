@@ -85,7 +85,7 @@ export default class SelectionTool {
         // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
         mainEventDispatcher.addListener(
             () => {
-                if(this.isActive){
+                if(this.isActive && mainLizmap.digitizing.featureDrawn){
                     // We only handle a single drawn feature currently
                     if (mainLizmap.digitizing.featureDrawn.length > 1){
                         mainLizmap.digitizing.drawLayer.destroyFeatures(mainLizmap.digitizing.drawLayer.features.shift());
@@ -95,20 +95,27 @@ export default class SelectionTool {
 
                     const selectionFeature = mainLizmap.digitizing.featureDrawn[0];
 
-                    if (selectionFeature){
+                    if (selectionFeature) {
                         // Handle buffer if any
                         this._bufferLayer.destroyFeatures();
                         if (this._bufferValue > 0) {
+                            // Reproject to project projection
+                            selectionFeature.geometry.transform(mainLizmap.projection, mainLizmap.qgisProjectProjection);
+
                             const geoJSONParser = new OpenLayers.Format.GeoJSON();
-                            const drawGeoJSON = geoJSONParser.write(selectionFeature.geometry);
                             const jstsGeoJSONReader = new GeoJSONReader();
                             const jstsGeoJSONWriter = new GeoJSONWriter();
-                            const jstsGeom = jstsGeoJSONReader.read(drawGeoJSON);
+
+                            // Use JSTS to get buffered geom
+                            const jstsGeom = jstsGeoJSONReader.read(geoJSONParser.write(selectionFeature.geometry));
                             const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
-                            const bufferedDraw = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
+                            const bufferedFeature = (geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom)))[0];
+
+                            // Reproject back to map projection
+                            bufferedFeature.geometry.transform(mainLizmap.qgisProjectProjection, mainLizmap.projection);
 
                             // Draw buffer
-                            this._bufferLayer.addFeatures(bufferedDraw);
+                            this._bufferLayer.addFeatures(bufferedFeature);
                             this._bufferLayer.redraw(true);
                         }
 

@@ -49,6 +49,8 @@ docker/*.zip
 tests/units/vendor/
 tests/units/composer.lock
 tests/qgis-projects/*
-!tests/qgis-projects/.empty
+!tests/qgis-projects/tests
+tests/qgis-server-plugins/*
+!tests/qgis-server-plugins/.empty
 assets/node_modules/
 tests/js/node_modules/

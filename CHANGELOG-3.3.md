@@ -1,17 +1,24 @@
 Changelog
 =========
 
+Version 3.3.12 (next)
+---------------------
+
 Version 3.3.11
 ---------------------
 
 - Fix QGIS custom dates in forms
 - Add zoomlevels to baselayers
 - Filter : assert filters have a title
+- Filter: use min_date field if max_date undefined
+- Don't display filter when no data
 
 - Treat PostGIS view datasource containing `key='""'` as `key=''`
 - Remove wps module from docker image
 - Fix broken link to IGN image in attribution
 - Datepicker i18n,call getCurrentLang() once
+- Fix the user table name into the Sqlite to Postgresql migrator
+- localization updated. New supported language: Slovak
 
 Version 3.3.10
 ---------------------

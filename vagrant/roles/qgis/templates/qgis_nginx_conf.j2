@@ -4,23 +4,25 @@
 #-----------------------------------
 
 # Nginx config far qgis-mapserver
+{% for q, qgishost in qgis_server_lists.items() %}
 server {
-    listen {{ qgis_server_port }};
-    server_name {{ qgis_server_name }};
+    listen {{ qgishost.proxy_server_address }}:{{ qgishost.proxy_server_port }};
+    server_name {{ qgishost.proxy_server_name }};
 
     access_log /var/log/nginx/qgis.access.log;
-    error_log /var/log/nginx/qgis.error.log;    
+    error_log /var/log/nginx/qgis.error.log;
 
-    # Ip forwarding 
-    # XXX beware that real ip is not always built 
+    # Ip forwarding
+    # XXX beware that real ip is not always built
     # by default
-    set_real_ip_from {{ qgis_set_real_ip }};
+    set_real_ip_from {{ qgishost.proxy_set_real_ip }};
     real_ip_header X-Forwarded-For;
     real_ip_recursive on;
 
     location / {
-        fastcgi_pass {{ qgis_fcgi_socket }};
+        fastcgi_pass {{ qgishost.server_ip }}:{{ qgishost.server_port }};
         include fastcgi_params;
     }
 }
+{% endfor %}
 
