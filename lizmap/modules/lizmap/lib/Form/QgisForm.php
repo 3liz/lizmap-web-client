@@ -1407,7 +1407,7 @@ class QgisForm implements QgisFormControlsInterface
             unset($params['PROPERTYNAME']);
         }
 
-        $wfsRequest = new \lizmapWFSRequest($project, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, \lizmap::getServices(), $this->appContext);
         $this->PerformWfsRequest($wfsRequest, $formControl, $referencedField, $previewField);
     }
 

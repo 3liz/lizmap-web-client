@@ -35,8 +35,8 @@ class qgisServer
             'request' => 'GetServerSettings',
             'map' => $project->getRelativeQgisPath(),
         );
-        $url = lizmapProxy::constructUrl($params);
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+        $url = \Lizmap\Request\Proxy::constructUrl($params);
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
             $json = json_decode($data);
             if (property_exists($json, 'lizmap')) {
@@ -52,8 +52,8 @@ class qgisServer
             'request' => 'GetCapabilitiesAtlas',
             'map' => $project->getRelativeQgisPath(),
         );
-        $url = lizmapProxy::constructUrl($params);
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+        $url = \Lizmap\Request\Proxy::constructUrl($params);
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
             $json = json_decode($data);
             $metadata = $json->metadata;

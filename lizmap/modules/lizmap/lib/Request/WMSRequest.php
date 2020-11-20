@@ -9,7 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapWMSRequest extends lizmapOGCRequest
+
+namespace Lizmap\Request;
+
+class WMSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wms_exception';
 
@@ -38,7 +41,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         }
 
         // No filter data by login rights
-        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+        if (\jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
             return $params;
         }
 
@@ -94,11 +97,11 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                jLog::log('GetCapabilities empty data', 'error');
+                \jLog::log('GetCapabilities empty data', 'error');
             } else {
-                jLog::log('GetCapabilities result code: '.$result->code, 'error');
+                \jLog::log('GetCapabilities result code: '.$result->code, 'error');
             }
-            jMessage::add('Server Error !', 'Error');
+            \jMessage::add('Server Error !', 'Error');
 
             return $this->serviceException();
         }
@@ -112,7 +115,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
+        $sUrl = \jUrl::getFull(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -180,7 +183,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $response = $this->request();
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
+        $sUrl = \jUrl::getFull(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -216,12 +219,12 @@ class lizmapWMSRequest extends lizmapOGCRequest
     protected function getmap()
     {
         if (!$this->checkMaximumWidthHeight()) {
-            jMessage::add('The requested map size is too large', 'Size error');
+            \jMessage::add('The requested map size is too large', 'Size error');
 
             return $this->serviceException();
         }
 
-        $getMap = lizmapProxy::getMap($this->project, $this->parameters(), $this->forceRequest);
+        $getMap = \Lizmap\Request\Proxy::getMap($this->project, $this->parameters(), $this->forceRequest);
 
         return (object) array(
             'code' => $getMap[2],
@@ -305,7 +308,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $queryLayers = $this->param('query_layers');
         // QUERY_LAYERS is mandatory
         if (!$queryLayers) {
-            jMessage::add('The QUERY_LAYERS parameter is missing.', 'MissingParameterValue');
+            \jMessage::add('The QUERY_LAYERS parameter is missing.', 'MissingParameterValue');
 
             return $this->serviceException();
         }
@@ -359,7 +362,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $querystring = $url.$this->buildQuery($externalWMSLayerParams);
 
             // Query external WMS layers
-            list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+            list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring);
 
             $rep .= $this->gfiGmlToHtml($data, $configLayer);
         }
@@ -421,7 +424,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             'repository' => $this->repository->getKey(),
             'project' => $this->project->getKey(),
         );
-        jEvent::notify('BeforePdfCreation', $eventParams);
+        \jEvent::notify('BeforePdfCreation', $eventParams);
 
         // Get remote data
         $response = $this->request(true);
@@ -470,7 +473,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $errormsg .= '\n'.http_build_query($gfiparams);
             $errormsg .= '\n'.$xmldata;
             $errormsg .= '\n'.implode('\n', $errorlist);
-            jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'error');
             // return empty html string
             return '';
         }
@@ -566,7 +569,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
     protected function gfiVectorXmlToHtml($layerId, $layerName, $layerTitle, $layer, $configLayer, $filterFid)
     {
         $content = array();
-        $popupClass = jClasses::getService('view~popup');
+        $popupClass = \jClasses::getService('view~popup');
 
         // Get the template for the popup content
         $templateConfigured = false;
@@ -615,7 +618,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
     ';
 
             // First get default template
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign('layerName', $layerName);
             $tpl->assign('layerId', $layerId);
             $tpl->assign('layerTitle', $layerTitle);
@@ -705,7 +708,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
                 }
             }
 
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign('layerTitle', $layerTitle);
             $tpl->assign('layerName', $layerName);
             $tpl->assign('layerId', $layerId);
@@ -716,7 +719,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
         // Build hidden table containing all features
         if (count($allFeatureAttributes) > 0) {
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign('layerTitle', $layerTitle);
             $tpl->assign('repository', $this->repository->getKey());
             $tpl->assign('project', $this->project->getKey());
@@ -739,7 +742,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
      */
     protected function gfiRasterXmlToHtml($layerId, $layerName, $layerTitle, $layer)
     {
-        $tpl = new jTpl();
+        $tpl = new \jTpl();
         $tpl->assign('layerName', $layerName);
         $tpl->assign('layerId', $layerId);
         $tpl->assign('attributes', $layer->Attribute);
@@ -747,7 +750,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $tpl->assign('project', $this->project->getKey());
         $popupRasterContent = $tpl->fetch('view~popupRasterContent', 'html');
 
-        $tpl = new jTpl();
+        $tpl = new \jTpl();
         $tpl->assign('layerTitle', $layerTitle);
         $tpl->assign('layerName', $layerName);
         $tpl->assign('layerId', $layerId);
@@ -766,10 +769,10 @@ class lizmapWMSRequest extends lizmapOGCRequest
      */
     protected function replaceMediaPathByMediaUrl($matches)
     {
-        $req = jApp::coord()->request;
+        $req = \jApp::coord()->request;
         $return = '';
         $return .= '"';
-        $return .= jUrl::getFull(
+        $return .= \jUrl::getFull(
             'view~media:getMedia',
             array(
                 'repository' => $this->repository->getKey(),
@@ -807,7 +810,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $errormsg .= '\n'.http_build_query($this->params);
             $errormsg .= '\n'.$xmldata;
             $errormsg .= '\n'.implode('\n', $errorlist);
-            jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'error');
             // return empty html string
             return '';
         }

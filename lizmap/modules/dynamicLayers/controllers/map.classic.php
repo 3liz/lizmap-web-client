@@ -49,7 +49,7 @@ class mapCtrl extends jController
         $querystring = $url.$rparams;
 
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring);
 
         // Get returned response and redirect to appropriate project page
         $json = json_decode($data);

@@ -9,7 +9,12 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapOGCRequest
+
+namespace Lizmap\Request;
+
+use Lizmap\App;
+
+abstract class OGCRequest
 {
     /**
      * @var lizmapProject
@@ -69,13 +74,13 @@ class lizmapOGCRequest
             $params['request'] = $request;
         }
         if ($service == 'WMS') {
-            return new lizmapWMSRequest($project, $params, $requestXml);
+            return new WMSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
         }
         if ($service == 'WMTS') {
-            return new lizmapWMTSRequest($project, $params, $requestXml);
+            return new WMTSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
         }
         if ($service == 'WFS') {
-            return new lizmapWFSRequest($project, $params, $requestXml);
+            return new WFSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
             // Not yet
         //} else if ($service == 'WCS') {
         //    return new lizmapWCSRequest($project, $params, $requestXml)
@@ -98,10 +103,10 @@ class lizmapOGCRequest
 
         $this->repository = $project->getRepository();
 
-        $this->services = lizmap::getServices();
+        $this->services = \lizmap::getServices();
 
         $params['map'] = $project->getRelativeQgisPath();
-        $this->params = lizmapProxy::normalizeParams($params);
+        $this->params = Proxy::normalizeParams($params);
         $this->requestXml = $requestXml;
     }
 
@@ -131,7 +136,7 @@ class lizmapOGCRequest
     public function parameters()
     {
         // Check if a user is authenticated
-        if (!jAuth::isConnected()) {
+        if (!\jAuth::isConnected()) {
             // return parameters with empty user param
             return array_merge($this->params, array(
                 'Lizmap_User' => '',
@@ -140,9 +145,9 @@ class lizmapOGCRequest
         }
 
         // Provide user and groups to lizmap plugin access control
-        $user = jAuth::getUserSession();
-        $userGroups = jAcl2DbUserGroup::getGroups();
-        $loginFilteredOverride = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
+        $user = \jAuth::getUserSession();
+        $userGroups = \jAcl2DbUserGroup::getGroups();
+        $loginFilteredOverride = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
         return array_merge($this->params, array(
             'Lizmap_User' => $user->login,
@@ -159,9 +164,9 @@ class lizmapOGCRequest
         }
 
         if (!$req) {
-            jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
+            \jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
         } else {
-            jMessage::add('Request '.$req.' is not supported', 'OperationNotSupported');
+            \jMessage::add('Request '.$req.' is not supported', 'OperationNotSupported');
         }
 
         return $this->serviceException(501);
@@ -205,7 +210,7 @@ class lizmapOGCRequest
             $options = array('method' => 'post');
         }
 
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, $options);
+        list($data, $mime, $code) = Proxy::getRemoteData($querystring, $options);
 
         return (object) array(
             'code' => $code,
@@ -216,7 +221,7 @@ class lizmapOGCRequest
 
     protected function serviceException($code = 400)
     {
-        $messages = jMessage::getAll();
+        $messages = \jMessage::getAll();
         $mime = 'text/plain';
         if (!$messages) {
             $data = '';
@@ -230,11 +235,11 @@ class lizmapOGCRequest
 
         if ($this->tplExceptions !== null) {
             $mime = 'text/xml';
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign('messages', $messages);
             $data = $tpl->fetch($this->tplExceptions);
         }
-        jMessage::clearAll();
+        \jMessage::clearAll();
 
         return (object) array(
             'code' => $code,
@@ -251,19 +256,19 @@ class lizmapOGCRequest
                $this->project->getRepository()->getKey().'-'.
                $this->project->getKey().'-'.
                $this->param('service').'-getcapabilities';
-        if (jAuth::isConnected()) {
-            $juser = jAuth::getUserSession();
+        if (\jAuth::isConnected()) {
+            $juser = \jAuth::getUserSession();
             $key .= '-'.$juser->login;
         }
         $key = sha1($key);
         $cached = false;
 
         try {
-            $cached = jCache::get($key, 'qgisprojects');
-        } catch (Exception $e) {
+            $cached = \jCache::get($key, 'qgisprojects');
+        } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
+            \jLog::logEx($e, 'error');
         }
         // invalid cache
         if ($cached !== false &&
@@ -300,7 +305,7 @@ class lizmapOGCRequest
                 'mime' => $response->mime,
                 'data' => $response->data,
             );
-            $cached = jCache::set($key, $cached, 3600, 'qgisprojects');
+            $cached = \jCache::set($key, $cached, 3600, 'qgisprojects');
         }
 
         return (object) array(

@@ -901,7 +901,7 @@ class qgisVectorLayer extends qgisMapLayer
         );
 
         // Perform request
-        $wfsRequest = new lizmapWFSRequest($project, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, lizmap::getServices(), lizmap::getAppContext());
         $result = $wfsRequest->process();
 
         // Check code

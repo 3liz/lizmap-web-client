@@ -82,7 +82,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
             );
 
             // Perform request
-            $wfsRequest = new \lizmapWFSRequest($lproj, $params);
+            $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices(), \lizmap::getAppContext());
             $wfsResult = $wfsRequest->process();
 
             $data = $wfsResult->data;
@@ -163,7 +163,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         );
 
         // Perform request
-        $wfsRequest = new \lizmapWFSRequest($lproj, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices(), \lizmap::getAppContext());
         $wfsResult = $wfsRequest->process();
 
         $data = $wfsResult->data;
