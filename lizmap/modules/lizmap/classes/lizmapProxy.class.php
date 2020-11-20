@@ -141,6 +141,9 @@ class lizmapProxy
             self::userHttpHeader(),
             $options['headers']
         );
+        if (isset($options['loginFilteredOverride'])) {
+            $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'];
+        }
 
         // Initialize responses
         $http_code = null;
@@ -269,9 +272,14 @@ class lizmapProxy
     {
         // Check if a user is authenticated
         if (!jAuth::isConnected()) {
-            // return empty header array
-            return array();
+            // return headers with empty user header
+            return array(
+                'X-Lizmap-User' => '',
+                'X-Lizmap-User-Groups' => '',
+            );
         }
+
+        // Provide user and groups to lizmap plugin access control
         $user = jAuth::getUserSession();
         $userGroups = jAcl2DbUserGroup::getGroups();
 
