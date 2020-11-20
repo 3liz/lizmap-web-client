@@ -30,7 +30,7 @@ New features:
   - Select on multiple layers or one
   - Invert selection
 - Editor:
-  - Use QGIS expression in Lizmap edition
+  - Use QGIS expression in Lizmap edition (needs Lizmap plugin installed as a QGIS Server plugin)
   - Split tool
   - Enhanced selection
   - Snapping while editing
@@ -64,7 +64,6 @@ New features:
 - Send user info to QGIS Server through parameters to get access control
   performed by Lizmap plugin as a QGIS Server plugin
 - Restrict filter by user on edition only, based on lizmap plugin config
-- Use QGIS expression in Lizmap edition, needs Lizmap plugin installed as a QGIS Server plugin
 - Command lines
   - A command line to request project WMS GetCapabilities to put project in QGIS Server cache
 
