@@ -132,18 +132,22 @@ class lizmapOGCRequest
     {
         // Check if a user is authenticated
         if (!jAuth::isConnected()) {
-            // return empty header array
+            // return parameters with empty user param
             return array_merge($this->params, array(
                 'Lizmap_User' => '',
                 'Lizmap_User_Groups' => '',
             ));
         }
+
+        // Provide user and groups to lizmap plugin access control
         $user = jAuth::getUserSession();
         $userGroups = jAcl2DbUserGroup::getGroups();
+        $loginFilteredOverride = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
         return array_merge($this->params, array(
             'Lizmap_User' => $user->login,
             'Lizmap_User_Groups' => implode(', ', $userGroups),
+            'Lizmap_Override_Filter' => $loginFilteredOverride,
         ));
     }
 

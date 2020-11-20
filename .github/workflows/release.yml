@@ -1,0 +1,47 @@
+name: Release 🚀
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+jobs:
+  packaging:
+    runs-on: ubuntu-latest
+    if: github.repository == '3liz/lizmap-web-client'
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: versions
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Add the version
+      run: ./add_version.py ${GITHUB_REF/refs\/tags\//}
+
+    - name: Git identity
+      run: |
+        git config --global user.email "etrimaille@3liz.com"
+        git config --global user.name "3Liz Bot"
+
+    - name: Check for changes
+      run: |
+        if git diff --exit-code; then
+          echo "::set-env name=changes_exist::false"
+        else
+          echo "::set-env name=changes_exist::true"
+        fi
+
+    - name: Commit and push
+      if: env.changes_exist == 'true'
+      run: |
+        git add -u
+        git commit -m "Publish ${GITHUB_REF/refs\/tags\//}"
+        git push --force https://${GITHUB_ACTOR}:${{secrets.GITHUB_TOKEN}}@github.com/${GITHUB_REPOSITORY}.git HEAD:versions

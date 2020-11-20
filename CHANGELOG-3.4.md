@@ -9,29 +9,35 @@ FIXME: to be completed
 
 New features:
 
-- possibility to add HTML content on the projects page, with image upload
-- search filter on the projects page
+- Projects page
+  - Possibility to add HTML content on the projects page, with image upload
+  - Search filter : filter projects by text or tags
 - New module `action` to run PostgreSQL actions from feature popup.
   This module allows to add action buttons in the popup which trigger PostgreSQL
   queries and return a geometry to display on the map
 - Allow multiple atlas definition
-- administration : project management and lizmap configuration are now into
+- Administration : project management and lizmap configuration are now into
   separate pages
-- Map view :
-    - Add digitizing (draw) + redlining
-    - Qgis theme switcher on a map
-    - Improvements in the geolocation feature
-    - Angle measurement tool
-    ![Angle measurement tool](https://user-images.githubusercontent.com/2145040/92402502-f4bceb00-f12f-11ea-8e1a-57e4b9841233.gif "Angle measurement tool")
-    - Display mouse position in QGIS project's projection
+- Map view:
+  - Improved UI for mobile. Hamburger button to toggle menu's view
+  - Add digitizing (draw) + redlining
+  - QGIS theme switcher on a map
+  - Improvements in the geolocation feature
+  - Angle measurement tool
+  - Display mouse position in QGIS project's projection
+  - Edit mouse position coordinates to center map to given ones
+- Selection:
+  - Select on multiple layers or one
+  - Invert selection
 - Editor:
-   - split tool
-   - Enhanced selection
-   - Snapping while editing
-   - Display angle, current and total segment length
-   - Geolocation survey
-   - Add an hidden table to popup with children (PR #1600) FIXME
-- improvements in dataviz
+  - Use QGIS expression in Lizmap edition (needs Lizmap plugin installed as a QGIS Server plugin)
+  - Split tool
+  - Enhanced selection
+  - Snapping while editing
+  - Display angle, current and total segment length
+  - Geolocation survey
+- Popup: add button to get a single table for all children's feature
+- Improvements in dataviz:
     - Add new sunburst chart type
     - Add internal theme support, between dark (default) and light
     - Add new graph type HTML
@@ -43,13 +49,12 @@ New features:
     - Add new user layout option && replace resizePlot by responsive cfg && UI improvements
     - Add mode bar: zoom in, out & export to PNG
     - Add the resizePlot function back
-- improvement in Attribute Table view
-  - a lizmap javascript script to show description labels instead of values in
+- Improvement in Attribute Table view:
+  - A lizmap javascript script to show description labels instead of values in
     the attribute table for columns with ValueMap widget
-  - allow the use of the lizmap javascript script also for numeric columns
-- improvement in Timemanager
+  - Allow the use of the lizmap javascript script also for numeric columns
+- Improvement in Timemanager
 - Atlas print in popup : you can now define values for custom fields
-![Atlas print in popup](https://user-images.githubusercontent.com/2145040/92587962-a9721c00-f298-11ea-9d13-4b58d477986b.gif "Atlas print in popup")
 - Map themes - check layer legend checkbox even if not in scale range
 - Expose QGIS themes in Lizmap JSON config
 - BAN Search - Add lon and lat parameters to prefer local search around map initial extent center
@@ -59,7 +64,6 @@ New features:
 - Send user info to QGIS Server through parameters to get access control
   performed by Lizmap plugin as a QGIS Server plugin
 - Restrict filter by user on edition only, based on lizmap plugin config
-- Use QGIS expression in Lizmap edition, needs Lizmap plugin installed as a QGIS Server plugin
 - Command lines
   - A command line to request project WMS GetCapabilities to put project in QGIS Server cache
 
@@ -82,12 +86,13 @@ Under the hood:
 
 - Configuration: remove the support of `proxyMethod`. Lizmap now guesses automatically
   if it can use curl to do HTTP queries.
-- starting to use some OpenLayers 6 features
+- Starting to use some OpenLayers 6 features
 - Starting to migrate the javascript code base to modern syntax and organization:
   web components, webpack etc. A sourcemap has been added too.
-- Upgrade jQuery to 3.5.1
+- Upgrade jQuery to 3.5.1 with jQuery-migrate
 - Use Composer to import external PHP libraries (jcommunity module, Proj4Php, ...)
-- locales files are moved to lizmap/app/locales/
-- tests environment with Docker (Vagrant is still there)
-- more unit tests in PHP and Javascript
-- deprecated class lizmapCache removed
+- Locales files are moved to lizmap/app/locales/
+- Tests environment with Docker (Vagrant is still there)
+- More unit tests in PHP and Javascript
+- Deprecated class lizmapCache removed
+- Optimizations to speed up launch

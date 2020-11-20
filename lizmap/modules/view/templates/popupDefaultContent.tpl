@@ -8,7 +8,7 @@
 
   <tbody>
   {foreach $attributes as $attribute}
-  {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != ''}
+  {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != '' && $attribute['value'] != 'NULL'}
     <tr>
       <th>{$attribute['name']}</th>
       <td>{$attribute['name']|featurepopup:$attribute['value'],$repository,$project}</td>

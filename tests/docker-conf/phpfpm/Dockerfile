@@ -41,7 +41,7 @@ RUN set -eux; \
     useradd --uid $LIZMAP_USER_ID --gid $LIZMAP_GROUP_ID usertest ; \
     mkdir -p /etc/openldap/ /etc/ssl/ldap/; \
     chmod 755 /etc/openldap/ /etc/ssl/ldap/; \
-    ln -s /usr/sbin/php-fpm7.3 /usr/sbin/php-fpm7; \
+    ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm7; \
     mkdir -p /run/php/ /srv/sqlite_ext; \
     sed -i "/^;sqlite3.extension_dir =/c\sqlite3.extension_dir = \/srv\/sqlite_ext\/" /etc/php/${PHP_VERSION}/fpm/php.ini; \
     cp /usr/lib/x86_64-linux-gnu/mod_spatialite.so /srv/sqlite_ext/mod_spatialite.so

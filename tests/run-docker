@@ -20,8 +20,17 @@ if [ "$LZMPGPORT" == "" ]; then
   export LZMPGPORT=8132
 fi
 
+if [ "$LZMQGSRVPORT" == "" ]; then
+  export LZMQGSRVPORT=8131
+fi
+
 if [ "$LZMWEBPORT" == "" ]; then
   export LZMWEBPORT=8130
+fi
+
+
+if [ "$LZMQGSRVVERSION" == "" ]; then
+  export LZMQGSRVVERSION=3.4
 fi
 
 

@@ -69,11 +69,20 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
             }
 
             $datepicker_default_config = jApp::config()->forms['datepicker'];
+            $timepicker_default_config = jApp::config()->forms['timepicker'];
 
             foreach($v->getControls() as $ctrl){
                 if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
-                    $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
-                    $resp->addJSLink($confDate[$config]);
+                    $config = $ctrl->datepickerConfig != ''?$ctrl->datepickerConfig:$datepicker_default_config;
+                    if ($config) {
+                        $resp->addJSLink($confDate[$config]);
+                    }
+                }
+                if ($ctrl instanceof jFormsControlTime || get_class($ctrl->datatype) == 'jDatatypeTime' || get_class($ctrl->datatype) == 'jDatatypeLocaleTime') {
+                    $config = $ctrl->timepickerConfig != '' ? $ctrl->timepickerConfig : $timepicker_default_config;
+                    if ($config) {
+                        $resp->addJSLink(jApp::config()->timepickers[$config]);
+                    }
                 }
             }
 
@@ -135,8 +144,16 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
 
         if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
-            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
-            $this->jsContent .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
+            $config = $ctrl->datepickerConfig != ''?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
+            if ($config) {
+                $this->jsContent .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
+            }
+        }
+        if ($ctrl instanceof jFormsControlTime || get_class($ctrl->datatype) == 'jDatatypeTime' || get_class($ctrl->datatype) == 'jDatatypeLocaleTime') {
+            $config = $ctrl->timepickerConfig != '' ? $ctrl->timepickerConfig : jApp::config()->forms['timepicker'];
+            if ($config) {
+                $this->jsContent .= 'jelix_timepicker_'.$config."(c, jFormsJQ.config);\n";
+            }
         }
     }
 

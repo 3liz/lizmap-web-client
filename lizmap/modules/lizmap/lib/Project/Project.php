@@ -809,6 +809,31 @@ class Project
         return $filters;
     }
 
+    /**
+     * Get login filtered config with the build expression.
+     *
+     * @param string $layerName : layer's name
+     * @param bool   $edition   : get login filters for edition
+     *
+     * @return array the login filtered config with build expression
+     */
+    public function getLoginFilter($layerName, $edition = false)
+    {
+        $loginFilters = $this->getLoginFilters(array($layerName), $edition);
+
+        // login filters array is empty
+        if (empty($loginFilters)) {
+            return array();
+        }
+
+        // layer not in login filters array
+        if (!array_key_exists($layerName, $loginFilters)) {
+            return array();
+        }
+
+        return $loginFilters[$layerName];
+    }
+
     private function optionToBoolean($configString)
     {
         $ret = false;

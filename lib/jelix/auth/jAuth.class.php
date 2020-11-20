@@ -4,7 +4,7 @@
 * @subpackage auth
 * @author     Laurent Jouanneau
 * @contributor Frédéric Guillot, Antoine Detante, Julien Issler, Dominique Papin, Tahina Ramaroson, Sylvain de Vathaire, Vincent Viaud
-* @copyright  2001-2005 CopixTeam, 2005-2019 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
+* @copyright  2001-2005 CopixTeam, 2005-2020 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
 * @copyright  2007-2008 Julien Issler, 2008 Dominique Papin, 2010 NEOV, 2010 BP2I
 *
 * This classes were get originally from an experimental branch of the Copix project (Copix 2.3dev, http://www.copix.org)
@@ -457,6 +457,32 @@ class jAuth {
         }
         return $_SESSION[$config['session_name']];
     }
+
+    /**
+     * Sets the given user in session without authentication
+     *
+     * It is useful if you manage a kind of session that is not the PHP session.
+     * For example, in a controller, you call jAuth::login() to verify the
+     * authentication, (and allowing listeners to interact during the authentication).
+     * In other controller, you just call setUserSession() with the login
+     * you retrieve some where, with the help of some request parameters (from
+     * a JWT token for example).
+     * And you could call jAuth::logout() when the user ends its "session".
+     *
+     * @param string $login
+     * @return object the user data
+     * @since 1.6.30
+     */
+    public static function setUserSession($login)
+    {
+        $config = self::loadConfig();
+        $user = self::getUser($login);
+        if ($user) {
+            $_SESSION[$config['session_name']] = $user;
+        }
+        return $user;
+    }
+
 
     /**
      * generate a password with random letters, numbers and special characters
