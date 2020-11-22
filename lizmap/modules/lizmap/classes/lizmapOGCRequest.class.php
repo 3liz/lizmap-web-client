@@ -205,6 +205,9 @@ class lizmapOGCRequest
             $options = array('method' => 'post');
         }
 
+        // Add login filtered override info
+        $options['loginFilteredOverride'] = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
+
         list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, $options);
 
         return (object) array(
