@@ -26,6 +26,17 @@ class lizmapOGCRequest
 
     protected $tplExceptions;
 
+    /**
+     * Build a lizmapOGCRequest child instance based on request.
+     * The parameters or the xml request has to contain the OGC service name.
+     * WMS, WFS and WMTS services are supported.
+     *
+     * @param lizmapProject $project    the project has a lizmapProject Class
+     * @param array         $params     the OGC request parameters array
+     * @param string        $requestXml the OGC XML Request as string
+     *
+     * @return lizmapOGCRequest a child instance based on the request
+     */
     public static function build($project, $params, $requestXml = null)
     {
         $service = null;
@@ -88,8 +99,8 @@ class lizmapOGCRequest
      * constructor.
      *
      * @param lizmapProject $project    the project has a lizmapProject Class
-     * @param array         $params     the params array
-     * @param string        $requestXml the params array
+     * @param array         $params     the OGC request parameters array
+     * @param string        $requestXml the OGC XML Request as string
      */
     public function __construct($project, $params, $requestXml = null)
     {
@@ -106,7 +117,7 @@ class lizmapOGCRequest
     }
 
     /**
-     * Gets the value of a request parameter. If not defined, gets its default value.
+     * Get the value of a request parameter. If not defined, gets its default value.
      *
      * @param string $name              the name of the request parameter
      * @param mixed  $defaultValue      the default returned value if the parameter doesn't exists
@@ -128,6 +139,12 @@ class lizmapOGCRequest
         return $defaultValue;
     }
 
+    /**
+     * Provide the parameters with the lizmap extra parameters for filtering request
+     * Lizmap_User, Lizmap_User_Groups and Lizmap_Override_Filter has been added to the OGC request parameters.
+     *
+     * @return array the OGC request aprameters with lizmap extra parameters for filtering request
+     */
     public function parameters()
     {
         // Check if a user is authenticated
@@ -151,6 +168,12 @@ class lizmapOGCRequest
         ));
     }
 
+    /**
+     * Process the OGC Request
+     * Checks the request parameter and performs the right method.
+     *
+     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     */
     public function process()
     {
         $req = $this->param('request');
@@ -167,6 +190,11 @@ class lizmapOGCRequest
         return $this->serviceException(501);
     }
 
+    /**
+     * Build the URL to request QGIS Server.
+     *
+     * @return string The URL to use to request QGIS Server
+     */
     protected function constructUrl()
     {
         $url = $this->services->wmsServerURL.'';
@@ -179,6 +207,13 @@ class lizmapOGCRequest
         return $url.$this->buildQuery($this->parameters());
     }
 
+    /**
+     * Generate URL-encoded query string.
+     *
+     * @param array $params The key value parameters array
+     *
+     * @return string the URL-encoded query string
+     */
     protected function buildQuery($params)
     {
         $bparams = http_build_query($params);
@@ -190,6 +225,13 @@ class lizmapOGCRequest
         return str_replace($a, $b, $bparams);
     }
 
+    /**
+     * Request QGIS Server.
+     *
+     * @param bool $post Force to use POST request
+     *
+     * @return array['code', 'mime', 'data'] The request result with HTTP code, response mime-type and response data
+     */
     protected function request($post = false)
     {
         $querystring = $this->constructUrl();
@@ -217,6 +259,13 @@ class lizmapOGCRequest
         );
     }
 
+    /**
+     * Provide an OGC Service Exception result.
+     *
+     * @param int $code The HTTP code to return
+     *
+     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     */
     protected function serviceException($code = 400)
     {
         $messages = jMessage::getAll();
@@ -247,6 +296,11 @@ class lizmapOGCRequest
         );
     }
 
+    /**
+     * Perform an OGC GetCapabilities Request.
+     *
+     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     */
     protected function getcapabilities()
     {
         // Get cached session
