@@ -61,7 +61,16 @@ class PasswordReset {
         $user->request_date = date('Y-m-d H:i:s');
         $user->keyactivate = ($this->byAdmin?'A:':'U:').$key;
 
-        $domain = \jApp::coord()->request->getDomainName();
+        if (method_exists('jServer', 'getDomainName')) {
+            $domain = \jServer::getDomainName();
+            $websiteUri =  \jServer::getServerURI();
+        }
+        else {
+            // old version of jelix < 1.7.5 && < 1.6.30
+            $domain = \jApp::coord()->request->getDomainName();
+            $websiteUri = \jApp::coord()->request->getServerURI();
+        }
+
         $mail = new \jMailer();
         $mail->From = \jApp::config()->mailer['webmasterEmail'];
         $mail->FromName = \jApp::config()->mailer['webmasterName'];
@@ -75,9 +84,9 @@ class PasswordReset {
         $tpl->assign('domain_name', $domain);
         $basePath = \jApp::urlBasePath();
         $tpl->assign('basePath', ($basePath == '/'?'':$basePath));
-        $tpl->assign('website_uri', \jApp::coord()->request->getServerURI());
+        $tpl->assign('website_uri', $websiteUri);
         $tpl->assign('confirmation_link', \jUrl::getFull(
-            'jcommunity~password_reset:resetform',
+            'jcommunity~password_reset:resetform@classic',
             array('login' => $user->login, 'key' => $key)
         ));
         $config = new Config();
