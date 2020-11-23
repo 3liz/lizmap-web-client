@@ -90,7 +90,16 @@ class Registration
 
     protected function sendRegistrationMail($user, $tplLocaleId, $mailLinkAction)
     {
-        $domain = \jApp::coord()->request->getDomainName();
+        if (method_exists('jServer', 'getDomainName')) {
+            $domain = \jServer::getDomainName();
+            $websiteUri =  \jServer::getServerURI();
+        }
+        else {
+            // old version of jelix < 1.7.5 && < 1.6.30
+            $domain = \jApp::coord()->request->getDomainName();
+            $websiteUri = \jApp::coord()->request->getServerURI();
+        }
+
         $mail = new \jMailer();
         $mail->From = \jApp::config()->mailer['webmasterEmail'];
         $mail->FromName = \jApp::config()->mailer['webmasterName'];
@@ -105,7 +114,7 @@ class Registration
         $tpl->assign('domain_name', $domain);
         $basePath = \jApp::urlBasePath();
         $tpl->assign('basePath', ($basePath == '/'?'':$basePath));
-        $tpl->assign('website_uri', \jApp::coord()->request->getServerURI());
+        $tpl->assign('website_uri', $websiteUri);
         $tpl->assign('confirmation_link', \jUrl::getFull(
             $mailLinkAction,
             array('login' => $user->login, 'key' => substr($user->keyactivate, 2))

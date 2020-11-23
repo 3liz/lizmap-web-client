@@ -225,17 +225,24 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
 
         $file = $path.'install/'.$relativeSourcePath;
         $usersToInsert = json_decode(file_get_contents($file), true);
-        if (!$usersToInsert) {
+        if ($usersToInsert === null) {
             throw new Exception("jCommunity install: Bad format for users data file $relativeSourcePath.");
         }
         if (is_object($usersToInsert)) {
             $usersToInsert = array($usersToInsert);
         }
 
+        if (empty($usersToInsert)) {
+            return ;
+        }
+
         $dao = jDao::get($daoSelector, $dbProfile);
         foreach($usersToInsert as $userData) {
             $user = $dao->getByLogin($userData['login']);
             if (!$user) {
+                if (isset($userData['password'])) {
+                    $userData['password'] = $this->parsePassword($userData['password'], $userData['login'], $driver);
+                }
                 if (isset($userData['_clear_password_to_be_encrypted'])) {
                     if (!isset($userData['password'])) {
                         $userData['password'] = $driver->cryptPassword($userData['_clear_password_to_be_encrypted']);
@@ -249,5 +256,37 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
                 $dao->insert($user);
             }
         }
+    }
+
+    /**
+     * Parse the password field value.
+     * 
+     * @param string $password The password field value ('__empty', '__to_encrypt:`password`' or the encrypted password)
+     * @param dbAuthDriver $driver The database driver
+     * 
+     * @return string The password value to put in the db
+     */
+    protected function parsePassword($password, $login, $driver)
+    {
+        if (strncmp('__', $password, 2)) {
+            return $password;
+        }
+
+        if ($password === '__random') {
+            $randomPass = \jAuth::getRandomPassword();
+            echo 'Password for user '.$login.': '.$randomPass.PHP_EOL;
+            return $driver->cryptPassword($randomPass);
+        }
+
+        if ($password === '__empty') {
+            return '';
+        }
+
+        $matches = array();
+        if (preg_match('/__to_encrypt:(.*)/', $password, $matches)) {
+            return $driver->cryptPassword($matches[1]);
+        }
+
+        return null;
     }
 }
