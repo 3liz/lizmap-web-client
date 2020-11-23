@@ -1,13 +1,14 @@
 <?php
 /**
-* @package     jelix
-* @subpackage  acl
-* @author      Laurent Jouanneau
-* @copyright   2006-2017 Laurent Jouanneau
-* @link        http://www.jelix.org
-* @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
-* @since 1.1
-*/
+ * @package     jelix
+ * @subpackage  acl
+ * @author      Laurent Jouanneau
+ * @contributor Adrien Lagroy de Croutte
+ * @copyright   2006-2017 Laurent Jouanneau, 2020 Adrien Lagroy de Croutte
+ * @link        http://www.jelix.org
+ * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
+ * @since 1.1
+ */
 
 
 /**
@@ -227,7 +228,14 @@ class jAcl2DbManager {
      * Existing rights not given in parameters are considered as deleted.
      *
      * Rights with resources are not changed.
-     * @param array $rightsChanges array(<id_aclgrp> => array( <id_aclsbj> => false(inherit)/''(inherit)/true(add)/'y'(add)/'n'(remove)))
+     *
+     * @param array      $rightsChanges         array(<id_aclgrp> => array( <id_aclsbj> => false(inherit)/''(inherit)/true(add)/'y'(add)/'n'(remove)))
+     * @param null|mixed $sessionUser
+     * @param mixed      $setForAllPublicGroups
+     * @param mixed      $setAllRightsInGroups
+     * @param null|mixed $ignoredUser
+     * @param null|mixed $ignoreUserInGroup
+     *
      * @return int one of the ACL_ADMIN_RIGHTS_* const
      */
     public static function checkAclAdminRightsChanges($rightsChanges,

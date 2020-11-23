@@ -59,15 +59,24 @@ class listbox_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
             echo '<select';
             $this->_outputAttr($attr);
             echo ">\n";
-            if($ctrl->emptyItemLabel !== null)
-                echo '<option value=""',(in_array('',$value,true)?' selected="selected"':''),'>',htmlspecialchars($ctrl->emptyItemLabel),"</option>\n";
-            if(is_array($value) && count($value) == 1)
+            if ($ctrl->emptyItemLabel !== null) {
+                if (is_array($value)) {
+                    $selected = in_array('',$value,true);
+                }
+                else {
+                    $selected = $value == '';
+                }
+                echo '<option value=""',($selected?' selected="selected"':''),'>',htmlspecialchars($ctrl->emptyItemLabel),"</option>\n";
+            }
+            if (is_array($value) && count($value) == 1) {
                 $value = $value[0];
+            }
 
-            if(is_array($value)){
+            if (is_array($value)) {
                 $value = array_map(function($v){ return (string) $v;},$value);
                 $this->fillSelect($ctrl, $value);
-            }else{
+            }
+            else {
                 $this->fillSelect($ctrl, (string)$value);
             }
             echo "</select>\n";

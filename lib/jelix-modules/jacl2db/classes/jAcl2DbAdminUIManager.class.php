@@ -3,10 +3,9 @@
  * @package     jelix_modules
  * @subpackage  jacl2db
  * @author      Laurent Jouanneau
- * @contributor Julien Issler, Olivier Demah
+ * @contributor Julien Issler, Olivier Demah, Adrien Lagroy de Croutte
  * @copyright   2008-2017 Laurent Jouanneau
- * @copyright   2009 Julien Issler
- * @copyright   2010 Olivier Demah
+ * @copyright   2009 Julien Issler, 2010 Olivier Demah, 2020 Adrien Lagroy de Croutte
  * @link        http://jelix.org
  * @licence     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public Licence, see LICENCE file
  */
@@ -424,7 +423,28 @@ class jAcl2DbAdminUIManager {
         jAcl2DbUserGroup::removeUserFromGroup($login, $groupId);
     }
 
-    public function canRemoveUser($login) {
+    public function addUserToGroup($login, $groupId, $sessionUser = null)
+    {
+        $rightsChanged = array();
+        $groupRights = $this->getGroupRights();
+        foreach (jAcl2DbManager::$ACL_ADMIN_RIGHTS as $right) {
+            if (jAcl2::check($right) && in_array($groupRights['rights'][$right][$groupId], array(null, false))) {
+                $rightsChanged[$groupId][$right] = 'n';
+            }
+        }
+        $checking = jAcl2DbManager::checkAclAdminRightsChanges($rightsChanged, $sessionUser);
+
+        if ($checking == jAcl2DbManager::ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM) {
+            throw new jAcl2DbAdminUIException("User cannot be add to group, else you wouldn't manage acl anymore", 3);
+        }
+        if ($checking == jAcl2DbManager::ACL_ADMIN_RIGHTS_NOT_ASSIGNED) {
+            throw new jAcl2DbAdminUIException('User cannot be add to group, else acl management is not possible anymore', 2);
+        }
+        jAcl2DbUserGroup::addUserToGroup($login, $groupId);
+    }
+
+    public function canRemoveUser($login)
+    {
         $checking = jAcl2DbManager::checkAclAdminRightsChanges(array(), null, false, true, $login);
         return ($checking === jAcl2DbManager::ACL_ADMIN_RIGHTS_STILL_USED);
     }
