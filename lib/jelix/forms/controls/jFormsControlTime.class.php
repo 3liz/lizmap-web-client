@@ -1,10 +1,13 @@
 <?php
 /**
-* @package     jelix
-* @subpackage  forms
-* @link        http://www.jelix.org
-* @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
-*/
+ * @package     jelix
+ * @subpackage  forms
+ * @author      Adrien Lagroy de Croutte
+ * @contributor Laurent Jouanneau
+ * @copyright   2020 Adrien Lagroy de Croutte, 2020 Laurent Jouanneau
+ * @link        http://www.jelix.org
+ * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
+ */
 
 /**
  *

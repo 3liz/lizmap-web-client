@@ -13,7 +13,7 @@
  *
  * @internal see https://tools.ietf.org/html/rfc4510
  */
-class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
+class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver2
 {
 
     /**
@@ -200,6 +200,14 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         }
     }
 
+    public function canChangePassword($login)
+    {
+        if ($login == $this->_params['jelixAdminLogin']) {
+            return true;
+        }
+        return false;
+    }
+
     public function changePassword($login, $newpassword)
     {
         if ($login == $this->_params['jelixAdminLogin']) {
@@ -235,11 +243,13 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         $user = $this->createUserObject($login, '');
         $userLdapAttributes = $this->searchLdapUserAttributes($connectAdmin, $login, $user);
         if ($userLdapAttributes === false) {
+            ldap_close($connectAdmin);
             return false;
         }
 
         $connect = $this->_getLinkId();
         if (!$connect) {
+            ldap_close($connectAdmin);
             return false;
         }
         // authenticate user. let's try with all configured DN
@@ -248,9 +258,10 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
 
         if ($userDn === false) {
             jLog::log('ldapdao error: cannot authenticate to ldap with given bindUserDN for the login "' . $login. '". Wrong DN or password', 'auth');
-            foreach ($this->bindUserDnTries as $dn) {
-                jLog::log('ldapdao: tried to connect with bindUserDN=' . $dn, 'auth');
+            foreach ($this->bindUserDnTries as $erroMessage) {
+                jLog::log($erroMessage, 'auth');
             }
+            ldap_close($connectAdmin);
             return false;
         }
 

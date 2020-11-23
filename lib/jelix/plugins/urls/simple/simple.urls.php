@@ -103,7 +103,7 @@ class simpleUrlEngine implements jIUrlEngine {
         }
 
         if ($usehttps)
-          return jApp::coord()->request->getServerURI(true).jApp::urlBasePath();
+          return jServer::getServerURI(true).jApp::urlBasePath();
         else
           return jApp::urlBasePath();
     }

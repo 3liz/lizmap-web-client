@@ -4,7 +4,7 @@
 * @subpackage  jauth
 * @author      Laurent Jouanneau
 * @contributor Antoine Detante, Bastien Jaillot, Loic Mathaud, Vincent Viaud, Julien Issler
-* @copyright   2005-2007 Laurent Jouanneau, 2007 Antoine Detante, 2008 Bastien Jaillot
+* @copyright   2005-2020 Laurent Jouanneau, 2007 Antoine Detante, 2008 Bastien Jaillot
 * @copyright   2008 Loic Mathaud, 2011 Vincent Viaud, 2015 Julien Issler
 * @link        http://www.jelix.org
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
