@@ -1,6 +1,6 @@
 FROM debian:buster-slim
 
-ARG composer_version=1.9.3
+ARG composer_version=2.0.7
 
 ENV LIZMAP_USER_ID=1000 \
     LIZMAP_GROUP_ID=1000 \
@@ -8,7 +8,7 @@ ENV LIZMAP_USER_ID=1000 \
 
 RUN set -eux; \
 	apt-get update; \
-    apt-get -y install apt-transport-https lsb-release ca-certificates curl wget git; \
+    apt-get -y install apt-transport-https lsb-release ca-certificates curl wget git unzip; \
     wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg; \
     sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'; \
     apt-get update;
