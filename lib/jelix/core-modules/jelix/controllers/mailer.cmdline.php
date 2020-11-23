@@ -53,7 +53,7 @@ class mailerCtrl extends \jControllerCmdLine
 
         $domain = $this->param('appname');
         if ($domain == '') {
-            $domain = $this->request->getDomainName();
+            $domain = jServer::getDomainName();
             if ($domain == '') {
                 $domain = gethostname();
                 if ($domain == '') {

@@ -1837,7 +1837,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }
 
         var msg = 'ok';
-        if (editionLayer['spatial'] && editionLayer['config'].capabilities.modifyGeometry == 'True') {
+        if (
+            editionLayer['spatial']
+            && 'allow_without_geom' in editionLayer['config'].capabilities
+            && editionLayer['config'].capabilities.allow_without_geom == 'False'){
 
             var gColumn = form.find('input[name="liz_geometryColumn"]').val();
             var formGeom = form.find('input[name="'+gColumn+'"]').val();

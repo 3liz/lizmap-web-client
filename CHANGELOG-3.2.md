@@ -13,6 +13,7 @@ Version 3.2.17
 - Datepicker i18n,call getCurrentLang() once
 - Fix the user table name into the Sqlite to Postgresql migrator
 - localization updated. New supported language: Slovak
+- upgrade ldap support (ldapdao module), to fix ldap connection management
 
 Version 3.2.16
 ---------------------

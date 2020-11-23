@@ -43,7 +43,13 @@
 {foreach $users as $user}
     <tr class="{if $line}odd{else}even{/if}">
         <td>{$user->login}</td>
-        <td>{foreach $user->groups as $group} {$group->name} {/foreach}</td>
+        <td>{foreach $user->groups as $key => $group} 
+            {if $key == $last}
+                {$group->name}
+            {else}
+                {$group->name.', '}
+            {/if}
+        {/foreach}</td>
         <td><a href="{jurl 'jacl2db_admin~users:rights', array('user'=>$user->login)}">{@jacl2db_admin~acl2.rights.link@}</a></td>
     </tr>
 {assign $line = !$line}
