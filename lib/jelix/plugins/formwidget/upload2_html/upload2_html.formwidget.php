@@ -5,7 +5,7 @@
  * @author      Claudio Bernardes
  * @contributor Laurent Jouanneau, Julien Issler, Dominique Papin
  * @copyright   2012 Claudio Bernardes
- * @copyright   2006-2018 Laurent Jouanneau, 2008-2011 Julien Issler, 2008 Dominique Papin
+ * @copyright   2006-2020 Laurent Jouanneau, 2008-2011 Julien Issler, 2008 Dominique Papin
  * @link        http://www.jelix.org
  * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */

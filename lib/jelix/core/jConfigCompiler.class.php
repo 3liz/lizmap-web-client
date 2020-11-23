@@ -528,9 +528,15 @@ class jConfigCompiler {
                 $urlconf['urlScriptPath'] = getcwd().'/'.substr ($urlconf['urlScript'], 0, $lastslash ).'/';
                 $urlconf['urlScriptName'] = substr ($urlconf['urlScript'], $lastslash+1);
             }
-            $basepath = $urlconf['urlScriptPath'];
+
             $snp = $urlconf['urlScriptName'];
-            $urlconf['urlScript'] = $basepath.$snp;
+            $urlconf['urlScript'] = $urlconf['urlScriptPath'].$snp;
+
+            if ($urlconf['basePath'] == '') {
+                // we should have a basePath when generating url from a command line
+                // script. We cannot guess the url base path so we use a default value
+                $urlconf['basePath'] = '/';
+            }
         }
         else {
             $lastslash = strrpos ($urlconf['urlScript'], '/');
