@@ -557,8 +557,8 @@ class qgisForm implements qgisFormControlsInterface
         $check = $form->check();
 
         // Geom check
-        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
-        if (strtolower($modifyGeometry) == 'true' && $form->getData($geometryColumn) == '') {
+        $allow_without_geom = $this->layer->getEditionCapabilities()->capabilities->allow_without_geom;
+        if (strtolower($allow_without_geom) == 'false' && $geometryColumn != '' && $form->getData($geometryColumn) == '') {
             $check = false;
             $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.no.geometry'));
         }

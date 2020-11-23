@@ -1,24 +1,24 @@
 <?php
 /**
-* @package     jelix_admin_modules
-* @subpackage  jacl2db_admin
-* @author      Laurent Jouanneau
-* @contributor Julien Issler
-* @copyright   2008-2017 Laurent Jouanneau
-* @copyright   2009 Julien Issler
-* @link        http://jelix.org
-* @licence     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public Licence, see LICENCE file
-*/
+ * @package     jelix_admin_modules
+ * @subpackage  jacl2db_admin
+ * @author      Laurent Jouanneau
+ * @contributor Julien Issler, Adrien Lagroy de Croutte
+ * @copyright   2008-2017 Laurent Jouanneau
+ * @copyright   2009 Julien Issler, 2020 Adrien Lagroy de Croutte
+ * @link        http://jelix.org
+ * @licence     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public Licence, see LICENCE file
+ */
 
 
-class usersCtrl extends jController {
-
-    public $pluginParams=array(
-        'index'=>array('jacl2.rights.and'=>array('acl.user.view')),
-        'rights'=>array('jacl2.rights.and'=>array('acl.user.view')),
-        'saverights'=>array('jacl2.rights.and'=>array('acl.user.view','acl.user.modify')),
-        'removegroup'=>array('jacl2.rights.and'=>array('acl.user.view','acl.user.modify')),
-        'addgroup'=>array('jacl2.rights.and'=>array('acl.user.view','acl.user.modify')),
+class usersCtrl extends jController
+{
+    public $pluginParams = array(
+        'index' => array('jacl2.rights.and' => array('acl.user.view')),
+        'rights' => array('jacl2.rights.and' => array('acl.user.view')),
+        'saverights' => array('jacl2.rights.and' => array('acl.user.view', 'acl.user.modify')),
+        'removegroup' => array('jacl2.rights.and' => array('acl.user.view', 'acl.user.modify')),
+        'addgroup' => array('jacl2.rights.and' => array('acl.user.view', 'acl.user.modify')),
     );
 
     protected function checkException(jAcl2DbAdminUIException $e, $category) {
@@ -53,8 +53,9 @@ class usersCtrl extends jController {
         $o->grouptype = jAcl2DbUserGroup::GROUPTYPE_NORMAL;
         $groups[]=$o;
 
-        foreach(jAcl2DbUserGroup::getGroupList() as $grp) {
-            $groups[]=$grp;
+        $groupList = jAcl2DbUserGroup::getGroupList();
+        foreach ($groupList as $grp) {
+            $groups[] = $grp;
         }
 
         $manager = new jAcl2DbAdminUIManager();
@@ -62,6 +63,7 @@ class usersCtrl extends jController {
         $offset = $this->param('idx', 0, true);
         $grpid = $this->param('grpid', jAcl2DbAdminUIManager::FILTER_GROUP_ALL_USERS, true);
         $filter = trim($this->param('filter'));
+        $last = count($groups) - 3;
         $tpl = new jTpl();
 
         if (is_numeric($grpid) && intval($grpid) < 0 ) {
@@ -71,7 +73,7 @@ class usersCtrl extends jController {
             $tpl->assign($manager->getUsersList(jAcl2DbAdminUIManager::FILTER_BY_GROUP, $grpid, $filter, $offset, $listPageSize));
         }
 
-        $tpl->assign(compact('offset', 'grpid', 'listPageSize', 'groups', 'filter'));
+        $tpl->assign(compact('offset', 'grpid', 'listPageSize', 'groups', 'filter', 'last'));
         $rep->body->assign('MAIN', $tpl->fetch('users_list'));
         $rep->body->assign('selectedMenuItem','usersrights');
 
@@ -217,10 +219,15 @@ class usersCtrl extends jController {
         $login = $this->param('user');
         if ($login != '') {
             $rep->action = 'jacl2db_admin~users:rights';
-            $rep->params=array('user'=>$login);
-            jAcl2DbUserGroup::addUserToGroup($login, $this->param('grpid') );
-        }
-        else {
+            $rep->params = array('user' => $login);
+
+            try {
+                $manager = new jAcl2DbAdminUIManager();
+                $manager->addUserToGroup($login, $this->param('grpid'));
+            } catch (jAcl2DbAdminUIException $e) {
+                $this->checkException($e, 'addusertogroup');
+            }
+        } else {
             $rep->action = 'jacl2db_admin~users:index';
         }
         return $rep;

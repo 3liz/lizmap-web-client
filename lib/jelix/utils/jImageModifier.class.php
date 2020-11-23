@@ -5,7 +5,7 @@
  * @author      Bastien Jaillot
  * @contributor Dominique Papin, Lepeltier kévin (the author of the original plugin)
  * @contributor geekbay, Brunto, Laurent Jouanneau
- * @copyright   2007-2008 Lepeltier kévin, 2008 Dominique Papin, 2008 Bastien Jaillot, 2009 geekbay, 2010 Brunto, 2011-2018 Laurent Jouanneau
+ * @copyright   2007-2008 Lepeltier kévin, 2008 Dominique Papin, 2008 Bastien Jaillot, 2009 geekbay, 2010 Brunto, 2011-2020 Laurent Jouanneau
  * @link       http://www.jelix.org
  * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
  */
@@ -184,7 +184,7 @@ class jImageModifier {
             $srcPath = jFile::parseJelixPath( $config['src_path'] );
         }
         else {
-            $srcUri = jApp::coord()->request->getServerURI().$basePath;
+            $srcUri = jServer::getServerURI().$basePath;
             $srcPath = jApp::wwwPath();
         }
 
@@ -197,7 +197,7 @@ class jImageModifier {
         }
         else {
             $cachePath = jApp::wwwPath('cache/images/');
-            $cacheUri = jApp::coord()->request->getServerURI().$basePath.'cache/images/';
+            $cacheUri = jServer::getServerURI().$basePath.'cache/images/';
         }
 
         if ($src && (!isset($config['use_old_cache_path']) || !$config['use_old_cache_path'])) {

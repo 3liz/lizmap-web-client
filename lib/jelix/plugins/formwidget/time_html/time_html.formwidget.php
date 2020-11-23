@@ -1,6 +1,10 @@
 <?php
 /**
- * @see        http://www.jelix.org
+ *
+ * @author      Adrien Lagroy de Croutte
+ * @contributor
+ * @copyright   2020 Adrien Lagroy de Croutte
+ * @see         https://jelix.org
  * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
 
