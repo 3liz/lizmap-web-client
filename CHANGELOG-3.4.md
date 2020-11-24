@@ -1,13 +1,8 @@
-Changelog Lizmap 3.4
-====================
+# Changelog Lizmap 3.4
 
+## Released 26/11/2020
 
-Version 3.4.0 (not released yet)
---------------------------------
-
-FIXME: to be completed
-
-New features:
+## New features:
 
 - Projects page
   - Possibility to add HTML content on the projects page, with image upload
@@ -31,6 +26,10 @@ New features:
   - Invert selection
 - Editor:
   - Use QGIS expression in Lizmap edition (needs Lizmap plugin installed as a QGIS Server plugin)
+      - Group visibility
+      - Default value
+      - Constraint
+      - Form drilldown using Value Relation widget
   - Split tool
   - Enhanced selection
   - Snapping while editing
@@ -70,19 +69,15 @@ New features:
 
 - Lizmap does not support anymore Internet Explorer (11 and lower)
 
-New JS events:
+## New JS events
 
 - `lizmapeditionfeatureinit` to customize edition layers
 - `mapthemechanged` and `mapthemesadded`
 - `lizmapchangelayervisibility` when map layer visibility changes
 
-New PHP events:
+## New PHP events:
 
--
-
-
-
-Under the hood:
+## Under the hood:
 
 - Configuration: remove the support of `proxyMethod`. Lizmap now guesses automatically
   if it can use curl to do HTTP queries.

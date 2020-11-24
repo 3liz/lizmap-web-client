@@ -4,6 +4,21 @@ Changelog
 Version 3.3.12 (next)
 ---------------------
 
+- Add 'empty-data' class in auto popup when value is empty or NULL
+- Fix QGIS Date format support
+- Fix delete attachment in forms
+- Fix edition forms: Do not activate combobox or autocomplete on disabled select 
+- Configuration form: do not allow to enable user account request when the
+  webmaster email is not set
+- new scripts for the command line, to create a user, change or reset a password
+
+```bash
+php scripts/script.php jcommunity~user:changePassword [--force] <login> [<password>]
+php scripts/script.php jcommunity~user:resetPassword <login>
+php scripts/script.php jcommunity~user:create [--reset] [--admin] [--no-error-if-exist] <login> <email> [<password>]
+```
+
+
 Version 3.3.11
 ---------------------
 

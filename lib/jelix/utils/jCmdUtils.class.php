@@ -4,7 +4,7 @@
 * @subpackage utils
 * @author     Loic Mathaud
 * @contributor Laurent Jouanneau
-* @copyright  2006 Loic Mathaud, 2008-2017 Laurent Jouanneau
+* @copyright  2006 Loic Mathaud, 2008-2020 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -52,7 +52,7 @@ class jCmdUtils {
         $parameters = array();
 
         //---------- get the switches
-        while (count($argv) && $argv[0]{0} == '-') {
+        while (count($argv) && $argv[0][0] == '-') {
             if (isset($sws[$argv[0]])) {
                 if ($sws[$argv[0]]) {
                     if (isset($argv[1]) && ($argv[1][0] != '-' || !isset($sws[$argv[1]]))) {

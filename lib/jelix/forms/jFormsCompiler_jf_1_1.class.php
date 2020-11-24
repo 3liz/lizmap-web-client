@@ -4,11 +4,12 @@
 * @subpackage forms
 * @author     Laurent Jouanneau
 * @contributor Loic Mathaud, Dominique Papin, Julien Issler
-* @contributor Uriel Corfa (Emotic SARL), Thomas, Olivier Demah
-* @copyright   2006-2012 Laurent Jouanneau
+* @contributor Uriel Corfa (Emotic SARL), Thomas, Olivier Demah, Adrien Lagroy de Croutte
+* @copyright   2006-2017 Laurent Jouanneau
 * @copyright   2007 Loic Mathaud, 2007-2008 Dominique Papin
 * @copyright   2007 Emotic SARL
 * @copyright   2008-2015 Julien Issler, 2009 Thomas, 2009 Olivier Demah
+ * @copyright 2020 Adrien Lagroy de Croutte
 * @link        http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */

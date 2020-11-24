@@ -2055,6 +2055,10 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 */
 
+#popupcontent .empty-data{
+  display: none;
+}
+
 .lizmapPopup.olPopup img,
 #map-content .lizmapPopup img,
 #popupcontent img{

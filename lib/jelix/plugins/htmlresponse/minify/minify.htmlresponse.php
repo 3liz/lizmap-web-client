@@ -91,7 +91,7 @@ class minifyHTMLResponsePlugin implements jIHTMLResponsePlugin {
 
         foreach ($list as $url=>$parameters) {
             if( preg_match('#^https?\://#', $url) || in_array($url, $this->$exclude) ) {
-                // for absolute or exculded url, we put directly in the result
+                // for absolute or excluded url, we put directly in the result
                 // we won't try to minify it or combine it with an other file
                 $resultList[$url] = $parameters;
                 continue;
