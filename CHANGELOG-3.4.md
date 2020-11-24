@@ -31,6 +31,9 @@ New features:
   - Invert selection
 - Editor:
   - Use QGIS expression in Lizmap edition (needs Lizmap plugin installed as a QGIS Server plugin)
+      - Group visibility
+      - Default value
+      - Constraint
   - Split tool
   - Enhanced selection
   - Snapping while editing
