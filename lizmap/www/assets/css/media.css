@@ -197,6 +197,10 @@ only screen and (                   max-device-height : 640px) {
     background-position : 5px 5px;
   }
 
+  #navbar div.slider{
+    margin-left: 18px;
+  }
+
   #navbar .history button.btn{
     width: 20px;
   }
