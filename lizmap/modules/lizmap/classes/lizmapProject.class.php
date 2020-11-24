@@ -280,6 +280,7 @@ class lizmapProject
     {
         return $this->proj->getLoginFilter($layerName, $edition);
     }
+
     /**
      * @return array|bool
      */

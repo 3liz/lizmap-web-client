@@ -36,7 +36,7 @@ class QgisFormForTests extends Form\QgisForm
 
     public function getFieldListForTests($geometryColumn, $insert)
     {
-        return $this->getFieldList($geometryColumn, $insert);
+        return $this->getFieldList($geometryColumn, $insert, array());
     }
 
     public function fillControlFromUniqueValuesForTests($fieldName, $control)
@@ -49,5 +49,13 @@ class QgisFormForConstructTests extends Form\QgisForm
 {
     public function getAttributesEditorForm()
     {
+    }
+}
+
+class jAcl2
+{
+    public static function check()
+    {
+        return true;
     }
 }
