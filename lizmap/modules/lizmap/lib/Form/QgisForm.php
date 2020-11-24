@@ -439,7 +439,7 @@ class QgisForm implements QgisFormControlsInterface
                     if ($edittype && property_exists($edittype, 'options')
                             && property_exists($edittype->options, 'field_format') && $value) {
                         $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
-                        $date = DateTime::createFromFormat($format, $value);
+                        $date = \DateTime::createFromFormat($format, $value);
                         if ($date) {
                             $value = $date->format('Y-m-d H:i:s');
                         }
@@ -500,7 +500,7 @@ class QgisForm implements QgisFormControlsInterface
         }
         // Get filter by login
         $expByUserKey = 'filterByLogin';
-        $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
+        $expByUser = \qgisExpressionUtils::getExpressionByUser($this->layer, true);
         if ($expByUser !== '') {
             while (array_key_exists($expByUserKey, $constraintExpressions)) {
                 $expByUserKey .= '@';
@@ -529,7 +529,7 @@ class QgisForm implements QgisFormControlsInterface
                 if ($fieldName === $expByUserKey) {
                     $project = $this->layer->getProject();
                     $loginFilterConfig = $project->getLoginFilteredConfig($this->layer->getName());
-                    $form->setErrorOn($loginFilterConfig->filterAttribute, jLocale::get('view~edition.message.error.feature.editable'));
+                    $form->setErrorOn($loginFilterConfig->filterAttribute, \jLocale::get('view~edition.message.error.feature.editable'));
 
                     $check = false;
 
@@ -638,7 +638,7 @@ class QgisForm implements QgisFormControlsInterface
     {
         $dateFormat = $this->convertQgisFormatToPHP($fieldFormat);
 
-        $date = new DateTime($value);
+        $date = new \DateTime($value);
 
         return $date->format($dateFormat);
     }
@@ -668,7 +668,7 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         $geometryColumn = $this->dbFieldsInfo->geometryColumn;
-        $fields = $this->getFieldList($geometryColumn, $insertAction);
+        $fields = $this->getFieldList($geometryColumn, $insertAction, $modifiedControls);
 
         if (count($fields) == 0) {
             $this->appContext->logMessage('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !', 'error');
@@ -741,7 +741,7 @@ class QgisForm implements QgisFormControlsInterface
         return false;
     }
 
-    protected function getFieldList($geometryColumn, $insertAction)
+    protected function getFieldList($geometryColumn, $insertAction, $modifiedControls)
     {
         $eCapabilities = $this->layer->getEditionCapabilities();
         $capabilities = $eCapabilities->capabilities;
@@ -804,25 +804,25 @@ class QgisForm implements QgisFormControlsInterface
             return 'NULL';
         }
 
-            $convertDate = array('date', 'time', 'datetime');
+        $convertDate = array('date', 'time', 'datetime');
 
-            if (in_array(strtolower($this->formControls[$ref]->fieldEditType), $convertDate)) {
-                $edittype = $this->formControls[$ref]->getEditType();
-                if ($edittype && property_exists($edittype, 'options')
+        if (in_array(strtolower($this->formControls[$ref]->fieldEditType), $convertDate)) {
+            $edittype = $this->formControls[$ref]->getEditType();
+            if ($edittype && property_exists($edittype, 'options')
                     && property_exists($edittype->options, 'field_format')) {
-                    $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
-                }
+                $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
             }
+        }
 
-            switch ($this->formControls[$ref]->fieldDataType) {
+        switch ($this->formControls[$ref]->fieldDataType) {
                 case 'geometry':
                     try {
                         $value = $this->layer->getGeometryAsSql($value);
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $form->setErrorOn($geometryColumn, $e->getMessage());
 
-                    return false;
-                }
+                        return false;
+                    }
 
                 break;
             case 'date':

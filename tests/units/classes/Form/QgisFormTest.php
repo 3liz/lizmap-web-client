@@ -258,6 +258,9 @@ class QgisFormTest extends TestCase
         $layer = new QgisLayerForTests();
         $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'True'));
         $layer->dbFieldValues = array();
+        $proj = new ProjectForTests();
+        $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, null));
+        $layer->setProject($proj);
         $formMock->setForm($jForm);
         $formMock->setLayer($layer);
         $this->assertEquals($expectedResult, $formMock->check());
@@ -379,10 +382,10 @@ class QgisFormTest extends TestCase
         return array(
             array($eCaps, null, true, $expectedFields1),
             array($eCaps, null, false, $expectedFields1),
-            array($eCaps, $formFields, true, $expectedFields3),
+            array($eCaps, $formFields, true, $expectedFields1),
             array($eCapsNoG, null, true, $expectedFields1),
             array($eCapsNoG, null, false, $expectedFields2),
-            array($eCapsNoG, $formFields, false, $formFields),
+            array($eCapsNoG, $formFields, false, $expectedFields2),
             array($eCapsNoA, null, true, $expectedFields1),
             array($eCapsNoA, null, false, array('geometry')),
             array($eCapsNoA, $formFields, false, array('geometry')),

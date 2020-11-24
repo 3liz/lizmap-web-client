@@ -335,7 +335,7 @@ class Project
         $props = array(
             'printCapabilities',
             'locateByLayers',
-            'formFilterLayers',
+            // 'formFilterLayers',
             'editionLayers',
             'layersOrder',
             'attributeLayers',
