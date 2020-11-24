@@ -4,7 +4,7 @@
  * @subpackage db_driver
  * @author     Yann Lecommandoux
  * @contributor Laurent Jouanneau, Louis S.
- * @copyright  2008 Yann Lecommandoux, 2011-2017 Laurent Jouanneau, Louis S.
+ * @copyright  2008 Yann Lecommandoux, 2011-2020 Laurent Jouanneau, Louis S.
  * @link     http://www.jelix.org
  * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */

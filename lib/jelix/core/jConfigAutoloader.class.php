@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage core
 * @author     Laurent Jouanneau
-* @copyright  2012 Laurent Jouanneau
+* @copyright  2012-2020 Laurent Jouanneau
 * @link       http://jelix.org
 * @licence    http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */

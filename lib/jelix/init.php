@@ -6,7 +6,7 @@
 * @subpackage core
 * @author   Laurent Jouanneau
 * @contributor Loic Mathaud, Julien Issler
-* @copyright 2005-2012 Laurent Jouanneau
+* @copyright 2005-2020 Laurent Jouanneau
 * @copyright 2007 Julien Issler
 * @link     http://www.jelix.org
 * @licence  GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -16,7 +16,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.6.30-pre');
+define ('JELIX_VERSION', '1.6.30');
 
 /**
  * base of namespace path used in xml files of jelix

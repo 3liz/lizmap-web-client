@@ -209,21 +209,21 @@ class QgisFormTest extends TestCase
         $constraintsFalse = array();
 
         return array(
-            array($dbFieldsInfo, true, 'not empty', $evaluateTrue, $constraintsTrue, true),
-            array($dbFieldsInfo, false, 'not empty', $evaluateTrue, $constraintsTrue, false),
-            array($dbFieldsInfo, true, '', $evaluateTrue, $constraintsTrue, false),
-            array($dbFieldsInfo, false, '', $evaluateTrue, $constraintsTrue, false),
-            array($dbFieldsInfo, true, '0', $evaluateTrue, $constraintsTrue, true),
-            array($dbFieldsInfo, true, 'not empty', $evaluateTrue, $constraintsFalse, true),
-            array($dbFieldsInfo, false, 'not empty', $evaluateTrue, $constraintsFalse, false),
-            array($dbFieldsInfo, true, '', $evaluateTrue, $constraintsFalse, false),
-            array($dbFieldsInfo, false, '', $evaluateTrue, $constraintsFalse, false),
-            array($dbFieldsInfo, true, '0', $evaluateTrue, $constraintsFalse, true),
-            array($dbFieldsInfo, true, 'not empty', $evaluateFalse, $constraintsTrue, false),
-            array($dbFieldsInfo, false, 'not empty', $evaluateFalse, $constraintsTrue, false),
-            array($dbFieldsInfo, true, '', $evaluateFalse, $constraintsTrue, false),
-            array($dbFieldsInfo, false, '', $evaluateFalse, $constraintsTrue, false),
-            array($dbFieldsInfo, true, '0', $evaluateFalse, $constraintsTrue, false),
+            array($dbFieldsInfo, true, 'not empty', $evaluateTrue, $constraintsTrue, 'true', true),
+            array($dbFieldsInfo, false, 'not empty', $evaluateTrue, $constraintsTrue, 'true', false),
+            array($dbFieldsInfo, true, '', $evaluateTrue, $constraintsTrue, 'false', false),
+            array($dbFieldsInfo, false, '', $evaluateTrue, $constraintsTrue, 'true', false),
+            array($dbFieldsInfo, true, '0', $evaluateTrue, $constraintsTrue, 'true', true),
+            array($dbFieldsInfo, true, 'not empty', $evaluateTrue, $constraintsFalse, 'true', true),
+            array($dbFieldsInfo, false, 'not empty', $evaluateTrue, $constraintsFalse, 'true', false),
+            array($dbFieldsInfo, true, '', $evaluateTrue, $constraintsFalse, 'false', false),
+            array($dbFieldsInfo, false, '', $evaluateTrue, $constraintsFalse, 'true', false),
+            array($dbFieldsInfo, true, '0', $evaluateTrue, $constraintsFalse, 'true', true),
+            array($dbFieldsInfo, true, 'not empty', $evaluateFalse, $constraintsTrue, 'true', false),
+            array($dbFieldsInfo, false, 'not empty', $evaluateFalse, $constraintsTrue, 'true', false),
+            array($dbFieldsInfo, true, '', $evaluateFalse, $constraintsTrue, 'true', false),
+            array($dbFieldsInfo, false, '', $evaluateFalse, $constraintsTrue, 'true', false),
+            array($dbFieldsInfo, true, '0', $evaluateFalse, $constraintsTrue, 'true', false),
         );
     }
 
@@ -237,7 +237,7 @@ class QgisFormTest extends TestCase
      * @param mixed $constraints
      * @param mixed $expectedResult
      */
-    public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $expectedResult)
+    public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $allowWithoutGeom, $expectedResult)
     {
         $mockFuncs = array('getAttributesEditorForm', 'getFieldValue', 'getConstraints', 'evaluateExpression');
         $formMock = $this->getMockBuilder(QgisFormForTests::class)->setMethods($mockFuncs)->getMock();
@@ -256,7 +256,7 @@ class QgisFormTest extends TestCase
         $jForm->check = $check;
         $jForm->data = $data;
         $layer = new QgisLayerForTests();
-        $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'True'));
+        $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'True', 'allow_without_geom' => $allowWithoutGeom));
         $layer->dbFieldValues = array();
         $proj = new ProjectForTests();
         $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, null));
