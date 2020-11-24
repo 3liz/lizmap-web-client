@@ -450,7 +450,7 @@ class datavizPlot
                 $wfsparams['EXP_FILTER'] = $exp_filter;
             }
 
-            $wfsrequest = new \Lizmap\Request\WFSRequest($this->lproj, $wfsparams);
+            $wfsrequest = new \Lizmap\Request\WFSRequest($this->lproj, $wfsparams, lizmap::getServices(), lizmap::getAppContext());
             $wfsresponse = $wfsrequest->getfeature();
             $features = null;
 

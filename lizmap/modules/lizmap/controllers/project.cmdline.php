@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Request\Proxy;
+
 /**
  * @author    your name
  * @copyright 2020 3liz
@@ -53,9 +56,6 @@ class projectCtrl extends jControllerCmdLine
             return $rep;
         }
 
-        $services = lizmap::getServices();
-        $wmsServerURL = $services->wmsServerURL;
-
         $repositories = lizmap::getRepositoryList();
         foreach ($repositories as $r) {
             $rep->addContent('Enter the repository '.$r."\n");
@@ -71,16 +71,7 @@ class projectCtrl extends jControllerCmdLine
                     'request' => 'GetCapabilities',
                 );
 
-                // Build http params
-                $bparams = http_build_query($params);
-
-                // Replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
-                $a = array('+', '_', '.', '-');
-                $b = array('%20', '%5F', '%2E', '%2D');
-                $bparams = str_replace($a, $b, $bparams);
-
-                // Get URL
-                $url = $wmsServerURL.'?'.$bparams;
+                \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
 
                 $nb_500 = 0;
                 $nb_400 = 0;
