@@ -207,7 +207,7 @@ class Proxy
         ), $options);
 
         $options['method'] = strtolower($options['method']);
-
+        
         return $options;
     }
 
