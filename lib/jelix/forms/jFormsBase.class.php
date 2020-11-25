@@ -658,16 +658,28 @@ abstract class jFormsBase {
             $comp = array_merge(array_diff($v1, $v2),array_diff($v2, $v1));
             return !empty($comp);
         }
-        elseif(empty($v1) && empty($v2)){
+
+        if ($v1 === $v2) {
             return false;
         }
-        elseif (is_array($v1) || is_array($v2)) {
+
+        if (($v1 === '' && $v2 === null) || ($v1 === null && $v2 === '')) {
+            return false;
+        }
+
+        if (is_numeric($v1) != is_numeric($v2)) {
             return true;
         }
-        else {
-            return !($v1==$v2);
-            //return !($v2== (string)$v1);
+
+        if (empty($v1) && empty($v2)) {
+            return false;
         }
+
+        if (is_array($v1) || is_array($v2)) {
+            return true;
+        }
+
+        return ($v1 != $v2);
     }
 
     /**
