@@ -160,6 +160,7 @@ class qgisFormControl
         'date' => 'date',
         'datetime' => 'datetime',
         'timestamp' => 'datetime',
+        'timestamptz' => 'datetime',
         'time' => 'time',
     );
 
@@ -381,6 +382,9 @@ class qgisFormControl
 
             case 'datetime':
                 $this->ctrl = new jFormsControlDatetime($this->ref);
+                if (preg_match('#ss#i', $this->widgetv2configAttr->display_format)) {
+                    $this->ctrl->enableSeconds = true;
+                }
 
                 break;
 
