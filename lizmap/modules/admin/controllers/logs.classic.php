@@ -197,7 +197,7 @@ class logsCtrl extends jController
         $rep->doDownload = true;
         $rep->deleteFileAfterSending = true;
         $rep->fileName = $fileName;
-        $rep->outputFileName = 'lizmap_logs.csv';
+        $rep->outputFileName = 'lizmap_logs_'.date('YmdHi')'.csv';
 
         return $rep;
     }
