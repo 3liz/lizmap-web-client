@@ -401,6 +401,7 @@ class lizmapServices
         $section = 'repository:'.$key;
 
         if ($key === null || $key === '') {
+            // XXX: should we throw an exception instead?
             return false;
         }
         // Check if repository exists in the ini file
