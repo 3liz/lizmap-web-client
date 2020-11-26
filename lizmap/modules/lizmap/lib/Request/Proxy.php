@@ -161,9 +161,11 @@ class Proxy
         return $data;
     }
 
-    public static function constructUrl($params, $services)
+    public static function constructUrl($params, $services, $url = null)
     {
-        $url = $services->wmsServerURL.'?';
+        if ($url === null) {
+            $url = $services->wmsServerURL.'?';
+        }
 
         $bparams = http_build_query($params);
 
