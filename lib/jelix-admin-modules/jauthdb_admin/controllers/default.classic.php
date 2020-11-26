@@ -18,6 +18,7 @@ class defaultCtrl extends jController
     public $pluginParams = array(
         'index'         => array('jacl2.right' => 'auth.users.list'),
         'view'          => array('jacl2.right' => 'auth.users.view'),
+        'autocomplete'  => array('jacl2.right' => 'auth.users.view'),
         'precreate'     => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.create')),
         'create'        => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.create')),
         'savecreate'    => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.create')),
