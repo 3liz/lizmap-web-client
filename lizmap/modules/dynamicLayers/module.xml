@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="dynamicLayers3liz.com" name="dynamicLayers" createdate="2015-10-05">
-        <version date="2020-11-09">3.4.0-beta.1</version>
+        <version date="2020-11-26">3.4.0-rc.1</version>
         <label lang="en_US">dynamicLayers</label>
         <description lang="en_US"/>
         <license URL="">All rights reserved</license>
@@ -10,6 +10,6 @@
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.6.5pre.3192" maxversion="1.6.*"/>
+        <jelix minversion="1.6.29" maxversion="1.6.*"/>
     </dependencies>
 </module>
