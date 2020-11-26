@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="proj4php3liz.com" name="proj4php" createdate="2015-03-13">
-        <version date="2020-11-09">3.4.0-beta.1</version>
+        <version date="2020-11-26">3.4.0-rc.1</version>
         <label lang="en_US">proj4php</label>
         <description lang="en_US"/>
         <license URL="https://www.gnu.org/licenses/lgpl.html">GNU LESSER GENERAL PUBLIC LICENSE Version 3</license>
@@ -10,6 +10,6 @@
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.6.2" maxversion="1.6.*"/>
+        <jelix minversion="1.6.29" maxversion="1.6.*"/>
     </dependencies>
 </module>
