@@ -27,6 +27,25 @@ We recommend you reading the [versions](https://github.com/3liz/lizmap-web-clien
 Documentation and customization
 --------------
 
+Main Features
+-------------
+
+* Map options
+  * Printing
+  * Measuring tools
+  * Scales
+* Layer editions
+* Attribute table
+* Filter data by user
+* Filter form
+* Tooltips
+* Dataviz
+* Locate by layer
+* Layer tree
+  * Enable and disable layers and groups
+  * Change layer opacity
+  * Layer Popup 
+
 https://docs.lizmap.com/
 
 Documentation source: https://github.com/3liz/lizmap-documentation/
