@@ -230,7 +230,8 @@ class lizmapOGCRequest
      *
      * @param bool $post Force to use POST request
      *
-     * @return array['code', 'mime', 'data'] The request result with HTTP code, response mime-type and response data
+     * @return object The request result with HTTP code, response mime-type and response data
+     *                  (properties $code, $mime, $data)
      */
     protected function request($post = false)
     {
