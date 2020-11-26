@@ -118,7 +118,7 @@ class WFSRequest extends OGCRequest
         $result = parent::getcapabilities();
 
         $data = $result->data;
-        if (empty($data) or floor($result->code / 100) >= 4) {
+        if (empty($data) || floor($result->code / 100) >= 4) {
             if (empty($data)) {
                 \jLog::log('GetCapabilities empty data', 'error');
             } else {
@@ -183,20 +183,10 @@ class WFSRequest extends OGCRequest
             if ($layer != null) {
 
                 // Get data from XML
-                $use_errors = libxml_use_internal_errors(true);
                 $go = true;
                 // Create a DOM instance
-                $xml = simplexml_load_string($data);
+                $xml = $this->logXmlError($data);
                 if (!$xml) {
-                    $errorlist = array();
-                    foreach (libxml_get_errors() as $error) {
-                        $errorlist[] = $error;
-                    }
-                    $errormsg = 'An error has been raised when loading DescribeFeatureType:';
-                    $errormsg .= '\n'.http_build_query($this->params);
-                    $errormsg .= '\n'.$data;
-                    $errormsg .= '\n'.implode('\n', $errorlist);
-                    \jLog::log($errormsg, 'error');
                     $go = false;
                 }
                 if ($go && $xml->complexType) {
@@ -290,9 +280,9 @@ class WFSRequest extends OGCRequest
         // and only for GeoJSON (specific to Lizmap)
         // and only if it is not a complex query like table="(SELECT ...)"
         if ($provider == 'postgres'
-            and empty($filter)
-            and strtolower($output) == 'geojson'
-            and $dtparams->table[0] != '('
+            && empty($filter)
+            && strtolower($output) == 'geojson'
+            && $dtparams->table[0] != '('
         ) {
             return $this->getfeaturePostgres();
         }
@@ -306,7 +296,6 @@ class WFSRequest extends OGCRequest
      */
     public function getfeatureQgis()
     {
-
         // Else pass query to QGIS Server
         // Get remote data
         $response = $this->request(true);
@@ -334,39 +323,8 @@ class WFSRequest extends OGCRequest
         );
     }
 
-    /**
-     * https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
-     * Queries The PostGreSQL Server for getFeature.
-     */
-    public function getfeaturePostgres()
+    protected function buildQueryBase($cnx, $params, $wfsFields)
     {
-        $params = $this->parameters();
-
-        // Get database connexion for this layer
-        $cnx = $this->qgisLayer->getDatasourceConnection();
-        // Get datasource
-        $this->datasource = $this->qgisLayer->getDatasourceParameters();
-
-        // Get fields
-        $wfsFields = $this->qgisLayer->getWfsFields();
-
-        // Get Db fields
-        try {
-            $dbFields = $this->qgisLayer->getDbFieldList();
-        } catch (\Exception $e) {
-            return $this->getfeatureQgis();
-        }
-
-        // Verifying that every wfs fields are db fields
-        // if not return getfeatureQgis
-        foreach ($wfsFields as $field) {
-            if (!array_key_exists($field, $dbFields)) {
-                return $this->getfeatureQgis();
-            }
-        }
-
-        // Build SQL
-        // SELECT
         $sql = ' SELECT ';
         $propertyname = '';
         if (array_key_exists('propertyname', $params)) {
@@ -414,15 +372,11 @@ class WFSRequest extends OGCRequest
         // FROM
         $sql .= ' FROM '.$this->datasource->table;
 
-        // WHERE
-        $sql .= ' WHERE True';
+        return $sql;
+    }
 
-        $dtsql = trim($this->datasource->sql);
-        if (!empty($dtsql)) {
-            $sql .= ' AND '.$dtsql;
-        }
-
-        // BBOX
+    protected function getBboxSql($params)
+    {
         if (!empty($this->datasource->geocol)) {
             $bbox = '';
             if (array_key_exists('bbox', $params)) {
@@ -445,13 +399,17 @@ class WFSRequest extends OGCRequest
                 $ymin = trim($bboxitem[1]);
                 $xmax = trim($bboxitem[2]);
                 $ymax = trim($bboxitem[3]);
-                $sql .= ' AND ST_Intersects("';
+                $sql = ' AND ST_Intersects("';
                 $sql .= $this->datasource->geocol;
                 $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+                return $sql;
             }
         }
+        return '';
+    }
 
-        // EXP_FILTER
+    protected function parseExpFilter($cnx, $params)
+    {
         $exp_filter = '';
         if (array_key_exists('exp_filter', $params)) {
             $exp_filter = $params['exp_filter'];
@@ -459,23 +417,29 @@ class WFSRequest extends OGCRequest
         if (!empty($exp_filter)) {
             $validFilter = $this->validateFilter($exp_filter);
             if (!$validFilter) {
-                return $this->getfeatureQgis();
+                return false;
             }
             if (strpos($validFilter, '$id') !== false) {
                 $key = $this->datasource->key;
                 if (count(explode(',', $key)) == 1) {
-                    $sql .= ' AND '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter);
+                    return ' AND '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter);
                 } else {
-                    return $this->getfeatureQgis();
+                    return false;
                 }
             } else {
-                $sql .= ' AND '.$validFilter;
+                return ' AND '.$validFilter;
             }
         }
 
-        // FEATUREID
+        return '';
+    }
+
+    protected function parseFeatureId($cnx, $params)
+    {
         $featureid = '';
+        $sql = '';
         $typename = $params['typename'];
+        $keys = explode(',', $this->datasource->key);
         if (array_key_exists('featureid', $params)) {
             $featureid = $params['featureid'];
         }
@@ -507,11 +471,16 @@ class WFSRequest extends OGCRequest
             $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
-        // ORDER BY
+        return $sql;
+    }
+
+    protected function getQueryOrder($cnx, $params, $wfsFields)
+    {
         // séparé par virgule, et fini par espace + a ou d
         // si pas de a ou d , c'est a
         // SortBY=id a,name d
         $sortby = '';
+        $sql = '';
         if (array_key_exists('sortby', $params)) {
             $sortby = $params['sortby'];
         }
@@ -539,6 +508,68 @@ class WFSRequest extends OGCRequest
             }
         }
 
+        return $sql;
+    }
+ 
+    /**
+     * https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
+     * Queries The PostGreSQL Server for getFeature.
+     */
+    public function getfeaturePostgres()
+    {
+        $params = $this->parameters();
+
+        // Get database connexion for this layer
+        $cnx = $this->qgisLayer->getDatasourceConnection();
+        // Get datasource
+        $this->datasource = $this->qgisLayer->getDatasourceParameters();
+
+        // Get fields
+        $wfsFields = $this->qgisLayer->getWfsFields();
+
+        // Get Db fields
+        try {
+            $dbFields = $this->qgisLayer->getDbFieldList();
+        } catch (\Exception $e) {
+            return $this->getfeatureQgis();
+        }
+
+        // Verifying that every wfs fields are db fields
+        // if not return getfeatureQgis
+        foreach ($wfsFields as $field) {
+            if (!array_key_exists($field, $dbFields)) {
+                return $this->getfeatureQgis();
+            }
+        }
+
+        // Build SQL
+        $sql = $this->buildQueryBase($cnx, $params, $wfsFields);
+
+        // WHERE
+        $sql .= ' WHERE True';
+
+        $dtsql = trim($this->datasource->sql);
+        if (!empty($dtsql)) {
+            $sql .= ' AND '.$dtsql;
+        }
+
+        // BBOX
+        $sql .= $this->getbboxSql($params);
+
+        // EXP_FILTER
+        $expFilterSql = $this->parseExpFilter($cnx, $params);
+        if ($expFilterSql === false) {
+            return $this->getfeatureQgis();
+        } else {
+            $sql .= $expFilterSql;
+        }
+
+        // FEATUREID
+        $sql .= $this->parseFeatureId($cnx, $params);
+
+        // ORDER BY
+        $sql .= $this->getQueryOrder($cnx, $params, $wfsFields);
+
         // LIMIT
         $maxfeatures = '';
         if (array_key_exists('maxfeatures', $params)) {
@@ -559,6 +590,12 @@ class WFSRequest extends OGCRequest
         $startindex = filter_var($startindex, FILTER_VALIDATE_INT);
         if (is_int($startindex)) {
             $sql .= ' OFFSET '.$startindex;
+        }
+
+        $typename = $params['typename'];
+        $geometryname = '';
+        if (array_key_exists('geometryname', $params)) {
+            $geometryname = strtolower($params['geometryname']);
         }
 
         //\jLog::log($sql);

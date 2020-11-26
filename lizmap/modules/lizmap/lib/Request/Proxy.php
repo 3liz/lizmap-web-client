@@ -93,17 +93,9 @@ class Proxy
         if ($request !== null) {
             $params['request'] = $request;
         }
-        if ($service == 'WMS') {
-            return new WMSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
-        }
-        if ($service == 'WMTS') {
-            return new WMTSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
-        }
-        if ($service == 'WFS') {
-            return new WFSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
-            // Not yet
-        //} else if ($service == 'WCS') {
-        //    return new lizmapWCSRequest($project, $params, $requestXml)
+        if (in_array($service, array('WMS', 'WMTS', 'WFS'))) {
+            $service = '\Lizmap\Request\\'.$service.'Request';
+            return new $service($project, $params, self::setServices(), self::setAppContext(), $requestXml);
         }
 
         return null;
@@ -146,9 +138,11 @@ class Proxy
         return $data;
     }
 
-    public static function constructUrl($params, $services)
+    public static function constructUrl($params, $services, $url = null)
     {
-        $url = $services->wmsServerURL.'?';
+        if ($url === null) {
+            $url = $services->wmsServerURL.'?';
+        }
 
         $bparams = http_build_query($params);
 
