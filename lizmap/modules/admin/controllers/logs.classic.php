@@ -168,22 +168,36 @@ class logsCtrl extends jController
             $columns = array_keys($fetchArray);
         }
 
-        $rep = $this->getResponse('binary');
-        $rep->mimeType = 'text/csv';
-        $rep->addHttpHeader('charset', 'UTF-8');
-        $rep->doDownload = true;
-        $rep->fileName = 'lizmap_logs.csv';
+        # Create temp file
+        $tempPath = jApp::tempPath('export');
+        jFile::createDir($tempPath);
+        $fileName = tempnam($tempPath, 'lizmap_logs-');
 
-        $data = array();
-        $data[] = '"'.implode('";"', $columns).'"';
+        # Opening file
+        $fp = fopen($fileName, 'w');
+        # Adding encode utf8 to the file
+        fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
+        # Adding first CSV line
+        fputcsv($fp, $columns);
+        # Adding content
         foreach ($logs as $log) {
             $row = array();
             foreach ($columns as $column) {
                 $row[] = $log->{$column};
             }
-            $data[] = '"'.implode('";"', $row).'"';
+            fputcsv($fp, $row);
         }
-        $rep->content = implode("\r\n", $data);
+        # Closing file
+        fclose($fp);
+
+        # Create response
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = 'text/csv';
+        $rep->addHttpHeader('charset', 'UTF-8');
+        $rep->doDownload = true;
+        $rep->deleteFileAfterSending = true;
+        $rep->fileName = $fileName;
+        $rep->outputFileName = 'lizmap_logs_'.date('YmdHi')'.csv';
 
         return $rep;
     }
