@@ -715,7 +715,8 @@ class editionCtrl extends jController
         // And get returned primary key values
         $pkvals = null;
         if ($check) {
-            $pkvals = $qgisForm->saveToDb($feature);
+            // Save to database with modified controls
+            $pkvals = $qgisForm->saveToDb($feature, $form->getModifiedControls());
         }
 
         // Some errors where encoutered
