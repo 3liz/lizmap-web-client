@@ -14,7 +14,12 @@ namespace Lizmap\Request;
 
 use Lizmap\App;
 
-class OGCRequest
+/**
+ * @see https://en.wikipedia.org/wiki/Open_Geospatial_Consortium.
+ *
+ * Base class for Requests
+ */
+abstract class OGCRequest
 {
     /**
      * @var lizmapProject
@@ -36,10 +41,10 @@ class OGCRequest
     /**
      * constructor.
      *
-     * @param lizmapProject $project    the project has a lizmapProject Class
-     * @param array         $params     the params array
-     * @param string        $requestXml the params array
-     * @param mixed         $services
+     * @param \Lizmap\Project\Project $project    the project has a lizmapProject Class
+     * @param array                   $params     the params array
+     * @param \lizmapServices         $services
+     * @param string                  $requestXml the params array
      */
     public function __construct($project, $params, $services, App\AppContextInterface $appContext, $requestXml = null)
     {
@@ -103,6 +108,9 @@ class OGCRequest
         ));
     }
 
+    /**
+     * Call the wanted Request.
+     */
     public function process()
     {
         $req = $this->param('request');

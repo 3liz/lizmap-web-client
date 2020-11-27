@@ -12,6 +12,9 @@
 
 namespace Lizmap\Request;
 
+/**
+ * @see https://en.wikipedia.org/wiki/Web_Feature_Service.
+ */
 class WFSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wfs_exception';
@@ -101,6 +104,9 @@ class WFSRequest extends OGCRequest
         return $params;
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
     protected function getcapabilities()
     {
         $version = $this->param('version');
@@ -153,6 +159,9 @@ class WFSRequest extends OGCRequest
         );
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
     public function describefeaturetype()
     {
         // Extensions to get aliases and type
@@ -218,6 +227,9 @@ class WFSRequest extends OGCRequest
         );
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
     public function getfeature()
     {
         if ($this->requestXml !== null) {
@@ -288,6 +300,11 @@ class WFSRequest extends OGCRequest
         return $this->getfeatureQgis();
     }
 
+    /**
+     * Queries Qgis Server for getFeature.
+     *
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
+     */
     public function getfeatureQgis()
     {
 
@@ -318,6 +335,11 @@ class WFSRequest extends OGCRequest
         );
     }
 
+    /**
+     * Queries The PostGreSQL Server for getFeature.
+     *
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
+     */
     public function getfeaturePostgres()
     {
         $params = $this->parameters();
@@ -585,6 +607,11 @@ class WFSRequest extends OGCRequest
         );
     }
 
+    /**
+     * Parses and validate a filter for postgresql.
+     *
+     * @param string $filter The filter to parse
+     */
     private function validateFilter($filter)
     {
         $block_items = array();
