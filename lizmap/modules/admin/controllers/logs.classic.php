@@ -143,9 +143,8 @@ class logsCtrl extends jController
     public function export()
     {
 
-    // Get logs
+        // Get logs
         $dao = jDao::get('lizmap~logDetail', 'lizlog');
-        $nblogs = 0;
         $logs = null;
 
         try {
@@ -197,7 +196,7 @@ class logsCtrl extends jController
         $rep->doDownload = true;
         $rep->deleteFileAfterSending = true;
         $rep->fileName = $fileName;
-        $rep->outputFileName = 'lizmap_logs_'.date('YmdHi')'.csv';
+        $rep->outputFileName = 'lizmap_logs_'.date('YmdHi').'.csv';
 
         return $rep;
     }
