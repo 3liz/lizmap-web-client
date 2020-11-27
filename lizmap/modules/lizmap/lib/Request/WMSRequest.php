@@ -41,7 +41,7 @@ class WMSRequest extends OGCRequest
         }
 
         // No filter data by login rights
-        if (\jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+        if ($this->appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
             return $params;
         }
 
@@ -183,7 +183,7 @@ class WMSRequest extends OGCRequest
         $response = $this->request();
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = \jUrl::getFull(
+        $sUrl = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -224,7 +224,7 @@ class WMSRequest extends OGCRequest
             return $this->serviceException();
         }
 
-        $getMap = \Lizmap\Request\Proxy::getMap($this->project, $this->parameters(), $this->forceRequest);
+        $getMap = Proxy::getMap($this->project, $this->parameters(), $this->forceRequest);
 
         return (object) array(
             'code' => $getMap[2],
@@ -424,7 +424,7 @@ class WMSRequest extends OGCRequest
             'repository' => $this->repository->getKey(),
             'project' => $this->project->getKey(),
         );
-        \jEvent::notify('BeforePdfCreation', $eventParams);
+        $this->appContext->eventNotify('BeforePdfCreation', $eventParams);
 
         // Get remote data
         $response = $this->request(true);
@@ -569,7 +569,7 @@ class WMSRequest extends OGCRequest
     protected function gfiVectorXmlToHtml($layerId, $layerName, $layerTitle, $layer, $configLayer, $filterFid)
     {
         $content = array();
-        $popupClass = \jClasses::getService('view~popup');
+        $popupClass = $this->appContext->getClassService('view~popup');
 
         // Get the template for the popup content
         $templateConfigured = false;
@@ -769,10 +769,11 @@ class WMSRequest extends OGCRequest
      */
     protected function replaceMediaPathByMediaUrl($matches)
     {
-        $req = \jApp::coord()->request;
+        $appContext = $this->appContext;
+        $req = $appContext->getCoord()->request;
         $return = '';
         $return .= '"';
-        $return .= \jUrl::getFull(
+        $return .= $appContext->getFullUrl(
             'view~media:getMedia',
             array(
                 'repository' => $this->repository->getKey(),

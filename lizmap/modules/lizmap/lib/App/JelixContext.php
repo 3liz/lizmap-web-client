@@ -29,6 +29,16 @@ class JelixContext implements AppContextInterface
         return \jApp::configPath($file);
     }
 
+    public function appVarPath($file = '')
+    {
+        return \jApp::varPath($file);
+    }
+
+    public function getCoord()
+    {
+        return \jApp::coord();
+    }
+
     /**
      * says if the current user has the given right. Call jAcl2::check().
      *
@@ -101,6 +111,11 @@ class JelixContext implements AppContextInterface
         return \jCache::get($key, $profile);
     }
 
+    public function getCacheDriver($profile)
+    {
+        return \jCache::getDriver($profile);
+    }
+
     /**
      * Set a data in the cache.
      *
@@ -123,6 +138,11 @@ class JelixContext implements AppContextInterface
     public function clearCache($key, $profile = '')
     {
         \jCache::delete($key, $profile);
+    }
+
+    public function flushCache($profile = '')
+    {
+        \jCache::flush($profile);
     }
 
     /**
@@ -277,5 +297,10 @@ class JelixContext implements AppContextInterface
     public function getFormPath()
     {
         return \jApp::tempPath('lizmap-forms');
+    }
+
+    public function getClassService($selector)
+    {
+        return \jClasses::getService($selector);
     }
 }

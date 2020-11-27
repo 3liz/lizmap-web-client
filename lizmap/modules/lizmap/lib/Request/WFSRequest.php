@@ -55,7 +55,7 @@ class WFSRequest extends OGCRequest
         }
 
         // No filter data by login rights
-        if (\jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+        if ($this->appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
             return $params;
         }
 
@@ -128,7 +128,7 @@ class WFSRequest extends OGCRequest
         }
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = \jUrl::getFull(
+        $sUrl = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -661,7 +661,7 @@ class WFSRequest extends OGCRequest
 
         if (!empty($geosql)) {
             // For new QGIS versions, export into EPSG:4326
-            $lizservices = \lizmap::getServices();
+            $lizservices = $this->services;
             if (version_compare($lizservices->qgisServerVersion, '2.18', '>=')) {
                 $geosql = 'ST_Transform('.$geosql.', 4326)';
             }
