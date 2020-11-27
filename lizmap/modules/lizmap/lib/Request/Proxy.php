@@ -25,27 +25,49 @@ class Proxy
 
     protected static $appContext = null;
 
-    public static function setServices($services = null)
+    /**
+     * Sets the services property that contains lizmap Services.
+     *
+     * @param \lizmapServices $services
+     */
+    public static function setServices($services)
+    {
+        self::$services = $services;
+    }
+
+    /**
+     * Sets the appContext property that contains the context of the application (Jelix or Test).
+     *
+     * @param Lizmap\App\AppContextInterface $appContext
+     */
+    public static function setAppContext(\Lizmap\App\AppContextInterface $appContext)
+    {
+        self::$appContext = $appContext;
+    }
+
+    /**
+     * Returns the services property.
+     *
+     * @return \lizmapServices
+     */
+    public static function getServices()
     {
         if (!self::$services) {
-            if ($services) {
-                self::$services = $services;
-            } else {
-                self::$services = \lizmap::getServices();
-            }
+            self::$services = \lizmap::getServices();
         }
 
         return self::$services;
     }
 
-    public static function setAppContext($appContext = null)
+    /**
+     * Returns the appContext property.
+     *
+     * @return \Lizmap\App\AppContextInterface
+     */
+    public static function getAppContext()
     {
         if (!self::$appContext) {
-            if ($appContext) {
-                self::$appContext = $appContext;
-            } else {
-                self::$appContext = \lizmap::getAppContext();
-            }
+            self::$appContext = \lizmap::getAppContext();
         }
 
         return self::$appContext;
@@ -94,13 +116,13 @@ class Proxy
             $params['request'] = $request;
         }
         if ($service == 'WMS') {
-            return new WMSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
+            return new WMSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
         }
         if ($service == 'WMTS') {
-            return new WMTSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
+            return new WMTSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
         }
         if ($service == 'WFS') {
-            return new WFSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
+            return new WFSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
             // Not yet
         //} else if ($service == 'WCS') {
         //    return new lizmapWCSRequest($project, $params, $requestXml)
@@ -196,7 +218,7 @@ class Proxy
             }
         }
 
-        $services = self::setServices();
+        $services = self::getServices();
         $options = array_merge(array(
             'method' => 'get',
             'referer' => '',
@@ -360,7 +382,7 @@ class Proxy
 
     protected static function userHttpHeader()
     {
-        $appContext = self::setAppContext();
+        $appContext = self::getAppContext();
         // Check if a user is authenticated
         if (!$appContext->UserIsConnected()) {
             // return headers with empty user header
@@ -400,9 +422,9 @@ class Proxy
             return $cacheName;
         }
 
-        $appContext = self::setAppContext();
+        $appContext = self::getAppContext();
         // Storage type
-        $ser = self::setServices();
+        $ser = self::getServices();
         $cacheStorageType = $ser->cacheStorageType;
         // Expiration time : take default one
         $cacheExpiration = (int) $ser->cacheExpiration;
@@ -528,12 +550,11 @@ class Proxy
         }
 
         // Create the virtual cache profile
-        self::setAppContext()->createVirtualProfile('jcache', $cacheName, $cacheParams);
+        self::getAppContext()->createVirtualProfile('jcache', $cacheName, $cacheParams);
     }
 
     /**
-     * @param mixed $repository
-     * @param mixed $lrep
+     * @param Lizmap\Project\Repository $lrep
      *
      * @return mixed the repository key, or false if clear has failed
      */
@@ -545,7 +566,7 @@ class Proxy
 
         // Get config utility
         $repository = $lrep->getKey();
-        $ser = self::setServices();
+        $ser = self::getServices();
 
         // Remove the cache for the repository for file/sqlite cache type
         $cacheStorageType = $ser->cacheStorageType;
@@ -562,7 +583,7 @@ class Proxy
             self::declareRedisProfile($ser, $cacheName, $repository);
             $clearCacheOk = $clearCacheOk && \jCache::flush($cacheName);
         }
-        self::setAppContext()->eventNotify('lizmapProxyClearCache', array('repository' => $repository));
+        self::getAppContext()->eventNotify('lizmapProxyClearCache', array('repository' => $repository));
         if ($clearCacheOk) {
             return $repository;
         }
@@ -574,8 +595,8 @@ class Proxy
     {
 
         // Storage type
-        $ser = self::setServices();
-        $appContext = self::setAppContext();
+        $ser = self::getServices();
+        $appContext = self::getAppContext();
         $cacheStorageType = $ser->cacheStorageType;
 
         // Cache root directory
