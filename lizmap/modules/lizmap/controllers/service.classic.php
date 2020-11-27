@@ -74,7 +74,7 @@ class serviceCtrl extends jController
             }
         }
 
-        $ogcRequest = \Lizmap\Request\OGCRequest::build($this->project, $this->params, $requestXml);
+        $ogcRequest = \Lizmap\Request\Proxy::build($this->project, $this->params, $requestXml);
         if ($ogcRequest === null) {
             // Error message
             jMessage::add('Service unknown or unsupported.', 'ServiceNotSupported');
