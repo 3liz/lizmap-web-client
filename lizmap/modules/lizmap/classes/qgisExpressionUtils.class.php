@@ -312,7 +312,7 @@ class qgisExpressionUtils
         );
 
         // Request evaluate constraint expressions
-        $url = \Lizmap\Request\Proxy::constructUrl($params, array('method' => 'post'));
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request
@@ -343,7 +343,7 @@ class qgisExpressionUtils
 
     protected static function request($params)
     {
-        $url = \Lizmap\Request\Proxy::constructUrl($params, array('method' => 'post'));
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request

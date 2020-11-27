@@ -9,9 +9,8 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-namespace Lizmap\Request;
 
-use Lizmap\App;
+namespace Lizmap\Request;
 
 class Proxy
 {
@@ -21,6 +20,36 @@ class Proxy
      * @var array
      */
     protected static $_profiles = array();
+
+    protected static $services = null;
+
+    protected static $appContext = null;
+
+    public static function setServices($services = null)
+    {
+        if (!self::$services) {
+            if ($services) {
+                self::$services = $services;
+            } else {
+                self::$services = \lizmap::getServices();
+            }
+        }
+
+        return self::$services;
+    }
+
+    public static function setAppContext($appContext = null)
+    {
+        if (!self::$appContext) {
+            if ($appContext) {
+                self::$appContext = $appContext;
+            } else {
+                self::$appContext = \lizmap::getAppContext();
+            }
+        }
+
+        return self::$appContext;
+    }
 
     /**
      * Normalize and filter request parameters.
@@ -59,10 +88,9 @@ class Proxy
         return $data;
     }
 
-    public static function constructUrl($params)
+    public static function constructUrl($params, $services)
     {
-        $ser = \lizmap::getServices();
-        $url = $ser->wmsServerURL.'?';
+        $url = $services->wmsServerURL.'?';
 
         $bparams = http_build_query($params);
 
@@ -110,7 +138,7 @@ class Proxy
             }
         }
 
-        $services = \lizmap::getServices();
+        $services = self::setServices();
         $options = array_merge(array(
             'method' => 'get',
             'referer' => '',
@@ -274,8 +302,9 @@ class Proxy
 
     protected static function userHttpHeader()
     {
+        $appContext = self::setAppContext();
         // Check if a user is authenticated
-        if (!\jAuth::isConnected()) {
+        if (!$appContext->UserIsConnected()) {
             // return headers with empty user header
             return array(
                 'X-Lizmap-User' => '',
@@ -284,8 +313,8 @@ class Proxy
         }
 
         // Provide user and groups to lizmap plugin access control
-        $user = \jAuth::getUserSession();
-        $userGroups = \jAcl2DbUserGroup::getGroups();
+        $user = $appContext->getUserSession();
+        $userGroups = $appContext->aclUserGroupsId();
 
         return array(
             'X-Lizmap-User' => $user->login,
@@ -326,7 +355,7 @@ class Proxy
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
 
         // Get repository data
-        $ser = \lizmap::getServices();
+        $ser = self::setServices();
         $lrep = $project->getRepository();
         $lproj = $project;
         $project = $lproj->getKey();
@@ -381,7 +410,7 @@ class Proxy
         // Get tile cache virtual profile (tile storage)
         // And get tile if already in cache
         // --> must be done after checking that parent project is involved
-        $profile = self::createVirtualProfile($repository, $project, $layers, $crs);
+        $profile = Proxy::createVirtualProfile($repository, $project, $layers, $crs);
 
         if ($debug) {
             \lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
@@ -404,10 +433,12 @@ class Proxy
             $useCache = false;
         }
 
+        $appContext = self::setAppContext();
+
         // Get the cache Driver, to be sure that we can use the configured cache
         if ($useCache) {
             try {
-                $drv = \jCache::getDriver($profile);
+                $drv = $appContext->getCacheDriver($profile);
                 if (!$drv) {
                     $useCache = false;
                 }
@@ -419,7 +450,7 @@ class Proxy
 
         if ($useCache and !$forced) {
             try {
-                $tile = \jCache::get($key, $profile);
+                $tile = $appContext->getCache($key, $profile);
             } catch (\Exception $e) {
                 \jLog::logEx($e, 'error');
                 $tile = false;
@@ -499,7 +530,7 @@ class Proxy
         $builtParams = str_replace($a, $b, $builtParams);
 
         // Get data from the map server
-        list($data, $mime, $code) = self::getRemoteData(
+        list($data, $mime, $code) = Proxy::getRemoteData(
             $url.$builtParams,
             array('method' => 'post')
         );
@@ -573,7 +604,7 @@ class Proxy
             }
 
             try {
-                \jCache::set($key, $data, $cacheExpiration, $profile);
+                $appContext->setCache($key, $data, $cacheExpiration, $profile);
                 $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
                 $cached = true;
 
@@ -599,8 +630,9 @@ class Proxy
             return $cacheName;
         }
 
+        $appContext = self::setAppContext();
         // Storage type
-        $ser = \lizmap::getServices();
+        $ser = self::setServices();
         $cacheStorageType = $ser->cacheStorageType;
         // Expiration time : take default one
         $cacheExpiration = (int) $ser->cacheExpiration;
@@ -633,7 +665,7 @@ class Proxy
             );
 
             // Create the virtual cache profile
-            \jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+            $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
         } elseif ($cacheStorageType == 'redis') {
             // CACHE CONTENT INTO REDIS
             self::declareRedisProfile($ser, $cacheName, $repository, $project, $layers, $crs);
@@ -648,7 +680,7 @@ class Proxy
 
             // Create database and populate with table if needed
             if (!file_exists($cacheDatabase)) {
-                copy(\jApp::varPath().'cacheTemplate.db', $cacheDatabase);
+                copy($appContext->appVarPath().'cacheTemplate.db', $cacheDatabase);
             }
 
             // Virtual jdb profile corresponding to the layer database
@@ -660,7 +692,7 @@ class Proxy
             );
             // Create the virtual jdb profile
             $cacheJdbName = 'jdb_'.$cacheName;
-            \jProfiles::createVirtualProfile('jdb', $cacheJdbName, $jdbParams);
+            $appContext->createVirtualProfile('jdb', $cacheJdbName, $jdbParams);
 
             // Virtual cache profile parameter
             $cacheParams = array(
@@ -671,7 +703,7 @@ class Proxy
             );
 
             // Create the virtual cache profile
-            \jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+            $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
         }
 
         self::$_profiles[$cacheName] = true;
@@ -726,19 +758,24 @@ class Proxy
         }
 
         // Create the virtual cache profile
-        \jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+        self::setAppContext()->createVirtualProfile('jcache', $cacheName, $cacheParams);
     }
 
     /**
      * @param mixed $repository
+     * @param mixed $lrep
      *
      * @return mixed the repository key, or false if clear has failed
      */
-    public static function clearCache($repository)
+    public static function clearCache($lrep)
     {
+        if (!$lrep) {
+            return null;
+        }
+
         // Get config utility
-        $lrep = \lizmap::getRepository($repository);
-        $ser = \lizmap::getServices();
+        $repository = $lrep->getKey();
+        $ser = self::setServices();
 
         // Remove the cache for the repository for file/sqlite cache type
         $cacheStorageType = $ser->cacheStorageType;
@@ -748,16 +785,16 @@ class Proxy
             if (!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)) {
                 $cacheRootDirectory = sys_get_temp_dir();
             }
-            $clearCacheOk = \jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey());
+            $clearCacheOk = \jFile::removeDir($cacheRootDirectory.'/'.$repository);
         } else {
             // remove the cache from redis
             $cacheName = 'lizmapCache_'.$repository;
             self::declareRedisProfile($ser, $cacheName, $repository);
             $clearCacheOk = $clearCacheOk && \jCache::flush($cacheName);
         }
-        \jEvent::notify('lizmapProxyClearCache', array('repository' => $repository));
+        self::setAppContext()->eventNotify('lizmapProxyClearCache', array('repository' => $repository));
         if ($clearCacheOk) {
-            return $lrep->getKey();
+            return $repository;
         }
 
         return false;
@@ -767,7 +804,8 @@ class Proxy
     {
 
         // Storage type
-        $ser = \lizmap::getServices();
+        $ser = self::setServices();
+        $appContext = self::setAppContext();
         $cacheStorageType = $ser->cacheStorageType;
 
         // Cache root directory
@@ -804,9 +842,9 @@ class Proxy
             // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
             $cacheName = 'lizmapCache_'.$repository.'_'.$project;
             self::declareRedisProfile($ser, $cacheName, $repository, $project);
-            \jCache::flush($cacheName);
+            $appContext->flushCache($cacheName);
         }
-        \jEvent::notify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
+        $appContext->eventNotify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
     }
 }
 

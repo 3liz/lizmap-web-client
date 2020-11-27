@@ -34,6 +34,18 @@ interface AppContextInterface
     public function appConfigPath($file = '');
 
     /**
+     * Returns the app var path.
+     *
+     * @param string $file The var file
+     */
+    public function appVarPath($file = '');
+
+    /**
+     * Returns a jCoordinator object.
+     */
+    public function getCoord();
+
+    /**
      * says if the current user has the given right.
      *
      * @param string $right    the key of the right to check
@@ -89,6 +101,13 @@ interface AppContextInterface
     public function getCache($key, $profile = '');
 
     /**
+     * Returns the cache driver corresponding to the profile.
+     *
+     * @param string $profile The profile name
+     */
+    public function getCacheDriver($profile);
+
+    /**
      * return the normalized value of a cache key, to be used with getCache.
      *
      * @param string $key
@@ -114,6 +133,13 @@ interface AppContextInterface
      * @param string $profile The cache profile
      */
     public function clearCache($key, $profile = '');
+
+    /**
+     * Flushes data from the cache.
+     *
+     * @param string $profile The cache profile
+     */
+    public function flushCache($profile = '');
 
     /**
      * Log a message.
@@ -247,4 +273,11 @@ interface AppContextInterface
      * @return string the path
      */
     public function getFormPath();
+
+    /**
+     * Returns a class instance.
+     *
+     * @param string $selector The jelix class selector
+     */
+    public function getClassService($selector);
 }

@@ -53,7 +53,7 @@ class WMTSRequest extends OGCRequest
             return $this->serviceException();
         }
 
-        $sUrl = \jUrl::getFull(
+        $sUrl = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -204,7 +204,7 @@ class WMTSRequest extends OGCRequest
             $params['exp_filter'] = $exp_filter;
         }
 
-        $wmsRequest = new WMSRequest($this->project, $params, self::getServices(), self::getAppContext());
+        $wmsRequest = new WMSRequest($this->project, $params, $this->services, $this->appContext);
         $wmsRequest->setForceRequest($this->forceRequest);
 
         return $wmsRequest->process();
