@@ -1,10 +1,8 @@
-Installing Lizmap
-=================
+# Installing Lizmap
 
-Requirements
-------------
+## Requirements
 
-First you should install
+First you should install :
 
 - The web server Apache or Nginx
 - The PHP-FPM package (`php5-fpm` or `php7.0` on debian/ubuntu) or `libapache2-mod-php` (apache only).
@@ -15,8 +13,7 @@ First you should install
 and [its documentation about QGIS Server](https://docs.qgis.org/2.18/en/docs/user_manual/working_with_ogc/server/index.html)
 - (optional) PostgreSQL with PostGIS and its php extension (`php-pgsql` or equivalents)
 
-Get the source
---------------
+## Get the source
 
 - Download the Lizmap ZIP archive from:
   - [the release page on GitHub](https://github.com/3liz/lizmap-web-client/releases) for stable releases.
@@ -28,8 +25,7 @@ are a developer and you want to contribute on the code of Lizmap.
 Since Lizmap 3.4, **the source code in the repository is not usable directly**.
 You must build the application. Read [how to contribute](./CONTRIBUTING.md) to build your own package.
 
-Installation
-------------
+## Installation
 
 Create `lizmapConfig.ini.php`, `localconfig.ini.php` and `profiles.ini.php` and edit them
 to set parameters specific to your installation. You can modify `lizmapConfig.ini.php`
@@ -61,8 +57,16 @@ Then you can launch the installer
 php lizmap/install/installer.php
 ```
 
-Test
-----
+## Additional features
+
+It's possible to add additional features in Lizmap by adding : 
+
+* Lizmap modules, in the PHP application, the list is available on 
+  [https://docs.lizmap.com](https://docs.lizmap.com/next/fr/introduction.html#additional-lizmap-modules).
+* QGIS Server plugins, the list is available on 
+  [https://docs.lizmap.com](https://docs.lizmap.com/next/fr/install/linux.html#qgis-server-plugins)
+
+## Test
 
 In your browser, launch: http://127.0.0.1/mylizmap/lizmap/www.
 
@@ -81,15 +85,13 @@ If you want to test lizmap with some demo qgis projects, you should launch
 tools : unzip and wget or curl.
 
 
-Using QGIS composer/layouts and PDF in Lizmap
----------------------------------------------
+### Using QGIS composer/layouts and PDF in Lizmap
 
 If you plan to print PDF from Lizmap, you need a fake X Server. 
 See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`. 
 It works for Apache and NGINX
 
-Debug
-----
+###Debug
 
 * Check Lizmap settings
 * Check logs in Apache/Nginx and QGIS Server.
