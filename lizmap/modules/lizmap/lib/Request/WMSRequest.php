@@ -12,6 +12,9 @@
 
 namespace Lizmap\Request;
 
+/**
+ * See https://en.wikipedia.org/wiki/Web_Map_Service.
+ */
 class WMSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wms_exception';
@@ -85,6 +88,9 @@ class WMSRequest extends OGCRequest
         return $params;
     }
 
+    /**
+     * https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getcapabilities()
     {
         $version = $this->param('version');
@@ -216,6 +222,9 @@ class WMSRequest extends OGCRequest
         );
     }
 
+    /**
+     * https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getmap()
     {
         if (!$this->checkMaximumWidthHeight()) {
@@ -234,6 +243,9 @@ class WMSRequest extends OGCRequest
         );
     }
 
+    /**
+     * Check wether the height and width values are valids.
+     */
     protected function checkMaximumWidthHeight()
     {
         $maxWidth = $this->project->getData('wmsMaxWidth');
@@ -272,6 +284,9 @@ class WMSRequest extends OGCRequest
         return true;
     }
 
+    /**
+     * https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getlegendgraphic()
     {
         return $this->getlegendgraphics();
@@ -303,6 +318,9 @@ class WMSRequest extends OGCRequest
         );
     }
 
+    /**
+     * https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getfeatureinfo()
     {
         $queryLayers = $this->param('query_layers');
@@ -852,9 +870,9 @@ class WMSRequest extends OGCRequest
     /**
      * Get data from map service or from the cache.
      *
-     * @param lizmapProject $project the project
-     * @param array         $params  array of parameters
-     * @param mixed         $forced
+     * @param \Lizmap\Project\Project $project the project
+     * @param array                   $params  array of parameters
+     * @param mixed                   $forced
      *
      * @return array $data normalized and filtered array
      */

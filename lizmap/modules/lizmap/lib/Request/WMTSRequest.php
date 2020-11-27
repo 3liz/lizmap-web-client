@@ -12,6 +12,9 @@
 
 namespace Lizmap\Request;
 
+/**
+ * https://en.wikipedia.org/wiki/Web_Map_Tile_Service.
+ */
 class WMTSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wmts_exception';
@@ -28,6 +31,9 @@ class WMTSRequest extends OGCRequest
         return $this->forceRequest = $forced;
     }
 
+    /**
+     * https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
+     */
     protected function getcapabilities()
     {
         $tileCapabilities = null;
@@ -74,6 +80,9 @@ class WMTSRequest extends OGCRequest
         );
     }
 
+    /**
+     * https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
+     */
     public function gettile()
     {
         //\jLog::log('GetTile '.http_build_query($this->params));
