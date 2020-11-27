@@ -51,6 +51,64 @@ class Proxy
         return self::$appContext;
     }
 
+    public static function build($project, $params, $requestXml = null)
+    {
+        $service = null;
+        $request = null;
+
+        // Check request XML
+        if ($requestXml && substr(trim($requestXml), 0, 1) == '<') {
+            $requestXml = trim($requestXml);
+        } else {
+            $requestXml = null;
+        }
+
+        // Parse request XML
+        if ($requestXml) {
+            $xml = simplexml_load_string($requestXml);
+            if ($xml) {
+                $request = $xml->getName();
+                if (property_exists($xml->attributes(), 'service')) {
+                    // OGC service has to be upper case for QGIS Server
+                    $service = strtoupper($xml['service']);
+                }
+            } else {
+                $requestXml = null;
+            }
+        }
+
+        // Check parameters
+        if (!$requestXml && isset($params['service'])) {
+            // OGC service has to be upper case for QGIS Server
+            $service = strtoupper($params['service']);
+            if (isset($params['request'])) {
+                $request = strtolower($params['request']);
+            }
+        }
+
+        if ($service == null) {
+            return null;
+        }
+        $params['service'] = $service;
+        if ($request !== null) {
+            $params['request'] = $request;
+        }
+        if ($service == 'WMS') {
+            return new WMSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
+        }
+        if ($service == 'WMTS') {
+            return new WMTSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
+        }
+        if ($service == 'WFS') {
+            return new WFSRequest($project, $params, self::setServices(), self::setAppContext(), $requestXml);
+            // Not yet
+        //} else if ($service == 'WCS') {
+        //    return new lizmapWCSRequest($project, $params, $requestXml)
+        }
+
+        return null;
+    }
+
     /**
      * Normalize and filter request parameters.
      *
@@ -330,290 +388,6 @@ class Proxy
         }
 
         return $headers;
-    }
-
-    /**
-     * Get data from map service or from the cache.
-     *
-     * @param lizmapProject $project the project
-     * @param array         $params  array of parameters
-     * @param mixed         $forced
-     *
-     * @return array $data normalized and filtered array
-     */
-    public static function getMap($project, $params, $forced = false)
-    {
-
-        // Get cache if exists
-        $keyParams = $params;
-        if (array_key_exists('map', $keyParams)) {
-            unset($keyParams['map']);
-        }
-        ksort($keyParams);
-
-        $layers = str_replace(',', '_', $params['layers']);
-        $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
-
-        // Get repository data
-        $ser = self::setServices();
-        $lrep = $project->getRepository();
-        $lproj = $project;
-        $project = $lproj->getKey();
-        $repository = $lrep->getKey();
-
-        // Change to true to put some information in debug files
-        $debug = $ser->debugMode;
-
-        // Read config file for the current project
-        $layername = $params['layers'];
-        $configLayers = $lproj->getLayers();
-        $configLayer = null;
-        if (property_exists($configLayers, $layername)) {
-            $configLayer = $configLayers->{$layername};
-        }
-
-        // Set or get tile from the parent project in case of embedded layers
-        if ($configLayer
-            and property_exists($configLayer, 'sourceRepository')
-            and $configLayer->sourceRepository != ''
-            and property_exists($configLayer, 'sourceProject')
-            and $configLayer->sourceProject != ''
-        ) {
-            $newRepository = (string) $configLayer->sourceRepository;
-            $newProject = (string) $configLayer->sourceProject;
-            $repository = $newRepository;
-            $project = $newProject;
-            $lrep = \lizmap::getRepository($repository);
-            if (!$lrep) {
-                \jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
-
-                return array('error', 'text/plain', '404', false);
-            }
-
-            try {
-                $lproj = \lizmap::getProject($repository.'~'.$project);
-                if (!$lproj) {
-                    \jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
-
-                    return array('error', 'text/plain', '404', false);
-                }
-            } catch (\UnknownLizmapProjectException $e) {
-                \jLog::logEx($e, 'error');
-                \jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
-
-                return array('error', 'text/plain', '404', false);
-            }
-        }
-
-        $key = md5(serialize($keyParams));
-
-        // Get tile cache virtual profile (tile storage)
-        // And get tile if already in cache
-        // --> must be done after checking that parent project is involved
-        $profile = Proxy::createVirtualProfile($repository, $project, $layers, $crs);
-
-        if ($debug) {
-            \lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
-        }
-
-        // Has the user asked for cache for this layer ?
-        $useCache = false;
-        if ($configLayer) {
-            $useCache = strtolower($configLayer->cached) == 'true';
-        }
-
-        // Avoid using cache for requests concerning not square tiles or too big
-        // Focus on real web square tiles
-        $wmsClient = 'web';
-        if ($useCache
-            and $params['width'] != $params['height']
-            and ($params['width'] > 300 or $params['height'] > 300)
-        ) {
-            $wmsClient = 'gis';
-            $useCache = false;
-        }
-
-        $appContext = self::setAppContext();
-
-        // Get the cache Driver, to be sure that we can use the configured cache
-        if ($useCache) {
-            try {
-                $drv = $appContext->getCacheDriver($profile);
-                if (!$drv) {
-                    $useCache = false;
-                }
-            } catch (\Exception $e) {
-                \jLog::logEx($e, 'error');
-                $useCache = false;
-            }
-        }
-
-        if ($useCache and !$forced) {
-            try {
-                $tile = $appContext->getCache($key, $profile);
-            } catch (\Exception $e) {
-                \jLog::logEx($e, 'error');
-                $tile = false;
-            }
-            if ($tile) {
-                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
-                $mime = 'image/jpeg';
-                if (preg_match('#png#', $params['format'])) {
-                    $mime = 'image/png';
-                }
-
-                if ($debug) {
-                    \lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
-                }
-
-                return array($tile, $mime, 200, true);
-            }
-        }
-
-        // ***************************
-        // No cache hit : need to ask the tile from QGIS Server
-        // ***************************
-
-        // Construction of the WMS url : base url + parameters
-        $url = $ser->wmsServerURL.'?';
-
-        // Add project path into map parameter
-        $params['map'] = $lproj->getRelativeQgisPath();
-
-        // Metatile : if needed, change the bbox
-        // Avoid metatiling when the cache is not active for the layer
-        $metatileSize = '1,1';
-        if ($configLayer and property_exists($configLayer, 'metatileSize')) {
-            if (preg_match('#^[3579],[3579]$#', $configLayer->metatileSize)) {
-                $metatileSize = $configLayer->metatileSize;
-            }
-        }
-
-        // Metatile buffer
-        $metatileBuffer = 5;
-
-        // Also checks if gd is installed
-        if ($metatileSize && $useCache && $wmsClient == 'web' &&
-            extension_loaded('gd') && function_exists('gd_info')) {
-            // Metatile Size
-            $metatileSizeExp = explode(',', $metatileSize);
-            $metatileSizeX = (int) $metatileSizeExp[0];
-            $metatileSizeY = (int) $metatileSizeExp[1];
-
-            // Get requested bbox
-            $bboxExp = explode(',', $params['bbox']);
-            $width = $bboxExp[2] - $bboxExp[0];
-            $height = $bboxExp[3] - $bboxExp[1];
-            // Calculate factors
-            $xFactor = (int) ($metatileSizeX / 2);
-            $yFactor = (int) ($metatileSizeY / 2);
-            // Calculate the new bbox
-            $xmin = $bboxExp[0] - $xFactor * $width - $metatileBuffer * $width / $params['width'];
-            $ymin = $bboxExp[1] - $yFactor * $height - $metatileBuffer * $height / $params['height'];
-            $xmax = $bboxExp[2] + $xFactor * $width + $metatileBuffer * $width / $params['width'];
-            $ymax = $bboxExp[3] + $yFactor * $height + $metatileBuffer * $height / $params['height'];
-            // Replace request bbox by metatile bbox
-            $params['bbox'] = "${xmin},${ymin},${xmax},${ymax}";
-
-            // Keep original param value
-            $originalParams = array('width' => $params['width'], 'height' => $params['height']);
-            // Replace width and height before requesting the image from qgis
-            $params['width'] = $metatileSizeX * $params['width'] + 2 * $metatileBuffer;
-            $params['height'] = $metatileSizeY * $params['height'] + 2 * $metatileBuffer;
-        }
-
-        // Build params before send the request to Qgis
-        $builtParams = http_build_query($params);
-        // Replace needed characters (not needed for php >= 5.4, just use the 4th parameter of the method http_build_query)
-        $a = array('+', '_', '.', '-');
-        $b = array('%20', '%5F', '%2E', '%2D');
-        $builtParams = str_replace($a, $b, $builtParams);
-
-        // Get data from the map server
-            $url.$builtParams,
-        if ($debug) {
-            \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
-        }
-
-        if ($useCache && !preg_match('/^image/', $mime)) {
-            $useCache = false;
-        }
-
-        // Metatile : if needed, crop the metatile into a single tile
-        // Also checks if gd is installed
-        if ($metatileSize && $useCache && $wmsClient == 'web' &&
-            extension_loaded('gd') && function_exists('gd_info')
-        ) {
-
-            // Save original content into an image var
-            $original = imagecreatefromstring($data);
-
-            // crop parameters
-            $newWidth = (int) ($originalParams['width']); // px
-            $newHeight = (int) ($originalParams['height']); // px
-            $positionX = (int) ($xFactor * $originalParams['width']) + $metatileBuffer; // left translation of 30px
-            $positionY = (int) ($yFactor * $originalParams['height']) + $metatileBuffer; // top translation of 20px
-
-            // create new gd image
-            $image = imagecreatetruecolor($newWidth, $newHeight);
-
-            // save transparency if needed
-            if (preg_match('#png#', $params['format'])) {
-                imagesavealpha($original, true);
-                imagealphablending($image, false);
-                $color = imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
-                imagefill($image, 0, 0, $color);
-                imagesavealpha($image, true);
-            }
-
-            // crop image
-            imagecopyresampled($image, $original, 0, 0, $positionX, $positionY, $newWidth, $newHeight, $newWidth, $newHeight);
-
-            // Output the image as a string (use PHP buffering)
-            ob_start();
-            if (preg_match('#png#', $params['format'])) {
-                imagepng($image, null, 9);
-            } else {
-                imagejpeg($image, null, 90);
-            }
-            $data = ob_get_contents(); // read from buffer
-            ob_end_clean(); // delete buffer
-
-            // Destroy image handlers
-            imagedestroy($original);
-            imagedestroy($image);
-
-            if ($debug) {
-                \lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
-            }
-        }
-
-        $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
-
-        // Store into cache if needed
-        $cached = false;
-        if ($useCache) {
-            //~ \jLog::log( ' Store into cache');
-            $cacheExpiration = (int) $ser->cacheExpiration;
-            if (property_exists($configLayer, 'cacheExpiration')) {
-                $cacheExpiration = (int) $configLayer->cacheExpiration;
-            }
-
-            try {
-                $appContext->setCache($key, $data, $cacheExpiration, $profile);
-                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
-                $cached = true;
-
-                if ($debug) {
-                    \lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
-                }
-            } catch (\Exception $e) {
-                \jLog::logEx($e, 'error');
-                $cached = false;
-            }
-        }
-
-        return array($data, $mime, $code, $cached);
     }
 
     public static function createVirtualProfile($repository, $project, $layers, $crs)

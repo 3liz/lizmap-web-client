@@ -56,64 +56,6 @@ class OGCRequest
         $this->requestXml = $requestXml;
     }
 
-    public static function build($project, $params, $requestXml = null)
-    {
-        $service = null;
-        $request = null;
-
-        // Check request XML
-        if ($requestXml && substr(trim($requestXml), 0, 1) == '<') {
-            $requestXml = trim($requestXml);
-        } else {
-            $requestXml = null;
-        }
-
-        // Parse request XML
-        if ($requestXml) {
-            $xml = simplexml_load_string($requestXml);
-            if ($xml) {
-                $request = $xml->getName();
-                if (property_exists($xml->attributes(), 'service')) {
-                    // OGC service has to be upper case for QGIS Server
-                    $service = strtoupper($xml['service']);
-                }
-            } else {
-                $requestXml = null;
-            }
-        }
-
-        // Check parameters
-        if (!$requestXml && isset($params['service'])) {
-            // OGC service has to be upper case for QGIS Server
-            $service = strtoupper($params['service']);
-            if (isset($params['request'])) {
-                $request = strtolower($params['request']);
-            }
-        }
-
-        if ($service == null) {
-            return null;
-        }
-        $params['service'] = $service;
-        if ($request !== null) {
-            $params['request'] = $request;
-        }
-        if ($service == 'WMS') {
-            return new WMSRequest($project, $params, $this->services, $this->appContext, $requestXml);
-        }
-        if ($service == 'WMTS') {
-            return new WMTSRequest($project, $params, $this->services, $this->appContext, $requestXml);
-        }
-        if ($service == 'WFS') {
-            return new WFSRequest($project, $params, $this->services, $this->appContext, $requestXml);
-            // Not yet
-        //} else if ($service == 'WCS') {
-        //    return new lizmapWCSRequest($project, $params, $requestXml)
-        }
-
-        return null;
-    }
-
     /**
      * Gets the value of a request parameter. If not defined, gets its default value.
      *
