@@ -42,7 +42,7 @@ class appCtrl extends jController
             'service' => 'WMS',
             'request' => 'GetCapabilities',
         );
-        $url = \Lizmap\Request\Proxy::constructUrl($params);
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
         list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
         if (preg_match('#ServerException#i', $resp) ||
             preg_match('#ServiceExceptionReport#i', $resp) ||

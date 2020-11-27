@@ -31,6 +31,31 @@ class OGCRequest
 
     protected $tplExceptions;
 
+    protected $appContext;
+
+    /**
+     * constructor.
+     *
+     * @param lizmapProject $project    the project has a lizmapProject Class
+     * @param array         $params     the params array
+     * @param string        $requestXml the params array
+     * @param mixed         $services
+     */
+    public function __construct($project, $params, $services, App\AppContextInterface $appContext, $requestXml = null)
+    {
+        //print_r( $project != null );
+        $this->project = $project;
+
+        $this->repository = $project->getRepository();
+
+        $this->services = $services;
+        $this->appContext = $appContext;
+
+        $params['map'] = $project->getRelativeQgisPath();
+        $this->params = Proxy::normalizeParams($params);
+        $this->requestXml = $requestXml;
+    }
+
     public static function build($project, $params, $requestXml = null)
     {
         $service = null;
@@ -74,40 +99,19 @@ class OGCRequest
             $params['request'] = $request;
         }
         if ($service == 'WMS') {
-            return new WMSRequest($project, $params, $requestXml);
+            return new WMSRequest($project, $params, $this->services, $this->appContext, $requestXml);
         }
         if ($service == 'WMTS') {
-            return new WMTSRequest($project, $params, $requestXml);
+            return new WMTSRequest($project, $params, $this->services, $this->appContext, $requestXml);
         }
         if ($service == 'WFS') {
-            return new WFSRequest($project, $params, $requestXml);
+            return new WFSRequest($project, $params, $this->services, $this->appContext, $requestXml);
             // Not yet
         //} else if ($service == 'WCS') {
         //    return new lizmapWCSRequest($project, $params, $requestXml)
         }
 
         return null;
-    }
-
-    /**
-     * constructor.
-     *
-     * @param lizmapProject $project    the project has a lizmapProject Class
-     * @param array         $params     the params array
-     * @param string        $requestXml the params array
-     */
-    public function __construct($project, $params, $requestXml = null)
-    {
-        //print_r( $project != null );
-        $this->project = $project;
-
-        $this->repository = $project->getRepository();
-
-        $this->services = \lizmap::getServices();
-
-        $params['map'] = $project->getRelativeQgisPath();
-        $this->params = \Lizmap\Request\Proxy::normalizeParams($params);
-        $this->requestXml = $requestXml;
     }
 
     /**
@@ -135,8 +139,9 @@ class OGCRequest
 
     public function parameters()
     {
+        $appContext = $this->appContext;
         // Check if a user is authenticated
-        if (!\jAuth::isConnected()) {
+        if (!$appContext->UserisConnected()) {
             // return parameters with empty user param
             return array_merge($this->params, array(
                 'Lizmap_User' => '',
@@ -145,9 +150,9 @@ class OGCRequest
         }
 
         // Provide user and groups to lizmap plugin access control
-        $user = \jAuth::getUserSession();
-        $userGroups = \jAcl2DbUserGroup::getGroups();
-        $loginFilteredOverride = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
+        $user = $appContext->getUserSession();
+        $userGroups = $appContext->aclUserGroupsId();
+        $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
         return array_merge($this->params, array(
             'Lizmap_User' => $user->login,
@@ -251,20 +256,21 @@ class OGCRequest
 
     protected function getcapabilities()
     {
+        $appContext = $this->appContext;
         // Get cached session
         $key = session_id().'-'.
                $this->project->getRepository()->getKey().'-'.
                $this->project->getKey().'-'.
                $this->param('service').'-getcapabilities';
-        if (\jAuth::isConnected()) {
-            $juser = \jAuth::getUserSession();
+        if ($appContext->UserisConnected()) {
+            $juser = $appContext->getUserSession();
             $key .= '-'.$juser->login;
         }
         $key = sha1($key);
         $cached = false;
 
         try {
-            $cached = \jCache::get($key, 'qgisprojects');
+            $cached = $appContext->getCache($key, 'qgisprojects');
         } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
@@ -305,7 +311,7 @@ class OGCRequest
                 'mime' => $response->mime,
                 'data' => $response->data,
             );
-            $cached = \jCache::set($key, $cached, 3600, 'qgisprojects');
+            $cached = $appContext->setCache($key, $cached, 3600, 'qgisprojects');
         }
 
         return (object) array(
