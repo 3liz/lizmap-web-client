@@ -55,7 +55,7 @@ class WFSRequest extends OGCRequest
         }
 
         // No filter data by login rights
-        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+        if (\jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
             return $params;
         }
 
@@ -114,11 +114,11 @@ class WFSRequest extends OGCRequest
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                jLog::log('GetCapabilities empty data', 'error');
+                \jLog::log('GetCapabilities empty data', 'error');
             } else {
-                jLog::log('GetCapabilities result code: '.$result->code, 'error');
+                \jLog::log('GetCapabilities result code: '.$result->code, 'error');
             }
-            jMessage::add('Server Error !', 'Error');
+            \jMessage::add('Server Error !', 'Error');
 
             return $this->serviceException();
         }
@@ -128,7 +128,7 @@ class WFSRequest extends OGCRequest
         }
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
+        $sUrl = \jUrl::getFull(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -187,7 +187,7 @@ class WFSRequest extends OGCRequest
                     $errormsg .= '\n'.http_build_query($this->params);
                     $errormsg .= '\n'.$data;
                     $errormsg .= '\n'.implode('\n', $errorlist);
-                    jLog::log($errormsg, 'error');
+                    \jLog::log($errormsg, 'error');
                     $go = false;
                 }
                 if ($go && $xml->complexType) {
@@ -227,7 +227,7 @@ class WFSRequest extends OGCRequest
         // Get type name
         $typename = $this->param('typename');
         if (!$typename) {
-            jMessage::add('TYPENAME is mandatory', 'RequestNotWellFormed');
+            \jMessage::add('TYPENAME is mandatory', 'RequestNotWellFormed');
 
             return $this->serviceException();
         }
@@ -241,7 +241,7 @@ class WFSRequest extends OGCRequest
         // Get Lizmap layer config
         $lizmapLayer = $this->project->findLayerByTypeName($typename);
         if (!$lizmapLayer) {
-            jMessage::add('The layer '.$typename.' does not exists !', 'Error');
+            \jMessage::add('The layer '.$typename.' does not exists !', 'Error');
 
             return $this->serviceException();
         }
@@ -333,7 +333,7 @@ class WFSRequest extends OGCRequest
         // Get Db fields
         try {
             $dbFields = $this->qgisLayer->getDbFieldList();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->getfeatureQgis();
         }
 
@@ -483,7 +483,7 @@ class WFSRequest extends OGCRequest
                     $fidsSql[] = $fidSql;
                 }
             }
-            //jLog::log(implode(' OR ', $fidsSql), 'error');
+            //\jLog::log(implode(' OR ', $fidsSql), 'error');
             $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
@@ -541,15 +541,15 @@ class WFSRequest extends OGCRequest
             $sql .= ' OFFSET '.$startindex;
         }
 
-        //jLog::log($sql);
+        //\jLog::log($sql);
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
-        //jLog::log($sql);
+        //\jLog::log($sql);
         // Run query
         try {
             $q = $cnx->query($sql);
-        } catch (Exception $e) {
-            jLog::logEx($e, 'error');
+        } catch (\Exception $e) {
+            \jLog::logEx($e, 'error');
 
             return $this->getfeatureQgis();
         }
@@ -589,7 +589,7 @@ class WFSRequest extends OGCRequest
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
+            \jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
 
             return false;
         }
@@ -661,7 +661,7 @@ class WFSRequest extends OGCRequest
 
         if (!empty($geosql)) {
             // For new QGIS versions, export into EPSG:4326
-            $lizservices = lizmap::getServices();
+            $lizservices = \lizmap::getServices();
             if (version_compare($lizservices->qgisServerVersion, '2.18', '>=')) {
                 $geosql = 'ST_Transform('.$geosql.', 4326)';
             }

@@ -89,7 +89,7 @@ class projectCtrl extends jControllerCmdLine
                 $i = 0;
                 while ($i < $nb) {
                     // Get remote data
-                    list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+                    list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
                     if (floor($code / 100) >= 5) {
                         ++$nb_500;
                     } elseif (floor($code / 100) >= 4) {
