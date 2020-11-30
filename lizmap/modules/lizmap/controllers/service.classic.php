@@ -280,7 +280,7 @@ class serviceCtrl extends jController
         // Get and normalize the passed parameters
         $pParams = jApp::coord()->request->params;
         $pParams['map'] = $lproj->getRelativeQgisPath();
-        $params = lizmapProxy::normalizeParams($pParams);
+        $params = \Lizmap\Request\Proxy::normalizeParams($pParams);
 
         // Define class private properties
         $this->project = $lproj;
