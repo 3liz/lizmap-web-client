@@ -9,7 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapOGCRequest
+
+namespace Lizmap\Request;
+
+class OGCRequest
 {
     /**
      * @var lizmapProject
