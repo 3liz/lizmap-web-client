@@ -207,7 +207,7 @@ class Proxy
         ), $options);
 
         $options['method'] = strtolower($options['method']);
-        
+
         return $options;
     }
 
@@ -398,11 +398,10 @@ class Proxy
         // Proxy http backend : use curl or file_get_contents
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
-            return self::curlProxy($url, $options);   
-        } else {
-            // With file_get_contents
-            return self::fileProxy($url, $options);
+            return self::curlProxy($url, $options);
         }
+        // With file_get_contents
+        return self::fileProxy($url, $options);
     }
 
     protected static function userHttpHeader()

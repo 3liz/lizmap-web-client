@@ -156,12 +156,12 @@ class WMSRequest extends OGCRequest
 
         //INSERT MaxWidth and MaxHeight
         $dimensions = array('Width', 'Height');
-        foreach($dimensions as $d) {
+        foreach ($dimensions as $d) {
             if (!preg_match('@Service>.*?Max'.$d.'.*?</Service@si', $data)) {
                 $matches = array();
                 if (preg_match('@Service>(.*?)</Service@si', $data, $matches)) {
                     if (count($matches) > 1) {
-                        $sUpdate = $matches[1]."<Max".$d.">3000</Max".$d.">\n ";
+                        $sUpdate = $matches[1].'<Max'.$d.'>3000</Max'.$d.">\n ";
                         $data = str_replace($matches[1], $sUpdate, $data);
                     }
                 }
@@ -248,7 +248,7 @@ class WMSRequest extends OGCRequest
             $var = 'wmsMax'.$d;
             $max = $this->project->getData($var);
             if (!$max) {
-                $max = $this->services->$var ? $this->services->$var : 3000;
+                $max = $this->services->{$var} ? $this->services->{$var} : 3000;
             }
             $dim = $this->param(lcfirst($d));
             if ($dim == null || !is_numeric($dim) || intval($dim) > $max) {
@@ -451,6 +451,7 @@ class WMSRequest extends OGCRequest
         foreach ($params as $key => $value) {
             $tpl->assign($key, $value);
         }
+
         return $tpl->fetch($tplName, 'html');
     }
 
@@ -458,12 +459,13 @@ class WMSRequest extends OGCRequest
      * gfiXmlToHtml : return HTML for the getFeatureInfo XML.
      *
      * @param string $xmldata XML data from getFeatureInfo
+     * @param mixed  $xmlData
      *
      * @return string feature Info in HTML format
      */
     protected function gfiXmlToHtml($xmlData)
     {
-        $xml = $this->logXmlError($xmlData);
+        $xml = $this->loadXmlString($xmlData, 'getFeatureInfo');
 
         if (!$xml || !$xml->Layer) {
             return '';
@@ -599,7 +601,7 @@ class WMSRequest extends OGCRequest
 
             $popupFeatureContent = $this->getViewTpl('view~popupDefaultContent', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
-                'attributes' => $feature->Attribute
+                'attributes' => $feature->Attribute,
             ));
             $autoContent = $popupFeatureContent;
 
@@ -650,7 +652,7 @@ class WMSRequest extends OGCRequest
                         $hiddenGeometry .= '<input type="hidden" value="'.$attribute['value'].'" class="lizmap-popup-layer-feature-geometry"/>'.PHP_EOL;
                         $bbox = $feature->BoundingBox[0];
                         foreach ($props as $prop => $class) {
-                            $hiddenGeometry .= '<input type="hidden" value="'.$bbox[$prop].'" class="lizmap-popup-layer-feature-'.$class.'"/>'.PHP_EOL;    
+                            $hiddenGeometry .= '<input type="hidden" value="'.$bbox[$prop].'" class="lizmap-popup-layer-feature-'.$class.'"/>'.PHP_EOL;
                         }
                     }
                 }
@@ -672,14 +674,14 @@ class WMSRequest extends OGCRequest
 
             $content[] = $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
-                'popupContent' => $hiddenFeatureId.$hiddenGeometry.$finalContent
+                'popupContent' => $hiddenFeatureId.$hiddenGeometry.$finalContent,
             ));
         } // loop features
 
         // Build hidden table containing all features
         if (count($allFeatureAttributes) > 0) {
             $content[] = $this->getViewTpl('view~popup_all_features_table', $layerName, $layerId, $layerTitle, array(
-                'allFeatureAttributes' => array_reverse($allFeatureAttributes)
+                'allFeatureAttributes' => array_reverse($allFeatureAttributes),
             ));
         }
 
@@ -699,11 +701,11 @@ class WMSRequest extends OGCRequest
     protected function gfiRasterXmlToHtml($layerId, $layerName, $layerTitle, $layer)
     {
         $popupRasterContent = $this->getViewTpl('view~popupRasterContent', $layerName, $layerId, $layerTitle, array(
-            'attributes' => $layer->Attribute
+            'attributes' => $layer->Attribute,
         ));
 
         return $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
-            'popupContent' => $popupRasterContent
+            'popupContent' => $popupRasterContent,
         ));
     }
 
@@ -745,7 +747,7 @@ class WMSRequest extends OGCRequest
      */
     protected function gfiGmlToHtml($gmldata, $configLayer)
     {
-        $xml = $this->logXmlError($gmldata);
+        $xml = $this->loadXmlString($gmldata, 'GetFeatureInfo');
 
         if (!$xml || count($xml->children()) == 0) {
             return '';
@@ -1037,7 +1039,7 @@ class WMSRequest extends OGCRequest
         // Also checks if gd is installed
         if ($metatileSize && $useCache && $wmsClient == 'web' &&
             extension_loaded('gd') && function_exists('gd_info')) {
-                list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
+            list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
         }
 
         // Get data from the map server

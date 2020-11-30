@@ -1,7 +1,5 @@
 <?php
 
-use Lizmap\Request\Proxy;
-
 /**
  * @author    your name
  * @copyright 2020 3liz
