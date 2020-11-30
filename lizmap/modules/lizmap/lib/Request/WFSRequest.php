@@ -402,9 +402,11 @@ class WFSRequest extends OGCRequest
                 $sql = ' AND ST_Intersects("';
                 $sql .= $this->datasource->geocol;
                 $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+
                 return $sql;
             }
         }
+
         return '';
     }
 
@@ -423,12 +425,12 @@ class WFSRequest extends OGCRequest
                 $key = $this->datasource->key;
                 if (count(explode(',', $key)) == 1) {
                     return ' AND '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter);
-                } else {
-                    return false;
                 }
-            } else {
-                return ' AND '.$validFilter;
+
+                return false;
             }
+
+            return ' AND '.$validFilter;
         }
 
         return '';
@@ -510,7 +512,7 @@ class WFSRequest extends OGCRequest
 
         return $sql;
     }
- 
+
     /**
      * https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      * Queries The PostGreSQL Server for getFeature.
@@ -560,9 +562,8 @@ class WFSRequest extends OGCRequest
         $expFilterSql = $this->parseExpFilter($cnx, $params);
         if ($expFilterSql === false) {
             return $this->getfeatureQgis();
-        } else {
-            $sql .= $expFilterSql;
         }
+        $sql .= $expFilterSql;
 
         // FEATUREID
         $sql .= $this->parseFeatureId($cnx, $params);
