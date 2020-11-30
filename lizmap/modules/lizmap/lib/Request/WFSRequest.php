@@ -403,9 +403,11 @@ class WFSRequest extends OGCRequest
                 $sql = ' AND ST_Intersects("';
                 $sql .= $this->datasource->geocol;
                 $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+
                 return $sql;
             }
         }
+
         return '';
     }
 
@@ -511,7 +513,7 @@ class WFSRequest extends OGCRequest
 
         return $sql;
     }
- 
+
     /**
      * https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      * Queries The PostGreSQL Server for getFeature.

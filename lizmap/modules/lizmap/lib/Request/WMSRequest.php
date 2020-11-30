@@ -451,6 +451,7 @@ class WMSRequest extends OGCRequest
         foreach ($params as $key => $value) {
             $tpl->assign($key, $value);
         }
+
         return $tpl->fetch($tplName, 'html');
     }
 
