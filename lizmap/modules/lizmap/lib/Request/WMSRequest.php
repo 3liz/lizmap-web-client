@@ -9,7 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapWMSRequest extends lizmapOGCRequest
+
+namespace Lizmap\Request;
+
+class WMSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wms_exception';
 

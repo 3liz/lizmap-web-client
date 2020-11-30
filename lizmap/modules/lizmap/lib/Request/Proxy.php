@@ -9,7 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapProxy
+
+namespace Lizmap\Request;
+
+class Proxy
 {
     /**
      * loaded profiles.
