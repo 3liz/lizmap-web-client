@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\Request\OGCRequest;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WMTSRequest;
 
