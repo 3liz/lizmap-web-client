@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Lizmap\App;
 use Lizmap\Request;
 
-require_once __DIR__.'/ProxyForTests.php';
+require_once __DIR__.'/ClassesForTests.php';
 
 class ProxyTest extends TestCase
 {

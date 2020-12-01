@@ -303,4 +303,14 @@ class JelixContext implements AppContextInterface
     {
         return \jClasses::getService($selector);
     }
+
+    public function getTpl()
+    {
+        return new \jTpl();
+    }
+
+    public function getTileCaps($project)
+    {
+        return \lizmapTiler::getTileCapabilities($project);
+    }
 }
