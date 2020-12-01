@@ -183,4 +183,14 @@ class testContext implements AppContextInterface
     public function getClassService($selector)
     {
     }
+
+    public function getTpl()
+    {
+        return new jTplForTests();
+    }
+
+    public function getTileCaps($project)
+    {
+        return lizmapTilerForTests::getTileCapabilities($project);
+    }
 }
