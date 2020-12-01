@@ -4,6 +4,11 @@ Changelog 3.2
 Version 3.2.18 (next)
 ---------------------
 
+- update locales
+- Upgrade the ldapdao module, to fix ldap connection management
+- Update IGN attribution
+- Fix a PHP notice about the existence of the hideLayer property
+
 Version 3.2.17
 ---------------------
 
