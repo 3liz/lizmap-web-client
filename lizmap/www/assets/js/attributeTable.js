@@ -2763,12 +2763,13 @@ var lizAttributeTable = function() {
                 var dtable = $(container).find('table.dataTable');
 
                 // Adapt height
-                var h = $(container +' div.attribute-layer-content').height();
+                var h = $(container + ' div.attribute-layer-content').height() ? $(container + ' div.attribute-layer-content').height() : 0;
 
-                h = h - $(container +' thead').height();
-                h = h - $(container +' div.dataTables_paginate').height();
-                h = h - $(container +' div.dataTables_filter').height();
-                h = h - 20;
+                h -= $(container + ' thead').height() ? $(container + ' thead').height() : 0;
+                h -= $(container + ' div.dataTables_paginate').height() ? $(container + ' div.dataTables_paginate').height() : 0;
+                h -= $(container + ' div.dataTables_filter').height() ? $(container + ' div.dataTables_filter').height() : 0;
+                h -= 20;
+                
                 dtable.parent('div.dataTables_scrollBody').height(h);
 
                 // Width : adapt columns size
