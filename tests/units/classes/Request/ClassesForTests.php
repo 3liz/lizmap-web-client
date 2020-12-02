@@ -2,12 +2,20 @@
 
 use Lizmap\Request\OGCRequest;
 use Lizmap\Request\Proxy;
+use Lizmap\Request\WFSRequest;
 use Lizmap\Request\WMTSRequest;
 
 class ProjectForOGC extends ProjectForTests
 {
+    public $loginFilters;
+
     public function getRelativeQgisPath()
     {
+    }
+
+    public function getLoginFilters($layerName, $edition = false)
+    {
+        return $this->loginFilters;
     }
 }
 
@@ -64,5 +72,68 @@ class ProxyForTests extends Proxy
     public static function userHttpHeadersForTests()
     {
         return parent::userHttpHeader();
+    }
+}
+
+class WFSRequestForTests extends WFSRequest {
+
+    public $datasource;
+
+    public $selectFields;
+
+    public $qgisLayer;
+
+    public function __construct()
+    {}
+
+    public function buildQueryBaseForTests($cnx, $params, $wfsFields)
+    {
+        return $this->buildQueryBase($cnx, $params, $wfsFields);
+    }
+
+    public function getBboxSqlForTests($params)
+    {
+        return $this->getBboxSql($params);
+    }
+
+    public function parseExpFilterForTests($cnx, $params)
+    {
+        return $this->parseExpFilter($cnx, $params);
+    }
+
+    public function parseFeatureIdForTests($cnx, $params)
+    {
+        return $this->parseFeatureId($cnx, $params);
+    }
+
+    public function getQueryOrderForTests($cnx, $params, $wfsFields)
+    {
+        return $this->getQueryOrder($cnx, $params, $wfsFields);
+    }
+
+    public function validateFilterForTests($filter)
+    {
+        return $this->validateFilter($filter);
+    }
+}
+
+class LayerForWFS
+{
+    public function getSrid()
+    {
+        return 'SRID';
+    }
+}
+
+class jDbConnectionForTests
+{
+    public function encloseName($name)
+    {
+        return $name;
+    }
+
+    public function quote($name)
+    {
+        return '"'.$name.'"';
     }
 }
