@@ -167,18 +167,18 @@ class logsCtrl extends jController
             $columns = array_keys($fetchArray);
         }
 
-        # Create temp file
+        // Create temp file
         $tempPath = jApp::tempPath('export');
         jFile::createDir($tempPath);
         $fileName = tempnam($tempPath, 'lizmap_logs-');
 
-        # Opening file
+        // Opening file
         $fp = fopen($fileName, 'w');
-        # Adding encode utf8 to the file
+        // Adding encode utf8 to the file
         fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
-        # Adding first CSV line
+        // Adding first CSV line
         fputcsv($fp, $columns);
-        # Adding content
+        // Adding content
         foreach ($logs as $log) {
             $row = array();
             foreach ($columns as $column) {
@@ -186,10 +186,10 @@ class logsCtrl extends jController
             }
             fputcsv($fp, $row);
         }
-        # Closing file
+        // Closing file
         fclose($fp);
 
-        # Create response
+        // Create response
         $rep = $this->getResponse('binary');
         $rep->mimeType = 'text/csv';
         $rep->addHttpHeader('charset', 'UTF-8');
