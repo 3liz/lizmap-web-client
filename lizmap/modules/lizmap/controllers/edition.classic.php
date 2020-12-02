@@ -691,8 +691,8 @@ class editionCtrl extends jController
         // Track modified records
         $form->initModifiedControlsList();
         // Apply default data to get save it
-        foreach( $defaultFormData as $ref => $val ) {
-            if ( $val !== null ) {
+        foreach ($defaultFormData as $ref => $val) {
+            if ($val !== null) {
                 $form->setdata($ref, $val);
             }
         }
