@@ -737,8 +737,10 @@ class lizmapProject extends qgisProject
             $hasDisplayedLayer = !$onlyDisplayedLayers;
             foreach ($this->cfg->attributeLayers as $key => $obj) {
                 ++$count;
-                if ($onlyDisplayedLayers && !property_exists($obj, 'hideLayer') ||
-                    strtolower($obj->hideLayer) != 'true') {
+                if ($onlyDisplayedLayers &&
+                    (!property_exists($obj, 'hideLayer') ||
+                     strtolower($obj->hideLayer) != 'true')
+                ) {
                     $hasDisplayedLayer = true;
                 }
             }
