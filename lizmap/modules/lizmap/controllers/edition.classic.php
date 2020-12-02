@@ -680,13 +680,22 @@ class editionCtrl extends jController
 
         // SELECT data from the database and set the form data accordingly
         // or reset form controls data to null to check modified fields
+        // and save default data
+        $defaultFormData = array();
         if ($this->featureId) {
             $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
         } else {
+            $defaultFormData = $form->getAllData();
             $form = $qgisForm->resetFormData();
         }
         // Track modified records
         $form->initModifiedControlsList();
+        // Apply default data to get save it
+        foreach( $defaultFormData as $ref => $val ) {
+            if ( $val !== null ) {
+                $form->setdata($ref, $val);
+            }
+        }
         // Get data from the request and set the form controls data accordingly
         $form->initFromRequest();
 
