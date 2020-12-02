@@ -185,12 +185,13 @@ class lizmapWMSRequest extends lizmapOGCRequest
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
         $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
+        $data = $response->data;
         $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
         return (object) array(
             'code' => $response->code,
             'mime' => $response->mime,
-            'data' => $response->data,
+            'data' => $data,
             'cached' => false,
         );
     }
@@ -467,7 +468,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
                 $errorlist[] = $error;
             }
             $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
-            $errormsg .= '\n'.http_build_query($gfiparams);
+            $errormsg .= '\n'.http_build_query($this->params);
             $errormsg .= '\n'.$xmldata;
             $errormsg .= '\n'.implode('\n', $errorlist);
             jLog::log($errormsg, 'error');
@@ -805,7 +806,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             }
             $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
             $errormsg .= '\n'.http_build_query($this->params);
-            $errormsg .= '\n'.$xmldata;
+            $errormsg .= '\n'.$gmldata;
             $errormsg .= '\n'.implode('\n', $errorlist);
             jLog::log($errormsg, 'error');
             // return empty html string
