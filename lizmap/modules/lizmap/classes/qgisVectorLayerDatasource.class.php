@@ -28,8 +28,8 @@ class qgisVectorLayerDatasource
         'srid' => 'srid=([0-9]+) ',
         'type' => 'type=([a-zA-Z]+) ',
         'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)' ",
-        'table' => ' table="(.+)" (\([^ ]+\) )?sql=',
-        'geocol' => '\(([^ ]+)\) sql=',
+        'table' => ' table="((?:[^(].+)|(?:\(.+\)))"',
+        'geocol' => '\(([^ ]+)\)(?: sql=?:)?',
         'sql' => ' sql=(.*)$',
     );
 
@@ -89,7 +89,7 @@ class qgisVectorLayerDatasource
             $this->datasource,
             $result
         );
-        if ((count($result) == 2 or count($result) == 3 and $param == 'table') and !empty($result[1])) {
+        if ((count($result) == 2 or count($result) == 3) and strlen($result[1])) {
             $value = $result[1];
 
             // Specific parsing for complex table parameter
