@@ -631,10 +631,18 @@ class qgisForm implements qgisFormControlsInterface
         }
 
         if (count($fields) == 0) {
-            jLog::log('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !', 'error');
-            $this->form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save').' '.jLocale::get('view~edition.message.error.save.fields'));
-
-            throw new Exception(jLocale::get('view~edition.link.error.sql'));
+            if ($insertAction) {
+                // For insertion, one field has to be set
+                jLog::log('Error in form, SQL cannot be constructed: no fields available for insert !', 'error');
+                $this->form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save').' '.jLocale::get('view~edition.message.error.save.fields'));
+                // do not throw an exception to let the user update the form
+                jLog::log(jLocale::get('view~edition.link.error.sql'), 'error');
+                return false;
+            } else {
+                // For update, nothing has changed so nothing to do except close form
+                jLog::log('SQL cannot be constructed: no fields available for update !', 'error');
+                return true;
+            }
         }
 
         $form = $this->form;
