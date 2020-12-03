@@ -1170,7 +1170,10 @@ class qgisForm implements qgisFormControlsInterface
             $dataSource = new jFormsStaticDatasource();
 
             // required
-            if (!$formControl->valueRelationData['allowNull']) {
+            if (array_key_exists('notNull', $formControl->valueRelationData)
+                and $formControl->valueRelationData['notNull']
+            ) {
+                jLog::log('notNull '.$formControl->valueRelationData['notNull'], 'error');
                 $formControl->ctrl->required = true;
             }
             // combobox
@@ -1182,7 +1185,7 @@ class qgisForm implements qgisFormControlsInterface
 
             // Add default empty value for required fields
             // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-            if ($formControl->ctrl->required) {
+            if ($formControl->ctrl->required or $formControl->valueRelationData['allowNull']) {
                 $data[''] = '';
             }
 
