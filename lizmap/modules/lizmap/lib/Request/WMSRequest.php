@@ -178,7 +178,6 @@ class WMSRequest extends OGCRequest
 
     protected function getcontext()
     {
-
         // Get remote data
         $response = $this->request();
 
@@ -188,7 +187,8 @@ class WMSRequest extends OGCRequest
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
         $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
-        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $response->data);
+        $data = $response->data;
+        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
         return (object) array(
             'code' => $response->code,
@@ -323,13 +323,6 @@ class WMSRequest extends OGCRequest
 
         // External WMS
         foreach ($externalWMSConfigLayers as $configLayer) {
-            $url = $configLayer->externalAccess->url;
-            if (!preg_match('/\?/', $url)) {
-                $url .= '?';
-            } elseif (!preg_match('/&$/', $url)) {
-                $url .= '&';
-            }
-
             $externalWMSLayerParams = array_merge(array(), $this->params);
             if (array_key_exists('map', $externalWMSLayerParams)) {
                 unset($externalWMSLayerParams['map']);
@@ -349,7 +342,13 @@ class WMSRequest extends OGCRequest
             $externalWMSLayerParams['info_format'] = 'application/vnd.ogc.gml';
 
             // build Query string
-            $querystring = Proxy::constructUrl($externalWMSLayerParams, $this->services);
+            $url = $configLayer->externalAccess->url;
+            if (!preg_match('/\?/', $url)) {
+                $url .= '?';
+            } elseif (!preg_match('/&$/', $url)) {
+                $url .= '&';
+            }
+            $querystring = Proxy::constructUrl($externalWMSLayerParams, $this->services, $url);
 
             // Query external WMS layers
             list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring);

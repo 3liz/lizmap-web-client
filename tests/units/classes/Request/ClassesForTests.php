@@ -3,6 +3,7 @@
 use Lizmap\Request\OGCRequest;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
+use Lizmap\Request\WMSRequest;
 use Lizmap\Request\WMTSRequest;
 
 class ProjectForOGC extends ProjectForTests
@@ -16,6 +17,11 @@ class ProjectForOGC extends ProjectForTests
     public function getLoginFilters($layerName, $edition = false)
     {
         return $this->loginFilters;
+    }
+
+    public function setData($key, $value)
+    {
+        $this->data[$key] = $value;
     }
 }
 
@@ -114,6 +120,24 @@ class WFSRequestForTests extends WFSRequest {
     public function validateFilterForTests($filter)
     {
         return $this->validateFilter($filter);
+    }
+}
+
+class WMSRequestForTests extends WMSRequest
+{
+    public function getContextForTests()
+    {
+        return $this->getcontext();
+    }
+
+    public function checkMaximumWidthHeightForTests()
+    {
+        return $this->checkMaximumWidthHeight();
+    }
+
+    public function useCacheForTests($configLayer, $params, $profile)
+    {
+        return $this->useCache($configLayer, $params, $profile);
     }
 }
 
