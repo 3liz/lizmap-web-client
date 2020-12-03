@@ -14,7 +14,7 @@
   <li class="span3 liz-repository-project-item">
     <div class="thumbnail">
       <div class="liz-project">
-        <img loading="lazy" width="250" height="250" src="{$p->img}" alt="project image" class="liz-project-img">
+        <img width="250" height="250" src="{$p->img}" alt="project image" class="liz-project-img">
         <p class="liz-project-desc" style="display:none;">
           <b>{$p->title}</b>
           <br/>
