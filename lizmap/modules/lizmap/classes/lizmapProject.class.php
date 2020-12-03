@@ -1978,7 +1978,7 @@ class lizmapProject extends qgisProject
             if (property_exists($configJson->editionLayers, $key)) {
                 unset($configJson->editionLayers->{$key});
             }
-            // datavizLayers
+            // datavizLayers (array)
             if (property_exists($configJson, 'datavizLayers')) {
                 $dvlLayers = $configJson->datavizLayers['layers'];
                 foreach ($dvlLayers as $o => $c) {
@@ -1998,10 +1998,10 @@ class lizmapProject extends qgisProject
                 $configJson->options->atlasEnabled = 'False';
             }
             // multi-atlas
-            // formFilterLayers
+            // formFilterLayers (class)
             foreach ($configJson->formFilterLayers as $o => $c) {
-                if ($c['layerId'] = $obj->id) {
-                    unset($configJson->formFilterLayers[$o]);
+                if (property_exists($c, 'layerId') && $c->layerId == $obj->id) {
+                    unset($configJson->formFilterLayers->{$o});
                 }
             }
             // relations
