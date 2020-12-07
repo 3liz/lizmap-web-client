@@ -9,15 +9,15 @@
     {
         "branch": "3.3",
         "first_release_date": "2019-09-02",
-        "latest_release_date": "2020-10-13",
-        "latest_release_version": "3.3.11",
+        "latest_release_date": "2020-12-07",
+        "latest_release_version": "3.3.12",
         "maintained": true
     },
     {
         "branch": "3.2",
         "first_release_date": "2018-11-19",
-        "latest_release_date": "2020-10-13",
-        "latest_release_version": "3.2.17",
+        "latest_release_date": "2020-12-07",
+        "latest_release_version": "3.2.18",
         "maintained": true
     },
     {
