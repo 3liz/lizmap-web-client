@@ -1,8 +1,8 @@
 Changelog 3.2
 =============
 
-Version 3.2.18 (next)
----------------------
+Version 3.2.18
+--------------
 
 - update locales
 - Upgrade the ldapdao module, to fix ldap connection management
