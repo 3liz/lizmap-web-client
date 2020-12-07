@@ -16,7 +16,34 @@ class loginCtrl extends jController {
       '*'=>array('auth.required'=>false)
     );
 
-    function index() {
+    function index()
+    {
+        if (jAuth::isConnected()) {
+            // if the user is already connected, try to go to the right page
+
+            $conf = jApp::coord()->getPlugin('auth')->config;
+
+            $url = '';
+
+            if ($conf['after_login'] != '') {
+                $url = jUrl::get($conf['after_login']);
+            }
+            $auth_url_return = $this->param('auth_url_return');
+            if ($conf['enable_after_login_override'] && $auth_url_return != '') {
+                if (method_exists('jAuth','checkReturnUrl')
+                    && jAuth::checkReturnUrl($auth_url_return)
+                ) {
+                    $url = $auth_url_return;
+                }
+            }
+
+            if ($url != '') {
+                $rep = $this->getResponse('redirectUrl');
+                $rep->url = $url;
+                return $rep;
+            }
+        }
+
         $response = 'html';
         if (isset(jApp::config()->jcommunity)) {
             $conf = jApp::config()->jcommunity;
