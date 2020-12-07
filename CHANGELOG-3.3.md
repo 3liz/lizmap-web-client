@@ -1,13 +1,16 @@
 Changelog
 =========
 
-Version 3.3.12 (next)
----------------------
+Version 3.3.12
+--------------
 
 - Add 'empty-data' class in auto popup when value is empty or NULL
 - Fix QGIS Date format support
 - Fix delete attachment in forms
-- Fix edition forms: Do not activate combobox or autocomplete on disabled select 
+- Fix edition forms: Do not activate combobox or autocomplete on disabled select
+- Fix edition forms: mandatory relational value by default
+- Fix Admin export logs: there were no output with big logs table
+
 - Configuration form: do not allow to enable user account request when the
   webmaster email is not set
 - new scripts for the command line, to create a user, change or reset a password
@@ -17,6 +20,10 @@ php scripts/script.php jcommunity~user:changePassword [--force] <login> [<passwo
 php scripts/script.php jcommunity~user:resetPassword <login>
 php scripts/script.php jcommunity~user:create [--reset] [--admin] [--no-error-if-exist] <login> <email> [<password>]
 ```
+
+- authentication: redirect to a lizmap page when the user goes to the login
+  form whereas he is authenticated.
+- bugs fixes from 3.2.18
 
 
 Version 3.3.11
