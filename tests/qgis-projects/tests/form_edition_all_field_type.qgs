@@ -145,6 +145,9 @@
         <Searchable>1</Searchable>
       </flags>
       <customproperties>
+        <property key="dualview/previewExpressions">
+          <value>"id"</value>
+        </property>
         <property value="0" key="embeddedWidgets/count"/>
         <property key="variableNames"/>
         <property key="variableValues"/>
@@ -175,34 +178,73 @@
             </config>
           </editWidget>
         </field>
+        <field name="boolean_notnull_for_checkbox">
+          <editWidget type="CheckBox">
+            <config>
+              <Option type="Map">
+                <Option value="" type="QString" name="CheckedState"/>
+                <Option value="" type="QString" name="UncheckedState"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field name="boolean_nullable">
+          <editWidget type="ValueMap">
+            <config>
+              <Option type="Map">
+                <Option type="List" name="map">
+                  <Option type="Map">
+                    <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="&lt;NULL>"/>
+                  </Option>
+                  <Option type="Map">
+                    <Option value="true" type="QString" name="True"/>
+                  </Option>
+                  <Option type="Map">
+                    <Option value="false" type="QString" name="False"/>
+                  </Option>
+                </Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
         <alias name="" index="0" field="id"/>
         <alias name="" index="1" field="integer_field"/>
+        <alias name="" index="2" field="boolean_notnull_for_checkbox"/>
+        <alias name="" index="3" field="boolean_nullable"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
         <default expression="" field="id" applyOnUpdate="0"/>
         <default expression="" field="integer_field" applyOnUpdate="0"/>
+        <default expression="" field="boolean_notnull_for_checkbox" applyOnUpdate="0"/>
+        <default expression="" field="boolean_nullable" applyOnUpdate="0"/>
       </defaults>
       <constraints>
         <constraint constraints="3" exp_strength="0" field="id" unique_strength="1" notnull_strength="1"/>
         <constraint constraints="0" exp_strength="0" field="integer_field" unique_strength="0" notnull_strength="0"/>
+        <constraint constraints="1" exp_strength="0" field="boolean_notnull_for_checkbox" unique_strength="0" notnull_strength="1"/>
+        <constraint constraints="0" exp_strength="0" field="boolean_nullable" unique_strength="0" notnull_strength="0"/>
       </constraints>
       <constraintExpressions>
         <constraint exp="" desc="" field="id"/>
         <constraint exp="" desc="" field="integer_field"/>
+        <constraint exp="" desc="" field="boolean_notnull_for_checkbox"/>
+        <constraint exp="" desc="" field="boolean_nullable"/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
         <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;id&quot;" sortOrder="0">
         <columns>
           <column width="-1" hidden="0" type="field" name="id"/>
           <column width="-1" hidden="0" type="field" name="integer_field"/>
           <column width="-1" hidden="1" type="actions"/>
+          <column width="216" hidden="0" type="field" name="boolean_notnull_for_checkbox"/>
+          <column width="184" hidden="0" type="field" name="boolean_nullable"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -234,10 +276,16 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
       <editable>
+        <field name="boolean_notnull_for_checkbox" editable="1"/>
+        <field name="boolean_nullable" editable="1"/>
+        <field name="boolean_nullable_for_checkbox" editable="1"/>
         <field name="id" editable="1"/>
         <field name="integer_field" editable="1"/>
       </editable>
       <labelOnTop>
+        <field labelOnTop="0" name="boolean_notnull_for_checkbox"/>
+        <field labelOnTop="0" name="boolean_nullable"/>
+        <field labelOnTop="0" name="boolean_nullable_for_checkbox"/>
         <field labelOnTop="0" name="id"/>
         <field labelOnTop="0" name="integer_field"/>
       </labelOnTop>
