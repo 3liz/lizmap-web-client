@@ -87,47 +87,22 @@ class WMTSRequest extends OGCRequest
     {
         //\jLog::log('GetTile '.http_build_query($this->params));
         // Get the layer
-        $LayerName = $this->param('Layer');
-        if (!$LayerName) {
-            // Error message
-            \jMessage::add('The parameter Layer is mandatory!', 'MissingParameter');
+        $params = array(
+            'LayerName' => 'Layer',
+            'Format' => 'Format',
+            'TileMatrixSetId' => 'TileMatrixSet',
+            'TileMatrixId' => 'TileMatrix',
+            'TileRow' => 'TileRow',
+            'TileCol' => 'TileCol',
+        );
 
-            return $this->serviceException();
-        }
-        $Format = $this->param('Format');
-        if (!$Format) {
-            // Error message
-            \jMessage::add('The parameter Format is mandatory!', 'MissingParameter');
+        foreach ($params as $var => $param) {
+            ${$var} = $this->param($param);
+            if (!${$var}) {
+                \jMessage::add('The parameter '.$var.' is mandatory!', 'MissingParameter');
 
-            return $this->serviceException();
-        }
-        $TileMatrixSetId = $this->param('TileMatrixSet');
-        if (!$TileMatrixSetId) {
-            // Error message
-            \jMessage::add('The parameter TileMatrixSet is mandatory!', 'MissingParameter');
-
-            return $this->serviceException();
-        }
-        $TileMatrixId = $this->param('TileMatrix');
-        if ($TileMatrixId === null) {
-            // Error message
-            \jMessage::add('The parameter TileMatrix is mandatory!', 'MissingParameter');
-
-            return $this->serviceException();
-        }
-        $TileRow = $this->param('TileRow');
-        if ($TileRow === null) {
-            // Error message
-            \jMessage::add('The parameter TileRow is mandatory!', 'MissingParameter');
-
-            return $this->serviceException();
-        }
-        $TileCol = $this->param('TileCol');
-        if ($TileCol === null) {
-            // Error message
-            \jMessage::add('The parameter TileCol is mandatory!', 'MissingParameter');
-
-            return $this->serviceException();
+                return $this->serviceException();
+            }
         }
 
         $tileCapabilities = null;

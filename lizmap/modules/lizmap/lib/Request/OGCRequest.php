@@ -50,7 +50,6 @@ abstract class OGCRequest
     {
         //print_r( $project != null );
         $this->project = $project;
-
         $this->repository = $project->getRepository();
 
         $this->services = $services;
@@ -136,18 +135,7 @@ abstract class OGCRequest
             $url .= '&';
         }
 
-        return $url.$this->buildQuery($this->parameters());
-    }
-
-    protected function buildQuery($params)
-    {
-        $bparams = http_build_query($params);
-
-        // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
-        $a = array('+', '_', '.', '-');
-        $b = array('%20', '%5F', '%2E', '%2D');
-
-        return str_replace($a, $b, $bparams);
+        return Proxy::constructUrl($this->parameters(), $this->services, $url);
     }
 
     protected function request($post = false)
@@ -270,5 +258,28 @@ abstract class OGCRequest
             'data' => $response->data,
             'cached' => $cached,
         );
+    }
+
+    protected function loadXmlString($xmldata, $name)
+    {
+        // Get data from XML
+        $use_errors = libxml_use_internal_errors(true);
+        $errorlist = array();
+        // Create a DOM instance
+        $xml = simplexml_load_string($xmldata);
+        if (!$xml) {
+            foreach (libxml_get_errors() as $error) {
+                $errorlist[] = $error;
+            }
+            $errormsg = 'An error has been raised when loading '.$name.':';
+            $errormsg .= '\n'.http_build_query($this->params);
+            $errormsg .= '\n'.$xmldata;
+            $errormsg .= '\n'.implode('\n', $errorlist);
+            \jLog::log($errormsg, 'error');
+            // return empty html string
+            return null;
+        }
+
+        return $xml;
     }
 }
