@@ -30,7 +30,7 @@ fi
 
 
 if [ "$LZMQGSRVVERSION" == "" ]; then
-  export LZMQGSRVVERSION=3.4
+  export LZMQGSRVVERSION=3.10
 fi
 
 if [ "$LIZMAP_ADMIN_LOGIN" == "" ]; then
