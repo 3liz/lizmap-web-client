@@ -36,6 +36,7 @@ services:
     volumes:
       - "../:/srv/lzm/"
       - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
+      - ./docker-conf/phpfpm/admin.conf:/srv/etc/admin.conf
     depends_on:
       - pgsql
       - redis

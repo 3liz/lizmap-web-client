@@ -17,12 +17,23 @@ The container deploy one lizmap instance and may run php-fpm on commande line.
 - LIZMAP\_USER: User used to run Lizmap
 - LIZMAP\_HOME: The root path for web files used from the web server
 - LIZMAP\_THEME: Lizmap theme to use
+- LIZMAP\_ADMIN\_LOGIN: Login if the admin user
+- LIZMAP\_ADMIN\_EMAIL: Email address if the admin user
+- LIZMAP\_ADMIN\_DEFAULT_PASSWORD_SOURCE: The password to set for the admin user. Cf [Admin Setup Section](#admin-setup)
 
 **Important**: LIZMAP\_HOME is the prefix of the path towards lizmap web files (lizmap/www). This prefix
 must be identical to the one given in the nginx *root* directive, ex:
 ```
 root <LIZMAP_HOME>/www
 ```
+
+### Admin Setup
+
+During installation, an admin user will be setup with the `LIZMAP_ADMIN_*` environnement variables.
+The `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE` value can either be: 
+- `__reset`: It will initiate a password reset process, an email will be sent to `LIZMAP_ADMIN_EMAIL` with a link to choose a new password.
+- `__random`: Will set a random password that will be report into the command line (see `docker logs` to access it).
+- `/path/to/pass/file`: The path to a file containing your password. The file must be used as a volume for docker to acess it.
 
 ### Tuning PHP Variables
 - PM_MAX_CHILDREN: Maximum number of child processes.
@@ -34,6 +45,7 @@ root <LIZMAP_HOME>/www
 - PM_PROCESS_IDLE_TIMEOUT: The number of seconds after which an idle process will be killed.
 
 For more information about these read [PHP](https://www.php.net/manual/en/install.fpm.configuration.php)
+
 ## Volumes
 
 The following volumes are used:
