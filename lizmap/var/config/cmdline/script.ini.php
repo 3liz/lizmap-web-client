@@ -11,4 +11,5 @@ auth="cmdline/auth.coord.ini.php"
 master_admin.access=1
 jauthdb_admin.access=1
 jacl2db_admin.access=1
+jcommunity.access=2
 lizmap.access=2

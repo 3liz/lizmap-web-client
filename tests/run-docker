@@ -33,5 +33,16 @@ if [ "$LZMQGSRVVERSION" == "" ]; then
   export LZMQGSRVVERSION=3.4
 fi
 
+if [ "$LIZMAP_ADMIN_LOGIN" == "" ]; then
+  export LIZMAP_ADMIN_LOGIN=admin
+fi
+
+if [ "$LIZMAP_ADMIN_EMAIL" == "" ]; then
+  export LIZMAP_ADMIN_EMAIL=admin@localost.local
+fi
+
+if [ "$LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE" == "" ]; then
+  export LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE=/srv/etc/admin.conf
+fi
 
 docker-compose -p lizmap-${LZMBRANCH}-tests $CMD
