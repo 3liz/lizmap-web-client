@@ -1257,7 +1257,7 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         // Perform request
-        $wfsRequest = new lizmapWFSRequest($project, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params);
         $result = $wfsRequest->process();
 
         $wfsData = $result->data;

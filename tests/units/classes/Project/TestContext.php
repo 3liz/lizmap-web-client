@@ -19,6 +19,14 @@ class testContext implements AppContextInterface
         return null;
     }
 
+    public function appVarPath($file = '')
+    {
+    }
+
+    public function getCoord()
+    {
+    }
+
     public function aclCheck($role, $resource = null)
     {
         if (array_key_exists($role, $this->result)) {
@@ -63,6 +71,11 @@ class testContext implements AppContextInterface
     {
     }
 
+    public function getCacheDriver($profile)
+    {
+        return \jCache::getDriver($profile);
+    }
+
     public function normalizeCacheKey($key)
     {
     }
@@ -75,6 +88,10 @@ class testContext implements AppContextInterface
     {
     }
 
+    public function flushCache($profile = '')
+    {
+    }
+    
     public function logMessage($message, $cat = 'default')
     {
     }
@@ -161,5 +178,9 @@ class testContext implements AppContextInterface
     public function getFormPath()
     {
         return $this->result['path'];
+    }
+
+    public function getClassService($selector)
+    {
     }
 }
