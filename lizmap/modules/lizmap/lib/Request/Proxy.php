@@ -21,6 +21,116 @@ class Proxy
      */
     protected static $_profiles = array();
 
+    protected static $services = null;
+
+    protected static $appContext = null;
+
+    /**
+     * Sets the services property that contains lizmap Services.
+     *
+     * @param \lizmapServices $services
+     */
+    public static function setServices($services)
+    {
+        self::$services = $services;
+    }
+
+    /**
+     * Sets the appContext property that contains the context of the application (Jelix or Test).
+     *
+     * @param Lizmap\App\AppContextInterface $appContext
+     */
+    public static function setAppContext(\Lizmap\App\AppContextInterface $appContext)
+    {
+        self::$appContext = $appContext;
+    }
+
+    /**
+     * Returns the services property.
+     *
+     * @return \lizmapServices
+     */
+    public static function getServices()
+    {
+        if (!self::$services) {
+            self::$services = \lizmap::getServices();
+        }
+
+        return self::$services;
+    }
+
+    /**
+     * Returns the appContext property.
+     *
+     * @return \Lizmap\App\AppContextInterface
+     */
+    public static function getAppContext()
+    {
+        if (!self::$appContext) {
+            self::$appContext = \lizmap::getAppContext();
+        }
+
+        return self::$appContext;
+    }
+
+    public static function build($project, $params, $requestXml = null)
+    {
+        $service = null;
+        $request = null;
+
+        // Check request XML
+        if ($requestXml && substr(trim($requestXml), 0, 1) == '<') {
+            $requestXml = trim($requestXml);
+        } else {
+            $requestXml = null;
+        }
+
+        // Parse request XML
+        if ($requestXml) {
+            $xml = simplexml_load_string($requestXml);
+            if ($xml) {
+                $request = $xml->getName();
+                if (property_exists($xml->attributes(), 'service')) {
+                    // OGC service has to be upper case for QGIS Server
+                    $service = strtoupper($xml['service']);
+                }
+            } else {
+                $requestXml = null;
+            }
+        }
+
+        // Check parameters
+        if (!$requestXml && isset($params['service'])) {
+            // OGC service has to be upper case for QGIS Server
+            $service = strtoupper($params['service']);
+            if (isset($params['request'])) {
+                $request = strtolower($params['request']);
+            }
+        }
+
+        if ($service == null) {
+            return null;
+        }
+        $params['service'] = $service;
+        if ($request !== null) {
+            $params['request'] = $request;
+        }
+        if ($service == 'WMS') {
+            return new WMSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
+        }
+        if ($service == 'WMTS') {
+            return new WMTSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
+        }
+        if ($service == 'WFS') {
+            return new WFSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
+            // Not yet
+        //} else if ($service == 'WCS') {
+        //    return new lizmapWCSRequest($project, $params, $requestXml)
+        }
+
+        return null;
+    }
+
     /**
      * Normalize and filter request parameters.
      *
@@ -58,10 +168,9 @@ class Proxy
         return $data;
     }
 
-    public static function constructUrl($params)
+    public static function constructUrl($params, $services)
     {
-        $ser = lizmap::getServices();
-        $url = $ser->wmsServerURL.'?';
+        $url = $services->wmsServerURL.'?';
 
         $bparams = http_build_query($params);
 
@@ -109,7 +218,7 @@ class Proxy
             }
         }
 
-        $services = lizmap::getServices();
+        $services = self::getServices();
         $options = array_merge(array(
             'method' => 'get',
             'referer' => '',
@@ -193,7 +302,7 @@ class Proxy
             $http_code = (int) $info['http_code'];
             // Optionnal debug
             if ($options['debug'] and curl_errno($ch)) {
-                jLog::log('--> CURL: '.json_encode($info));
+                \jLog::log('--> CURL: '.json_encode($info));
             }
 
             curl_close($ch);
@@ -262,9 +371,9 @@ class Proxy
             }
             // optional debug
             if ($options['debug'] && ($http_code >= 400)) {
-                jLog::log('getRemoteData, bad response for '.$url);
-                jLog::dump($opts, 'getRemoteData, bad response, options');
-                jLog::dump($http_response_header, 'getRemoteData, bad response, response headers');
+                \jLog::log('getRemoteData, bad response for '.$url);
+                \jLog::dump($opts, 'getRemoteData, bad response, options');
+                \jLog::dump($http_response_header, 'getRemoteData, bad response, response headers');
             }
         }
 
@@ -273,8 +382,9 @@ class Proxy
 
     protected static function userHttpHeader()
     {
+        $appContext = self::getAppContext();
         // Check if a user is authenticated
-        if (!jAuth::isConnected()) {
+        if (!$appContext->UserIsConnected()) {
             // return headers with empty user header
             return array(
                 'X-Lizmap-User' => '',
@@ -283,8 +393,8 @@ class Proxy
         }
 
         // Provide user and groups to lizmap plugin access control
-        $user = jAuth::getUserSession();
-        $userGroups = jAcl2DbUserGroup::getGroups();
+        $user = $appContext->getUserSession();
+        $userGroups = $appContext->aclUserGroupsId();
 
         return array(
             'X-Lizmap-User' => $user->login,
@@ -302,292 +412,6 @@ class Proxy
         return $headers;
     }
 
-    /**
-     * Get data from map service or from the cache.
-     *
-     * @param lizmapProject $project the project
-     * @param array         $params  array of parameters
-     * @param mixed         $forced
-     *
-     * @return array $data normalized and filtered array
-     */
-    public static function getMap($project, $params, $forced = false)
-    {
-
-        // Get cache if exists
-        $keyParams = $params;
-        if (array_key_exists('map', $keyParams)) {
-            unset($keyParams['map']);
-        }
-        ksort($keyParams);
-
-        $layers = str_replace(',', '_', $params['layers']);
-        $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
-
-        // Get repository data
-        $ser = lizmap::getServices();
-        $lrep = $project->getRepository();
-        $lproj = $project;
-        $project = $lproj->getKey();
-        $repository = $lrep->getKey();
-
-        // Change to true to put some information in debug files
-        $debug = $ser->debugMode;
-
-        // Read config file for the current project
-        $layername = $params['layers'];
-        $configLayers = $lproj->getLayers();
-        $configLayer = null;
-        if (property_exists($configLayers, $layername)) {
-            $configLayer = $configLayers->{$layername};
-        }
-
-        // Set or get tile from the parent project in case of embedded layers
-        if ($configLayer
-            and property_exists($configLayer, 'sourceRepository')
-            and $configLayer->sourceRepository != ''
-            and property_exists($configLayer, 'sourceProject')
-            and $configLayer->sourceProject != ''
-        ) {
-            $newRepository = (string) $configLayer->sourceRepository;
-            $newProject = (string) $configLayer->sourceProject;
-            $repository = $newRepository;
-            $project = $newProject;
-            $lrep = lizmap::getRepository($repository);
-            if (!$lrep) {
-                jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
-
-                return array('error', 'text/plain', '404', false);
-            }
-
-            try {
-                $lproj = lizmap::getProject($repository.'~'.$project);
-                if (!$lproj) {
-                    jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
-
-                    return array('error', 'text/plain', '404', false);
-                }
-            } catch (UnknownLizmapProjectException $e) {
-                jLog::logEx($e, 'error');
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
-
-                return array('error', 'text/plain', '404', false);
-            }
-        }
-
-        $key = md5(serialize($keyParams));
-
-        // Get tile cache virtual profile (tile storage)
-        // And get tile if already in cache
-        // --> must be done after checking that parent project is involved
-        $profile = lizmapProxy::createVirtualProfile($repository, $project, $layers, $crs);
-
-        if ($debug) {
-            lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
-        }
-
-        // Has the user asked for cache for this layer ?
-        $useCache = false;
-        if ($configLayer) {
-            $useCache = strtolower($configLayer->cached) == 'true';
-        }
-
-        // Avoid using cache for requests concerning not square tiles or too big
-        // Focus on real web square tiles
-        $wmsClient = 'web';
-        if ($useCache
-            and $params['width'] != $params['height']
-            and ($params['width'] > 300 or $params['height'] > 300)
-        ) {
-            $wmsClient = 'gis';
-            $useCache = false;
-        }
-
-        // Get the cache Driver, to be sure that we can use the configured cache
-        if ($useCache) {
-            try {
-                $drv = jCache::getDriver($profile);
-                if (!$drv) {
-                    $useCache = false;
-                }
-            } catch (Exception $e) {
-                jLog::logEx($e, 'error');
-                $useCache = false;
-            }
-        }
-
-        if ($useCache and !$forced) {
-            try {
-                $tile = jCache::get($key, $profile);
-            } catch (Exception $e) {
-                jLog::logEx($e, 'error');
-                $tile = false;
-            }
-            if ($tile) {
-                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
-                $mime = 'image/jpeg';
-                if (preg_match('#png#', $params['format'])) {
-                    $mime = 'image/png';
-                }
-
-                if ($debug) {
-                    lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
-                }
-
-                return array($tile, $mime, 200, true);
-            }
-        }
-
-        // ***************************
-        // No cache hit : need to ask the tile from QGIS Server
-        // ***************************
-
-        // Construction of the WMS url : base url + parameters
-        $url = $ser->wmsServerURL.'?';
-
-        // Add project path into map parameter
-        $params['map'] = $lproj->getRelativeQgisPath();
-
-        // Metatile : if needed, change the bbox
-        // Avoid metatiling when the cache is not active for the layer
-        $metatileSize = '1,1';
-        if ($configLayer and property_exists($configLayer, 'metatileSize')) {
-            if (preg_match('#^[3579],[3579]$#', $configLayer->metatileSize)) {
-                $metatileSize = $configLayer->metatileSize;
-            }
-        }
-
-        // Metatile buffer
-        $metatileBuffer = 5;
-
-        // Also checks if gd is installed
-        if ($metatileSize && $useCache && $wmsClient == 'web' &&
-            extension_loaded('gd') && function_exists('gd_info')) {
-            // Metatile Size
-            $metatileSizeExp = explode(',', $metatileSize);
-            $metatileSizeX = (int) $metatileSizeExp[0];
-            $metatileSizeY = (int) $metatileSizeExp[1];
-
-            // Get requested bbox
-            $bboxExp = explode(',', $params['bbox']);
-            $width = $bboxExp[2] - $bboxExp[0];
-            $height = $bboxExp[3] - $bboxExp[1];
-            // Calculate factors
-            $xFactor = (int) ($metatileSizeX / 2);
-            $yFactor = (int) ($metatileSizeY / 2);
-            // Calculate the new bbox
-            $xmin = $bboxExp[0] - $xFactor * $width - $metatileBuffer * $width / $params['width'];
-            $ymin = $bboxExp[1] - $yFactor * $height - $metatileBuffer * $height / $params['height'];
-            $xmax = $bboxExp[2] + $xFactor * $width + $metatileBuffer * $width / $params['width'];
-            $ymax = $bboxExp[3] + $yFactor * $height + $metatileBuffer * $height / $params['height'];
-            // Replace request bbox by metatile bbox
-            $params['bbox'] = "${xmin},${ymin},${xmax},${ymax}";
-
-            // Keep original param value
-            $originalParams = array('width' => $params['width'], 'height' => $params['height']);
-            // Replace width and height before requesting the image from qgis
-            $params['width'] = $metatileSizeX * $params['width'] + 2 * $metatileBuffer;
-            $params['height'] = $metatileSizeY * $params['height'] + 2 * $metatileBuffer;
-        }
-
-        // Build params before send the request to Qgis
-        $builtParams = http_build_query($params);
-        // Replace needed characters (not needed for php >= 5.4, just use the 4th parameter of the method http_build_query)
-        $a = array('+', '_', '.', '-');
-        $b = array('%20', '%5F', '%2E', '%2D');
-        $builtParams = str_replace($a, $b, $builtParams);
-
-        // Get data from the map server
-        list($data, $mime, $code) = lizmapProxy::getRemoteData(
-            $url.$builtParams,
-            array('method' => 'post')
-        );
-
-        if ($debug) {
-            lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
-        }
-
-        if ($useCache && !preg_match('/^image/', $mime)) {
-            $useCache = false;
-        }
-
-        // Metatile : if needed, crop the metatile into a single tile
-        // Also checks if gd is installed
-        if ($metatileSize && $useCache && $wmsClient == 'web' &&
-            extension_loaded('gd') && function_exists('gd_info')
-        ) {
-
-            // Save original content into an image var
-            $original = imagecreatefromstring($data);
-
-            // crop parameters
-            $newWidth = (int) ($originalParams['width']); // px
-            $newHeight = (int) ($originalParams['height']); // px
-            $positionX = (int) ($xFactor * $originalParams['width']) + $metatileBuffer; // left translation of 30px
-            $positionY = (int) ($yFactor * $originalParams['height']) + $metatileBuffer; // top translation of 20px
-
-            // create new gd image
-            $image = imagecreatetruecolor($newWidth, $newHeight);
-
-            // save transparency if needed
-            if (preg_match('#png#', $params['format'])) {
-                imagesavealpha($original, true);
-                imagealphablending($image, false);
-                $color = imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
-                imagefill($image, 0, 0, $color);
-                imagesavealpha($image, true);
-            }
-
-            // crop image
-            imagecopyresampled($image, $original, 0, 0, $positionX, $positionY, $newWidth, $newHeight, $newWidth, $newHeight);
-
-            // Output the image as a string (use PHP buffering)
-            ob_start();
-            if (preg_match('#png#', $params['format'])) {
-                imagepng($image, null, 9);
-            } else {
-                imagejpeg($image, null, 90);
-            }
-            $data = ob_get_contents(); // read from buffer
-            ob_end_clean(); // delete buffer
-
-            // Destroy image handlers
-            imagedestroy($original);
-            imagedestroy($image);
-
-            if ($debug) {
-                lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
-            }
-        }
-
-        $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
-
-        // Store into cache if needed
-        $cached = false;
-        if ($useCache) {
-            //~ jLog::log( ' Store into cache');
-            $cacheExpiration = (int) $ser->cacheExpiration;
-            if (property_exists($configLayer, 'cacheExpiration')) {
-                $cacheExpiration = (int) $configLayer->cacheExpiration;
-            }
-
-            try {
-                jCache::set($key, $data, $cacheExpiration, $profile);
-                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
-                $cached = true;
-
-                if ($debug) {
-                    lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
-                }
-            } catch (Exception $e) {
-                jLog::logEx($e, 'error');
-                $cached = false;
-            }
-        }
-
-        return array($data, $mime, $code, $cached);
-    }
-
     public static function createVirtualProfile($repository, $project, $layers, $crs)
     {
 
@@ -598,8 +422,9 @@ class Proxy
             return $cacheName;
         }
 
+        $appContext = self::getAppContext();
         // Storage type
-        $ser = lizmap::getServices();
+        $ser = self::getServices();
         $cacheStorageType = $ser->cacheStorageType;
         // Expiration time : take default one
         $cacheExpiration = (int) $ser->cacheExpiration;
@@ -608,7 +433,7 @@ class Proxy
         $cacheRootDirectory = $ser->cacheRootDirectory;
         if ($cacheStorageType != 'redis') {
             if (!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)) {
-                jLog::log('cacheRootDirectory "'.$cacheRootDirectory.'" is not a directory or is not writable!', 'error');
+                \jLog::log('cacheRootDirectory "'.$cacheRootDirectory.'" is not a directory or is not writable!', 'error');
                 $cacheRootDirectory = sys_get_temp_dir();
             }
         }
@@ -619,7 +444,7 @@ class Proxy
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
 
             // Create directory if needed
-            jFile::createDir($cacheDirectory);
+            \jFile::createDir($cacheDirectory);
 
             // Virtual cache profile parameter
             $cacheParams = array(
@@ -632,7 +457,7 @@ class Proxy
             );
 
             // Create the virtual cache profile
-            jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+            $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
         } elseif ($cacheStorageType == 'redis') {
             // CACHE CONTENT INTO REDIS
             self::declareRedisProfile($ser, $cacheName, $repository, $project, $layers, $crs);
@@ -641,13 +466,13 @@ class Proxy
 
             // Directory where to store the sqlite database
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
-            jFile::createDir($cacheDirectory); // Create directory if needed
+            \jFile::createDir($cacheDirectory); // Create directory if needed
             $cacheDatabase = $cacheDirectory.$layers.'_'.$crs.'.db';
             $cachePdoDsn = 'sqlite:'.$cacheDatabase;
 
             // Create database and populate with table if needed
             if (!file_exists($cacheDatabase)) {
-                copy(jApp::varPath().'cacheTemplate.db', $cacheDatabase);
+                copy($appContext->appVarPath().'cacheTemplate.db', $cacheDatabase);
             }
 
             // Virtual jdb profile corresponding to the layer database
@@ -659,7 +484,7 @@ class Proxy
             );
             // Create the virtual jdb profile
             $cacheJdbName = 'jdb_'.$cacheName;
-            jProfiles::createVirtualProfile('jdb', $cacheJdbName, $jdbParams);
+            $appContext->createVirtualProfile('jdb', $cacheJdbName, $jdbParams);
 
             // Virtual cache profile parameter
             $cacheParams = array(
@@ -670,7 +495,7 @@ class Proxy
             );
 
             // Create the virtual cache profile
-            jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+            $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
         }
 
         self::$_profiles[$cacheName] = true;
@@ -725,19 +550,23 @@ class Proxy
         }
 
         // Create the virtual cache profile
-        jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+        self::getAppContext()->createVirtualProfile('jcache', $cacheName, $cacheParams);
     }
 
     /**
-     * @param mixed $repository
+     * @param Lizmap\Project\Repository $lrep
      *
      * @return mixed the repository key, or false if clear has failed
      */
-    public static function clearCache($repository)
+    public static function clearCache($lrep)
     {
+        if (!$lrep) {
+            return null;
+        }
+
         // Get config utility
-        $lrep = lizmap::getRepository($repository);
-        $ser = lizmap::getServices();
+        $repository = $lrep->getKey();
+        $ser = self::getServices();
 
         // Remove the cache for the repository for file/sqlite cache type
         $cacheStorageType = $ser->cacheStorageType;
@@ -747,16 +576,16 @@ class Proxy
             if (!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)) {
                 $cacheRootDirectory = sys_get_temp_dir();
             }
-            $clearCacheOk = jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey());
+            $clearCacheOk = \jFile::removeDir($cacheRootDirectory.'/'.$repository);
         } else {
             // remove the cache from redis
             $cacheName = 'lizmapCache_'.$repository;
             self::declareRedisProfile($ser, $cacheName, $repository);
-            $clearCacheOk = $clearCacheOk && jCache::flush($cacheName);
+            $clearCacheOk = $clearCacheOk && \jCache::flush($cacheName);
         }
-        jEvent::notify('lizmapProxyClearCache', array('repository' => $repository));
+        self::getAppContext()->eventNotify('lizmapProxyClearCache', array('repository' => $repository));
         if ($clearCacheOk) {
-            return $lrep->getKey();
+            return $repository;
         }
 
         return false;
@@ -766,7 +595,8 @@ class Proxy
     {
 
         // Storage type
-        $ser = lizmap::getServices();
+        $ser = self::getServices();
+        $appContext = self::getAppContext();
         $cacheStorageType = $ser->cacheStorageType;
 
         // Cache root directory
@@ -793,7 +623,7 @@ class Proxy
                 closedir($handle);
                 foreach ($results as $rem) {
                     if (is_dir($rem)) {
-                        jFile::removeDir($rem);
+                        \jFile::removeDir($rem);
                     } else {
                         unlink($rem);
                     }
@@ -803,9 +633,9 @@ class Proxy
             // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
             $cacheName = 'lizmapCache_'.$repository.'_'.$project;
             self::declareRedisProfile($ser, $cacheName, $repository, $project);
-            jCache::flush($cacheName);
+            $appContext->flushCache($cacheName);
         }
-        jEvent::notify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
+        $appContext->eventNotify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
     }
 }
 
@@ -819,7 +649,7 @@ function lizmap_stream_notification_callback($notification_code, $severity, $mes
         case STREAM_NOTIFY_COMPLETED:
         case STREAM_NOTIFY_FAILURE:
         case STREAM_NOTIFY_AUTH_RESULT:
-            jLog::dump(array(
+            \jLog::dump(array(
                 "notification_code"=>$notification_code,
                 "severity"=>$severity,
                 "message"=>$message,
@@ -830,23 +660,23 @@ function lizmap_stream_notification_callback($notification_code, $severity, $mes
             break;
 
         case STREAM_NOTIFY_REDIRECTED:
-            jLog::log("notification_callback - Being redirected to: ".$message);
+            \jLog::log("notification_callback - Being redirected to: ".$message);
             break;
 
         case STREAM_NOTIFY_CONNECT:
-            jLog::log("notification_callback - Connected...");
+            \jLog::log("notification_callback - Connected...");
             break;
 
         case STREAM_NOTIFY_FILE_SIZE_IS:
-            jLog::log( "notification_callback - Got the filesize: ". $bytes_max);
+            \jLog::log( "notification_callback - Got the filesize: ". $bytes_max);
             break;
 
         case STREAM_NOTIFY_MIME_TYPE_IS:
-            jLog::log( "notification_callback - Found the mime-type: ". $message);
+            \jLog::log( "notification_callback - Found the mime-type: ". $message);
             break;
 
         case STREAM_NOTIFY_PROGRESS:
-            jLog::log( "notification_callback - Made some progress, downloaded ". $bytes_transferred. " so far");
+            \jLog::log( "notification_callback - Made some progress, downloaded ". $bytes_transferred. " so far");
             break;
     }
 }

@@ -12,6 +12,9 @@
 
 namespace Lizmap\Request;
 
+/**
+ * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service.
+ */
 class WMTSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wmts_exception';
@@ -28,18 +31,21 @@ class WMTSRequest extends OGCRequest
         return $this->forceRequest = $forced;
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
+     */
     protected function getcapabilities()
     {
         $tileCapabilities = null;
 
         try {
-            $tileCapabilities = lizmapTiler::getTileCapabilities($this->project);
-        } catch (Exception $e) {
+            $tileCapabilities = \lizmapTiler::getTileCapabilities($this->project);
+        } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
+            \jLog::logEx($e, 'error');
             // Error message
-            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
             return $this->serviceException();
         }
@@ -48,18 +54,18 @@ class WMTSRequest extends OGCRequest
              $tileCapabilities->tileMatrixSetList === null ||
              $tileCapabilities->layerTileInfoList === null) {
             // Error message
-            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
             return $this->serviceException();
         }
 
-        $sUrl = jUrl::getFull(
+        $sUrl = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
         $sUrl .= '&';
 
-        $tpl = new jTpl();
+        $tpl = new \jTpl();
         $tpl->assign('url', $sUrl);
         $tpl->assign('repository', $this->param('repository'));
         $tpl->assign('project', $this->param('project'));
@@ -74,49 +80,52 @@ class WMTSRequest extends OGCRequest
         );
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
+     */
     public function gettile()
     {
-        //jLog::log('GetTile '.http_build_query($this->params));
+        //\jLog::log('GetTile '.http_build_query($this->params));
         // Get the layer
         $LayerName = $this->param('Layer');
         if (!$LayerName) {
             // Error message
-            jMessage::add('The parameter Layer is mandatory!', 'MissingParameter');
+            \jMessage::add('The parameter Layer is mandatory!', 'MissingParameter');
 
             return $this->serviceException();
         }
         $Format = $this->param('Format');
         if (!$Format) {
             // Error message
-            jMessage::add('The parameter Format is mandatory!', 'MissingParameter');
+            \jMessage::add('The parameter Format is mandatory!', 'MissingParameter');
 
             return $this->serviceException();
         }
         $TileMatrixSetId = $this->param('TileMatrixSet');
         if (!$TileMatrixSetId) {
             // Error message
-            jMessage::add('The parameter TileMatrixSet is mandatory!', 'MissingParameter');
+            \jMessage::add('The parameter TileMatrixSet is mandatory!', 'MissingParameter');
 
             return $this->serviceException();
         }
         $TileMatrixId = $this->param('TileMatrix');
         if ($TileMatrixId === null) {
             // Error message
-            jMessage::add('The parameter TileMatrix is mandatory!', 'MissingParameter');
+            \jMessage::add('The parameter TileMatrix is mandatory!', 'MissingParameter');
 
             return $this->serviceException();
         }
         $TileRow = $this->param('TileRow');
         if ($TileRow === null) {
             // Error message
-            jMessage::add('The parameter TileRow is mandatory!', 'MissingParameter');
+            \jMessage::add('The parameter TileRow is mandatory!', 'MissingParameter');
 
             return $this->serviceException();
         }
         $TileCol = $this->param('TileCol');
         if ($TileCol === null) {
             // Error message
-            jMessage::add('The parameter TileCol is mandatory!', 'MissingParameter');
+            \jMessage::add('The parameter TileCol is mandatory!', 'MissingParameter');
 
             return $this->serviceException();
         }
@@ -127,13 +136,13 @@ class WMTSRequest extends OGCRequest
             // if the cache is not available, the tile matrix is calculated
             // if there is an issue with the cache, the tile matrix is caclulated each time
             // to get an error we acn used getCalculatedTileCapabilities
-            $tileCapabilities = lizmapTiler::getTileCapabilities($this->project);
-        } catch (Exception $e) {
+            $tileCapabilities = \lizmapTiler::getTileCapabilities($this->project);
+        } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
+            \jLog::logEx($e, 'error');
             // Error message
-            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
             return $this->serviceException();
         }
@@ -142,7 +151,7 @@ class WMTSRequest extends OGCRequest
              $tileCapabilities->tileMatrixSetList === null ||
              $tileCapabilities->layerTileInfoList === null) {
             // Error message
-            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
             return $this->serviceException();
         }
@@ -159,7 +168,7 @@ class WMTSRequest extends OGCRequest
 
         if ($tileMatrixSet === null) {
             // Error message
-            jMessage::add('TileMatrixSet seems to be wrong', 'ServiceError');
+            \jMessage::add('TileMatrixSet seems to be wrong', 'ServiceError');
 
             return $this->serviceException();
         }
@@ -204,7 +213,7 @@ class WMTSRequest extends OGCRequest
             $params['exp_filter'] = $exp_filter;
         }
 
-        $wmsRequest = new lizmapWMSRequest($this->project, $params);
+        $wmsRequest = new WMSRequest($this->project, $params, $this->services, $this->appContext);
         $wmsRequest->setForceRequest($this->forceRequest);
 
         return $wmsRequest->process();

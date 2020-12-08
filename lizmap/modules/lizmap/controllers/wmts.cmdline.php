@@ -397,7 +397,7 @@ class wmtsCtrl extends jControllerCmdLine
                     while ($row <= $tileMatrixLimit->maxRow) {
                         $col = (int) $tileMatrixLimit->minCol;
                         while ($col <= $tileMatrixLimit->maxCol) {
-                            $request = new lizmapWMTSRequest(
+                            $request = new \Lizmap\Request\WMTSRequest(
                                 $project,
                                 array(
                                     'service' => 'WMTS',

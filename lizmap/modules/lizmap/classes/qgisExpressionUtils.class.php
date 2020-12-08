@@ -312,8 +312,8 @@ class qgisExpressionUtils
         );
 
         // Request evaluate constraint expressions
-        $url = lizmapProxy::constructUrl($params, array('method' => 'post'));
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
@@ -343,8 +343,8 @@ class qgisExpressionUtils
 
     protected static function request($params)
     {
-        $url = lizmapProxy::constructUrl($params, array('method' => 'post'));
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
