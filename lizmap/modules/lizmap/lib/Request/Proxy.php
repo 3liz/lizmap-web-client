@@ -115,17 +115,10 @@ class Proxy
         if ($request !== null) {
             $params['request'] = $request;
         }
-        if ($service == 'WMS') {
-            return new WMSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
-        }
-        if ($service == 'WMTS') {
-            return new WMTSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
-        }
-        if ($service == 'WFS') {
-            return new WFSRequest($project, $params, self::getServices(), self::getAppContext(), $requestXml);
-            // Not yet
-        //} else if ($service == 'WCS') {
-        //    return new lizmapWCSRequest($project, $params, $requestXml)
+        if (in_array($service, array('WMS', 'WMTS', 'WFS'))) {
+            $service = '\Lizmap\Request\\'.$service.'Request';
+
+            return new $service($project, $params, self::getServices(), self::getAppContext(), $requestXml);
         }
 
         return null;
@@ -168,9 +161,11 @@ class Proxy
         return $data;
     }
 
-    public static function constructUrl($params, $services)
+    public static function constructUrl($params, $services, $url = null)
     {
-        $url = $services->wmsServerURL.'?';
+        if ($url === null) {
+            $url = $services->wmsServerURL.'?';
+        }
 
         $bparams = http_build_query($params);
 
@@ -182,27 +177,10 @@ class Proxy
         return $url.$bparams;
     }
 
-    /**
-     * Get remote data from URL, with curl or internal php functions.
-     *
-     * @param string            $url     url of the remote data to fetch
-     * @param null|array|string $options list of options for the http request.
-     *                                   Option items can be: "method", "referer", "proxyHttpBackend",
-     *                                   "headers" (array of headers strings), "body", "debug".
-     *                                   If $options is a string, this should be the proxy method
-     *                                   for compatibility to old calls.
-     *                                   $proxyHttpBackend: method for the proxy : 'php' or 'curl', or ''.
-     *                                   by default, it is the proxy method indicated into lizmapService
-     * @param null|int          $debug   deprecated. 0 or 1 to get debug log.
-     *                                   if null, it uses the method indicated into lizmapService.
-     *                                   it is ignored if $options is an array.
-     * @param string|string[]   $method  deprecated. the http method.
-     *                                   it is ignored if $options is an array.
-     *
-     * @return array($data, $mime, $http_code) Array containing the data and the mime type
-     */
-    public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
+    protected static function buildOptions($options, $method, $debug)
     {
+        $services = self::getServices();
+
         if (!is_array($options)) {
             // support of deprecated parameters
             if ($options !== null) {
@@ -230,6 +208,11 @@ class Proxy
 
         $options['method'] = strtolower($options['method']);
 
+        return $options;
+    }
+
+    protected static function buildHeaders($url, $options)
+    {
         if ($options['method'] == 'post' || $options['method'] == 'put') {
             if ($options['body'] == '') {
                 $options['headers']['Content-type'] = 'application/x-www-form-urlencoded';
@@ -257,127 +240,168 @@ class Proxy
             $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'];
         }
 
-        // Initialize responses
+        return $options;
+    }
+
+    protected static function curlProxy($url, $options)
+    {
+        $services = self::getServices();
         $http_code = null;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
+            $proxy = $services->requestProxyHost;
+            if ($services->requestProxyPort) {
+                $proxy .= ':'.$services->requestProxyPort;
+            }
+            curl_setopt($ch, CURLOPT_PROXY, $proxy);
+            if ($services->requestProxyType) {
+                curl_setopt($ch, CURLOPT_PROXYTYPE, $services->requestProxyType);
+            }
+            if ($services->requestProxyNotForDomain) {
+                curl_setopt($ch, CURLOPT_NOPROXY, $services->requestProxyNotForDomain);
+            }
+            if ($services->requestProxyUser) {
+                curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $services->requestProxyUser.':'.$services->requestProxyPassword);
+            }
+        }
+
+        if ($options['referer']) {
+            curl_setopt($ch, CURLOPT_REFERER, $options['referer']);
+        }
+        if ($options['method'] === 'post') {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
+        }
+        $data = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        $mime = $info['content_type'];
+        $http_code = (int) $info['http_code'];
+        // Optionnal debug
+        if ($options['debug'] and curl_errno($ch)) {
+            \jLog::log('--> CURL: '.json_encode($info));
+        }
+
+        curl_close($ch);
+
+        return array($data, $mime, $http_code);
+    }
+
+    protected static function fileProxy($url, $options)
+    {
+        $services = self::getServices();
+        $http_code = null;
+
+        $urlInfo = parse_url($url);
+        $scheme = isset($urlInfo['scheme']) ? $urlInfo['scheme'] : 'http';
+
+        $opts = array(
+            'protocol_version' => '1.1',
+            'method' => strtoupper($options['method']),
+        );
+
+        if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
+            $okproxy = true;
+            if ($services->requestProxyNotForDomain) {
+                $noProxy = preg_split('/\s*,\s*/', $services->requestProxyNotForDomain);
+                $host = isset($urlInfo['host']) ? $urlInfo['host'] : 'localhost';
+                if (in_array($host, $noProxy)) {
+                    $okproxy = false;
+                }
+            }
+            if ($okproxy) {
+                $proxy = 'tcp://'.$services->requestProxyHost;
+                if ($services->requestProxyPort) {
+                    $proxy .= ':'.$services->requestProxyPort;
+                }
+                $opts['proxy'] = $proxy;
+                $opts['request_fulluri'] = true;
+
+                if ($services->requestProxyUser) {
+                    $options['headers']['Proxy-Authorization'] =
+                        'Basic '.base64_encode($services->requestProxyUser.':'.$services->requestProxyPassword);
+                }
+            }
+        }
+        if ($options['referer']) {
+            $options['headers']['Referer'] = $options['referer'];
+        }
+        if ($options['method'] != 'get' && $options['body'] != '') {
+            $opts['content'] = $options['body'];
+        } else {
+            unset($options['headers']['Connection']);
+        }
+        $opts['header'] = self::encodeHttpHeaders($options['headers']);
+
+        $context = stream_context_create(array($scheme => $opts));
+        // for debug, uncomment it and uncomment  the lizmap_stream_notification_callback function below
+        //use stream_context_set_params($context, array("notification" => "lizmap_stream_notification_callback"));
+
+        $data = file_get_contents($url, false, $context);
+        $mime = 'image/png';
+        $matches = array();
+        $http_code = 0;
+        // $http_response_header is created by file_get_contents
+        foreach ($http_response_header as $header) {
+            if (preg_match('#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches)) {
+                $mime = $matches[1];
+                if (count($matches) > 3) {
+                    $mime .= '; charset='.$matches[3];
+                }
+            } elseif (substr($header, 0, 5) === 'HTTP/') {
+                list($version, $code, $phrase) = explode(' ', $header, 3) + array('', false, '');
+                $http_code = (int) $code;
+            }
+        }
+        // optional debug
+        if ($options['debug'] && ($http_code >= 400)) {
+            \jLog::log('getRemoteData, bad response for '.$url);
+            \jLog::dump($opts, 'getRemoteData, bad response, options');
+            \jLog::dump($http_response_header, 'getRemoteData, bad response, response headers');
+        }
+
+        return array($data, $mime, $http_code);
+    }
+
+    /**
+     * Get remote data from URL, with curl or internal php functions.
+     *
+     * @param string            $url     url of the remote data to fetch
+     * @param null|array|string $options list of options for the http request.
+     *                                   Option items can be: "method", "referer", "proxyHttpBackend",
+     *                                   "headers" (array of headers strings), "body", "debug".
+     *                                   If $options is a string, this should be the proxy method
+     *                                   for compatibility to old calls.
+     *                                   $proxyHttpBackend: method for the proxy : 'php' or 'curl', or ''.
+     *                                   by default, it is the proxy method indicated into lizmapService
+     * @param null|int          $debug   deprecated. 0 or 1 to get debug log.
+     *                                   if null, it uses the method indicated into lizmapService.
+     *                                   it is ignored if $options is an array.
+     * @param string|string[]   $method  deprecated. the http method.
+     *                                   it is ignored if $options is an array.
+     *
+     * @return array($data, $mime, $http_code) Array containing the data and the mime type
+     */
+    public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
+    {
+        $options = self::buildOptions($options, $method, $debug);
+        $options = self::buildHeaders($url, $options);
 
         // Proxy http backend : use curl or file_get_contents
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
-            curl_setopt($ch, CURLOPT_URL, $url);
-
-            if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
-                $proxy = $services->requestProxyHost;
-                if ($services->requestProxyPort) {
-                    $proxy .= ':'.$services->requestProxyPort;
-                }
-                curl_setopt($ch, CURLOPT_PROXY, $proxy);
-                if ($services->requestProxyType) {
-                    curl_setopt($ch, CURLOPT_PROXYTYPE, $services->requestProxyType);
-                }
-                if ($services->requestProxyNotForDomain) {
-                    curl_setopt($ch, CURLOPT_NOPROXY, $services->requestProxyNotForDomain);
-                }
-                if ($services->requestProxyUser) {
-                    curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
-                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $services->requestProxyUser.':'.$services->requestProxyPassword);
-                }
-            }
-
-            if ($options['referer']) {
-                curl_setopt($ch, CURLOPT_REFERER, $options['referer']);
-            }
-            if ($options['method'] === 'post') {
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
-            }
-            $data = curl_exec($ch);
-            $info = curl_getinfo($ch);
-            $mime = $info['content_type'];
-            $http_code = (int) $info['http_code'];
-            // Optionnal debug
-            if ($options['debug'] and curl_errno($ch)) {
-                \jLog::log('--> CURL: '.json_encode($info));
-            }
-
-            curl_close($ch);
-        } else {
-            // With file_get_contents
-            $urlInfo = parse_url($url);
-            $scheme = isset($urlInfo['scheme']) ? $urlInfo['scheme'] : 'http';
-
-            $opts = array(
-                'protocol_version' => '1.1',
-                'method' => strtoupper($options['method']),
-            );
-
-            if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
-                $okproxy = true;
-                if ($services->requestProxyNotForDomain) {
-                    $noProxy = preg_split('/\s*,\s*/', $services->requestProxyNotForDomain);
-                    $host = isset($urlInfo['host']) ? $urlInfo['host'] : 'localhost';
-                    if (in_array($host, $noProxy)) {
-                        $okproxy = false;
-                    }
-                }
-                if ($okproxy) {
-                    $proxy = 'tcp://'.$services->requestProxyHost;
-                    if ($services->requestProxyPort) {
-                        $proxy .= ':'.$services->requestProxyPort;
-                    }
-                    $opts['proxy'] = $proxy;
-                    $opts['request_fulluri'] = true;
-
-                    if ($services->requestProxyUser) {
-                        $options['headers']['Proxy-Authorization'] =
-                            'Basic '.base64_encode($services->requestProxyUser.':'.$services->requestProxyPassword);
-                    }
-                }
-            }
-            if ($options['referer']) {
-                $options['headers']['Referer'] = $options['referer'];
-            }
-            if ($options['method'] != 'get' && $options['body'] != '') {
-                $opts['content'] = $options['body'];
-            } else {
-                unset($options['headers']['Connection']);
-            }
-            $opts['header'] = self::encodeHttpHeaders($options['headers']);
-
-            $context = stream_context_create(array($scheme => $opts));
-            // for debug, uncomment it and uncomment  the lizmap_stream_notification_callback function below
-            //use stream_context_set_params($context, array("notification" => "lizmap_stream_notification_callback"));
-
-            $data = file_get_contents($url, false, $context);
-            $mime = 'image/png';
-            $matches = array();
-            $http_code = 0;
-            // $http_response_header is created by file_get_contents
-            foreach ($http_response_header as $header) {
-                if (preg_match('#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches)) {
-                    $mime = $matches[1];
-                    if (count($matches) > 3) {
-                        $mime .= '; charset='.$matches[3];
-                    }
-                } elseif (substr($header, 0, 5) === 'HTTP/') {
-                    list($version, $code, $phrase) = explode(' ', $header, 3) + array('', false, '');
-                    $http_code = (int) $code;
-                }
-            }
-            // optional debug
-            if ($options['debug'] && ($http_code >= 400)) {
-                \jLog::log('getRemoteData, bad response for '.$url);
-                \jLog::dump($opts, 'getRemoteData, bad response, options');
-                \jLog::dump($http_response_header, 'getRemoteData, bad response, response headers');
-            }
+            return self::curlProxy($url, $options);
         }
-
-        return array($data, $mime, $http_code);
+        // With file_get_contents
+        return self::fileProxy($url, $options);
     }
 
     protected static function userHttpHeader()
@@ -412,6 +436,60 @@ class Proxy
         return $headers;
     }
 
+    protected static function createFileProfile($cacheDirectory, $cacheName, $cacheExpiration)
+    {
+        $appContext = self::getAppContext();
+        // Create directory if needed
+        \jFile::createDir($cacheDirectory);
+
+        // Virtual cache profile parameter
+        $cacheParams = array(
+            'driver' => 'file',
+            'cache_dir' => $cacheDirectory,
+            'file_locking' => true,
+            'directory_level' => '5',
+            'file_name_prefix' => 'lizmap_',
+            'ttl' => $cacheExpiration,
+        );
+
+        // Create the virtual cache profile
+        $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
+    }
+
+    protected static function createSqLiteProfile($cacheDirectory, $cacheName, $cacheExpiration, $cacheDatabase)
+    {
+        $appContext = self::getAppContext();
+        \jFile::createDir($cacheDirectory); // Create directory if needed
+        $cachePdoDsn = 'sqlite:'.$cacheDatabase;
+
+        // Create database and populate with table if needed
+        if (!file_exists($cacheDatabase)) {
+            copy($appContext->appVarPath().'cacheTemplate.db', $cacheDatabase);
+        }
+
+        // Virtual jdb profile corresponding to the layer database
+        $jdbParams = array(
+            'driver' => 'pdo',
+            'dsn' => $cachePdoDsn,
+            'user' => 'cache',
+            'password' => 'cache',
+        );
+        // Create the virtual jdb profile
+        $cacheJdbName = 'jdb_'.$cacheName;
+        $appContext->createVirtualProfile('jdb', $cacheJdbName, $jdbParams);
+
+        // Virtual cache profile parameter
+        $cacheParams = array(
+            'driver' => 'db',
+            'dbprofile' => $cacheJdbName,
+            'ttl' => $cacheExpiration,
+            'base64encoding' => true,
+        );
+
+        // Create the virtual cache profile
+        $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
+    }
+
     public static function createVirtualProfile($repository, $project, $layers, $crs)
     {
 
@@ -442,60 +520,16 @@ class Proxy
             // CACHE CONTENT INTO FILE SYSTEM
             // Directory where to store the cached files
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
-
-            // Create directory if needed
-            \jFile::createDir($cacheDirectory);
-
-            // Virtual cache profile parameter
-            $cacheParams = array(
-                'driver' => 'file',
-                'cache_dir' => $cacheDirectory,
-                'file_locking' => true,
-                'directory_level' => '5',
-                'file_name_prefix' => 'lizmap_',
-                'ttl' => $cacheExpiration,
-            );
-
-            // Create the virtual cache profile
-            $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
+            self::createFileProfile($cacheDirectory, $cacheName, $cacheExpiration);
         } elseif ($cacheStorageType == 'redis') {
             // CACHE CONTENT INTO REDIS
             self::declareRedisProfile($ser, $cacheName, $repository, $project, $layers, $crs);
         } else {
             // CACHE CONTENT INTO SQLITE DATABASE
-
             // Directory where to store the sqlite database
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
-            \jFile::createDir($cacheDirectory); // Create directory if needed
             $cacheDatabase = $cacheDirectory.$layers.'_'.$crs.'.db';
-            $cachePdoDsn = 'sqlite:'.$cacheDatabase;
-
-            // Create database and populate with table if needed
-            if (!file_exists($cacheDatabase)) {
-                copy($appContext->appVarPath().'cacheTemplate.db', $cacheDatabase);
-            }
-
-            // Virtual jdb profile corresponding to the layer database
-            $jdbParams = array(
-                'driver' => 'pdo',
-                'dsn' => $cachePdoDsn,
-                'user' => 'cache',
-                'password' => 'cache',
-            );
-            // Create the virtual jdb profile
-            $cacheJdbName = 'jdb_'.$cacheName;
-            $appContext->createVirtualProfile('jdb', $cacheJdbName, $jdbParams);
-
-            // Virtual cache profile parameter
-            $cacheParams = array(
-                'driver' => 'db',
-                'dbprofile' => $cacheJdbName,
-                'ttl' => $cacheExpiration,
-                'base64encoding' => true,
-            );
-
-            // Create the virtual cache profile
-            $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
+            self::createSqLiteProfile($cacheDirectory, $cacheName, $cacheExpiration, $cacheDatabase);
         }
 
         self::$_profiles[$cacheName] = true;
