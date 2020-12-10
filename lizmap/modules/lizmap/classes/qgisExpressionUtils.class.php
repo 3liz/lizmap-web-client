@@ -344,7 +344,7 @@ class qgisExpressionUtils
     protected static function request($params)
     {
         $url = lizmapProxy::constructUrl($params);
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url,array('method' => 'post'));
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($url, array('method' => 'post'));
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
