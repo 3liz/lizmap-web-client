@@ -89,7 +89,7 @@ var lizTimemanager = function() {
                         $('#tmCurrentValue').html(formatDatetime(tmStartDate, tmTimeFrameType));
                         $("#tmSlider").slider({
                             min: tmStartDate.valueOf(),
-                            max: tmEndDate.valueOf(),
+                            max: tmEndDate.startOf(tmTimeFrameType.slice(0, -1)).valueOf(),
                             value: tmStartDate.valueOf()
                         });
                         tmLayersDataFetched+= 1;
@@ -303,7 +303,7 @@ var lizTimemanager = function() {
 
             function moveNext(){
 
-                if (tmCurrentDate < tmEndDate) {
+                if (tmCurrentDate.startOf(tmTimeFrameType.slice(0, -1)) < tmEndDate.startOf(tmTimeFrameType.slice(0, -1))) {
                     var lowerBoundary = null;
                     var upperBoundary = null;
                     // Change lower boundary
@@ -323,7 +323,7 @@ var lizTimemanager = function() {
             }
 
             function movePrev() {
-                if (tmCurrentDate > tmStartDate) {
+                if (tmCurrentDate.startOf(tmTimeFrameType.slice(0, -1)) > tmStartDate) {
                     var lowerBoundary = null;
                     var upperBoundary = null;
                     // Change lower boundary
