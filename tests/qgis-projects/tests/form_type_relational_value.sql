@@ -19,6 +19,8 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+CREATE SCHEMA if NOT EXISTS tests_projects;
+
 --
 -- Name: table_for_form; Type: TABLE; Schema: tests_projects; Owner: lizmap
 --
@@ -103,7 +105,14 @@ ALTER TABLE ONLY tests_projects.table_for_relationnal_value
 -- INSERT DATA IN table_for_form
 --
 
-INSERT INTO tests_projects.table_for_form VALUES(1, 'test', '{"A06"}', '{"A07"}', '{"A08"}');
+INSERT INTO tests_projects.table_for_form VALUES(
+    1,
+    'test',
+    '{"A06"}',
+    '{"A07"}',
+    '{"A08"}',
+    '01010000206A08000070B1DA88456C0F4198A01B3111072C41'
+);
 
 --
 -- INSERT DATA IN table_for_relationnal_value

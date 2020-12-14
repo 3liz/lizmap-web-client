@@ -79,9 +79,9 @@
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" type="vector" wkbType="Point">
       <extent>
         <xmin>257416.69182337401434779</xmin>
-        <ymin>918408.5959139047190547</ymin>
+        <ymin>918408.59591390495188534</ymin>
         <xmax>257416.69182337401434779</xmax>
-        <ymax>918408.5959139047190547</ymax>
+        <ymax>918408.59591390495188534</ymax>
       </extent>
       <id>table_for_form_8a6a46b7_21ef_47d6_a5cd_134f6e84dace</id>
       <datasource>dbname='lizmap' service='lizmapdb' sslmode=disable key='gid' srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."table_for_form" (geom) sql=</datasource>
@@ -195,9 +195,7 @@
         <sizescale></sizescale>
       </renderer-v2>
       <customproperties>
-        <property key="dualview/previewExpressions">
-          <value>"gid"</value>
-        </property>
+        <property key="dualview/previewExpressions" value="&quot;gid&quot;"></property>
         <property key="embeddedWidgets/count" value="0"></property>
         <property key="variableNames"></property>
         <property key="variableValues"></property>
@@ -408,7 +406,7 @@ def my_form_open(dialog, layer, feature):
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -431,7 +429,7 @@ def my_form_open(dialog, layer, feature):
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent></extent>
