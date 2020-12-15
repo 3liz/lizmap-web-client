@@ -91,8 +91,8 @@ class lizmapLogListener extends jEventListener
             $logItem->insertLogDetail($data);
 
             // Send an email
-            if ($logItem->getData('logEmail') &&
-                in_array($key, array('editionSaveFeature', 'editionDeleteFeature'))
+            if ($logItem->getData('logEmail')
+                && in_array($key, array('editionSaveFeature', 'editionDeleteFeature'))
             ) {
                 $this->sendEmail($key, $data);
             }
