@@ -222,19 +222,19 @@ class lizmapServices
         }
 
         // check email address where to send notifications
-        if ($this->adminContactEmail == 'root@localhost' ||
-            $this->adminContactEmail == 'root@localhost.localdomain' ||
-            $this->adminContactEmail == '' ||
-            !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
+        if ($this->adminContactEmail == 'root@localhost'
+            || $this->adminContactEmail == 'root@localhost.localdomain'
+            || $this->adminContactEmail == ''
+            || !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
         ) {
             $this->adminContactEmail = '';
         }
 
         // check email address of the sender
-        if ($this->adminSenderEmail == 'root@localhost' ||
-            $this->adminSenderEmail == 'root@localhost.localdomain' ||
-            $this->adminSenderEmail == '' ||
-            !filter_var($this->adminSenderEmail, FILTER_VALIDATE_EMAIL)
+        if ($this->adminSenderEmail == 'root@localhost'
+            || $this->adminSenderEmail == 'root@localhost.localdomain'
+            || $this->adminSenderEmail == ''
+            || !filter_var($this->adminSenderEmail, FILTER_VALIDATE_EMAIL)
         ) {
             // if the sender email is not configured, deactivate features that
             // need to send an email

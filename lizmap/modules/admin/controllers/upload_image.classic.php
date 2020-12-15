@@ -52,12 +52,16 @@ class upload_imageCtrl extends jController
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
                 return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.bigger'));
+
             case UPLOAD_ERR_PARTIAL:
                 return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.partially'));
+
             case UPLOAD_ERR_NO_FILE:
                 return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.none'));
+
             case UPLOAD_ERR_NO_TMP_DIR:
                 return $this->uploadError(jLocale::get('admin~admin.upload.image.error.missing.temp'));
+
             case UPLOAD_ERR_CANT_WRITE:
                 return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.onDisk'));
         }

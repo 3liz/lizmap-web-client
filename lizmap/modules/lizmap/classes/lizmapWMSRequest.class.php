@@ -317,9 +317,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $qgisQueryLayers = array();
         foreach ($queryLayers as $queryLayer) {
             $configLayer = $this->project->findLayerByAnyName($queryLayer);
-            if (property_exists($configLayer, 'externalAccess') &&
-                $configLayer->externalAccess != 'False' &&
-                property_exists($configLayer->externalAccess, 'url')
+            if (property_exists($configLayer, 'externalAccess')
+                && $configLayer->externalAccess != 'False'
+                && property_exists($configLayer->externalAccess, 'url')
             ) {
                 $externalWMSConfigLayers[] = $configLayer;
             } else {
@@ -517,8 +517,8 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
             if (!$returnPopup) {
                 $editionLayer = $this->project->findEditionLayerByLayerId($configLayer->id);
-                if ($editionLayer != null &&
-                    ($editionLayer->capabilities->modifyGeometry == 'True'
+                if ($editionLayer != null
+                    && ($editionLayer->capabilities->modifyGeometry == 'True'
                                      || $editionLayer->capabilities->modifyAttribute == 'True'
                                      || $editionLayer->capabilities->deleteFeature == 'True')
                 ) {
@@ -599,9 +599,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
         foreach ($layer->Feature as $feature) {
             $id = (string) $feature['id'];
             // Optionnally filter by feature id
-            if ($filterFid &&
-                isset($filterFid[$configLayer->name]) &&
-                $filterFid[$configLayer->name] != $id
+            if ($filterFid
+                && isset($filterFid[$configLayer->name])
+                && $filterFid[$configLayer->name] != $id
             ) {
                 continue;
             }

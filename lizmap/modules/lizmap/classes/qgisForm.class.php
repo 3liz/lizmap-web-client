@@ -844,8 +844,8 @@ class qgisForm implements qgisFormControlsInterface
                 $value = '{'.implode(',', $value).'}';
             }
 
-            if (($value === '' || $value === null) &&
-              !$this->formControls[$ref]->required
+            if (($value === '' || $value === null)
+              && !$this->formControls[$ref]->required
             ) {
                 $values[$ref] = 'NULL';
 
@@ -873,6 +873,7 @@ class qgisForm implements qgisFormControlsInterface
                     }
 
                     break;
+
                 case 'date':
                 case 'time':
                 case 'datetime':
@@ -884,6 +885,7 @@ class qgisForm implements qgisFormControlsInterface
                     }
 
                     break;
+
                 case 'integer':
                     if (is_numeric($value)) {
                         $value = (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
@@ -895,6 +897,7 @@ class qgisForm implements qgisFormControlsInterface
                     }
 
                     break;
+
                 case 'float':
                     if (is_numeric($value)) {
                         $value = (float) $value;
@@ -906,16 +909,18 @@ class qgisForm implements qgisFormControlsInterface
                     }
 
                     break;
+
                 case 'text':
                     $value = $cnx->quote($value);
 
                     break;
+
                 case 'boolean':
                     $strVal = strtolower($value);
-                    if ($strVal != 'true' && $strVal !== 't' && intval($value) != 1 &&
-                       $strVal !== 'on' && $value !== true &&
-                       $strVal != 'false' && $strVal !== 'f' && intval($value) != 0 &&
-                       $strVal !== 'off' && $value !== false
+                    if ($strVal != 'true' && $strVal !== 't' && intval($value) != 1
+                       && $strVal !== 'on' && $value !== true
+                       && $strVal != 'false' && $strVal !== 'f' && intval($value) != 0
+                       && $strVal !== 'off' && $value !== false
                     ) {
                         $value = 'NULL';
                     } else {
@@ -923,6 +928,7 @@ class qgisForm implements qgisFormControlsInterface
                     }
 
                     break;
+
                 default:
                     $value = $cnx->quote(
                         filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
@@ -996,8 +1002,7 @@ class qgisForm implements qgisFormControlsInterface
             jFile::createDir($repPath.$this->formControls[$ref]->DefaultRoot); // Need to create it to then make the realpath checks
             if (
                 (substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
-                or
-                (substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
+                or (substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
             ) {
                 $targetPath = $this->formControls[$ref]->DefaultRoot;
                 $targetFullPath = realpath($repPath.$this->formControls[$ref]->DefaultRoot);
