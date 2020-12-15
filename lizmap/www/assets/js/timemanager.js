@@ -87,6 +87,8 @@ var lizTimemanager = function() {
 
                         // Set slider
                         $('#tmCurrentValue').html(formatDatetime(tmStartDate, tmTimeFrameType));
+                        $('#tmNextValue').html(formatDatetime(tmEndDate, tmTimeFrameType));
+                        toggleNextSpan();
                         $("#tmSlider").slider({
                             min: tmStartDate.valueOf(),
                             max: tmEndDate.startOf(tmTimeFrameType.slice(0, -1)).valueOf(),
@@ -98,6 +100,8 @@ var lizTimemanager = function() {
 
                     });
                 }
+                // Make sure to trigger filter for slider position
+                onSliderStop();
             }
 
             // Deactivate Timemanager feature
@@ -109,19 +113,8 @@ var lizTimemanager = function() {
                 $('#timemanager-menu').hide();
                 tmActive = false;
 
-                // Remove filter
-                for(var layerName in lizMap.config.timemanagerLayers){
-                    lizMap.deactivateMaplayerFilter(layerName);
-                    // Refresh plots and popups
-                    lizMap.config.layers[layerName]['request_params']['filtertoken'] = null;
-                    lizMap.events.triggerEvent("layerFilterParamChanged",
-                        {
-                            'featureType': layerName,
-                            'filter': null,
-                            'updateDrawing': false
-                        }
-                    );
-                }
+                // Remove layers filters
+                unFilterTimeLayers();
             }
 
             function getDataFromLayer(layerConfig, aCallback){
@@ -204,7 +197,7 @@ var lizTimemanager = function() {
                 if(!ready){
                     return true;
                 }
-                // Trigger filter by mimicing slider stop
+                // Make sure to trigger filter for slider position
                 onSliderStop();
             }
 
@@ -302,14 +295,15 @@ var lizTimemanager = function() {
 
 
             function moveNext(){
+                var nextLowerBoundary = getSideDate(
+                    tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, 1
+                );
 
-                if (tmCurrentDate.startOf(tmTimeFrameType.slice(0, -1)) < tmEndDate.startOf(tmTimeFrameType.slice(0, -1))) {
+                if (nextLowerBoundary.startOf(tmTimeFrameType.slice(0, -1)) <= tmEndDate.startOf(tmTimeFrameType.slice(0, -1))) {
                     var lowerBoundary = null;
                     var upperBoundary = null;
                     // Change lower boundary
-                    lowerBoundary = getSideDate(
-                        tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, 1
-                    );
+                    lowerBoundary = nextLowerBoundary;
                     // Change upper boundary
                     upperBoundary = getSideDate(
                         tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 2, 1
@@ -318,18 +312,22 @@ var lizTimemanager = function() {
                     updateStep(lowerBoundary, upperBoundary);
 
                 } else {
+                    // Go back to first step
                     stopAnimation(true);
+                    // Make sure to trigger filter for slider position
+                    onSliderStop();
                 }
             }
 
             function movePrev() {
-                if (tmCurrentDate.startOf(tmTimeFrameType.slice(0, -1)) > tmStartDate) {
+                var prevLowerBoundary = getSideDate(
+                    tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, -1
+                );
+                if (prevLowerBoundary.startOf(tmTimeFrameType.slice(0, -1)) >= tmStartDate.startOf(tmTimeFrameType.slice(0, -1))) {
                     var lowerBoundary = null;
                     var upperBoundary = null;
                     // Change lower boundary
-                    lowerBoundary = getSideDate(
-                        tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, -1
-                    );
+                    lowerBoundary = prevLowerBoundary;
                     // Change upper boundary
                     upperBoundary = moment(tmCurrentDate);
 
@@ -337,7 +335,16 @@ var lizTimemanager = function() {
 
                 } else {
                     stopAnimation(true);
+                    // Make sure to trigger filter for slider position
+                    onSliderStop();
                 }
+            }
+
+            // Display/hide the span containing the next time value
+            function toggleNextSpan() {
+                var hideNextSpan = ($('#tmCurrentValue').text() == $('#tmNextValue').text());
+                $('#tmNextValue').toggle(!hideNextSpan);
+                $('#tmNextValue').prev("span").toggle(!hideNextSpan);
             }
 
             function updateStep(lowerBoundary, upperBoundary) {
@@ -349,6 +356,8 @@ var lizTimemanager = function() {
 
                 // Display
                 $('#tmCurrentValue').html(formatDatetime(tmCurrentDate, tmTimeFrameType));
+                $('#tmNextValue').html(formatDatetime(moment(upperBoundary), tmTimeFrameType));
+                toggleNextSpan();
                 $("#tmSlider").slider( "option", "value", tmCurrentDate.valueOf() );
             }
 
@@ -402,7 +411,25 @@ var lizTimemanager = function() {
                     $("#tmSlider").slider( "option", "value", tmCurrentDate.valueOf() );
                     var upperBoundary = getSideDate(
                         tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, 1
-                        );
+                    );
+                    $('#tmNextValue').html(formatDatetime(upperBoundary, tmTimeFrameType));
+                    toggleNextSpan();
+                }
+            }
+
+            function unFilterTimeLayers() {
+                // Remove filter
+                for(var layerName in lizMap.config.timemanagerLayers){
+                    lizMap.deactivateMaplayerFilter(layerName);
+                    // Refresh plots and popups
+                    lizMap.config.layers[layerName]['request_params']['filtertoken'] = null;
+                    lizMap.events.triggerEvent("layerFilterParamChanged",
+                        {
+                            'featureType': layerName,
+                            'filter': null,
+                            'updateDrawing': false
+                        }
+                    );
                 }
             }
 
