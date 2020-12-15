@@ -1178,7 +1178,7 @@ class qgisForm implements qgisFormControlsInterface
 
             // Add default empty value for required fields
             // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-            if (($formControl->ctrl->required and !$formControl->valueRelationData['allowMulti'] ) or $formControl->valueRelationData['allowNull']) {
+            if (($formControl->ctrl->required and !$formControl->valueRelationData['allowMulti']) or $formControl->valueRelationData['allowNull']) {
                 $data[''] = '';
             }
 
