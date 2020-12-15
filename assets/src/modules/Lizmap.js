@@ -30,6 +30,11 @@ export default class Lizmap {
                 }
                 register(proj4);
 
+                // Override getPointResolution method to always return resolution
+                // without taking care of geodesic adjustment as it can be confusing for user to not have rounded scales
+                (getProjection(this.projection)).setGetPointResolution((resolution) => resolution);
+                (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
+
                 // Create Lizmap modules
                 this.map = new Map();
                 this.edition = new Edition();
