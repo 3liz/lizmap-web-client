@@ -139,8 +139,8 @@ class mediaCtrl extends jController
         $repex = explode('/', $n_repositoryPath);
         array_pop($repex);
         $reptest = implode('/', $repex);
-        if (!preg_match('#^'.$n_repositoryPath.'(/)?media/#', $n_abspath) &&
-            !preg_match('#^'.$reptest.'(/)?media/#', $n_abspath)
+        if (!preg_match('#^'.$n_repositoryPath.'(/)?media/#', $n_abspath)
+            && !preg_match('#^'.$reptest.'(/)?media/#', $n_abspath)
         ) {
             $ok = false;
         }
@@ -175,10 +175,10 @@ class mediaCtrl extends jController
 
         // Get the mime type
         $mime = jFile::getMimeType($abspath);
-        if ($mime == 'text/plain' || $mime == '' ||
-            $mime == 'application/octet-stream' ||
-            ($mime == 'text/html' &&
-                !in_array($path_parts['extension'], array('html', 'htm')))
+        if ($mime == 'text/plain' || $mime == ''
+            || $mime == 'application/octet-stream'
+            || ($mime == 'text/html'
+                && !in_array($path_parts['extension'], array('html', 'htm')))
         ) {
             $mime = jFile::getMimeTypeFromFilename($abspath);
         }
@@ -324,10 +324,10 @@ class mediaCtrl extends jController
         $repex = explode('/', $n_repositoryPath);
         array_pop($repex);
         $reptest = implode('/', $repex);
-        if (!preg_match('#^'.$n_repositoryPath.'(/)?media/themes/#', $n_abspath) &&
-            !preg_match('#^'.$reptest.'(/)?media/themes/#', $n_abspath) &&
-            !preg_match('#^'.$n_repositoryPath.'(/)?media/js/#', $n_abspath) &&
-            !preg_match('#^'.$reptest.'(/)?media/js/#', $n_abspath)
+        if (!preg_match('#^'.$n_repositoryPath.'(/)?media/themes/#', $n_abspath)
+            && !preg_match('#^'.$reptest.'(/)?media/themes/#', $n_abspath)
+            && !preg_match('#^'.$n_repositoryPath.'(/)?media/js/#', $n_abspath)
+            && !preg_match('#^'.$reptest.'(/)?media/js/#', $n_abspath)
         ) {
             $ok = false;
         }
@@ -339,8 +339,8 @@ class mediaCtrl extends jController
 
         // Check if file is CSS
         $path_parts = pathinfo($abspath);
-        if (!isset($path_parts['extension']) ||
-            strtolower($path_parts['extension']) != 'css'
+        if (!isset($path_parts['extension'])
+            || strtolower($path_parts['extension']) != 'css'
         ) {
             $ok = false;
         }

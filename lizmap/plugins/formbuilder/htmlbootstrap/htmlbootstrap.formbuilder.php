@@ -153,9 +153,9 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
         if ($ctrl->type == 'hidden' || $ctrl->type == 'button') {
             return;
         }
-        if ($ctrl->type == 'checkbox' &&
-            $ctrl->valueLabelOnCheck === '' &&
-            $ctrl->valueLabelOnUncheck === '') {
+        if ($ctrl->type == 'checkbox'
+            && $ctrl->valueLabelOnCheck === ''
+            && $ctrl->valueLabelOnUncheck === '') {
             return;
         }
         $widget = $this->getWidget($ctrl, $this->rootWidget);

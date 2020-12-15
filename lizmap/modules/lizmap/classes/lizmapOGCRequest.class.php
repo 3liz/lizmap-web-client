@@ -324,10 +324,10 @@ class lizmapOGCRequest
             jLog::logEx($e, 'error');
         }
         // invalid cache
-        if ($cached !== false &&
-            $cached['mtime'] < $this->project->getFileTime() &&
-            (!array_key_exists('ctime', $cached) ||
-              $cached['ctime'] < $this->project->getCfgFileTime())
+        if ($cached !== false
+            && $cached['mtime'] < $this->project->getFileTime()
+            && (!array_key_exists('ctime', $cached)
+              || $cached['ctime'] < $this->project->getCfgFileTime())
             ) {
             $cached = false;
         }

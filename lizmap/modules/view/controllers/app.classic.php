@@ -44,9 +44,9 @@ class appCtrl extends jController
         );
         $url = lizmapProxy::constructUrl($params);
         list($resp, $mime, $code) = lizmapProxy::getRemoteData($url);
-        if (preg_match('#ServerException#i', $resp) ||
-            preg_match('#ServiceExceptionReport#i', $resp) ||
-            preg_match('#WMS_Capabilities#i', $resp)) {
+        if (preg_match('#ServerException#i', $resp)
+            || preg_match('#ServiceExceptionReport#i', $resp)
+            || preg_match('#WMS_Capabilities#i', $resp)) {
             $data['qgis_server']['test'] = 'OK';
         } else {
             $data['qgis_server']['test'] = 'ERROR';
