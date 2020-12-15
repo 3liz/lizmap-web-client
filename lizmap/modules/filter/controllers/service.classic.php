@@ -42,19 +42,23 @@ class serviceCtrl extends jController
 
         // Redirect to method corresponding on REQUEST param
         $request = $this->param('request', 'getFeatureCount');
+
         switch ($request) {
             case 'getFeatureCount':
                 return $this->getFeatureCount();
 
                 break;
+
             case 'getUniqueValues':
                 return $this->getUniqueValues();
 
                 break;
+
             case 'getMinAndMaxValues':
                 return $this->getMinAndMaxValues();
 
                 break;
+
             case 'getExtent':
                 return $this->getExtent();
 

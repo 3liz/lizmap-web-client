@@ -32,10 +32,12 @@ class configCtrl extends jController
                   $form->setData($ser, $services->{$ser} ? 'on' : 'off');
 
                   break;
+
               case 'projectSwitcher':
                   $form->setData($ser, $services->{$ser} ? 'on' : 'off');
 
                   break;
+
               default:
                   if ($form->getControl($ser)) {
                       $form->setData($ser, $services->{$ser});
@@ -129,8 +131,8 @@ class configCtrl extends jController
                 $ctrl = $form->getControl('allowUserAccountRequests');
                 $ctrl->help = jLocale::get('admin~admin.configuration.services.allowUserAccountRequests.help.deactivated');
             }
-            if ($form->getData('allowUserAccountRequests') == 'on' ||
-                $form->getData('adminContactEmail') != ''
+            if ($form->getData('allowUserAccountRequests') == 'on'
+                || $form->getData('adminContactEmail') != ''
             ) {
                 $form->getControl('adminSenderEmail')->required = true;
             }
@@ -197,8 +199,8 @@ class configCtrl extends jController
             }
         }
 
-        if ($form->getData('allowUserAccountRequests') == 'on' ||
-            $form->getData('adminContactEmail') != ''
+        if ($form->getData('allowUserAccountRequests') == 'on'
+            || $form->getData('adminContactEmail') != ''
         ) {
             $form->getControl('adminSenderEmail')->required = true;
         }

@@ -65,9 +65,9 @@ class lizmapTiler
             jLog::logEx($e, 'error');
         }
 
-        if (!is_array($tileMatrixSetList) || !is_array($layers) || !is_array($hash) ||
-            $hash['qgsmtime'] < filemtime($file) ||
-            $hash['qgscfgmtime'] < filemtime($file.'.cfg')) {
+        if (!is_array($tileMatrixSetList) || !is_array($layers) || !is_array($hash)
+            || $hash['qgsmtime'] < filemtime($file)
+            || $hash['qgscfgmtime'] < filemtime($file.'.cfg')) {
             $wmsRequest = new lizmapWMSRequest(
                 $project,
                 array(
