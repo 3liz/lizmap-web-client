@@ -116,9 +116,13 @@ var lizAttributeTable = function() {
                     }
 
                     config.layers[configLayerName]['crs'] = self.find('SRS').text();
-                    lizMap.loadProjDefinition( config.layers[configLayerName].crs, function( aProj ) {
-                        new OpenLayers.Projection(config.layers[configLayerName].crs);
-                    });
+
+                    if (config.layers[configLayerName]['crs'] !== ""){
+                        lizMap.loadProjDefinition(config.layers[configLayerName].crs, function (aProj) {
+                            new OpenLayers.Projection(config.layers[configLayerName].crs);
+                        });
+                    }
+
                     var bbox = self.find('LatLongBoundingBox');
                     atConfig['bbox'] = [
                         parseFloat(bbox.attr('minx'))
