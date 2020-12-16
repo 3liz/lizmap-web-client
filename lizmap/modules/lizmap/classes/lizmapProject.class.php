@@ -1624,8 +1624,19 @@ class lizmapProject extends qgisProject
                 $spatialiteExt = $this->getSpatialiteExtension();
             }
             if (!$spatialiteExt) {
-                jLog::log('Spatialite is not available', 'error');
+                jLog::log('Spatialite is not available', 'notice');
                 foreach ($editionLayers as $key => $obj) {
+                    // Improve performance by getting provider directly from config
+                    // Available for lizmap plugin >= 3.3.2
+                    if (property_exists($obj, 'provider')) {
+                        if ($obj->provider == 'spatialite') {
+                            unset($editionLayers->{$key});
+                        }
+
+                        continue;
+                    }
+
+                    // Read layer property from QGIS project XML
                     $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
                     if (count($layerXml) == 0) {
                         continue;
@@ -1654,6 +1665,13 @@ class lizmapProject extends qgisProject
 
             // Get field order & visibility
             foreach ($attributeLayers as $key => $obj) {
+                // Improve performance by getting custom_config status directly from config
+                // Available for lizmap plugin >= 3.3.3
+                if (property_exists($obj, 'custom_config') && $obj->custom_config != 'True') {
+                    continue;
+                }
+
+                // Read layer property from QGIS project XML
                 $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
                 if (count($layerXml) == 0) {
                     continue;
