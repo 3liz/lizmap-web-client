@@ -91,6 +91,7 @@ class lizmapServices
 
     private $notEditableProperties = array(
         'cacheRedisKeyPrefixFlushMethod',
+        'wmsServerHeaders',
     );
 
     /**
@@ -116,6 +117,8 @@ class lizmapServices
     public $qgisServerVersion = '3.0';
     // Wms map server
     public $wmsServerURL = '';
+    // headers to send to Wms map server
+    public $wmsServerHeaders = array();
     // Public Wms url list
     public $wmsPublicUrlList = '';
     // Wms max width
@@ -219,6 +222,10 @@ class lizmapServices
             if (isset($readConfigPath['services'][$prop])) {
                 $this->{$prop} = $readConfigPath['services'][$prop];
             }
+        }
+
+        if (!is_array($this->wmsServerHeaders)) {
+            $this->wmsServerHeaders = array();
         }
 
         // check email address where to send notifications
