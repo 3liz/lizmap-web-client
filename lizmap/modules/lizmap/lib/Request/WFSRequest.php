@@ -385,9 +385,9 @@ class WFSRequest extends OGCRequest
             }
             $bboxvalid = false;
             if (!empty($bbox)) {
-                $bboxvalid = true;
                 $bboxitem = explode(',', $bbox);
                 if (count($bboxitem) == 4) {
+                    $bboxvalid = true;
                     foreach ($bboxitem as $coord) {
                         if (!is_numeric(trim($coord))) {
                             $bboxvalid = false;
@@ -649,7 +649,7 @@ class WFSRequest extends OGCRequest
      *
      * @param string $filter The filter to parse
      */
-    private function validateFilter($filter)
+    protected function validateFilter($filter)
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
