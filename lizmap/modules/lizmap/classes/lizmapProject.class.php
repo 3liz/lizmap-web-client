@@ -953,6 +953,10 @@ class lizmapProject extends qgisProject
             return $filters;
         }
 
+        if (!is_array($layers)) {
+            return $filters;
+        }
+
         // for each layer get login filtered config and build expression
         foreach ($layers as $layername) {
             $lname = $layername;

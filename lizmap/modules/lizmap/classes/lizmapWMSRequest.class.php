@@ -44,12 +44,22 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
         // filter data by login
         $layers = $this->param('layers');
+
+        // 'getprintatlas' request has param 'layer' and not 'layers'
+        if ($this->param('request') == 'getprintatlas') {
+            $layers = $this->param('layer');
+        }
+
         if (is_string($layers)) {
             $layers = explode(',', $layers);
         }
 
         // get login filters
-        $loginFilters = $this->project->getLoginFilters($layers);
+        $loginFilters = array();
+
+        if ($layers) {
+            $loginFilters = $this->project->getLoginFilters($layers);
+        }
 
         // login filters array is empty
         if (empty($loginFilters)) {
