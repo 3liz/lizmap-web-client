@@ -115,9 +115,13 @@ var lizAttributeTable = function() {
                     }
 
                     config.layers[configLayerName]['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
-                    lizMap.loadProjDefinition( config.layers[configLayerName].crs, function() {
-                        new OpenLayers.Projection(config.layers[configLayerName].crs);
-                    });
+
+                    if (config.layers[configLayerName]['crs'] !== ""){
+                        lizMap.loadProjDefinition(config.layers[configLayerName].crs, function (aProj) {
+                            new OpenLayers.Projection(config.layers[configLayerName].crs);
+                        });
+                    }
+
                     var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
                     atConfig['bbox'] = [
                         parseFloat(bbox.getAttribute('minx'))
