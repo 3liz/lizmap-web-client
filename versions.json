@@ -1,10 +1,10 @@
 [
     {
         "branch": "3.4", 
-        "first_release_date": "2020-11-26", 
+        "first_release_date": "2020-12-18",
         "latest_release_date": "2020-12-18", 
         "latest_release_version": "3.4.0", 
-        "maintained": false
+        "maintained": true
     }, 
     {
         "branch": "3.3", 
@@ -18,7 +18,7 @@
         "first_release_date": "2018-11-19", 
         "latest_release_date": "2020-12-07", 
         "latest_release_version": "3.2.18", 
-        "maintained": true
+        "maintained": false
     }, 
     {
         "branch": "3.1", 
