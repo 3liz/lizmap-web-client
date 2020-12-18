@@ -1,13 +1,15 @@
 # Changelog Lizmap 3.4
 
-## Released 2020-12-XX
+## Version 3.4.0
 
-## QGIS Plugin Desktop and Server
+Released on 2020-12-18
+
+### QGIS Plugin Desktop and Server
 
 * Changelog in the Lizmap QGIS plugin related to this new version is available 
   [here](https://github.com/3liz/lizmap-plugin/blob/master/CHANGELOG.md#330---25112020)
 
-## New features
+### New features
 
 - Projects page
   - Possibility to add HTML content on the projects page, with image upload
@@ -81,17 +83,17 @@
   - Map themes - check layer legend checkbox even if not in scale range
   - Expose QGIS themes in Lizmap JSON config
 
-## New JS events
+### New JS events
 
 - `lizmapeditionfeatureinit` to customize edition layers
 - `mapthemechanged` and `mapthemesadded`
 - `lizmapchangelayervisibility` when map layer visibility changes
 
-## New PHP events:
+### New PHP events:
 
 - None
 
-## Under the hood:
+### Under the hood:
 
 - Configuration: remove the support of `proxyMethod`. Lizmap now guesses automatically
   if it can use curl to do HTTP queries.
@@ -108,6 +110,6 @@
 - Deprecated class lizmapCache removed
 - Optimizations to speed up launch
 
-## Bugfix
+### Bugfix
 
 - Read the version changelog
