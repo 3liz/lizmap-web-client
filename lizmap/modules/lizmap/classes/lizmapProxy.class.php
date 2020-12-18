@@ -137,10 +137,15 @@ class lizmapProxy
             'Accept' => '*/*',
         ), $options['headers']);
 
-        $options['headers'] = array_merge(
-            self::userHttpHeader(),
-            $options['headers']
-        );
+        if (strpos($url, $services->wmsServerURL) === 0) {
+            // headers only for QGIS server
+            $options['headers'] = array_merge(
+                self::userHttpHeader(),
+                $services->wmsServerHeaders,
+                $options['headers']
+            );
+        }
+
         if (isset($options['loginFilteredOverride'])) {
             $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'];
         }
