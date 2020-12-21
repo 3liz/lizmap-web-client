@@ -77,8 +77,13 @@ var lizAtlas = function () {
 
             for (var layerId in lizAtlasLayers.layerOptions) {
                 var getLayerConfig = lizMap.getLayerConfigById(layerId);
-                if (!getLayerConfig)
-                    return;
+
+                // If layer has no config (because current user has no rights to view it for example)
+                // decrement lizAtlasLayersCount and continue to next layer
+                if (!getLayerConfig){
+                    lizAtlasLayersCount--;
+                    continue;
+                }
                 var layerConfig = getLayerConfig[1];
                 var featureType = getLayerConfig[0];
 
