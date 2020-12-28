@@ -1,5 +1,12 @@
 [
     {
+        "branch": "3.5",
+        "first_release_date": "",
+        "latest_release_date": "",
+        "latest_release_version": "3.5.0",
+        "maintained": false
+    },
+    {
         "branch": "3.4", 
         "first_release_date": "2020-12-18",
         "latest_release_date": "2020-12-18", 
