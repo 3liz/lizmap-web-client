@@ -15,10 +15,10 @@ class qgisFormListener extends jEventListener
     {
         $form = $event->getParam('form');
         $privateData = $form->getContainer()->privateData;
-        if (!$privateData ||
-            !array_key_exists('liz_repository', $privateData) ||
-            !array_key_exists('liz_project', $privateData) ||
-            !array_key_exists('liz_layerId', $privateData)) {
+        if (!$privateData
+            || !array_key_exists('liz_repository', $privateData)
+            || !array_key_exists('liz_project', $privateData)
+            || !array_key_exists('liz_layerId', $privateData)) {
             // it's not a QGIS Form
             return;
         }
