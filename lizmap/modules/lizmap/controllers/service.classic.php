@@ -290,8 +290,7 @@ class serviceCtrl extends jController
 
         // Get the optionnal filter token
         if (isset($params['filtertoken'], $params['request'])
-             &&
-            in_array(strtolower($params['request']), array('getmap', 'getfeature', 'getprint', 'getfeatureinfo'))
+            && in_array(strtolower($params['request']), array('getmap', 'getfeature', 'getprint', 'getfeatureinfo'))
         ) {
             $tokens = $params['filtertoken'];
             $tokens = explode(';', $tokens);
@@ -316,8 +315,8 @@ class serviceCtrl extends jController
         // Get the selection token
         if (isset($params['request'])) {
             $request = strtolower($params['request']);
-            if (isset($params['selectiontoken']) &&
-                in_array($request, array('getmap', 'getfeature', 'getprint'))
+            if (isset($params['selectiontoken'])
+                && in_array($request, array('getmap', 'getfeature', 'getprint'))
             ) {
                 $tokens = $params['selectiontoken'];
                 $tokens = explode(';', $tokens);
@@ -326,9 +325,9 @@ class serviceCtrl extends jController
                     $data = jCache::get($token);
                     if ($data) {
                         $data = json_decode($data);
-                        if (property_exists($data, 'typename') &&
-                            property_exists($data, 'ids') &&
-                            count($data->ids) > 0
+                        if (property_exists($data, 'typename')
+                            && property_exists($data, 'ids')
+                            && count($data->ids) > 0
                         ) {
                             $selections[] = $data->typename.':'.implode(',', $data->ids);
                         }

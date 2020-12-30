@@ -230,8 +230,8 @@ class qgisFormControl
                 $this->required = true;
             }
 
-            if ($constraints !== null && !$prop->notNull &&
-                $constraints['constraints'] > 0 && $constraints['notNull']) {
+            if ($constraints !== null && !$prop->notNull
+                && $constraints['constraints'] > 0 && $constraints['notNull']) {
                 $this->required = true;
             }
         } else {
@@ -328,8 +328,8 @@ class qgisFormControl
                     if (property_exists($attributes, 'max')) {
                         $this->ctrl->datatype->addFacet('maxValue', (float) $attributes->max);
                     }
-                } elseif ($this->fieldEditType === 'Range' ||
-                         $this->fieldEditType === 'EditRange') {
+                } elseif ($this->fieldEditType === 'Range'
+                         || $this->fieldEditType === 'EditRange') {
                     $this->ctrl->datatype = new jDatatypeDecimal();
                     $attributes = $this->widgetv2configAttr;
                     if (property_exists($attributes, 'Min')) {
@@ -468,8 +468,7 @@ class qgisFormControl
                               '#^../media(/)?#',
                               $this->widgetv2configAttr->DefaultRoot
                           )
-                          or
-                          preg_match(
+                          or preg_match(
                               '#^media(/)?#',
                               $this->widgetv2configAttr->DefaultRoot
                           )
@@ -494,8 +493,8 @@ class qgisFormControl
         }
 
         // Rework for boolean
-        if ($this->fieldDataType == 'boolean' &&
-            in_array($markup, array('menulist', 'checkboxes'))) {
+        if ($this->fieldDataType == 'boolean'
+            && in_array($markup, array('menulist', 'checkboxes'))) {
             // Get data list, to use label
             $data = $this->ctrl->datasource->data;
             // Set edit type
@@ -507,13 +506,13 @@ class qgisFormControl
             // Check data list
             foreach ($data as $k => $v) {
                 $strK = strtolower($k);
-                if ($strK === 'true' || $strK === 't' ||
-                    intval($k) === 1 || $strK === 'on') {
+                if ($strK === 'true' || $strK === 't'
+                    || intval($k) === 1 || $strK === 'on') {
                     // Check info
                     $this->ctrl->valueOnCheck = $k;
                     $this->ctrl->valueLabelOnCheck = $v;
-                } elseif ($strK === 'false' || $strK === 'f' ||
-                    intval($k) === 0 || $strK === 'off') {
+                } elseif ($strK === 'false' || $strK === 'f'
+                    || intval($k) === 0 || $strK === 'off') {
                     // Uncheck info
                     $this->ctrl->valueOnUncheck = $k;
                     $this->ctrl->valueLabelOnUncheck = $v;
@@ -599,8 +598,8 @@ class qgisFormControl
                     $isEditable = filter_var((string) $this->edittype->attributes()->editable, FILTER_VALIDATE_BOOLEAN);
                 }
                 // Also use "fieldEditable" property
-                elseif (property_exists($this->edittype->attributes(), 'widgetv2type') &&
-                        property_exists($this->widgetv2configAttr, 'fieldEditable')
+                elseif (property_exists($this->edittype->attributes(), 'widgetv2type')
+                        && property_exists($this->widgetv2configAttr, 'fieldEditable')
                 ) {
                     $isEditable = filter_var((string) $this->widgetv2configAttr->fieldEditable, FILTER_VALIDATE_BOOLEAN);
                 }
@@ -709,6 +708,7 @@ class qgisFormControl
                 }
 
                 break;
+
             case 'ValueMap':
                 if ($this->edittype instanceof SimpleXMLElement) {
                     foreach ($this->edittype->widgetv2config->xpath('value') as $value) {
@@ -874,30 +874,30 @@ class qgisFormControl
 
     public function isUniqueValue()
     {
-        return $this->fieldEditType === 2 ||
-           $this->fieldEditType === 'UniqueValues' ||
-           $this->fieldEditType === 'UniqueValuesEditable';
+        return $this->fieldEditType === 2
+           || $this->fieldEditType === 'UniqueValues'
+           || $this->fieldEditType === 'UniqueValuesEditable';
     }
 
     public function isValueRelation()
     {
-        return ($this->fieldEditType === 15 ||
-            $this->fieldEditType === 'ValueRelation') &&
-            $this->valueRelationData;
+        return ($this->fieldEditType === 15
+            || $this->fieldEditType === 'ValueRelation')
+            && $this->valueRelationData;
     }
 
     public function isRelationReference()
     {
-        return $this->fieldEditType === 'RelationReference' &&
-           $this->relationReferenceData;
+        return $this->fieldEditType === 'RelationReference'
+           && $this->relationReferenceData;
     }
 
     public function isUploadControl()
     {
-        return $this->fieldEditType === 8 ||
-            $this->fieldEditType === 'FileName' ||
-            $this->fieldEditType === 'Photo' ||
-            $this->fieldEditType === 'ExternalResource';
+        return $this->fieldEditType === 8
+            || $this->fieldEditType === 'FileName'
+            || $this->fieldEditType === 'Photo'
+            || $this->fieldEditType === 'ExternalResource';
     }
 
     public function getControlName()

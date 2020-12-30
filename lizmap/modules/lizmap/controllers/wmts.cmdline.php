@@ -138,9 +138,9 @@ class wmtsCtrl extends jControllerCmdLine
             return $rep;
         }
 
-        if ($tileCapabilities === null ||
-             $tileCapabilities->tileMatrixSetList === null ||
-             $tileCapabilities->layerTileInfoList === null
+        if ($tileCapabilities === null
+             || $tileCapabilities->tileMatrixSetList === null
+             || $tileCapabilities->layerTileInfoList === null
         ) {
             // Error message
             $rep->addContent("The cache is not available!\n");
@@ -230,9 +230,9 @@ class wmtsCtrl extends jControllerCmdLine
             return $rep;
         }
 
-        if ($tileCapabilities === null ||
-             $tileCapabilities->tileMatrixSetList === null ||
-             $tileCapabilities->layerTileInfoList === null) {
+        if ($tileCapabilities === null
+             || $tileCapabilities->tileMatrixSetList === null
+             || $tileCapabilities->layerTileInfoList === null) {
             // Error message
             $rep->addContent("The cache is not available!\n");
             $rep->addContent("The WMTS Service has not been initialized!\n");
@@ -251,9 +251,9 @@ class wmtsCtrl extends jControllerCmdLine
                 return $rep;
             }
 
-            if ($tileCapabilities === null ||
-                 $tileCapabilities->tileMatrixSetList === null ||
-                 $tileCapabilities->layerTileInfoList === null) {
+            if ($tileCapabilities === null
+                 || $tileCapabilities->tileMatrixSetList === null
+                 || $tileCapabilities->layerTileInfoList === null) {
                 // Error message
                 $rep->addContent("The cache is not available!\n");
                 $rep->addContent("The WMTS Service can't be initialized!\n");
