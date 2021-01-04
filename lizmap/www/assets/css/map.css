@@ -1419,6 +1419,8 @@ transform: none !important;
 
 #switcher {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 #switcher-layers {
   padding-left: 19px;
@@ -1452,9 +1454,9 @@ transform: none !important;
 }
 
 #switcher-layers-container{
-  max-height: calc(100% - 71px);
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
 
 #switcher-layers-container > div.menu-content {
