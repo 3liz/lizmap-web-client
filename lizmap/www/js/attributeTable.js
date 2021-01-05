@@ -399,7 +399,7 @@ var lizAttributeTable = function() {
 
                 // Export tools
                 if ( 'exportLayers' in config.options && config.options.exportLayers == 'True' ) {
-                    html+= '&nbsp;<div class="btn-group pull-right" role="group" >';
+                    html+= '&nbsp;<div class="export-formats btn-group pull-right" role="group" >';
                     html+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
                     html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
                     html+= '      <span class="caret"></span>';
