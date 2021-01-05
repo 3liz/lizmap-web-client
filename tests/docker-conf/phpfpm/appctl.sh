@@ -152,6 +152,20 @@ function launch() {
       composerInstall
     fi
 
+    if [ ! -d "$ROOTDIR/assets/node_modules/" ]; then
+      (
+        cd "$ROOTDIR/assets/";
+        npm install
+      )
+    fi
+
+    if [ ! -f "$APPDIR/www/assets/js/lizmap.js" ]; then
+      (
+        cd "$ROOTDIR/assets/";
+        npm run build
+      )
+    fi
+
     launchInstaller
     setRights
     cleanTmp
