@@ -690,6 +690,12 @@ SubDock
   height:30px;
   border-bottom: 1px solid lightgrey;
 }
+
+.attribute-layer-action-bar .export-formats .dropdown-menu{
+  max-height: 110px;
+  overflow: auto;
+}
+
 .attribute-layer-content {
   overflow:auto;
   height: 90%;
