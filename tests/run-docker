@@ -38,7 +38,7 @@ if [ "$LIZMAP_ADMIN_LOGIN" == "" ]; then
 fi
 
 if [ "$LIZMAP_ADMIN_EMAIL" == "" ]; then
-  export LIZMAP_ADMIN_EMAIL=admin@localost.local
+  export LIZMAP_ADMIN_EMAIL=admin@localhost.local
 fi
 
 if [ "$LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE" == "" ]; then
