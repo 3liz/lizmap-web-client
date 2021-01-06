@@ -265,7 +265,7 @@ export default class Digitizing {
 
         // Refresh layer
         this._drawLayer.redraw(true);
-        
+
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
 
@@ -346,10 +346,10 @@ export default class Digitizing {
 
             }
             return `<?xml version="1.0" encoding="UTF-8"?>
-                    <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" 
-                        xmlns:ogc="http://www.opengis.net/ogc" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" 
-                        xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" 
+                    <StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+                        xmlns:ogc="http://www.opengis.net/ogc"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd"
                         xmlns:se="http://www.opengis.net/se">
                         <UserStyle>
                             <FeatureTypeStyle>
@@ -472,6 +472,9 @@ export default class Digitizing {
     import(file){
         const reader = new FileReader();
 
+        // get extension file
+        var fileExtension = file.name.split('.').pop();
+
         reader.onload = (() => {
             return (e) => {
                 const fileContent = e.target.result;
@@ -479,12 +482,13 @@ export default class Digitizing {
 
                 // Handle GeoJSON, GPX or KML strings
                 try {
-                    if (fileContent[0] === '{') {
+                    // Check extension to the feature type
+                    if (fileExtension === 'geojson' || fileExtension === 'json') {
                         OL6features = (new GeoJSON()).readFeatures(fileContent);
-                    } else if (fileContent.slice(0, 4) === '<gpx') {
+                    } else if (fileExtension === 'gpx') {
                         OL6features = (new GPX()).readFeatures(fileContent);
 
-                    } else if (fileContent.slice(0, 4) === '<kml') {
+                    } else if (fileExtension === 'kml') {
                         OL6features = (new KML()).readFeatures(fileContent);
                     }
                 } catch (error) {
