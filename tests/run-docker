@@ -2,8 +2,23 @@
 
 set -e
 
-export LIZMAP_USER_ID=${LIZMAP_USER_ID:-$(id -u)}
-export LIZMAP_GROUP_ID=${LIZMAP_GROUP_ID:-$(id -g)}
+LZMBRANCH=${LZMBRANCH:-$(git rev-parse --abbrev-ref HEAD)}
+
+# Create a .env file so that we may use subsequent docker-compose 
+# commands directly
+cat > .env << End-of-env
+LIZMAP_USER_ID=${LIZMAP_USER_ID:-$(id -u)}
+LIZMAP_GROUP_ID=${LIZMAP_GROUP_ID:-$(id -g)}
+LZMPOSTGISVERSION=${LZMPOSTGISVERSION:-11-2.5}
+LZMQGSRVVERSION=${LZMQGSRVVERSION:-3.10}
+LZMBRANCH=${LZMBRANCH}
+LZMPGPORT=${LZMPGPORT:-8132}
+LZMQGSRVPORT=${LZMQGSRVPORT:-8131}
+LZMWEBPORT=${LZMWEBPORT:-8130}
+LIZMAP_ADMIN_LOGIN=${LIZMAP_ADMIN_LOGIN:-admin}
+LIZMAP_ADMIN_EMAIL=${LIZMAP_ADMIN_EMAIL:-admin@localost.local}
+LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE=${LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE:-/srv/etc/admin.conf}
+End-of-env
 
 CMD=$1
 
@@ -11,38 +26,5 @@ if [ "$CMD" == "" ]; then
     CMD="up -d"
 fi
 
-if [ "$LZMBRANCH" == "" ]; then
-  export LZMBRANCH=$(git rev-parse --abbrev-ref HEAD)
-fi
-
-
-if [ "$LZMPGPORT" == "" ]; then
-  export LZMPGPORT=8132
-fi
-
-if [ "$LZMQGSRVPORT" == "" ]; then
-  export LZMQGSRVPORT=8131
-fi
-
-if [ "$LZMWEBPORT" == "" ]; then
-  export LZMWEBPORT=8130
-fi
-
-
-if [ "$LZMQGSRVVERSION" == "" ]; then
-  export LZMQGSRVVERSION=3.10
-fi
-
-if [ "$LIZMAP_ADMIN_LOGIN" == "" ]; then
-  export LIZMAP_ADMIN_LOGIN=admin
-fi
-
-if [ "$LIZMAP_ADMIN_EMAIL" == "" ]; then
-  export LIZMAP_ADMIN_EMAIL=admin@localhost.local
-fi
-
-if [ "$LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE" == "" ]; then
-  export LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE=/srv/etc/admin.conf
-fi
-
 docker-compose -p lizmap-${LZMBRANCH}-tests $CMD
+
