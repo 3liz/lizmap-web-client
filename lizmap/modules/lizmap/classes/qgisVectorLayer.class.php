@@ -815,8 +815,10 @@ class qgisVectorLayer extends qgisMapLayer
         $sql .= $uwhere;
 
         // Get select clause for primary keys (used when inserting data in postgresql)
-        $returnKeys = array_keys($pk);
-
+        $returnKeys = array();
+        foreach ($array_keys($pk) as $key) {
+            $returnKeys[] = $cnx->encloseName($key);
+        }
         $returnKeysString = implode(', ', $returnKeys);
         // For spatialite, we will run a complementary query to retrieve the pkeys
         if ($this->provider == 'postgres') {
