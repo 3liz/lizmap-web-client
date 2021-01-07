@@ -18,7 +18,18 @@ class loginCtrl extends jController {
 
     function index()
     {
-        if (jAuth::isConnected()) {
+        if (isset(jApp::config()->jcommunity)) {
+            $config = jApp::config()->jcommunity;
+            $stayOnLoginPage = isset($config['noRedirectionOnAuthenticatedLoginPage'])
+                               && $config['noRedirectionOnAuthenticatedLoginPage'];
+        }
+        else {
+            $config = null;
+            $stayOnLoginPage = true;
+        }
+
+
+        if (jAuth::isConnected() && !$stayOnLoginPage) {
             // if the user is already connected, try to go to the right page
 
             $conf = jApp::coord()->getPlugin('auth')->config;
@@ -45,9 +56,8 @@ class loginCtrl extends jController {
         }
 
         $response = 'html';
-        if (isset(jApp::config()->jcommunity)) {
-            $conf = jApp::config()->jcommunity;
-            $response = (isset($conf['loginResponse'])?$conf['loginResponse']:'html');
+        if ($config) {
+            $response = (isset($config['loginResponse'])?$config['loginResponse']:'html');
         }
 
         $rep = $this->getResponse($response);

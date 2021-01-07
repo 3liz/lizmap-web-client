@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 3.3.13
+--------------
+
+- new config parameter to disable the behavior change of the login page,
+  introduced in lizmap 3.3.12, which redirect to the main page when the user 
+  is already authenticated. You can disable it by setting `noRedirectionOnAuthenticatedLoginPage=on` 
+  into the jcommunity section of the configuration (localconfig.ini.php).
+
 Version 3.3.12
 --------------
 
