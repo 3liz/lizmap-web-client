@@ -1425,9 +1425,13 @@ transform: none !important;
 
 #switcher {
   height: 100%;
+}
+
+#switcher.active{
   display: flex;
   flex-direction: column;
 }
+
 #switcher-layers {
   padding-left: 19px;
 }
