@@ -42,7 +42,7 @@ class lizmapFtsSearchListener extends jEventListener
         try {
             // try to get the specific search profile to do not rebuild it
             $cnx = jDb::getConnection($profile);
-            $cnx->query('SELECT * FROM lizmap_search LIMIT 0;');
+            @$cnx->query('SELECT * FROM lizmap_search LIMIT 0;');
             $ok = true;
         } catch (Exception $e) {
             $ok = false;
