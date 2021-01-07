@@ -64,6 +64,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
             'resetPasswordEnabled' =>true,
             'resetAdminPasswordEnabled' =>true,
             'disableJPref' =>true,
+            'noRedirectionOnAuthenticatedLoginPage' => false,
             'publicProperties' =>array('login', 'nickname', 'create_date')
         );
 

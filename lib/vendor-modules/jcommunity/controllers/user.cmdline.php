@@ -189,7 +189,7 @@ class userCtrl extends jControllerCmdLine {
         }
 
         if ($code) {            
-                return $this->exit($rep, $error ? 0 : $code, $message, $verbose);
+            return $this->exitMessage($rep, $error ? 0 : $code, $message, $verbose);
         }
 
         if (!$password) {
