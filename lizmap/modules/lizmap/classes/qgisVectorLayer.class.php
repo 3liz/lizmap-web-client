@@ -816,7 +816,7 @@ class qgisVectorLayer extends qgisMapLayer
 
         // Get select clause for primary keys (used when inserting data in postgresql)
         $returnKeys = array();
-        foreach (array_keys($pk) as $key) {
+        foreach ($array_keys($pk) as $key) {
             $returnKeys[] = $cnx->encloseName($key);
         }
         $returnKeysString = implode(', ', $returnKeys);
