@@ -1,14 +1,14 @@
 version: '3.4'
 services:
   pgsql:
-    image: 3liz/postgis:9.5-2.3
+    image: 3liz/postgis:${LZMPOSTGISVERSION}
     container_name: "lizmap${LZMBRANCH}_test_pgsql"
     environment:
       POSTGRES_DB: lizmap
       POSTGRES_PASSWORD: lizmap1234!
       POSTGRES_USER: lizmap
     volumes:
-      - pg_data:/var/lib/postgresql
+      - pg_data:/var/lib/postgresql/data
     ports:
       - ${LZMPGPORT}:5432
     networks:
@@ -29,13 +29,21 @@ services:
     volumes:
       - "./docker-conf/openldap/ldif:/customldif"
   lizmap:
-    build: ./docker-conf/phpfpm
+    build: 
+        context: ./docker-conf/phpfpm
+        args:
+          lizmap_user_id: ${LIZMAP_USER_ID}
+          lizmap_group_id: ${LIZMAP_GROUP_ID}
     container_name: "lizmap${LZMBRANCH}_test_php"
     environment:
-      PGSERVICEFILE: /srv/etc/pg_service.conf
+      - PGSERVICEFILE=/srv/etc/pg_service.conf
+      - LIZMAP_ADMIN_LOGIN
+      - LIZMAP_ADMIN_EMAIL
+      - LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE
     volumes:
       - "../:/srv/lzm/"
       - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
+      - ./docker-conf/phpfpm/admin.conf:/srv/etc/admin.conf
     depends_on:
       - pgsql
       - redis
