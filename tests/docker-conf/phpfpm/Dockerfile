@@ -1,10 +1,12 @@
 FROM debian:buster-slim
 
 ARG composer_version=2.0.7
+ARG lizmap_user_id
+ARG lizmap_group_id
 
-ENV LIZMAP_USER_ID=1000 \
-    LIZMAP_GROUP_ID=1000 \
-    PHP_VERSION=7.4
+ENV LIZMAP_USER_ID=${lizmap_user_id}
+ENV LIZMAP_GROUP_ID=${lizmap_group_id}
+ENV PHP_VERSION=7.4
 
 RUN set -eux; \
 	apt-get update; \
