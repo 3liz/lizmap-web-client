@@ -87,12 +87,12 @@ Admin User Account Setup
 ========================
 
 Default admin credentials are `admin`/`admin`, to modify it, set these variables in your environment, default values are provided in `run-docker` : 
-- LIZMAP\_ADMIN\_LOGIN: Login if the admin user
-- LIZMAP\_ADMIN\_EMAIL: Email address if the admin user, it will be used by the password reset process.
-- LIZMAP\_ADMIN\_DEFAULT_PASSWORD_SOURCE: The password source to user for the admin user, it can either be: 
+- `LIZMAP_ADMIN_LOGIN`: Login of the admin user
+- `LIZMAP_ADMIN_EMAIL`: Email address of the admin user, it will be used by the password reset process.
+- `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password source to user for the admin user, it can either be: 
     - `__reset`: It will initiate a password reset process, an email will be sent to `LIZMAP_ADMIN_EMAIL` with a link to choose a new password.
     - `__random`: Will set a random password that will be report into the command line (see `docker logs` to access it).
-    - `/path/to/pass/file`: The path to a file containing your password. The file must be used as a volume for docker to acess it.
+    - `/path/to/pass/file`: The path to a file containing your password. The file must be used as a volume for docker to access it.
 
 
 Setting port numbers for services
