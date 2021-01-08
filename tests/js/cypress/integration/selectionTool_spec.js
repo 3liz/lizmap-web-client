@@ -8,7 +8,7 @@ describe('Selection tool', function () {
         cy.get('#button-selectiontool').click()
 
         // Activate polygon tool
-        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').click()
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
         cy.get('#selectiontool .digitizing-polygon').click()
     })
 
@@ -304,7 +304,7 @@ describe('Selection tool', function () {
         cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selectable-visible-layers')
 
         // Activate polygon tool
-        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').click()
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
         cy.get('#selectiontool .digitizing-polygon').click()
 
         cy.get('#map')
