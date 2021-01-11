@@ -1,0 +1,30 @@
+name: End-to-end tests with Cypress
+on:
+  push:
+    branches:
+      - master
+      - release_3_4
+      - refactor
+  pull_request:
+    branches:
+      - master
+      - release_3_4
+      - refactor
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run tests docker
+        run: cd tests && ./lizmap-ctl clean && ./run-docker build && ./run-docker
+
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          browser: chrome
+          headless: true
+          working-directory: tests/js
