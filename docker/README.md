@@ -6,46 +6,62 @@ The container deploy one lizmap instance and may run php-fpm on commande line.
 
 ## Configuration variables
 
-- LIZMAP\_WMSSERVERURL: URL of the OWS (WMS/WFS/WCS) service used
-- LIZMAP\_DEBUGMODE: Error level INFO/DEBUG/ERROR/WARNING
-- LIZMAP\_CACHESTORAGETYPE: Always Use 'redis'
-- LIZMAP\_CACHEREDISHOST: Redis host
-- LIZMAP\_CACHEREDISPORT: Redis port (use default if not set)
-- LIZMAP\_CACHEEXPIRATION: Lizmap cache expiration time 
-- LIZMAP\_CACHEREDISDB:  Redis Database index used 
-- LIZMAP\_CACHEREDISKEYPREFIX: the redis key prefix to use
-- LIZMAP\_USER: User used to run Lizmap
-- LIZMAP\_HOME: The root path for web files used from the web server
-- LIZMAP\_THEME: Lizmap theme to use
+- `LIZMAP_WMSSERVERURL`: URL of the OWS (WMS/WFS/WCS) service used
+- `LIZMAP_DEBUGMODE`: Error level INFO/DEBUG/ERROR/WARNING
+- `LIZMAP_CACHESTORAGETYPE`: Always Use 'redis'
+- `LIZMAP_CACHEREDISHOST`: Redis host
+- `LIZMAP_CACHEREDISPORT`: Redis port (use default if not set)
+- `LIZMAP_CACHEEXPIRATION`: Lizmap cache expiration time 
+- `LIZMAP_CACHEREDISDB`:  Redis Database index used 
+- `LIZMAP_CACHEREDISKEYPREFIX`: the redis key prefix to use
+- `LIZMAP_USER`: User used to run Lizmap
+- `LIZMAP_HOME`: The root path for web files used from the web server
+- `LIZMAP_THEME`: Lizmap theme to use
+- `LIZMAP_ADMIN_LOGIN`: Login of the admin user
+- `LIZMAP_ADMIN_EMAIL`: Email address of the admin user
+- `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password to set for the admin user. Cf [Admin Setup Section](#admin-setup)
 
-**Important**: LIZMAP\_HOME is the prefix of the path towards lizmap web files (lizmap/www). This prefix
+**Important**: `LIZMAP_HOME` is the prefix of the path towards lizmap web files (`lizmap/www`). This prefix
 must be identical to the one given in the nginx *root* directive, ex:
 ```
 root <LIZMAP_HOME>/www
 ```
 
+### Admin Setup
+
+During installation, an admin user will be setup with the `LIZMAP_ADMIN_*` environnement variables.
+The `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE` value can either be: 
+- `__reset`: It will initiate a password reset process, an email will be sent 
+  to `LIZMAP_ADMIN_EMAIL` with a link to choose a new password. The web server
+  should be configured properly, and the mailer configuration should be set
+  into lizmap. See the Lizmap documentation. 
+- `__random`: Will set a random password that will be report into the command line (see `docker logs` to access it).
+- `/path/to/pass/file`: The path to a file containing your password. The file must be used as a volume for docker to access it.
+
 ### Tuning PHP Variables
-- PM_MAX_CHILDREN: Maximum number of child processes.
-- PM_START_SERVERS: The number of child processes created on startup.
-- PM_MIN_SPARE_SERVERS: The desired minimum number of idle server processes.
-- PM_MAX_SPARE_SERVERS: The desired maximum number of idle server processes.
-- PM_CHILD_PROCESS: Control the number of child processes values can be (static,dynamic,ondemand)
-- PM_MAX_REQUESTS: The number of requests each child process should execute before respawning
-- PM_PROCESS_IDLE_TIMEOUT: The number of seconds after which an idle process will be killed.
+
+- `PM_MAX_CHILDREN`: Maximum number of child processes.
+- `PM_START_SERVERS`: The number of child processes created on startup.
+- `PM_MIN_SPARE_SERVERS`: The desired minimum number of idle server processes.
+- `PM_MAX_SPARE_SERVERS`: The desired maximum number of idle server processes.
+- `PM_CHILD_PROCESS`: Control the number of child processes values can be (static,dynamic,ondemand)
+- `PM_MAX_REQUESTS`: The number of requests each child process should execute before respawning
+- `PM_PROCESS_IDLE_TIMEOUT`: The number of seconds after which an idle process will be killed.
 
 For more information about these read [PHP](https://www.php.net/manual/en/install.fpm.configuration.php)
+
 ## Volumes
 
 The following volumes are used:
 
-- /srv/projects (required)
-- /www/lizmap/var/config (required)
-- /www/lizmap/var/lizmap-theme-config (required)
-- /www/lizmap/var/db (required)
-- /www/lizmap/var/log (recommended)
-- /www/lizmap/www (required)
+- `/srv/projects` (required)
+- `/www/lizmap/var/config` (required)
+- `/www/lizmap/var/lizmap-theme-config` (required)
+- `/www/lizmap/var/db` (required)
+- `/www/lizmap/var/log` (recommended)
+- `/www/lizmap/www` (required)
 
-**Important**: The folder /www/lizmap/www must be binded to a directory that is accessible to the web server (see note above)
+**Important**: The folder `/www/lizmap/www` must be binded to a directory that is accessible to the web server (see note above)
 
 ## Docker compose configuration example
 
