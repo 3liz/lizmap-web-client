@@ -1,3 +1,5 @@
+CREATE SCHEMA if NOT EXISTS tests_projects;
+
 CREATE TABLE tests_projects.form_edition_point_4326 (
     id serial PRIMARY KEY,
     label text,
