@@ -44,5 +44,3 @@ jobs:
       - name: Run PHPStan
         run: phpstan analyse -c ../phpstan.neon
 
-      # - name: PHPStan
-      #   uses: chindit/actions-phpstan@master
