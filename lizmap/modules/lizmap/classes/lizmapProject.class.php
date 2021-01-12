@@ -2372,11 +2372,6 @@ class lizmapProject extends qgisProject
             return false;
         }
 
-        // Check user is admin -> ok, give permission
-        if (jAcl2::check('lizmap.admin.repositories.delete')) {
-            return true;
-        }
-
         // Check if configured groups white list and authenticated user groups list intersects
         $aclGroups = $this->cfg->options->acl;
         $userGroups = jAcl2DbUserGroup::getGroups();
@@ -2406,11 +2401,6 @@ class lizmapProject extends qgisProject
 
         // Check acl option is configured in project config
         if (!property_exists($this->cfg->options, 'acl') || !is_array($this->cfg->options->acl) || empty($this->cfg->options->acl)) {
-            return true;
-        }
-
-        // Check user is admin -> ok, give permission
-        if (jAcl2::checkByUser($login, 'lizmap.admin.repositories.delete')) {
             return true;
         }
 
