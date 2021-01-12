@@ -31,20 +31,30 @@ class lizmapFtsSearchListener extends jEventListener
         $profile = 'search';
 
         try {
-            // try to get the specific search profile to do not rebuild it
+            // try to get the specific search profile
             jProfiles::get('jdb', $profile, true);
         } catch (Exception $e) {
-            // else use default
+            // else use default profile
             $profile = null;
         }
 
+        // The Lizmap FTS search is only available for PostgreSQL
+        $cnx = jDb::getConnection($profile);
+        if ($cnx->dbms != 'pgsql') {
+            return false;
+        }
+
+        // Use a transaction to avoid: "ERROR: current transaction is aborted"
+        // https://github.com/3liz/lizmap-web-client/issues/2008
+        $cnx->beginTransaction();
+
         // Try to get data from lizmap_fts table / view / materialized view
         try {
-            // try to get the specific search profile to do not rebuild it
-            $cnx = jDb::getConnection($profile);
-            @$cnx->query('SELECT * FROM lizmap_search LIMIT 0;');
+            $cnx->query('SELECT * FROM lizmap_search LIMIT 0;');
+            $cnx->commit();
             $ok = true;
         } catch (Exception $e) {
+            $cnx->rollback();
             $ok = false;
         }
 
