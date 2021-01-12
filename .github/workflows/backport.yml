@@ -1,0 +1,21 @@
+name: Backport
+on:
+  pull_request:
+    types:
+      - closed
+      - labeled
+
+jobs:
+  backport:
+    runs-on: ubuntu-18.04
+    name: Backport
+    steps:
+      - name: Backport Bot
+        id: backport
+        # if: github.event.pull_request.merged && ( ( github.event.action == 'closed' && contains( join( github.event.pull_request.labels.*.name ), 'backport') ) || contains( github.event.label.name, 'backport' ) )
+        uses: Gaurav0/backport@v1.0.26
+        with:
+          bot_username: 3liz-bot
+          bot_token: f75e78d82bf9bea8ac9542ea723c33b3ca9ab896
+          bot_token_key: 5cb95ea792c6c98d1d59ad62731edf4a90488139
+          github_token: ${{ secrets.GITHUB_TOKEN }}
