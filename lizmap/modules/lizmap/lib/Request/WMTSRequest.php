@@ -43,7 +43,7 @@ class WMTSRequest extends OGCRequest
         } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            \jLog::logEx($e, 'error');
+            $this->appContext->logException($e, 'error');
             // Error message
             \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
@@ -115,7 +115,7 @@ class WMTSRequest extends OGCRequest
         } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            \jLog::logEx($e, 'error');
+            $this->appContext->logException($e, 'error');
             // Error message
             \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 

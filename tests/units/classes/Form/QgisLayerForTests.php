@@ -69,10 +69,3 @@ class QgisLayerForTests extends qgisVectorLayer
         return $this->dbFieldValues;
     }
 }
-
-class jDbConnectionForTests
-{
-    public function quote($str) {
-        return $str;
-    }
-}

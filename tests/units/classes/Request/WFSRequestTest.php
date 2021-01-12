@@ -166,6 +166,7 @@ class WFSRequestTest extends TestCase
     public function testParseExpFilter($params, $key, $expectedSql)
     {
         $wfs = new WFSRequestForTests();
+        $wfs->appContext = new testContext();
         $wfs->datasource = (object)array('key' => $key, 'geocol' => 'geom');
         $result = $wfs->parseExpFilterForTests(new jDbConnectionForTests(), $params);
         $this->assertEquals($expectedSql, $result);
@@ -233,6 +234,7 @@ class WFSRequestTest extends TestCase
     public function testValidateFilter($filter, $expectedFilter)
     {
         $wfs = new WFSRequestForTests();
+        $wfs->appContext = new testContext();
         $wfs->datasource = (object)array(
             'geocol' => 'column'
         );
