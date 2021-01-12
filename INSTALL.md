@@ -1,22 +1,27 @@
-Installing Lizmap
-=================
+# Installing Lizmap
 
-Requirements
-------------
+## Versions
 
-First you should install
+We recommend you reading the [versions](https://github.com/3liz/lizmap-web-client/wiki/Versions) page about
+QGIS Server, webbrowsers etc.
+
+## Requirements
+
+First you should install :
 
 - The web server Apache or Nginx
 - The PHP-FPM package (`php5-fpm` or `php7.0` on debian/ubuntu) or `libapache2-mod-php` (apache only).
-  You can install PHP 5.6 or PHP 7.0/7.1/7.2. You can use generic package names, which will install latest version available (`php5`, `php7.0` `php7.2` etc.)
+  You can install PHP 5.6 or PHP 7.0/7.1/7.2. You can use generic package names, which will install latest
+  version available (`php5`, `php7.0` `php7.2` etc.)
 - The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml`:
   - Debian 9 Stretch and Ubuntu 18.04: `apt install curl php-sqlite3 php-gd php-xml php-curl`
 - [QGIS](http://qgis.org/en/site/forusers/download.html)
-and [its documentation about QGIS Server](https://docs.qgis.org/2.18/en/docs/user_manual/working_with_ogc/server/index.html)
+and [its documentation about QGIS Server](https://docs.qgis.org/2.18/en/docs/user_manual/working_with_ogc/server/index.html).
+  We recommend **strongly** to use the same version on the server **and** on the desktop. QGIS Server will read
+  your QGS file and obviously can't read a file made with a newer version of QGIS Desktop.
 - (optional) PostgreSQL with PostGIS and its php extension (`php-pgsql` or equivalents)
 
-Get the source
---------------
+## Get the source
 
 - Download the Lizmap ZIP archive from:
   - [the release page on GitHub](https://github.com/3liz/lizmap-web-client/releases) for stable releases.
@@ -28,8 +33,7 @@ are a developer and you want to contribute on the code of Lizmap.
 Since Lizmap 3.4, **the source code in the repository is not usable directly**.
 You must build the application. Read [how to contribute](./CONTRIBUTING.md) to build your own package.
 
-Installation
-------------
+## Installation
 
 Create `lizmapConfig.ini.php`, `localconfig.ini.php` and `profiles.ini.php` and edit them
 to set parameters specific to your installation. You can modify `lizmapConfig.ini.php`
@@ -61,8 +65,16 @@ Then you can launch the installer
 php lizmap/install/installer.php
 ```
 
-Test
-----
+## Additional features
+
+It's possible to add additional features in Lizmap by adding : 
+
+* Lizmap modules, in the PHP application, the list is available on 
+  [https://docs.lizmap.com](https://docs.lizmap.com/next/fr/introduction.html#additional-lizmap-modules).
+* QGIS Server plugins, the list is available on 
+  [https://docs.lizmap.com](https://docs.lizmap.com/next/fr/install/linux.html#qgis-server-plugins)
+
+## Test
 
 In your browser, launch: http://127.0.0.1/mylizmap/lizmap/www.
 
@@ -81,15 +93,13 @@ If you want to test lizmap with some demo qgis projects, you should launch
 tools : unzip and wget or curl.
 
 
-Using QGIS composer/layouts and PDF in Lizmap
----------------------------------------------
+### Using QGIS composer/layouts and PDF in Lizmap
 
 If you plan to print PDF from Lizmap, you need a fake X Server. 
 See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`. 
 It works for Apache and NGINX
 
-Debug
-----
+###Debug
 
 * Check Lizmap settings
 * Check logs in Apache/Nginx and QGIS Server.

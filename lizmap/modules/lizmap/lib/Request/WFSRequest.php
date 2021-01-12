@@ -69,7 +69,11 @@ class WFSRequest extends OGCRequest
         }
 
         // get login filters
-        $loginFilters = $this->project->getLoginFilters($typenames);
+        $loginFilters = array();
+
+        if ($typenames) {
+            $loginFilters = $this->project->getLoginFilters($typenames);
+        }
 
         // login filters array is empty
         if (empty($loginFilters)) {

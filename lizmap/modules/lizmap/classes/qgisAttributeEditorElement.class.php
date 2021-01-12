@@ -76,9 +76,9 @@ class qgisAttributeEditorElement
             $childIdx = 0;
             foreach ($node->children() as $child) {
                 $name = $child->getName();
-                if ($name != 'attributeEditorContainer' &&
-                    $name != 'attributeEditorForm' &&
-                    $name != 'attributeEditorField'
+                if ($name != 'attributeEditorContainer'
+                    && $name != 'attributeEditorForm'
+                    && $name != 'attributeEditorField'
                 ) {
                     ++$childIdx;
 
@@ -156,8 +156,8 @@ class qgisAttributeEditorElement
 
     public function isVisibilityExpressionEnabled()
     {
-        return $this->_isVisibilityExpressionEnabled &&
-                $this->_visibilityExpression !== '';
+        return $this->_isVisibilityExpressionEnabled
+                && $this->_visibilityExpression !== '';
     }
 
     public function visibilityExpression()

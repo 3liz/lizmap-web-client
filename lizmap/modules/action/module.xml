@@ -10,7 +10,7 @@
         <homepageURL>http://www.3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.6.14" maxversion="1.6.*"/>
+        <jelix minversion="1.6.29" maxversion="1.6.*"/>
         <module name="lizmap" />
         <module name="view" />
     </dependencies>

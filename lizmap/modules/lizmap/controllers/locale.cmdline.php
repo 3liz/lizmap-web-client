@@ -90,8 +90,8 @@ class localeCtrl extends jControllerCmdLine
         $files = array();
         if ($dh = opendir($moduleLocalePath)) {
             while (($file = readdir($dh)) !== false) {
-                if (substr($file, -17) == '.UTF-8.properties' &&
-                    !($module == 'jelix' && $file == 'format.UTF-8.properties')) {
+                if (substr($file, -17) == '.UTF-8.properties'
+                    && !($module == 'jelix' && $file == 'format.UTF-8.properties')) {
                     $files[] = $file;
                 }
             }

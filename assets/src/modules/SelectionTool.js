@@ -77,11 +77,6 @@ export default class SelectionTool {
             return false;
         }
 
-        // List of WFS format
-        this._exportFormats = mainLizmap.vectorLayerResultFormat.filter(
-            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
-        );
-
         // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
         mainEventDispatcher.addListener(
             () => {
@@ -191,8 +186,11 @@ export default class SelectionTool {
         return null;
     }
 
+    // List of WFS format
     get exportFormats() {
-        return this._exportFormats;
+        return mainLizmap.vectorLayerResultFormat.filter(
+            format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
+        );
     }
 
     // Selection is exportable if :

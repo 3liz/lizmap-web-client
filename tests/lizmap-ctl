@@ -3,6 +3,9 @@
 COMMAND="$1"
 shift
 
+SCRIPTDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+APPDIR="$SCRIPTDIR/../lizmap/"
+
 if [ "$LZMBRANCH" == "" ]; then
   LZMBRANCH=$(git rev-parse --abbrev-ref HEAD)
 fi
@@ -18,33 +21,90 @@ fi
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
-    echo "Possible commands: clean_tmp, reset, reset-sqlite, install, rights, composer_install, "
+    echo "Possible commands: clean, clean_tmp, reset, reset-sqlite, install, rights, composer_install, "
     echo "composer_update, unittests, shell, shellroot, ldapreset, ldapusers"
     echo "pgsql, redis-cli"
     exit 1;
 fi
 
+function resetfiles() {
+  if [ -f $APPDIR/var/config/installer.ini.php ]; then
+    rm -f $APPDIR/var/config/installer.ini.php
+  fi
+  if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
+    rm -f $APPDIR/var/config/liveconfig.ini.php
+  fi
+  if [ -f $APPDIR/var/config/localconfig.ini.php ]; then
+    rm -f $APPDIR/var/config/localconfig.ini.php
+  fi
+  if [ -f $APPDIR/var/config/profiles.ini.php ]; then
+    rm -f $APPDIR/var/config/profiles.ini.php
+  fi
+
+  if [ -d $APPDIR/vendor ]; then
+    rm -rf $APPDIR/vendor
+  fi
+
+  if [ -f $APPDIR/composer.lock ]; then
+    rm -f $APPDIR/composer.lock
+  fi
+
+  if [ -f $APPDIR/www/assets/js/lizmap.js ]; then
+    rm -f $APPDIR/www/assets/js/lizmap.js
+  fi
+  if [ -f $APPDIR/www/assets/js/lizmap.js.map ]; then
+    rm -f $APPDIR/www/assets/js/lizmap.js.map
+  fi
+
+  if [ -d $SCRIPTDIR/units/vendor ]; then
+    rm -rf $SCRIPTDIR/units/vendor
+  fi
+
+  if [ -f $SCRIPTDIR/units/composer.lock ]; then
+    rm -f $SCRIPTDIR/units/composer.lock
+  fi
+
+  if [ -d $SCRIPTDIR/../assets/node_modules ]; then
+    rm -rf $SCRIPTDIR/../assets/node_modules
+  fi
+
+}
+
+function execInPhp() {
+  CONTAINER="lizmap${LZMBRANCH}_test_php"
+  if [ "$( docker container inspect -f '{{.State.Running}}' $CONTAINER )" != "true" ]; then
+    echo "ERROR: The lizmap container is not running"
+    exit 1
+  fi
+  docker exec -t -i $CONTAINER appctl.sh $1
+}
+
+
+
 case $COMMAND in
+    clean)
+      resetfiles
+      ;;
     clean_tmp)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh clean_tmp;;
+       execInPhp clean_tmp;;
     reset)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh reset;;
+       execInPhp reset;;
     reset-sqlite)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh reset-sqlite;;
+       execInPhp reset-sqlite;;
     install)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh install;;
+        execInPhp install;;
     rights)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh rights;;
+        execInPhp rights;;
     composer_install)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh composer_install;;
+        execInPhp composer_install;;
     composer_update)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh composer_update;;
+        execInPhp composer_update;;
     unittests)
-        docker exec -t -i lizmap${LZMBRANCH}_test_php appctl.sh unittests;;
+        execInPhp unittests;;
     shell)
        docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shellroot)
-       docker exec -it lizmap${LZMBRANCH}_test_php  /bin/bash  -l;;
+       execInPhp  /bin/bash  -l;;
     ldapreset)
       docker exec -it lizmap${LZMBRANCH}_test_ldap /bin/ctl.sh reset
       ;;

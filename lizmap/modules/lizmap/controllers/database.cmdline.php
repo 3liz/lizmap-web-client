@@ -74,14 +74,17 @@ class databaseCtrl extends jControllerCmdLine
                 $rep->addContent("It seems already migrated, there are some data into logCounter or logDetail table\n");
 
                 break;
+
             case $logMigrator::MIGRATE_RES_OK:
                 $rep->addContent("Migration done\n");
 
                 break;
+
             case 0:
                 $rep->addContent("Unknown error\n");
 
                 break;
+
             default:
                 $rep->addContent("Unknown result\n");
         }
@@ -112,14 +115,17 @@ class databaseCtrl extends jControllerCmdLine
                 $rep->addContent("It seems already migrated, there are some data into existing users tables\n");
 
                 break;
+
             case $logMigrator::MIGRATE_RES_OK:
                 $rep->addContent("Migration done\n");
 
                 break;
+
             case 0:
                 $rep->addContent("Unknown error\n");
 
                 break;
+
             default:
                 $rep->addContent("Unknown result\n");
         }

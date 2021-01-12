@@ -44,6 +44,7 @@ abstract class OGCRequest
      * @param \Lizmap\Project\Project $project    the project has a lizmapProject Class
      * @param array                   $params     the params array
      * @param \lizmapServices         $services
+     * @param App\AppContextInterface $appContext
      * @param string                  $requestXml the params array
      */
     public function __construct($project, $params, $services, App\AppContextInterface $appContext, $requestXml = null)
@@ -61,7 +62,7 @@ abstract class OGCRequest
     }
 
     /**
-     * Gets the value of a request parameter. If not defined, gets its default value.
+     * Get the value of a request parameter. If not defined, gets its default value.
      *
      * @param string $name              the name of the request parameter
      * @param mixed  $defaultValue      the default returned value if the parameter doesn't exists
@@ -83,6 +84,12 @@ abstract class OGCRequest
         return $defaultValue;
     }
 
+    /**
+     * Provide the parameters with the lizmap extra parameters for filtering request
+     * Lizmap_User, Lizmap_User_Groups and Lizmap_Override_Filter has been added to the OGC request parameters.
+     *
+     * @return array the OGC request aprameters with lizmap extra parameters for filtering request
+     */
     public function parameters()
     {
         $appContext = $this->appContext;
@@ -108,7 +115,10 @@ abstract class OGCRequest
     }
 
     /**
-     * Call the wanted Request.
+     * Process the OGC Request
+     * Checks the request parameter and performs the right method.
+     *
+     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
      */
     public function process()
     {
@@ -126,6 +136,11 @@ abstract class OGCRequest
         return $this->serviceException(501);
     }
 
+    /**
+     * Build the URL to request QGIS Server.
+     *
+     * @return string The URL to use to request QGIS Server
+     */
     protected function constructUrl()
     {
         $url = $this->services->wmsServerURL.'';
@@ -138,6 +153,14 @@ abstract class OGCRequest
         return Proxy::constructUrl($this->parameters(), $this->services, $url);
     }
 
+    /**
+     * Request QGIS Server.
+     *
+     * @param bool $post Force to use POST request
+     *
+     * @return object The request result with HTTP code, response mime-type and response data
+     *                (properties $code, $mime, $data)
+     */
     protected function request($post = false)
     {
         $querystring = $this->constructUrl();
@@ -153,6 +176,9 @@ abstract class OGCRequest
             $options = array('method' => 'post');
         }
 
+        // Add login filtered override info
+        $options['loginFilteredOverride'] = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
+
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
 
         return (object) array(
@@ -162,6 +188,13 @@ abstract class OGCRequest
         );
     }
 
+    /**
+     * Provide an OGC Service Exception result.
+     *
+     * @param int $code The HTTP code to return
+     *
+     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     */
     protected function serviceException($code = 400)
     {
         $messages = \jMessage::getAll();
@@ -192,6 +225,11 @@ abstract class OGCRequest
         );
     }
 
+    /**
+     * Perform an OGC GetCapabilities Request.
+     *
+     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     */
     protected function getcapabilities()
     {
         $appContext = $this->appContext;
@@ -215,10 +253,10 @@ abstract class OGCRequest
             \jLog::logEx($e, 'error');
         }
         // invalid cache
-        if ($cached !== false &&
-            $cached['mtime'] < $this->project->getFileTime() &&
-            (!array_key_exists('ctime', $cached) ||
-              $cached['ctime'] < $this->project->getCfgFileTime())
+        if ($cached !== false
+            && $cached['mtime'] < $this->project->getFileTime()
+            && (!array_key_exists('ctime', $cached)
+              || $cached['ctime'] < $this->project->getCfgFileTime())
             ) {
             $cached = false;
         }

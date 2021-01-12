@@ -113,8 +113,8 @@ class repositoryCtrl extends jControllerCmdLine
                     $data[$prop] = false;
                 } else {
                     $strVal = strtolower($value);
-                    if ($strVal === 'true' && $strVal === 't' && intval($value) === 1 &&
-                        $strVal === 'on' && $strVal === '1' && $value === true) {
+                    if ($strVal === 'true' && $strVal === 't' && intval($value) === 1
+                        && $strVal === 'on' && $strVal === '1' && $value === true) {
                         $data[$prop] = true;
                     } else {
                         $data[$prop] = false;

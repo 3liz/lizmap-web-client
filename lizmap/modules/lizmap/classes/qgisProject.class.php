@@ -106,8 +106,8 @@ class qgisProject
             jLog::logEx($e, 'error');
         }
 
-        if ($data === false ||
-            $data['qgsmtime'] < filemtime($file)) {
+        if ($data === false
+            || $data['qgsmtime'] < filemtime($file)) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.

@@ -91,6 +91,7 @@ class lizmapServices
 
     private $notEditableProperties = array(
         'cacheRedisKeyPrefixFlushMethod',
+        'wmsServerHeaders',
     );
 
     /**
@@ -116,6 +117,8 @@ class lizmapServices
     public $qgisServerVersion = '3.0';
     // Wms map server
     public $wmsServerURL = '';
+    // headers to send to Wms map server
+    public $wmsServerHeaders = array();
     // Public Wms url list
     public $wmsPublicUrlList = '';
     // Wms max width
@@ -225,20 +228,24 @@ class lizmapServices
             }
         }
 
+        if (!is_array($this->wmsServerHeaders)) {
+            $this->wmsServerHeaders = array();
+        }
+
         // check email address where to send notifications
-        if ($this->adminContactEmail == 'root@localhost' ||
-            $this->adminContactEmail == 'root@localhost.localdomain' ||
-            $this->adminContactEmail == '' ||
-            !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
+        if ($this->adminContactEmail == 'root@localhost'
+            || $this->adminContactEmail == 'root@localhost.localdomain'
+            || $this->adminContactEmail == ''
+            || !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
         ) {
             $this->adminContactEmail = '';
         }
 
         // check email address of the sender
-        if ($this->adminSenderEmail == 'root@localhost' ||
-            $this->adminSenderEmail == 'root@localhost.localdomain' ||
-            $this->adminSenderEmail == '' ||
-            !filter_var($this->adminSenderEmail, FILTER_VALIDATE_EMAIL)
+        if ($this->adminSenderEmail == 'root@localhost'
+            || $this->adminSenderEmail == 'root@localhost.localdomain'
+            || $this->adminSenderEmail == ''
+            || !filter_var($this->adminSenderEmail, FILTER_VALIDATE_EMAIL)
         ) {
             // if the sender email is not configured, deactivate features that
             // need to send an email
@@ -405,6 +412,7 @@ class lizmapServices
         $section = 'repository:'.$key;
 
         if ($key === null || $key === '') {
+            // XXX: should we throw an exception instead?
             return false;
         }
         // Check if repository exists in the ini file
