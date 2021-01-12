@@ -48,6 +48,11 @@ if (getenv("LIZMAP_WPS_URL") !== false) {
      $localConfig->setValue('wps.access', 0, 'modules');
 }
 
+// Let's modify the install configuration of jcommunity, to not create a default
+// admin account (no `defaultusers` parameter). We're relying on
+// lizmap-entrypoint.sh to setup it
+$localConfig->setValue('jcommunity.installparam', 'manualconfig', 'modules');
+
 // Set urlengine config
 
 if (getenv('LIZMAP_PROXYURL_PROTOCOL') !== false) {
