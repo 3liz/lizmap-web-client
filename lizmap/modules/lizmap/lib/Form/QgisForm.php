@@ -487,7 +487,6 @@ class QgisForm implements QgisFormControlsInterface
             $formFields = $attributeEditorForm->getFields();
         }
 
-        $cnx = $this->layer->getDatasourceConnection();
         // Get values from form and get expressions
         $constraintExpressions = array();
         foreach ($formFields as $fieldName) {
@@ -550,7 +549,6 @@ class QgisForm implements QgisFormControlsInterface
 
     public function getFieldValue($fieldName, $form)
     {
-        $cnx = $this->layer->getDatasourceConnection();
         $jCtrl = $form->getControl($fieldName);
         // Field not in form
         if ($jCtrl === null) {
@@ -675,7 +673,7 @@ class QgisForm implements QgisFormControlsInterface
             if ($insertAction) {
                 // For insertion, one field has to be set
                 $this->appContext->logMessage('Error in form, SQL cannot be constructed: no fields available for insert !', 'error');
-                $this->form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save').' '.jLocale::get('view~edition.message.error.save.fields'));
+                $this->form->setErrorOn($geometryColumn, \jLocale::get('view~edition.message.error.save').' '.\jLocale::get('view~edition.message.error.save.fields'));
                 // do not throw an exception to let the user update the form
                 throw new \Exception($this->appContext->getLocale('view~edition.link.error.sql'));
             }
@@ -1411,7 +1409,7 @@ class QgisForm implements QgisFormControlsInterface
             unset($params['PROPERTYNAME']);
         }
 
-        $wfsRequest = new \lizmapWFSRequest($project, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params);
         $this->PerformWfsRequest($wfsRequest, $formControl, $referencedField, $previewField);
     }
 

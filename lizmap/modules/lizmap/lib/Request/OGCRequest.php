@@ -44,7 +44,6 @@ abstract class OGCRequest
      * @param \Lizmap\Project\Project $project    the project has a lizmapProject Class
      * @param array                   $params     the params array
      * @param \lizmapServices         $services
-     * @param App\AppContextInterface $appContext
      * @param string                  $requestXml the params array
      */
     public function __construct($project, $params, $services, App\AppContextInterface $appContext, $requestXml = null)

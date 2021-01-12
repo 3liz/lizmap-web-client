@@ -10,6 +10,8 @@ class QgisLayerForTests extends qgisVectorLayer
 
     public $name;
 
+    public $connection;
+
     public function __construct()
     {
         $this->type = 'vector';
@@ -65,5 +67,12 @@ class QgisLayerForTests extends qgisVectorLayer
     public function getDbFieldDistinctValues($feature)
     {
         return $this->dbFieldValues;
+    }
+}
+
+class jDbConnectionForTests
+{
+    public function quote($str) {
+        return $str;
     }
 }

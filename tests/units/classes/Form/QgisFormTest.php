@@ -290,6 +290,7 @@ class QgisFormTest extends TestCase
         $jForm = new dummyForm();
         $jForm->controls = $controls;
         $layerMock = $this->getMockBuilder(QgisLayerForTests::class)->setMethods(array('getDatasourceParameters', 'updateFeature', 'insertFeature'))->getMock();
+        $layerMock->connection = new jDbConnectionForTests();
         $layerMock->method('getDatasourceParameters')->willReturn((object) array('tablename' => null, 'schema' => null));
         $layerMock->expects($this->once())->method('insertFeature')->with($this->equalTo($values));
         $formMock->dbFieldsInfo = $dbFieldsInfo;
