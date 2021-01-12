@@ -259,6 +259,20 @@ class qgisForm implements qgisFormControlsInterface
             $this->formControls[$fieldName] = $formControl;
         }
 
+        // Deactivate undisplayed fields in Drag and Drop form
+        $attributeEditorForm = $this->getAttributesEditorForm();
+        if ($attributeEditorForm) {
+            $attributeEditorFormFields = $attributeEditorForm->getFields();
+            if (count($attributeEditorFormFields) > 0) {
+                foreach ($this->formControls as $fieldName => $formControl) {
+                    if (in_array($fieldName, $attributeEditorFormFields)) {
+                        continue;
+                    }
+                    $form->setReadOnly($formControl->getControlName(), true);
+                }
+            }
+        }
+
         // Hide when no modify capabilities, only for UPDATE cases (  when $this->featureId control exists )
         if (!empty($featureId) && strtolower($capabilities->modifyAttribute) == 'false') {
             foreach ($toDeactivate as $de) {
