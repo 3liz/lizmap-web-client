@@ -236,6 +236,7 @@ class ProxyTest extends TestCase
     public function testBuildHeaders($options, $expectedHeaders, $expectedBody, $expectedUrl = null)
     {
         $url = 'http://localhost?test=test';
+        ProxyForTests::setServices((object)array('wmsServerURL' => 'http://localhost', 'wmsServerHeaders' => array()));
         list($url, $result) = ProxyForTests::buildHeadersForTests($url, $options);
         $this->assertEquals($expectedHeaders, $result['headers']);
         $this->assertEquals($expectedBody, $result['body']);

@@ -124,9 +124,9 @@ class WFSRequest extends OGCRequest
         $data = $result->data;
         if (empty($data) || floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                \jLog::log('GetCapabilities empty data', 'error');
+                $this->appContext->logMessage('GetCapabilities empty data', 'error');
             } else {
-                \jLog::log('GetCapabilities result code: '.$result->code, 'error');
+                $this->appContext->logMessage('GetCapabilities result code: '.$result->code, 'error');
             }
             \jMessage::add('Server Error !', 'Error');
 
@@ -474,7 +474,7 @@ class WFSRequest extends OGCRequest
                     $fidsSql[] = $fidSql;
                 }
             }
-            //\jLog::log(implode(' OR ', $fidsSql), 'error');
+            //$this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
             $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
@@ -604,15 +604,15 @@ class WFSRequest extends OGCRequest
             $geometryname = strtolower($params['geometryname']);
         }
 
-        //\jLog::log($sql);
+        //$this->appContext->logMessage($sql);
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
-        //\jLog::log($sql);
+        //$this->appContext->logMessage($sql);
         // Run query
         try {
             $q = $cnx->query($sql);
         } catch (\Exception $e) {
-            \jLog::logEx($e, 'error');
+            $this->appContext->logException($e, 'error');
 
             return $this->getfeatureQgis();
         }
@@ -657,7 +657,7 @@ class WFSRequest extends OGCRequest
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            \jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
+            $this->appContext->logMessage('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
 
             return false;
         }

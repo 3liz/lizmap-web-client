@@ -52,8 +52,8 @@ class WMSRequestTest extends TestCase
         );
         return array(
             array(array(), null, null),
-            array(array('layer' => array('filter' => '')), 'layer:filter', 'layer: AND filter'),
-            array($loginFilters, 'layer1:filter;layer:dontExists', 'layer1:test AND filter;layer2:other test;layer:dontExists')
+            array(array('layer' => array('filter' => '')), 'layer:filter', 'layer:filter'),
+            array($loginFilters, 'layer1:filter;layer:dontExists', 'layer1:filter;layer:dontExists')
         );
     }
 

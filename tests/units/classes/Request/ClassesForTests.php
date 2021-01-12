@@ -89,6 +89,8 @@ class WFSRequestForTests extends WFSRequest {
 
     public $qgisLayer;
 
+    public $appContext;
+
     public function __construct()
     {}
 
