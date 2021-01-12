@@ -54,3 +54,4 @@ tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
 assets/node_modules/
 tests/js/node_modules/
+.vscode/
