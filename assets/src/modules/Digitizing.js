@@ -62,8 +62,8 @@ export default class Digitizing {
 
         this._drawLayer = new OpenLayers.Layer.Vector(
             'drawLayer', {
-                styleMap: drawStyleMap
-            }
+            styleMap: drawStyleMap
+        }
         );
 
         this._drawLayer.events.on({
@@ -79,7 +79,7 @@ export default class Digitizing {
 
         // Disable getFeatureInfo when drawing with clicks
         const drawAndGetFeatureInfoMutuallyExclusive = (event) => {
-            if (lizMap.controls.hasOwnProperty('featureInfo') && lizMap.controls.featureInfo){
+            if (lizMap.controls.hasOwnProperty('featureInfo') && lizMap.controls.featureInfo) {
                 if (event.type === 'activate' && lizMap.controls.featureInfo.active) {
                     lizMap.controls.featureInfo.deactivate();
                 }
@@ -143,7 +143,7 @@ export default class Digitizing {
          */
         this._drawBoxLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 4, irregular: true }}
+            { handlerOptions: { sides: 4, irregular: true } }
         );
 
         /**
@@ -161,9 +161,9 @@ export default class Digitizing {
          */
         this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
-                styleMap: drawStyleMap,
-                handlerOptions: { freehand: true }
-            }
+            styleMap: drawStyleMap,
+            handlerOptions: { freehand: true }
+        }
         );
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
@@ -195,7 +195,7 @@ export default class Digitizing {
         });
     }
 
-    get drawLayer(){
+    get drawLayer() {
         return this._drawLayer;
     }
 
@@ -211,9 +211,9 @@ export default class Digitizing {
             }
 
             // If current selected tool is selected again => unactivate
-            if(this._toolSelected === tool){
+            if (this._toolSelected === tool) {
                 this._toolSelected = this._tools[0];
-            }else{
+            } else {
                 switch (tool) {
                     case this._tools[1]:
                         this._drawPointLayerCtrl.activate();
@@ -239,7 +239,7 @@ export default class Digitizing {
             }
 
             // Disable edition when tool changes
-            if (this._toolSelected !== this._tools[0]){
+            if (this._toolSelected !== this._tools[0]) {
                 this.isEdited = false;
             }
 
@@ -247,11 +247,11 @@ export default class Digitizing {
         }
     }
 
-    get drawColor(){
+    get drawColor() {
         return this._drawColor;
     }
 
-    set drawColor(color){
+    set drawColor(color) {
         this._drawColor = color;
 
         // Update default and temporary draw styles
@@ -265,7 +265,7 @@ export default class Digitizing {
 
         // Refresh layer
         this._drawLayer.redraw(true);
-        
+
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
 
@@ -273,7 +273,7 @@ export default class Digitizing {
     }
 
     get featureDrawn() {
-        if (this._drawLayer.features.length){
+        if (this._drawLayer.features.length) {
             return this._drawLayer.features;
         }
         return null;
@@ -288,15 +288,15 @@ export default class Digitizing {
     }
 
     set isEdited(edited) {
-        if(this._isEdited !== edited){
+        if (this._isEdited !== edited) {
             this._isEdited = edited;
 
             if (this._isEdited) {
                 // Automatically edit the feature if unique
-                if(this.featureDrawn.length === 1){
+                if (this.featureDrawn.length === 1) {
                     this._editCtrl.standalone = true;
                     this._editCtrl.selectFeature(this.featureDrawn[0]);
-                }else{
+                } else {
                     this._editCtrl.standalone = false;
                 }
                 this._editCtrl.activate();
@@ -346,10 +346,10 @@ export default class Digitizing {
 
             }
             return `<?xml version="1.0" encoding="UTF-8"?>
-                    <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" 
-                        xmlns:ogc="http://www.opengis.net/ogc" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" 
-                        xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" 
+                    <StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+                        xmlns:ogc="http://www.opengis.net/ogc"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd"
                         xmlns:se="http://www.opengis.net/se">
                         <UserStyle>
                             <FeatureTypeStyle>
@@ -376,7 +376,7 @@ export default class Digitizing {
     }
 
     erase() {
-        if (!confirm(lizDict['digitizing.confirme.erase'])){
+        if (!confirm(lizDict['digitizing.confirme.erase'])) {
             return false;
         }
         this._drawLayer.destroyFeatures();
@@ -392,7 +392,7 @@ export default class Digitizing {
         const formatWKT = new OpenLayers.Format.WKT();
 
         // Save features in WKT format
-        if (this.featureDrawn){
+        if (this.featureDrawn) {
             localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.write(this.featureDrawn));
         }
     }
@@ -402,14 +402,14 @@ export default class Digitizing {
 
         const drawLayerWKT = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
 
-        if (drawLayerWKT){
+        if (drawLayerWKT) {
             this._drawLayer.addFeatures(formatWKT.read(drawLayerWKT));
             this._drawLayer.redraw(true);
         }
     }
 
-    download(format){
-        if (this.featureDrawn){
+    download(format) {
+        if (this.featureDrawn) {
             const OL6Allfeatures = [];
 
             // Create OL6 features with OL2 features coordinates
@@ -441,11 +441,11 @@ export default class Digitizing {
                 OL6Allfeatures.push(OL6feature);
             }
 
-            if(format === 'geojson'){
+            if (format === 'geojson') {
                 const geoJSON = (new GeoJSON()).writeFeatures(OL6Allfeatures);
                 this._downloadString(geoJSON, 'application/geo+json', 'export.geojson');
             }
-            else if(format === 'gpx'){
+            else if (format === 'gpx') {
                 const gpx = (new GPX()).writeFeatures(OL6Allfeatures);
                 this._downloadString(gpx, 'application/gpx+xml', 'export.gpx');
             } else if (format === 'kml') {
@@ -469,8 +469,11 @@ export default class Digitizing {
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
     }
 
-    import(file){
+    import(file) {
         const reader = new FileReader();
+
+        // Get extension file
+        const fileExtension = file.name.split('.').pop();
 
         reader.onload = (() => {
             return (e) => {
@@ -479,19 +482,20 @@ export default class Digitizing {
 
                 // Handle GeoJSON, GPX or KML strings
                 try {
-                    if (fileContent[0] === '{') {
+                    // Check extension to the feature type
+                    if (fileExtension === 'geojson' || fileExtension === 'json') {
                         OL6features = (new GeoJSON()).readFeatures(fileContent);
-                    } else if (fileContent.slice(0, 4) === '<gpx') {
+                    } else if (fileExtension === 'gpx') {
                         OL6features = (new GPX()).readFeatures(fileContent);
 
-                    } else if (fileContent.slice(0, 4) === '<kml') {
+                    } else if (fileExtension === 'kml') {
                         OL6features = (new KML()).readFeatures(fileContent);
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
                 }
 
-                if (OL6features){
+                if (OL6features) {
                     const OL2Features = [];
 
                     for (const OL6feature of OL6features) {
@@ -527,7 +531,7 @@ export default class Digitizing {
                         }
                     }
 
-                    if (OL2Features){
+                    if (OL2Features) {
                         this._drawLayer.addFeatures(OL2Features);
                         this._drawLayer.redraw(true);
                     }
