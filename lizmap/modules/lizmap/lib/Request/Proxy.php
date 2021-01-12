@@ -164,7 +164,11 @@ class Proxy
     public static function constructUrl($params, $services, $url = null)
     {
         if ($url === null) {
-            $url = $services->wmsServerURL.'?';
+            $url = $services->wmsServerURL;
+        }
+
+        if (!preg_match('/\?$/', $url)) {
+            $url .= '?';
         }
 
         $bparams = http_build_query($params);
@@ -245,7 +249,7 @@ class Proxy
             $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'];
         }
 
-        return $options;
+        return array($url, $options);
     }
 
     protected static function curlProxy($url, $options)
@@ -398,7 +402,7 @@ class Proxy
     public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
     {
         $options = self::buildOptions($options, $method, $debug);
-        $options = self::buildHeaders($url, $options);
+        list($url, $options) = self::buildHeaders($url, $options);
 
         // Proxy http backend : use curl or file_get_contents
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
@@ -632,7 +636,6 @@ class Proxy
 
     public static function clearLayerCache($repository, $project, $layer)
     {
-
         // Storage type
         $ser = self::getServices();
         $appContext = self::getAppContext();
