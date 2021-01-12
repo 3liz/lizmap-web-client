@@ -73,6 +73,10 @@ class testContext implements AppContextInterface
 
     public function getCacheDriver($profile)
     {
+        if (array_key_exists('cacheDriver', $this->result)) {
+            return $this->result['cacheDriver'];
+        }
+
         return \jCache::getDriver($profile);
     }
 
@@ -149,6 +153,11 @@ class testContext implements AppContextInterface
 
     public function getFullUrl($selector, $params = array())
     {
+        if (array_key_exists('fullUrl', $this->result)) {
+            return $this->result['fullUrl'];
+        }
+
+        return '';
     }
 
     public function setResult($result)
@@ -182,5 +191,15 @@ class testContext implements AppContextInterface
 
     public function getClassService($selector)
     {
+    }
+
+    public function getTpl()
+    {
+        return new jTplForTests();
+    }
+
+    public function getTileCaps($project)
+    {
+        return lizmapTilerForTests::getTileCapabilities($project);
     }
 }

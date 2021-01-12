@@ -280,4 +280,16 @@ interface AppContextInterface
      * @param string $selector The jelix class selector
      */
     public function getClassService($selector);
+
+    /**
+     * Returns a new jTpl Object
+     */
+    public function getTpl();
+
+    /**
+     * Calls the lizmapTiler::getTileCapabilities method
+     * 
+     * @param \Lizmap\Project\Project $project
+     */
+    public function getTileCaps($project);
 }

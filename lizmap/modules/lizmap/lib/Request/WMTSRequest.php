@@ -39,7 +39,7 @@ class WMTSRequest extends OGCRequest
         $tileCapabilities = null;
 
         try {
-            $tileCapabilities = \lizmapTiler::getTileCapabilities($this->project);
+            $tileCapabilities = $this->appContext->getTileCaps($this->project);
         } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
@@ -65,7 +65,7 @@ class WMTSRequest extends OGCRequest
         );
         $sUrl .= '&';
 
-        $tpl = new \jTpl();
+        $tpl = $this->appContext->getTpl();
         $tpl->assign('url', $sUrl);
         $tpl->assign('repository', $this->param('repository'));
         $tpl->assign('project', $this->param('project'));
@@ -111,7 +111,7 @@ class WMTSRequest extends OGCRequest
             // if the cache is not available, the tile matrix is calculated
             // if there is an issue with the cache, the tile matrix is caclulated each time
             // to get an error we acn used getCalculatedTileCapabilities
-            $tileCapabilities = \lizmapTiler::getTileCapabilities($this->project);
+            $tileCapabilities = $this->appContext->getTileCaps($this->project);
         } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
