@@ -473,7 +473,7 @@ export default class Digitizing {
         const reader = new FileReader();
 
         // Get extension file
-        var fileExtension = file.name.split('.').pop();
+        const fileExtension = file.name.split('.').pop();
 
         reader.onload = (() => {
             return (e) => {
