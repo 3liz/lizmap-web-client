@@ -1,34 +1,37 @@
 # Contribution guidelines
 
-
 ## Pull request
 
-To contribute you should clone the lizmap_web_client repository into your
-Github account. After adding some changes in a new branch (see Branches and Commits),
-you should do a pull request in Github.
+To contribute you should clone the 3liz/lizmap-web-client repository into your
+GitHub account. After adding some changes in a new branch (see Branches and Commits),
+you should do a pull request in GitHub.
 
 ## Branches
 
-* New features are developped in **master** branch
-* **release_X_Y** branches are created for each stable version, for example release_3_1 for Lizmap 3.1
-* Bug fixes must land on the **last release branch**, for example **release_3_1**. We regularly merge the last release branch in the master branch. No cherry-pick must be done from master into the release branch
+* New features are developed in `master` branch
+* `release_X_Y` branches are created for each stable version, for example `release_3_4` for Lizmap 3.4
+* Starting from January 2021, bug fixes must land on the `master` branch. To backport to a released branch,
+  either use the backport bot or do the cheery-pick manually. It's your responsibility to check the backport.
 
 ## Commits
 
-You should create commits in a new branch based on the target branch (see above).
+You should create commits in a new branch based on the `master` branch.
 
 ```
-# git checkout -b <your-new-branch> <target-branch>
+# git checkout -b <your-new-branch> master
 # example:
 
-git checkout -b fix-something release_3_1 
+git checkout -b fix-something master
 ```
 
-* Commit messages must be written with care. First line of the message is short and allows a quick comprehension. A description can be written after a line break if more text is needed.
-* Related issues must be written in the commit message. Be aware Github can close related issues when using some words: https://help.github.com/articles/closing-issues-via-commit-messages/
-* A keyword can be used to prefix the commit and describe the type of commit, between brackets like [FEATURE] or [BUGFIX]
+* Commit messages must be written with care. First line of the message is short and allows a quick comprehension.
+  A description can be written after a line break if more text is needed.
+* Related issues must be written in the commit message. Be aware GitHub can close related issues when using 
+  some words: https://help.github.com/articles/closing-issues-via-commit-messages/
+* A keyword can be used to prefix the commit and describe the type of commit, between brackets like [FEATURE] 
+  or [BUGFIX]
 
-For example
+For example :
 
 ```
 [FEATURE] New super feature to make coffea #123456789
