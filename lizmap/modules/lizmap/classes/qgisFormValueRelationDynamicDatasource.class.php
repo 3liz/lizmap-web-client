@@ -37,14 +37,17 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             // build feature's form
             $geom = null;
             $values = array();
-            foreach ($this->criteriaFrom as $ref) {
-                if ($ref == $privateData['liz_geometryColumn']) {
-                    // from wkt to geom
-                    $wkt = trim($form->getData($ref));
-                    $geom = lizmapWkt::parse($wkt);
-                } else {
-                    // properties
-                    $values[$ref] = $form->getData($ref);
+            $criteriaControls = $this->getCriteriaControls();
+            if ($criteriaControls !== null && is_array($criteriaControls)) {
+                foreach ($criteriaControls as $ref) {
+                    if ($ref == $privateData['liz_geometryColumn']) {
+                        // from wkt to geom
+                        $wkt = trim($form->getData($ref));
+                        $geom = lizmapWkt::parse($wkt);
+                    } else {
+                        // properties
+                        $values[$ref] = $form->getData($ref);
+                    }
                 }
             }
 
