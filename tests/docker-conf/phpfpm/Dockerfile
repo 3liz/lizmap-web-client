@@ -1,10 +1,12 @@
 FROM debian:buster-slim
 
 ARG composer_version=2.0.7
+ARG lizmap_user_id
+ARG lizmap_group_id
 
-ENV LIZMAP_USER_ID=1000 \
-    LIZMAP_GROUP_ID=1000 \
-    PHP_VERSION=7.3
+ENV LIZMAP_USER_ID=${lizmap_user_id}
+ENV LIZMAP_GROUP_ID=${lizmap_group_id}
+ENV PHP_VERSION=7.4
 
 RUN set -eux; \
 	apt-get update; \
@@ -34,6 +36,10 @@ RUN apt-get -y install \
 ## Install Composer
 RUN wget -O /bin/composer https://getcomposer.org/download/$composer_version/composer.phar \
     && chmod +x /bin/composer && /bin/composer self-update
+
+#install nodejs and npm to build js files
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+    && apt-get install -y nodejs
 
 RUN set -eux; \
     sed -i "/^display_errors =/c\display_errors = On" /etc/php/${PHP_VERSION}/fpm/php.ini; \

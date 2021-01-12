@@ -171,8 +171,8 @@ class qgisExpressionUtils
                 // if (property_exists($json, 'errors')) {
                 // }
                 jLog::log($data, 'error');
-            } elseif (property_exists($json, 'results') &&
-                array_key_exists(0, $json->results)) {
+            } elseif (property_exists($json, 'results')
+                && array_key_exists(0, $json->results)) {
                 // Get results
                 return $json->results[0];
             } else {
@@ -323,8 +323,8 @@ class qgisExpressionUtils
                 // if (property_exists($json, 'errors')) {
                 // }
                 jLog::log($data, 'error');
-            } elseif (property_exists($json, 'results') &&
-                array_key_exists(0, $json->results)) {
+            } elseif (property_exists($json, 'results')
+                && array_key_exists(0, $json->results)) {
                 // Get results
                 $results = (array) $json->results[0];
                 foreach ($results as $id => $result) {

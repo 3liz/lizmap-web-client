@@ -595,6 +595,7 @@ class QgisForm implements QgisFormControlsInterface
             'mm' => 'i',
             'ss' => 's',
             't' => 'T',
+            'Qt ISO Date' => 'c',
         ));
     }
 
@@ -671,10 +672,17 @@ class QgisForm implements QgisFormControlsInterface
         $fields = $this->getFieldList($geometryColumn, $insertAction, $modifiedControls);
 
         if (count($fields) == 0) {
-            $this->appContext->logMessage('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !', 'error');
-            $this->form->setErrorOn($geometryColumn, $this->appContext->getLocale('view~edition.message.error.save').' '.$this->appContext->getLocale('view~edition.message.error.save.fields'));
+            if ($insertAction) {
+                // For insertion, one field has to be set
+                $this->appContext->logMessage('Error in form, SQL cannot be constructed: no fields available for insert !', 'error');
+                $this->form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save').' '.jLocale::get('view~edition.message.error.save.fields'));
+                // do not throw an exception to let the user update the form
+                throw new \Exception($this->appContext->getLocale('view~edition.link.error.sql'));
+            }
+            // For update, nothing has changed so nothing to do except close form
+            $this->appContext->logMessage('SQL cannot be constructed: no fields available for update !', 'error');
 
-            throw new \Exception($this->appContext->getLocale('view~edition.link.error.sql'));
+            return true;
         }
 
         $values = array();
@@ -1281,10 +1289,6 @@ class QgisForm implements QgisFormControlsInterface
             }
             $dataSource = new \jFormsStaticDatasource();
 
-            // required
-            if (!$formControl->valueRelationData['allowNull']) {
-                $formControl->ctrl->required = true;
-            }
             // combobox
             if (array_key_exists('useCompleter', $formControl->valueRelationData)
                  && $formControl->valueRelationData['useCompleter']
@@ -1294,7 +1298,7 @@ class QgisForm implements QgisFormControlsInterface
 
             // Add default empty value for required fields
             // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-            if ($formControl->ctrl->required) {
+            if (($formControl->ctrl->required and !$formControl->valueRelationData['allowMulti']) or $formControl->valueRelationData['allowNull']) {
                 $data[''] = '';
             }
 

@@ -115,9 +115,13 @@ var lizAttributeTable = function() {
                     }
 
                     config.layers[configLayerName]['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
-                    lizMap.loadProjDefinition( config.layers[configLayerName].crs, function() {
-                        new OpenLayers.Projection(config.layers[configLayerName].crs);
-                    });
+
+                    if (config.layers[configLayerName]['crs'] !== ""){
+                        lizMap.loadProjDefinition(config.layers[configLayerName].crs, function (aProj) {
+                            new OpenLayers.Projection(config.layers[configLayerName].crs);
+                        });
+                    }
+
                     var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
                     atConfig['bbox'] = [
                         parseFloat(bbox.getAttribute('minx'))
@@ -411,7 +415,7 @@ var lizAttributeTable = function() {
 
                 // Export tools
                 if ( 'exportLayers' in config.options && config.options.exportLayers == 'True' ) {
-                    html+= '&nbsp;<div class="btn-group pull-right" role="group" >';
+                    html+= '&nbsp;<div class="export-formats btn-group pull-right" role="group" >';
                     html+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
                     html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
                     html+= '      <span class="caret"></span>';
@@ -2763,12 +2767,13 @@ var lizAttributeTable = function() {
                 var dtable = $(container).find('table.dataTable');
 
                 // Adapt height
-                var h = $(container +' div.attribute-layer-content').height();
+                var h = $(container + ' div.attribute-layer-content').height() ? $(container + ' div.attribute-layer-content').height() : 0;
 
-                h = h - $(container +' thead').height();
-                h = h - $(container +' div.dataTables_paginate').height();
-                h = h - $(container +' div.dataTables_filter').height();
-                h = h - 20;
+                h -= $(container + ' thead').height() ? $(container + ' thead').height() : 0;
+                h -= $(container + ' div.dataTables_paginate').height() ? $(container + ' div.dataTables_paginate').height() : 0;
+                h -= $(container + ' div.dataTables_filter').height() ? $(container + ' div.dataTables_filter').height() : 0;
+                h -= 20;
+                
                 dtable.parent('div.dataTables_scrollBody').height(h);
 
                 // Width : adapt columns size

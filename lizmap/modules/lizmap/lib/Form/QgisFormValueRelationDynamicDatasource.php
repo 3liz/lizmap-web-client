@@ -91,9 +91,9 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
             }
             $mime = $wfsResult->mime;
 
-            if ($data && (strpos($mime, 'text/json') === 0 ||
-                          strpos($mime, 'application/json') === 0 ||
-                          strpos($mime, 'application/vnd.geo+json') === 0)) {
+            if ($data && (strpos($mime, 'text/json') === 0
+                          || strpos($mime, 'application/json') === 0
+                          || strpos($mime, 'application/vnd.geo+json') === 0)) {
                 $json = json_decode($data);
                 // Get result from json
                 $features = $json->features;
@@ -163,7 +163,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         );
 
         // Perform request
-        $wfsRequest = new \lizmapWFSRequest($lproj, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices(), \lizmap::getAppContext());
         $wfsResult = $wfsRequest->process();
 
         $data = $wfsResult->data;
@@ -172,9 +172,9 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         }
         $mime = $wfsResult->mime;
 
-        if ($data && (strpos($mime, 'text/json') === 0 ||
-                      strpos($mime, 'application/json') === 0 ||
-                      strpos($mime, 'application/vnd.geo+json') === 0)) {
+        if ($data && (strpos($mime, 'text/json') === 0
+                      || strpos($mime, 'application/json') === 0
+                      || strpos($mime, 'application/vnd.geo+json') === 0)) {
             $json = json_decode($wfsResult->data);
             // Get result from json
             $features = $json->features;

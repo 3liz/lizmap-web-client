@@ -375,9 +375,9 @@ class editionCtrl extends jController
                     $this->featureData->features[0]
                 );
 
-                if ($results &&
-                    property_exists($results, 'filterByLogin') &&
-                    $results->filterByLogin !== 1) {
+                if ($results
+                    && property_exists($results, 'filterByLogin')
+                    && $results->filterByLogin !== 1) {
                     $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
 
                     return $this->serviceAnswer();
@@ -451,9 +451,9 @@ class editionCtrl extends jController
                     $this->featureData->features[0]
                 );
 
-                if ($results &&
-                    property_exists($results, 'filterByLogin') &&
-                    $results->filterByLogin !== 1) {
+                if ($results
+                    && property_exists($results, 'filterByLogin')
+                    && $results->filterByLogin !== 1) {
                     $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
 
                     return $this->serviceAnswer();
@@ -539,8 +539,7 @@ class editionCtrl extends jController
                     jFile::createDir($repPath.$DefaultRoot); // Need to create it to then make the realpath checks
                     if (
                         (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
-                        or
-                        (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
+                        or (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
                     ) {
                         $targetPath = $DefaultRoot;
                         $targetFullPath = realpath($repPath.$DefaultRoot);
@@ -683,13 +682,22 @@ class editionCtrl extends jController
 
         // SELECT data from the database and set the form data accordingly
         // or reset form controls data to null to check modified fields
+        // and save default data
+        $defaultFormData = array();
         if ($this->featureId) {
             $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
         } else {
+            $defaultFormData = $form->getAllData();
             $form = $qgisForm->resetFormData();
         }
         // Track modified records
         $form->initModifiedControlsList();
+        // Apply default data to get save it
+        foreach ($defaultFormData as $ref => $val) {
+            if ($val !== null) {
+                $form->setdata($ref, $val);
+            }
+        }
         // Get data from the request and set the form controls data accordingly
         $form->initFromRequest();
 
@@ -718,7 +726,8 @@ class editionCtrl extends jController
         // And get returned primary key values
         $pkvals = null;
         if ($check) {
-            $pkvals = $qgisForm->saveToDb($feature);
+            // Save to database with modified controls
+            $pkvals = $qgisForm->saveToDb($feature, $form->getModifiedControls());
         }
 
         // Some errors where encoutered
@@ -754,8 +763,8 @@ class editionCtrl extends jController
         $eCapabilities = $this->layer->getEditionCapabilities();
 
         // CREATE NEW FEATURE
-        if ($next_action == 'create' &&
-            $eCapabilities->capabilities->createFeature == 'True'
+        if ($next_action == 'create'
+            && $eCapabilities->capabilities->createFeature == 'True'
         ) {
             jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
             $rep->params = array(
@@ -776,11 +785,11 @@ class editionCtrl extends jController
         // If there is a single integer primary key
         // This is the featureid, we can redirect to the edition form
         // for the newly created or the updated feature
-        if ($next_action == 'edit' &&
+        if ($next_action == 'edit'
             // and if capabilities is ok for attribute modification
-            $eCapabilities->capabilities->modifyAttribute == 'True' &&
+            && $eCapabilities->capabilities->modifyAttribute == 'True'
             // if we have retrieved the pkeys only one integer pkey
-            is_array($pkvals) and count($pkvals) == 1
+            && is_array($pkvals) and count($pkvals) == 1
         ) {
             //Get the fields info
             $dbFieldsInfo = $this->layer->getDbFieldsInfo();

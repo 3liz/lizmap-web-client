@@ -50,9 +50,9 @@ class WMTSRequest extends OGCRequest
             return $this->serviceException();
         }
 
-        if ($tileCapabilities === null ||
-             $tileCapabilities->tileMatrixSetList === null ||
-             $tileCapabilities->layerTileInfoList === null) {
+        if ($tileCapabilities === null
+             || $tileCapabilities->tileMatrixSetList === null
+             || $tileCapabilities->layerTileInfoList === null) {
             // Error message
             \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
@@ -122,9 +122,9 @@ class WMTSRequest extends OGCRequest
             return $this->serviceException();
         }
 
-        if ($tileCapabilities === null ||
-             $tileCapabilities->tileMatrixSetList === null ||
-             $tileCapabilities->layerTileInfoList === null) {
+        if ($tileCapabilities === null
+             || $tileCapabilities->tileMatrixSetList === null
+             || $tileCapabilities->layerTileInfoList === null) {
             // Error message
             \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 

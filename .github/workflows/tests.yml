@@ -1,0 +1,30 @@
+name: "Tests 🎳"
+
+on:
+  push:
+    branches:
+      - master
+      - release_3_4
+      - refactor
+  pull_request:
+    branches:
+      - master
+      - release_3_4
+      - refactor
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: php-cs-fixer, phpunit
+
+      - name: Running tests
+        run: make tests

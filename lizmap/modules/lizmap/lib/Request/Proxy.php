@@ -232,10 +232,15 @@ class Proxy
             'Accept' => '*/*',
         ), $options['headers']);
 
-        $options['headers'] = array_merge(
-            self::userHttpHeader(),
-            $options['headers']
-        );
+        if (strpos($url, self::$services->wmsServerURL) === 0) {
+            // headers only for QGIS server
+            $options['headers'] = array_merge(
+                self::userHttpHeader(),
+                self::$services->wmsServerHeaders,
+                $options['headers']
+            );
+        }
+
         if (isset($options['loginFilteredOverride'])) {
             $options['headers']['X-Lizmap-Override-Filter'] = $options['loginFilteredOverride'];
         }

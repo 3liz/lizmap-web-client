@@ -46,7 +46,9 @@ lizMap.events.on({
                                     customLabels += `<input type="text" class="atlasprint-custom-labels" size="15" data-print-id="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`;
                                 }
                             }
-                            const customLabelsTool = `<div class="toggle-custom-labels-view"><button><i class="icon-cog" title="${lizDict['print.customLabels.tooltip']}"></i></button><div>${customLabels}</div></div>`;
+
+                            // Create custom labels tool if any custom labels have been defined
+                            const customLabelsTool = (customLabels === '') ? '' : `<div class="toggle-custom-labels-view"><button><i class="icon-cog" title="${lizDict['print.customLabels.tooltip']}"></i></button><div>${customLabels}</div></div>`;
 
                             $(this).append('<a class="lizmap-atlasprint-link" data-href="' + url + '" href="' + url + '" target="_blank" title="' + lizDict['attributeLayers.toolbar.btn.data.export.title'] + ' ' + t.title + '"><span class="icon"></span>' + t.title + '</a>' + customLabelsTool + '<br>');
 

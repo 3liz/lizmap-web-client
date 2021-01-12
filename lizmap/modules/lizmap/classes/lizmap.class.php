@@ -180,8 +180,8 @@ class lizmap
             if ($propertiesOptions[$k]['fieldType'] == 'checkbox') {
                 $ctrl = new jFormsControlCheckbox($k);
             } elseif ($k == 'path' && $rootRepositories != '') {
-                if ($rep == null ||
-                    substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
+                if ($rep == null
+                    || substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
                 ) {
                     $ctrl = new jFormsControlMenulist($k);
                     $dataSource = new jFormsStaticDatasource();
@@ -226,8 +226,8 @@ class lizmap
         if ($rep) {
             foreach (lizmapRepository::getProperties() as $k) {
                 $v = $rep->getData($k);
-                if ($k == 'path' && $rootRepositories != '' &&
-                    substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
+                if ($k == 'path' && $rootRepositories != ''
+                    && substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
                 ) {
                     $v = $rep->getPath();
                 }
@@ -274,8 +274,8 @@ class lizmap
      */
     public static function createRepository($key, $data)
     {
-        if (in_array($key, self::$repositories) ||
-            in_array($key, self::getRepositoryList())
+        if (in_array($key, self::$repositories)
+            || in_array($key, self::getRepositoryList())
         ) {
             return null;
         }

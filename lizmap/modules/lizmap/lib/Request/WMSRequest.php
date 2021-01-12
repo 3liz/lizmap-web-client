@@ -50,12 +50,22 @@ class WMSRequest extends OGCRequest
 
         // filter data by login
         $layers = $this->param('layers');
+
+        // 'getprintatlas' request has param 'layer' and not 'layers'
+        if ($this->param('request') == 'getprintatlas') {
+            $layers = $this->param('layer');
+        }
+
         if (is_string($layers)) {
             $layers = explode(',', $layers);
         }
 
         // get login filters
-        $loginFilters = $this->project->getLoginFilters($layers);
+        $loginFilters = array();
+
+        if ($layers) {
+            $loginFilters = $this->project->getLoginFilters($layers);
+        }
 
         // login filters array is empty
         if (empty($loginFilters)) {
@@ -309,9 +319,9 @@ class WMSRequest extends OGCRequest
         $qgisQueryLayers = array();
         foreach ($queryLayers as $queryLayer) {
             $configLayer = $this->project->findLayerByAnyName($queryLayer);
-            if (property_exists($configLayer, 'externalAccess') &&
-                $configLayer->externalAccess != 'False' &&
-                property_exists($configLayer->externalAccess, 'url')
+            if (property_exists($configLayer, 'externalAccess')
+                && $configLayer->externalAccess != 'False'
+                && property_exists($configLayer->externalAccess, 'url')
             ) {
                 $externalWMSConfigLayers[] = $configLayer;
             } else {
@@ -465,7 +475,7 @@ class WMSRequest extends OGCRequest
      */
     protected function gfiXmlToHtml($xmlData)
     {
-        $xml = $this->loadXmlString($xmlData, 'getFeatureInfo');
+        $xml = $this->loadXmlString($xmlData, 'getFeatureInfoHtml');
 
         if (!$xml || !$xml->Layer) {
             return '';
@@ -584,9 +594,9 @@ class WMSRequest extends OGCRequest
         foreach ($layer->Feature as $feature) {
             $id = (string) $feature['id'];
             // Optionnally filter by feature id
-            if ($filterFid &&
-                isset($filterFid[$configLayer->name]) &&
-                $filterFid[$configLayer->name] != $id
+            if ($filterFid
+                && isset($filterFid[$configLayer->name])
+                && $filterFid[$configLayer->name] != $id
             ) {
                 continue;
             }
@@ -747,7 +757,7 @@ class WMSRequest extends OGCRequest
      */
     protected function gfiGmlToHtml($gmldata, $configLayer)
     {
-        $xml = $this->loadXmlString($gmldata, 'GetFeatureInfo');
+        $xml = $this->loadXmlString($gmldata, 'GetFeatureInfoHtml');
 
         if (!$xml || count($xml->children()) == 0) {
             return '';

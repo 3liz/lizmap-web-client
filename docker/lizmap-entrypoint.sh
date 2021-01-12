@@ -80,5 +80,21 @@ if [ $1 == "php-fpm" ]; then
     set -- php-fpm7 -F -O "$@"
 fi
 
+source=$LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE
+if [ "$source" == "" ]; then
+  source="__random"
+fi
+if [ "$source" == "__random" ]; then
+    su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL"
+elif [ "$source" == "__reset" ]; then
+    su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL"
+elif [ -f $source ]; then
+    pass=$(cat $source)
+    su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL $pass"
+else
+    echo '[ERROR] Invalid LIZMAP_ADMIN_DEFAULT_SOURCE'
+    return 1
+fi
+
 exec "$@"
 

@@ -562,8 +562,10 @@ class Project
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
             foreach ($attributeLayers as $key => $obj) {
-                if (($onlyDisplayedLayers && !property_exists($obj, 'hideLayer'))
-                || (property_exists($obj, 'hideLayer') && strtolower($obj->hideLayer) != 'true')) {
+                if ($onlyDisplayedLayers
+                    && (!property_exists($obj, 'hideLayer')
+                    || strtolower($obj->hideLayer) != 'true')
+                ) {
                     $hasDisplayedLayer = true;
                 }
             }
@@ -753,6 +755,10 @@ class Project
         $filters = array();
 
         if (!$this->hasLoginFilteredLayers()) {
+            return $filters;
+        }
+
+        if (!is_array($layers)) {
             return $filters;
         }
 
@@ -1402,8 +1408,8 @@ class Project
             // multi-atlas
             // formFilterLayers
             foreach ($configJson->formFilterLayers as $o => $c) {
-                if ($c['layerId'] = $obj->id) {
-                    unset($configJson->formFilterLayers[$o]);
+                if (property_exists($c, 'layerId') && $c->layerId == $obj->id) {
+                    unset($configJson->formFilterLayers->{$o});
                 }
             }
             // relations

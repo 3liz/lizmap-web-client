@@ -8,7 +8,7 @@
     <div class="menu-content">
         <div id="tmSlider"></div>
         <div>
-            <span id="tmCurrentValue"></span><br/>
+            <span id="tmCurrentValue"></span><span> - </span><span id="tmNextValue"></span><br/>
             <button id="tmPrev" class="btn-print-launch btn btn-small btn-primary">{@view~map.timemanager.toolbar.prev@}</button>
             <button id="tmTogglePlay" class="btn-print-launch btn btn-small btn-primary">{@view~map.timemanager.toolbar.play@}</button>
             <button id="tmNext" class="btn-print-launch btn btn-small btn-primary">{@view~map.timemanager.toolbar.next@}</button>
