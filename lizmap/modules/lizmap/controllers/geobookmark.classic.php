@@ -11,6 +11,8 @@
  */
 class geobookmarkCtrl extends jController
 {
+    protected $whiteParams;
+
     public function __construct($request)
     {
         $this->whiteParams = array(
