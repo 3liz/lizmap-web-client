@@ -6,7 +6,7 @@
 * @contributor Dominique Papin
 * @contributor Bastien Jaillot, Steven Jehannet
 * @contributor Christophe Thiriot, Julien Issler, Olivier Demah
-* @copyright   2006-2010 Laurent Jouanneau, 2007 Dominique Papin, 2008 Bastien Jaillot
+* @copyright   2006-2020 Laurent Jouanneau, 2007 Dominique Papin, 2008 Bastien Jaillot
 * @copyright   2008-2009 Julien Issler, 2009 Olivier Demah, 2010 Steven Jehannet
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -483,12 +483,16 @@ abstract class jFormsBase {
     /**
      *
      * @param string $name the name of the control/data
-     * @param string $value the data value
+     * @param string|string[] $value the data value
      * @throws jExceptionForms
      */
     public function setData($name, $value) {
-        if (!isset($this->controls[$name]))
-            throw new jExceptionForms('jelix~formserr.unknown.control2', array($name, $this->sel));
+        if (!isset($this->controls[$name])) {
+            throw new jExceptionForms(
+                'jelix~formserr.unknown.control2',
+                array($name, $this->sel)
+            );
+        }
 
         $this->controls[$name]->setData($value);
     }
@@ -653,6 +657,12 @@ abstract class jFormsBase {
             return $this->container->data;
     }
 
+    /**
+     * @param mixed $v1
+     * @param mixed $v2
+     *
+     * @return bool true if the values are not equals
+     */
     protected function _diffValues(&$v1, &$v2) {
         if (is_array($v1) && is_array($v2)) {
             $comp = array_merge(array_diff($v1, $v2),array_diff($v2, $v1));

@@ -4,7 +4,7 @@
  * @subpackage  acl
  * @author      Laurent Jouanneau
  * @contributor Adrien Lagroy de Croutte
- * @copyright   2006-2017 Laurent Jouanneau, 2020 Adrien Lagroy de Croutte
+ * @copyright   2006-2021 Laurent Jouanneau, 2020 Adrien Lagroy de Croutte
  * @link        http://www.jelix.org
  * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  * @since 1.1
@@ -224,183 +224,105 @@ class jAcl2DbManager {
     const ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM = 2;
 
     /**
-     * Only rights on given subjects are considered changed.
-     * Existing rights not given in parameters are considered as deleted.
+     * Checks if given authorizations changes still allow to administrate rights
+     * for at least one user.
      *
-     * Rights with resources are not changed.
+     * For each groups, only authorizations on given rights are considered changed.
+     * Other existing authorizations are considered as deleted.
      *
-     * @param array      $rightsChanges         array(<id_aclgrp> => array( <id_aclsbj> => false(inherit)/''(inherit)/true(add)/'y'(add)/'n'(remove)))
-     * @param null|mixed $sessionUser
-     * @param mixed      $setForAllPublicGroups
-     * @param mixed      $setAllRightsInGroups
-     * @param null|mixed $ignoredUser
-     * @param null|mixed $ignoreUserInGroup
+     * Authorizations with resources are not changed.
      *
-     * @return int one of the ACL_ADMIN_RIGHTS_* const
+     * @param array  $authorizationsChanges         array(<id_aclgrp> => array( <id_aclsbj> => false(inherit)/''(inherit)/true(add)/'y'(add)/'n'(remove)))
+     * @param string $sessionUser the login name of the user who initiate the change
+     * @param integer $changeType  1 for group rights change, 2 for user rights change
+     *
+     * @return int one of the jAcl2DbAdminCheckAuthorizations::ACL_ADMIN_RIGHTS_* const
      */
-    public static function checkAclAdminRightsChanges($rightsChanges,
-                                                      $sessionUser=null,
-                                                      $setForAllPublicGroups = true,
-                                                      $setAllRightsInGroups = true,
-                                                      $ignoredUser = null,
-                                                      $ignoreUserInGroup = null) {
+    public static function checkAclAdminAuthorizationsChanges($authorizationsChanges,
+                                                      $sessionUser,
+                                                      $changeType
+    ) {
 
-        $canceledRoles = array();
-        $assignedRoles = array();
-        $sessionUserGroups = array();
-        $sessionCanceledRoles = array();
-        $sessionAssignedRoles = array();
-
-        $db = jDb::getConnection('jacl2_profile');
-        if ($sessionUser) {
-            $gp = jDao::get('jacl2db~jacl2usergroup', 'jacl2_profile')
-                ->getGroupsUser($sessionUser);
-            foreach($gp as $g){
-                $sessionUserGroups[$g->id_aclgrp] = true;
-            }
-        }
-
-        // get all acl admin rights, even all those in private groups
-        $sql = "SELECT id_aclsbj, r.id_aclgrp, canceled, g.grouptype
-            FROM ".$db->prefixTable('jacl2_rights'). " r 
-            INNER JOIN ".$db->prefixTable('jacl2_group'). " g 
-            ON (r.id_aclgrp = g.id_aclgrp)
-            WHERE id_aclsbj IN (".implode(',', array_map(function($role) use ($db) {
-                return $db->quote($role);
-            }, self::$ACL_ADMIN_RIGHTS)).") ";
-        $rs = $db->query($sql);
-        foreach($rs as $rec) {
-            if ($sessionUser && isset($sessionUserGroups[$rec->id_aclgrp])) {
-                if ($rec->canceled != '0') {
-                    $sessionCanceledRoles[$rec->id_aclsbj] = true;
-                } else {
-                    $sessionAssignedRoles[$rec->id_aclsbj] = true;
-                }
-            }
-            if ($setForAllPublicGroups &&
-                !isset($rightsChanges[$rec->id_aclgrp]) &&
-                $rec->grouptype != jAcl2DbUserGroup::GROUPTYPE_PRIVATE
-            ) {
-                continue;
-            }
-            if ($rec->canceled != '0') {
-                $canceledRoles[$rec->id_aclgrp][$rec->id_aclsbj] = true;
-            } else {
-                $assignedRoles[$rec->id_aclgrp][$rec->id_aclsbj] = true;
-            }
-        }
-
-        $rolesStats = array_combine(self::$ACL_ADMIN_RIGHTS, array_fill(0, count(self::$ACL_ADMIN_RIGHTS), 0));
-
-        // now apply changes
-        foreach($rightsChanges as $groupId => $changes) {
-            if (!isset($assignedRoles[$groupId])) {
-                $assignedRoles[$groupId] = array();
-            }
-            if (!isset($canceledRoles[$groupId])) {
-                $canceledRoles[$groupId] = array();
-            }
-            $unassignedRoles = array_combine(self::$ACL_ADMIN_RIGHTS, array_fill(0, count(self::$ACL_ADMIN_RIGHTS), true));
-            foreach ($changes as $role => $roleAssignation) {
-                if (!isset($rolesStats[$role])) {
-                    continue;
-                }
-                unset($unassignedRoles[$role]);
-                if ($roleAssignation === false || $roleAssignation === '') {
-                    // inherited
-                    if (isset($assignedRoles[$groupId][$role])) {
-                        unset($assignedRoles[$groupId][$role]);
-                    }
-                    if (isset($canceledRoles[$groupId][$role])) {
-                        unset($canceledRoles[$groupId][$role]);
-                    }
-                } else if ($roleAssignation == 'y' || $roleAssignation === true) {
-                    if (isset($canceledRoles[$groupId][$role])) {
-                        unset($canceledRoles[$groupId][$role]);
-                    }
-                    $assignedRoles[$groupId][$role] = true;
-                } else if ($roleAssignation == 'n') {
-                    if (isset($assignedRoles[$groupId][$role])) {
-                        unset($assignedRoles[$groupId][$role]);
-                    }
-                    $canceledRoles[$groupId][$role] = true;
-                }
-            }
-            if ($setAllRightsInGroups) {
-                foreach ($unassignedRoles as $role => $ok) {
-                    if (isset($assignedRoles[$groupId][$role])) {
-                        unset($assignedRoles[$groupId][$role]);
-                    }
-                    if (isset($canceledRoles[$groupId][$role])) {
-                        unset($canceledRoles[$groupId][$role]);
-                    }
-                }
-            }
-            if (count($assignedRoles[$groupId]) == 0 && count($canceledRoles[$groupId]) == 0) {
-                unset($assignedRoles[$groupId]);
-                unset($canceledRoles[$groupId]);
-            }
-        }
-
-        // get all users that are in groups having new acl admin rights
-        $allGroups = array_unique(array_merge(array_keys($assignedRoles), array_keys($canceledRoles)));
-        if (count($allGroups) === 0) {
-            return self::ACL_ADMIN_RIGHTS_NOT_ASSIGNED;
-        }
-
-        $sql = "SELECT login, id_aclgrp FROM ".$db->prefixTable('jacl2_user_group'). "
-            WHERE id_aclgrp IN (".implode(',', array_map(function($grp) use ($db) {
-                return $db->quote($grp);
-            }, $allGroups)).") ";
-
-        $rs = $db->query($sql);
-        $users = array();
-        foreach($rs as $rec) {
-            if ($rec->login === $ignoredUser &&
-                ($ignoreUserInGroup === null || $ignoreUserInGroup === $rec->id_aclgrp)) {
-                continue;
-            }
-            if (!isset($users[$rec->login])) {
-                $users[$rec->login] = array('canceled' => array(), 'roles' => array());
-            }
-            if (isset($assignedRoles[$rec->id_aclgrp])) {
-                $users[$rec->login]['roles'] = array_merge($users[$rec->login]['roles'], $assignedRoles[$rec->id_aclgrp]);
-            }
-            if (isset($canceledRoles[$rec->id_aclgrp])) {
-                $users[$rec->login]['canceled'] = array_merge($users[$rec->login]['canceled'], $canceledRoles[$rec->id_aclgrp]);
-            }
-        }
-
-        // gets statistics
-        $newSessionUserRoles = array();
-        foreach($users as $login => $data) {
-            if (count($data['canceled'])) {
-                $data['roles'] = array_diff_key($data['roles'], $data['canceled']);
-            }
-            if ($login === $sessionUser) {
-                $newSessionUserRoles =  $data['roles'];
-            }
-            foreach($data['roles'] as $role => $ok) {
-                $rolesStats[$role]++;
-            }
-        }
-
-        if ($sessionUser) {
-            foreach($sessionAssignedRoles as $role=>$ok) {
-                if(isset($sessionCanceledRoles[$role])) {
-                    continue;
-                }
-                if (!isset($newSessionUserRoles[$role])) {
-                    return self::ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM;
-                }
-            }
-        }
-
-        foreach($rolesStats as $count) {
-            if ($count == 0) {
-                return self::ACL_ADMIN_RIGHTS_NOT_ASSIGNED;
-            }
-        }
-        return self::ACL_ADMIN_RIGHTS_STILL_USED;
+        $checker = new jAcl2DbAdminCheckAuthorizations($sessionUser);
+        return $checker->checkAclAdminAuthorizationsChanges($authorizationsChanges, $changeType);
     }
+
+    /**
+     * check if the removing of the given user still allow to administrate authorizations
+     * for at least one user.
+     *
+     * @param string $userToRemove
+     * @param string $sessionUser the login name of the user who initiate the change
+     *
+     * @return int one of ACL_ADMIN_RIGHTS_* constant
+     */
+    public static function checkAclAdminRightsToRemoveUser(
+        $userToRemove,
+        $sessionUser=null
+    ) {
+        $checker = new jAcl2DbAdminCheckAuthorizations($sessionUser);
+        return $checker->checkAclAdminRightsToRemoveUser($userToRemove);
+    }
+
+    /**
+     * check if the removing of the given user from a the given group still
+     * allows to administrate rights for at least one user.
+     *
+     * @param string $userToRemoveFromTheGroup
+     * @param string $groupFromWhichToRemoveTheUser
+     * @param string $sessionUser the login name of the user who initiate the change
+     *
+     * @return int one of ACL_ADMIN_RIGHTS_* constant
+     */
+    public static function checkAclAdminRightsToRemoveUserFromGroup(
+        $userToRemoveFromTheGroup,
+        $groupFromWhichToRemoveTheUser,
+        $sessionUser)
+    {
+        $checker = new jAcl2DbAdminCheckAuthorizations($sessionUser);
+        return $checker->checkAclAdminRightsToRemoveUserFromGroup($userToRemoveFromTheGroup, $groupFromWhichToRemoveTheUser);
+    }
+
+    /**
+     * check if the removing of the given group still
+     * allows to administrate rights for at least one user.
+     *
+     *
+     * @param string $groupToRemove the group id to remove
+     * @param string $sessionUser the login name of the user who initiate the change
+     *
+     * @return int one of ACL_ADMIN_RIGHTS_* constant
+     */
+    public static function checkAclAdminRightsToRemoveGroup(
+        $groupToRemove,
+        $sessionUser
+    )
+    {
+        $checker = new jAcl2DbAdminCheckAuthorizations($sessionUser);
+        return $checker->checkAclAdminRightsToRemoveGroup($groupToRemove);
+    }
+
+    /**
+     * check if the adding of the given user to the the given group still
+     * allows to administrate rights for at least one user.
+     *
+     * (because the group may forbid to administrate rights.)
+     *
+     * @param string $userToAdd              the user login
+     * @param string $groupInWhichToAddAUser the group id
+     * @param string $sessionUser the login name of the user who initiate the change
+     *
+     * @return int one of ACL_ADMIN_RIGHTS_* constant
+     */
+    public static function checkAclAdminRightsToAddUserIntoGroup(
+        $userToAdd,
+        $groupInWhichToAddAUser,
+        $sessionUser
+    )
+    {
+        $checker = new jAcl2DbAdminCheckAuthorizations($sessionUser);
+        return $checker->checkAclAdminRightsToAddUserIntoGroup($userToAdd,
+                                                               $groupInWhichToAddAUser);
+    }
+
 }
