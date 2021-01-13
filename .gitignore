@@ -1,3 +1,7 @@
+# IDE
+.idea
+.vscode/
+
 *.orig
 *.rej
 *~
@@ -6,7 +10,12 @@
 *.swp
 *.log
 *.pyc
-.idea
+
+# Build
+build/
+assets/node_modules/
+
+# Config
 lizmap/var/config/lizmapConfig.ini.php
 lizmap/var/config/localconfig.ini.php
 lizmap/var/config/liveconfig.ini.php
@@ -41,18 +50,19 @@ lizmap/my-packages/*
 !lizmap/my-packages/README.md
 .php_cs
 .php_cs.cache
-build/
+
 .drafts
 docker/factory.manifest
 docker/.run
 docker/*.zip
+
+# Tests
 tests/units/vendor/
 tests/units/composer.lock
 tests/qgis-projects/*
 !tests/qgis-projects/tests
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
-assets/node_modules/
 tests/js/node_modules/
 tests/.env
 .vscode/

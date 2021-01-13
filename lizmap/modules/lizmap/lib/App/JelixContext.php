@@ -44,7 +44,7 @@ class JelixContext implements AppContextInterface
      */
     public function aclUserGroupsId()
     {
-        return \jAcl2dbUserGroup::getGroups();
+        return \jAcl2DbUserGroup::getGroups();
     }
 
     /**

@@ -1,12 +1,13 @@
 <?php
 /**
- * @author    Laurent Jouanneau
- * @copyright 2009-2019 Laurent Jouanneau
- *
- * @see      http://jelix.org
- *
- * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public Licence
- */
+* @package   admin
+* @subpackage jauthdb_admin
+* @author    Laurent Jouanneau
+* @copyright 2009-2021 Laurent Jouanneau
+* @link      http://jelix.org
+* @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public Licence
+*/
+
 
 /**
  * controller to manage all users.
@@ -15,18 +16,18 @@ class defaultCtrl extends jController
 {
     public $sensitiveParameters = array('password', 'password_confirm', 'pwd', 'pwd_confirm');
 
-    public $pluginParams = array(
-        'index'         => array('jacl2.right' => 'auth.users.list'),
-        'view'          => array('jacl2.right' => 'auth.users.view'),
-        'autocomplete'  => array('jacl2.right' => 'auth.users.view'),
-        'precreate'     => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.create')),
-        'create'        => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.create')),
-        'savecreate'    => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.create')),
-        'preupdate'     => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.modify')),
-        'editupdate'    => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.modify')),
-        'saveupdate'    => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.modify')),
-        'deleteconfirm' => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.delete')),
-        'delete'        => array('jacl2.rights.and' => array('auth.users.view', 'auth.users.delete')),
+    public $pluginParams=array(
+        'index'        =>array('jacl2.right'=>'auth.users.list'),
+        'autocomplete' =>array('jacl2.right'=>'auth.users.list'),
+        'view'         =>array('jacl2.right'=>'auth.users.view'),
+        'precreate'    =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.create')),
+        'create'       =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.create')),
+        'savecreate'   =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.create')),
+        'preupdate'    =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.modify')),
+        'editupdate'   =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.modify')),
+        'saveupdate'   =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.modify')),
+        'deleteconfirm'=>array('jacl2.rights.and'=>array('auth.users.view','auth.users.delete')),
+        'delete'       =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.delete')),
     );
     /**
      * selector of the dao to use for the crud.
@@ -491,6 +492,7 @@ class defaultCtrl extends jController
             }
         }
         $rep->data = $users;
+
 
         return $rep;
     }
