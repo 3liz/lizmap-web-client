@@ -19,7 +19,7 @@ class jInstallerComponentModule extends jInstallerComponentBase {
     /**
      * @var string the namespace of the xml file
      */
-    protected $identityNamespace = 'http://jelix.org/ns/module/1.0';
+    protected $identityNamespace = '!^https?\\://jelix\\.org/ns/module/1\\.0$!';
 
     /**
      * @var string the expected name of the root element in the xml file
