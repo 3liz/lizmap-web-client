@@ -23,7 +23,16 @@ End-of-env
 CMD=$1
 
 if [ "$CMD" == "" ]; then
-    CMD="up -d"
+  CMD="up -d"
+fi
+
+# Install or update Lizmap as a QGIS Server plugin
+if [ "$CMD" != "stop" ]; then
+  curl "https://packages.3liz.org/pub/lizmap-qgis-plugin/dev/lizmap-qgis-plugin.dev.zip" --output lizmap-qgis-plugin.dev.zip --silent
+  unzip -qq lizmap-qgis-plugin.dev.zip
+  rm lizmap-qgis-plugin.dev.zip
+  rm -rf qgis-server-plugins/lizmap/
+  mv lizmap qgis-server-plugins/
 fi
 
 docker-compose -p lizmap-${LZMBRANCH}-tests $CMD
