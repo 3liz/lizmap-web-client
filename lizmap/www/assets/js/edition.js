@@ -1523,7 +1523,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
             }
             // Check li (tabs) visibility
-            if (form.children('ul.nav-tabs').find('li:visible').length == 0 ) {
+            var visibleTabs = form.children('ul.nav-tabs').find('li').filter(
+                function(){
+                    return $(this).css('display') !== 'none';
+                });
+            if (visibleTabs.length == 0 ) {
                 // No tabs visible, hide the tab content
                 $('#'+form.attr('id')+'-tab-content').hide();
             } else {
