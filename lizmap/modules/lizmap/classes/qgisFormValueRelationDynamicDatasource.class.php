@@ -176,7 +176,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
         if ($data && (strpos($mime, 'text/json') === 0
                       || strpos($mime, 'application/json') === 0
                       || strpos($mime, 'application/vnd.geo+json') === 0)) {
-            $json = json_decode($result->data);
+            $json = json_decode($data);
             // Get result from json
             $features = $json->features;
             foreach ($features as $feat) {
