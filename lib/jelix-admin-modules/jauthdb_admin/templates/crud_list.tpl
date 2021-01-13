@@ -1,10 +1,11 @@
+{meta_html js $j_jelixwww.'js/authdb_admin.js'}
 <h1>{@jauthdb_admin~crud.title.list@}</h1>
 
 {if $canview}
 <form action="{formurl 'jauthdb_admin~default:view'}" method="get">
     <div>
         <label for="search-login">{@jauthdb_admin~crud.title.view@}</label>
-        <input id="search-login" name="j_user_login">
+        <input id="search-login" name="j_user_login" data-link="{jurl 'jauthdb_admin~default:autocomplete'}">
         <button type="submit">{@jauthdb_admin~crud.link.view.record@}</button>
     </div>
 </form>
