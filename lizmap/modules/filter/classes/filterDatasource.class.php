@@ -46,11 +46,11 @@ class filterDatasource
         jClasses::inc('filter~filterConfig');
         $dv = new filterConfig($repository, $project);
         if (!$dv->getStatus()) {
-            return $this->error($dv->getErrors());
+            return $dv->getErrors();
         }
         $config = $dv->getConfig();
         if (empty($config)) {
-            return $this->error($dv->getErrors());
+            return $dv->getErrors();
         }
 
         $this->repository = $repository;
