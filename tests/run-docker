@@ -4,7 +4,7 @@ set -e
 
 LZMBRANCH=${LZMBRANCH:-$(git rev-parse --abbrev-ref HEAD)}
 
-CMD=$1
+CMD=$1;
 
 if [ "$CMD" == "reset" ]; then
     # Stop/Remove containers
@@ -16,6 +16,8 @@ if [ "$CMD" == "reset" ]; then
     exit 0
 elif [ -z "$CMD" ]; then
     CMD="up"
+else
+    shift
 fi
 
 # Create a .env file so that we may use subsequent docker-compose 
@@ -34,5 +36,5 @@ LIZMAP_ADMIN_EMAIL=${LIZMAP_ADMIN_EMAIL:-admin@localhost.local}
 LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE=${LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE:-/srv/etc/admin.conf}
 End-of-env
 
-docker-compose -p lizmap-${LZMBRANCH}-tests "$@"
+docker-compose -p lizmap-${LZMBRANCH}-tests $CMD "$@"
 
