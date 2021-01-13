@@ -6,7 +6,7 @@ A docker configuration is provided to launch Lizmap into a container.
 You must install Docker on your machine first. Then you should execute
 the run-docker script.
 
-To launch containers the first time:
+To launch containers for the first time, with your current user:
 
 ```bash
 ./lizmap-ctl clean
@@ -16,7 +16,8 @@ To launch containers the first time:
 Then:
 
 ```bash
-./run-docker 
+./run-docker
+./lizmap-ctl install
 ```
 
 You must set `lizmap.local` into your `/etc/hosts`:
@@ -30,7 +31,7 @@ Then, in your browser, go to `http://lizmap.local:8130/`. (see below to change t
 To stop containers:
 
 ```bash
-./run-docker stop 
+./run-docker stop
 ```
 
 You may have to close connections to the postgresql database if you are using
@@ -174,5 +175,5 @@ You can inspect the content of Redis with `lizmap-ctl redis-cli`.
 ## Testing QGIS projects
 
 Put your projects into `tests/qgis_projects/rep1/` (replace `rep1` by the name 
-of your choice), and then you can declare `rep1` projects into the admin page
-of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
+of your choice), and then you can declare `/srv/lzm/tests/qgis-projects/rep1` projects into
+the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
