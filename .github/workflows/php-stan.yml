@@ -1,0 +1,37 @@
+name: phpstan
+on:
+  push:
+    branches:
+      - master
+      - release_3_4
+      - release_3_3
+  pull_request:
+    branches:
+      - master
+      - release_3_4
+      - release_3_3
+
+defaults:
+  run:
+    working-directory: ./lizmap
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: phpstan
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run PHPStan
+        run: phpstan analyse -c ../phpstan.neon
+
+      # - name: PHPStan
+      #   uses: chindit/actions-phpstan@master
