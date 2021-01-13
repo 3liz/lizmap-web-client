@@ -1,0 +1,14 @@
+parameters:
+  scanDirectories:
+    - lib/
+    - lizmap/vendor/
+  level: 0
+  ignoreErrors:
+    -
+      # This error is normal, the undefined variable is a reference and it's defined in the function it's passed to.
+      message: '#Undefined variable: \$address#'
+      path: lizmap/modules/view/classes/popup.class.php
+    - "#Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function\\, class method\\, or a top-level-defined function\\.#"
+  paths:
+    - lizmap/modules
+  

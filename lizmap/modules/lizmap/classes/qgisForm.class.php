@@ -1482,7 +1482,7 @@ class qgisForm implements qgisFormControlsInterface
         $referencedField = $relationXml->fieldRef->attributes()->referencedField;
         $previewField = $previewExpression;
         if (substr($previewField, 0, 8) == 'COALESCE') {
-            if (preg_match('/"([\S ]+)"/g', $previewField, $matches) == 1) {
+            if (preg_match('/"([\S ]+)"/', $previewField, $matches) == 1) {
                 $previewField = $matches[1];
             } else {
                 $previewField = $referencedField;
