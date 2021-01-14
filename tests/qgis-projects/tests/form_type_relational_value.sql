@@ -111,7 +111,7 @@ INSERT INTO tests_projects.table_for_form VALUES(
     '{"A06"}',
     '{"A07"}',
     '{"A08"}',
-    '01010000206A08000070B1DA88456C0F4198A01B3111072C41'
+    '01010000206A080000BF599997AB39254116EA7038651D5841'
 );
 
 --
@@ -121,3 +121,16 @@ INSERT INTO tests_projects.table_for_form VALUES(
 INSERT INTO tests_projects.table_for_relationnal_value(gid, "label", "code") VALUES(1, 'Flower', 'A06');
 INSERT INTO tests_projects.table_for_relationnal_value(gid, "label", "code") VALUES(2, 'water', 'A07');
 INSERT INTO tests_projects.table_for_relationnal_value(gid, "label", "code") VALUES(3, 'Tree', 'A08');
+
+--
+-- Name: table_for_form_gid_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.table_for_form_gid_seq', 1, true);
+
+
+--
+-- Name: table_for_relationnal_value_gid_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.table_for_relationnal_value_gid_seq', 3, true);
