@@ -4,12 +4,16 @@ Changelog
 Version 3.3.13
 --------------
 
-- Fix issues with rights managements: removing rights to manage rights, from all 
-  users, was still possible in specific case. 
+- Fix assert crs is not empty before loading
+- Remove warning about lizmap_search
+- Fix issues with rights managements: removing rights to manage rights, from all
+  users, was still possible in specific case.
 - new config parameter to disable the behavior change of the login page,
-  introduced in lizmap 3.3.12, which redirect to the main page when the user 
-  is already authenticated. You can disable it by setting `noRedirectionOnAuthenticatedLoginPage=on` 
+  introduced in lizmap 3.3.12, which redirect to the main page when the user
+  is already authenticated. You can disable it by setting `noRedirectionOnAuthenticatedLoginPage=on`
   into the jcommunity section of the configuration (localconfig.ini.php).
+- Fix attribute edition sets to null unedited fields
+- Search - Use a transaction to avoid PostgreSQL connection issue
 
 
 Version 3.3.12
