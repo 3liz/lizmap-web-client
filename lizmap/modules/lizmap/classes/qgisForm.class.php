@@ -268,7 +268,14 @@ class qgisForm implements qgisFormControlsInterface
                     if (in_array($fieldName, $attributeEditorFormFields)) {
                         continue;
                     }
-                    $form->setReadOnly($formControl->getControlName(), true);
+                    if ($formControl->ctrl->type == 'hidden') {
+                        continue;
+                    }
+                    $ctrlref = $formControl->getControlName();
+                    if (!$form->isActivated($ctrlref)) {
+                        continue;
+                    }
+                    $form->setReadOnly($ctrlref, true);
                 }
             }
         }
@@ -1275,7 +1282,10 @@ class qgisForm implements qgisFormControlsInterface
     {
 
         // required
-        if (!$formControl->valueRelationData['allowNull']) {
+        if (array_key_exists('notNull', $formControl->valueRelationData)
+                and $formControl->valueRelationData['notNull']
+        ) {
+            jLog::log('notNull '.$formControl->valueRelationData['notNull'], 'error');
             $formControl->ctrl->required = true;
         }
         // combobox
@@ -1285,9 +1295,9 @@ class qgisForm implements qgisFormControlsInterface
             $formControl->ctrl->setAttribute('class', 'combobox');
         }
 
-        // Add default empty value for required fields
+        // Add empty value if the add null value is checked
         // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-        $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->ctrl->required);
+        $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->valueRelationData['allowNull']);
 
         // criteriaFrom based on current_value in filterExpression
         if (array_key_exists('filterExpression', $formControl->valueRelationData)
