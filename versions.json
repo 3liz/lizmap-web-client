@@ -1,14 +1,14 @@
 [
     {
-        "branch": "3.5",
-        "first_release_date": "",
-        "latest_release_date": "",
-        "latest_release_version": "3.5.0",
+        "branch": "3.5", 
+        "first_release_date": "", 
+        "latest_release_date": "", 
+        "latest_release_version": "3.5.0", 
         "maintained": false
-    },
+    }, 
     {
         "branch": "3.4", 
-        "first_release_date": "2020-12-18",
+        "first_release_date": "2020-12-18", 
         "latest_release_date": "2020-12-18", 
         "latest_release_version": "3.4.0", 
         "maintained": true
@@ -16,8 +16,8 @@
     {
         "branch": "3.3", 
         "first_release_date": "2019-09-02", 
-        "latest_release_date": "2020-12-07", 
-        "latest_release_version": "3.3.12", 
+        "latest_release_date": "2021-01-14", 
+        "latest_release_version": "3.3.13", 
         "maintained": true
     }, 
     {
