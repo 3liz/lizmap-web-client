@@ -1,12 +1,40 @@
 # Changelog Lizmap 3.4
 
+## Version 3.4.1
+
+Release on 2021-01-14
+
+- Fix drill-down (cascading) forms in Lizmap based on QGIS expression
+- Fix draw: import KML does not draw anythings if xml headers
+- Fix regression in 3.4.0 about Primary Keys enclosing for UPDATE RETURNING
+- Fix the landing page shouldn't show project when not available for groups ACL
+  Users in admins groups with rights to remove repositories no longer have
+  access to every maps
+- Fix cache does not work after authorization
+- Fix edition tab content is not visible on mobile screen
+- Fix regression in edition form with multiple values from relationnal value
+
+- Enhance Drag'N Drop Edition form test to avoid regression
+- Enhance form_type_relational_value test
+
+- Fix assert crs is not empty before loading
+- Remove warning about lizmap_search
+- Fix issues with rights managements: removing rights to manage rights, from all
+  users, was still possible in specific case.
+- new config parameter to disable the behavior change of the login page,
+  introduced in lizmap 3.3.12, which redirect to the main page when the user
+  is already authenticated. You can disable it by setting `noRedirectionOnAuthenticatedLoginPage=on`
+  into the jcommunity section of the configuration (localconfig.ini.php).
+- Fix attribute edition sets to null unedited fields
+- Search - Use a transaction to avoid PostgreSQL connection issue
+
 ## Version 3.4.0
 
 Released on 2020-12-18
 
 ### QGIS Plugin Desktop and Server
 
-* Changelog in the Lizmap QGIS plugin related to this new version is available 
+* Changelog in the Lizmap QGIS plugin related to this new version is available
   [here](https://github.com/3liz/lizmap-plugin/blob/master/CHANGELOG.md#330---25112020)
 
 ### New features
@@ -17,7 +45,7 @@ Released on 2020-12-18
 - Popup
   - Add button to get a single table for all children's feature
   - [New module `action` to run PostgreSQL actions from feature popup.](https://docs.lizmap.com/next/en/publish/configuration/action_popup.html)
-    This module allows to add action buttons in the popup which trigger PostgreSQL queries and return a 
+    This module allows to add action buttons in the popup which trigger PostgreSQL queries and return a
     geometry to display on the map
   - Print PDF from a popup (layout having an atlas enabled). You can now define values for custom fields
 - Atlas tool
