@@ -1,50 +1,19 @@
-### 3857
+# Creating/editing geometries/attributes
 
-* [ ] Create and save a point_3857
-* [ ] Click and display the point_3857 popup
-* [ ] Update (label and geometry) and save the point_3857
-* [ ] Click and display the point_3857 popup
+For each layer, do
+* Create, fill and save a feature
+* Click and display the popup
+* Update (label and geometry) and save it
+* Display the popup and check
 
-* [ ] Create and save a line_3857
-* [ ] Click and display the line_3857 popup
-* [ ] Update (label and geometry) and save the line_3857
-* [ ] Click and display the line_3857 popup
+Layers to check :
 
-* [ ] Create and save a polygon_3857
-* [ ] Click and display the polygon_3857 popup
-* [ ] Update (label and geometry) and save the polygon_3857
-* [ ] Click and display the polygon_3857 popup
-
-### 4326
-
-* [ ] Create and save a point_4326
-* [ ] Click and display the point_4326 popup
-* [ ] Update (label and geometry) and save the point_4326
-* [ ] Click and display the point_4326 popup
-
-* [ ] Create and save a line_4326
-* [ ] Click and display the line_4326 popup
-* [ ] Update (label and geometry) and save the line_4326
-* [ ] Click and display the line_4326 popup
-
-* [ ] Create and save a polygon_4326
-* [ ] Click and display the polygon_4326 popup
-* [ ] Update (label and geometry) and save the polygon_4326
-* [ ] Click and display the polygon_4326 popup
-
-### 2154
-
-* [ ] Create and save a point_2154
-* [ ] Click and display the point_2154 popup
-* [ ] Update (label and geometry) and save the point_2154
-* [ ] Click and display the point_2154 popup
-
-* [ ] Create and save a line_2154
-* [ ] Click and display the line_2154 popup
-* [ ] Update (label and geometry) and save the line_2154
-* [ ] Click and display the line_2154 popup
-
-* [ ] Create and save a polygon_2154
-* [ ] Click and display the polygon_2154 popup
-* [ ] Update (label and geometry) and save the polygon_2154
-* [ ] Click and display the polygon_2154 popup
+* [ ] line_2154
+* [ ] line_3857
+* [ ] line_4326
+* [ ] point_2154
+* [ ] point_3857
+* [ ] point_4326
+* [ ] polygon_2154
+* [ ] polygon_3857
+* [ ] polygon_4326
