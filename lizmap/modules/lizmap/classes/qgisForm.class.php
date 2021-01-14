@@ -268,7 +268,14 @@ class qgisForm implements qgisFormControlsInterface
                     if (in_array($fieldName, $attributeEditorFormFields)) {
                         continue;
                     }
-                    $form->setReadOnly($formControl->getControlName(), true);
+                    if ($formControl->ctrl->type == 'hidden') {
+                        continue;
+                    }
+                    $ctrlref = $formControl->getControlName();
+                    if (!$form->isActivated($ctrlref)) {
+                        continue;
+                    }
+                    $form->setReadOnly($ctrlref, true);
                 }
             }
         }
