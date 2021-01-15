@@ -3235,13 +3235,18 @@ var lizMap = function() {
 
                 parentDiv.append(childPopup);
 
-                // Trigger event
+                // Trigger event for single popup children
                 lizMap.events.triggerEvent(
                   "lizmappopupchildrendisplayed",
                   { 'html': childPopup.html() }
                 );
               }
             }
+            // Trigger event for all popup children
+            lizMap.events.triggerEvent(
+              "lizmappopupallchildrendisplayed",
+              { 'html': popupChildrenData }
+            );
           });
         });
       });
