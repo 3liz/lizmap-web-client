@@ -133,20 +133,29 @@ export LZMBRANCH=another-name
 
 ```
 
-
 Port to access to the postgresql server and the nginx server
 are the same on each branch, by default. So if you want to run different stack
 at the same time, you will have some error. You must then change the port. See above.
  
 
-## Launching unit-tests
+## Automatic PHP tests
 
-This directory contains some unit tests.
+The `units` directory contains some unit tests.
 
-To launch tests:
+To launch PHP tests:
 
 - Launch the lizmap application as indicated above.
 - launch `./lizmap-ctl unittests`
+
+## Automatic End-to-End tests
+
+The `js` directory contains some end-to-end tests.
+
+## Manual tests
+
+Put your projects into `tests/qgis_projects/tests/` (replace `tests` by the name
+of your choice), and then you can declare `tests` projects into
+the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
 
 ## Using LDAP
 
@@ -171,11 +180,3 @@ Into `lizmap/var/config/profiles.ini.php`, uncomment parameters into the `jcache
 section.
 
 You can inspect the content of Redis with `lizmap-ctl redis-cli`.
- 
-## Testing QGIS projects
-
-Put your projects into `tests/qgis_projects/tests/` (replace `tests` by the name
-of your choice), and then you can declare `tests` projects into
-the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
-
-For your information, `tests/qgis_projects/tests/` is mounted to `/srv/lzm/tests/qgis-projects/tests`.
