@@ -113,6 +113,11 @@ Go to https://github.com/3liz/lizmap-web-client/issues and post issues you find.
 
 ## Testing your changes
 
+Tests is highly recommended for any new commits. Tests can be provided with :
+* End-to-end tests with Cypress
+* PHP Unit tests
+* Manual tests
+
 You can test your changes, or you can launch unit tests, by running some 
 Docker containers. Go into tests/ and read the README.md file. 
 A docker-compose.yml file is provided, launching a full stack of softwares to 
