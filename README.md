@@ -1,6 +1,10 @@
 [![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.4.1
 -------------------------------------------------------------
 
+![Unit tests 🎳](https://github.com/3liz/lizmap-web-client/workflows/Unit%20tests%20%F0%9F%8E%B3/badge.svg)
+![Lint](https://github.com/3liz/lizmap-web-client/workflows/Lint/badge.svg)
+![PHPStan](https://github.com/3liz/lizmap-web-client/workflows/PHPStan/badge.svg)
+
 Lizmap web application, by 3LIZ.
 
     begin       : 2011-11-01
