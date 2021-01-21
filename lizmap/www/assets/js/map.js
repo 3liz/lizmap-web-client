@@ -3172,6 +3172,9 @@ var lizMap = function() {
 
           // Execute promise all
           Promise.all(popupChidrenRequests).then(popupChildrenData => {
+
+            childPopupElements = [];
+
             for (let index = 0; index < popupChildrenData.length; index++) {
               let popupChildData = popupChildrenData[index];
               
@@ -3235,6 +3238,8 @@ var lizMap = function() {
 
                 parentDiv.append(childPopup);
 
+                childPopupElements.push(childPopup);
+
                 // Trigger event for single popup children
                 lizMap.events.triggerEvent(
                   "lizmappopupchildrendisplayed",
@@ -3245,7 +3250,10 @@ var lizMap = function() {
             // Trigger event for all popup children
             lizMap.events.triggerEvent(
               "lizmappopupallchildrendisplayed",
-              { 'html': popupChildrenData }
+              {
+                parentPopupElement: self.parents('.lizmapPopupSingleFeature'),
+                childPopupElements: childPopupElements
+              }
             );
           });
         });
