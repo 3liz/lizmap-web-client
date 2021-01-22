@@ -1,5 +1,12 @@
 # Changelog Lizmap 3.4
 
+## Version 3.4.2
+
+Not released yet
+
+- Fix lizmap/install/set_rights.sh: some directories were missing
+
+
 ## Version 3.4.1
 
 Release on 2021-01-14
