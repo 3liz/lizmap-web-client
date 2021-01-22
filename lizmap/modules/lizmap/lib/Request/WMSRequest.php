@@ -511,8 +511,8 @@ class WMSRequest extends OGCRequest
 
             if (!$returnPopup) {
                 $editionLayer = $this->project->findEditionLayerByLayerId($configLayer->id);
-                if ($editionLayer != null &&
-                    ($editionLayer->capabilities->modifyGeometry == 'True'
+                if ($editionLayer != null
+                    && ($editionLayer->capabilities->modifyGeometry == 'True'
                     || $editionLayer->capabilities->modifyAttribute == 'True'
                     || $editionLayer->capabilities->deleteFeature == 'True')
                 ) {
@@ -1057,8 +1057,8 @@ class WMSRequest extends OGCRequest
         }
 
         // Also checks if gd is installed
-        if ($metatileSize && $useCache && $wmsClient == 'web' &&
-            extension_loaded('gd') && function_exists('gd_info')) {
+        if ($metatileSize && $useCache && $wmsClient == 'web'
+            && extension_loaded('gd') && function_exists('gd_info')) {
             list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
         }
 
@@ -1077,8 +1077,8 @@ class WMSRequest extends OGCRequest
 
         // Metatile : if needed, crop the metatile into a single tile
         // Also checks if gd is installed
-        if ($metatileSize && $useCache && $wmsClient == 'web' &&
-            extension_loaded('gd') && function_exists('gd_info')
+        if ($metatileSize && $useCache && $wmsClient == 'web'
+            && extension_loaded('gd') && function_exists('gd_info')
         ) {
             $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor, $debug);
         }

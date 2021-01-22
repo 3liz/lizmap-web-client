@@ -245,6 +245,7 @@ class QgisFormControl
         switch ($markup) {
             case null:
                 break;
+
             case 'input':
                 $this->ctrl = new \jFormsControlInput($this->ref);
                 if ($this->fieldEditType === 15) {
@@ -256,8 +257,8 @@ class QgisFormControl
                     if (property_exists($attributes, 'max')) {
                         $this->ctrl->datatype->addFacet('maxValue', (float) $attributes->max);
                     }
-                } elseif ($this->fieldEditType === 'Range' ||
-                         $this->fieldEditType === 'EditRange') {
+                } elseif ($this->fieldEditType === 'Range'
+                         || $this->fieldEditType === 'EditRange') {
                     $this->ctrl->datatype = new \jDatatypeDecimal();
                     $attributes = $this->widgetv2configAttr;
                     if (property_exists($attributes, 'Min')) {
