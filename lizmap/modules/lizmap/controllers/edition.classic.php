@@ -269,7 +269,7 @@ class editionCtrl extends jController
                 'FEATUREID' => $featureId,
             );
 
-            $wfsrequest = new \Lizmap\Request\WFSRequest($this->project, $wfsparams);
+            $wfsrequest = new \Lizmap\Request\WFSRequest($this->project, $wfsparams, lizmap::getServices(), lizmap::getAppContext());
             $wfsresponse = $wfsrequest->getfeature();
             if (property_exists($wfsresponse, 'data')) {
                 $data = $wfsresponse->data;

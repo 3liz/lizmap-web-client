@@ -1190,7 +1190,7 @@ class QgisForm implements QgisFormControlsInterface
         if (array_key_exists('notNull', $formControl->valueRelationData)
                 and $formControl->valueRelationData['notNull']
         ) {
-            jLog::log('notNull '.$formControl->valueRelationData['notNull'], 'error');
+            \jLog::log('notNull '.$formControl->valueRelationData['notNull'], 'error');
             $formControl->ctrl->required = true;
         }
         // combobox
@@ -1202,7 +1202,7 @@ class QgisForm implements QgisFormControlsInterface
 
         // Add empty value if the add null value is checked
         // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-        $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->valueRelationData['allowNull']);
+        $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->valueRelationData['allowNull']);
 
         // criteriaFrom based on current_value in filterExpression
         if (array_key_exists('filterExpression', $formControl->valueRelationData)
@@ -1433,7 +1433,7 @@ class QgisForm implements QgisFormControlsInterface
             unset($params['PROPERTYNAME']);
         }
 
-        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, \lizmap::getServices(), \lizmap::getAppContext());
         $this->PerformWfsRequest($wfsRequest, $formControl, $referencedField, $previewField);
     }
 

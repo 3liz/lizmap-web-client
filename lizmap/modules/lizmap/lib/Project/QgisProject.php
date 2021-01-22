@@ -476,7 +476,7 @@ class QgisProject
     {
         $layer = $this->getLayerDefinition($layerId);
         if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
-            $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']), $this->services, $this->appContext);
+            $qgsProj = new QgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']), $this->services, $this->appContext);
 
             return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
         }

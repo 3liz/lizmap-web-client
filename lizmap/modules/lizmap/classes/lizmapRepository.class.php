@@ -83,14 +83,14 @@ class lizmapRepository
         return self::$properties;
     }
 
-    public function getRepoProperties()
+    public static function getRepoProperties()
     {
         return self::$propertiesOptions;
     }
 
-    public static function getPropertiesOptions()
+    public function getPropertiesOptions()
     {
-        return self::$repo->getPropertiesOptions();
+        return $this->repo->getPropertiesOptions();
     }
 
     public function getData($key)
