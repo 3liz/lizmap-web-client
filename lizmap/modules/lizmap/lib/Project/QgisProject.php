@@ -338,9 +338,9 @@ class QgisProject
         //unset displayInLegend for geometryType none or unknown
         if ($layers) {
             foreach ($layers as $key => $obj) {
-                if (property_exists($layers->{$key}, 'geometryType') &&
-                    ($layers->{$key}->geometryType == 'none' ||
-                        $layers->{$key}->geometryType == 'unknown')
+                if (property_exists($layers->{$key}, 'geometryType')
+                    && ($layers->{$key}->geometryType == 'none'
+                        || $layers->{$key}->geometryType == 'unknown')
                 ) {
                     $layers->{$key}->displayInLegend = 'False';
                 }
@@ -670,8 +670,8 @@ class QgisProject
         }
         // get layout qgs project version >= 3
         $layouts = $this->xml->xpath('//Layout');
-        if ($layouts && count($layouts) > 0 &&
-            version_compare($services->qgisServerVersion, '3.0', '>=')) {
+        if ($layouts && count($layouts) > 0
+            && version_compare($services->qgisServerVersion, '3.0', '>=')) {
             foreach ($layouts as $layout) {
                 // test restriction
                 if (in_array((string) $layout['name'], $rComposers)) {

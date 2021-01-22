@@ -852,6 +852,7 @@ class QgisForm implements QgisFormControlsInterface
                     }
 
                 break;
+
             case 'date':
             case 'time':
             case 'datetime':
@@ -863,6 +864,7 @@ class QgisForm implements QgisFormControlsInterface
                 }
 
                 break;
+
             case 'integer':
                 if (is_numeric($value)) {
                     $value = (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
@@ -874,6 +876,7 @@ class QgisForm implements QgisFormControlsInterface
                 }
 
                 break;
+
             case 'float':
                 if (is_numeric($value)) {
                     $value = (float) $value;
@@ -885,16 +888,18 @@ class QgisForm implements QgisFormControlsInterface
                 }
 
                 break;
+
             case 'text':
                 $value = $cnx->quote($value);
 
                 break;
+
             case 'boolean':
                 $strVal = strtolower($value);
-                if ($strVal != 'true' && $strVal !== 't' && intval($value) != 1 &&
-                   $strVal !== 'on' && $value !== true &&
-                   $strVal != 'false' && $strVal !== 'f' && intval($value) != 0 &&
-                   $strVal !== 'off' && $value !== false
+                if ($strVal != 'true' && $strVal !== 't' && intval($value) != 1
+                   && $strVal !== 'on' && $value !== true
+                   && $strVal != 'false' && $strVal !== 'f' && intval($value) != 0
+                   && $strVal !== 'off' && $value !== false
                 ) {
                     $value = 'NULL';
                 } else {
@@ -902,6 +907,7 @@ class QgisForm implements QgisFormControlsInterface
                 }
 
                 break;
+
             default:
                 $value = $cnx->quote(
                     filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)

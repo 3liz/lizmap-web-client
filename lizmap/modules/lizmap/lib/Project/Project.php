@@ -781,9 +781,9 @@ class Project
 
             // If login filter is configured for edition only and the expression
             // is not requested for edition, do not return expression
-            if (property_exists($loginFilteredConfig, 'edition_only') &&
-                $this->optionToBoolean($loginFilteredConfig->edition_only) &&
-                !$edition) {
+            if (property_exists($loginFilteredConfig, 'edition_only')
+                && $this->optionToBoolean($loginFilteredConfig->edition_only)
+                && !$edition) {
                 continue;
             }
 
@@ -797,8 +797,8 @@ class Project
             if ($this->appContext->userIsConnected()) {
                 $user = $this->appContext->getUserSession();
                 $login = $user->login;
-                if (property_exists($loginFilteredConfig, 'filterPrivate') &&
-                    $this->optionToBoolean($loginFilteredConfig->filterPrivate)
+                if (property_exists($loginFilteredConfig, 'filterPrivate')
+                    && $this->optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
                     $filter = "\"{$attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
@@ -1398,9 +1398,9 @@ class Project
                 }
             }
             // atlas
-            if (property_exists($configJson->options, 'atlasEnabled') &&
-                $this->optionToBoolean($configJson->options->atlasEnabled) &&
-                $configJson->options->atlasLayer == $obj->id) {
+            if (property_exists($configJson->options, 'atlasEnabled')
+                && $this->optionToBoolean($configJson->options->atlasEnabled)
+                && $configJson->options->atlasLayer == $obj->id) {
                 $configJson->options->atlasLayer = '';
                 $configJson->options->atlasPrimaryKey = '';
                 $configJson->options->atlasFeatureLabel = '';
@@ -1437,9 +1437,9 @@ class Project
             // printTemplates
             $printTemplatesToKeep = array();
             foreach ($configJson->printTemplates as $printTemplate) {
-                if (array_key_exists('atlas', $printTemplate) &&
-                    array_key_exists('coverageLayer', $printTemplate['atlas']) &&
-                    $printTemplate['atlas']['coverageLayer'] != $obj->id) {
+                if (array_key_exists('atlas', $printTemplate)
+                    && array_key_exists('coverageLayer', $printTemplate['atlas'])
+                    && $printTemplate['atlas']['coverageLayer'] != $obj->id) {
                     $printTemplatesToKeep[] = $printTemplate;
                 }
             }
