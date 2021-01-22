@@ -2,7 +2,7 @@
 
 set -e
 
-LZMBRANCH=${LZMBRANCH:-$(git rev-parse --abbrev-ref HEAD)}
+export LZMBRANCH=${LZMBRANCH:-$(git rev-parse --abbrev-ref HEAD)}
 
 CMD=$1;
 
