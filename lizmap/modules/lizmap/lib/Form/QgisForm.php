@@ -146,6 +146,27 @@ class QgisForm implements QgisFormControlsInterface
             $this->formControls[$fieldName] = $formControl;
         }
 
+        // Deactivate undisplayed fields in Drag and Drop form
+        $attributeEditorForm = $this->getAttributesEditorForm();
+        if ($attributeEditorForm) {
+            $attributeEditorFormFields = $attributeEditorForm->getFields();
+            if (count($attributeEditorFormFields) > 0) {
+                foreach ($this->formControls as $fieldName => $formControl) {
+                    if (in_array($fieldName, $attributeEditorFormFields)) {
+                        continue;
+                    }
+                    if ($formControl->ctrl->type == 'hidden') {
+                        continue;
+                    }
+                    $ctrlref = $formControl->getControlName();
+                    if (!$form->isActivated($ctrlref)) {
+                        continue;
+                    }
+                    $form->setReadOnly($ctrlref, true);
+                }
+            }
+        }
+
         // Hide when no modify capabilities, only for UPDATE cases (  when $this->featureId control exists )
         if (!empty($featureId) && strtolower($capabilities->modifyAttribute) == 'false') {
             foreach ($toDeactivate as $de) {
@@ -1166,7 +1187,10 @@ class QgisForm implements QgisFormControlsInterface
     {
 
         // required
-        if (!$formControl->valueRelationData['allowNull']) {
+        if (array_key_exists('notNull', $formControl->valueRelationData)
+                and $formControl->valueRelationData['notNull']
+        ) {
+            jLog::log('notNull '.$formControl->valueRelationData['notNull'], 'error');
             $formControl->ctrl->required = true;
         }
         // combobox
@@ -1176,9 +1200,9 @@ class QgisForm implements QgisFormControlsInterface
             $formControl->ctrl->setAttribute('class', 'combobox');
         }
 
-        // Add default empty value for required fields
+        // Add empty value if the add null value is checked
         // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-        $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->ctrl->required);
+        $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->valueRelationData['allowNull']);
 
         // criteriaFrom based on current_value in filterExpression
         if (array_key_exists('filterExpression', $formControl->valueRelationData)
@@ -1363,7 +1387,7 @@ class QgisForm implements QgisFormControlsInterface
         $referencedField = $relationXml->fieldRef->attributes()->referencedField;
         $previewField = $previewExpression;
         if (substr($previewField, 0, 8) == 'COALESCE') {
-            if (preg_match('/"([\S ]+)"/g', $previewField, $matches) == 1) {
+            if (preg_match('/"([\S ]+)"/', $previewField, $matches) == 1) {
                 $previewField = $matches[1];
             } else {
                 $previewField = $referencedField;

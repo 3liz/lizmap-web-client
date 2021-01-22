@@ -65,6 +65,15 @@ interface AppContextInterface
     public function aclUserGroupsId();
 
     /**
+     * Returns the groups ids of an user.
+     *
+     * @param string $login The login of the user
+     *
+     * @return array an array containing the user's groups ids
+     */
+    public function aclGroupsIdByUser($login);
+
+    /**
      * Retrieve the list of groups properties, the current user is member of,
      * in the acl system.
      *
@@ -282,13 +291,13 @@ interface AppContextInterface
     public function getClassService($selector);
 
     /**
-     * Returns a new jTpl Object
+     * Returns a new jTpl Object.
      */
     public function getTpl();
 
     /**
-     * Calls the lizmapTiler::getTileCapabilities method
-     * 
+     * Calls the lizmapTiler::getTileCapabilities method.
+     *
      * @param \Lizmap\Project\Project $project
      */
     public function getTileCaps($project);

@@ -170,14 +170,14 @@ class qgisExpressionUtils
                 // TODO parse errors
                 // if (property_exists($json, 'errors')) {
                 // }
-                jLog::log($data, 'error');
+                jLog::log($json->data, 'error');
             } elseif (property_exists($json, 'results')
                 && array_key_exists(0, $json->results)) {
                 // Get results
                 return $json->results[0];
             } else {
                 // Data not well formed
-                jLog::log($data, 'error');
+                jLog::log($json->data, 'error');
             }
         }
 

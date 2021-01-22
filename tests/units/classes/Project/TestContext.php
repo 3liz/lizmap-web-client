@@ -42,9 +42,13 @@ class testContext implements AppContextInterface
             return $this->result['groups'];
         }
 
-        return null;
+        return array();
     }
 
+    public function aclGroupsIdByUser($login)
+    {
+    }
+    
     public function aclUserGroupsInfo()
     {
     }

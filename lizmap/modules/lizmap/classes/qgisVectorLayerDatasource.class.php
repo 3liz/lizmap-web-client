@@ -33,6 +33,10 @@ class qgisVectorLayerDatasource
         'sql' => ' sql=(.*)$',
     );
 
+    protected $provider;
+
+    protected $datasource;
+
     // /!\ in table and geocol regex above, sql= will be removed when search for table or geocol
     // to remove issues
     // better would be to find a robust regex, but it is fragile

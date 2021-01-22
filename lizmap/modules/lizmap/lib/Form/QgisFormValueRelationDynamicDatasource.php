@@ -39,14 +39,17 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
             // build feature's form
             $geom = null;
             $values = array();
-            foreach ($this->criteriaFrom as $ref) {
-                if ($ref == $privateData['liz_geometryColumn']) {
-                    // from wkt to geom
-                    $wkt = trim($form->getData($ref));
-                    $geom = \lizmapWkt::parse($wkt);
-                } else {
-                    // properties
-                    $values[$ref] = $form->getData($ref);
+            $criteriaControls = $this->getCriteriaControls();
+            if ($criteriaControls !== null && is_array($criteriaControls)) {
+                foreach ($criteriaControls as $ref) {
+                    if ($ref == $privateData['liz_geometryColumn']) {
+                        // from wkt to geom
+                        $wkt = trim($form->getData($ref));
+                        $geom = lizmapWkt::parse($wkt);
+                    } else {
+                        // properties
+                        $values[$ref] = $form->getData($ref);
+                    }
                 }
             }
 
@@ -175,7 +178,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         if ($data && (strpos($mime, 'text/json') === 0
                       || strpos($mime, 'application/json') === 0
                       || strpos($mime, 'application/vnd.geo+json') === 0)) {
-            $json = json_decode($wfsResult->data);
+            $json = json_decode($data);
             // Get result from json
             $features = $json->features;
             foreach ($features as $feat) {
