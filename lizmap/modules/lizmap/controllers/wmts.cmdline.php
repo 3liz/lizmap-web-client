@@ -356,11 +356,11 @@ class wmtsCtrl extends jControllerCmdLine
                         $maxRow = ceil(($tileMatrix->top - $bbox[1]) / ($height * $res));
 
                         $tileMatrix = (object) array(
-                            id => $tileMatrixLimit->id,
-                            minRow => min($minRow, $tileMatrixLimit->minRow),
-                            minCol => min($minCol, $tileMatrixLimit->minCol),
-                            maxRow => min($maxRow, $tileMatrixLimit->maxRow),
-                            maxCol => min($maxCol, $tileMatrixLimit->maxCol),
+                            'id' => $tileMatrixLimit->id,
+                            'minRow' => min($minRow, $tileMatrixLimit->minRow),
+                            'minCol' => min($minCol, $tileMatrixLimit->minCol),
+                            'maxRow' => min($maxRow, $tileMatrixLimit->maxRow),
+                            'maxCol' => min($maxCol, $tileMatrixLimit->maxCol),
                         );
                         $tileMatrixLimits[] = $tileMatrix;
 
@@ -409,7 +409,9 @@ class wmtsCtrl extends jControllerCmdLine
                                     'TileMatrix' => $tileMatrixLimit->id,
                                     'TileRow' => $row,
                                     'TileCol' => $col,
-                                )
+                                ),
+                                lizmap::getServices(),
+                                lizmap::getAppContext()
                             );
                             if ($forced) {
                                 $request->setForceRequest(true);

@@ -41,7 +41,7 @@ class Item
         'email',
     );
 
-    protected $context;
+    protected $appContext;
 
     /**
      * Construct the object, you should use the Log\Config::getLogItem() method

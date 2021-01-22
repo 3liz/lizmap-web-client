@@ -168,6 +168,8 @@ class Project
      */
     private $spatialiteExt;
 
+    protected $path;
+
     /**
      * version of the format of data stored in the cache.
      *

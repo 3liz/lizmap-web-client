@@ -45,7 +45,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                     if ($ref == $privateData['liz_geometryColumn']) {
                         // from wkt to geom
                         $wkt = trim($form->getData($ref));
-                        $geom = lizmapWkt::parse($wkt);
+                        $geom = \lizmapWkt::parse($wkt);
                     } else {
                         // properties
                         $values[$ref] = $form->getData($ref);
@@ -85,7 +85,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
             );
 
             // Perform request
-            $wfsRequest = new \lizmapWFSRequest($lproj, $params);
+            $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices(), \lizmap::getAppContext());
             $wfsResult = $wfsRequest->process();
 
             $data = $wfsResult->data;

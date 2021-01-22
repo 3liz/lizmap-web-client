@@ -69,7 +69,7 @@ class projectCtrl extends jControllerCmdLine
                     'request' => 'GetCapabilities',
                 );
 
-                \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+                $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
 
                 $nb_500 = 0;
                 $nb_400 = 0;

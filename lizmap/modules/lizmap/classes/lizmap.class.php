@@ -173,7 +173,7 @@ class lizmap
         }
 
         // reconstruct form fields based on repositoryPropertyList
-        $propertiesOptions = lizmapRepository::getPropertiesOptions();
+        $propertiesOptions = lizmapRepository::getRepoProperties();
 
         foreach (lizmapRepository::getProperties() as $k) {
             $ctrl = null;
