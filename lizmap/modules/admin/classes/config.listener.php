@@ -62,7 +62,7 @@ class configListener extends jEventListener
 
     public function onjauthdbAdminGetViewInfo(jEvent $event)
     {
-        if (/*!$event->himself && */jAcl2::check('acl.user.view')) {
+        if (/*!$event->himself && */ jAcl2::check('acl.user.view')) {
             $user = $event->tpl->get('id');
 
             $groups = jAcl2DbUserGroup::getGroupList($user);
