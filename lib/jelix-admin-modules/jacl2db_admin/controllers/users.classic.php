@@ -200,9 +200,8 @@ class usersCtrl extends jController
             $rep->params = array('user'=>$login);
             try {
                 $manager = new jAcl2DbAdminUIManager();
-                $manager->removeUserFromGroup($login, $this->param('grpid'));
-            }
-            catch (jAcl2DbAdminUIException $e) {
+                $manager->removeUserFromGroup($login, $this->param('grpid'), jAuth::getUserSession()->login);
+            } catch (jAcl2DbAdminUIException $e) {
                 $this->checkException($e, 'removeuserfromgroup');
             }
         }
@@ -223,7 +222,7 @@ class usersCtrl extends jController
 
             try {
                 $manager = new jAcl2DbAdminUIManager();
-                $manager->addUserToGroup($login, $this->param('grpid'));
+                $manager->addUserToGroup($login, $this->param('grpid'), jAuth::getUserSession()->login);
             } catch (jAcl2DbAdminUIException $e) {
                 $this->checkException($e, 'addusertogroup');
             }

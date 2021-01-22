@@ -4,6 +4,22 @@ set -e
 
 LZMBRANCH=${LZMBRANCH:-$(git rev-parse --abbrev-ref HEAD)}
 
+CMD=$1;
+
+if [ "$CMD" == "reset" ]; then
+    # Stop/Remove containers
+    docker-compose -p lizmap-${LZMBRANCH}-tests rm -sf || true
+    # Clean postgres volume
+    docker volume rm "lizmap${LZMBRANCH}_pg_data" || true
+    # Clean up lizmap config
+    ./lizmap-ctl clean
+    exit 0
+elif [ -z "$CMD" ]; then
+    CMD="up"
+else
+    shift
+fi
+
 # Create a .env file so that we may use subsequent docker-compose 
 # commands directly
 cat > .env << End-of-env
@@ -20,11 +36,5 @@ LIZMAP_ADMIN_EMAIL=${LIZMAP_ADMIN_EMAIL:-admin@localhost.local}
 LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE=${LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE:-/srv/etc/admin.conf}
 End-of-env
 
-CMD=$1
-
-if [ "$CMD" == "" ]; then
-    CMD="up -d"
-fi
-
-docker-compose -p lizmap-${LZMBRANCH}-tests $CMD
+docker-compose -p lizmap-${LZMBRANCH}-tests $CMD "$@"
 

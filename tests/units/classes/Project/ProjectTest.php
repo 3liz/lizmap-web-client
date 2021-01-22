@@ -383,7 +383,7 @@ class ProjectTest extends TestCase
             array($result2, $options1, false),
             array($result3, $options1, false),
             array($result3, $options3, true),
-            array($result4, $options1, true),
+            array($result4, $options1, false),
         );
     }
 

@@ -41,11 +41,11 @@ class actionDatasource
         jClasses::inc('action~actionConfig');
         $dv = new actionConfig($repository, $project);
         if (!$dv->getStatus()) {
-            return $this->error($dv->getErrors());
+            return $dv->getErrors();
         }
         $config = $dv->getConfig();
         if (empty($config)) {
-            return $this->error($dv->getErrors());
+            return $dv->getErrors();
         }
 
         $this->repository = $repository;

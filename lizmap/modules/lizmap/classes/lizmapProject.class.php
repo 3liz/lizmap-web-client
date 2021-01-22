@@ -397,6 +397,11 @@ class lizmapProject
         return $this->proj->checkAcl();
     }
 
+    public function checkAclByUser($login)
+    {
+        return $this->proj->checkAclByUser($login);
+    }
+
     public function getSpatialiteExtension()
     {
         return $this->proj->getSpatialiteExtension();

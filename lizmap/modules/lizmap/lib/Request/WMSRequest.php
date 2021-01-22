@@ -865,9 +865,20 @@ class WMSRequest extends OGCRequest
 
     public function getTileCache($params, $profile, $useCache, $forced, $debug)
     {
+        // Get cache if exists
         $keyParams = $params;
+        // Remove keys not necessary for cache
         if (array_key_exists('map', $keyParams)) {
             unset($keyParams['map']);
+        }
+        if (array_key_exists('lizmap_user', $keyParams)) {
+            unset($keyParams['lizmap_user']);
+        }
+        if (array_key_exists('lizmap_user_groups', $keyParams)) {
+            unset($keyParams['lizmap_user_groups']);
+        }
+        if (array_key_exists('lizmap_override_filter', $keyParams)) {
+            unset($keyParams['lizmap_override_filter']);
         }
         ksort($keyParams);
         $key = md5(serialize($keyParams));

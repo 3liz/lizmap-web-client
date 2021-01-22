@@ -1,4 +1,4 @@
-name: "Tests 🎳"
+name: "Unit tests 🎳"
 
 on:
   push:
@@ -14,6 +14,7 @@ on:
 
 jobs:
   tests:
+    name: "Unit tests"
     runs-on: ubuntu-latest
     steps:
 
