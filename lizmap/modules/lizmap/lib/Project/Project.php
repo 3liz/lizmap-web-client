@@ -494,7 +494,7 @@ class Project
     public function hasLocateByLayer()
     {
         $locate = $this->cfg->getProperty('locateByLayer');
-        if ($locate && is_array($locate) && count($locate)) {
+        if ($locate && count((array) $locate)) {
             return true;
         }
 
@@ -504,7 +504,7 @@ class Project
     public function hasFormFilterLayers()
     {
         $form = $this->cfg->getProperty('formFilterLayers');
-        if ($form && is_array($form) && count($form)) {
+        if ($form && count((array) $form)) {
             return true;
         }
 
@@ -519,7 +519,7 @@ class Project
     public function hasTimemanagerLayers()
     {
         $timeManager = $this->cfg->getProperty('timemanagerLayers');
-        if ($timeManager && is_array($timeManager) && count($timeManager)) {
+        if ($timeManager && count((array) $timeManager)) {
             return true;
         }
 
@@ -531,7 +531,7 @@ class Project
         $options = $this->getOptions();
         $atlas = $this->cfg->getProperty('atlas');
         if ((property_exists($options, 'atlasEnabled') && $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
-            || ($atlas && property_exists($atlas, 'layers') && is_array($atlas) && count($atlas) > 0)) { // Multiple atlas
+            || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas) > 0)) { // Multiple atlas
             return true;
         }
 
@@ -715,7 +715,7 @@ class Project
     public function hasLoginFilteredLayers()
     {
         $login = (array) $this->cfg->getProperty('loginFilteredLayers');
-        if ($login && is_array($login) && count($login)) {
+        if ($login && count((array) $login)) {
             return true;
         }
 

@@ -21,7 +21,7 @@
                 <dd>
                     <table class="table">
                         {assign $section = 'repository:'.$repo->getKey()}
-                        {assign $properties = $repo->getRepoProperties()}
+                        {assign $properties = $repo->getProperties()}
                         {foreach $properties as $prop}
                             <tr>
                                 {if $prop == 'path' && $rootRepositories != ''}
