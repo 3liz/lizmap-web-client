@@ -1161,7 +1161,9 @@ transform: none !important;
 }
 
 #content.right-dock-visible #map-content{
-  margin-right:30%;
+  /* 30/100 is linked to #right-dock{width: 30%;}
+  TODO : avoid use of calc() and hard value */
+  margin-right: calc((100% - 30px)*30/100);
 }
 #content.mobile.right-dock-visible #map-content{
   margin-right:0px;
