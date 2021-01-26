@@ -1407,7 +1407,7 @@ class QgisProject
     {
         $values = array();
 
-        foreach ($optionList->option as $v) {
+        foreach ($optionList->Option as $v) {
             if (!$name) {
                 $values[] = (string) $v->attributes()->value;
             } else {
@@ -1416,6 +1416,10 @@ class QgisProject
                     'value' => (string) $v->attributes()->value,
                 );
             }
+        }
+
+        if (count($values) == 1) {
+            return $values[0];
         }
 
         return $values;
@@ -1439,11 +1443,17 @@ class QgisProject
             $fieldEditOptions = array();
             foreach ($options->Option as $option) {
                 if ((string) $option->attributes()->type === 'List') {
+                    $values = array();
                     foreach ($option->Option as $l) {
                         if ((string) $l->attributes()->type === 'Map') {
-                            $values = $this->getValuesFromOptions($l);
+                            $value = $this->getValuesFromOptions($l);
                         } else {
-                            $values = $this->getValuesFromOptions($l, false);
+                            $value = $this->getValuesFromOptions($l, false);
+                        }
+                        if (is_array($value)) {
+                            $values = array_merge($values, $value);
+                        } else {
+                            $values[] = $value;
                         }
                     }
                     $fieldEditOptions[(string) $option->attributes()->name] = $values;
@@ -1557,8 +1567,10 @@ class QgisProject
             if (preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)) {
                 $markup = 'time';
             }
-        } else {
+        } elseif (array_key_exists($fieldEditType, $qgisEdittypeMap)) {
             $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'];
+        } else {
+            $markup = '';
         }
 
         return $markup;
@@ -1599,6 +1611,9 @@ class QgisProject
 
         foreach ($props as $fieldName => $prop) {
             $alias = null;
+            if ($prop['fieldEditType'] === '') {
+                $prop['fieldEditType'] = 'undefined';
+            }
             if ($aliases && array_key_exists($fieldName, $aliases)) {
                 $alias = $aliases[$fieldName];
             }

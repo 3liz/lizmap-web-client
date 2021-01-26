@@ -438,6 +438,7 @@ class QgisFormControl
         self::$qgisEdittypeMap['Color'] = self::$qgisEdittypeMap[0];
         self::$qgisEdittypeMap['ExternalResource'] = self::$qgisEdittypeMap[17];
         self::$qgisEdittypeMap['RelationReference'] = self::$qgisEdittypeMap[18];
+        self::$qgisEdittypeMap['undefined'] = self::$qgisEdittypeMap[0];
         self::$qgisEdittypeMap['builded'] = true;
     }
 
