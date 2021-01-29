@@ -4,6 +4,8 @@ set -e
 set -x
 
 LIZMAP_USER=${LIZMAP_USER:-9001}
+LIZMAP_ADMIN_LOGIN=${LIZMAP_ADMIN_LOGIN:-admin}
+LIZMAP_ADMIN_EMAIL=${LIZMAP_ADMIN_EMAIL:-root@local.localhost}
 
 # php ini override
 if [ ! -z $PHP_INI ]; then
@@ -85,17 +87,17 @@ if [ "$source" == "" ]; then
   source="__default"
 fi
 if [ "$source" == "__random" ]; then
-    su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL"
+    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL
 elif [ "$source" == "__reset" ]; then
-    su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL"
+    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL
 elif [ "$source" == "__default" ]; then
-    su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL admin"
+    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL admin
 elif [ -f $source ]; then
     pass=$(cat $source)
-    su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL $pass"
+    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL $pass
 else
     echo '[ERROR] Invalid LIZMAP_ADMIN_DEFAULT_SOURCE'
-    return 1
+    exit 1
 fi
 
 exec "$@"
