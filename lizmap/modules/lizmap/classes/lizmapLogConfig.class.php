@@ -9,40 +9,27 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Lizmap\Logger as Log;
+
+/**
+ * @deprecated
+ */
 class lizmapLogConfig
 {
-    // Lizmap log configuration data
-    private $data = array();
+    /**
+     * @var Log\Config;
+     */
+    protected $config;
 
-    // general properties
-    private $properties = array(
-        'active',
-        'profile',
-    );
-
-    // list of the logItems of the ini file
-    protected $logItems = array();
-    // If the log is active globally or not
-    private $active = '';
-
-    // database profile
-    private $profile = '';
-
-    public function __construct($readConfigPath)
+    public function __construct($readConfigPath, $appContext, $iniFile)
     {
-        $this->data = $readConfigPath;
-
-        // set generic parameters
-        foreach ($this->properties as $prop) {
-            if (isset($readConfigPath['general'][$prop])) {
-                $this->{$prop} = $readConfigPath['general'][$prop];
-            }
-        }
+        $this->config = new Log\Config($readConfigPath, $appContext, $iniFile);
     }
 
     public function getProperties()
     {
-        return $this->properties;
+        return $this->config->getProperties();
     }
 
     /**
@@ -50,18 +37,11 @@ class lizmapLogConfig
      *
      * @param string $key Key of the log item to get
      *
-     * @return lizmapLogItem
+     * @return lizmapLogItem|Log\Item
      */
     public function getLogItem($key)
     {
-        if (!key_exists($key, $this->logItems)) {
-            if (!key_exists('item:'.$key, $this->data)) {
-                return null;
-            }
-            $this->logItems[$key] = new lizmapLogItem($key, $this->data['item:'.$key]);
-        }
-
-        return $this->logItems[$key];
+        return $this->config->getLogItem($key);
     }
 
     /**
@@ -71,16 +51,7 @@ class lizmapLogConfig
      */
     public function getLogItemList()
     {
-        $logItemList = array();
-
-        foreach ($this->data as $section => $data) {
-            $match = preg_match('#(^item:)#', $section, $matches);
-            if (isset($matches[0])) {
-                $logItemList[] = str_replace($matches[0], '', $section);
-            }
-        }
-
-        return $logItemList;
+        return $this->config->getLogItemList();
     }
 
     /**
@@ -90,19 +61,7 @@ class lizmapLogConfig
      */
     public function modify($data)
     {
-        $modified = false;
-        if (!$data) {
-            return $modified;
-        }
-        foreach ($data as $k => $v) {
-            if (in_array($k, $this->properties)) {
-                $this->data['general'][$k] = $v;
-                $this->{$k} = $v;
-                $modified = true;
-            }
-        }
-
-        return $modified;
+        return $this->config->modify($data);
     }
 
     /**
@@ -113,12 +72,7 @@ class lizmapLogConfig
      */
     public function update($data, $ini = null)
     {
-        $modified = $this->modify($data);
-        if ($modified) {
-            $modified = $this->save($ini);
-        }
-
-        return $modified;
+        return $this->config->update($data, $ini);
     }
 
     /**
@@ -128,21 +82,6 @@ class lizmapLogConfig
      */
     public function save($ini = null)
     {
-        if (!$ini) {
-            $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
-            $ini = new jIniFileModifier($iniFile);
-        }
-        foreach ($this->properties as $prop) {
-            if ($this->{$prop} !== '' && $this->{$prop} !== null) {
-                $ini->setValue($prop, $this->{$prop}, 'general');
-            } else {
-                $ini->removeValue($prop, 'general');
-            }
-        }
-
-        // Save the ini file
-        $ini->save();
-
-        return $ini->isModified();
+        return $this->config->save($ini);
     }
 }

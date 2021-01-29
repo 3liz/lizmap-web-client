@@ -9,7 +9,13 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapWFSRequest extends lizmapOGCRequest
+
+namespace Lizmap\Request;
+
+/**
+ * @see https://en.wikipedia.org/wiki/Web_Feature_Service.
+ */
+class WFSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wfs_exception';
 
@@ -52,7 +58,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         }
 
         // No filter data by login rights
-        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+        if ($this->appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
             return $params;
         }
 
@@ -102,6 +108,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
         return $params;
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
     protected function getcapabilities()
     {
         $version = $this->param('version');
@@ -113,13 +122,13 @@ class lizmapWFSRequest extends lizmapOGCRequest
         $result = parent::getcapabilities();
 
         $data = $result->data;
-        if (empty($data) or floor($result->code / 100) >= 4) {
+        if (empty($data) || floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                jLog::log('GetCapabilities empty data', 'error');
+                $this->appContext->logMessage('GetCapabilities empty data', 'error');
             } else {
-                jLog::log('GetCapabilities result code: '.$result->code, 'error');
+                $this->appContext->logMessage('GetCapabilities result code: '.$result->code, 'error');
             }
-            jMessage::add('Server Error !', 'Error');
+            \jMessage::add('Server Error !', 'Error');
 
             return $this->serviceException();
         }
@@ -129,7 +138,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         }
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
+        $sUrl = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -154,6 +163,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
         );
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
     public function describefeaturetype()
     {
         // Extensions to get aliases and type
@@ -175,20 +187,10 @@ class lizmapWFSRequest extends lizmapOGCRequest
             if ($layer != null) {
 
                 // Get data from XML
-                $use_errors = libxml_use_internal_errors(true);
                 $go = true;
                 // Create a DOM instance
-                $xml = simplexml_load_string($data);
+                $xml = $this->loadXmlString($data, 'describeFeatureType');
                 if (!$xml) {
-                    $errorlist = array();
-                    foreach (libxml_get_errors() as $error) {
-                        $errorlist[] = $error;
-                    }
-                    $errormsg = 'An error has been raised when loading DescribeFeatureType:';
-                    $errormsg .= '\n'.http_build_query($this->params);
-                    $errormsg .= '\n'.$data;
-                    $errormsg .= '\n'.implode('\n', $errorlist);
-                    jLog::log($errormsg, 'error');
                     $go = false;
                 }
                 if ($go && $xml->complexType) {
@@ -219,6 +221,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
         );
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
     public function getfeature()
     {
         if ($this->requestXml !== null) {
@@ -228,7 +233,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // Get type name
         $typename = $this->param('typename');
         if (!$typename) {
-            jMessage::add('TYPENAME is mandatory', 'RequestNotWellFormed');
+            \jMessage::add('TYPENAME is mandatory', 'RequestNotWellFormed');
 
             return $this->serviceException();
         }
@@ -242,7 +247,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // Get Lizmap layer config
         $lizmapLayer = $this->project->findLayerByTypeName($typename);
         if (!$lizmapLayer) {
-            jMessage::add('The layer '.$typename.' does not exists !', 'Error');
+            \jMessage::add('The layer '.$typename.' does not exists !', 'Error');
 
             return $this->serviceException();
         }
@@ -279,9 +284,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // and only for GeoJSON (specific to Lizmap)
         // and only if it is not a complex query like table="(SELECT ...)"
         if ($provider == 'postgres'
-            and empty($filter)
-            and strtolower($output) == 'geojson'
-            and $dtparams->table[0] != '('
+            && empty($filter)
+            && strtolower($output) == 'geojson'
+            && $dtparams->table[0] != '('
         ) {
             return $this->getfeaturePostgres();
         }
@@ -289,9 +294,13 @@ class lizmapWFSRequest extends lizmapOGCRequest
         return $this->getfeatureQgis();
     }
 
+    /**
+     * Queries Qgis Server for getFeature.
+     *
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
+     */
     public function getfeatureQgis()
     {
-
         // Else pass query to QGIS Server
         // Get remote data
         $response = $this->request(true);
@@ -319,35 +328,8 @@ class lizmapWFSRequest extends lizmapOGCRequest
         );
     }
 
-    public function getfeaturePostgres()
+    protected function buildQueryBase($cnx, $params, $wfsFields)
     {
-        $params = $this->parameters();
-
-        // Get database connexion for this layer
-        $cnx = $this->qgisLayer->getDatasourceConnection();
-        // Get datasource
-        $this->datasource = $this->qgisLayer->getDatasourceParameters();
-
-        // Get fields
-        $wfsFields = $this->qgisLayer->getWfsFields();
-
-        // Get Db fields
-        try {
-            $dbFields = $this->qgisLayer->getDbFieldList();
-        } catch (Exception $e) {
-            return $this->getfeatureQgis();
-        }
-
-        // Verifying that every wfs fields are db fields
-        // if not return getfeatureQgis
-        foreach ($wfsFields as $field) {
-            if (!array_key_exists($field, $dbFields)) {
-                return $this->getfeatureQgis();
-            }
-        }
-
-        // Build SQL
-        // SELECT
         $sql = ' SELECT ';
         $propertyname = '';
         if (array_key_exists('propertyname', $params)) {
@@ -395,15 +377,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // FROM
         $sql .= ' FROM '.$this->datasource->table;
 
-        // WHERE
-        $sql .= ' WHERE True';
+        return $sql;
+    }
 
-        $dtsql = trim($this->datasource->sql);
-        if (!empty($dtsql)) {
-            $sql .= ' AND '.$dtsql;
-        }
-
-        // BBOX
+    protected function getBboxSql($params)
+    {
         if (!empty($this->datasource->geocol)) {
             $bbox = '';
             if (array_key_exists('bbox', $params)) {
@@ -411,9 +389,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
             }
             $bboxvalid = false;
             if (!empty($bbox)) {
-                $bboxvalid = true;
                 $bboxitem = explode(',', $bbox);
                 if (count($bboxitem) == 4) {
+                    $bboxvalid = true;
                     foreach ($bboxitem as $coord) {
                         if (!is_numeric(trim($coord))) {
                             $bboxvalid = false;
@@ -426,13 +404,19 @@ class lizmapWFSRequest extends lizmapOGCRequest
                 $ymin = trim($bboxitem[1]);
                 $xmax = trim($bboxitem[2]);
                 $ymax = trim($bboxitem[3]);
-                $sql .= ' AND ST_Intersects("';
+                $sql = ' AND ST_Intersects("';
                 $sql .= $this->datasource->geocol;
                 $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+
+                return $sql;
             }
         }
 
-        // EXP_FILTER
+        return '';
+    }
+
+    protected function parseExpFilter($cnx, $params)
+    {
         $exp_filter = '';
         if (array_key_exists('exp_filter', $params)) {
             $exp_filter = $params['exp_filter'];
@@ -440,23 +424,29 @@ class lizmapWFSRequest extends lizmapOGCRequest
         if (!empty($exp_filter)) {
             $validFilter = $this->validateFilter($exp_filter);
             if (!$validFilter) {
-                return $this->getfeatureQgis();
+                return false;
             }
             if (strpos($validFilter, '$id') !== false) {
                 $key = $this->datasource->key;
                 if (count(explode(',', $key)) == 1) {
-                    $sql .= ' AND '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter);
-                } else {
-                    return $this->getfeatureQgis();
+                    return ' AND '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter);
                 }
-            } else {
-                $sql .= ' AND '.$validFilter;
+
+                return false;
             }
+
+            return ' AND '.$validFilter;
         }
 
-        // FEATUREID
+        return '';
+    }
+
+    protected function parseFeatureId($cnx, $params)
+    {
         $featureid = '';
+        $sql = '';
         $typename = $params['typename'];
+        $keys = explode(',', $this->datasource->key);
         if (array_key_exists('featureid', $params)) {
             $featureid = $params['featureid'];
         }
@@ -484,15 +474,20 @@ class lizmapWFSRequest extends lizmapOGCRequest
                     $fidsSql[] = $fidSql;
                 }
             }
-            //jLog::log(implode(' OR ', $fidsSql), 'error');
+            //$this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
             $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
-        // ORDER BY
+        return $sql;
+    }
+
+    protected function getQueryOrder($cnx, $params, $wfsFields)
+    {
         // séparé par virgule, et fini par espace + a ou d
         // si pas de a ou d , c'est a
         // SortBY=id a,name d
         $sortby = '';
+        $sql = '';
         if (array_key_exists('sortby', $params)) {
             $sortby = $params['sortby'];
         }
@@ -520,6 +515,67 @@ class lizmapWFSRequest extends lizmapOGCRequest
             }
         }
 
+        return $sql;
+    }
+
+    /**
+     * https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
+     * Queries The PostGreSQL Server for getFeature.
+     */
+    public function getfeaturePostgres()
+    {
+        $params = $this->parameters();
+
+        // Get database connexion for this layer
+        $cnx = $this->qgisLayer->getDatasourceConnection();
+        // Get datasource
+        $this->datasource = $this->qgisLayer->getDatasourceParameters();
+
+        // Get fields
+        $wfsFields = $this->qgisLayer->getWfsFields();
+
+        // Get Db fields
+        try {
+            $dbFields = $this->qgisLayer->getDbFieldList();
+        } catch (\Exception $e) {
+            return $this->getfeatureQgis();
+        }
+
+        // Verifying that every wfs fields are db fields
+        // if not return getfeatureQgis
+        foreach ($wfsFields as $field) {
+            if (!array_key_exists($field, $dbFields)) {
+                return $this->getfeatureQgis();
+            }
+        }
+
+        // Build SQL
+        $sql = $this->buildQueryBase($cnx, $params, $wfsFields);
+
+        // WHERE
+        $sql .= ' WHERE True';
+
+        $dtsql = trim($this->datasource->sql);
+        if (!empty($dtsql)) {
+            $sql .= ' AND '.$dtsql;
+        }
+
+        // BBOX
+        $sql .= $this->getbboxSql($params);
+
+        // EXP_FILTER
+        $expFilterSql = $this->parseExpFilter($cnx, $params);
+        if ($expFilterSql === false) {
+            return $this->getfeatureQgis();
+        }
+        $sql .= $expFilterSql;
+
+        // FEATUREID
+        $sql .= $this->parseFeatureId($cnx, $params);
+
+        // ORDER BY
+        $sql .= $this->getQueryOrder($cnx, $params, $wfsFields);
+
         // LIMIT
         $maxfeatures = '';
         if (array_key_exists('maxfeatures', $params)) {
@@ -542,15 +598,21 @@ class lizmapWFSRequest extends lizmapOGCRequest
             $sql .= ' OFFSET '.$startindex;
         }
 
-        //jLog::log($sql);
+        $typename = $params['typename'];
+        $geometryname = '';
+        if (array_key_exists('geometryname', $params)) {
+            $geometryname = strtolower($params['geometryname']);
+        }
+
+        //$this->appContext->logMessage($sql);
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
-        //jLog::log($sql);
+        //$this->appContext->logMessage($sql);
         // Run query
         try {
             $q = $cnx->query($sql);
-        } catch (Exception $e) {
-            jLog::logEx($e, 'error');
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'error');
 
             return $this->getfeatureQgis();
         }
@@ -586,11 +648,16 @@ class lizmapWFSRequest extends lizmapOGCRequest
         );
     }
 
-    private function validateFilter($filter)
+    /**
+     * Parses and validate a filter for postgresql.
+     *
+     * @param string $filter The filter to parse
+     */
+    protected function validateFilter($filter)
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
+            $this->appContext->logMessage('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
 
             return false;
         }
@@ -662,7 +729,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         if (!empty($geosql)) {
             // For new QGIS versions, export into EPSG:4326
-            $lizservices = lizmap::getServices();
+            $lizservices = $this->services;
             if (version_compare($lizservices->qgisServerVersion, '2.18', '>=')) {
                 $geosql = 'ST_Transform('.$geosql.', 4326)';
             }
