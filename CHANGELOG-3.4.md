@@ -7,6 +7,7 @@ Not released yet
 - Fix lizmap/install/set_rights.sh: some directories were missing
 - Fix visual blank line between the map and the right-dock
 - Fix can't launch children layers edition from parent form
+- Fix error about script.php into the docker container 
 
 ## Version 3.4.1
 
