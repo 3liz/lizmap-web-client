@@ -27,6 +27,25 @@ interface AppContextInterface
     public function appConfig();
 
     /**
+     * Returns the configuration file path.
+     *
+     * @param string $file The configuration file
+     */
+    public function appConfigPath($file = '');
+
+    /**
+     * Returns the app var path.
+     *
+     * @param string $file The var file
+     */
+    public function appVarPath($file = '');
+
+    /**
+     * Returns a jCoordinator object.
+     */
+    public function getCoord();
+
+    /**
      * says if the current user has the given right.
      *
      * @param string $right    the key of the right to check
@@ -44,6 +63,15 @@ interface AppContextInterface
      * @return array list of group id
      */
     public function aclUserGroupsId();
+
+    /**
+     * Returns the groups ids of an user.
+     *
+     * @param string $login The login of the user
+     *
+     * @return array an array containing the user's groups ids
+     */
+    public function aclGroupsIdByUser($login);
 
     /**
      * Retrieve the list of groups properties, the current user is member of,
@@ -82,6 +110,13 @@ interface AppContextInterface
     public function getCache($key, $profile = '');
 
     /**
+     * Returns the cache driver corresponding to the profile.
+     *
+     * @param string $profile The profile name
+     */
+    public function getCacheDriver($profile);
+
+    /**
      * return the normalized value of a cache key, to be used with getCache.
      *
      * @param string $key
@@ -89,6 +124,48 @@ interface AppContextInterface
      * @return string
      */
     public function normalizeCacheKey($key);
+
+    /**
+     * Set a data in the cache.
+     *
+     * @param string $key     The cache key
+     * @param mixed  $value   The data to store in the cache
+     * @param mixed  $ttl     data time expiration
+     * @param string $profile the cache profile to use
+     */
+    public function setCache($key, $value, $ttl = null, $profile = '');
+
+    /**
+     * Deletes data from cache.
+     *
+     * @param string $key     The cache key
+     * @param string $profile The cache profile
+     */
+    public function clearCache($key, $profile = '');
+
+    /**
+     * Flushes data from the cache.
+     *
+     * @param string $profile The cache profile
+     */
+    public function flushCache($profile = '');
+
+    /**
+     * Log a message.
+     *
+     * @param mixed  $message The message to log
+     * @param string $cat     The category of the logged message
+     */
+    public function logMessage($message, $cat = 'default');
+
+    /**
+     * Log an Exception.
+     *
+     * @param \Exception $exception The exception to log
+     * @param string The category of the logged Exception
+     * @param mixed $cat
+     */
+    public function logException($exception, $cat = 'default');
 
     /**
      * Create a profile to be used with getDbConnection.
@@ -138,12 +215,13 @@ interface AppContextInterface
     /**
      * Get a string in a specific language.
      *
-     * @param string $key The key corresponding to the string
-     *                    you want to get
+     * @param string $key       The key corresponding to the string
+     *                          you want to get
+     * @param array  $variables values to replace in the localized string
      *
      * @return string the translated string
      */
-    public function getLocale($key);
+    public function getLocale($key, $variables = array());
 
     /**
      * Return a dao factory. Specific to Jelix.
@@ -156,6 +234,14 @@ interface AppContextInterface
     public function getJelixDao($daoKey, $profile = '');
 
     /**
+     * Creates a new Record in the Dao.
+     *
+     * @param string $dao     The Jelix dao selector
+     * @param string $profile The profile to use
+     */
+    public function createDaoRecord($dao, $profile = '');
+
+    /**
      * Gets the form object corresponding to the given selector.
      *
      * specific to Jelix
@@ -166,4 +252,53 @@ interface AppContextInterface
      * @return \jFormsBase
      */
     public function createJelixForm($formSel, $formId = null);
+
+    /**
+     * Returns the URL corresponding to the Jelix Selector.
+     *
+     * @param string $selector The Jelix selector
+     */
+    public function getUrl($selector);
+
+    /**
+     * Returns the absolute Url.
+     *
+     * @param string $selector The Jelix selector of the Url
+     * @param array an associative array with the parameters of the Url
+     * @param mixed $params
+     */
+    public function getFullUrl($selector, $params = array());
+
+    /**
+     * Returns a the IniFileModifier corresponding to the ini file.
+     *
+     * @param string $ini The ini file
+     */
+    public function getIniModifier($ini);
+
+    /**
+     * Returns the path to the json form folder.
+     *
+     * @return string the path
+     */
+    public function getFormPath();
+
+    /**
+     * Returns a class instance.
+     *
+     * @param string $selector The jelix class selector
+     */
+    public function getClassService($selector);
+
+    /**
+     * Returns a new jTpl Object.
+     */
+    public function getTpl();
+
+    /**
+     * Calls the lizmapTiler::getTileCapabilities method.
+     *
+     * @param \Lizmap\Project\Project $project
+     */
+    public function getTileCaps($project);
 }

@@ -1,0 +1,11 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.10.5-A Coruña" projectname="Montpellier - Transports">
+  <relations>
+    <relation id="SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO" referencingLayer="SousQuartiers20160121124316563" referencedLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" strength="Association" name="Subdistricts by district">
+      <fieldRef referencingField="QUARTMNO" referencedField="QUARTMNO"/>
+    </relation>
+    <relation id="jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id" referencingLayer="jointure_tram_stop20150328114216806" referencedLayer="tramstop20150328114203878" strength="Association" name="Tram stop -> pivot tram stop/tram line">
+      <fieldRef referencingField="stop_id" referencedField="osm_id"/>
+    </relation>
+  </relations>
+</qgis>

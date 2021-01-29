@@ -14,15 +14,18 @@ class qgisServer
     // QGIS Server version
     public $qgisServerVersion;
 
+    // lizmapServices instance
+    protected $services;
+
     // List of activated server plugins
     public $plugins = array();
 
     // constructor
     public function __construct()
     {
-        $services = lizmap::getServices();
+        $this->services = lizmap::getServices();
 
-        $this->qgisServerVersion = $services->qgisServerVersion;
+        $this->qgisServerVersion = $this->services->qgisServerVersion;
     }
 
     public function getPlugins($project)
@@ -35,8 +38,8 @@ class qgisServer
             'request' => 'GetServerSettings',
             'map' => $project->getRelativeQgisPath(),
         );
-        $url = lizmapProxy::constructUrl($params);
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+        $url = \Lizmap\Request\Proxy::constructUrl($params, $this->services);
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
             $json = json_decode($data);
             if (property_exists($json, 'lizmap')) {
@@ -52,8 +55,8 @@ class qgisServer
             'request' => 'GetCapabilitiesAtlas',
             'map' => $project->getRelativeQgisPath(),
         );
-        $url = lizmapProxy::constructUrl($params);
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+        $url = \Lizmap\Request\Proxy::constructUrl($params, $this->services);
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
             $json = json_decode($data);
             $metadata = $json->metadata;

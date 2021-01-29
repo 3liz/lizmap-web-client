@@ -234,7 +234,7 @@ class qgisExpressionUtils
      */
     public static function evaluateGroupVisibilities($attributeEditorForm, $form)
     {
-        // qgisForm::getAttributesEditorForm can return null
+        // QgisForm::getAttributesEditorForm can return null
         if ($attributeEditorForm === null || $form === null) {
             return array();
         }
@@ -312,8 +312,8 @@ class qgisExpressionUtils
         );
 
         // Request evaluate constraint expressions
-        $url = lizmapProxy::constructUrl($params);
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url, array('method' => 'post'));
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
@@ -343,8 +343,8 @@ class qgisExpressionUtils
 
     protected static function request($params)
     {
-        $url = lizmapProxy::constructUrl($params);
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($url, array('method' => 'post'));
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {

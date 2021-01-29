@@ -9,7 +9,17 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapOGCRequest
+
+namespace Lizmap\Request;
+
+use Lizmap\App;
+
+/**
+ * @see https://en.wikipedia.org/wiki/Open_Geospatial_Consortium.
+ *
+ * Base class for Requests
+ */
+abstract class OGCRequest
 {
     /**
      * @var lizmapProject
@@ -26,93 +36,27 @@ class lizmapOGCRequest
 
     protected $tplExceptions;
 
-    /**
-     * Build a lizmapOGCRequest child instance based on request.
-     * The parameters or the xml request has to contain the OGC service name.
-     * WMS, WFS and WMTS services are supported.
-     *
-     * @param lizmapProject $project    the project has a lizmapProject Class
-     * @param array         $params     the OGC request parameters array
-     * @param string        $requestXml the OGC XML Request as string
-     *
-     * @return lizmapOGCRequest a child instance based on the request
-     */
-    public static function build($project, $params, $requestXml = null)
-    {
-        $service = null;
-        $request = null;
-
-        // Check request XML
-        if ($requestXml && substr(trim($requestXml), 0, 1) == '<') {
-            $requestXml = trim($requestXml);
-        } else {
-            $requestXml = null;
-        }
-
-        // Parse request XML
-        if ($requestXml) {
-            $xml = simplexml_load_string($requestXml);
-            if ($xml) {
-                $request = $xml->getName();
-                if (property_exists($xml->attributes(), 'service')) {
-                    // OGC service has to be upper case for QGIS Server
-                    $service = strtoupper($xml['service']);
-                }
-            } else {
-                $requestXml = null;
-            }
-        }
-
-        // Check parameters
-        if (!$requestXml && isset($params['service'])) {
-            // OGC service has to be upper case for QGIS Server
-            $service = strtoupper($params['service']);
-            if (isset($params['request'])) {
-                $request = strtolower($params['request']);
-            }
-        }
-
-        if ($service == null) {
-            return null;
-        }
-        $params['service'] = $service;
-        if ($request !== null) {
-            $params['request'] = $request;
-        }
-        if ($service == 'WMS') {
-            return new lizmapWMSRequest($project, $params, $requestXml);
-        }
-        if ($service == 'WMTS') {
-            return new lizmapWMTSRequest($project, $params, $requestXml);
-        }
-        if ($service == 'WFS') {
-            return new lizmapWFSRequest($project, $params, $requestXml);
-            // Not yet
-        //} else if ($service == 'WCS') {
-        //    return new lizmapWCSRequest($project, $params, $requestXml)
-        }
-
-        return null;
-    }
+    protected $appContext;
 
     /**
      * constructor.
      *
-     * @param lizmapProject $project    the project has a lizmapProject Class
-     * @param array         $params     the OGC request parameters array
-     * @param string        $requestXml the OGC XML Request as string
+     * @param \Lizmap\Project\Project $project    the project has a lizmapProject Class
+     * @param array                   $params     the params array
+     * @param \lizmapServices         $services
+     * @param string                  $requestXml the params array
      */
-    public function __construct($project, $params, $requestXml = null)
+    public function __construct($project, $params, $services, App\AppContextInterface $appContext, $requestXml = null)
     {
         //print_r( $project != null );
         $this->project = $project;
-
         $this->repository = $project->getRepository();
 
-        $this->services = lizmap::getServices();
+        $this->services = $services;
+        $this->appContext = $appContext;
 
         $params['map'] = $project->getRelativeQgisPath();
-        $this->params = lizmapProxy::normalizeParams($params);
+        $this->params = Proxy::normalizeParams($params);
         $this->requestXml = $requestXml;
     }
 
@@ -147,8 +91,9 @@ class lizmapOGCRequest
      */
     public function parameters()
     {
+        $appContext = $this->appContext;
         // Check if a user is authenticated
-        if (!jAuth::isConnected()) {
+        if (!$appContext->UserisConnected()) {
             // return parameters with empty user param
             return array_merge($this->params, array(
                 'Lizmap_User' => '',
@@ -157,9 +102,9 @@ class lizmapOGCRequest
         }
 
         // Provide user and groups to lizmap plugin access control
-        $user = jAuth::getUserSession();
-        $userGroups = jAcl2DbUserGroup::getGroups();
-        $loginFilteredOverride = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
+        $user = $appContext->getUserSession();
+        $userGroups = $appContext->aclUserGroupsId();
+        $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
         return array_merge($this->params, array(
             'Lizmap_User' => $user->login,
@@ -182,9 +127,9 @@ class lizmapOGCRequest
         }
 
         if (!$req) {
-            jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
+            \jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
         } else {
-            jMessage::add('Request '.$req.' is not supported', 'OperationNotSupported');
+            \jMessage::add('Request '.$req.' is not supported', 'OperationNotSupported');
         }
 
         return $this->serviceException(501);
@@ -204,25 +149,7 @@ class lizmapOGCRequest
             $url .= '&';
         }
 
-        return $url.$this->buildQuery($this->parameters());
-    }
-
-    /**
-     * Generate URL-encoded query string.
-     *
-     * @param array $params The key value parameters array
-     *
-     * @return string the URL-encoded query string
-     */
-    protected function buildQuery($params)
-    {
-        $bparams = http_build_query($params);
-
-        // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
-        $a = array('+', '_', '.', '-');
-        $b = array('%20', '%5F', '%2E', '%2D');
-
-        return str_replace($a, $b, $bparams);
+        return Proxy::constructUrl($this->parameters(), $this->services, $url);
     }
 
     /**
@@ -249,9 +176,9 @@ class lizmapOGCRequest
         }
 
         // Add login filtered override info
-        $options['loginFilteredOverride'] = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
+        $options['loginFilteredOverride'] = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, $options);
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
 
         return (object) array(
             'code' => $code,
@@ -269,7 +196,7 @@ class lizmapOGCRequest
      */
     protected function serviceException($code = 400)
     {
-        $messages = jMessage::getAll();
+        $messages = \jMessage::getAll();
         $mime = 'text/plain';
         if (!$messages) {
             $data = '';
@@ -283,11 +210,11 @@ class lizmapOGCRequest
 
         if ($this->tplExceptions !== null) {
             $mime = 'text/xml';
-            $tpl = new jTpl();
+            $tpl = new \jTpl();
             $tpl->assign('messages', $messages);
             $data = $tpl->fetch($this->tplExceptions);
         }
-        jMessage::clearAll();
+        \jMessage::clearAll();
 
         return (object) array(
             'code' => $code,
@@ -304,24 +231,25 @@ class lizmapOGCRequest
      */
     protected function getcapabilities()
     {
+        $appContext = $this->appContext;
         // Get cached session
         $key = session_id().'-'.
                $this->project->getRepository()->getKey().'-'.
                $this->project->getKey().'-'.
                $this->param('service').'-getcapabilities';
-        if (jAuth::isConnected()) {
-            $juser = jAuth::getUserSession();
+        if ($appContext->UserisConnected()) {
+            $juser = $appContext->getUserSession();
             $key .= '-'.$juser->login;
         }
         $key = sha1($key);
         $cached = false;
 
         try {
-            $cached = jCache::get($key, 'qgisprojects');
-        } catch (Exception $e) {
+            $cached = $appContext->getCache($key, 'qgisprojects');
+        } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
+            \jLog::logEx($e, 'error');
         }
         // invalid cache
         if ($cached !== false
@@ -358,7 +286,7 @@ class lizmapOGCRequest
                 'mime' => $response->mime,
                 'data' => $response->data,
             );
-            $cached = jCache::set($key, $cached, 3600, 'qgisprojects');
+            $cached = $appContext->setCache($key, $cached, 3600, 'qgisprojects');
         }
 
         return (object) array(
@@ -367,5 +295,28 @@ class lizmapOGCRequest
             'data' => $response->data,
             'cached' => $cached,
         );
+    }
+
+    protected function loadXmlString($xmldata, $name)
+    {
+        // Get data from XML
+        $use_errors = libxml_use_internal_errors(true);
+        $errorlist = array();
+        // Create a DOM instance
+        $xml = simplexml_load_string($xmldata);
+        if (!$xml) {
+            foreach (libxml_get_errors() as $error) {
+                $errorlist[] = $error;
+            }
+            $errormsg = 'An error has been raised when loading '.$name.':';
+            $errormsg .= '\n'.http_build_query($this->params);
+            $errormsg .= '\n'.$xmldata;
+            $errormsg .= '\n'.implode('\n', $errorlist);
+            \jLog::log($errormsg, 'error');
+            // return empty html string
+            return null;
+        }
+
+        return $xml;
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
+namespace Lizmap\Form;
+
 require_once JELIX_LIB_PATH.'forms/jFormsDatasource.class.php';
 
-class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
+class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 {
     //protected $formid;
     protected $ref;
@@ -28,7 +30,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
 
         $repository = $privateData['liz_repository'];
         $project = $privateData['liz_project'];
-        $lproj = lizmap::getProject($repository.'~'.$project);
+        $lproj = \lizmap::getProject($repository.'~'.$project);
 
         $layer = $lproj->getLayer($layerId);
 
@@ -43,7 +45,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
                     if ($ref == $privateData['liz_geometryColumn']) {
                         // from wkt to geom
                         $wkt = trim($form->getData($ref));
-                        $geom = lizmapWkt::parse($wkt);
+                        $geom = \lizmapWkt::parse($wkt);
                     } else {
                         // properties
                         $values[$ref] = $form->getData($ref);
@@ -58,7 +60,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             );
 
             // Get Feature With Forms Scope
-            $features = qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn), true);
+            $features = \qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn));
             foreach ($features as $feat) {
                 if (property_exists($feat, 'properties')
                     and property_exists($feat->properties, $keyColumn)
@@ -83,12 +85,12 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             );
 
             // Perform request
-            $wfsRequest = new lizmapWFSRequest($lproj, $params);
+            $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices(), \lizmap::getAppContext());
             $wfsResult = $wfsRequest->process();
 
             $data = $wfsResult->data;
             if (property_exists($wfsResult, 'file') and $wfsResult->file and is_file($data)) {
-                $data = jFile::read($data);
+                $data = \jFile::read($data);
             }
             $mime = $wfsResult->mime;
 
@@ -135,7 +137,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
 
         $repository = $privateData['liz_repository'];
         $project = $privateData['liz_project'];
-        $lproj = lizmap::getProject($repository.'~'.$project);
+        $lproj = \lizmap::getProject($repository.'~'.$project);
 
         $layer = $lproj->getLayer($layerId);
 
@@ -164,12 +166,12 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
         );
 
         // Perform request
-        $wfsRequest = new lizmapWFSRequest($lproj, $params);
+        $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices(), \lizmap::getAppContext());
         $wfsResult = $wfsRequest->process();
 
         $data = $wfsResult->data;
         if (property_exists($wfsResult, 'file') and $wfsResult->file and is_file($data)) {
-            $data = jFile::read($data);
+            $data = \jFile::read($data);
         }
         $mime = $wfsResult->mime;
 

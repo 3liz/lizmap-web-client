@@ -43,7 +43,6 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
                 'allowUserDefinedThemes' => true,
             ),
         );
-        print_r(realpath(__DIR__.'/../tmp/'));
 
         return array(
             array($repo1, 'test', realpath(__DIR__.'/../tmp/config'), $repo1['repository:test']['path'].'/'),
@@ -64,7 +63,7 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
      */
     public function testGetPath($repo, $key, $varPath, $expectedPath)
     {
-        $services = new lizmapServices($repo, (object) array(), true, $varPath);
+        $services = new lizmapServices($repo, (object) array(), true, $varPath, null);
         $rep = $services->getLizmapRepository($key);
         $this->assertEquals($expectedPath, $rep->getPath());
         unset($services, $rep);
@@ -141,7 +140,7 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
 
         file_put_contents($iniFile, '');
         $ini = new jIniFileModifier($iniFile);
-        $services = new lizmapServices($data, (object) array(), true, '');
+        $services = new lizmapServices($data, (object) array(), true, '', null);
         $repo = $services->getLizmapRepository('test');
         if ($changedProp && $changedValue) {
             $data[$section][$changedProp] = $changedValue;
@@ -153,9 +152,7 @@ class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
         unset($services, $repo, $ini);
     }
 
-    /**
-     * Tests for after the lizmapProject class refactorisation
-     */
+    // Tests for after the lizmapProject class refactorisation
 
 /*  public function testGetProject()
     {

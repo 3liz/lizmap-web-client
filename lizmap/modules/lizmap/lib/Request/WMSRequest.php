@@ -9,7 +9,13 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapWMSRequest extends lizmapOGCRequest
+
+namespace Lizmap\Request;
+
+/**
+ * @see https://en.wikipedia.org/wiki/Web_Map_Service.
+ */
+class WMSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wms_exception';
 
@@ -38,7 +44,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         }
 
         // No filter data by login rights
-        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+        if ($this->appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
             return $params;
         }
 
@@ -92,6 +98,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
         return $params;
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getcapabilities()
     {
         $version = $this->param('version');
@@ -104,11 +113,11 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                jLog::log('GetCapabilities empty data', 'error');
+                \jLog::log('GetCapabilities empty data', 'error');
             } else {
-                jLog::log('GetCapabilities result code: '.$result->code, 'error');
+                \jLog::log('GetCapabilities result code: '.$result->code, 'error');
             }
-            jMessage::add('Server Error !', 'Error');
+            \jMessage::add('Server Error !', 'Error');
 
             return $this->serviceException();
         }
@@ -122,7 +131,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
+        $sUrl = \jUrl::getFull(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -156,21 +165,15 @@ class lizmapWMSRequest extends lizmapOGCRequest
         }
 
         //INSERT MaxWidth and MaxHeight
-        if (!preg_match('@Service>.*?MaxWidth.*?</Service@si', $data)) {
-            $matches = array();
-            if (preg_match('@Service>(.*?)</Service@si', $data, $matches)) {
-                if (count($matches) > 1) {
-                    $sUpdate = $matches[1]."<MaxWidth>3000</MaxWidth>\n ";
-                    $data = str_replace($matches[1], $sUpdate, $data);
-                }
-            }
-        }
-        if (!preg_match('@Service>.*?MaxHeight.*?</Service@si', $data)) {
-            $matches = array();
-            if (preg_match('@Service>(.*?)</Service@si', $data, $matches)) {
-                if (count($matches) > 1) {
-                    $sUpdate = $matches[1]."<MaxHeight>3000</MaxHeight>\n ";
-                    $data = str_replace($matches[1], $sUpdate, $data);
+        $dimensions = array('Width', 'Height');
+        foreach ($dimensions as $d) {
+            if (!preg_match('@Service>.*?Max'.$d.'.*?</Service@si', $data)) {
+                $matches = array();
+                if (preg_match('@Service>(.*?)</Service@si', $data, $matches)) {
+                    if (count($matches) > 1) {
+                        $sUpdate = $matches[1].'<Max'.$d.'>3000</Max'.$d.">\n ";
+                        $data = str_replace($matches[1], $sUpdate, $data);
+                    }
                 }
             }
         }
@@ -185,12 +188,11 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getcontext()
     {
-
         // Get remote data
         $response = $this->request();
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
+        $sUrl = $this->appContext->getFullUrl(
             'lizmap~service:index',
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
@@ -224,15 +226,18 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getmap()
     {
         if (!$this->checkMaximumWidthHeight()) {
-            jMessage::add('The requested map size is too large', 'Size error');
+            \jMessage::add('The requested map size is too large', 'Size error');
 
             return $this->serviceException();
         }
 
-        $getMap = lizmapProxy::getMap($this->project, $this->parameters(), $this->forceRequest);
+        $getMap = $this->getMapData($this->project, $this->parameters(), $this->forceRequest);
 
         return (object) array(
             'code' => $getMap[2],
@@ -242,44 +247,31 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    /**
+     * Check wether the height and width values are valids.
+     */
     protected function checkMaximumWidthHeight()
     {
-        $maxWidth = $this->project->getData('wmsMaxWidth');
-        if (!$maxWidth) {
-            $maxWidth = $this->services->wmsMaxWidth;
-        }
-        if (!$maxWidth) {
-            $maxWidth = 3000;
-        }
-        $width = $this->param('width');
-        if ($width == null || !is_numeric($width)) {
-            // raise exception
-            return false;
-        }
-        $width = intval($width);
-        if ($width > $maxWidth) {
-            return false;
-        }
-        $maxHeight = $this->project->getData('wmsMaxHeight');
-        if (!$maxHeight) {
-            $maxHeight = $this->services->wmsMaxHeight;
-        }
-        if (!$maxHeight) {
-            $maxHeight = 3000;
-        }
-        $height = $this->param('height');
-        if ($height == null || !is_numeric($height)) {
-            // raise exception
-            return false;
-        }
-        $height = intval($height);
-        if ($height > $maxHeight) {
-            return false;
+        $dimensions = array('Width', 'Height');
+
+        foreach ($dimensions as $d) {
+            $var = 'wmsMax'.$d;
+            $max = $this->project->getData($var);
+            if (!$max) {
+                $max = $this->services->{$var} ? $this->services->{$var} : 3000;
+            }
+            $dim = $this->param(lcfirst($d));
+            if ($dim == null || !is_numeric($dim) || intval($dim) > $max) {
+                return false;
+            }
         }
 
         return true;
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getlegendgraphic()
     {
         return $this->getlegendgraphics();
@@ -287,10 +279,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getlegendgraphics()
     {
-        $layers = $this->param('Layers', '');
-        if ($layers == '') {
-            $layers = $this->param('Layer', '');
-        }
+        $layers = $this->param('Layers', $this->param('Layer', ''));
         $layers = explode(',', $layers);
         if (count($layers) == 1) {
             $lName = $layers[0];
@@ -311,12 +300,15 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function getfeatureinfo()
     {
         $queryLayers = $this->param('query_layers');
         // QUERY_LAYERS is mandatory
         if (!$queryLayers) {
-            jMessage::add('The QUERY_LAYERS parameter is missing.', 'MissingParameterValue');
+            \jMessage::add('The QUERY_LAYERS parameter is missing.', 'MissingParameterValue');
 
             return $this->serviceException();
         }
@@ -341,13 +333,6 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
         // External WMS
         foreach ($externalWMSConfigLayers as $configLayer) {
-            $url = $configLayer->externalAccess->url;
-            if (!preg_match('/\?/', $url)) {
-                $url .= '?';
-            } elseif (!preg_match('/&$/', $url)) {
-                $url .= '&';
-            }
-
             $externalWMSLayerParams = array_merge(array(), $this->params);
             if (array_key_exists('map', $externalWMSLayerParams)) {
                 unset($externalWMSLayerParams['map']);
@@ -367,10 +352,16 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $externalWMSLayerParams['info_format'] = 'application/vnd.ogc.gml';
 
             // build Query string
-            $querystring = $url.$this->buildQuery($externalWMSLayerParams);
+            $url = $configLayer->externalAccess->url;
+            if (!preg_match('/\?/', $url)) {
+                $url .= '?';
+            } elseif (!preg_match('/&$/', $url)) {
+                $url .= '&';
+            }
+            $querystring = Proxy::constructUrl($externalWMSLayerParams, $this->services, $url);
 
             // Query external WMS layers
-            list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+            list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring);
 
             $rep .= $this->gfiGmlToHtml($data, $configLayer);
         }
@@ -411,7 +402,6 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getprint()
     {
-
         // Get remote data
         $response = $this->request(true);
 
@@ -432,7 +422,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             'repository' => $this->repository->getKey(),
             'project' => $this->project->getKey(),
         );
-        jEvent::notify('BeforePdfCreation', $eventParams);
+        $this->appContext->eventNotify('BeforePdfCreation', $eventParams);
 
         // Get remote data
         $response = $this->request(true);
@@ -459,42 +449,36 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    protected function getViewTpl($tplName, $layerName, $layerId, $layerTitle, $params = array())
+    {
+        $tpl = new \jTpl();
+        $tpl->assign('layerName', $layerName);
+        $tpl->assign('layerId', $layerId);
+        $tpl->assign('layerTitle', $layerTitle);
+        $tpl->assign('repository', $this->repository->getKey());
+        $tpl->assign('project', $this->project->getKey());
+        foreach ($params as $key => $value) {
+            $tpl->assign($key, $value);
+        }
+
+        return $tpl->fetch($tplName, 'html');
+    }
+
     /**
      * gfiXmlToHtml : return HTML for the getFeatureInfo XML.
      *
      * @param string $xmldata XML data from getFeatureInfo
+     * @param mixed  $xmlData
      *
      * @return string feature Info in HTML format
      */
-    protected function gfiXmlToHtml($xmldata)
+    protected function gfiXmlToHtml($xmlData)
     {
-        // Get data from XML
-        $use_errors = libxml_use_internal_errors(true);
-        $errorlist = array();
-        // Create a DOM instance
-        $xml = simplexml_load_string($xmldata);
-        if (!$xml) {
-            foreach (libxml_get_errors() as $error) {
-                $errorlist[] = $error;
-            }
-            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
-            $errormsg .= '\n'.http_build_query($this->params);
-            $errormsg .= '\n'.$xmldata;
-            $errormsg .= '\n'.implode('\n', $errorlist);
-            jLog::log($errormsg, 'error');
-            // return empty html string
+        $xml = $this->loadXmlString($xmlData, 'getFeatureInfoHtml');
+
+        if (!$xml || !$xml->Layer) {
             return '';
         }
-
-        // Check layer children
-        if (!$xml->Layer) {
-            // No data found
-            // return empty html string
-            return '';
-        }
-
-        // Get json configuration for the project
-        $configLayers = $this->project->getLayers();
 
         // Get optional parameter fid
         $filterFid = null;
@@ -529,8 +513,8 @@ class lizmapWMSRequest extends lizmapOGCRequest
                 $editionLayer = $this->project->findEditionLayerByLayerId($configLayer->id);
                 if ($editionLayer != null
                     && ($editionLayer->capabilities->modifyGeometry == 'True'
-                                     || $editionLayer->capabilities->modifyAttribute == 'True'
-                                     || $editionLayer->capabilities->deleteFeature == 'True')
+                    || $editionLayer->capabilities->modifyAttribute == 'True'
+                    || $editionLayer->capabilities->deleteFeature == 'True')
                 ) {
                     $returnPopup = true;
                 }
@@ -577,7 +561,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
     protected function gfiVectorXmlToHtml($layerId, $layerName, $layerTitle, $layer, $configLayer, $filterFid)
     {
         $content = array();
-        $popupClass = jClasses::getService('view~popup');
+        $popupClass = $this->appContext->getClassService('view~popup');
 
         // Get the template for the popup content
         $templateConfigured = false;
@@ -622,19 +606,12 @@ class lizmapWMSRequest extends lizmapOGCRequest
             ++$layerFeaturesCounter;
 
             // Hidden input containing layer id and feature id
-            $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>
-    ';
+            $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>'.PHP_EOL;
 
-            // First get default template
-            $tpl = new jTpl();
-            $tpl->assign('layerName', $layerName);
-            $tpl->assign('layerId', $layerId);
-            $tpl->assign('layerTitle', $layerTitle);
-            $tpl->assign('featureId', $id);
-            $tpl->assign('attributes', $feature->Attribute);
-            $tpl->assign('repository', $this->repository->getKey());
-            $tpl->assign('project', $this->project->getKey());
-            $popupFeatureContent = $tpl->fetch('view~popupDefaultContent', 'html');
+            $popupFeatureContent = $this->getViewTpl('view~popupDefaultContent', $layerName, $layerId, $layerTitle, array(
+                'featureId' => $id,
+                'attributes' => $feature->Attribute,
+            ));
             $autoContent = $popupFeatureContent;
 
             // Get specific template for the layer has been configured
@@ -656,59 +633,47 @@ class lizmapWMSRequest extends lizmapOGCRequest
             }
 
             // Use default template if needed or maptip value if defined
-            $hasMaptip = false;
-            $maptipValue = '';
             // Get geometry data
             $hasGeometry = false;
-            $geometryValue = '';
+            $hiddenGeometry = '';
+            $maptipValue = null;
 
             foreach ($feature->Attribute as $attribute) {
                 if ($attribute['name'] == 'maptip') {
-                    $hasMaptip = true;
-                    $maptipValue = $attribute['value'];
+                    // first replace all "media/bla/bla/llkjk.ext" by full url
+                    $maptipValue = preg_replace_callback(
+                        '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
+                        array($this, 'replaceMediaPathByMediaUrl'),
+                        $attribute['value']
+                    );
+                    // Replace : html encoded chars to let further regexp_replace find attributes
+                    $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
                 } elseif ($attribute['name'] == 'geometry') {
-                    $hasGeometry = true;
-                    $geometryValue = $attribute['value'];
+                    // Get the BoundingBox data
+                    $props = array(
+                        'CRS' => 'crs',
+                        'minx' => 'bbox-minx',
+                        'miny' => 'bbox-miny',
+                        'maxx' => 'bbox-maxx',
+                        'maxy' => 'bbox-maxy',
+                    );
+                    if ($hasGeometry && $feature->BoundingBox) {
+                        $hiddenGeometry .= '<input type="hidden" value="'.$attribute['value'].'" class="lizmap-popup-layer-feature-geometry"/>'.PHP_EOL;
+                        $bbox = $feature->BoundingBox[0];
+                        foreach ($props as $prop => $class) {
+                            $hiddenGeometry .= '<input type="hidden" value="'.$bbox[$prop].'" class="lizmap-popup-layer-feature-'.$class.'"/>'.PHP_EOL;
+                        }
+                    }
                 }
-            }
-            // If there is a maptip attribute we display its value
-            if ($hasMaptip) {
-                // first replace all "media/bla/bla/llkjk.ext" by full url
-                $maptipValue = preg_replace_callback(
-                    '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
-                    array($this, 'replaceMediaPathByMediaUrl'),
-                    $maptipValue
-                );
-                // Replace : html encoded chars to let further regexp_replace find attributes
-                $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
-                $qgisContent = $maptipValue;
-            }
-
-            // Get the BoundingBox data
-            $hiddenGeometry = '';
-            if ($hasGeometry && $feature->BoundingBox) {
-                $hiddenGeometry = '<input type="hidden" value="'.$geometryValue.'" class="lizmap-popup-layer-feature-geometry"/>
-        ';
-                $bbox = $feature->BoundingBox[0];
-                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['CRS'].'" class="lizmap-popup-layer-feature-crs"/>
-        ';
-                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['minx'].'" class="lizmap-popup-layer-feature-bbox-minx"/>
-        ';
-                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['miny'].'" class="lizmap-popup-layer-feature-bbox-miny"/>
-        ';
-                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxx'].'" class="lizmap-popup-layer-feature-bbox-maxx"/>
-        ';
-                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxy'].'" class="lizmap-popup-layer-feature-bbox-maxy"/>
-        ';
             }
 
             // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
             $finalContent = $autoContent;
             if (property_exists($configLayer, 'popupSource')) {
-                if ($configLayer->popupSource == 'qgis' and $hasMaptip) {
-                    $finalContent = $qgisContent;
+                if ($configLayer->popupSource == 'qgis' && $maptipValue) {
+                    $finalContent = $maptipValue;
                 }
-                if ($configLayer->popupSource == 'lizmap' and $templateConfigured) {
+                if ($configLayer->popupSource == 'lizmap' && $templateConfigured) {
                     $finalContent = $lizmapContent;
                 }
                 if ($configLayer->popupSource == 'auto') {
@@ -716,23 +681,17 @@ class lizmapWMSRequest extends lizmapOGCRequest
                 }
             }
 
-            $tpl = new jTpl();
-            $tpl->assign('layerTitle', $layerTitle);
-            $tpl->assign('layerName', $layerName);
-            $tpl->assign('layerId', $layerId);
-            $tpl->assign('featureId', $id);
-            $tpl->assign('popupContent', $hiddenFeatureId.$hiddenGeometry.$finalContent);
-            $content[] = $tpl->fetch('view~popup', 'html');
+            $content[] = $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
+                'featureId' => $id,
+                'popupContent' => $hiddenFeatureId.$hiddenGeometry.$finalContent,
+            ));
         } // loop features
 
         // Build hidden table containing all features
         if (count($allFeatureAttributes) > 0) {
-            $tpl = new jTpl();
-            $tpl->assign('layerTitle', $layerTitle);
-            $tpl->assign('repository', $this->repository->getKey());
-            $tpl->assign('project', $this->project->getKey());
-            $tpl->assign('allFeatureAttributes', array_reverse($allFeatureAttributes));
-            $content[] = $tpl->fetch('view~popup_all_features_table', 'html');
+            $content[] = $this->getViewTpl('view~popup_all_features_table', $layerName, $layerId, $layerTitle, array(
+                'allFeatureAttributes' => array_reverse($allFeatureAttributes),
+            ));
         }
 
         return $content;
@@ -750,21 +709,13 @@ class lizmapWMSRequest extends lizmapOGCRequest
      */
     protected function gfiRasterXmlToHtml($layerId, $layerName, $layerTitle, $layer)
     {
-        $tpl = new jTpl();
-        $tpl->assign('layerName', $layerName);
-        $tpl->assign('layerId', $layerId);
-        $tpl->assign('attributes', $layer->Attribute);
-        $tpl->assign('repository', $this->repository->getKey());
-        $tpl->assign('project', $this->project->getKey());
-        $popupRasterContent = $tpl->fetch('view~popupRasterContent', 'html');
+        $popupRasterContent = $this->getViewTpl('view~popupRasterContent', $layerName, $layerId, $layerTitle, array(
+            'attributes' => $layer->Attribute,
+        ));
 
-        $tpl = new jTpl();
-        $tpl->assign('layerTitle', $layerTitle);
-        $tpl->assign('layerName', $layerName);
-        $tpl->assign('layerId', $layerId);
-        $tpl->assign('popupContent', $popupRasterContent);
-
-        return $tpl->fetch('view~popup', 'html');
+        return $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
+            'popupContent' => $popupRasterContent,
+        ));
     }
 
     /**
@@ -777,10 +728,10 @@ class lizmapWMSRequest extends lizmapOGCRequest
      */
     protected function replaceMediaPathByMediaUrl($matches)
     {
-        $req = jApp::coord()->request;
-        $return = '';
-        $return .= '"';
-        $return .= jUrl::getFull(
+        $appContext = $this->appContext;
+        $req = $appContext->getCoord()->request;
+        $return = '"';
+        $return .= $appContext->getFullUrl(
             'view~media:getMedia',
             array(
                 'repository' => $this->repository->getKey(),
@@ -805,25 +756,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
      */
     protected function gfiGmlToHtml($gmldata, $configLayer)
     {
-        // Get data from XML
-        $use_errors = libxml_use_internal_errors(true);
-        $errorlist = array();
-        // Create a DOM instance
-        $xml = simplexml_load_string($gmldata);
-        if (!$xml) {
-            foreach (libxml_get_errors() as $error) {
-                $errorlist[] = $error;
-            }
-            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
-            $errormsg .= '\n'.http_build_query($this->params);
-            $errormsg .= '\n'.$gmldata;
-            $errormsg .= '\n'.implode('\n', $errorlist);
-            jLog::log($errormsg, 'error');
-            // return empty html string
-            return '';
-        }
+        $xml = $this->loadXmlString($gmldata, 'GetFeatureInfoHtml');
 
-        if (count($xml->children()) == 0) {
+        if (!$xml || count($xml->children()) == 0) {
             return '';
         }
 
@@ -854,5 +789,325 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $HTMLResponse .= '</table></div>';
 
         return $HTMLResponse;
+    }
+
+    protected function getVProfileInfos($configLayer, $repository, $project)
+    {
+        // Set or get tile from the parent project in case of embedded layers
+        if ($configLayer
+            && property_exists($configLayer, 'sourceRepository')
+            && $configLayer->sourceRepository != ''
+            && property_exists($configLayer, 'sourceProject')
+            && $configLayer->sourceProject != ''
+        ) {
+            $newRepository = (string) $configLayer->sourceRepository;
+            $newProject = (string) $configLayer->sourceProject;
+            $repository = $newRepository;
+            $project = $newProject;
+            $lrep = \lizmap::getRepository($repository);
+            if (!$lrep) {
+                \jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+
+                return array('error', 'text/plain');
+            }
+
+            try {
+                $lproj = \lizmap::getProject($repository.'~'.$project);
+                if (!$lproj) {
+                    \jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+
+                    return array('error', 'text/plain');
+                }
+            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+                \jLog::logEx($e, 'error');
+                \jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+
+                return array('error', 'text/plain');
+            }
+        }
+
+        return array($repository, $project);
+    }
+
+    protected function useCache($configLayer, $params, $profile)
+    {
+        // Has the user asked for cache for this layer ?
+        $wmsClient = 'web';
+        $useCache = false;
+        if ($configLayer) {
+            $useCache = strtolower($configLayer->cached) == 'true';
+        }
+        // Avoid using cache for requests concerning not square tiles or too big
+        // Focus on real web square tiles
+        if ($useCache
+            && $params['width'] != $params['height']
+            && ($params['width'] > 300 || $params['height'] > 300)
+        ) {
+            $wmsClient = 'gis';
+            $useCache = false;
+        }
+
+        // Get the cache Driver, to be sure that we can use the configured cache
+        if ($useCache) {
+            try {
+                $drv = $this->appContext->getCacheDriver($profile);
+                if (!$drv) {
+                    $useCache = false;
+                }
+            } catch (\Exception $e) {
+                \jLog::logEx($e, 'error');
+                $useCache = false;
+            }
+        }
+
+        return array($useCache, $wmsClient);
+    }
+
+    public function getTileCache($params, $profile, $useCache, $forced, $debug)
+    {
+        // Get cache if exists
+        $keyParams = $params;
+        // Remove keys not necessary for cache
+        if (array_key_exists('map', $keyParams)) {
+            unset($keyParams['map']);
+        }
+        if (array_key_exists('lizmap_user', $keyParams)) {
+            unset($keyParams['lizmap_user']);
+        }
+        if (array_key_exists('lizmap_user_groups', $keyParams)) {
+            unset($keyParams['lizmap_user_groups']);
+        }
+        if (array_key_exists('lizmap_override_filter', $keyParams)) {
+            unset($keyParams['lizmap_override_filter']);
+        }
+        ksort($keyParams);
+        $key = md5(serialize($keyParams));
+        if ($useCache && !$forced) {
+            try {
+                $tile = $this->appContext->getCache($key, $profile);
+            } catch (\Exception $e) {
+                \jLog::logEx($e, 'error');
+                $tile = false;
+            }
+            if ($tile) {
+                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
+                $mime = 'image/jpeg';
+                if (preg_match('#png#', $params['format'])) {
+                    $mime = 'image/png';
+                }
+
+                if ($debug) {
+                    \lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
+                }
+
+                return array($tile, $mime, 200, true);
+            }
+        }
+
+        return $key;
+    }
+
+    protected function getMetaTileData($params, $metatileSize)
+    {
+        $metatileBuffer = 5;
+        // Metatile Size
+        $metatileSizeExp = explode(',', $metatileSize);
+        $metatileSizeX = (int) $metatileSizeExp[0];
+        $metatileSizeY = (int) $metatileSizeExp[1];
+
+        // Get requested bbox
+        $bboxExp = explode(',', $params['bbox']);
+        $width = $bboxExp[2] - $bboxExp[0];
+        $height = $bboxExp[3] - $bboxExp[1];
+        // Calculate factors
+        $xFactor = (int) ($metatileSizeX / 2);
+        $yFactor = (int) ($metatileSizeY / 2);
+        // Calculate the new bbox
+        $xmin = $bboxExp[0] - $xFactor * $width - $metatileBuffer * $width / $params['width'];
+        $ymin = $bboxExp[1] - $yFactor * $height - $metatileBuffer * $height / $params['height'];
+        $xmax = $bboxExp[2] + $xFactor * $width + $metatileBuffer * $width / $params['width'];
+        $ymax = $bboxExp[3] + $yFactor * $height + $metatileBuffer * $height / $params['height'];
+        // Replace request bbox by metatile bbox
+        $params['bbox'] = "${xmin},${ymin},${xmax},${ymax}";
+
+        // Keep original param value
+        $originalParams = array('width' => $params['width'], 'height' => $params['height']);
+        // Replace width and height before requesting the image from qgis
+        $params['width'] = $metatileSizeX * $params['width'] + 2 * $metatileBuffer;
+        $params['height'] = $metatileSizeY * $params['height'] + 2 * $metatileBuffer;
+
+        return array($params, $originalParams, $xFactor, $yFactor);
+    }
+
+    protected function getImageData($data, $params, $originalParams, $xFactor, $yFactor, $debug)
+    {
+        $metatileBuffer = 5;
+        // Save original content into an image var
+        $original = imagecreatefromstring($data);
+
+        // crop parameters
+        $newWidth = (int) ($originalParams['width']); // px
+        $newHeight = (int) ($originalParams['height']); // px
+        $positionX = (int) ($xFactor * $originalParams['width']) + $metatileBuffer; // left translation of 30px
+        $positionY = (int) ($yFactor * $originalParams['height']) + $metatileBuffer; // top translation of 20px
+
+        // create new gd image
+        $image = imagecreatetruecolor($newWidth, $newHeight);
+
+        // save transparency if needed
+        if (preg_match('#png#', $params['format'])) {
+            imagesavealpha($original, true);
+            imagealphablending($image, false);
+            $color = imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
+            imagefill($image, 0, 0, $color);
+            imagesavealpha($image, true);
+        }
+
+        // crop image
+        imagecopyresampled($image, $original, 0, 0, $positionX, $positionY, $newWidth, $newHeight, $newWidth, $newHeight);
+
+        // Output the image as a string (use PHP buffering)
+        ob_start();
+        if (preg_match('#png#', $params['format'])) {
+            imagepng($image, null, 9);
+        } else {
+            imagejpeg($image, null, 90);
+        }
+        $data = ob_get_contents(); // read from buffer
+        ob_end_clean(); // delete buffer
+
+        // Destroy image handlers
+        imagedestroy($original);
+        imagedestroy($image);
+
+        if ($debug) {
+            \lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get data from map service or from the cache.
+     *
+     * @param lizmapProject $project the project
+     * @param array         $params  array of parameters
+     * @param mixed         $forced
+     *
+     * @return array $data normalized and filtered array
+     */
+    protected function getMapData($project, $params, $forced = false)
+    {
+        $layers = str_replace(',', '_', $params['layers']);
+        $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
+
+        // Get repository data
+        $lrep = $project->getRepository();
+        $lproj = $project;
+        $project = $lproj->getKey();
+        $repository = $lrep->getKey();
+
+        // Change to true to put some information in debug files
+        $debug = $this->services->debugMode;
+
+        // Read config file for the current project
+        $layername = $params['layers'];
+        $configLayers = $lproj->getLayers();
+        $configLayer = null;
+        if (property_exists($configLayers, $layername)) {
+            $configLayer = $configLayers->{$layername};
+        }
+
+        list($repository, $project) = $this->getVProfileInfos($configLayer, $repository, $project);
+
+        if ($repository === 'error') {
+            return array('error', 'text/plain', '404', false);
+        }
+
+        // Get tile cache virtual profile (tile storage)
+        // And get tile if already in cache
+        // --> must be done after checking that parent project is involved
+        $profile = Proxy::createVirtualProfile($repository, $project, $layers, $crs);
+
+        if ($debug) {
+            \lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
+        }
+
+        list($useCache, $wmsClient) = $this->useCache($configLayer, $params, $profile);
+        // Get cache if exists
+
+        $key = $this->getTileCache($params, $profile, $useCache, $forced, $debug);
+        if (is_array($key)) {
+            return $key;
+        }
+
+        // ***************************
+        // No cache hit : need to ask the tile from QGIS Server
+        // ***************************
+        // Add project path into map parameter
+        $params['map'] = $lproj->getRelativeQgisPath();
+
+        // Metatile : if needed, change the bbox
+        // Avoid metatiling when the cache is not active for the layer
+        $metatileSize = '1,1';
+        if ($configLayer and property_exists($configLayer, 'metatileSize')) {
+            if (preg_match('#^[3579],[3579]$#', $configLayer->metatileSize)) {
+                $metatileSize = $configLayer->metatileSize;
+            }
+        }
+
+        // Also checks if gd is installed
+        if ($metatileSize && $useCache && $wmsClient == 'web'
+            && extension_loaded('gd') && function_exists('gd_info')) {
+            list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
+        }
+
+        // Get data from the map server
+        list($data, $mime, $code) = Proxy::getRemoteData(
+            Proxy::constructUrl($params, $this->services)
+        );
+
+        if ($debug) {
+            \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
+        }
+
+        if ($useCache && !preg_match('/^image/', $mime)) {
+            $useCache = false;
+        }
+
+        // Metatile : if needed, crop the metatile into a single tile
+        // Also checks if gd is installed
+        if ($metatileSize && $useCache && $wmsClient == 'web'
+            && extension_loaded('gd') && function_exists('gd_info')
+        ) {
+            $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor, $debug);
+        }
+
+        $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
+
+        // Store into cache if needed
+        $cached = false;
+        if ($useCache) {
+            //~ \jLog::log( ' Store into cache');
+            $cacheExpiration = (int) $this->services->cacheExpiration;
+            if (property_exists($configLayer, 'cacheExpiration')) {
+                $cacheExpiration = (int) $configLayer->cacheExpiration;
+            }
+
+            try {
+                $this->appContext->setCache($key, $data, $cacheExpiration, $profile);
+                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
+                $cached = true;
+
+                if ($debug) {
+                    \lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
+                }
+            } catch (\Exception $e) {
+                \jLog::logEx($e, 'error');
+                $cached = false;
+            }
+        }
+
+        return array($data, $mime, $code, $cached);
     }
 }

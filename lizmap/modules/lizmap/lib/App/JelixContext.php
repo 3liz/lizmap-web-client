@@ -12,6 +12,8 @@
 
 namespace Lizmap\App;
 
+use jIniFileModifier;
+
 class JelixContext implements AppContextInterface
 {
     /**
@@ -20,6 +22,21 @@ class JelixContext implements AppContextInterface
     public function appConfig()
     {
         return \jApp::config();
+    }
+
+    public function appConfigPath($file = '')
+    {
+        return \jApp::configPath($file);
+    }
+
+    public function appVarPath($file = '')
+    {
+        return \jApp::varPath($file);
+    }
+
+    public function getCoord()
+    {
+        return \jApp::coord();
     }
 
     /**
@@ -61,6 +78,11 @@ class JelixContext implements AppContextInterface
         return \jAcl2DbUserGroup::getGroupList($login);
     }
 
+    public function aclGroupsIdByUser($login)
+    {
+        return \jAcl2DbUserGroup::getGroupsIdByUser($login);
+    }
+
     /**
      * Indicate if the current user is authenticated.
      *
@@ -92,6 +114,63 @@ class JelixContext implements AppContextInterface
     public function getCache($key, $profile = '')
     {
         return \jCache::get($key, $profile);
+    }
+
+    public function getCacheDriver($profile)
+    {
+        return \jCache::getDriver($profile);
+    }
+
+    /**
+     * Set a data in the cache.
+     *
+     * @param string $key     The cache key
+     * @param mixed  $value   The data to store in the cache
+     * @param mixed  $ttl     data time expiration
+     * @param string $profile the cache profile to use
+     */
+    public function setCache($key, $value, $ttl = null, $profile = '')
+    {
+        \jCache::set($key, $value, $ttl, $profile);
+    }
+
+    /**
+     * Deletes data from cache.
+     *
+     * @param string $key     The cache key
+     * @param string $profile The cache profile
+     */
+    public function clearCache($key, $profile = '')
+    {
+        \jCache::delete($key, $profile);
+    }
+
+    public function flushCache($profile = '')
+    {
+        \jCache::flush($profile);
+    }
+
+    /**
+     * Log a message.
+     *
+     * @param mixed  $message The message to log
+     * @param string $cat     The category of the logged message
+     */
+    public function logMessage($message, $cat = 'default')
+    {
+        \jLog::log($message, $cat);
+    }
+
+    /**
+     * Log an Exception.
+     *
+     * @param \Exception $exception The exception to log
+     * @param string The category of the logged Exception
+     * @param mixed $cat
+     */
+    public function logException($exception, $cat = 'default')
+    {
+        \jLog::logEx($exception, $cat);
     }
 
     /**
@@ -168,14 +247,15 @@ class JelixContext implements AppContextInterface
     /**
      * Get a string in a specific language.
      *
-     * @param string $key The Jelix selector corresponding to the string
-     *                    you want to get
+     * @param string $key       The Jelix selector corresponding to the string
+     *                          you want to get
+     * @param mixed  $variables
      *
      * @return string the translated string
      */
-    public function getLocale($key)
+    public function getLocale($key, $variables = array())
     {
-        return \jLocale::get($key);
+        return \jLocale::get($key, $variables);
     }
 
     /**
@@ -191,11 +271,51 @@ class JelixContext implements AppContextInterface
         return \jDao::get($jSelector, $profile);
     }
 
+    public function createDaoRecord($dao, $profile = '')
+    {
+        return \jDao::createRecord($dao, $profile);
+    }
+
     /**
      * {@inheritdoc}
      */
     public function createJelixForm($formSel, $formId = null)
     {
         return \jForms::create($formSel, $formId);
+    }
+
+    public function getUrl($selector)
+    {
+        return \jUrl::get($selector);
+    }
+
+    public function getFullUrl($selector, $params = array())
+    {
+        return \jUrl::getFull($selector, $params);
+    }
+
+    public function getIniModifier($ini)
+    {
+        return new jIniFileModifier($ini);
+    }
+
+    public function getFormPath()
+    {
+        return \jApp::tempPath('lizmap-forms');
+    }
+
+    public function getClassService($selector)
+    {
+        return \jClasses::getService($selector);
+    }
+
+    public function getTpl()
+    {
+        return new \jTpl();
+    }
+
+    public function getTileCaps($project)
+    {
+        return \lizmapTiler::getTileCapabilities($project);
     }
 }

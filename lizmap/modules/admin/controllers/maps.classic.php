@@ -547,7 +547,7 @@ class mapsCtrl extends jController
     public function removeCache()
     {
         $repository = $this->param('repository');
-        $repoKey = lizmapProxy::clearCache($repository);
+        $repoKey = \Lizmap\Request\Proxy::clearCache(lizmap::getRepository($repository));
         if ($repoKey) {
             jMessage::add(jLocale::get('admin~admin.cache.repository.removed', array($repoKey)));
         }
@@ -595,7 +595,7 @@ class mapsCtrl extends jController
             $lproj->clearCache();
 
             // Remove the cache for the layer
-            lizmapProxy::clearLayerCache($repository, $project, $layer);
+            \Lizmap\Request\Proxy::clearLayerCache($repository, $project, $layer);
 
             jMessage::add(jLocale::get('admin~admin.cache.layer.removed', array($layer)));
 

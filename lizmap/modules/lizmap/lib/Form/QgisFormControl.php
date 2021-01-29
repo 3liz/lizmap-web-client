@@ -9,19 +9,24 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class qgisFormControl
+
+namespace Lizmap\Form;
+
+use Lizmap\App;
+
+class QgisFormControl
 {
     public $ref = '';
 
     /**
-     * @var jFormsControl
+     * @var\jFormsControl
      */
     public $ctrl;
 
     /**
      * Qgis edittype as a simpleXml object.
      *
-     * @var SimpleXMLElement
+     * @var \SimpleXMLElement
      */
     protected $edittype;
 
@@ -59,7 +64,7 @@ class qgisFormControl
     public $DefaultRoot;
 
     // Table mapping QGIS and jelix forms
-    protected $qgisEdittypeMap = array(
+    protected static $qgisEdittypeMap = array(
         0 => array(
             'qgis' => array('name' => 'Line edit', 'description' => 'Simple edit box'),
             'jform' => array('markup' => 'input'),
@@ -124,6 +129,7 @@ class qgisFormControl
             'qgis' => array('name' => 'Relation reference', 'description' => 'Use relation to select value'),
             'jform' => array('markup' => 'menulist'),
         ),
+        'builded' => false,
     );
 
     // Table to map arbitrary data types to expected ones
@@ -165,65 +171,43 @@ class qgisFormControl
     );
 
     /**
-     * @var SimpleXMLElement attributes on the widgetv2config element
+     * @var \SimpleXMLElement attributes on the widgetv2config element
      */
     protected $widgetv2configAttr;
+
+    /** @var App\AppContextInterface */
+    protected $appContext;
 
     /**
      * Create an jForms control object based on a qgis edit widget.
      * And add it to the passed form.
      *
      * @param string              $ref                name of the control
-     * @param SimpleXMLElement    $edittype           simplexml object corresponding to the QGIS edittype for this field
+     * @param \SimpleXMLElement   $edittype           simplexml object corresponding to the QGIS edittype for this field
      * @param object              $prop               Jelix object with field properties (datatype, required, etc.)
      * @param array|object|string $aliasXml           simplexml object corresponding to the QGIS alias for this field
-     * @param string              $defaultValue       the QGIS expression of the default value
-     * @param array               $constraints        the QGIS constraints
+     * @param null|string         $defaultValue       the QGIS expression of the default value
+     * @param null|array          $constraints        the QGIS constraints
      * @param object              $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
+     * @param mixed               $properties
      */
-    public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue = null, $constraints = null, $rendererCategories = null)
+    public function __construct($ref, $properties, $prop, $defaultValue, $constraints, App\AppContextInterface $appContext)
     {
-
-    // Add new editTypes naming convention since QGIS 2.4
-        $this->qgisEdittypeMap['LineEdit'] = $this->qgisEdittypeMap[0];
-        $this->qgisEdittypeMap['UniqueValues'] = $this->qgisEdittypeMap[2];
-        $this->qgisEdittypeMap['UniqueValuesEditable'] = $this->qgisEdittypeMap[2];
-        $this->qgisEdittypeMap['ValueMap'] = $this->qgisEdittypeMap[3];
-        $this->qgisEdittypeMap['Classification'] = $this->qgisEdittypeMap[4];
-        $this->qgisEdittypeMap['Range'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['EditRange'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['SliderRange'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['CheckBox'] = $this->qgisEdittypeMap[7];
-        $this->qgisEdittypeMap['FileName'] = $this->qgisEdittypeMap[8];
-        $this->qgisEdittypeMap['Enumeration'] = $this->qgisEdittypeMap[-1];
-        $this->qgisEdittypeMap['Immutable'] = $this->qgisEdittypeMap[10];
-        $this->qgisEdittypeMap['Hidden'] = $this->qgisEdittypeMap[11];
-        $this->qgisEdittypeMap['TextEdit'] = $this->qgisEdittypeMap[12];
-        $this->qgisEdittypeMap['Calendar'] = $this->qgisEdittypeMap[13];
-        $this->qgisEdittypeMap['DateTime'] = $this->qgisEdittypeMap[13];
-        $this->qgisEdittypeMap['DialRange'] = $this->qgisEdittypeMap[5];
-        $this->qgisEdittypeMap['ValueRelation'] = $this->qgisEdittypeMap[15];
-        $this->qgisEdittypeMap['UuidGenerator'] = $this->qgisEdittypeMap[16];
-        $this->qgisEdittypeMap['Photo'] = $this->qgisEdittypeMap[8];
-        $this->qgisEdittypeMap['WebView'] = $this->qgisEdittypeMap[0];
-        $this->qgisEdittypeMap['Color'] = $this->qgisEdittypeMap[0];
-        $this->qgisEdittypeMap['ExternalResource'] = $this->qgisEdittypeMap[17];
-        $this->qgisEdittypeMap['RelationReference'] = $this->qgisEdittypeMap[18];
-
         // Set class attributes
         $this->ref = $ref;
         $this->fieldName = $ref;
-        if (is_string($aliasXml)) {
-            $this->fieldAlias = $aliasXml;
-        } elseif ($aliasXml and is_array($aliasXml) and count($aliasXml) != 0) {
-            $this->fieldAlias = (string) $aliasXml[0]->attributes()->name;
-        } elseif ($aliasXml and count($aliasXml) != 0) {
-            $this->fieldAlias = $aliasXml;
-        }
+        $this->appContext = $appContext;
         $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
-
         $this->defaultValue = $defaultValue;
+        $propTab = array('edittype', 'fieldEditType', 'fieldAlias', 'widgetv2configAttr', 'rendererCategories');
 
+        foreach ($propTab as $elem) {
+            if ($properties && property_exists($properties, $elem)) {
+                $this->{$elem} = $properties->{$elem};
+            }
+        }
+
+        $this->getEditTypeMap();
         // An auto-increment field cannot be required!
         if (!$prop->autoIncrement) {
             if ($prop->notNull) {
@@ -238,89 +222,34 @@ class qgisFormControl
             $this->required = false;
         }
 
-        if ($this->fieldDataType != 'geometry') {
-            $this->edittype = $edittype;
-            $this->rendererCategories = $rendererCategories;
-
-            // Get qgis edittype data
-            if ($this->edittype && ($this->edittype instanceof SimpleXMLElement)) {
-                // New QGIS 2.4 edittypes : use widgetv2type property
-                if (property_exists($this->edittype->attributes(), 'widgetv2type')) {
-                    $this->widgetv2configAttr = $this->edittype->widgetv2config->attributes();
-                    $this->fieldEditType = (string) $this->edittype->attributes()->widgetv2type;
-                }
-                // Before QGIS 2.4
-                else {
-                    $this->fieldEditType = (int) $this->edittype->attributes()->type;
-                }
-            } elseif ($this->edittype && is_object($this->edittype)) {
-                $this->widgetv2configAttr = $this->edittype->options;
-                $this->fieldEditType = $this->edittype->type;
-            } else {
-                $this->fieldEditType = 0;
-            }
-
-            // Get jform control type
-            if ($this->fieldEditType === 12) {
-                $useHtml = 0;
-                if (property_exists($this->edittype->attributes(), 'UseHtml')) {
-                    $useHtml = (int) filter_var((string) $this->edittype->attributes()->UseHtml, FILTER_VALIDATE_BOOLEAN);
-                }
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
-            } elseif ($this->fieldEditType === 'TextEdit') {
-                $isMultiLine = false;
-                if (property_exists($this->widgetv2configAttr, 'IsMultiline')) {
-                    $isMultiLine = filter_var((string) $this->widgetv2configAttr->IsMultiline, FILTER_VALIDATE_BOOLEAN);
-                }
-
-                if (!$isMultiLine) {
-                    $this->fieldEditType = 'LineEdit';
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
-                } else {
-                    $useHtml = 0;
-                    if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
-                        $useHtml = (int) filter_var((string) $this->widgetv2configAttr->UseHtml, FILTER_VALIDATE_BOOLEAN);
-                    }
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
-                }
-            } elseif ($this->fieldEditType === 5) {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
-            } elseif ($this->fieldEditType === 15) {
-                $allowMulti = (int) filter_var((string) $this->edittype->attributes()->allowMulti, FILTER_VALIDATE_BOOLEAN);
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
-            } elseif ($this->fieldEditType === 'Range' || $this->fieldEditType === 'EditRange') {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
-            } elseif ($this->fieldEditType === 'SliderRange' || $this->fieldEditType === 'DialRange') {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][1];
-            } elseif ($this->fieldEditType === 'ValueRelation') {
-                $allowMulti = (int) filter_var((string) $this->widgetv2configAttr->AllowMulti, FILTER_VALIDATE_BOOLEAN);
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
-            } elseif ($this->fieldEditType === 'DateTime') {
-                $markup = 'date';
-                if (property_exists($this->widgetv2configAttr, 'display_format')) {
-                    $display_format = $this->widgetv2configAttr->display_format;
-                    // Use date AND time widget id type is DateTime and we find HH
-                    if (preg_match('#HH#i', $display_format)) {
-                        $markup = 'datetime';
-                    }
-                    // Use only time if field is only time
-                    if (preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)) {
-                        $markup = 'time';
-                    }
-                }
-            } else {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
-            }
-        } else {
+        if ($this->fieldDataType == 'geometry') {
             $markup = 'hidden';
+        } else {
+            $markup = $properties->markup;
+        }
+
+        $controlNames = array('Menulist', 'Hidden', 'Checkboxes', 'Checkbox', 'Textarea', 'HtmlEditor', 'Date', 'Datetime');
+        $fillMethods = array('Menulist', 'Checkboxes', 'Checkbox');
+        foreach ($controlNames as $controlName) {
+            if (strtolower($controlName) === $markup) {
+                $class = '\jFormsControl'.$controlName;
+                $this->ctrl = new $class($this->ref);
+                if (in_array($controlName, $fillMethods)) {
+                    $this->fillControlDatasource();
+                }
+                $markup = null;
+            }
         }
 
         // Create the control
         switch ($markup) {
+            case null:
+                break;
+
             case 'input':
-                $this->ctrl = new jFormsControlInput($this->ref);
+                $this->ctrl = new \jFormsControlInput($this->ref);
                 if ($this->fieldEditType === 15) {
-                    $this->ctrl->datatype = new jDatatypeDecimal();
+                    $this->ctrl->datatype = new \jDatatypeDecimal();
                     $attributes = $this->edittype->attributes();
                     if (property_exists($attributes, 'min')) {
                         $this->ctrl->datatype->addFacet('minValue', (float) $attributes->min);
@@ -330,7 +259,7 @@ class qgisFormControl
                     }
                 } elseif ($this->fieldEditType === 'Range'
                          || $this->fieldEditType === 'EditRange') {
-                    $this->ctrl->datatype = new jDatatypeDecimal();
+                    $this->ctrl->datatype = new \jDatatypeDecimal();
                     $attributes = $this->widgetv2configAttr;
                     if (property_exists($attributes, 'Min')) {
                         $this->ctrl->datatype->addFacet('minValue', (float) $attributes->Min);
@@ -342,152 +271,19 @@ class qgisFormControl
 
                 break;
 
-            case 'menulist':
-                $this->ctrl = new jFormsControlMenulist($this->ref);
-                $this->fillControlDatasource();
-
-                break;
-
-            case 'checkboxes':
-                $this->ctrl = new jFormsControlCheckboxes($this->ref);
-                $this->fillControlDatasource();
-
-                break;
-
-            case 'hidden':
-                $this->ctrl = new jFormsControlHidden($this->ref);
-
-                break;
-
-            case 'checkbox':
-                $this->ctrl = new jFormsControlCheckbox($this->ref);
-                $this->fillCheckboxValues();
-
-                break;
-
-            case 'textarea':
-                $this->ctrl = new jFormsControlTextarea($this->ref);
-
-                break;
-
-            case 'htmleditor':
-                $this->ctrl = new jFormsControlHtmlEditor($this->ref);
-
-                break;
-
-            case 'date':
-                $this->ctrl = new jFormsControlDate($this->ref);
-
-                break;
-
-            case 'datetime':
-                $this->ctrl = new jFormsControlDatetime($this->ref);
-                if (preg_match('#ss#i', $this->widgetv2configAttr->display_format)) {
-                    $this->ctrl->enableSeconds = true;
-                }
-
-                break;
-
             case 'time':
-                //$this->ctrl = new jFormsControlDatetime($this->ref);
-                $this->ctrl = new jFormsControlInput($this->ref);
+                //$this->ctrl = new \jFormsControlDatetime($this->ref);
+                $this->ctrl = new \jFormsControlInput($this->ref);
 
                 break;
 
             case 'upload':
-                $choice = new jFormsControlChoice($this->ref.'_choice');
-                $choice->createItem('keep', 'keep');
-                $choice->createItem('update', 'update');
-                $upload = new jFormsControlUpload($this->ref);
-                if ($this->fieldEditType === 'Photo') {
-                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
-                    $upload->capture = 'camera';
-                } elseif ($this->fieldEditType === 'ExternalResource') {
-                    $upload->accept = '';
-                    if (property_exists($this->widgetv2configAttr, 'FileWidgetFilter')) {
-                        //QFileDialog::getOpenFileName filter
-                        $FileWidgetFilter = $this->widgetv2configAttr->FileWidgetFilter;
-                        $FileWidgetFilter = explode(';;', $FileWidgetFilter);
-                        $accepts = array();
-                        $re = '/(\*\.\w{3,6})/';
-                        foreach ($FileWidgetFilter as $FileFilter) {
-                            $matches = array();
-                            if (preg_match_all($re, $FileFilter, $matches) == 1) {
-                                foreach (array_slice($matches, 1) as $m) {
-                                    $accepts[] = substr($m, 1);
-                                }
-                            }
-                        }
-                        if (count($accepts) > 0) {
-                            $upload->accept = implode(', ', array_unique($accepts));
-                        }
-                    }
-                    if (property_exists($this->widgetv2configAttr, 'DocumentViewer')
-                        && ($this->widgetv2configAttr->DocumentViewer === '1' || $this->widgetv2configAttr->DocumentViewer === 'true')) {
-                        if ($upload->accept != '') {
-                            $mimetypes = array();
-                            $accepts = explode(', ', $upload->accept);
-                            foreach ($accepts as $a) {
-                                if ($a == '.gif') {
-                                    $mimetypes[] = 'image/gif';
-                                } elseif ($a == '.png') {
-                                    $mimetypes[] = 'image/png';
-                                } elseif ($a == '.jpg' or $a == '.jpeg') {
-                                    if (!in_array('image/jpg', $mimetypes)) {
-                                        $mimetypes = array_merge($mimetypes, array('image/jpg', 'image/jpeg', 'image/pjpeg'));
-                                    }
-                                } elseif ($a == '.bm' or $a == '.bmp') {
-                                    if (!in_array('image/bmp', $mimetypes)) {
-                                        $mimetypes = array_merge($mimetypes, array('image/bmp', 'image/x-windows-bmp'));
-                                    }
-                                } elseif ($a == '.pbm') {
-                                    $mimetypes[] = 'image/x-portable-bitmap';
-                                } elseif ($a == '.pgm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/x-portable-graymap', 'image/x-portable-greymap'));
-                                } elseif ($a == '.ppm') {
-                                    $mimetypes[] = 'image/x-portable-pixmap';
-                                } elseif ($a == '.xbm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'));
-                                } elseif ($a == '.xpm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/xpm', 'image/x-xpixmap'));
-                                } elseif ($a == '.svg') {
-                                    $mimetypes[] = 'image/svg+xml';
-                                }
-                            }
-                            $upload->mimetype = array_unique($mimetypes);
-                        } else {
-                            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-                            $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
-                        }
-                        $upload->capture = 'camera';
-                    }
-                    if (property_exists($this->widgetv2configAttr, 'DefaultRoot')
-                        and (
-                          preg_match(
-                              '#^../media(/)?#',
-                              $this->widgetv2configAttr->DefaultRoot
-                          )
-                          or preg_match(
-                              '#^media(/)?#',
-                              $this->widgetv2configAttr->DefaultRoot
-                          )
-                        )
-                    ) {
-                        $this->DefaultRoot = $this->widgetv2configAttr->DefaultRoot.'/';
-                    } else {
-                        $this->DefaultRoot = '';
-                    }
-                }
-                $choice->addChildControl($upload, 'update');
-                $choice->createItem('delete', 'delete');
-                $choice->defaultValue = 'keep';
-                $this->ctrl = $choice;
+                $this->getUploadControl();
 
                 break;
 
             default:
-                $this->ctrl = new jFormsControlInput($this->ref);
+                $this->ctrl = new \jFormsControlInput($this->ref);
 
                 break;
         }
@@ -502,7 +298,7 @@ class qgisFormControl
             // Checkbox should not be required
             $this->required = false;
             // Set control
-            $this->ctrl = new jFormsControlCheckbox($this->ref);
+            $this->ctrl = new \jFormsControlCheckbox($this->ref);
             // Check data list
             foreach ($data as $k => $v) {
                 $strK = strtolower($k);
@@ -528,9 +324,131 @@ class qgisFormControl
             if ($constraints['exp_desc'] !== '') {
                 $this->ctrl->hint = $constraints['exp_desc'];
             } else {
-                $this->ctrl->hint = jLocale::get('view~edition.message.hint.constraint', array($constraints['exp_value']));
+                $this->ctrl->hint = $this->appContext->getLocale('view~edition.message.hint.constraint', array($constraints['exp_value']));
             }
         }
+    }
+
+    protected function getUploadControl()
+    {
+        $choice = new \jFormsControlChoice($this->ref.'_choice');
+        $choice->createItem('keep', 'keep');
+        $choice->createItem('update', 'update');
+        $upload = new \jFormsControlUpload($this->ref);
+        if ($this->fieldEditType === 'Photo') {
+            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+            $upload->accept = implode(', ', $upload->mimetype);
+            $upload->capture = 'camera';
+        } elseif ($this->fieldEditType === 'ExternalResource') {
+            $upload->accept = '';
+            if (property_exists($this->widgetv2configAttr, 'FileWidgetFilter')) {
+                //QFileDialog::getOpenFileName filter
+                $FileWidgetFilter = explode(';;', $this->widgetv2configAttr->FileWidgetFilter);
+                $accepts = array();
+                $re = '/(\*\.\w{3,6})/';
+                foreach ($FileWidgetFilter as $FileFilter) {
+                    $matches = array();
+                    if (preg_match_all($re, $FileFilter, $matches) == 1) {
+                        foreach (array_slice($matches, 1) as $m) {
+                            $accepts[] = substr($m, 1);
+                        }
+                    }
+                }
+                if (count($accepts) > 0) {
+                    $upload->accept = implode(', ', array_unique($accepts));
+                }
+            }
+            if (property_exists($this->widgetv2configAttr, 'DocumentViewer')
+                && ($this->widgetv2configAttr->DocumentViewer === '1' || $this->widgetv2configAttr->DocumentViewer === 'true')) {
+                if ($upload->accept != '') {
+                    $mimetypes = array();
+                    $accepts = explode(', ', $upload->accept);
+                    foreach ($accepts as $a) {
+                        $typeTab = array(
+                            '.gif' => 'image/gif',
+                            '.png' => 'image/png',
+                            '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                            '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                            '.bm' => array('image/bmp', 'image/x-windows-bmp'),
+                            '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
+                            '.pbm' => 'image/x-portable-bitmap',
+                            '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
+                            '.ppm' => 'image/x-portable-pixmap',
+                            '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
+                            '.xpm' => array('image/xpm', 'image/x-xpixmap'),
+                            '.svg' => 'image/svg+xml',
+                        );
+                        if (array_key_exists($a, $typeTab)) {
+                            if ((in_array($a, array('.jpg', '.jpeg')) && in_array('image/jpg', $mimetypes))
+                            || (in_array($a, array('.bm', '.bmp')) && in_array('image/bmp', $mimetypes))) {
+                                continue;
+                            }
+                            if (is_array($typeTab[$a])) {
+                                $mimetypes = array_merge($mimetypes, $typeTab[$a]);
+                            } else {
+                                $mimetypes[] = $typeTab[$a];
+                            }
+                        }
+                    }
+                    $upload->mimetype = array_unique($mimetypes);
+                } else {
+                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                }
+                $upload->capture = 'camera';
+            }
+            if (property_exists($this->widgetv2configAttr, 'DefaultRoot')
+                && (preg_match('#^../media(/)?#', $this->widgetv2configAttr->DefaultRoot)
+                    || preg_match('#^media(/)?#', $this->widgetv2configAttr->DefaultRoot))) {
+                $this->DefaultRoot = $this->widgetv2configAttr->DefaultRoot.'/';
+            } else {
+                $this->DefaultRoot = '';
+            }
+        }
+        $choice->addChildControl($upload, 'update');
+        $choice->createItem('delete', 'delete');
+        $choice->defaultValue = 'keep';
+        $this->ctrl = $choice;
+    }
+
+    protected static function buildEditTypeMap()
+    {
+        // Add new editTypes naming convention since QGIS 2.4
+        self::$qgisEdittypeMap['LineEdit'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['UniqueValues'] = self::$qgisEdittypeMap[2];
+        self::$qgisEdittypeMap['UniqueValuesEditable'] = self::$qgisEdittypeMap[2];
+        self::$qgisEdittypeMap['ValueMap'] = self::$qgisEdittypeMap[3];
+        self::$qgisEdittypeMap['Classification'] = self::$qgisEdittypeMap[4];
+        self::$qgisEdittypeMap['Range'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['EditRange'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['SliderRange'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['CheckBox'] = self::$qgisEdittypeMap[7];
+        self::$qgisEdittypeMap['FileName'] = self::$qgisEdittypeMap[8];
+        self::$qgisEdittypeMap['Enumeration'] = self::$qgisEdittypeMap[-1];
+        self::$qgisEdittypeMap['Immutable'] = self::$qgisEdittypeMap[10];
+        self::$qgisEdittypeMap['Hidden'] = self::$qgisEdittypeMap[11];
+        self::$qgisEdittypeMap['TextEdit'] = self::$qgisEdittypeMap[12];
+        self::$qgisEdittypeMap['Calendar'] = self::$qgisEdittypeMap[13];
+        self::$qgisEdittypeMap['DateTime'] = self::$qgisEdittypeMap[13];
+        self::$qgisEdittypeMap['DialRange'] = self::$qgisEdittypeMap[5];
+        self::$qgisEdittypeMap['ValueRelation'] = self::$qgisEdittypeMap[15];
+        self::$qgisEdittypeMap['UuidGenerator'] = self::$qgisEdittypeMap[16];
+        self::$qgisEdittypeMap['Photo'] = self::$qgisEdittypeMap[8];
+        self::$qgisEdittypeMap['WebView'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['Color'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['ExternalResource'] = self::$qgisEdittypeMap[17];
+        self::$qgisEdittypeMap['RelationReference'] = self::$qgisEdittypeMap[18];
+        self::$qgisEdittypeMap['undefined'] = self::$qgisEdittypeMap[0];
+        self::$qgisEdittypeMap['builded'] = true;
+    }
+
+    public static function getEditTypeMap()
+    {
+        if (!self::$qgisEdittypeMap['builded']) {
+            self::buildEditTypeMap();
+        }
+
+        return self::$qgisEdittypeMap;
     }
 
     /*
@@ -548,50 +466,29 @@ class qgisFormControl
         }
 
         // Data type
-        if ($this->ctrl->datatype instanceof jDatatypeString) {
-            // let's change datatype when control has the default one, jDatatypeString
-            // we don't want to change datatype that are specific to a control type, like in jFormsControlHtmlEditor,
-            // jFormsControlDate etc..
-
-            switch ($this->fieldDataType) {
-                case 'integer':
-                    $this->ctrl->datatype = new jDatatypeInteger();
-
-                    break;
-
-                case 'float':
-                    $this->ctrl->datatype = new jDatatypeDecimal();
-
-                    break;
-
-                case 'date':
-                    $this->ctrl->datatype = new jDatatypeDate();
-
-                    break;
-
-                case 'datetime':
-                    $this->ctrl->datatype = new jDatatypeDateTime();
-
-                    break;
-
-                case 'time':
-                    $this->ctrl->datatype = new jDatatypeTime();
-
-                    break;
-
-                case 'boolean':
-                    $this->ctrl->datatype = new jDatatypeBoolean();
-
-                    break;
+        if ($this->ctrl->datatype instanceof \jDatatypeString) {
+            // let's change datatype when control has the default one, \jDatatypeString
+            // we don't want to change datatype that are specific to a control type, like in\jFormsControlHtmlEditor,
+            //\jFormsControlDate etc..
+            $typeTab = array('Integer', 'float', 'Date', 'DateTime', 'Time', 'Boolean');
+            foreach ($typeTab as $type) {
+                if ($this->fieldDataType === strtolower($type)) {
+                    if ($this->fieldDataType === 'float') {
+                        $class = '\jDatatype'.'Decimal';
+                    } else {
+                        $class = '\jDatatype'.$type;
+                    }
+                    $this->ctrl->datatype = new $class();
+                }
             }
         }
 
         // Read-only
         if ($this->fieldDataType != 'geometry') {
-            if (array_key_exists('readonly', $this->qgisEdittypeMap[$this->fieldEditType]['jform'])) {
+            if (array_key_exists('readonly', self::$qgisEdittypeMap[$this->fieldEditType]['jform'])) {
                 $this->isReadOnly = true;
             }
-            if ($this->edittype && ($this->edittype instanceof SimpleXMLElement)) {
+            if ($this->edittype && ($this->edittype instanceof \SimpleXMLElement)) {
                 $isEditable = true;
                 // Also use "editable" property
                 if (property_exists($this->edittype->attributes(), 'editable')) {
@@ -654,7 +551,7 @@ class qgisFormControl
     {
 
         // Create a datasource for some types : menulist
-        $dataSource = new jFormsStaticDatasource();
+        $dataSource = new \jFormsStaticDatasource();
 
         // Create an array of data specific for the qgis edittype
         $data = array();
@@ -685,7 +582,7 @@ class qgisFormControl
                 if ($this->fieldEditType === 'UniqueValuesEditable') {
                     $this->uniqueValuesData['editable'] = true;
                 }
-                if (($this->edittype instanceof SimpleXMLElement) && $this->edittype->widgetv2config) {
+                if (($this->edittype instanceof \SimpleXMLElement) && $this->edittype->widgetv2config) {
                     $this->uniqueValuesData['notNull'] = filter_var($this->widgetv2configAttr->notNull, FILTER_VALIDATE_BOOLEAN);
                     $this->uniqueValuesData['editable'] = filter_var($this->widgetv2configAttr->Editable, FILTER_VALIDATE_BOOLEAN);
                 } elseif (is_object($this->edittype)) {
@@ -710,7 +607,7 @@ class qgisFormControl
                 break;
 
             case 'ValueMap':
-                if ($this->edittype instanceof SimpleXMLElement) {
+                if ($this->edittype instanceof \SimpleXMLElement) {
                     foreach ($this->edittype->widgetv2config->xpath('value') as $value) {
                         $k = (string) $value->attributes()->key;
                         $v = (string) $value->attributes()->value;
@@ -729,12 +626,7 @@ class qgisFormControl
             // Classification
             case 4:
             case 'Classification':
-                foreach ($this->rendererCategories as $category) {
-                    $k = (string) $category->attributes()->label;
-                    $v = (string) $category->attributes()->value;
-                    $data[$v] = $k;
-                }
-                asort($data);
+                $data = $this->rendererCategories;
 
                 break;
 
@@ -813,7 +705,7 @@ class qgisFormControl
                 $filterExpression = (string) $this->widgetv2configAttr->FilterExpression;
                 $useCompleter = filter_var($this->widgetv2configAttr->UseCompleter, FILTER_VALIDATE_BOOLEAN);
                 $fieldEditable = true;
-                if (($this->edittype instanceof SimpleXMLElement) && property_exists($this->widgetv2configAttr, 'fieldEditable')) {
+                if (($this->edittype instanceof \SimpleXMLElement) && property_exists($this->widgetv2configAttr, 'fieldEditable')) {
                     $fieldEditable = filter_var($this->widgetv2configAttr->fieldEditable, FILTER_VALIDATE_BOOLEAN);
                 } elseif (is_object($this->edittype) && property_exists($this->edittype, 'editable')) {
                     $fieldEditable = filter_var($this->edittype->editable, FILTER_VALIDATE_BOOLEAN);
@@ -834,13 +726,13 @@ class qgisFormControl
                 break;
 
             case 'RelationReference':
-                $allowNull = filter_var($this->widgetv2configAttr->AllowNULL, FILTER_VALIDATE_BOOLEAN);
+                $allowNull = filter_var($this->widgetv2configAttr->AllowNull, FILTER_VALIDATE_BOOLEAN);
                 $orderByValue = filter_var($this->widgetv2configAttr->OrderByValue, FILTER_VALIDATE_BOOLEAN);
                 $Relation = (string) $this->widgetv2configAttr->Relation;
                 $MapIdentification = filter_var($this->widgetv2configAttr->MapIdentification, FILTER_VALIDATE_BOOLEAN);
                 $chainFilters = false;
                 $filters = array();
-                if (($this->edittype instanceof SimpleXMLElement)) {
+                if (($this->edittype instanceof \SimpleXMLElement)) {
                     if (property_exists($this->edittype->widgetv2config, 'FilterFields')) {
                         foreach ($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
                             $filters[] = (string) $f->attributes()->name;

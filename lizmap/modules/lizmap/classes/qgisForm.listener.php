@@ -9,6 +9,9 @@
  *
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Lizmap\Form;
+
 class qgisFormListener extends jEventListener
 {
     public function onjformsPrepareToFillDynamicList($event)
@@ -44,6 +47,6 @@ class qgisFormListener extends jEventListener
             return;
         }
 
-        $qgisForm = new qgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()));
+        $qgisForm = new Form\QgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()), lizmap::getAppContext());
     }
 }

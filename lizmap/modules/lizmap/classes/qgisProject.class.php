@@ -9,6 +9,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+/**
+ * @deprecated
+ */
 class qgisProject
 {
     /**
