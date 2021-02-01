@@ -910,7 +910,7 @@ class Project
             );
             foreach ($properties as $prop) {
                 if (property_exists($lc, $prop)) {
-                    $plot_conf['plot'][$prop] = $lc->{$prop};
+                    $plotConf['plot'][$prop] = $lc->{$prop};
                 }
             }
 
