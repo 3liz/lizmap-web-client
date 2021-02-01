@@ -3156,7 +3156,7 @@ var lizMap = function() {
                     );
 
                     // Keep `rConfigLayer` in array with same order that fetch queries
-                    // for later user when Promise.all resolves
+                    // for later user when Promise.allSettled resolves
                     rConfigLayerAll.push(rConfigLayer);
                     popupChidrenRequests.push(
                       fetch(service, {
@@ -3170,13 +3170,13 @@ var lizMap = function() {
               }
           }
 
-          // Execute promise all
-          Promise.all(popupChidrenRequests).then(popupChildrenData => {
+          // Fetch GetFeatureInfo query for every children popups
+          Promise.allSettled(popupChidrenRequests).then(popupChildrenData => {
 
             childPopupElements = [];
 
             for (let index = 0; index < popupChildrenData.length; index++) {
-              let popupChildData = popupChildrenData[index];
+              let popupChildData = popupChildrenData[index].value;
               
               var hasPopupContent = (!(!popupChildData || popupChildData == null || popupChildData == ''))
               if (hasPopupContent) {
