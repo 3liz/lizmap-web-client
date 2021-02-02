@@ -15,11 +15,12 @@ fi
 # lizmapConfig.ini.php.dist
 
 # Copy config files to mount point
-cp -aR lizmap/var/config.dist/* lizmap/var/config
-[ ! -f lizmap/var/config/lizmapConfig.ini.php ] && cp lizmap/var/config/lizmapConfig.ini.php.dist lizmap/var/config/lizmapConfig.ini.php
-[ ! -f lizmap/var/config/localconfig.ini.php  ] && cp lizmap/var/config/localconfig.ini.php.dist  lizmap/var/config/localconfig.ini.php
-[ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php
+cp -aR lizmap/var/config.dist/* lizmap/var/config 
+[ ! -f lizmap/var/config/lizmapConfig.ini.php ] && cp lizmap/var/config/lizmapConfig.ini.php.dist lizmap/var/config/lizmapConfig.ini.php 
+[ ! -f lizmap/var/config/localconfig.ini.php  ] && cp lizmap/var/config/localconfig.ini.php.dist  lizmap/var/config/localconfig.ini.php 
+[ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php 
 
+chown -R $LIZMAP_USER:$LIZMAP_USER lizmap/var/
 
 # Copy static files
 # Note: static files needs to be resolved by external web server
