@@ -1,0 +1,33 @@
+
+# Docker image with composer base on debian:buster-slim
+#
+
+NAME=lizmap-builder
+
+PHP_VERSION:=7.4
+COMPOSER_VERSION:=2.0.8
+
+VERSION_TAG=$(COMPOSER_VERSION)-php$(PHP_VERSION)
+
+image:
+	docker build --rm \
+		--build-arg="PHP_VERSION=$(PHP_VERSION)" \
+		--build-arg="COMPOSER_VERSION=$(COMPOSER_VERSION)" \
+		-t $(NAME):$(VERSION_TAG) \
+		.
+
+WORKDIR=$(realpath ..)
+
+build: image
+	mkdir -p $(WORKDIR)/.composer $(WORKDIR)/.npm
+	docker run --rm -it --user $$(id -u):$$(id -g) \
+		--workdir /build \
+		--volume $(WORKDIR):/build \
+		--volume $(WORKDIR)/.composer:/.composer \
+		--volume $(WORKDIR)/.npm:/.npm \
+		$(NAME):$(VERSION_TAG) \
+		make package
+
+clean:
+	rm -rf $(WORKDIR)/.composer $(WORKDIR)/.npm
+
