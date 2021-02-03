@@ -505,7 +505,9 @@ var lizMap = function() {
                   ITEMFONTSIZE: 9,
                   SYMBOLSPACE: 1,
                   ICONLABELSPACE: 2,
-                  DPI: 96};
+                  DPI: 96,
+                  RULELABEL:"AUTO"
+                };
     if (layerConfig.id==layerConfig.name)
       legendParams['LAYERFONTBOLD'] = "TRUE";
     else {
