@@ -33,71 +33,34 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
         $layer = $lproj->getLayer($layerId);
 
         $result = array();
-        if ($filterExpression !== '') {
-            // build feature's form
-            $geom = null;
-            $values = array();
-            $criteriaControls = $this->getCriteriaControls();
-            if ($criteriaControls !== null && is_array($criteriaControls)) {
-                foreach ($criteriaControls as $ref) {
-                    if ($ref == $privateData['liz_geometryColumn']) {
-                        // from wkt to geom
-                        $wkt = trim($form->getData($ref));
-                        $geom = lizmapWkt::parse($wkt);
-                    } else {
-                        // properties
-                        $values[$ref] = $form->getData($ref);
+
+        if ($layer) {
+            if ($filterExpression !== '') {
+                // build feature's form
+                $geom = null;
+                $values = array();
+                $criteriaControls = $this->getCriteriaControls();
+                if ($criteriaControls !== null && is_array($criteriaControls)) {
+                    foreach ($criteriaControls as $ref) {
+                        if ($ref == $privateData['liz_geometryColumn']) {
+                            // from wkt to geom
+                            $wkt = trim($form->getData($ref));
+                            $geom = lizmapWkt::parse($wkt);
+                        } else {
+                            // properties
+                            $values[$ref] = $form->getData($ref);
+                        }
                     }
                 }
-            }
 
-            $form_feature = array(
-                'type' => 'Feature',
-                'geometry' => $geom,
-                'properties' => $values,
-            );
+                $form_feature = array(
+                    'type' => 'Feature',
+                    'geometry' => $geom,
+                    'properties' => $values,
+                );
 
-            // Get Feature With Forms Scope
-            $features = qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn), true);
-            foreach ($features as $feat) {
-                if (property_exists($feat, 'properties')
-                    and property_exists($feat->properties, $keyColumn)
-                    and property_exists($feat->properties, $valueColumn)) {
-                    $result[(string) $feat->properties->{$keyColumn}] = $feat->properties->{$valueColumn};
-                }
-            }
-        } else {
-            $typename = $layer->getShortName();
-            if ($typename === null || $typename === '') {
-                $typename = str_replace(' ', '_', $layer->getName());
-            }
-
-            $params = array(
-                'SERVICE' => 'WFS',
-                'VERSION' => '1.0.0',
-                'REQUEST' => 'GetFeature',
-                'TYPENAME' => $typename,
-                'PROPERTYNAME' => $valueColumn.','.$keyColumn,
-                'OUTPUTFORMAT' => 'GeoJSON',
-                'GEOMETRYNAME' => 'none',
-            );
-
-            // Perform request
-            $wfsRequest = new lizmapWFSRequest($lproj, $params);
-            $wfsResult = $wfsRequest->process();
-
-            $data = $wfsResult->data;
-            if (property_exists($wfsResult, 'file') and $wfsResult->file and is_file($data)) {
-                $data = jFile::read($data);
-            }
-            $mime = $wfsResult->mime;
-
-            if ($data && (strpos($mime, 'text/json') === 0
-                          || strpos($mime, 'application/json') === 0
-                          || strpos($mime, 'application/vnd.geo+json') === 0)) {
-                $json = json_decode($data);
-                // Get result from json
-                $features = $json->features;
+                // Get Feature With Forms Scope
+                $features = qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn), true);
                 foreach ($features as $feat) {
                     if (property_exists($feat, 'properties')
                         and property_exists($feat->properties, $keyColumn)
@@ -105,18 +68,58 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
                         $result[(string) $feat->properties->{$keyColumn}] = $feat->properties->{$valueColumn};
                     }
                 }
+            } else {
+                $typename = $layer->getShortName();
+                if ($typename === null || $typename === '') {
+                    $typename = str_replace(' ', '_', $layer->getName());
+                }
+
+                $params = array(
+                    'SERVICE' => 'WFS',
+                    'VERSION' => '1.0.0',
+                    'REQUEST' => 'GetFeature',
+                    'TYPENAME' => $typename,
+                    'PROPERTYNAME' => $valueColumn.','.$keyColumn,
+                    'OUTPUTFORMAT' => 'GeoJSON',
+                    'GEOMETRYNAME' => 'none',
+                );
+
+                // Perform request
+                $wfsRequest = new lizmapWFSRequest($lproj, $params);
+                $wfsResult = $wfsRequest->process();
+
+                $data = $wfsResult->data;
+                if (property_exists($wfsResult, 'file') and $wfsResult->file and is_file($data)) {
+                    $data = jFile::read($data);
+                }
+                $mime = $wfsResult->mime;
+
+                if ($data && (strpos($mime, 'text/json') === 0
+                            || strpos($mime, 'application/json') === 0
+                            || strpos($mime, 'application/vnd.geo+json') === 0)) {
+                    $json = json_decode($data);
+                    // Get result from json
+                    $features = $json->features;
+                    foreach ($features as $feat) {
+                        if (property_exists($feat, 'properties')
+                            and property_exists($feat->properties, $keyColumn)
+                            and property_exists($feat->properties, $valueColumn)) {
+                            $result[(string) $feat->properties->{$keyColumn}] = $feat->properties->{$valueColumn};
+                        }
+                    }
+                }
+
+                // Add default empty value for required fields
+                // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+                if ($this->emptyValue) {
+                    $result[''] = '';
+                }
             }
 
-            // Add default empty value for required fields
-            // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-            if ($this->emptyValue) {
-                $result[''] = '';
+            // orderByValue
+            if ($valueRelationData['orderByValue']) {
+                asort($result);
             }
-        }
-
-        // orderByValue
-        if ($valueRelationData['orderByValue']) {
-            asort($result);
         }
 
         return $result;
