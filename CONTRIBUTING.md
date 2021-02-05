@@ -43,24 +43,41 @@ This allows the user to request coffea:
 
 ## Build and install dependencies
 
-**Since Lizmap 3.4, the source code in the repository is not usable directly**, you must build the application first.
+**Since Lizmap 3.4, the source code in the repository is not usable directly**.
+The application should be "built" first.
+
+If you want to modify then test the code of Lizmap, or if you want to generate
+zip packages you must install some tools. See below.
+
+If you just want to modify and/or test the docker image of Lizmap (the
+`docker/` directory). See `docker/CONTRIBUTING.md`.
+
+### tools
+
+You need some developer tools in order to build and install dependencies.
+
+* The cli version of PHP (prefered version: 7.4). Be sure that following extensions are also installed:
+  json, curl, mbstring, xml.
+* [Composer](http://getcomposer.org), the package manager of PHP. You should have at least version 2.0.0 
+* Nodejs (we are using 12.x or 14.x) and npm:
+  * with [binaries](https://nodejs.org/en/download/)
+  * or with the package manager for your Linux distribution, but prefer to install
+    directly from nodesource: https://github.com/nodesource/distributions/blob/master/README.md#debinstall
+* `Make` and `zip`.
+
 
 ### Building a zip with Javascript and PHP
 
-- Install [Composer](http://getcomposer.org), [Npm](https://www.npmjs.com/), `Make` and `zip`.
 - Run `make package` in your terminal.
 - You'll have 3 packages in the `build` directory:
   - `lizmap-web-client` and `lizmap-web-client-X.Y` are identical.
   - Each folder has its own zip file too.
-  - `lizmapdemo` is the Jelix module for the Lizmap demo.
+  - `lizmapdemo` is a module for the Lizmap demo.
 
 ### Building JavaScript only
 
 #### Requirements
 
-* Install nodejs :
-    * with [binaries](https://nodejs.org/en/download/)
-    * or the packet manager for your Linux distribution (e.g. Ubuntu : `sudo apt install nodejs`)
 * Install dependencies :
     * `cd assets/`
     * `npm install`
@@ -76,7 +93,6 @@ It creates a `assets/node_modules/` directory. Don't commit it into the git repo
 Don't commit minified JS files into the git repository. They will be built by our
 continuous integration and added into zip packages that are available on github.
 
-
 * Build for development (source mapping, build is executed at every change on a JS file) :
 `npm run watch`
 
@@ -84,8 +100,7 @@ Look at [webpack documentation](https://webpack.js.org/guides/development/) for 
 
 ### Installing PHP dependencies only
 
-You have to install [Composer](http://getcomposer.org), and then run `composer install`
-into the `lizmap/` directory.
+Run `composer install` into the `lizmap/` directory.
 
 It will download some packages and install them into `lizmap/vendor/`. 
 Don't commit this directory into the git repository!
