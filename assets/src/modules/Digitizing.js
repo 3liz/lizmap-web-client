@@ -512,6 +512,13 @@ export default class Digitizing {
 
                         if (importedGeomType === 'Point') {
                             geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
+                        } else if (importedGeomType === 'MultiPoint') {
+                            let pointsCoords = [];
+                            for (const coordinate of importedGeomCoordinates) {
+                                pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
+                            
+                            geomToDraw = new OpenLayers.Geometry.MultiPoint(pointsCoords);
                         } else if (importedGeomType === 'LineString') {
                             for (const coordinate of importedGeomCoordinates) {
                                 importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
