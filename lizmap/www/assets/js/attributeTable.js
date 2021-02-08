@@ -526,6 +526,7 @@ var lizAttributeTable = function() {
                         getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
                             buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                             $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').show();
+                            refreshDatatableSize('#attribute-layer-main-'+ cleanName);
                         });
 
                         return false;
@@ -3200,6 +3201,30 @@ var lizAttributeTable = function() {
                 bottomdocksizechanged: function(evt) {
                     var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
                     refreshDatatableSize('#'+mycontainerId);
+                },
+                dockopened: function(evt) {
+                    if($('#mapmenu li.attributeLayers').hasClass('active')){
+                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                        refreshDatatableSize('#'+mycontainerId);
+                    }
+                },
+                dockclosed: function(evt) {
+                    if($('#mapmenu li.attributeLayers').hasClass('active')){
+                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                        refreshDatatableSize('#'+mycontainerId);
+                    }
+                },
+                rightdockopened: function(evt) {
+                    if($('#mapmenu li.attributeLayers').hasClass('active')){
+                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                        refreshDatatableSize('#'+mycontainerId);
+                    }
+                },
+                rightdockclosed: function(evt) {
+                    if($('#mapmenu li.attributeLayers').hasClass('active')){
+                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                        refreshDatatableSize('#'+mycontainerId);
+                    }
                 }
 
             }); // lizMap.events.on end
