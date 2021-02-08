@@ -524,6 +524,17 @@ export default class Digitizing {
                             }
 
                             geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
+                        } else if (importedGeomType === 'MultiPolygon') {
+                            const polygonsArray = [];
+                            for (const polygonCoords of importedGeomCoordinates){
+                                let pointsCoords = [];
+                                for (const coordinate of polygonCoords[0]) {
+                                    pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                }
+                                polygonsArray.push(new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(pointsCoords)]));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.MultiPolygon(polygonsArray);
                         }
 
                         if (geomToDraw) {
