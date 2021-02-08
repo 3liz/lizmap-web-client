@@ -62,8 +62,8 @@ export default class Digitizing {
 
         this._drawLayer = new OpenLayers.Layer.Vector(
             'drawLayer', {
-            styleMap: drawStyleMap
-        }
+                styleMap: drawStyleMap
+            }
         );
 
         this._drawLayer.events.on({
@@ -161,9 +161,9 @@ export default class Digitizing {
          */
         this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
-            styleMap: drawStyleMap,
-            handlerOptions: { freehand: true }
-        }
+                styleMap: drawStyleMap,
+                handlerOptions: { freehand: true }
+            }
         );
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
