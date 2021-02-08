@@ -518,6 +518,17 @@ export default class Digitizing {
                             }
 
                             geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
+                        } else if (importedGeomType === 'MultiLineString') {
+                            const lineStringArray = [];
+                            for (const lineStringCoords of importedGeomCoordinates) {
+                                let pointsCoords = [];
+                                for (const coordinate of lineStringCoords) {
+                                    pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                }
+                                lineStringArray.push(new OpenLayers.Geometry.LineString(pointsCoords));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.MultiLineString(lineStringArray);
                         } else if (importedGeomType === 'Polygon') {
                             for (const coordinate of importedGeomCoordinates[0]) {
                                 importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
