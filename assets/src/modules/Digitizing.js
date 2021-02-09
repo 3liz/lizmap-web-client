@@ -590,8 +590,10 @@ export default class Digitizing {
                     }
 
                     if (OL2Features) {
+                        // Add imported features to map and zoom to their extent
                         this._drawLayer.addFeatures(OL2Features);
                         this._drawLayer.redraw(true);
+                        mainLizmap.lizmap3.map.zoomToExtent(this._drawLayer.getDataExtent());
                     }
                 }
             };
