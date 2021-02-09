@@ -444,11 +444,15 @@ export default class Digitizing {
                     }
                     OL6feature = new Feature(new MultiLineString(lineStringArray));
                 } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
-                    let coordinates = [];
-                    for (const component of featureGeometry.components[0].components) {
-                        coordinates.push([component.x, component.y]);
+                    let linearRingArray = [];
+                    for (const linearRingComponent of featureGeometry.components) {
+                        let coordinates = [];
+                        for (const pointComponent of linearRingComponent.components) {
+                            coordinates.push([pointComponent.x, pointComponent.y]);
+                        }
+                        linearRingArray.push(coordinates);
                     }
-                    OL6feature = new Feature(new Polygon([coordinates]));
+                    OL6feature = new Feature(new Polygon(linearRingArray));
                 } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.MultiPolygon') {
                     let polygonArray = [];
                     for (const polygonComponent of featureGeometry.components) {
@@ -566,19 +570,28 @@ export default class Digitizing {
 
                             geomToDraw = new OpenLayers.Geometry.MultiLineString(lineStringArray);
                         } else if (importedGeomType === 'Polygon') {
-                            for (const coordinate of importedGeomCoordinates[0]) {
-                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            const linearRingsArray = [];
+                            for (const linearRingsCoords of importedGeomCoordinates) {
+                                let pointsCoords = [];
+                                for (const coordinate of linearRingsCoords) {
+                                    pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                }
+                                linearRingsArray.push(new OpenLayers.Geometry.LinearRing(pointsCoords));
                             }
 
-                            geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
+                            geomToDraw = new OpenLayers.Geometry.Polygon(linearRingsArray);
                         } else if (importedGeomType === 'MultiPolygon') {
                             const polygonsArray = [];
                             for (const polygonCoords of importedGeomCoordinates){
-                                let pointsCoords = [];
-                                for (const coordinate of polygonCoords[0]) {
-                                    pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                const linearRingsArray = [];
+                                for (const linearRingsCoords of polygonCoords){
+                                    let pointsCoords = [];
+                                    for (const coordinate of linearRingsCoords) {
+                                        pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                    }
+                                    linearRingsArray.push(new OpenLayers.Geometry.LinearRing(pointsCoords));
                                 }
-                                polygonsArray.push(new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(pointsCoords)]));
+                                polygonsArray.push(new OpenLayers.Geometry.Polygon(linearRingsArray));
                             }
 
                             geomToDraw = new OpenLayers.Geometry.MultiPolygon(polygonsArray);
