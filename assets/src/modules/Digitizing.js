@@ -7,6 +7,7 @@ import MultiPoint from 'ol/geom/MultiPoint';
 import LineString from 'ol/geom/LineString';
 import MultiLineString from 'ol/geom/MultiLineString';
 import Polygon from 'ol/geom/Polygon';
+import MultiPolygon from 'ol/geom/MultiPolygon';
 
 import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
@@ -448,6 +449,20 @@ export default class Digitizing {
                         coordinates.push([component.x, component.y]);
                     }
                     OL6feature = new Feature(new Polygon([coordinates]));
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.MultiPolygon') {
+                    let polygonArray = [];
+                    for (const polygonComponent of featureGeometry.components) {
+                        let linearRingArray = [];
+                        for (const linearRingComponent of polygonComponent.components) {
+                            let coordinates = [];
+                            for (const pointComponent of linearRingComponent.components){
+                                coordinates.push([pointComponent.x, pointComponent.y]);
+                            }
+                            linearRingArray.push(coordinates);
+                        }
+                        polygonArray.push(new Polygon(linearRingArray));
+                    }
+                    OL6feature = new Feature(new MultiPolygon(polygonArray));
                 }
 
                 // Reproject to EPSG:4326
