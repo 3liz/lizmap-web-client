@@ -5,6 +5,7 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import MultiPoint from 'ol/geom/MultiPoint';
 import LineString from 'ol/geom/LineString';
+import MultiLineString from 'ol/geom/MultiLineString';
 import Polygon from 'ol/geom/Polygon';
 
 import GeoJSON from 'ol/format/GeoJSON';
@@ -431,6 +432,16 @@ export default class Digitizing {
                         coordinates.push([component.x, component.y]);
                     }
                     OL6feature = new Feature(new LineString(coordinates));
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.MultiLineString') {
+                    let lineStringArray = [];
+                    for (const lineStringComponent of featureGeometry.components) {
+                        let coordinates = [];
+                        for (const pointComponent of lineStringComponent.components){
+                            coordinates.push([pointComponent.x, pointComponent.y]);
+                        }
+                        lineStringArray.push(new LineString(coordinates));
+                    }
+                    OL6feature = new Feature(new MultiLineString(lineStringArray));
                 } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
                     let coordinates = [];
                     for (const component of featureGeometry.components[0].components) {
