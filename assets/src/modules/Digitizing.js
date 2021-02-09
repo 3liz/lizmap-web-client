@@ -3,6 +3,7 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Feature from 'ol/Feature';
 
 import Point from 'ol/geom/Point';
+import MultiPoint from 'ol/geom/MultiPoint';
 import LineString from 'ol/geom/LineString';
 import Polygon from 'ol/geom/Polygon';
 
@@ -82,8 +83,7 @@ export default class Digitizing {
             if (lizMap.controls.hasOwnProperty('featureInfo') && lizMap.controls.featureInfo) {
                 if (event.type === 'activate' && lizMap.controls.featureInfo.active) {
                     lizMap.controls.featureInfo.deactivate();
-                }
-                else if (event.type === 'deactivate' && !lizMap.controls.featureInfo.active) {
+                } else if (event.type === 'deactivate' && !lizMap.controls.featureInfo.active) {
                     lizMap.controls.featureInfo.activate();
                 }
             }
@@ -419,15 +419,19 @@ export default class Digitizing {
 
                 if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
                     OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
-                }
-                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.MultiPoint') {
+                    let coordinates = [];
+                    for (const component of featureGeometry.components){
+                        coordinates.push([component.x, component.y]);
+                    }
+                    OL6feature = new Feature(new MultiPoint(coordinates));
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
                     let coordinates = [];
                     for (const component of featureGeometry.components) {
                         coordinates.push([component.x, component.y]);
                     }
                     OL6feature = new Feature(new LineString(coordinates));
-                }
-                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
                     let coordinates = [];
                     for (const component of featureGeometry.components[0].components) {
                         coordinates.push([component.x, component.y]);
@@ -444,8 +448,7 @@ export default class Digitizing {
             if (format === 'geojson') {
                 const geoJSON = (new GeoJSON()).writeFeatures(OL6Allfeatures);
                 this._downloadString(geoJSON, 'application/geo+json', 'export.geojson');
-            }
-            else if (format === 'gpx') {
+            } else if (format === 'gpx') {
                 const gpx = (new GPX()).writeFeatures(OL6Allfeatures);
                 this._downloadString(gpx, 'application/gpx+xml', 'export.gpx');
             } else if (format === 'kml') {
