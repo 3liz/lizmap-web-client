@@ -29,7 +29,14 @@ class MigratorFromSqlite
             foreach ($properties as $prop) {
                 $daoRec->{$prop} = $rec->{$prop};
             }
-            $daoNew->insert($daoRec);
+
+            try {
+                $daoNew->insert($daoRec);
+            } catch (\Exception $e) {
+                echo '*** Insert ERROR for the record ';
+                var_export($rec->getPk());
+                echo "\nError is: ".$e->getMessage()."\n";
+            }
         }
     }
 
