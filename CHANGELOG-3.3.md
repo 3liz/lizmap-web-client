@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 3.3.14
+--------------
+
+- Fix the sqlite to pgsql migrator
+
+
 Version 3.3.13
 --------------
 
