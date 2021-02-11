@@ -42,8 +42,6 @@ class MigratorFromSqlite
 
         if ($resetBefore) {
             $db = \jDb::getConnection($profile);
-            $table = $daoUsersNew->getTables()[$daoUsersNew->getPrimaryTable()]['realname'];
-            $db->exec('DELETE FROM '.$db->prefixTable($table));
             $table = $daoGeoBkmNew->getTables()[$daoGeoBkmNew->getPrimaryTable()]['realname'];
             $db->exec('DELETE FROM '.$db->prefixTable($table));
             $db->exec('DELETE FROM '.$db->prefixTable('jacl2_rights'));
@@ -51,17 +49,19 @@ class MigratorFromSqlite
             $db->exec('DELETE FROM '.$db->prefixTable('jacl2_subject'));
             $db->exec('DELETE FROM '.$db->prefixTable('jacl2_subject_group'));
             $db->exec('DELETE FROM '.$db->prefixTable('jacl2_group'));
+            $table = $daoUsersNew->getTables()[$daoUsersNew->getPrimaryTable()]['realname'];
+            $db->exec('DELETE FROM '.$db->prefixTable($table));
         } elseif ($daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
         $this->copyTable($daoUserSelector, 'oldjauth', $profile);
-        $this->copyTable('lizmap~geobookmark', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2subjectgroup', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2subject', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2usergroup', 'oldjauth', $profile);
         $this->copyTable('jacl2db~jacl2rights', 'oldjauth', $profile);
+        $this->copyTable('lizmap~geobookmark', 'oldjauth', $profile);
 
         return self::MIGRATE_RES_OK;
     }
@@ -76,7 +76,14 @@ class MigratorFromSqlite
             foreach ($properties as $prop) {
                 $daoRec->{$prop} = $rec->{$prop};
             }
-            $daoNew->insert($daoRec);
+
+            try {
+                $daoNew->insert($daoRec);
+            } catch (\Exception $e) {
+                echo '*** Insert ERROR for the record ';
+                var_export($rec->getPk());
+                echo "\nError is: ".$e->getMessage()."\n";
+            }
         }
     }
 
@@ -96,7 +103,7 @@ class MigratorFromSqlite
 
         $profile = \jProfiles::get('jdb', $profileName);
         if (!$profile) {
-            throw new \UnexpectedValueException("No ${profile} profile defined into profiles.ini.php", 1);
+            throw new \UnexpectedValueException("No {$profile} profile defined into profiles.ini.php", 1);
         }
 
         if ($profile['driver'] == 'sqlite3') {
