@@ -33,6 +33,9 @@ jobs:
       - name: Load SQL data
         run: cd tests && sleep 30 && ./load_sql.sh
 
+      - name: Install Lizmap as QGIS Server plugin
+        run: cd tests && ./add_server_plugins.sh
+
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
