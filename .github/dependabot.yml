@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "Gustry"
+
+  - package-ecosystem: "composer"
+    directory: "/lizmap"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "laurentj"
+
+  - package-ecosystem: "docker"
+    directory: "/tests"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "dmarteau"
+
+  - package-ecosystem: "npm"
+    directory: "/assets"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "nboisteault"
