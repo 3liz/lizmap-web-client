@@ -4,12 +4,12 @@ on:
     branches:
       - master
       - release_3_4
-      - refactor
+      - tests_load_sql
   pull_request:
     branches:
       - master
       - release_3_4
-      - refactor
+      - tests_load_sql
 jobs:
   cypress:
     name: "Cypress"
