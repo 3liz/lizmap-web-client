@@ -31,7 +31,7 @@ jobs:
       - run: cd tests && ./run-docker up --build -d
 
       - name: Load SQL data
-        run: cd tests && ./load_sql.sh
+        run: cd tests && sleep 30 && ./load_sql.sh
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
