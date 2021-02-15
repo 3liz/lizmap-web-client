@@ -3,7 +3,7 @@ describe('Selection tool', function () {
         // runs once before the first test in this block
         cy.visit('/index.php/view/map/?repository=montpellier&project=montpellier')
         // Todo wait for map to be fully loaded
-        cy.wait(30000)
+        cy.wait(3000)
 
         cy.get('#button-selectiontool').click()
 
