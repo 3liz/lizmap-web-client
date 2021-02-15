@@ -30,6 +30,8 @@ jobs:
 
       - run: cd tests && ./run-docker up --build -d
 
+      - run: cd tests && sleep 60 && ./lizmap-ctl install
+
       - name: Load SQL data
         run: cd tests/qgis-projects/tests && sleep 30 && ./load_sql.sh
 
