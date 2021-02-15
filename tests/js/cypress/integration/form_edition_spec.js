@@ -3,7 +3,7 @@ describe('Form edition', function () {
         // runs once before the first test in this block
         cy.visit('/index.php/view/map/?repository=testsrepository&project=end2end_form_edition')
         // Todo wait for map to be fully loaded
-        cy.wait(2000)
+        cy.wait(10000)
     })
 
     it('submits form and gets success message', function () {
