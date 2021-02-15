@@ -1,5 +1,5 @@
 #!/bin/bash
-DATA=`find ./qgis-projects/tests -type f -name "*.sql"`
+DATA=`find ./ -type f -name "*.sql"`
 for i in $DATA
 do
     echo "* Run file $i"
