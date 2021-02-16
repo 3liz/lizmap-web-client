@@ -47,3 +47,6 @@ jobs:
           headless: true
           working-directory: tests/js
           wait-on: http://localhost:8130
+
+      - name: Display Lizmap error logs
+        run: cat lizmap/var/log/errors.log

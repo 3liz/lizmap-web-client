@@ -1,7 +1,7 @@
 describe('Form edition', function () {
     before(function () {
         // runs once before the first test in this block
-        cy.visit('/index.php/view/?repository=testsrepository')
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=end2end_form_edition')
         // Todo wait for map to be fully loaded
         cy.wait(10000)
     })
