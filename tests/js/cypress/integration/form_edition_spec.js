@@ -7,13 +7,13 @@ describe('Form edition', function () {
     })
 
     it('submits form and gets success message', function () {
-        // cy.get('#button-edition').click()
-        // cy.get('#edition-draw').click()
-        // cy.get('#jforms_view_edition_value').type('42')
-        // cy.get('#jforms_view_edition__submit_submit').click()
+        cy.get('#button-edition').click()
+        cy.get('#edition-draw').click()
+        cy.get('#jforms_view_edition_value').type('42')
+        cy.get('#jforms_view_edition__submit_submit').click()
 
         // Assert success message is displayed
-        //cy.get('#title').should('be.visible')
+        cy.get('#title').should('be.visible')
     })
 
 })
