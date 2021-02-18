@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "Test Lizmap JavaScript",
   "main": "index.js",
-  "dependencies": {},
   "devDependencies": {
-    "cypress": "^6.3.0"
+    "cypress": "^6.5.0"
   },
   "scripts": {
     "cypress:open": "cypress open"
