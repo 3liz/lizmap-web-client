@@ -145,6 +145,11 @@ export default class SelectionTool {
             },
             'layerFilteredFeaturesChanged': () => {
                 mainEventDispatcher.dispatch('selectionTool.filteredFeaturesChanged');
+            },
+            minidockclosed: (event) => {
+                if (event.id === 'selectiontool'){
+                    mainLizmap.digitizing.toolSelected = 'deactivate';
+                }
             }
         });
     }
