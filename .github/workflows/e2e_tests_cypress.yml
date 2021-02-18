@@ -4,12 +4,10 @@ on:
     branches:
       - master
       - release_3_4
-      - refactor
   pull_request:
     branches:
       - master
       - release_3_4
-      - refactor
 jobs:
   cypress:
     name: "Cypress"
@@ -18,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Run tests docker
+      - name: Pull docker images
         run: cd tests && ./run-docker pull
 
       # In this step, this action saves a list of existing images,
@@ -28,7 +26,17 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
-      - run: cd tests && ./run-docker up --build -d
+      - name: Build and start docker images
+        run: cd tests && ./run-docker up --build -d
+
+      - name: Wait docker images ready and install Lizmap
+        run: cd tests && sleep 30 && ./lizmap-ctl install
+
+      - name: Load SQL data
+        run: cd tests/qgis-projects/tests && ./load_sql.sh
+
+      - name: Install Lizmap as a QGIS Server plugin
+        run: cd tests && ./add_server_plugins.sh
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
@@ -39,3 +47,6 @@ jobs:
           headless: true
           working-directory: tests/js
           wait-on: http://localhost:8130
+
+      - name: Display Lizmap error logs
+        run: cat lizmap/var/log/errors.log
