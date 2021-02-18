@@ -76,7 +76,7 @@ function execInPhp() {
     echo "ERROR: The lizmap container is not running"
     exit 1
   fi
-  docker exec -t -i $CONTAINER appctl.sh $1
+  docker exec -i $CONTAINER appctl.sh $1
 }
 
 
