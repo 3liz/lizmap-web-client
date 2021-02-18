@@ -334,7 +334,7 @@ var lizDataviz = function() {
             // We need to get the plot Lizmap config from its container id
             var pid = getPlotIdByContainerId(id);
             // Do nothing if pid not found
-            if (!pid) {
+            if (pid == null) {
                 return;
             }
             var plot_config = dv.config.layers[pid];
@@ -393,7 +393,7 @@ var lizDataviz = function() {
 
                     // Get plot id and layer id
                     var pid = getPlotIdByContainerId(id);
-                    if (!pid) {
+                    if (pid == null) {
                         return;
                     }
                     var plot_config = dv.config.layers[pid];
