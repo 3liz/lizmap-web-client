@@ -65,3 +65,5 @@ tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
 tests/js/node_modules/
 tests/.env
+/.composer
+/.npm

@@ -54,4 +54,7 @@ label="Demo - Intranet"
 path="demoqgis_intranet/"
 allowUserDefinedThemes=0
 
-
+[repository:testsrepository]
+label="Tests repository"
+path="/srv/lzm/tests/qgis-projects/tests/"
+allowUserDefinedThemes=0
