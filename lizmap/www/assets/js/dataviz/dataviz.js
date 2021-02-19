@@ -357,9 +357,15 @@ var lizDataviz = function() {
                 if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
                     resizePlot(id);
                 }
+                if($('#mapmenu li.dataviz').hasClass('active')){
+                    resizePlot(id);
+                }
             },
             rightdockopened: function(e) {
                 if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
+                    resizePlot(id);
+                }
+                if($('#mapmenu li.dataviz').hasClass('active')){
                     resizePlot(id);
                 }
             },
@@ -370,6 +376,16 @@ var lizDataviz = function() {
             },
             bottomdocksizechanged: function(e) {
                 if($('#mapmenu li.dataviz').hasClass('active')  || $('#mapmenu li.popup').hasClass('active')){
+                    resizePlot(id);
+                }
+            },
+            dockclosed: function(e) {
+                if($('#mapmenu li.dataviz').hasClass('active')){
+                    resizePlot(id);
+                }
+            },
+            rightdockclosed: function(e) {
+                if($('#mapmenu li.dataviz').hasClass('active')){
                     resizePlot(id);
                 }
             }
