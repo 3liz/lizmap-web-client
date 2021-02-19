@@ -2192,6 +2192,10 @@ lizmap-mouse-position > div.coords-unit > select{
   padding-left: 20px;
 }
 
+.lizmapPopupChildren .popupAllFeaturesCompact .row{
+  margin-left: -10px;
+}
+
 .lizmapPopupChildren{
   border: solid lightgray 1px;
   margin-top: 5px;
