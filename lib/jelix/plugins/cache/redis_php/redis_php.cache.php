@@ -148,8 +148,14 @@ class redis_phpCacheDriver implements jICacheDriver {
     * @param int    $ttl    data time expiration
     * @return boolean       false if failure
     */
-    public function set($key, $value, $ttl = 0) {
-        if (is_resource($value)) {
+    public function set($key, $value, $ttl = 0)
+    {
+        if (function_exists('\\Jelix\\Utilities\\is_resource')) {
+            if (\Jelix\Utilities\is_resource($value))  {
+                return false;
+            }
+        }
+        else if (is_resource($value)) {
             return false;
         }
         $used_key = $this->getUsedKey($key);
