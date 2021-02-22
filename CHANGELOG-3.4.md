@@ -7,6 +7,7 @@ Not released yet
 - Fix lizmap/install/set_rights.sh: some directories were missing
 - Fix visual blank line between the map and the right-dock
 - Fix error about script.php into the docker container 
+- Hide label in legend for layers with single symbol rendering
 
 ## Version 3.4.1
 
