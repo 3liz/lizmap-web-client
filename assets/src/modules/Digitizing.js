@@ -3,8 +3,11 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Feature from 'ol/Feature';
 
 import Point from 'ol/geom/Point';
+import MultiPoint from 'ol/geom/MultiPoint';
 import LineString from 'ol/geom/LineString';
+import MultiLineString from 'ol/geom/MultiLineString';
 import Polygon from 'ol/geom/Polygon';
+import MultiPolygon from 'ol/geom/MultiPolygon';
 
 import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
@@ -62,8 +65,8 @@ export default class Digitizing {
 
         this._drawLayer = new OpenLayers.Layer.Vector(
             'drawLayer', {
-            styleMap: drawStyleMap
-        }
+                styleMap: drawStyleMap
+            }
         );
 
         this._drawLayer.events.on({
@@ -82,8 +85,7 @@ export default class Digitizing {
             if (lizMap.controls.hasOwnProperty('featureInfo') && lizMap.controls.featureInfo) {
                 if (event.type === 'activate' && lizMap.controls.featureInfo.active) {
                     lizMap.controls.featureInfo.deactivate();
-                }
-                else if (event.type === 'deactivate' && !lizMap.controls.featureInfo.active) {
+                } else if (event.type === 'deactivate' && !lizMap.controls.featureInfo.active) {
                     lizMap.controls.featureInfo.activate();
                 }
             }
@@ -161,9 +163,9 @@ export default class Digitizing {
          */
         this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
-            styleMap: drawStyleMap,
-            handlerOptions: { freehand: true }
-        }
+                styleMap: drawStyleMap,
+                handlerOptions: { freehand: true }
+            }
         );
 
         this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
@@ -419,20 +421,52 @@ export default class Digitizing {
 
                 if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
                     OL6feature = new Feature(new Point([featureGeometry.x, featureGeometry.y]));
-                }
-                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.MultiPoint') {
+                    let coordinates = [];
+                    for (const component of featureGeometry.components){
+                        coordinates.push([component.x, component.y]);
+                    }
+                    OL6feature = new Feature(new MultiPoint(coordinates));
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.LineString') {
                     let coordinates = [];
                     for (const component of featureGeometry.components) {
                         coordinates.push([component.x, component.y]);
                     }
                     OL6feature = new Feature(new LineString(coordinates));
-                }
-                else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
-                    let coordinates = [];
-                    for (const component of featureGeometry.components[0].components) {
-                        coordinates.push([component.x, component.y]);
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.MultiLineString') {
+                    let lineStringArray = [];
+                    for (const lineStringComponent of featureGeometry.components) {
+                        let coordinates = [];
+                        for (const pointComponent of lineStringComponent.components){
+                            coordinates.push([pointComponent.x, pointComponent.y]);
+                        }
+                        lineStringArray.push(new LineString(coordinates));
                     }
-                    OL6feature = new Feature(new Polygon([coordinates]));
+                    OL6feature = new Feature(new MultiLineString(lineStringArray));
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.Polygon') {
+                    let linearRingArray = [];
+                    for (const linearRingComponent of featureGeometry.components) {
+                        let coordinates = [];
+                        for (const pointComponent of linearRingComponent.components) {
+                            coordinates.push([pointComponent.x, pointComponent.y]);
+                        }
+                        linearRingArray.push(coordinates);
+                    }
+                    OL6feature = new Feature(new Polygon(linearRingArray));
+                } else if (featureGeometry.CLASS_NAME === 'OpenLayers.Geometry.MultiPolygon') {
+                    let polygonArray = [];
+                    for (const polygonComponent of featureGeometry.components) {
+                        let linearRingArray = [];
+                        for (const linearRingComponent of polygonComponent.components) {
+                            let coordinates = [];
+                            for (const pointComponent of linearRingComponent.components){
+                                coordinates.push([pointComponent.x, pointComponent.y]);
+                            }
+                            linearRingArray.push(coordinates);
+                        }
+                        polygonArray.push(new Polygon(linearRingArray));
+                    }
+                    OL6feature = new Feature(new MultiPolygon(polygonArray));
                 }
 
                 // Reproject to EPSG:4326
@@ -444,8 +478,7 @@ export default class Digitizing {
             if (format === 'geojson') {
                 const geoJSON = (new GeoJSON()).writeFeatures(OL6Allfeatures);
                 this._downloadString(geoJSON, 'application/geo+json', 'export.geojson');
-            }
-            else if (format === 'gpx') {
+            } else if (format === 'gpx') {
                 const gpx = (new GPX()).writeFeatures(OL6Allfeatures);
                 this._downloadString(gpx, 'application/gpx+xml', 'export.gpx');
             } else if (format === 'kml') {
@@ -512,18 +545,56 @@ export default class Digitizing {
 
                         if (importedGeomType === 'Point') {
                             geomToDraw = new OpenLayers.Geometry.Point(importedGeomCoordinates[0], importedGeomCoordinates[1]);
+                        } else if (importedGeomType === 'MultiPoint') {
+                            let pointsCoords = [];
+                            for (const coordinate of importedGeomCoordinates) {
+                                pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                            }
+                            
+                            geomToDraw = new OpenLayers.Geometry.MultiPoint(pointsCoords);
                         } else if (importedGeomType === 'LineString') {
                             for (const coordinate of importedGeomCoordinates) {
                                 importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
                             }
 
                             geomToDraw = new OpenLayers.Geometry.LineString(importedGeomAsArrayOfPoints);
-                        } else if (importedGeomType === 'Polygon') {
-                            for (const coordinate of importedGeomCoordinates[0]) {
-                                importedGeomAsArrayOfPoints.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                        } else if (importedGeomType === 'MultiLineString') {
+                            const lineStringArray = [];
+                            for (const lineStringCoords of importedGeomCoordinates) {
+                                let pointsCoords = [];
+                                for (const coordinate of lineStringCoords) {
+                                    pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                }
+                                lineStringArray.push(new OpenLayers.Geometry.LineString(pointsCoords));
                             }
 
-                            geomToDraw = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(importedGeomAsArrayOfPoints)]);
+                            geomToDraw = new OpenLayers.Geometry.MultiLineString(lineStringArray);
+                        } else if (importedGeomType === 'Polygon') {
+                            const linearRingsArray = [];
+                            for (const linearRingsCoords of importedGeomCoordinates) {
+                                let pointsCoords = [];
+                                for (const coordinate of linearRingsCoords) {
+                                    pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                }
+                                linearRingsArray.push(new OpenLayers.Geometry.LinearRing(pointsCoords));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.Polygon(linearRingsArray);
+                        } else if (importedGeomType === 'MultiPolygon') {
+                            const polygonsArray = [];
+                            for (const polygonCoords of importedGeomCoordinates){
+                                const linearRingsArray = [];
+                                for (const linearRingsCoords of polygonCoords){
+                                    let pointsCoords = [];
+                                    for (const coordinate of linearRingsCoords) {
+                                        pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
+                                    }
+                                    linearRingsArray.push(new OpenLayers.Geometry.LinearRing(pointsCoords));
+                                }
+                                polygonsArray.push(new OpenLayers.Geometry.Polygon(linearRingsArray));
+                            }
+
+                            geomToDraw = new OpenLayers.Geometry.MultiPolygon(polygonsArray);
                         }
 
                         if (geomToDraw) {
@@ -532,8 +603,10 @@ export default class Digitizing {
                     }
 
                     if (OL2Features) {
+                        // Add imported features to map and zoom to their extent
                         this._drawLayer.addFeatures(OL2Features);
                         this._drawLayer.redraw(true);
+                        mainLizmap.lizmap3.map.zoomToExtent(this._drawLayer.getDataExtent());
                     }
                 }
             };
