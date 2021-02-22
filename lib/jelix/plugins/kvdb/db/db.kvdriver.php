@@ -1,11 +1,13 @@
 <?php
 /**
-* @package    jelix
-* @subpackage kvdb_plugin
-* @author     Laurent Jouanneau
-* @copyright  2010 Laurent Jouanneau
-* @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
-*/
+ * @package    jelix
+ * @subpackage kvdb_plugin
+ *
+ * @author     Laurent Jouanneau
+ * @copyright  2010-2021 Laurent Jouanneau
+ * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
+ */
+
 
 /**
  * Driver for jKVDB, that uses an SQL table to store key/value data.
@@ -88,9 +90,11 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
         }
     }
 
-    public function set ($key, $value) {
-        if (is_resource($value))
+    public function set ($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
         return $this->_set($key, $value, '2050-12-31 00:00:00');
     }
 
@@ -116,9 +120,11 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
         return (bool) $this->_connection->exec($sql);
     }
 
-    public function insert ($key, $value) {
-        if (is_resource($value))
+    public function insert ($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -134,10 +140,11 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
         }
     }
 
-    public function replace ($key, $value) {
-        if (is_resource($value))
+    public function replace ($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
-
+        }
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
         $value = $this->_connection->quote2(serialize($value), false, true);
@@ -161,9 +168,11 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
         return (bool)$this->_connection->exec('DELETE FROM '.$table);
     }
 
-    public function append ($key, $value) {
-        if (is_resource($value))
+    public function append ($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -181,9 +190,11 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
         return false;
     }
 
-    public function prepend ($key, $value) {
-        if (is_resource($value))
+    public function prepend ($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -253,9 +264,11 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
      * @param integer $ttl the time to live in seconds...
      * @return boolean false if failure, if the value is a resource...
      */
-    public function setWithTtl($key, $value, $ttl) {
-        if (is_resource($value))
+    public function setWithTtl($key, $value, $ttl)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
         if ($ttl > 0) {
             if ($ttl <= 2592000) {
                 $ttl += time();
