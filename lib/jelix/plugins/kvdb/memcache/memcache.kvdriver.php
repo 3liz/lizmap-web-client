@@ -4,7 +4,8 @@
  * @subpackage  kvdb_plugin
  * @author      Yannick Le Guédart
  * @contributor Laurent Jouanneau
- * @copyright   2009 Yannick Le Guédart, 2010 Laurent Jouanneau
+ *
+ * @copyright   2009 Yannick Le Guédart, 2010-2021 Laurent Jouanneau
  *
  * @link     http://www.jelix.org
  * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -12,8 +13,8 @@
  * @see http://fr2.php.net/manual/en/book.memcache.php
  */
 
-class memcacheKVDriver extends jKVDriver implements jIKVttl {
-
+class memcacheKVDriver extends jKVDriver implements jIKVttl
+{
     /**
      * Array of StdClass objects that contains host/port attributes for the
      * memcache servers. Used only during _connection.
@@ -141,9 +142,11 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl {
         return $val;
     }
 
-    public function set($key, $value) {
-        if (is_resource($value))
+    public function set($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
         return $this->_connection->set(
             $key,
             $value,
@@ -152,9 +155,11 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl {
         );
     }
 
-    public function insert($key, $value) {
-        if (is_resource($value))
+    public function insert($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
         return $this->_connection->add(
             $key,
             $value,
@@ -163,9 +168,11 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl {
         );
     }
 
-    public function replace($key, $value) {
-        if (is_resource($value))
+    public function replace($key, $value)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
         return $this->_connection->replace(
             $key,
             $value,
@@ -269,9 +276,11 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl {
     * @param int    $ttl    data time expiration
     * @return boolean false if failure
     */
-    public function setWithTtl($key, $value, $ttl) {
-        if (is_resource($value))
+    public function setWithTtl($key, $value, $ttl)
+    {
+        if ($this->isResource($value)) {
             return false;
+        }
         return $this->_connection->set(
             $key,
             $value,

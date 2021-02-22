@@ -4,7 +4,7 @@
  * @subpackage  jacl2db
  * @author      Laurent Jouanneau
  * @contributor Julien Issler, Olivier Demah, Adrien Lagroy de Croutte
- * @copyright   2008-2017 Laurent Jouanneau
+ * @copyright   2008-2021 Laurent Jouanneau
  * @copyright   2009 Julien Issler, 2010 Olivier Demah, 2020 Adrien Lagroy de Croutte
  * @link        http://jelix.org
  * @licence     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public Licence, see LICENCE file
@@ -101,8 +101,8 @@ class jAcl2DbAdminUIManager {
 
         // retrieve existing rights
         $rs = jDao::get('jacl2db~jacl2rights','jacl2_profile')->getRightsByGroups($gid);
-        foreach($rs as $rec){
-            $rights[$rec->id_aclsbj][$rec->id_aclgrp] = ($rec->canceled?'n':'y');
+        foreach ($rs as $rec) {
+            $rights[$rec->id_aclsbj][$rec->id_aclgrp] = ($rec->canceled ? 'n' : 'y');
         }
 
         return compact('groups', 'rights', 'sbjgroups_localized', 'subjects', 'rightsWithResources');
@@ -138,18 +138,31 @@ class jAcl2DbAdminUIManager {
     }
 
     /**
-     * @param array $rights
-     *      array(<id_aclgrp> => array( <id_aclsbj> => (bool, 'y', 'n' or '')))
+     * Save authorizations for all groups
+     *
+     * Only authorizations on given subjects are changed.
+     * Existing authorizations not given in parameters are deleted from the
+     * corresponding group (i.e: marked as inherited).
+     *
+     * If authorizations of a group are missing, all authorizations for
+     * this group are deleted.
+     *
+     * @param array  $rights
+     *                array(<id_aclgrp> => array( <id_aclsbj> => (bool, 'y', 'n' or '')))
+     * @param string $sessionUser the user login who initiates the change.
+     *                            It is mandatory although null is accepted for
+     *                            API compatibility. Null value is deprecated
+     *
      * @see jAcl2DbManager::setRightsOnGroup()
      */
-    public function saveGroupRights($rights, $sessionUser = null) {
-
-        $checking = jAcl2DbManager::checkAclAdminRightsChanges($rights, $sessionUser);
+    public function saveGroupRights($rights, $sessionUser = null)
+    {
+        $checking = jAcl2DbManager::checkAclAdminAuthorizationsChanges($rights, $sessionUser, 1);
         if ($checking === jAcl2DbManager::ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM) {
-            throw new jAcl2DbAdminUIException("Changes cannot be applied: You won't be able to change some rights", 3);
+            throw new jAcl2DbAdminUIException("Changes cannot be applied else you won't be able to change some rights", 3);
         }
         if ($checking === jAcl2DbManager::ACL_ADMIN_RIGHTS_NOT_ASSIGNED) {
-            throw new jAcl2DbAdminUIException("Changes cannot be applied: nobody will be able to change some rights", 2);
+            throw new jAcl2DbAdminUIException('Changes cannot be applied else nobody will be able to change some rights', 2);
         }
 
         foreach(jAcl2DbUserGroup::getGroupList() as $grp) {
@@ -328,18 +341,36 @@ class jAcl2DbAdminUIManager {
     }
 
 
-    public function saveUserRights($login, $userRights, $sessionUser = null) {
-        $dao = jDao::get('jacl2db~jacl2groupsofuser','jacl2_profile');
+    /**
+     * Save rights of the given user
+     *
+     * Only rights on given subjects are changed.
+     * Existing rights not given in parameters are deleted from the
+     * private group of the user (i.e: marked as inherited).
+     *
+     * Rights with resources are not changed.
+     *
+     * @param string $login     the login of the user on who rights will be changed
+     * @param array $userRights list of rights key=subject, value=false(inherit)/''(inherit)/true(add)/'y'(add)/'n'(remove)
+     * @param null|string  $sessionUser the login name of the user who initiate the change
+     *                            It is mandatory although null is accepted for
+     *                            API compatibility. Null value is deprecated.
+     *
+     * @throws jAcl2DbAdminUIException
+     */
+    public function saveUserRights($login, $userRights, $sessionUser = null)
+    {
+        $dao = jDao::get('jacl2db~jacl2groupsofuser', 'jacl2_profile');
         $grp = $dao->getPrivateGroup($login);
 
         $rights = array($grp->id_aclgrp => $userRights);
 
-        $checking = jAcl2DbManager::checkAclAdminRightsChanges($rights, $sessionUser, false, true);
+        $checking = jAcl2DbManager::checkAclAdminAuthorizationsChanges($rights, $sessionUser, 2);
         if ($checking === jAcl2DbManager::ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM) {
-            throw new jAcl2DbAdminUIException("Changes cannot be applied: You won't be able to change some rights", 3);
+            throw new jAcl2DbAdminUIException("Changes cannot be applied else you won't be able to change some rights", 3);
         }
         if ($checking === jAcl2DbManager::ACL_ADMIN_RIGHTS_NOT_ASSIGNED) {
-            throw new jAcl2DbAdminUIException("Changes cannot be applied: nobody will be able to change some rights", 2);
+            throw new jAcl2DbAdminUIException('Changes cannot be applied else nobody will be able to change some rights', 2);
         }
 
         jAcl2DbManager::setRightsOnGroup($grp->id_aclgrp, $userRights);
@@ -398,9 +429,19 @@ class jAcl2DbAdminUIManager {
         }
     }
 
-    public function removeGroup($groupId, $sessionUser = null) {
-        $rights = array($groupId => array());
-        $checking = jAcl2DbManager::checkAclAdminRightsChanges($rights, $sessionUser, false, true);
+    /**
+     * delete a group of user
+     *
+     * @param string $groupId the id of the group to remove
+     * @param null|string  $sessionUser the login name of the user who initiate the change
+     *                            It is mandatory although null is accepted for
+     *                            API compatibility. Null value is deprecated.
+     *
+     * @throws jAcl2DbAdminUIException
+     */
+    public function removeGroup($groupId, $sessionUser = null)
+    {
+        $checking = jAcl2DbManager::checkAclAdminRightsToRemoveGroup($groupId, $sessionUser);
 
         if ($checking == jAcl2DbManager::ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM) {
             throw new jAcl2DbAdminUIException("Group cannot be removed, else you wouldn't manage acl anymore", 3);
@@ -411,8 +452,17 @@ class jAcl2DbAdminUIManager {
         jAcl2DbUserGroup::removeGroup($groupId);
     }
 
-    public function removeUserFromGroup($login, $groupId, $sessionUser = null) {
-        $checking = jAcl2DbManager::checkAclAdminRightsChanges(array(), $sessionUser, false, true, $login, $groupId);
+    /**
+     * @param string $login the login of the user to remove from the given group
+     * @param string $groupId the group name from which the user should be removed
+     * @param null|string  $sessionUser the login name of the user who initiates the change
+     *                            It is mandatory although null is accepted for
+     *                            API compatibility. Null value is deprecated.
+     * @throws jAcl2DbAdminUIException
+     */
+    public function removeUserFromGroup($login, $groupId, $sessionUser = null)
+    {
+        $checking = jAcl2DbManager::checkAclAdminRightsToRemoveUserFromGroup($login, $groupId, $sessionUser);
 
         if ($checking == jAcl2DbManager::ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM) {
             throw new jAcl2DbAdminUIException("User cannot be removed from group, else you wouldn't manage acl anymore", 3);
@@ -423,16 +473,18 @@ class jAcl2DbAdminUIManager {
         jAcl2DbUserGroup::removeUserFromGroup($login, $groupId);
     }
 
+    /**
+     * @param string $login
+     * @param string $groupId
+     * @param null|string  $sessionUser the login name of the user who initiates the change
+     *                            It is mandatory although null is accepted for
+     *                            API compatibility. Null value is deprecated.
+     *
+     * @throws jAcl2DbAdminUIException
+     */
     public function addUserToGroup($login, $groupId, $sessionUser = null)
     {
-        $rightsChanged = array();
-        $groupRights = $this->getGroupRights();
-        foreach (jAcl2DbManager::$ACL_ADMIN_RIGHTS as $right) {
-            if (jAcl2::check($right) && in_array($groupRights['rights'][$right][$groupId], array(null, false))) {
-                $rightsChanged[$groupId][$right] = 'n';
-            }
-        }
-        $checking = jAcl2DbManager::checkAclAdminRightsChanges($rightsChanged, $sessionUser);
+        $checking = jAcl2DbManager::checkAclAdminRightsToAddUserIntoGroup($login, $groupId, $sessionUser);
 
         if ($checking == jAcl2DbManager::ACL_ADMIN_RIGHTS_SESSION_USER_LOOSE_THEM) {
             throw new jAcl2DbAdminUIException("User cannot be add to group, else you wouldn't manage acl anymore", 3);
@@ -443,9 +495,14 @@ class jAcl2DbAdminUIManager {
         jAcl2DbUserGroup::addUserToGroup($login, $groupId);
     }
 
+    /**
+     * @param string $login
+     *
+     * @return bool true if is safe to remove the user
+     */
     public function canRemoveUser($login)
     {
-        $checking = jAcl2DbManager::checkAclAdminRightsChanges(array(), null, false, true, $login);
+        $checking = jAcl2DbManager::checkAclAdminRightsToRemoveUser($login, null);
         return ($checking === jAcl2DbManager::ACL_ADMIN_RIGHTS_STILL_USED);
     }
 

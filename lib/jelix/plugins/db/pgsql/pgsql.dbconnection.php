@@ -271,5 +271,14 @@ class pgsqlDbConnection extends jDbConnection {
         }
         return $this->serverVersion;
     }
+
+
+    public function getSearchPath()
+    {
+        if (isset($this->profile['search_path']) && trim($this->profile['search_path']) != '') {
+            return preg_split('/\s*,\s*/', trim($this->profile['search_path']));
+        }
+        return array('public');
+    }
 }
 

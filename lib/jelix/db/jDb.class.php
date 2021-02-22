@@ -174,9 +174,11 @@ class jDb {
      * PHP uses the local decimal separator, and so, we don't want that.
      * @since 1.1.11
      */
-    public static function floatToStr($value) {
-        if (is_float($value)) {// this is a float
-            return rtrim(rtrim(sprintf("%.20F", $value), "0"), '.'); // %F to not format with the local decimal separator
+    public static function floatToStr($value)
+    {
+        if (is_float($value)) {
+            // we don't use floatval nor sprintf because of rounding errors (12.56 becomes 12.56000000000000049738)
+            return var_export($value, true);
         }
         else if (is_integer($value)) {
             return sprintf('%d', $value);

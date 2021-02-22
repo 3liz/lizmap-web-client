@@ -16,7 +16,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.6.30');
+define ('JELIX_VERSION', '1.6.32');
 
 /**
  * base of namespace path used in xml files of jelix
@@ -69,6 +69,10 @@ require (JELIX_LIB_CORE_PATH . 'jLocale.class.php');
 require (JELIX_LIB_CORE_PATH . 'jLog.class.php');
 require (JELIX_LIB_CORE_PATH . 'jIncluder.class.php');
 require (JELIX_LIB_CORE_PATH . 'jSession.class.php');
+
+if (version_compare(phpversion(), "5.6") > -1) {
+    require JELIX_LIB_UTILS_PATH.'Utilities.php';
+}
 
 /**
  * contains path for the jelix_autoload function

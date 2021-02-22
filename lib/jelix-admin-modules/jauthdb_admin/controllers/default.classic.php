@@ -3,7 +3,7 @@
 * @package   admin
 * @subpackage jauthdb_admin
 * @author    Laurent Jouanneau
-* @copyright 2009-2019 Laurent Jouanneau
+* @copyright 2009-2021 Laurent Jouanneau
 * @link      http://jelix.org
 * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public Licence
 */
@@ -17,6 +17,7 @@ class defaultCtrl extends jController {
 
     public $pluginParams=array(
         'index'        =>array('jacl2.right'=>'auth.users.list'),
+        'autocomplete' =>array('jacl2.right'=>'auth.users.list'),
         'view'         =>array('jacl2.right'=>'auth.users.view'),
         'precreate'    =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.create')),
         'create'       =>array('jacl2.rights.and'=>array('auth.users.view','auth.users.create')),
@@ -434,5 +435,30 @@ class defaultCtrl extends jController {
         return $rep;
     }
 
+    public function autocomplete()
+    {
+        $rep = $this->getResponse('json');
+        $term = $this->param('term');
+        if (strlen($term) < 2) {
+            $rep->data = array();
+
+            return $rep;
+        }
+
+        $dao = jDao::get($this->dao, $this->dbProfile);
+        $cond = jDao::createConditions();
+        $cond->addItemOrder('login', 'asc');
+        $list = $dao->findBy($cond);
+        $users = array();
+        foreach ($list as $prop) {
+            if (strstr($prop->login, $term) || $term === '') {
+                $users[] = $prop->login;
+            }
+        }
+        $rep->data = $users;
+
+
+        return $rep;
+    }
 }
 
