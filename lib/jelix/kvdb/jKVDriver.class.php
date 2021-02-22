@@ -198,5 +198,12 @@ abstract class jKVDriver {
 
     abstract protected function _connect();
     abstract protected function _disconnect();
+
+    protected function isResource($value) {
+        if (function_exists('\\Jelix\\Utilities\\is_resource')) {
+            return \Jelix\Utilities\is_resource($value);
+        }
+        return is_resource($value);
+    }
 }
 

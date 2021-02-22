@@ -150,16 +150,26 @@ class redis_extCacheDriver implements jICacheDriver {
     }
 
     /**
-    * set a specific data in the cache
-    * @param string $key    key used for storing data
-    * @param mixed  $var    data to store
-    * @param int    $ttl    data time expiration
-    * @return boolean       false if failure
-    */
-    public function set($key, $value, $ttl = 0) {
-        if (is_resource($value)) {
+     * set a specific data in the cache.
+     *
+     * @param string $key   key used for storing data
+     * @param mixed  $var   data to store
+     * @param int    $ttl   data time expiration
+     * @param mixed  $value
+     *
+     * @return bool false if failure
+     */
+    public function set($key, $value, $ttl = 0)
+    {
+        if (function_exists('\\Jelix\\Utilities\\is_resource')) {
+            if (\Jelix\Utilities\is_resource($value))  {
+                return false;
+            }
+        }
+        else if (is_resource($value)) {
             return false;
         }
+        
         $used_key = $this->getUsedKey($key);
 
         $res = $this->redis->set($used_key, $this->esc($value));

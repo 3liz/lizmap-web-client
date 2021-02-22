@@ -210,9 +210,13 @@ abstract class jDaoFactoryBase  {
         if(count($args)==1 && is_array($args[0])){
             $args=$args[0];
         }
-        $keys = @array_combine(static::$_pkFields, $args );
 
-        if($keys === false){
+        try {
+            $keys = @array_combine(static::$_pkFields, $args);
+            if ($keys === false) {
+                throw new jException('jelix~dao.error.keys.missing');
+            }
+        } catch (ValueError $e) { // In PHP8+
             throw new jException('jelix~dao.error.keys.missing');
         }
 
@@ -236,10 +240,16 @@ abstract class jDaoFactoryBase  {
         if(count($args)==1 && is_array($args[0])){
             $args=$args[0];
         }
-        $keys = array_combine(static::$_pkFields, $args);
-        if($keys === false){
+
+        try {
+            $keys = @array_combine(static::$_pkFields, $args);
+            if ($keys === false) {
+                throw new jException('jelix~dao.error.keys.missing');
+            }
+        } catch (ValueError $e) { // In PHP8+
             throw new jException('jelix~dao.error.keys.missing');
         }
+
         $q = 'DELETE FROM '.$this->_conn->encloseName($this->_tables[$this->_primaryTable]['realname']).' ';
         $q.= $this->_getPkWhereClauseForNonSelect($keys);
 
