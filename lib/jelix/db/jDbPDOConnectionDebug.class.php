@@ -15,32 +15,22 @@
  */
 class jDbPDOConnectionDebug extends jDbPDOConnection {
 
-    public function query() {
-        $args = func_get_args();
-
-        switch (count($args)) {
-        case 1:
-            $log = new jSQLLogMessage($args[0]);
-            $rs = parent::query($args[0]);
-            $log->endQuery();
-            jLog::log($log,'sql');
-            $rs->setFetchMode(PDO::FETCH_OBJ);
-            return $rs;
-        case 2:
-            $log = new jSQLLogMessage($args[0]);
-            $result = parent::query($args[0], $args[1]);
-            $log->endQuery();
-            jLog::log($log,'sql');
-            return $result;
-        case 3:
-            $log = new jSQLLogMessage($args[0]);
-            $result = parent::query($args[0], $args[1], $args[2]);
-            $log->endQuery();
-            jLog::log($log,'sql');
-            return $result;
-        default:
-            throw new Exception('jDbPDOConnectionDebug: bad argument number in query');
+    public function query($queryString, $fetchmode = PDO::FETCH_OBJ, ...$fetchModeArgs)
+    {
+        $log = new jSQLLogMessage($queryString);
+        if (count($fetchModeArgs) === 0) {
+            $rs = parent::query($queryString, $fetchmode);
         }
+        else if (count($fetchModeArgs) === 1 || $fetchModeArgs[1] === array()) {
+            $rs = parent::query($queryString, $fetchmode, $fetchModeArgs[0]);
+        }
+        else {
+            $rs = parent::query($queryString, $fetchmode, $fetchModeArgs[0], $fetchModeArgs[1]);
+        }
+
+        $log->endQuery();
+        jLog::log($log, 'sql');
+        return $rs;
     }
 
     public function exec($query) {

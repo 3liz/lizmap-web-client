@@ -104,7 +104,12 @@ class jDbPDOConnection extends PDO {
 
         parent::__construct($dsn, $user, $password, $prof);
 
-        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('jDbPDOResultSet'));
+        if (version_compare(phpversion(), "8.0") < 0) {
+            $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('jDbPDOResultSet7'));
+        }
+        else {
+            $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('jDbPDOResultSet'));
+        }
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // we cannot launch two queries at the same time with PDO ! except if
@@ -159,23 +164,22 @@ class jDbPDOConnection extends PDO {
      * fetch method of classes which inherit of PDOStatement.
      * so, we cannot indicate to fetch object directly in jDbPDOResultSet::fetch().
      * So we overload query() to do it.
-     * TODO check if this is still the case in PHP 5.3
+     * TODO check if this is still the case in PHP 8.1+
+     * @return jDbPDOResultSet|PDOStatement
      */
-    public function query() {
-        $args = func_get_args();
+    public function query($queryString, $fetchmode = PDO::FETCH_OBJ, ...$fetchModeArgs)
+    {
 
-        switch (count($args)) {
-        case 1:
-            $rs = parent::query($args[0]);
-            $rs->setFetchMode(PDO::FETCH_OBJ);
+        if (count($fetchModeArgs) === 0) {
+            $rs = parent::query($queryString);
+            $rs->setFetchMode($fetchmode);
             return $rs;
-        case 2:
-            return parent::query($args[0], $args[1]);
-        case 3:
-            return parent::query($args[0], $args[1], $args[2]);
-        default:
-            throw new Exception('jDbPDOConnection: bad argument number in query');
         }
+
+        if (count($fetchModeArgs) === 1 || $fetchModeArgs[1] === array()) {
+            return parent::query($queryString, $fetchmode, $fetchModeArgs[0]);
+        }
+        return parent::query($queryString, $fetchmode, $fetchModeArgs[0], $fetchModeArgs[1]);
     }
 
     /**

@@ -354,15 +354,25 @@ class fileKVDriver extends jKVDriver implements jIKVPersistent, jIKVttl {
     }
 
     /**
-    * Writing in a file.
-    * @param    string      $filePath         file name
-    * @param    string      $DataToWrite  data to write in the file
-    * @param    integer     $mtime   modification time
-    * @return   boolean     true if success of writing operation
-    */
-    protected function _setFileContent ($filePath, $dataToWrite, $mtime) {
-        if (is_resource($dataToWrite))
+     * Writing in a file.
+     *
+     * @param string $filePath    file name
+     * @param string $DataToWrite data to write in the file
+     * @param int    $mtime       modification time
+     * @param mixed  $dataToWrite
+     *
+     * @return bool true if success of writing operation
+     */
+    protected function _setFileContent($filePath, $dataToWrite, $mtime)
+    {
+        if (function_exists('\\Jelix\\Utilities\\is_resource')) {
+            if (\Jelix\Utilities\is_resource($dataToWrite))  {
+                return false;
+            }
+        }
+        else if (is_resource($dataToWrite)) {
             return false;
+        }
 
         try {
             $dataToWrite = serialize($dataToWrite);
