@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="kml_multipoint" id="kml_multipoint">
+	<SimpleField name="id" type="int"></SimpleField>
+</Schema>
+<Folder><name>kml_multipoint</name>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#kml_multipoint">
+		<SimpleData name="id">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><Point><coordinates>4.94280215159599,43.8214338643574</coordinates></Point><Point><coordinates>4.94362799651332,43.8214879856834</coordinates></Point><Point><coordinates>4.94347713182574,43.820779336781</coordinates></Point><Point><coordinates>4.94262196248626,43.8207945761073</coordinates></Point></MultiGeometry>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#kml_multipoint">
+		<SimpleData name="id">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><Point><coordinates>4.9467992307709,43.8215461432728</coordinates></Point><Point><coordinates>4.94710737098699,43.82128823058</coordinates></Point><Point><coordinates>4.94749215168458,43.820954372319</coordinates></Point></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>
