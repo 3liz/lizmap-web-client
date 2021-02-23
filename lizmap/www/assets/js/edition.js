@@ -592,6 +592,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Hide edition tabs
         $('.edition-tabs').hide();
+
+        // Display digitization tab back
+        $('.edition-tabs a[href="#tabdigitization"]').show();
     }
 
     function addEditionControls() {
@@ -821,9 +824,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
                 // Activate edition
                 editCtrls.panel.activate();
-
-                // Display digitization tab
-                $('.edition-tabs a[href="#tabdigitization"]').show();
 
                 // Launch edition to gather edition layer info
                 launchEdition( $('#edition-layer').val(), null);
@@ -1480,6 +1480,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             if (geometryType != 'point')
                                 $('#edition-geomtool-container').show();
                         }
+                    } else {
+                        $('.edition-tabs a[href="#tabdigitization"]').hide();
                     }
                 }
                 // Modification
