@@ -1,5 +1,5 @@
 <div class="lizmapPopupSingleFeature">
-    <h4>{$layerTitle}</h4>
+    <h4 class="lizmapPopupTitle">{$layerTitle}</h4>
 
     <div class="lizmapPopupDiv">
     {$popupContent}
