@@ -31,6 +31,41 @@ CREATE TABLE tests_projects.end2end_form_edition (
 ALTER TABLE tests_projects.end2end_form_edition OWNER TO lizmap;
 
 --
+-- Name: end2end_form_edition_geom; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.end2end_form_edition_geom (
+    id integer NOT NULL,
+    value integer,
+    geom public.geometry(Point,2154)
+);
+
+
+ALTER TABLE tests_projects.end2end_form_edition_geom OWNER TO lizmap;
+
+--
+-- Name: end2end_form_edition_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.end2end_form_edition_geom_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.end2end_form_edition_geom_id_seq OWNER TO lizmap;
+
+--
+-- Name: end2end_form_edition_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.end2end_form_edition_geom_id_seq OWNED BY tests_projects.end2end_form_edition_geom.id;
+
+
+--
 -- Name: end2end_form_edition_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
 --
 
@@ -60,6 +95,13 @@ ALTER TABLE ONLY tests_projects.end2end_form_edition ALTER COLUMN id SET DEFAULT
 
 
 --
+-- Name: end2end_form_edition_geom id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.end2end_form_edition_geom ALTER COLUMN id SET DEFAULT nextval('tests_projects.end2end_form_edition_geom_id_seq'::regclass);
+
+
+--
 -- Data for Name: end2end_form_edition; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
 --
 
@@ -68,10 +110,33 @@ COPY tests_projects.end2end_form_edition (id, value) FROM stdin;
 
 
 --
+-- Data for Name: end2end_form_edition_geom; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.end2end_form_edition_geom (id, value, geom) FROM stdin;
+\.
+
+
+--
+-- Name: end2end_form_edition_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.end2end_form_edition_geom_id_seq', 1, false);
+
+
+--
 -- Name: end2end_form_edition_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
 SELECT pg_catalog.setval('tests_projects.end2end_form_edition_id_seq', 1, true);
+
+
+--
+-- Name: end2end_form_edition_geom end2end_form_edition_geom_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.end2end_form_edition_geom
+    ADD CONSTRAINT end2end_form_edition_geom_pkey PRIMARY KEY (id);
 
 
 --
