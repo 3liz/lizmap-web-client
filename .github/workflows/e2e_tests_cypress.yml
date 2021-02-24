@@ -16,6 +16,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install Lizmap as a QGIS Server plugin
+        run: cd tests && ./add_server_plugins.sh
+
       - name: Pull docker images
         run: cd tests && ./run-docker pull
 
@@ -34,9 +37,6 @@ jobs:
 
       - name: Load SQL data
         run: cd tests/qgis-projects/tests && ./load_sql.sh
-
-      - name: Install Lizmap as a QGIS Server plugin
-        run: cd tests && ./add_server_plugins.sh
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
