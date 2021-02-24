@@ -32,13 +32,17 @@ class aclCtrl extends jController
         $rep = $this->getResponse('redirect');
 
         $login = $this->param('user');
+        $grpid = $this->param('grpid');
         if ($login != '') {
             $rep->action = 'jauthdb_admin~default:view';
             $rep->params = array('j_user_login' => $login);
+            if (!$grpid) {
+                return $rep;
+            }
 
             try {
                 $manager = new jAcl2DbAdminUIManager();
-                $manager->removeUserFromGroup($login, $this->param('grpid'));
+                $manager->removeUserFromGroup($login, $grpid, jAuth::getUserSession()->login);
             } catch (jAcl2DbAdminUIException $e) {
                 $this->checkException($e, 'removeuserfromgroup');
             }
@@ -55,14 +59,26 @@ class aclCtrl extends jController
 
         $login = $this->param('user');
         $grpid = $this->param('grpid');
-        if ($login != '') {
-            $rep->action = 'jauthdb_admin~default:view';
-            $rep->params = array('j_user_login' => $login);
-            if ($grpid) {
-                jAcl2DbUserGroup::addUserToGroup($login, $grpid);
-            }
-        } else {
+        if ($login == '') {
             $rep->action = 'jauthdb_admin~default:index';
+
+            return $rep;
+        }
+        $rep->action = 'jauthdb_admin~default:view';
+        $rep->params = array('j_user_login' => $login);
+        if (!$grpid) {
+            return $rep;
+        }
+
+        try {
+            $manager = new jAcl2DbAdminUIManager();
+            $manager->addUserToGroup(
+                $login,
+                $grpid,
+                jAuth::getUserSession()->login
+            );
+        } catch (jAcl2DbAdminUIException $e) {
+            $this->checkException($e, 'addusertogroup');
         }
 
         return $rep;
