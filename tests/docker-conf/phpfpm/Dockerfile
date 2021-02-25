@@ -59,6 +59,6 @@ COPY appctl.sh /bin/
 COPY profile.start /etc/profile.d/start
 RUN chmod 755 /bin/entrypoint.sh /bin/appctl.sh
 
-WORKDIR /src/lzm/
+WORKDIR /srv/lzm/
 ENTRYPOINT ["/bin/entrypoint.sh"]
 CMD ["/usr/sbin/php-fpm7", "-F", "-O"]
