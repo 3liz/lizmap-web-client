@@ -104,7 +104,7 @@ case $COMMAND in
     shell)
        docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shellroot)
-       execInPhp  /bin/bash  -l;;
+       docker exec -it lizmap${LZMBRANCH}_test_php /bin/bash  -l;;
     ldapreset)
       docker exec -it lizmap${LZMBRANCH}_test_ldap /bin/ctl.sh reset
       ;;
