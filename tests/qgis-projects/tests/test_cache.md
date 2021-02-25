@@ -1,0 +1,15 @@
+This test is to check the cache.
+- [ ] Config the tile cache as file cache
+- [ ] Create the the cache with the lizmap command line:
+  - `php lizmap/scripts/script.php lizmap~wmts:capabilities testsrepository test_cache`
+  - `php lizmap/scripts/script.php lizmap~wmts:capabilities -v  testsrepository test_cache Quartiers EPSG:3857`
+  - `php lizmap/scripts/script.php lizmap~wmts:seeding -v -f testsrepository test_cache Quartiers EPSG:3857 0 18`
+- [ ] Check the tile cache size
+- [ ] Go to the map, zoom and pan on it without authentication
+- [ ] Check the tile cache size has not changed
+- [ ] Authenticate as admins
+- [ ] Go to the map, zoom and pan on it
+- [ ] Check the tile cache size has not changed
+- [ ] Authenticate as no admins
+- [ ] Go to the map, zoom and pan on it
+- [ ] Check the tile cache size has not changed
