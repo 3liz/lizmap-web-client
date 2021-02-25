@@ -2,9 +2,13 @@
 
 ## Version 3.4.2
 
-Not released yet
+Release on 2021-02-25
 
 - Fix lizmap/install/set_rights.sh: some directories were missing
+- Make MultiGeometry KML importable/exportable and focus on features extent after load
+- Fix geobookmark sql: remove explicit public schema
+- Fix popup compact table margin-left
+- Fix the adding of the user into group
 - Fix visual blank line between the map and the right-dock
 - Fix can't launch children layers edition from parent form
 - Fix error about script.php into the docker container 
