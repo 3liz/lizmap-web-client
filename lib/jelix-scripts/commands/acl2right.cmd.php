@@ -23,6 +23,7 @@ ACTION:
  * list
  * add groupid sujet [resource]
  * [-allres] remove groupid sujet [resource]
+ * forbid groupid sujet [resource]
  * subject_create subject labelkey [grouplabelkey [subjectlabel]]
         Si subjectlabel est donné, le label et sa clé labelkey sera
         créé dans le fichier indiqué par la clé.
@@ -42,6 +43,7 @@ ACTION:
  * list
  * add  groupid subject [resource]
  * [-allres] remove groupid subject [resource]
+ * forbid  groupid subject [resource]
  * subject_create subject labelkey [grouplabelkey [subjectlabel]]
     if subjectlabel is given, it will be stored in the properties file
     indicated by the labelkey.
@@ -60,6 +62,7 @@ ACTION:
             'list'=>"Liste des droits",
             'add'=>"Ajout d'un droit",
             'remove'=>"Retire un droit",
+            'forbid'=>"Interdit un droit",
             'subject_create'=>"Création d'un sujet",
             'subject_delete'=>"Effacement d'un sujet",
             'subject_list'=>"Liste des sujets",
@@ -71,6 +74,7 @@ ACTION:
             'list'=>"Rights list",
             'add'=>"Add a right",
             'remove'=>"Remove a right",
+            'forbid'=>"Forbid a right",
             'subject_create'=>"Create a subject",
             'subject_delete'=>"Delete a subject",
             'subject_list'=>"List of subjects",
@@ -84,7 +88,7 @@ ACTION:
     public function run(){
         $this->loadAppConfig();
         $action = $this->getParam('action');
-        if(!in_array($action,array('list','add','remove',
+        if(!in_array($action,array('list','add','remove', 'forbid',
                                    'subject_create','subject_delete','subject_list',
                                    'subject_group_create','subject_group_delete','subject_group_list',
                                    ))){
@@ -103,7 +107,7 @@ ACTION:
 
         $cnx = jDb::getConnection('jacl2_profile');
 
-        $sql="SELECT r.id_aclgrp, r.id_aclsbj, r.id_aclres, s.label_key as subject
+        $sql="SELECT r.id_aclgrp, r.id_aclsbj, r.id_aclres, r.canceled, s.label_key as subject
                 FROM ".$cnx->prefixTable('jacl2_rights')." r,
                 ".$cnx->prefixTable('jacl2_subject')." s
                 WHERE r.id_aclgrp = '__anonymous' AND r.id_aclsbj=s.id_aclsbj
@@ -113,16 +117,16 @@ ACTION:
         foreach($rs as $rec){
             if($sbj !=$rec->id_aclsbj){
                 $sbj = $rec->id_aclsbj;
-                echo "\t",$rec->id_aclsbj,"\n";
+                echo "\t",$rec->id_aclsbj, ($rec->canceled == '1'?' (forbidden)':''),"\n";
             }
             echo "\t\t",$rec->id_aclres,"\n";
         }
 
-        $sql="SELECT r.id_aclgrp, r.id_aclsbj, r.id_aclres, name as grp, s.label_key as subject
+        $sql="SELECT r.id_aclgrp, r.id_aclsbj, r.id_aclres, r.canceled, name as grp, s.label_key as subject
                 FROM ".$cnx->prefixTable('jacl2_rights')." r,
                 ".$cnx->prefixTable('jacl2_group')." g,
                 ".$cnx->prefixTable('jacl2_subject')." s
-                WHERE r.id_aclgrp = g.id_aclgrp AND r.id_aclsbj=s.id_aclsbj
+                WHERE r.id_aclgrp = g.id_aclgrp AND r.id_aclsbj=s.id_aclsbj AND r.id_aclgrp <> '__anonymous'
                 ORDER BY grp, subject, id_aclres ";
 
         $rs = $cnx->query($sql);
@@ -137,7 +141,7 @@ ACTION:
 
             if($sbj !=$rec->id_aclsbj){
                 $sbj = $rec->id_aclsbj;
-                echo "\t",$rec->id_aclsbj,"\n";
+                echo "\t",$rec->id_aclsbj, ($rec->canceled == '1'?' (forbidden)':''),"\n";
             }
             echo "\t\t",$rec->id_aclres,"\n";
         }
@@ -216,6 +220,49 @@ ACTION:
 
         if ($this->verbose())
             echo "Right on subject $subject with group $group ".(isset($resource)?' and resource '.$resource:'')." is deleted \n";
+    }
+
+
+    protected function cmd_forbid()
+    {
+        $params = $this->getParam('...');
+        if(!is_array($params) || count($params) <2 || count($params) >3)
+            throw new Exception("wrong parameter count");
+
+        $cnx = jDb::getConnection('jacl2_profile');
+
+        $group = $cnx->quote($this->_getGrpId($params[0]));
+
+        $subject=$cnx->quote($params[1]);
+        if(isset($params[2]))
+            $resource = $cnx->quote($params[2]);
+        else
+            $resource = $cnx->quote('-');
+
+        $sql="SELECT * FROM ".$cnx->prefixTable('jacl2_rights')."
+                WHERE id_aclgrp=".$group."
+                AND id_aclsbj=".$subject."
+                AND id_aclres=".$resource;
+        $rs = $cnx->query($sql);
+        if($rs->fetch()){
+            throw new Exception("right already sets");
+        }
+
+        $sql="SELECT * FROM ".$cnx->prefixTable('jacl2_subject')." WHERE id_aclsbj=".$subject;
+        $rs = $cnx->query($sql);
+        if(!($sbj = $rs->fetch())){
+            throw new Exception("subject is unknown");
+        }
+
+        $sql="INSERT into ".$cnx->prefixTable('jacl2_rights')
+             ." (id_aclgrp, id_aclsbj, id_aclres, canceled) VALUES (";
+        $sql.=$group.',';
+        $sql.=$subject.',';
+        $sql.=$resource.', 1)';
+
+        $cnx->exec($sql);
+        if ($this->verbose())
+            echo "Right is forbid on subject $subject for the group $group".(isset($params[2])?' and resource '.$resource:'')."\n";
     }
 
     protected function cmd_subject_list(){
