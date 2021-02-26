@@ -26,6 +26,7 @@ Release on 2021-02-25
 - UX Display form first in edition mode for desktop and mobile
 - Fix hide digitization tab for non geom layer
 - Hide label in legend for layers with single symbol rendering
+- Fix WMTS Request - use specific $wmsRequest parameters array
 
 ## Version 3.4.1
 
