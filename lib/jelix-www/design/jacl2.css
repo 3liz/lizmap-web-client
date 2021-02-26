@@ -3,7 +3,7 @@ table.jacl2-list tbody td,
 table.jacl2-list-user tbody td
 { font-weight:bold; text-align:center;}
 
-table.jacl2-list-user tr td:last-child {
+table.jacl2-list-user tbody tr td:last-child {
    border-left: 1px solid #686868;
    border-right: 1px solid #686868;
 }
@@ -18,3 +18,14 @@ table.records-list thead th a.addgroup { text-decoration:none !important; border
 
 table.jacl2-list-user tbody tr.even td:last-child { background-color: #FCE8EA }
 table.jacl2-list-user tbody tr.odd td:last-child { background-color: #F7E1E4 }
+
+select.right-no, span.right-no {
+   color: #7d7d7d;
+}
+select.right-forbidden, span.right-forbidden {
+   color: #ba0000;
+}
+select.right-yes, span.right-yes {
+   color: green;
+   font-weight: bold;
+}
