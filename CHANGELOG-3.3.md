@@ -5,7 +5,10 @@ Version 3.3.14
 --------------
 
 - Fix the sqlite to pgsql migrator
-
+- Fix some issues with PHP 8.0 and PHP 7.x 
+- Fix geobookmark sql: remove explicit public schema
+- Fix latest issues with rights management in some specific case
+- Improved the interface management to be more understandable
 
 Version 3.3.13
 --------------
