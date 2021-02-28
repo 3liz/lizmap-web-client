@@ -27,7 +27,6 @@ major, minor, bugfix = tag
 json_file = 'versions.json'
 with open(json_file, 'r') as f:
     versions = json.load(f)
-    f.close()
 
 for version in versions:
     if version['branch'] == '{}.{}'.format(major, minor):

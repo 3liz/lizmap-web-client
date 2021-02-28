@@ -3,35 +3,45 @@
         "branch": "3.5", 
         "first_release_date": "", 
         "latest_release_date": "", 
-        "latest_release_version": "3.5.0", 
+        "latest_release_version": "3.5.0",
+        "qgis_min_version_recommended": 30000,
+        "qgis_max_version_recommended": 39900,
         "maintained": false
     }, 
     {
         "branch": "3.4", 
         "first_release_date": "2020-12-18", 
         "latest_release_date": "2021-01-14", 
-        "latest_release_version": "3.4.1", 
+        "latest_release_version": "3.4.1",
+        "qgis_min_version_recommended": 30000,
+        "qgis_max_version_recommended": 39900,
         "maintained": true
     }, 
     {
         "branch": "3.3", 
         "first_release_date": "2019-09-02", 
         "latest_release_date": "2021-01-14", 
-        "latest_release_version": "3.3.13", 
+        "latest_release_version": "3.3.13",
+        "qgis_min_version_recommended": 20000,
+        "qgis_max_version_recommended": 31500,
         "maintained": true
     }, 
     {
         "branch": "3.2", 
         "first_release_date": "2018-11-19", 
         "latest_release_date": "2020-12-07", 
-        "latest_release_version": "3.2.18", 
+        "latest_release_version": "3.2.18",
+        "qgis_min_version_recommended": 20000,
+        "qgis_max_version_recommended": 21900,
         "maintained": false
     }, 
     {
         "branch": "3.1", 
         "first_release_date": "2017-03-07", 
         "latest_release_date": "2019-05-19", 
-        "latest_release_version": "3.1.21", 
+        "latest_release_version": "3.1.21",
+        "qgis_min_version_recommended": 20000,
+        "qgis_max_version_recommended": 21900,
         "maintained": false
     }
 ]
