@@ -1,9 +1,32 @@
 # Versions of Lizmap Web Client
 
-This is a GitHub Action automatically updating the version number in this JSON file when a tag is published.
+The [raw JSON URL](https://raw.githubusercontent.com/3liz/lizmap-web-client/versions/versions.json) is used in 
+Lizmap QGIS plugin. Keep in mind there is a cache from GitHub about this file.
 
-Only a new major version, this file should be edited manually.
+## GitHub Action
 
-The [raw JSON](https://raw.githubusercontent.com/3liz/lizmap-web-client/versions/versions.json) is used in Lizmap QGIS plugin.
+In each Lizmap branch, there is a GitHub action to run the script [add_version.py](./add_version.py) when a
+tag is published. The script is managing the update of the [versions.json](./versions.json) file.
 
-Keep in mind there is a cache from GitHub about this file.
+## Manual edit
+
+This file must be edited manually when :
+* a new major version is prepared : create the new release, and set `maintained=False` to the oldest branch.
+* a known issue with QGIS Desktop/Server
+
+## Structure
+
+```json
+{
+    "branch": "3.3",                       # Name of the release
+    "first_release_date": "2019-09-02",    # First date of the release, YYYY-MM-DD
+    "latest_release_date": "2021-01-14",   # Last date of the release, YYYY-MM-DD
+    "latest_release_version": "3.3.13",    # Last full version X.Y.Z
+    "qgis_min_version_recommended": 20000, # Minimum recommended, inclusive, usually even major version
+    "qgis_max_version_recommended": 31500, # Maximum recommended, exclusive, usually odd major version
+    "maintained": true                     # If the branch is maintained for production. The dev version is not maintained yet
+}
+```
+
+* The latest branch is **not** maintained, because not released yet.
+* QGIS Desktop will check `qgis_min <= Qgis.QGIS_VERSION_INT < qgis_max`
