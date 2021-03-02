@@ -28,8 +28,8 @@ jobs:
 
     - name: Git identity
       run: |
-        git config --global user.email "etrimaille@3liz.com"
-        git config --global user.name "3Liz Bot"
+        git config --global user.email "${{ secrets.BOT_MAIL }}"
+        git config --global user.name "${{ secrets.BOT_NAME }}"
 
     - name: Check for changes
       run: |
