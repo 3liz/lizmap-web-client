@@ -487,13 +487,15 @@ class qgisProject
             $WMSServiceTitle = (string) $qgsLoad->properties->WMSServiceTitle;
             $WMSServiceAbstract = (string) $qgsLoad->properties->WMSServiceAbstract;
 
-            $values = array();
-            foreach ($qgsLoad->properties->WMSKeywordList->value as $value) {
-                if ((string) $value !== '') {
-                    $values[] = (string) $value;
+            if (property_exists($qgsLoad->properties, 'WMSKeywordList')) {
+                $values = array();
+                foreach ($qgsLoad->properties->WMSKeywordList->value as $value) {
+                    if ((string) $value !== '') {
+                        $values[] = (string) $value;
+                    }
                 }
+                $WMSKeywordList = implode(', ', $values);
             }
-            $WMSKeywordList = implode(', ', $values);
 
             $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
             $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[1];
