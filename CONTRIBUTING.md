@@ -157,6 +157,11 @@ directory into sub-directories of `lizmap/modules/`).
 Only modifications on en_US locales are accepted in Pull Requests.
 
 All other locales are translated with Transifex. So to help us to translate, 
-please go on Transifex:  https://www.transifex.com/3liz-1/lizmap-locales/
+please go on Transifex:  
 
-For core developers, see the repository https://github.com/3liz/lizmap-locales/.
+- https://www.transifex.com/3liz-1/lizmap-locales/  to translate Lizmap strings
+- https://www.transifex.com/3liz-1/jelix/ to translate Jelix strings
+
+For core developers, see the repository https://github.com/3liz/lizmap-locales/
+and https://github.com/jelix/jelix-langpacks.
+
