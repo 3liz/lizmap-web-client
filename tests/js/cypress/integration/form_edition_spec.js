@@ -1,13 +1,42 @@
 describe('Form edition', function () {
-    before(function () {
-        // runs once before the first test in this block
+    beforeEach(function () {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=end2end_form_edition')
         // Todo wait for map to be fully loaded
         cy.wait(1000)
+        // Display edition if not active
+        cy.get('li.edition #button-edition').click()
     })
 
+    it('must not show digitization tab for non geom layers', function () {
+        // Intercept editFeature query to wait for its end
+        cy.intercept('/index.php/lizmap/edition/editFeature*').as('editFeature')
+
+        cy.get('#edition-draw').click()
+
+        // Wait editFeature query ends + slight delay for UI to be ready
+        cy.wait('@editFeature')
+        cy.wait(200)
+
+        cy.get('.edition-tabs a[href="#tabdigitization"]').should('not.be.visible')
+    })
+
+    it('must show digitization tab for geom layers', function () {
+        // Intercept editFeature query to wait for its end
+        cy.intercept('/index.php/lizmap/edition/editFeature*').as('editFeature')
+
+        // Select layer with geometry for edition
+        cy.get('#edition-layer').select('end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382')
+        cy.get('#edition-draw').click()
+
+        // Wait editFeature query ends + slight delay for UI to be ready
+        cy.wait('@editFeature')
+        cy.wait(200)
+
+        cy.get('.edition-tabs a[href="#tabdigitization"]').should('be.visible')
+    })
+
+
     it('submits form and gets success message', function () {
-        cy.get('#button-edition').click()
         cy.get('#edition-draw').click()
         cy.get('#jforms_view_edition_value').type('42')
         cy.get('#jforms_view_edition__submit_submit').click()

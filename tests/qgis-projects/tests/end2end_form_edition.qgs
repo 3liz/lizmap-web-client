@@ -7,50 +7,55 @@
   <trust active="0"/>
   <projectCrs>
     <spatialrefsys>
-      <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
-      <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-      <srsid>3452</srsid>
-      <srid>4326</srid>
-      <authid>EPSG:4326</authid>
-      <description>WGS 84</description>
-      <projectionacronym>longlat</projectionacronym>
-      <ellipsoidacronym>WGS84</ellipsoidacronym>
-      <geographicflag>true</geographicflag>
+      <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
+      <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
+      <srsid>145</srsid>
+      <srid>2154</srid>
+      <authid>EPSG:2154</authid>
+      <description>RGF93 / Lambert-93</description>
+      <projectionacronym>lcc</projectionacronym>
+      <ellipsoidacronym>GRS80</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
     </spatialrefsys>
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer id="end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;end2end_form_edition&quot; sql=" expanded="1" checked="Qt::Checked" name="end2end_form_edition" providerKey="postgres" legend_exp="">
+    <layer-tree-layer legend_exp="" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;end2end_form_edition&quot; sql=" expanded="1" id="end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e" name="end2end_form_edition" checked="Qt::Checked">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer legend_exp="" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;end2end_form_edition_geom&quot; (geom) sql=" expanded="1" id="end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382" name="end2end_form_edition_geom" checked="Qt::Checked">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
-      <item>end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e</item>
+      <item>end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings enabled="0" unit="1" intersection-snapping="0" mode="2" type="1" tolerance="12">
-    <individual-layer-settings/>
+  <snapping-settings type="1" tolerance="12" mode="2" unit="1" enabled="0" intersection-snapping="0">
+    <individual-layer-settings>
+      <layer-setting type="1" tolerance="12" units="1" enabled="0" id="end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382"/>
+    </individual-layer-settings>
   </snapping-settings>
   <relations/>
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
-    <units>degrees</units>
+    <units>meters</units>
     <extent>
-      <xmin>-1</xmin>
-      <ymin>-1</ymin>
-      <xmax>1</xmax>
-      <ymax>1</ymax>
+      <xmin>743675.69339718855917454</xmin>
+      <ymin>6256566.5438290610909462</ymin>
+      <xmax>805636.48084406880661845</xmax>
+      <ymax>6295802.27965793013572693</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
       <spatialrefsys>
-        <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
-        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-        <srsid>3452</srsid>
-        <srid>4326</srid>
-        <authid>EPSG:4326</authid>
-        <description>WGS 84</description>
-        <projectionacronym>longlat</projectionacronym>
-        <ellipsoidacronym>WGS84</ellipsoidacronym>
-        <geographicflag>true</geographicflag>
+        <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
+        <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
+        <srsid>145</srsid>
+        <srid>2154</srid>
+        <authid>EPSG:2154</authid>
+        <description>RGF93 / Lambert-93</description>
+        <projectionacronym>lcc</projectionacronym>
+        <ellipsoidacronym>GRS80</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
       </spatialrefsys>
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
@@ -58,16 +63,21 @@
   </mapcanvas>
   <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendlayer open="true" showFeatureCount="0" drawingOrder="-1" checked="Qt::Checked" name="end2end_form_edition">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" visible="1" layerid="end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e"/>
+    <legendlayer open="true" name="end2end_form_edition" checked="Qt::Checked" drawingOrder="-1" showFeatureCount="0">
+      <filegroup hidden="false" open="true">
+        <legendlayerfile layerid="end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e" isInOverview="0" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer open="true" name="end2end_form_edition_geom" checked="Qt::Checked" drawingOrder="-1" showFeatureCount="0">
+      <filegroup hidden="false" open="true">
+        <legendlayerfile layerid="end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382" isInOverview="0" visible="1"/>
       </filegroup>
     </legendlayer>
   </legend>
   <mapViewDocks/>
   <mapViewDocks3D/>
   <projectlayers>
-    <maplayer readOnly="0" autoRefreshTime="0" autoRefreshEnabled="0" wkbType="NoGeometry" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0" maxScale="0" type="vector" refreshOnNotifyMessage="" geometry="No geometry" styleCategories="AllStyleCategories" minScale="1e+8">
+    <maplayer type="vector" autoRefreshEnabled="0" refreshOnNotifyEnabled="0" wkbType="NoGeometry" hasScaleBasedVisibilityFlag="0" styleCategories="AllStyleCategories" autoRefreshTime="0" refreshOnNotifyMessage="" minScale="1e+8" readOnly="0" geometry="No geometry" maxScale="0">
       <id>end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e</id>
       <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."end2end_form_edition" sql=</datasource>
       <keywordList>
@@ -84,7 +94,7 @@
           <description></description>
           <projectionacronym></projectionacronym>
           <ellipsoidacronym></ellipsoidacronym>
-          <geographicflag>false</geographicflag>
+          <geographicflag>true</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
@@ -107,7 +117,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -130,7 +140,7 @@
       <customproperties/>
       <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
         <activeChecks type="StringList">
-          <Option value="" type="QString"/>
+          <Option type="QString" value=""/>
         </activeChecks>
         <checkConfiguration/>
       </geometryOptions>
@@ -151,18 +161,18 @@
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias field="id" index="0" name=""/>
-        <alias field="value" index="1" name=""/>
+        <alias field="id" name="" index="0"/>
+        <alias field="value" name="" index="1"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
-        <default field="id" expression="" applyOnUpdate="0"/>
-        <default field="value" expression="" applyOnUpdate="0"/>
+        <default expression="" applyOnUpdate="0" field="id"/>
+        <default expression="" applyOnUpdate="0" field="value"/>
       </defaults>
       <constraints>
-        <constraint field="id" notnull_strength="1" constraints="3" unique_strength="1" exp_strength="0"/>
-        <constraint field="value" notnull_strength="0" constraints="0" unique_strength="0" exp_strength="0"/>
+        <constraint field="id" exp_strength="0" constraints="3" notnull_strength="1" unique_strength="1"/>
+        <constraint field="value" exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0"/>
       </constraints>
       <constraintExpressions>
         <constraint field="id" exp="" desc=""/>
@@ -172,7 +182,171 @@
       <attributeactions>
         <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortOrder="0" sortExpression="">
+      <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
+        <columns/>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable/>
+      <labelOnTop/>
+      <widgets/>
+      <previewExpression></previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+    <maplayer simplifyDrawingHints="1" type="vector" styleCategories="AllStyleCategories" simplifyDrawingTol="1" simplifyMaxScale="1" readOnly="0" simplifyLocal="1" autoRefreshTime="0" autoRefreshEnabled="0" minScale="1e+8" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" wkbType="Point" geometry="Point" refreshOnNotifyMessage="" maxScale="0" simplifyAlgorithm="0">
+      <id>end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382</id>
+      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."end2end_form_edition_geom" (geom) sql=</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>end2end_form_edition_geom</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
+          <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
+          <srsid>145</srsid>
+          <srid>2154</srid>
+          <authid>EPSG:2154</authid>
+          <description>RGF93 / Lambert-93</description>
+          <projectionacronym>lcc</projectionacronym>
+          <ellipsoidacronym>GRS80</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
+            <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
+            <srsid>145</srsid>
+            <srid>2154</srid>
+            <authid>EPSG:2154</authid>
+            <description>RGF93 / Lambert-93</description>
+            <projectionacronym>lcc</projectionacronym>
+            <ellipsoidacronym>GRS80</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <legend type="default-vector"/>
+      <expressionfields/>
+      <map-layer-style-manager current="défaut">
+        <map-layer-style name="défaut"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 type="singleSymbol" symbollevels="0" forceraster="0" enableorderby="0">
+        <symbols>
+          <symbol type="marker" force_rhr="0" name="0" clip_to_extent="1" alpha="1">
+            <layer locked="0" class="SimpleMarker" enabled="1" pass="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="190,178,151,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="name" v="circle"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="35,35,35,255"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0"/>
+              <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="2"/>
+              <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" value="" name="name"/>
+                  <Option name="properties"/>
+                  <Option type="QString" value="collection" name="type"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <customproperties/>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+        <activeChecks type="StringList">
+          <Option type="QString" value=""/>
+        </activeChecks>
+        <checkConfiguration/>
+      </geometryOptions>
+      <fieldConfiguration>
+        <field name="id">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="value">
+          <editWidget type="">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias field="id" name="" index="0"/>
+        <alias field="value" name="" index="1"/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="id"/>
+        <default expression="" applyOnUpdate="0" field="value"/>
+      </defaults>
+      <constraints>
+        <constraint field="id" exp_strength="0" constraints="3" notnull_strength="1" unique_strength="1"/>
+        <constraint field="value" exp_strength="0" constraints="0" notnull_strength="0" unique_strength="0"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint field="id" exp="" desc=""/>
+        <constraint field="value" exp="" desc=""/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
+      </attributeactions>
+      <attributetableconfig sortOrder="0" actionWidgetStyle="dropDown" sortExpression="">
         <columns/>
       </attributetableconfig>
       <conditionalstyles>
@@ -195,7 +369,7 @@
     </maplayer>
   </projectlayers>
   <layerorder>
-    <layer id="end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e"/>
+    <layer id="end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382"/>
   </layerorder>
   <properties>
     <DefaultStyles>
@@ -222,7 +396,7 @@
       <pythonCode type="QString"></pythonCode>
     </Macros>
     <Measure>
-      <Ellipsoid type="QString">WGS84</Ellipsoid>
+      <Ellipsoid type="QString">GRS80</Ellipsoid>
     </Measure>
     <Measurement>
       <AreaUnits type="QString">m2</AreaUnits>
@@ -256,9 +430,11 @@
     <WCSUrl type="QString"></WCSUrl>
     <WFSLayers type="QStringList">
       <value>end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e</value>
+      <value>end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382</value>
     </WFSLayers>
     <WFSLayersPrecision>
       <end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e type="int">8</end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e>
+      <end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382 type="int">8</end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382>
     </WFSLayersPrecision>
     <WFSTLayers>
       <Delete type="QStringList"/>
@@ -275,10 +451,10 @@
     <WMSContactPosition type="QString"></WMSContactPosition>
     <WMSDefaultMapUnitsPerMm type="double">1</WMSDefaultMapUnitsPerMm>
     <WMSExtent type="QStringList">
-      <value>-1.6647127784290738</value>
-      <value>-1.0</value>
-      <value>1.6647127784290738</value>
-      <value>1.0</value>
+      <value>742710.49844994198065251</value>
+      <value>6256566.5438290610909462</value>
+      <value>806601.67579131538514048</value>
+      <value>6295802.27965793013572693</value>
     </WMSExtent>
     <WMSFees type="QString">conditions unknown</WMSFees>
     <WMSImageQuality type="int">90</WMSImageQuality>
@@ -319,7 +495,10 @@
     <WMTSUrl type="QString"></WMTSUrl>
   </properties>
   <visibility-presets/>
-  <transformContext/>
+  <transformContext>
+    <srcDest sourceTransform="+towgs84=0,0,0" source="EPSG:2154" dest="EPSG:4326" destTransform=""/>
+    <srcDest sourceTransform="" source="EPSG:3857" dest="EPSG:2154" destTransform="+towgs84=0,0,0"/>
+  </transformContext>
   <projectMetadata>
     <identifier></identifier>
     <parentidentifier></parentidentifier>

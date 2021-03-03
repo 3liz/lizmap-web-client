@@ -592,6 +592,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Hide edition tabs
         $('.edition-tabs').hide();
+
+        // Display digitization tab back
+        $('.edition-tabs a[href="#tabdigitization"]').show();
     }
 
     function addEditionControls() {
@@ -721,7 +724,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // edit layer events
             editLayer.events.on({
 
-                featureadded: function(evt) {
+                featureadded: function() {
                     // Deactivate draw control
                     if( !editCtrls )
                         return false;
@@ -760,13 +763,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
                     // Inform user he can now modify
                     addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
-
-                    var btn = $('#button-edition');
-                    var dockVisible = btn.parent().hasClass('active');
-                    if( lizMap.checkMobile() && !dockVisible ){
-                        btn.click();
-                    }
-
                 },
 
                 featuremodified: function(evt) {
@@ -821,9 +817,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
                 // Activate edition
                 editCtrls.panel.activate();
-
-                // Display digitization tab
-                $('.edition-tabs a[href="#tabdigitization"]').show();
 
                 // Launch edition to gather edition layer info
                 launchEdition( $('#edition-layer').val(), null);
@@ -1466,7 +1459,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         if ( !ctrl.active ) {
                             ctrl.activate();
 
-                            addEditionMessage(lizDict['edition.draw.activate'],'info',true);
+                            if(lizMap.checkMobile()){
+                                addEditionMessage(lizDict['edition.draw.activate.mobile'], 'info', true);
+                            }else{
+                                addEditionMessage(lizDict['edition.draw.activate'],'info',true);
+                            }
                         }
                         // Need to get geometry from form and add feature to the openlayer layer
                         var feat = getFeatureFromGeometryColumn();
@@ -1480,6 +1477,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             if (geometryType != 'point')
                                 $('#edition-geomtool-container').show();
                         }
+                    } else {
+                        $('.edition-tabs a[href="#tabdigitization"]').hide();
                     }
                 }
                 // Modification
@@ -1509,19 +1508,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Check tabs visibility
             // We need to force showing the container before testing li visibility
             formContainer.show();
-            var btn = $('#button-edition');
-            var dockVisible = btn.parent().hasClass('active');
-
-            if (form.length != 0) {
-                $('#button-edition').show();
-                if (!lizMap.checkMobile()) {
-                    if (!dockVisible)
-                        btn.click();
-                } else {
-                    if (dockVisible)
-                        btn.click();
-                }
-            }
             // Check li (tabs) visibility
             var visibleTabs = form.children('ul.nav-tabs').find('li').filter(
                 function(){
@@ -1579,23 +1565,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         }
 
-        formContainer.show();
         $('#edition-waiter').hide();
-
-        // Show the dock if needed
-        var btn = $('#button-edition');
-        var dockVisible = btn.parent().hasClass('active');
-
-        if (form.length != 0) {
-            $('#button-edition').show();
-            if( !lizMap.checkMobile() ){
-                if ( !dockVisible )
-                    btn.click();
-            }else{
-                if ( dockVisible )
-                    btn.click();
-            }
-        }
 
         // Hide popup
         if( $('#liz_layer_popup_close').length )
