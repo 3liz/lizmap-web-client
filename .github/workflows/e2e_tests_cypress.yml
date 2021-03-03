@@ -48,5 +48,10 @@ jobs:
           working-directory: tests/js
           wait-on: http://localhost:8130
 
-      - name: Display Lizmap error logs
-        run: cat lizmap/var/log/errors.log
+      - name: Display Lizmap errors.log and fail if not empty
+        run: |
+          if [ -s "lizmap/var/log/errors.log" ]; then
+            echo "errors.log not empty!";
+            cat lizmap/var/log/errors.log;
+            exit -1;
+          fi
