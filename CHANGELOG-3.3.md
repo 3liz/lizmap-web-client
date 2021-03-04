@@ -3,6 +3,7 @@ Changelog
 
 Version 3.3.14
 --------------
+Release on 2021-03-04
 
 - Fix the sqlite to pgsql migrator
 - Fix some issues with PHP 8.0 and PHP 7.x 
