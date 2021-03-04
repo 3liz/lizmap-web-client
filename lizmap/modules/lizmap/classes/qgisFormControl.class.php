@@ -238,6 +238,8 @@ class qgisFormControl
             $this->required = false;
         }
 
+        $markup = '';
+
         if ($this->fieldDataType != 'geometry') {
             $this->edittype = $edittype;
             $this->rendererCategories = $rendererCategories;
@@ -308,8 +310,10 @@ class qgisFormControl
                         $markup = 'time';
                     }
                 }
-            } else {
+            } elseif (in_array($this->fieldEditType, $this->qgisEdittypeMap)) {
                 $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
+            } else {
+                $markup = 'input';
             }
         } else {
             $markup = 'hidden';
