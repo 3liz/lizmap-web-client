@@ -2,7 +2,7 @@
 
 ## Version 3.4.2
 
-Release on 2021-02-25
+Release on 2021-03-04
 
 - Fix lizmap/install/set_rights.sh: some directories were missing
 - Make MultiGeometry KML importable/exportable and focus on features extent after load
