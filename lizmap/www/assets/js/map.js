@@ -3894,18 +3894,7 @@ var lizMap = function() {
       $.each(map.layers, function(i, l) {
         if ( (l instanceof OpenLayers.Layer.WMS) || (l instanceof OpenLayers.Layer.WMTS) ){
             if( l.getVisibility() && ('params' in l) && ('LAYERS' in l.params)) {
-              // Add layer to the list of printed layers
-              printLayers.push(l.params['LAYERS']);
-              // Optionnaly add layer style if needed (same order as layers )
-              var lst = 'default';
-              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
-                  lst = '';
-              }
-              if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
-                lst = l.params['STYLES'];
-              styleLayers.push( lst );
-
-              // Get config to get qgis layer opacity
+              // Get config
               var qgisName = null;
               if ( l.name in cleanNameMap )
                   qgisName = getLayerNameByCleanName(l.name);
@@ -3916,6 +3905,28 @@ var lizMap = function() {
                   configLayer = config.layers[l.params['LAYERS']];
               if ( !configLayer )
                   configLayer = config.layers[l.name];
+
+              // If the layer has no config it is not a QGIS layer
+              if ( !configLayer )
+                return;
+
+              // If the layer has no id it is not a QGIS layer or group
+              if (!('id' in configLayer))
+                return;
+
+              // Add layer to the list of printed layers
+              printLayers.push(l.params['LAYERS']);
+
+              // Optionnaly add layer style if needed (same order as layers )
+              var lst = 'default';
+              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
+                  lst = '';
+              }
+              if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+                lst = l.params['STYLES'];
+              styleLayers.push( lst );
+
+              // Get qgis layer opacity
               if ( configLayer && ('opacity' in configLayer) )
                 opacityLayers.push(parseInt(255*l.opacity*configLayer.opacity));
               else
