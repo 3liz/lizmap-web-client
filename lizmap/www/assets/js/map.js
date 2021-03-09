@@ -3892,11 +3892,8 @@ var lizMap = function() {
       var styleLayers = [];
       var opacityLayers = [];
       $.each(map.layers, function(i, l) {
-        if (
-            l instanceof OpenLayers.Layer.WMS
-            || ( l instanceof OpenLayers.Layer.WMTS && !(l.name.lastIndexOf('ign', 0) === 0 ) )
-        ){
-            if( l.getVisibility() ) {
+        if ( (l instanceof OpenLayers.Layer.WMS) || (l instanceof OpenLayers.Layer.WMTS) ){
+            if( l.getVisibility() && ('params' in l) && ('LAYERS' in l.params)) {
               // Add layer to the list of printed layers
               printLayers.push(l.params['LAYERS']);
               // Optionnaly add layer style if needed (same order as layers )
