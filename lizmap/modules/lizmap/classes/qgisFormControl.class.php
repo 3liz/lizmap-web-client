@@ -310,7 +310,7 @@ class qgisFormControl
                         $markup = 'time';
                     }
                 }
-            } elseif (in_array($this->fieldEditType, $this->qgisEdittypeMap)) {
+            } elseif (array_key_exists($this->fieldEditType, $this->qgisEdittypeMap)) {
                 $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
             } else {
                 $markup = 'input';
