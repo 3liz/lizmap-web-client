@@ -3147,7 +3147,7 @@ var lizMap = function() {
                           wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
                       else
                           wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
-                    
+
                     var parentDiv = self.parent();
 
                     // Fetch queries
@@ -3177,7 +3177,7 @@ var lizMap = function() {
 
             for (let index = 0; index < popupChildrenData.length; index++) {
               let popupChildData = popupChildrenData[index].value;
-              
+
               var hasPopupContent = (!(!popupChildData || popupChildData == null || popupChildData == ''))
               if (hasPopupContent) {
                 var popupReg = new RegExp('lizmapPopupTable', 'g');
@@ -3911,7 +3911,7 @@ var lizMap = function() {
               // Get config to get qgis layer opacity
               var qgisName = null;
               if ( l.name in cleanNameMap )
-                  qgisName = getLayerNameByCleanName(layer.name);
+                  qgisName = getLayerNameByCleanName(l.name);
               var configLayer = null;
               if ( qgisName )
                   configLayer = config.layers[qgisName];
