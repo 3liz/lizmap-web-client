@@ -467,6 +467,16 @@ class Project
         return $this->qgis->getData($key);
     }
 
+    /**
+     * Get the minimum needed project information for some pages (landing page, admin project listing).
+     *
+     * @return ProjectMetadata
+     */
+    public function getMetadata()
+    {
+        return new ProjectMetadata($this);
+    }
+
     public function getProj4($authId)
     {
         return $this->qgis->getProj4($authId);
