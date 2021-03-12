@@ -125,6 +125,42 @@ class lizmapRepository
         return $modified;
     }
 
+    /**
+     * Get a project by key.
+     *
+     * @param string $key           the project key
+     * @param bool   $keepReference if we need to keep reference in projectInstances
+     *
+     * @return null|lizmapProject null if it does not exist
+     */
+    public function getProject($key, $keepReference = true)
+    {
+        if (isset($this->projectInstances[$key])) {
+            return $this->projectInstances[$key];
+        }
+
+        try {
+            $proj = new lizmapProject($key, $this);
+        } catch (UnknownLizmapProjectException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
+            return null;
+        }
+
+        if ($keepReference) {
+            $this->projectInstances[$key] = $proj;
+        }
+
+        return $proj;
+    }
+
+    /**
+     * Get the repository projects instances.
+     *
+     * @return lizmapProject[]
+     */
     public function getProjects()
     {
         $projects = array();
@@ -147,8 +183,11 @@ class lizmapRepository
                     $proj = null;
                     if (in_array($qgsFile.'.cfg', $cfgFiles)) {
                         try {
-                            $proj = lizmap::getProject($this->key.'~'.substr($qgsFile, 0, -4));
+                            // Avoid memory usage by not keeping project instance in projectInstances
+                            $keepReference = false;
+                            $proj = $this->getProject(substr($qgsFile, 0, -4), $keepReference);
                             if ($proj != null) {
+                                // Add project instance in returned object
                                 $projects[] = $proj;
                             }
                         } catch (UnknownLizmapProjectException $e) {
@@ -162,5 +201,53 @@ class lizmapRepository
         }
 
         return $projects;
+    }
+
+    /**
+     * Get the repository projects metadata.
+     *
+     * @return ProjectMetadata[]
+     */
+    public function getProjectsMetadata()
+    {
+        $data = array();
+        $dir = $this->getPath();
+
+        if (is_dir($dir)) {
+            if ($dh = opendir($dir)) {
+                $cfgFiles = array();
+                $qgsFiles = array();
+                while (($file = readdir($dh)) !== false) {
+                    if (substr($file, -3) == 'cfg') {
+                        $cfgFiles[] = $file;
+                    }
+                    if (substr($file, -3) == 'qgs') {
+                        $qgsFiles[] = $file;
+                    }
+                }
+                closedir($dh);
+
+                foreach ($qgsFiles as $qgsFile) {
+                    $proj = null;
+                    if (in_array($qgsFile.'.cfg', $cfgFiles)) {
+                        try {
+                            // Get project
+                            $keepReference = false;
+                            $proj = $this->getProject(substr($qgsFile, 0, -4), $keepReference);
+                            if ($proj != null) {
+                                // Get project metadata and add it to the returned object
+                                $data[] = $proj->getMetadata();
+                            }
+                        } catch (UnknownLizmapProjectException $e) {
+                            jLog::logEx($e, 'error');
+                        } catch (Exception $e) {
+                            jLog::logEx($e, 'error');
+                        }
+                    }
+                }
+            }
+        }
+
+        return $data;
     }
 }
