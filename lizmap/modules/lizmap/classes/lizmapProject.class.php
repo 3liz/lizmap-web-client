@@ -139,6 +139,16 @@ class lizmapProject
         return $this->proj->getXmlLayer($layerId);
     }
 
+    /**
+     * Get the minimum needed project information for some pages (landing page, admin project listing).
+     *
+     * @return ProjectMetadata
+     */
+    public function getMetadata()
+    {
+        return $this->proj->getMetadata();
+    }
+
     public function findLayerByAnyName($name)
     {
         return $this->proj->findLayerByAnyName($name);
