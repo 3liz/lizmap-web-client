@@ -60,13 +60,14 @@ class projectCtrl extends jControllerCmdLine
         foreach ($repositories as $r) {
             $rep->addContent('Enter the repository '.$r."\n");
             $lrep = lizmap::getRepository($r);
-            $lprojects = $lrep->getProjects();
 
-            foreach ($lprojects as $p) {
-                $rep->addContent('Get the project '.$p->getData('id')."\n");
+            // Get projects metadata
+            $metadata = $lrep->getProjectsMetadata();
+            foreach ($metadata as $meta) {
+                $rep->addContent('Get the project '.$meta->getId()."\n");
                 // Get params
                 $params = array(
-                    'map' => $p->getRelativeQgisPath(),
+                    'map' => $meta->getMap(),
                     'service' => 'WMS',
                     'request' => 'GetCapabilities',
                 );
@@ -100,11 +101,11 @@ class projectCtrl extends jControllerCmdLine
                     ++$i;
                 }
                 if ($nb_500) {
-                    $rep->addContent($nb_500.' request(s) return error 500 for the project '.$p->getData('id')."\n");
+                    $rep->addContent($nb_500.' request(s) return error 500 for the project '.$meta->getId()."\n");
                 } elseif ($nb_400) {
-                    $rep->addContent($nb_400.' request(s) return error 400 for the project '.$p->getData('id')."\n");
+                    $rep->addContent($nb_400.' request(s) return error 400 for the project '.$meta->getId()."\n");
                 } else {
-                    $rep->addContent($nb_success.' request(s) return success for the project '.$p->getData('id')."\n");
+                    $rep->addContent($nb_success.' request(s) return success for the project '.$meta->getId()."\n");
                 }
             }
         }

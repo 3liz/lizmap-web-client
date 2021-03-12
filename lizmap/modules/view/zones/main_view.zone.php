@@ -45,7 +45,6 @@ class main_viewZone extends jZone
             if (jAcl2::check('lizmap.repositories.view', $r)) {
                 $lrep = lizmap::getRepository($r);
                 $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
-                $lprojects = $lrep->getProjects();
 
                 // WMS GetCapabilities Url
                 $wmsGetCapabilitiesUrl = jAcl2::check(
@@ -54,35 +53,33 @@ class main_viewZone extends jZone
                 );
                 $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
 
-                foreach ($lprojects as $p) {
-                    $pOptions = $p->getOptions();
-                    // Hide project with option "hideProject"
-                    if (property_exists($pOptions, 'hideProject')
-                        && $pOptions->hideProject == 'True'
-                    ) {
+                $metadata = $lrep->getProjectsMetadata();
+                foreach ($metadata as $meta) {
+                    // Avoid project with no access rights
+                    if (!$meta->getAcl()) {
                         continue;
                     }
 
-                    // Hide project with no acl
-                    if (!$p->checkAcl()) {
+                    // Hide project with option "hideProject"
+                    if ($meta->getHidden()) {
                         continue;
                     }
 
                     // Get project information
                     if ($wmsGetCapabilitiesUrl) {
-                        $wmsGetCapabilitiesUrl = $p->getData('wmsGetCapabilitiesUrl');
-                        $wmtsGetCapabilitiesUrl = $p->getData('wmtsGetCapabilitiesUrl');
+                        $wmsGetCapabilitiesUrl = $meta->getData('wmsGetCapabilitiesUrl');
+                        $wmtsGetCapabilitiesUrl = $meta->getData('wmtsGetCapabilitiesUrl');
                     }
-                    if ($lrep->getKey().'~'.$p->getData('id') != $excludedProject) {
+                    if ($lrep->getKey().'~'.$meta->getId() != $excludedProject) {
                         $mrep->childItems[] = new lizmapMainViewItem(
-                            $p->getData('id'),
-                            $p->getData('title'),
-                            $p->getData('abstract'),
-                            $p->getData('keywordList'),
-                            $p->getData('proj'),
-                            $p->getData('bbox'),
-                            jUrl::get('view~map:index', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
-                            jUrl::get('view~media:illustration', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
+                            $meta->getId(),
+                            $meta->getTitle(),
+                            $meta->getAbstract(),
+                            $meta->getData('keywordList'),
+                            $meta->getData('proj'),
+                            $meta->getData('bbox'),
+                            jUrl::get('view~map:index', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
+                            jUrl::get('view~media:illustration', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
                             0,
                             $r,
                             'map',
@@ -93,7 +90,7 @@ class main_viewZone extends jZone
                           $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
                             array(
                               "repository"=>$lrep->getKey(),
-                              "project"=>$p->getData('id'),
+                              "project"=>$meta->getId(),
                             )
                           ) );*/
                     }
