@@ -22,13 +22,13 @@ class listProjectDatasource extends jFormsDynamicDatasource
         $criteria = $form->getData($this->criteriaFrom[0]);
         if ($criteria && array_key_exists($criteria, $this->data)) {
             $rep = lizmap::getRepository($criteria);
-            $projects = $rep->getProjects();
-            foreach ($projects as $p) {
-                $pOptions = $p->getOptions();
-                if (property_exists($pOptions, 'hideProject') && $pOptions->hideProject == 'True') {
+            // Get projects metadata
+            $metadata = $rep->getProjectsMetadata();
+            foreach ($metadata as $meta) {
+                if ($meta->getHidden()) {
                     continue;
                 }
-                $pdata[$p->getData('id')] = (string) $p->getData('title');
+                $pdata[$meta->getId()] = $meta->getTitle();
             }
         }
 

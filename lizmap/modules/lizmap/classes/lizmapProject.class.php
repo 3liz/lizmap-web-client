@@ -9,6 +9,8 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+use Lizmap\Project\ProjectMetadata;
+
 class lizmapProject extends qgisProject
 {
     /**
@@ -489,6 +491,16 @@ class lizmapProject extends qgisProject
     public function getLayers()
     {
         return $this->cfg->layers;
+    }
+
+    /**
+     * Get the minimum needed project information for some pages (landing page, admin project listing).
+     *
+     * @return ProjectMetadata
+     */
+    public function getMetadata()
+    {
+        return new ProjectMetadata($this);
     }
 
     public function findLayerByAnyName($name)
