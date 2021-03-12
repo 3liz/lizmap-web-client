@@ -189,7 +189,15 @@ class Repository
         return $modified;
     }
 
-    public function getProject($key)
+    /**
+     * Get a project by key.
+     *
+     * @param string $key           the project key
+     * @param bool   $keepReference if we need to keep reference in the repository property projectInstances
+     *
+     * @return null|Project null if it does not exist
+     */
+    public function getProject($key, $keepReference = true)
     {
         if (isset($this->projectInstances[$key])) {
             return $this->projectInstances[$key];
@@ -205,11 +213,18 @@ class Repository
             return null;
         }
 
-        $this->projectInstances[$key] = $proj;
+        if ($keepReference) {
+            $this->projectInstances[$key] = $proj;
+        }
 
         return $proj;
     }
 
+    /**
+     * Get the repository projects instances.
+     *
+     * @return Project[]
+     */
     public function getProjects()
     {
         $projects = array();
@@ -233,8 +248,11 @@ class Repository
                     $proj = null;
                     if (in_array($qgsFile.'.cfg', $cfgFiles)) {
                         try {
-                            $proj = $this->getProject(substr($qgsFile, 0, -4));
+                            // Avoid memory usage by not keeping project instance in projectInstances
+                            $keepReference = false;
+                            $proj = $this->getProject(substr($qgsFile, 0, -4), $keepReference);
                             if ($proj != null) {
+                                // Add project instance in returned object
                                 $projects[] = $proj;
                             }
                         } catch (UnknownLizmapProjectException $e) {
@@ -248,5 +266,53 @@ class Repository
         }
 
         return $projects;
+    }
+
+    /**
+     * Get the repository projects metadata.
+     *
+     * @return ProjectMetadata[]
+     */
+    public function getProjectsMetadata()
+    {
+        $data = array();
+        $dir = $this->getPath();
+
+        if (is_dir($dir)) {
+            if ($dh = opendir($dir)) {
+                $cfgFiles = array();
+                $qgsFiles = array();
+                while (($file = readdir($dh)) !== false) {
+                    if (substr($file, -3) == 'cfg') {
+                        $cfgFiles[] = $file;
+                    }
+                    if (substr($file, -3) == 'qgs') {
+                        $qgsFiles[] = $file;
+                    }
+                }
+                closedir($dh);
+
+                foreach ($qgsFiles as $qgsFile) {
+                    $proj = null;
+                    if (in_array($qgsFile.'.cfg', $cfgFiles)) {
+                        try {
+                            // Get project
+                            $keepReference = false;
+                            $proj = $this->getProject(substr($qgsFile, 0, -4), $keepReference);
+                            if ($proj != null) {
+                                // Get project metadata and add it to the returned object
+                                $data[] = $proj->getMetadata();
+                            }
+                        } catch (UnknownLizmapProjectException $e) {
+                            $this->appContext->logException($e, 'error');
+                        } catch (\Exception $e) {
+                            $this->appContext->logException($e, 'error');
+                        }
+                    }
+                }
+            }
+        }
+
+        return $data;
     }
 }

@@ -111,13 +111,36 @@ class lizmapRepository
         return $this->repo->update($data, $ini);
     }
 
-    public function getProject($key)
+    /**
+     * Get a project by key.
+     *
+     * @param string $key           the project key
+     * @param bool   $keepReference if we need to keep reference in projectInstances
+     *
+     * @return null|Project null if it does not exist
+     */
+    public function getProject($key, $keepReference = true)
     {
-        return $this->repo->getProject($key);
+        return $this->repo->getProject($key, $keepReference);
     }
 
+    /**
+     * Get the repository projects.
+     *
+     * @return Project[]
+     */
     public function getProjects()
     {
         return $this->repo->getProjects();
+    }
+
+    /**
+     * Get the repository projects metadata.
+     *
+     * @return ProjectMetadata[]
+     */
+    public function getProjectsMetadata()
+    {
+        return $this->repo->getProjectsMetadata();
     }
 }
