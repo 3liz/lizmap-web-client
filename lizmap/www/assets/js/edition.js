@@ -1567,6 +1567,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         $('#edition-waiter').hide();
 
+        // Activate edition dock if not yet
+        $('li.edition:not(.active) #button-edition').click();
+
         // Hide popup
         if( $('#liz_layer_popup_close').length )
             $('#liz_layer_popup_close').click();
