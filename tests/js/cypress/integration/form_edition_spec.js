@@ -36,12 +36,38 @@ describe('Form edition', function () {
     })
 
 
-    it('submits form and gets success message', function () {
+    it('must show edition form, submit form and gets success message', function () {
+        // Intercept editFeature query to wait for its end
+        cy.intercept('/index.php/lizmap/edition/editFeature*').as('editFeature')
+
+        // Select layer with no geometry for edition
+        cy.get('#edition-layer').select('end2end_form_edition_e77a188c_0547_4304_8df1_a74755e5b42e')
         cy.get('#edition-draw').click()
+
+        // Wait editFeature query ends + slight delay for UI to be ready
+        cy.wait('@editFeature')
+        cy.wait(200)
+
+        // Assert form is displayed
+        cy.get('#edition').should('have.class', 'active')
+
         cy.get('#jforms_view_edition_value').type('42')
         cy.get('#jforms_view_edition__submit_submit').click()
 
         // Assert success message is displayed
         cy.get('#message .jelix-msg-item-success').should('be.visible')
+    })
+
+    it('must show edition form when edition launched via attribute table', function () {
+        cy.get('#button-attributeLayers').click()
+
+        // Use { force: true } because pointer is not on bottom-dock
+        cy.get('button[value="end2end_form_edition"].btn-open-attribute-layer').click({ force: true })
+        cy.get('button.attribute-layer-feature-edit:first').click({ force: true })
+
+        // Assert form is displayed
+        cy.get('#edition').should('have.class', 'active')
+        cy.get('#edition').should('be.visible')
+
     })
 })
