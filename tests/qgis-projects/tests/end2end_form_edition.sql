@@ -106,6 +106,7 @@ ALTER TABLE ONLY tests_projects.end2end_form_edition_geom ALTER COLUMN id SET DE
 --
 
 COPY tests_projects.end2end_form_edition (id, value) FROM stdin;
+1	42
 \.
 
 
