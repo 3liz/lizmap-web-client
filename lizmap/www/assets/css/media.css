@@ -412,11 +412,6 @@ only screen and (                   max-device-height : 640px) {
     background-image: url(images/glyphicons-halflings-white.png);
   }
 
-  #content #message.span6{
-    left: 60px;
-    width: calc(100% - 70px);
-  }
-
   #right-dock{
     margin: 0;
   }

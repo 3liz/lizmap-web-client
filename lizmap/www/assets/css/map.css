@@ -1996,7 +1996,8 @@ lizmap-mouse-position > div.coords-unit > select{
   z-index:6000;
 }
 #content.mobile #message.span6{
-  margin-left:0px;
+  margin-left:60px;
+  width: calc(100% - 60px);
 }
 #message .alert {
   margin-bottom: 0px;
