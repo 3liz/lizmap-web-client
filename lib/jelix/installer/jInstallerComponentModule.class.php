@@ -65,26 +65,38 @@ class jInstallerComponentModule extends jInstallerComponentBase {
     }
 
     /**
-     * @param jIniMultiFilesModifier $config
-     * @param jIniMultiFilesModifier $localconfig
+     * If no access is defined for the module, we should set it one
+     *
+     *
+     * @param jIniMultiFilesModifier $config mainconfig.ini.php (master) and entrypoint config (overrider)
+     * @param jIniMultiFilesModifier $localconfig mainconfig.ini.php + localconfig.ini.php
      */
-    protected function _setAccess($config, $localconfig) {
+    protected function _setAccess($config, $localconfig)
+    {
+        $epConfig = $config->getOverrider();
+        $access = $epConfig->getValue($this->name.'.access', 'modules');
 
-        $localAccess = $localconfig->getValue($this->name.'.access', 'modules');
-        $access = $config->getValue($this->name.'.access', 'modules');
-        $config = $config->getOverrider();
-
-        if ($localAccess == 2) {
-            $config->removeValue($this->name . '.access', 'modules');
-            $config->save();
-        }
-        else if ($access == 0 || $access == null) {
-            $config->setValue($this->name.'.access', 2, 'modules');
-            $config->save();
+        if ($access === 0 || $access === null || $access === '') {
+            // access is not defined or is defined to 0. We must set it to 1 or 2
+            $localAccess = $localconfig->getValue($this->name.'.access', 'modules');
+            if ($localAccess === 0 || $localAccess === null || $localAccess === '') {
+                // if there is no global access value, let's set to 2
+                $epConfig->setValue($this->name . '.access', 2, 'modules');
+            }
+            else if ($localAccess === 3) {
+                $epConfig->setValue($this->name.'.access', 1, 'modules');
+            }
+            else {
+                // there is a global access value to 1 or 2, be sure we remove
+                // the access value from the ep config, to avoid duplication
+                // and to remove possible "0" value
+                $epConfig->removeValue($this->name . '.access', 'modules');
+            }
+            $epConfig->save();
         }
         else if ($access == 3) {
-            $config->setValue($this->name.'.access', 1, 'modules');
-            $config->save();
+            $epConfig->setValue($this->name.'.access', 1, 'modules');
+            $epConfig->save();
         }
     }
 
