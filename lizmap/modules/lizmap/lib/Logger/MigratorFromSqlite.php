@@ -19,7 +19,7 @@ class MigratorFromSqlite
     const MIGRATE_RES_OK = 1;
     const MIGRATE_RES_ALREADY_MIGRATED = 2;
 
-    protected function copyTable($daoSelector, $oldProfile, $newProfile)
+    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence=true)
     {
         $daoNew = \jDao::get($daoSelector, $newProfile);
         $daoSqlite = \jDao::create($daoSelector, $oldProfile);
@@ -36,6 +36,23 @@ class MigratorFromSqlite
                 echo '*** Insert ERROR for the record ';
                 var_export($rec->getPk());
                 echo "\nError is: ".$e->getMessage()."\n";
+            }
+        }
+
+        if ($updateSequence) {
+
+            $idField = $daoNew->getProperties()[$daoNew->getPrimaryKeyNames()[0]]['fieldName'];
+            $table =  $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
+
+            $conn = \jDb::getConnection($newProfile);
+            $rs = $conn->query('SELECT pg_get_serial_sequence('.$conn->quote($table).','.$conn->quote($idField).') as sequence_name');
+            if ($rs && ($rec = $rs->fetch())) {
+                $sequence = $rec->sequence_name;
+                if ($sequence) {
+                    $conn->query('SELECT setval('.$conn->quote($sequence).',
+                    (SELECT max('.$conn->encloseName($idField).') 
+                    FROM '.$conn->encloseName($table).'))');
+                }
             }
         }
     }
