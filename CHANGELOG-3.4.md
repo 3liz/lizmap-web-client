@@ -8,6 +8,7 @@ Release on 2021-03-xx
 - Some fixes in the js to getprint
 - Fix measurement result not shown on tablet
 - Fix/performance Get only projects metadata for the landing page
+- Update to Webpack 5
 - Update Jelix to fix an issue in the installer
 
 ## Version 3.4.2
