@@ -66,7 +66,7 @@ class MigratorFromSqlite
         return self::MIGRATE_RES_OK;
     }
 
-    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence=true)
+    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence = true)
     {
         $daoNew = \jDao::get($daoSelector, $newProfile);
         $daoSqlite = \jDao::create($daoSelector, $oldProfile);
@@ -87,9 +87,8 @@ class MigratorFromSqlite
         }
 
         if ($updateSequence) {
-
             $idField = $daoNew->getProperties()[$daoNew->getPrimaryKeyNames()[0]]['fieldName'];
-            $table =  $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
+            $table = $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
 
             $conn = \jDb::getConnection($newProfile);
             $rs = $conn->query('SELECT pg_get_serial_sequence('.$conn->quote($table).','.$conn->quote($idField).') as sequence_name');
