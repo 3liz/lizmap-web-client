@@ -56,17 +56,17 @@ class MigratorFromSqlite
         }
 
         $this->copyTable($daoUserSelector, 'oldjauth', $profile);
-        $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile);
-        $this->copyTable('jacl2db~jacl2subjectgroup', 'oldjauth', $profile);
-        $this->copyTable('jacl2db~jacl2subject', 'oldjauth', $profile);
-        $this->copyTable('jacl2db~jacl2usergroup', 'oldjauth', $profile);
-        $this->copyTable('jacl2db~jacl2rights', 'oldjauth', $profile);
-        $this->copyTable('lizmap~geobookmark', 'oldjauth', $profile);
+        $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile, false);
+        $this->copyTable('jacl2db~jacl2subjectgroup', 'oldjauth', $profile, false);
+        $this->copyTable('jacl2db~jacl2subject', 'oldjauth', $profile, false);
+        $this->copyTable('jacl2db~jacl2usergroup', 'oldjauth', $profile, false);
+        $this->copyTable('jacl2db~jacl2rights', 'oldjauth', $profile, false);
+        $this->copyTable('lizmap~geobookmark', 'oldjauth', $profile, true);
 
         return self::MIGRATE_RES_OK;
     }
 
-    protected function copyTable($daoSelector, $oldProfile, $newProfile)
+    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence = true)
     {
         $daoNew = \jDao::get($daoSelector, $newProfile);
         $daoSqlite = \jDao::create($daoSelector, $oldProfile);
@@ -83,6 +83,22 @@ class MigratorFromSqlite
                 echo '*** Insert ERROR for the record ';
                 var_export($rec->getPk());
                 echo "\nError is: ".$e->getMessage()."\n";
+            }
+        }
+
+        if ($updateSequence) {
+            $idField = $daoNew->getProperties()[$daoNew->getPrimaryKeyNames()[0]]['fieldName'];
+            $table = $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
+
+            $conn = \jDb::getConnection($newProfile);
+            $rs = $conn->query('SELECT pg_get_serial_sequence('.$conn->quote($table).','.$conn->quote($idField).') as sequence_name');
+            if ($rs && ($rec = $rs->fetch())) {
+                $sequence = $rec->sequence_name;
+                if ($sequence) {
+                    $conn->query('SELECT setval('.$conn->quote($sequence).',
+                    (SELECT max('.$conn->encloseName($idField).') 
+                    FROM '.$conn->encloseName($table).'))');
+                }
             }
         }
     }
