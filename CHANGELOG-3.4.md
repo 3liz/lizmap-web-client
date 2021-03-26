@@ -2,7 +2,7 @@
 
 ## Version 3.4.3
 
-Release on 2021-03-xx
+Release on 2021-03-26
 
 - Fix form not displayed when editing an existing feature
 - Some fixes in the js to getprint

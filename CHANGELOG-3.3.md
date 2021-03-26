@@ -4,7 +4,7 @@ Changelog
 Version 3.3.15
 --------------
 
-Release on 2021-03-25
+Release on 2021-03-26
 
 - Fix database migrator: sequence should be updated 
 - Update Jelix to fix an issue in the installer
