@@ -8,10 +8,9 @@ export default class Scaleline extends HTMLElement {
 
     connectedCallback() {
 
-        // DPI is adjusted here because this commit https://github.com/openlayers/openlayers/commit/857f4e01ac9c6c27d83f7cc1f5eda86c53405228
-        // has not been released yet. Also we use 25.40005080010160020 as it is more precise
-        // TODO : Change this value when commit released and Lizmap up to date with OL 6
-        const ADJUSTED_DPI = (96 * 1000) / (25.40005080010160020 * 39.37);
+        // Adjust OL2 to OL6 DPI value
+        // We use 25.40005080010160020 for inch to meter conversion as it is more precise
+        const ADJUSTED_DPI = 96 * 25.4 / 25.40005080010160020;
 
         this._olScaleline = new ScaleLine({
             target: this,

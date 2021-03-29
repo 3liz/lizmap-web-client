@@ -2,7 +2,7 @@
 
 ## Version 3.5.0
 
-Not released yet
+- Update OpenLayers to 6.5
 
 ### New JS events
 
