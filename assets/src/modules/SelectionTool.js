@@ -332,7 +332,7 @@ export default class SelectionTool {
 
             // Get all features
             mainLizmap.lizmap3.getFeatureData(featureType, null, null, 'extent', false, null, null,
-                (aName, aFilter, cFeatures, cAliases) => {
+                (aName, aFilter, cFeatures) => {
                     const invertSelectionIds = [];
                     for (const feat of cFeatures) {
                         const fid = feat.id.split('.')[1];
