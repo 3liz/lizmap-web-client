@@ -21,6 +21,7 @@
         "indent": ["error", 4, {
                 "SwitchCase": 1, "ignoredNodes": ["TemplateLiteral *"]
             }
-        ]
+        ],
+        "no-prototype-builtins": "off"
     }
 }
