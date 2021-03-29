@@ -1,23 +1,6 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import PluggableMap from 'ol/PluggableMap';
-import MapRenderer from 'ol/renderer/Map';
-import { assign } from 'ol/obj';
+import olMap from 'ol/Map';
 import View from 'ol/View';
-
-class olMap extends PluggableMap {
-    /**
-     * @param {import("./PluggableMap.js").MapOptions} options Map options.
-     */
-    constructor(options) {
-        options = assign({}, options);
-
-        super(options);
-    }
-
-    createRenderer() {
-        return new MapRenderer(this);
-    }
-}
 
 /** Class initializing Openlayers Map. */
 export default class Map {
