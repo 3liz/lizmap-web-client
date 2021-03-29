@@ -113,7 +113,7 @@ export default class Snapping {
         for (const snapLayer of this._config.snap_layers) {
 
             lizMap.getFeatureData(mainLizmap.lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
-                (fName, fFilter, fFeatures, fAliases) => {
+                (fName, fFilter, fFeatures) => {
 
                     // Transform features
                     const snapLayerConfig = lizMap.config.layers[fName];
