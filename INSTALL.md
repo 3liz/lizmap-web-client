@@ -16,7 +16,7 @@ First you should install :
 - The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml`:
   - Debian 9 Stretch and Ubuntu 18.04: `apt install curl php-sqlite3 php-gd php-xml php-curl`
 - [QGIS](http://qgis.org/en/site/forusers/download.html)
-and [its documentation about QGIS Server](https://docs.qgis.org/2.18/en/docs/user_manual/working_with_ogc/server/index.html).
+and [its documentation about QGIS Server](https://docs.qgis.org/3.16/en/docs/user_manual/working_with_ogc/server/index.html).
   We recommend **strongly** to use the same version on the server **and** on the desktop. QGIS Server will read
   your QGS file and obviously can't read a file made with a newer version of QGIS Desktop.
 - (optional) PostgreSQL with PostGIS and its php extension (`php-pgsql` or equivalents)
