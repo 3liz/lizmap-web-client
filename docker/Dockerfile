@@ -1,5 +1,5 @@
 ARG REGISTRY_PREFIX=''
-FROM ${REGISTRY_PREFIX}alpine:3.11
+FROM ${REGISTRY_PREFIX}alpine:3
 MAINTAINER David Marteau <david.marteau@3liz.com>
 LABEL Description="Lizmap web client" Vendor="3liz.org"
 
