@@ -9,7 +9,7 @@ LIZMAP_ADMIN_EMAIL=${LIZMAP_ADMIN_EMAIL:-root@local.localhost}
 
 # php ini override
 if [ ! -z $PHP_INI ]; then
-    echo -e "$PHP_INI" > $PHP_INI_DIR/conf.d/lizmap-php-0.ini
+    echo -e "$PHP_INI" > $PHP_INI_DIR/conf.d/00_lizmap.ini
 fi
 
 # lizmapConfig.ini.php.dist
