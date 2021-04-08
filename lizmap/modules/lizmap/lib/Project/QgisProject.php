@@ -261,7 +261,7 @@ class QgisProject
             foreach ($groupsMutuallyExclusive as $group) {
                 $name = (string) $group['name'];
                 if ($layers && property_exists($layers, $name)) {
-                    $layers->{$name}->smutuallyExclusive = 'True';
+                    $layers->{$name}->mutuallyExclusive = 'True';
                 }
             }
         }
