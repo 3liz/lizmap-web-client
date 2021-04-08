@@ -3738,6 +3738,13 @@ var lizMap = function() {
                       popup.panMapIfOutOfView = true;
                       map.addPopup(popup);
 
+                      // Activate Boostrap 2 tabs here as they are not 
+                      // automatically activated when created in popup anchored
+                      $('#' + popupContainerId + ' a[data-toggle="tab"]').on('click', function (e) {
+                        e.preventDefault();
+                        $(this).tab('show');
+                      });
+
                       popup.verifySize();
                       // Hide navbar and overview in mobile mode
                       if(mCheckMobile()){
