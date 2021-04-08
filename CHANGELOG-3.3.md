@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 3.3.16
+--------------
+
+- Fix: tabs in anchored popup were not toggling
+
 Version 3.3.15
 --------------
 
