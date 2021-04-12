@@ -21,12 +21,12 @@ export default class SelectionTool extends HTMLElement {
                 <div>${lizDict['selectiontool.toolbar.layer']}</div>
                 <div>
                     <select class="selectiontool-layer-list" @change=${ (event) => mainLizmap.selectionTool.allFeatureTypeSelected = event.target.value}>
-                        <optgroup label="Single layers">
+                        <optgroup label="${lizDict['selectiontool.toolbar.layers.single']}">
                             ${mainLizmap.selectionTool.layers.map((layer) => html`<option value="${layer.name}">${layer.title}</option>`)}
                         </optgroup>
-                        <optgroup label="Multiple layers">
-                            <option value="selectable-visible-layers">Selectable and visible layers</option>
-                            <option selected value="selectable-layers">Selectable layers</option>
+                        <optgroup label="${lizDict['selectiontool.toolbar.layers.multiple']}">
+                            <option value="selectable-visible-layers">${lizDict['selectiontool.toolbar.layers.selectableAndVisible']}</option>
+                            <option selected value="selectable-layers">${lizDict['selectiontool.toolbar.layers.selectable']}</option>
                         </optgroup>
                     </select>
                 </div>
@@ -40,13 +40,13 @@ export default class SelectionTool extends HTMLElement {
                 </div>
                 <div>
                     <select class="selection-geom-operator" @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value} data-original-title="${lizDict['selectiontool.toolbar.geomOperator']}">
-                        <option value="intersects">Interects</option>
-                        <option value="within">Within</option>
-                        <option value="overlaps">Overlaps</option>
-                        <option value="contains">Contains</option>
-                        <option value="crosses">Crosses</option>
-                        <option value="disjoint">Disjoint</option>
-                        <option value="touches">Touches</option>
+                        <option value="intersects">${lizDict['selectiontool.toolbar.geomOperator.intersects']}</option>
+                        <option value="within">${lizDict['selectiontool.toolbar.geomOperator.within']}</option>
+                        <option value="overlaps">${lizDict['selectiontool.toolbar.geomOperator.overlaps']}</option>
+                        <option value="contains">${lizDict['selectiontool.toolbar.geomOperator.contains']}</option>
+                        <option value="crosses">${lizDict['selectiontool.toolbar.geomOperator.crosses']}</option>
+                        <option value="disjoint">${lizDict['selectiontool.toolbar.geomOperator.disjoint']}</option>
+                        <option value="touches">${lizDict['selectiontool.toolbar.geomOperator.touches']}</option>
                     </select>
                 </div>
                 <div class="selectiontool-results" style="padding:2px">${mainLizmap.selectionTool.selectedFeaturesCount > 1 ? lizDict['selectiontool.results.more'].replace('%s', mainLizmap.selectionTool.selectedFeaturesCount) : mainLizmap.selectionTool.selectedFeaturesCount === 1 ? lizDict['selectiontool.results.one'] : lizDict['selectiontool.results.none']}</div>
