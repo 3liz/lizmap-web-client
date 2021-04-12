@@ -45,7 +45,7 @@
     </div>
   </div>
   <div id="map-content">
-    <div id="newOlMap" style="width:1px;height:1px;position: absolute;"></div>
+    <div id="newOlMap" style="width:100%;height:100%;position: absolute;"></div>
     <div id="map"></div>
 
     <div id="mini-dock">
@@ -67,6 +67,7 @@
     </span>
 
     <div id="overview-box">
+      <lizmap-overviewmap style="position: absolute;"></lizmap-overviewmap>
       <div id="overview-map" title="{@view~map.overviewmap.hover@}"></div>
       <div id="overview-bar">
        <lizmap-scaleline title="{@view~map.overviewbar.scaletext.hover@}"></lizmap-scaleline>

@@ -5,9 +5,10 @@ import SelectionInvert from './components/SelectionInvert.js';
 import Snapping from './components/Snapping.js';
 import Scaleline from './components/Scaleline.js';
 import MousePosition from './components/MousePosition.js';
-
 import Digitizing from './components/Digitizing.js';
-import {mainLizmap, mainEventDispatcher} from './modules/Globals.js';
+import OverviewMap from './components/OverviewMap.js';
+
+import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 
 lizMap.events.on({
     uicreated: () => {
@@ -18,8 +19,9 @@ lizMap.events.on({
         window.customElements.define('lizmap-snapping', Snapping);
         window.customElements.define('lizmap-scaleline', Scaleline);
         window.customElements.define('lizmap-mouse-position', MousePosition);
-
         window.customElements.define('lizmap-digitizing', Digitizing);
+        window.customElements.define('lizmap-overviewmap', OverviewMap);
+
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
     }
