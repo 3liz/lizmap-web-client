@@ -10,7 +10,7 @@ export default class Map {
             view: new View({
                 center: [0, 0],
                 zoom: 2,
-                projection: mainLizmap.projection
+                projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection
             }),
             target: 'newOlMap'
         });
