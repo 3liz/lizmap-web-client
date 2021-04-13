@@ -1,3 +1,11 @@
+html, #content, #map-content{
+  height: 100%;
+}
+
+body{
+  height: calc(100% - 75px);
+}
+
 body {
   padding-bottom:0;
   padding-left:0;
