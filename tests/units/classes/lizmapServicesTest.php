@@ -396,4 +396,39 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
         unset($testLizmapServices);
         unset($repo);
     }
+
+    public function getMetricsEnabled()
+    {
+        return array(
+            array(null, false),
+            array('', false),
+            array('1', true),
+            array('0', false),
+            array(true, true),
+            array(false, false),
+            array('bla', false),
+        );
+    }
+
+    /**
+     * @dataProvider getMetricsEnabled
+     *
+     * @param mixed $testValue
+     * @param mixed $expectedValue
+     */
+    public function testGetMetricsEnabled($testValue, $expectedValue)
+    {
+        $ini_tab = array('hideSensitiveServicesProperties' => '0',
+                         'services' => array(
+                             'appName' => 'Lizmap' ),
+        );
+
+        if ($testValue !== null) {
+            $ini_tab['services']['metricsEnabled'] = $testValue;
+        }
+
+        $testLizmapServices = new lizmapServices($ini_tab, (object) array(), true, '', null);
+        $this->assertEquals($expectedValue, $testLizmapServices->areMetricsEnabled());
+        unset($testLizmapServices);
+    }
 }

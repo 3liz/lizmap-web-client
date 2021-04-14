@@ -457,12 +457,7 @@ class serviceCtrl extends jController
             }
         }
 
-        // log metric
-        $ser = lizmap::getServices();
-        $debug = $ser->debugMode;
-        if ($debug) {
-            lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
-        }
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
 
         return $rep;
     }
@@ -794,12 +789,7 @@ class serviceCtrl extends jController
             }
         }
 
-        // log metric
-        $ser = lizmap::getServices();
-        $debug = $ser->debugMode;
-        if ($debug) {
-            lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
-        }
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
 
         return $rep;
     }
