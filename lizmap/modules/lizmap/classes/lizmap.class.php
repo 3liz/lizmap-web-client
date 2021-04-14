@@ -371,6 +371,10 @@ class lizmap
      */
     public static function logMetric($label, $start = 'index')
     {
+        if (!self::getServices()->areMetricsEnabled()) {
+            return;
+        }
+
         // Choose from when to calculate time: index, request or given $start
         if ($start == 'index') {
             $start = $_SERVER['LIZMAP_BEGIN_TIME'];

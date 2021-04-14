@@ -299,9 +299,6 @@ class lizmapProxy
         $project = $lproj->getKey();
         $repository = $lrep->getKey();
 
-        // Change to true to put some information in debug files
-        $debug = $ser->debugMode;
-
         // Read config file for the current project
         $layername = $params['layers'];
         $configLayers = $lproj->getLayers();
@@ -350,9 +347,7 @@ class lizmapProxy
         // --> must be done after checking that parent project is involved
         $profile = lizmapProxy::createVirtualProfile($repository, $project, $layers, $crs);
 
-        if ($debug) {
-            lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
-        }
+        lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
 
         // Has the user asked for cache for this layer ?
         $useCache = false;
@@ -398,9 +393,7 @@ class lizmapProxy
                     $mime = 'image/png';
                 }
 
-                if ($debug) {
-                    lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
-                }
+                lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
 
                 return array($tile, $mime, 200, true);
             }
@@ -471,9 +464,7 @@ class lizmapProxy
             array('method' => 'post')
         );
 
-        if ($debug) {
-            lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
-        }
+        lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
 
         if ($useCache && !preg_match('/^image/', $mime)) {
             $useCache = false;
@@ -523,9 +514,7 @@ class lizmapProxy
             imagedestroy($original);
             imagedestroy($image);
 
-            if ($debug) {
-                lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
-            }
+            lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
         }
 
         $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
@@ -544,9 +533,7 @@ class lizmapProxy
                 $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
                 $cached = true;
 
-                if ($debug) {
-                    lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
-                }
+                lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
                 $cached = false;
