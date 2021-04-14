@@ -21,6 +21,8 @@ class lizmapServices
     /**
      * List of all properties of lizmapServices that should be retrieved
      * from lizmapConfig.ini.php or from the main configuration.
+     *
+     * These properties can be editable in the configuration form of Lizmap
      */
     private $properties = array(
         'appName',
@@ -56,10 +58,12 @@ class lizmapServices
         'adminSenderEmail',
         'adminSenderName',
         'googleAnalyticsID',
+        'metricsEnabled',
     );
 
     /**
-     * services properties to not display into the configuration form.
+     * services properties to not display into the configuration form,
+     * when hideSensitiveServicesProperties is set to 1.
      */
     private $sensitiveProperties = array(
         'qgisServerVersion',
@@ -89,13 +93,20 @@ class lizmapServices
         'proxyHttpBackend',
     );
 
+    /**
+     * List of properties that are not editable at all.
+     *
+     * @var string[]
+     */
     private $notEditableProperties = array(
         'cacheRedisKeyPrefixFlushMethod',
         'wmsServerHeaders',
+        'metricsEnabled',
     );
 
     /**
-     * List of properties mapped to a parameter of the main configuration of Jelix.
+     * List of properties mapped to a parameter of the main configuration
+     * of Jelix.
      *
      * @var array
      */
@@ -187,13 +198,18 @@ class lizmapServices
     // application id for google analytics
     public $googleAnalyticsID = '';
 
+    /**
+     * @var bool|int true/1 if metrics should be sent to the metric logger
+     */
+    private $metricsEnabled = false;
+
     protected $appContext;
 
     /**
      * constructor method.
      *
      * @param array  $readConfigPath the lizmapConfig ini file put in an array
-     * @param object  $globalConfig   the jelix configuration
+     * @param object $globalConfig   the jelix configuration
      * @param bool   $ldapEnabled    true if ldapdao module is enabled
      * @param string $varPath        the configuration files path given by jApp::varPath()
      * @param mixed  $appContext
@@ -272,6 +288,14 @@ class lizmapServices
     public function isLdapEnabled()
     {
         return $this->isUsingLdap;
+    }
+
+    /**
+     * @return bool|int
+     */
+    public function areMetricsEnabled()
+    {
+        return $this->metricsEnabled === true || $this->metricsEnabled === '1' || $this->metricsEnabled === 'true';
     }
 
     public function getProperties()
