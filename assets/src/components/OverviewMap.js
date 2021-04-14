@@ -24,7 +24,8 @@ export default class OverviewMap extends HTMLElement {
         this._olOverviewMap = new olOverviewMap({
             layers: layers,
             collapsed: false,
-            target: this
+            target: this,
+            tipLabel: lizDict['overviewbar.displayoverview.hover'],
         });
         mainLizmap.map._olMap.addControl(
             this._olOverviewMap
