@@ -14,7 +14,7 @@ export default class OverviewMap extends HTMLElement {
         var layers = [
             new ImageLayer({
                 source: new ImageWMS({
-                    url: '/index.php/lizmap/service/?repository=testsrepository&project=overviewmap',
+                    url: mainLizmap.serviceURL,
                     params: { 'LAYERS': 'Overview' },
                     ratio: 1,
                     serverType: 'qgis',

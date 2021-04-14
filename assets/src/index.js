@@ -20,7 +20,10 @@ lizMap.events.on({
         window.customElements.define('lizmap-scaleline', Scaleline);
         window.customElements.define('lizmap-mouse-position', MousePosition);
         window.customElements.define('lizmap-digitizing', Digitizing);
-        window.customElements.define('lizmap-overviewmap', OverviewMap);
+
+        if(mainLizmap.hasOverview){
+            window.customElements.define('lizmap-overviewmap', OverviewMap);
+        }
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
