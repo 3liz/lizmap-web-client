@@ -863,7 +863,16 @@ class WMSRequest extends OGCRequest
         return array($useCache, $wmsClient);
     }
 
-    public function getTileCache($params, $profile, $useCache, $forced, $debug)
+    /**
+     * @param array  $params
+     * @param string $profile
+     * @param bool   $useCache
+     * @param bool   $forced
+     * @param false  $debug    deprecated
+     *
+     * @return array|string
+     */
+    public function getTileCache($params, $profile, $useCache, $forced, $debug = false)
     {
         // Get cache if exists
         $keyParams = $params;
@@ -896,9 +905,7 @@ class WMSRequest extends OGCRequest
                     $mime = 'image/png';
                 }
 
-                if ($debug) {
-                    \lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
-                }
+                \lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
 
                 return array($tile, $mime, 200, true);
             }
@@ -939,7 +946,17 @@ class WMSRequest extends OGCRequest
         return array($params, $originalParams, $xFactor, $yFactor);
     }
 
-    protected function getImageData($data, $params, $originalParams, $xFactor, $yFactor, $debug)
+    /**
+     * @param string $data           data of the original image
+     * @param array  $params
+     * @param array  $originalParams
+     * @param float  $xFactor
+     * @param float  $yFactor
+     * @param false  $debug          deprecated
+     *
+     * @return false|string content of the image
+     */
+    protected function getImageData($data, $params, $originalParams, $xFactor, $yFactor, $debug = false)
     {
         $metatileBuffer = 5;
         // Save original content into an image var
@@ -980,9 +997,7 @@ class WMSRequest extends OGCRequest
         imagedestroy($original);
         imagedestroy($image);
 
-        if ($debug) {
-            \lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
-        }
+        \lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
 
         return $data;
     }
@@ -1007,9 +1022,6 @@ class WMSRequest extends OGCRequest
         $project = $lproj->getKey();
         $repository = $lrep->getKey();
 
-        // Change to true to put some information in debug files
-        $debug = $this->services->debugMode;
-
         // Read config file for the current project
         $layername = $params['layers'];
         $configLayers = $lproj->getLayers();
@@ -1029,14 +1041,12 @@ class WMSRequest extends OGCRequest
         // --> must be done after checking that parent project is involved
         $profile = Proxy::createVirtualProfile($repository, $project, $layers, $crs);
 
-        if ($debug) {
-            \lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
-        }
+        \lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
 
         list($useCache, $wmsClient) = $this->useCache($configLayer, $params, $profile);
         // Get cache if exists
 
-        $key = $this->getTileCache($params, $profile, $useCache, $forced, $debug);
+        $key = $this->getTileCache($params, $profile, $useCache, $forced);
         if (is_array($key)) {
             return $key;
         }
@@ -1067,9 +1077,7 @@ class WMSRequest extends OGCRequest
             Proxy::constructUrl($params, $this->services)
         );
 
-        if ($debug) {
-            \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
-        }
+        \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
 
         if ($useCache && !preg_match('/^image/', $mime)) {
             $useCache = false;
@@ -1080,7 +1088,7 @@ class WMSRequest extends OGCRequest
         if ($metatileSize && $useCache && $wmsClient == 'web'
             && extension_loaded('gd') && function_exists('gd_info')
         ) {
-            $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor, $debug);
+            $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor);
         }
 
         $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
@@ -1099,9 +1107,7 @@ class WMSRequest extends OGCRequest
                 $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
                 $cached = true;
 
-                if ($debug) {
-                    \lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
-                }
+                \lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
             } catch (\Exception $e) {
                 \jLog::logEx($e, 'error');
                 $cached = false;
