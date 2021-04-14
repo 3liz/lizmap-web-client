@@ -83,7 +83,11 @@ class ProjectTest extends TestCase
      */
     public function testGetRelativeQgisPath($relative, $root, $file, $expectedPath)
     {
-        $services = new lizmapServices(array('services' => array('relativeWMSPath' => $relative, 'rootRepositories' => $root)), null, false, null, null);
+        $services = new lizmapServices(
+            array('services' =>
+                      array('relativeWMSPath' => $relative,
+                            'rootRepositories' => $root)
+            ), null, false, null, null);
         $proj = new ProjectForTests();
         $proj->setRepo(new Project\Repository(null, array('path' => ''), null, null, null));
         $proj->setServices($services);

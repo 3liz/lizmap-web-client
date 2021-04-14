@@ -165,7 +165,7 @@ class QgisFormTest extends TestCase
 
     public function testGetAttributeEditorForm()
     {
-        $proj = new Project\QgisProject(__DIR__.'/forms/attributeEditorTest.qgs', new lizmapServices(array(), array(), false, '', null), new testContext());
+        $proj = new Project\QgisProject(__DIR__.'/forms/attributeEditorTest.qgs', new lizmapServices(array(), (object) array(), false, '', null), new testContext());
         $layer = $proj->getLayer('LayerId', $proj);
         $layerFalse = $proj->getLayer('LayerFalse', $proj);
         $form = new QgisFormForTests();

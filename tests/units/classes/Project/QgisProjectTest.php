@@ -193,7 +193,7 @@ class QgisProjectTest extends TestCase
         foreach ($cachedProperties as $prop) {
             $data[$prop] = 'some stuff about'.$prop;
         }
-        $services = new lizmapServices('', '', false, '', '');
+        $services = new lizmapServices(array(), (object) array(), false, '', '');
         $testQgis = new Project\QgisProject(null, $services, new TestContext(), $data);
         $this->assertEquals($data, $testQgis->getCacheData($emptyData));
     }
