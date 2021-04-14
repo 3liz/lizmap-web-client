@@ -7,6 +7,7 @@ export default class Map {
 
     constructor() {
         this._olMap = new olMap({
+            controls: [], // disable default controls
             view: new View({
                 center: [0, 0],
                 zoom: 2,
