@@ -67,11 +67,11 @@
     </span>
 
     <div id="overview-box">
-      <lizmap-overviewmap style="position: absolute;"></lizmap-overviewmap>
+      <lizmap-overviewmap title="{@view~map.overviewmap.hover@}"></lizmap-overviewmap>
       <div id="overview-map" title="{@view~map.overviewmap.hover@}"></div>
       <div id="overview-bar">
        <lizmap-scaleline title="{@view~map.overviewbar.scaletext.hover@}"></lizmap-scaleline>
-        <button id="overview-toggle" class="btn" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
+        <button id="overview-toggle" class="btn"></button>
       </div>
       <lizmap-mouse-position></lizmap-mouse-position>
     </div>
