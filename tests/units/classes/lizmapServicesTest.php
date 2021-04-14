@@ -32,7 +32,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
                 'adminContactEmail' => $email_test, ),
         );
 
-        $testLizmapServices = new lizmapServices($ini_tab, array(), true, '', null, null);
+        $testLizmapServices = new lizmapServices($ini_tab, (object) array(), true, '', null);
         $this->assertEquals($expected_email, $testLizmapServices->adminContactEmail);
         unset($testLizmapServices);
     }
@@ -56,7 +56,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
                 'webmasterEmail' => $email_test, ),
         );
 
-        $testLizmapServices = new lizmapServices($ini_tab, array(), true, '', null);
+        $testLizmapServices = new lizmapServices($ini_tab, (object) array(), true, '', null);
         $this->assertEquals('', $testLizmapServices->adminSenderEmail);
         unset($testLizmapServices);
         $testLizmapServices = new lizmapServices(array(), $ini_tab2, true, '', null);
@@ -117,7 +117,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
             'hideSensitiveServicesProperties' => $testValue,
         );
 
-        $testLizmapServices = new LizmapServices($ini_tab, array(), false, '', null);
+        $testLizmapServices = new LizmapServices($ini_tab, (object) array(), false, '', null);
         $this->assertEquals($expectedReturnValue, $testLizmapServices->HideSensitiveProperties());
         unset($testLizmapServices);
     }
@@ -151,7 +151,7 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
                 'rootRepositories' => $testIniValue, ),
         );
 
-        $testLizmapServices = new LizmapServices($ini_tab, array(), false, $testVarPathValue, null);
+        $testLizmapServices = new LizmapServices($ini_tab, (object) array(), false, $testVarPathValue, null);
         $this->assertEquals($expectedReturnValue, $testLizmapServices->getRootRepositories());
         unset($testLizmapServices);
     }
