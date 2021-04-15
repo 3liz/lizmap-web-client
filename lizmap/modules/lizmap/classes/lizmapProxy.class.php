@@ -493,7 +493,7 @@ class lizmapProxy
             $xmax = $bboxExp[2] + $xFactor * $width + $metatileBuffer * $width / $params['width'];
             $ymax = $bboxExp[3] + $yFactor * $height + $metatileBuffer * $height / $params['height'];
             // Replace request bbox by metatile bbox
-            $params['bbox'] = "${xmin},${ymin},${xmax},${ymax}";
+            $params['bbox'] = "{$xmin},{$ymin},{$xmax},{$ymax}";
 
             // Keep original param value
             $originalParams = array('width' => $params['width'], 'height' => $params['height']);

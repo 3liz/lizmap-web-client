@@ -846,10 +846,10 @@ class lizmapWMSRequest extends lizmapOGCRequest
         // Create HTML response
         $layerTitle = $configLayer->title;
 
-        $HTMLResponse = "<h4>${layerTitle}</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
+        $HTMLResponse = "<h4>{$layerTitle}</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
 
         foreach ($xmlFeature->children() as $key => $value) {
-            $HTMLResponse .= "<tr><td>${key}&nbsp;:&nbsp;</td><td>${value}</td></tr>";
+            $HTMLResponse .= "<tr><td>{$key}&nbsp;:&nbsp;</td><td>{$value}</td></tr>";
         }
         $HTMLResponse .= '</table></div>';
 

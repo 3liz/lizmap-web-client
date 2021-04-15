@@ -273,13 +273,13 @@ class lizmapProject extends qgisProject
 
         if (!file_exists($qgs_path)
             || !file_exists($qgs_path.'.cfg')) {
-            throw new UnknownLizmapProjectException("Files of project ${key} does not exists");
+            throw new UnknownLizmapProjectException("Files of project {$key} does not exists");
         }
 
         $config = jFile::read($qgs_path.'.cfg');
         $this->cfg = json_decode($config);
         if ($this->cfg === null) {
-            throw new UnknownLizmapProjectException(".qgs.cfg File of project ${key} has invalid content");
+            throw new UnknownLizmapProjectException(".qgs.cfg File of project {$key} has invalid content");
         }
 
         $configOptions = $this->cfg->options;
@@ -334,7 +334,7 @@ class lizmapProject extends qgisProject
         if ($shortNames && count($shortNames) > 0) {
             foreach ($shortNames as $sname) {
                 $sname = (string) $sname;
-                $xmlLayer = $qgs_xml->xpath("//maplayer[shortname='${sname}']");
+                $xmlLayer = $qgs_xml->xpath("//maplayer[shortname='{$sname}']");
                 if (count($xmlLayer) == 0) {
                     continue;
                 }
@@ -997,7 +997,7 @@ class lizmapProject extends qgisProject
             $attribute = strtolower($loginFilteredConfig->filterAttribute);
 
             // default no user connected
-            $filter = "\"${attribute}\" = 'all'";
+            $filter = "\"{$attribute}\" = 'all'";
 
             // A user is connected
             if (jAuth::isConnected()) {
@@ -1006,11 +1006,11 @@ class lizmapProject extends qgisProject
                 if (property_exists($loginFilteredConfig, 'filterPrivate')
                     && $this->optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
-                    $filter = "\"${attribute}\" IN ( '".$login."' , 'all' )";
+                    $filter = "\"{$attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
                     $userGroups = jAcl2DbUserGroup::getGroups();
                     $flatGroups = implode("' , '", $userGroups);
-                    $filter = "\"${attribute}\" IN ( '".$flatGroups."' , 'all' )";
+                    $filter = "\"{$attribute}\" IN ( '".$flatGroups."' , 'all' )";
                 }
             }
 
@@ -2096,7 +2096,7 @@ class lizmapProject extends qgisProject
      */
     public function getComposer($title)
     {
-        $xmlComposer = $this->getXml()->xpath("//Composer[@title='${title}']");
+        $xmlComposer = $this->getXml()->xpath("//Composer[@title='{$title}']");
         if ($xmlComposer) {
             return $xmlComposer[0];
         }

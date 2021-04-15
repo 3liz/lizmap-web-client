@@ -95,7 +95,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // Update propertyname parameter
         $propertyName = $this->param('propertyname');
         if ($propertyName != null && !empty($propertyName)) {
-            $propertyName = trim($propertyName).",${attribute}";
+            $propertyName = trim($propertyName).",{$attribute}";
             $params['propertyname'] = $propertyName;
         }
 
