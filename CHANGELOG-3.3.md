@@ -6,6 +6,7 @@ Version 3.3.16
 
 - Fix: form filter no more fails when using text values with multiple single quote
 - Fix: tabs in anchored popup were not toggling
+- Fix: no more page processing interruption when the logger fails
 
 Version 3.3.15
 --------------

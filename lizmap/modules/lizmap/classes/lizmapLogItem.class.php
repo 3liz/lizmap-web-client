@@ -188,30 +188,26 @@ class lizmapLogItem
     {
         $dao = jDao::get('lizmap~logCounter', $profile);
 
-        if ($rec = $dao->getDistinctCounter($this->key, $repository, $project)) {
-            ++$rec->counter;
+        try {
+            if ($rec = $dao->getDistinctCounter($this->key, $repository, $project)) {
+                ++$rec->counter;
 
-            try {
                 $dao->update($rec);
-            } catch (Exception $e) {
-                jLog::log('Error while updating a line in log_counter :'.$e->getMessage());
-            }
-        } else {
-            $rec = jDao::createRecord('lizmap~logCounter', $profile);
-            $rec->key = $this->key;
-            if ($repository) {
-                $rec->repository = $repository;
-            }
-            if ($project) {
-                $rec->project = $project;
-            }
-            $rec->counter = 1;
+            } else {
+                $rec = jDao::createRecord('lizmap~logCounter', $profile);
+                $rec->key = $this->key;
+                if ($repository) {
+                    $rec->repository = $repository;
+                }
+                if ($project) {
+                    $rec->project = $project;
+                }
+                $rec->counter = 1;
 
-            try {
                 $dao->insert($rec);
-            } catch (Exception $e) {
-                jLog::log('Error while inserting a new line in log_counter :'.$e->getMessage());
             }
+        } catch (Exception $e) {
+            jLog::log('Error while increasing log counter:'.$e->getMessage());
         }
     }
 }
