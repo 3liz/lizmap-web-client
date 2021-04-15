@@ -193,7 +193,7 @@ class lizmapServices
      * constructor method.
      *
      * @param array  $readConfigPath the lizmapConfig ini file put in an array
-     * @param object  $globalConfig   the jelix configuration
+     * @param object $globalConfig   the jelix configuration
      * @param bool   $ldapEnabled    true if ldapdao module is enabled
      * @param string $varPath        the configuration files path given by jApp::varPath()
      * @param mixed  $appContext

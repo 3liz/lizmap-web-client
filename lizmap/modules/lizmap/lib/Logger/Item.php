@@ -152,30 +152,26 @@ class Item
     {
         $dao = $this->appContext->getJelixDao('lizmap~logCounter', $profile);
 
-        if ($rec = $dao->getDistinctCounter($this->key, $repository, $project)) {
-            ++$rec->counter;
+        try {
+            if ($rec = $dao->getDistinctCounter($this->key, $repository, $project)) {
+                ++$rec->counter;
 
-            try {
                 $dao->update($rec);
-            } catch (\Exception $e) {
-                $this->appContext->logMessage('Error while updating a new line in log_counter :'.$e->getMessage());
-            }
-        } else {
-            $rec = $this->appContext->createDaoRecord('lizmap~logCounter', $profile);
-            $rec->key = $this->key;
-            if ($repository) {
-                $rec->repository = $repository;
-            }
-            if ($project) {
-                $rec->project = $project;
-            }
-            $rec->counter = 1;
+            } else {
+                $rec = $this->appContext->createDaoRecord('lizmap~logCounter', $profile);
+                $rec->key = $this->key;
+                if ($repository) {
+                    $rec->repository = $repository;
+                }
+                if ($project) {
+                    $rec->project = $project;
+                }
+                $rec->counter = 1;
 
-            try {
                 $dao->insert($rec);
-            } catch (\Exception $e) {
-                $this->appContext->logMessage('Error while inserting a new line in log_counter :'.$e->getMessage());
             }
+        } catch (\Exception $e) {
+            $this->appContext->logMessage('Error while increasing log counter:'.$e->getMessage());
         }
     }
 }
