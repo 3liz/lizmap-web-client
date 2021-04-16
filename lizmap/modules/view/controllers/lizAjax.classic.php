@@ -144,14 +144,14 @@ class lizAjaxCtrl extends jController
             }
         }
 
-        // Get lizmapProject class
+        // Get the project
         try {
             $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
             if (!$lproj) {
-                return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+                return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
         } catch (UnknownLizmapProjectException $e) {
-            return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+            return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
         }
 
         if (!$lproj->checkAcl()) {

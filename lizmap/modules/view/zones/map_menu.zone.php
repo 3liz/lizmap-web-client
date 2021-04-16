@@ -23,7 +23,7 @@ class map_menuZone extends jZone
         $project = $this->param('project');
         $repository = $this->param('repository');
 
-        // Get lizmapProject class
+        // Get the project
         $assign = array(
             'display_home' => !$services->onlyMaps,
             'edition' => false,

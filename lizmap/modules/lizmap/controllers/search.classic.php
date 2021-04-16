@@ -36,13 +36,13 @@ class searchCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return $rep;
             }
         } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return $rep;
         }

@@ -585,7 +585,7 @@ class mapsCtrl extends jController
         try {
             $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+                jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
                 return $rep;
             }
@@ -602,7 +602,7 @@ class mapsCtrl extends jController
             return $rep;
         } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
             return $rep;
         }

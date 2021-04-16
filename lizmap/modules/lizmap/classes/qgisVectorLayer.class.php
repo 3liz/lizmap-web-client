@@ -62,8 +62,8 @@ class qgisVectorLayer extends qgisMapLayer
     /**
      * constructor.
      *
-     * @param lizmapProject|qgisProject $project
-     * @param array                     $propLayer list of properties values
+     * @param \Lizmap\Project\Project|qgisProject $project
+     * @param array                               $propLayer list of properties values
      */
     public function __construct($project, $propLayer)
     {

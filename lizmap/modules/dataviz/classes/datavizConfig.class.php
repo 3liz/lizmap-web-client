@@ -25,7 +25,7 @@ class datavizConfig
             if (!$lproj) {
                 $this->errors = array(
                     'title' => 'Invalid Query Parameter',
-                    'detail' => 'The lizmapProject '.strtoupper($project).' does not exist !',
+                    'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
                 );
 
                 return false;
@@ -33,7 +33,7 @@ class datavizConfig
         } catch (UnknownLizmapProjectException $e) {
             $this->errors = array(
                 'title' => 'Invalid Query Parameter',
-                'detail' => 'The lizmapProject '.strtoupper($project).' does not exist !',
+                'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
             );
 
             return false;

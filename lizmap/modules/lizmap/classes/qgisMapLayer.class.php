@@ -62,15 +62,15 @@ class qgisMapLayer
     protected $provider = '';
 
     /**
-     * @var lizmapProject|qgisProject
+     * @var Lizmap\Project\Project|qgisProject
      */
     protected $project;
 
     /**
      * constructor.
      *
-     * @param lizmapProject|qgisProject $project
-     * @param array                     $propLayer list of properties values
+     * @param Lizmap\Project\Project|qgisProject $project
+     * @param array                              $propLayer list of properties values
      */
     public function __construct($project, $propLayer)
     {
@@ -141,7 +141,7 @@ class qgisMapLayer
     }
 
     /**
-     * @return lizmapProject|qgisProject
+     * @return Lizmap\Project\Project|qgisProject
      */
     public function getProject()
     {
@@ -150,6 +150,8 @@ class qgisMapLayer
 
     /**
      * @return null|SimpleXMLElement
+     *
+     * @deprecated
      */
     public function getXmlLayer()
     {

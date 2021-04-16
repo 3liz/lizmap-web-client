@@ -316,7 +316,7 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         $this->form_name = self::generateFormName($this->form->getSelector());
-
+        // FIXME do not use anymore XML in this method, migrate XML code to QgisProject  or other low level classes
         $layerXml = $this->layer->getXmlLayer();
         $_editorlayout = $layerXml->xpath('editorlayout');
         $attributeEditorForm = null;
@@ -1363,6 +1363,8 @@ class QgisForm implements QgisFormControlsInterface
         //   Get layername via id
         $project = $this->layer->getProject();
         $relationId = $formControl->relationReferenceData['relation'];
+
+        // FIXME do not use anymore XML in this method, migrate XML code to QgisProject or other low level classes
 
         $_relationXml = $project->getXmlRelation($relationId);
         if (count($_relationXml) == 0) {

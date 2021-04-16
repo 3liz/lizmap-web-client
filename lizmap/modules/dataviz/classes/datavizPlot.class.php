@@ -10,7 +10,7 @@
 class datavizPlot
 {
     /**
-     * @var null|bool|lizmapProject
+     * @var null|Lizmap\Project\Project
      */
     protected $lproj;
 
@@ -20,6 +20,11 @@ class datavizPlot
 
     public $layerId;
 
+    /**
+     * @var \SimpleXMLElement
+     *
+     * @deprecated
+     */
     public $layerXmlZero;
 
     protected $data;
@@ -210,7 +215,7 @@ class datavizPlot
      *
      * @throws jExceptionSelector
      *
-     * @return null|bool|lizmapProject
+     * @return null|bool|Lizmap\Project\Project
      */
     public function getProject($repository, $project)
     {
@@ -219,12 +224,12 @@ class datavizPlot
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return false;
             }
         } catch (UnknownLizmapProjectException $e) {
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return false;
         }
@@ -241,6 +246,7 @@ class datavizPlot
     protected function parseLayer($layerId)
     {
         $layer = $this->lproj->getLayer($this->layerId);
+        //FIXME do not use this deprecated method and XML stuff here
         $layerXml = $this->lproj->getXmlLayer($this->layerId);
         if (count($layerXml) > 0) {
             $this->layerXmlZero = $layerXml[0];
@@ -398,6 +404,9 @@ class datavizPlot
             return false;
         }
         $response = false;
+
+        // FIXME do not use anymore XML from project in this method, migrate
+        // XML code to QgisProject or other low level classes
 
         $_layerName = $this->layerXmlZero->xpath('layername');
         $layerName = (string) $_layerName[0];

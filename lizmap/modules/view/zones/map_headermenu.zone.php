@@ -29,7 +29,7 @@ class map_headermenuZone extends jZone
             );
         }
 
-        // Get lizmapProject class
+        // Get the project
         $assign = array(
             'isConnected' => jAuth::isConnected(),
             'user' => jAuth::getUserSession(),

@@ -14,7 +14,7 @@ use Lizmap\Form;
 
 class editionCtrl extends jController
 {
-    /** @var null|lizmapProject */
+    /** @var null|Lizmap\Project\Project */
     private $project;
 
     /** @var lizmapRepository */
@@ -144,12 +144,12 @@ class editionCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                $this->setErrorMessage('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                $this->setErrorMessage('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return false;
             }
         } catch (UnknownLizmapProjectException $e) {
-            $this->setErrorMessage('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            $this->setErrorMessage('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return false;
         }
@@ -1115,12 +1115,12 @@ class editionCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                $rep->data['message'] = 'The lizmapProject '.strtoupper($project).' does not exist !';
+                $rep->data['message'] = 'The lizmap project '.strtoupper($project).' does not exist !';
 
                 return $rep;
             }
         } catch (UnknownLizmapProjectException $e) {
-            $rep->data['message'] = 'The lizmapProject '.strtoupper($project).' does not exist !';
+            $rep->data['message'] = 'The lizmap project '.strtoupper($project).' does not exist !';
 
             return $rep;
         }
@@ -1214,12 +1214,12 @@ class editionCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return $this->serviceAnswer();
             }
         } catch (UnknownLizmapProjectException $e) {
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return $this->serviceAnswer();
         }
@@ -1359,12 +1359,12 @@ class editionCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return $this->serviceAnswer();
             }
         } catch (UnknownLizmapProjectException $e) {
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return $this->serviceAnswer();
         }

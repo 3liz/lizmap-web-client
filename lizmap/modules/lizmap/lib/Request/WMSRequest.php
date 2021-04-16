@@ -12,6 +12,8 @@
 
 namespace Lizmap\Request;
 
+use Lizmap\Project\Project;
+
 /**
  * @see https://en.wikipedia.org/wiki/Web_Map_Service.
  */
@@ -814,13 +816,13 @@ class WMSRequest extends OGCRequest
             try {
                 $lproj = \lizmap::getProject($repository.'~'.$project);
                 if (!$lproj) {
-                    \jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                    \jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                     return array('error', 'text/plain');
                 }
             } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
                 \jLog::logEx($e, 'error');
-                \jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                \jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return array('error', 'text/plain');
             }
@@ -1005,9 +1007,9 @@ class WMSRequest extends OGCRequest
     /**
      * Get data from map service or from the cache.
      *
-     * @param lizmapProject $project the project
-     * @param array         $params  array of parameters
-     * @param mixed         $forced
+     * @param Project $project the project
+     * @param array   $params  array of parameters
+     * @param mixed   $forced
      *
      * @return array $data normalized and filtered array
      */

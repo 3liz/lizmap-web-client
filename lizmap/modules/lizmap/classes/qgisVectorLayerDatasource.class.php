@@ -45,10 +45,8 @@ class qgisVectorLayerDatasource
     /**
      * constructor.
      *
-     * @param lizmapProject|qgisProject $project
-     * @param array                     $propLayer  list of properties values
-     * @param mixed                     $provider
-     * @param mixed                     $datasource
+     * @param mixed $provider
+     * @param mixed $datasource
      */
     public function __construct($provider, $datasource)
     {

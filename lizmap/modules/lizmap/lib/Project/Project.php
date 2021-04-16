@@ -403,11 +403,21 @@ class Project
         return $this->qgis->getLayerDefinition($layerId);
     }
 
+    /**
+     * @param string $key
+     *
+     * @return null|\qgisMapLayer|\qgisVectorLayer
+     */
     public function getLayerByKeyword($key)
     {
         return $this->qgis->getLayerByKeyword($key, $this);
     }
 
+    /**
+     * @param string $key
+     *
+     * @return \qgisMapLayer[]|\qgisVectorLayer[]
+     */
     public function findLayersByKeyword($key)
     {
         return $this->qgis->findLayersByKeyword($key, $this);
@@ -448,11 +458,23 @@ class Project
         return $this->cfg->getProperty('layers');
     }
 
+    /**
+     * @param string $layerId
+     *
+     * @return null|\qgisMapLayer|\qgisVectorLayer
+     */
     public function getLayer($layerId)
     {
         return $this->qgis->getLayer($layerId, $this);
     }
 
+    /**
+     * @param string $layerId
+     *
+     * @return \SimpleXMLElement[]
+     *
+     * @deprecated
+     */
     public function getXmlLayer($layerId)
     {
         return $this->qgis->getXmlLayer($layerId);
