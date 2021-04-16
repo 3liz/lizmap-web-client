@@ -35,7 +35,7 @@ class serviceCtrl extends jController
             if (!$lproj) {
                 $errors = array(
                     'title' => 'Wrong repository and project !',
-                    'detail' => 'The lizmapProject '.strtoupper($project).' does not exist !',
+                    'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
                 );
 
                 return $this->error($errors);
@@ -43,7 +43,7 @@ class serviceCtrl extends jController
         } catch (UnknownLizmapProjectException $e) {
             $errors = array(
                 'title' => 'Wrong repository and project !',
-                'detail' => 'The lizmapProject '.strtoupper($project).' does not exist !',
+                'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
             );
 
             return $this->error($errors);

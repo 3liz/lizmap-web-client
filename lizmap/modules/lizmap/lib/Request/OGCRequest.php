@@ -22,7 +22,7 @@ use Lizmap\App;
 abstract class OGCRequest
 {
     /**
-     * @var lizmapProject
+     * @var \Lizmap\Project\Project
      */
     protected $project;
 
@@ -41,7 +41,7 @@ abstract class OGCRequest
     /**
      * constructor.
      *
-     * @param \Lizmap\Project\Project $project    the project has a lizmapProject Class
+     * @param \Lizmap\Project\Project $project    the project
      * @param array                   $params     the params array
      * @param \lizmapServices         $services
      * @param string                  $requestXml the params array

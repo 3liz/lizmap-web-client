@@ -371,8 +371,8 @@ class QgisProject
 
     /**
      * @param $layerId
-     * @param mixed $layers
-     * @param mixed $proj
+     * @param mixed   $layers
+     * @param Project $proj
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
@@ -396,8 +396,8 @@ class QgisProject
     }
 
     /**
-     * @param string $key
-     * @param mixed  $proj
+     * @param string  $key
+     * @param Project $proj
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
@@ -421,8 +421,8 @@ class QgisProject
     }
 
     /**
-     * @param string $key
-     * @param mixed  $proj
+     * @param string  $key
+     * @param Project $proj
      *
      * @return \qgisMapLayer[]|\qgisVectorLayer[]
      */
@@ -515,6 +515,8 @@ class QgisProject
      * @param string            $layerId
      *
      * @return \SimpleXMLElement[]
+     *
+     * @deprecated
      */
     protected function getXmlLayer2($xml, $layerId)
     {
@@ -872,6 +874,10 @@ class QgisProject
         }
     }
 
+    /**
+     * @param $editionLayers
+     * @param Project $proj
+     */
     public function readEditionForms($editionLayers, $proj)
     {
         foreach ($editionLayers as $key => $obj) {
@@ -1578,6 +1584,13 @@ class QgisProject
         return $markup;
     }
 
+    /**
+     * @param \SimpleXMLElement $layerXml
+     * @param string            $layerId
+     * @param Project           $proj
+     *
+     * @return array
+     */
     public function readFormControls($layerXml, $layerId, $proj)
     {
         $props = null;

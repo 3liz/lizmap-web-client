@@ -354,7 +354,7 @@ class lizmap
      *
      * @param string $key the project name
      *
-     * @return null|lizmapProject null if it does not exist
+     * @return null|Lizmap\Project\Project null if it does not exist
      * @FIXME all calls to getProject construct $key. Why not to
      * deliver directly $rep and $project? It could avoid
      * a preg_match

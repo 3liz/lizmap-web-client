@@ -99,16 +99,16 @@ class mediaCtrl extends jController
         // Get the project
         $project = $this->param('project');
 
-        // Get lizmapProject class
+        // Get the project
         try {
             $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
             if (!$lproj) {
-                return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+                return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
         } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
 
-            return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+            return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
         }
 
         // Redirect if no right to access the project
@@ -224,16 +224,16 @@ class mediaCtrl extends jController
         // Get the project
         $project = $this->param('project');
 
-        // Get lizmapProject class
+        // Get the project
         try {
             $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
             if (!$lproj) {
-                return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+                return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
         } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
 
-            return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+            return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
         }
 
         // Redirect if no right to access the project
@@ -299,10 +299,10 @@ class mediaCtrl extends jController
         // Get the project
         $project = $this->param('project');
 
-        // Get lizmapProject class
+        // Get the project
         $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
         if (!$lproj) {
-            $this->error('The lizmapProject '.strtoupper($project).' does not exist !');
+            $this->error('The lizmap project '.strtoupper($project).' does not exist !');
         }
 
         // Redirect if no right to access the project

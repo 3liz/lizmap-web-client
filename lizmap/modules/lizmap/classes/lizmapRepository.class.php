@@ -117,7 +117,7 @@ class lizmapRepository
      * @param string $key           the project key
      * @param bool   $keepReference if we need to keep reference in projectInstances
      *
-     * @return null|Project null if it does not exist
+     * @return null|Lizmap\Project\Project null if it does not exist
      */
     public function getProject($key, $keepReference = true)
     {
@@ -127,7 +127,7 @@ class lizmapRepository
     /**
      * Get the repository projects.
      *
-     * @return Project[]
+     * @return Lizmap\Project\Project[]
      */
     public function getProjects()
     {
@@ -137,7 +137,7 @@ class lizmapRepository
     /**
      * Get the repository projects metadata.
      *
-     * @return ProjectMetadata[]
+     * @return Lizmap\Project\ProjectMetadata[]
      */
     public function getProjectsMetadata()
     {

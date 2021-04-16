@@ -1,4 +1,9 @@
 <?php
+
+use Lizmap\Request\WFSRequest;
+use Lizmap\Request\WMSRequest;
+use Lizmap\Request\WMTSRequest;
+
 /**
  * Php proxy to access map services.
  *
@@ -12,7 +17,7 @@
 class serviceCtrl extends jController
 {
     /**
-     * @var lizmapProject
+     * @var Lizmap\Project\Project
      */
     protected $project;
 
@@ -227,9 +232,9 @@ class serviceCtrl extends jController
     }
 
     /**
-     * Get parameters and set classes for the project and repository given.
+     * Read parameters and set classes for the project and repository given.
      *
-     * @return array|false list of needed variables : $params, $lizmapProject, $lizmapRepository
+     * @return bool false if some request parameters are missing
      */
     protected function getServiceParameters()
     {
@@ -259,13 +264,13 @@ class serviceCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return false;
             }
         } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return false;
         }
@@ -423,7 +428,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wmsRequest
+     * @param WFSRequest|WMSRequest|WMTSRequest $wmsRequest
      *
      * @return jResponseBinary image rendered by the Map Server
      */

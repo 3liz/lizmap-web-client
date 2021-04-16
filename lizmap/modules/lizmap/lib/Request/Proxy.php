@@ -73,6 +73,13 @@ class Proxy
         return self::$appContext;
     }
 
+    /**
+     * @param $project
+     * @param $params
+     * @param null $requestXml
+     *
+     * @return null|WFSRequest|WMSRequest|WMTSRequest
+     */
     public static function build($project, $params, $requestXml = null)
     {
         $service = null;

@@ -19,7 +19,7 @@ class lizMapCtrl extends jController
     /**
      * Used to pass project Object (no need to rebuild it).
      *
-     * @var lizmapProject
+     * @var \Lizmap\Project\Project
      */
     protected $projectObj;
 
@@ -33,7 +33,7 @@ class lizMapCtrl extends jController
      * @param string $repository name of the repository
      * @param string $project    name of the project
      *
-     * @return Page with map and content for the chose Qgis project
+     * @return jResponse with map and content for the chose Qgis project
      */
     public function index()
     {
@@ -90,16 +90,16 @@ class lizMapCtrl extends jController
             }
         }
 
-        // Get lizmapProject class
+        // Get the project
         try {
             $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+                jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
                 return $rep;
             }
         } catch (UnknownLizmapProjectException $e) {
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
             return $rep;
         }
