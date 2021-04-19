@@ -68,10 +68,8 @@
 
     <div id="overview-box">
       <lizmap-overviewmap title="{@view~map.overviewmap.hover@}"></lizmap-overviewmap>
-      <div id="overview-map" title="{@view~map.overviewmap.hover@}"></div>
       <div id="overview-bar">
        <lizmap-scaleline title="{@view~map.overviewbar.scaletext.hover@}"></lizmap-scaleline>
-        <button id="overview-toggle" class="btn"></button>
       </div>
       <lizmap-mouse-position></lizmap-mouse-position>
     </div>

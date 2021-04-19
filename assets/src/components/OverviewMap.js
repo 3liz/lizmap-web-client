@@ -19,11 +19,16 @@ export default class OverviewMap extends HTMLElement {
                     ratio: 1,
                     serverType: 'qgis',
                 }),
-            })];
+            })
+        ];
+
+        // TODO : 'view/embed' can be not present in URL because of URL rewriting
+        // => needs better way to detect we're in embed context
+        this._isCollapsedAtInit = lizMap.checkMobile() || document.URL.includes('view/embed');
 
         this._olOverviewMap = new olOverviewMap({
             layers: layers,
-            collapsed: false,
+            collapsed: this._isCollapsedAtInit,
             target: this,
             tipLabel: lizDict['overviewbar.displayoverview.hover'],
             collapseLabel: '\u00BB',
