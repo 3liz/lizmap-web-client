@@ -1813,12 +1813,18 @@ a.btn.btn-opacity-layer.active {
   position:absolute;
   right:10px;
   bottom:40px;
+  border : solid 1px #606060;
+  border-top: none;
 }
+
+#overview-box > * + *, lizmap-overviewmap .ol-overviewmap{
+  border-top : solid 1px #606060;
+}
+
 #overview-bar {
   position:relative;
   width:220px;
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
   line-height : 12px;
   height: 47px;
 }
@@ -1834,7 +1840,6 @@ a.btn.btn-opacity-layer.active {
 
 #overview-toggle {
   width : 20px;
-  border-left : solid 1px #606060;
   border-bottom : none;
   border-top : none;
   border-right : none;
@@ -1865,7 +1870,6 @@ a.btn.btn-opacity-layer.active {
 /* Mouse position */
 lizmap-mouse-position{
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
   display: flex;
 }
 lizmap-mouse-position > div.mouse-position{
@@ -1908,7 +1912,6 @@ lizmap-mouse-position > div.coords-unit > select{
 #overview-map{
   position:relative;
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
   border-bottom : none;
 }
 .olControlOverviewMapContainer {
@@ -2789,4 +2792,45 @@ lizmap-scaleline .ol-scale-text{
 
 lizmap-scaleline .ol-scale-singlebar{
   height: 0;
+}
+
+/* OverviewMap */
+
+lizmap-overviewmap{
+  display: block;
+}
+
+lizmap-overviewmap .ol-overviewmap{
+  left: unset;
+  bottom: unset;
+  position: relative;
+  border-radius: unset;
+}
+
+lizmap-overviewmap .ol-overviewmap.ol-collapsed{
+  padding:0;
+  border: none;
+}
+
+lizmap-overviewmap .ol-overviewmap .ol-overviewmap-map {
+  width: 210px;
+  height: 100px;
+  border: none;
+}
+
+lizmap-overviewmap .ol-overviewmap button{
+  position: absolute;
+  right: 2px;
+  top: -28px;
+}
+
+lizmap-overviewmap .ol-overviewmap:not(.ol-collapsed) button{
+  left: auto;
+  top: unset!important;
+}
+
+lizmap-overviewmap .ol-overviewmap-box{
+  background-image: url(img/overview_replacement.gif);
+  background-repeat: no-repeat;
+  background-position: center;
 }
