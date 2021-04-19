@@ -26,7 +26,10 @@ export default class OverviewMap extends HTMLElement {
             collapsed: false,
             target: this,
             tipLabel: lizDict['overviewbar.displayoverview.hover'],
+            collapseLabel: '\u00BB',
+            label: '\u00AB',
         });
+        
         mainLizmap.map._olMap.addControl(
             this._olOverviewMap
         );
