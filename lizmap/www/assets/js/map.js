@@ -254,12 +254,6 @@ var lizMap = function() {
       // Add mobile class to content
       $('#content, #headermenu').addClass('mobile');
 
-      // hide overview map
-      if (config.options.hasOverview){
-        $('#overview-toggle').hide();
-        $('#overview-map').hide().removeClass('active');
-      }
-
       // Hide switcher
       if( $('#button-switcher').parent().hasClass('active') )
         $('#button-switcher').click();
@@ -286,11 +280,6 @@ var lizMap = function() {
       // Remove mobile class to content
       $('#content, #headermenu').removeClass('mobile');
 
-      // Display overview map
-      if (config.options.hasOverview){
-        $('#overview-map').show();
-        $('#overview-toggle').show().addClass('active');
-      }
       // Show switcher
       if( !( $('#button-switcher').parent().hasClass('active') ) )
         $('#button-switcher').click();
@@ -2303,78 +2292,6 @@ var lizMap = function() {
   }
 
   /**
-   * PRIVATE function: createOverview
-   * create the overview
-   */
-  function createOverview() {
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
-    var ovLayer = new OpenLayers.Layer.WMS('overview'
-        ,service
-        ,{
-          layers:'Overview'
-         ,version:'1.3.0'
-         ,exceptions:'application/vnd.ogc.se_inimage'
-         ,format:'image/png'
-         ,transparent:true
-         ,dpi:96
-        },{
-          isBaseLayer:true
-         ,gutter:5
-         ,buffer:0
-         ,singleTile:true
-        });
-
-    if (config.options.hasOverview) {
-      // get and define the max extent
-      var bbox = config.options.bbox;
-      var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-      var res = extent.getHeight()/90;
-      var resW = extent.getWidth()/180;
-      if (res <= resW)
-        res = resW;
-
-      map.addControl(new OpenLayers.Control.OverviewMap(
-        {div: document.getElementById("overview-map"),
-         size : new OpenLayers.Size(220, 110),
-         mapOptions:{maxExtent:map.maxExtent
-                  ,maxResolution:"auto"
-                  ,minResolution:"auto"
-                  ,scales: [OpenLayers.Util.getScaleFromResolution(res, map.projection.proj.units)]
-                  ,projection:map.projection
-                  ,units:map.projection.proj.units
-                  ,layers:[ovLayer]
-                  ,singleTile:true
-                  ,ratio:1
-                  }
-        }
-      ));
-    } else {
-      $('#overview-map').hide();
-      $('#overview-toggle').hide().removeClass('active');
-    }
-
-    $('#overview-toggle')
-    .click(function(){
-      var self = $(this);
-      if ( self.hasClass('active') )
-        self.removeClass('active');
-      else
-        self.addClass('active');
-
-      $('#overview-map').toggle();
-      return false;
-    });
-
-    if (config.options.hasOverview)
-      if(!mCheckMobile()) {
-        $('#overview-map').show();
-        $('#overview-toggle').show().addClass('active');
-      }
-  }
-
-  /**
    * PRIVATE function: createNavbar
    * create the navigation bar (zoom, scales, etc)
    */
@@ -2495,7 +2412,7 @@ var lizMap = function() {
 
   /**
    * PRIVATE function: createToolbar
-   * create the tool bar (collapse overview and switcher, etc)
+   * create the tool bar (collapse switcher, etc)
    */
   function createToolbar() {
     var configOptions = config.options;
@@ -6072,9 +5989,6 @@ var lizMap = function() {
         updateContentSize();
         map.events.triggerEvent("zoomend", { "zoomChanged": true });
 
-        // create overview if 'Overview' layer
-        createOverview();
-
         // create navigation and toolbar
         createNavbar();
         createToolbar();
@@ -6975,18 +6889,6 @@ lizMap.events.on({
         if( $('#button-switcher').parent().hasClass('active') )
           $('#button-switcher').click();
       }
-
-        var ovCtrl = lizMap.map.getControlsByClass('OpenLayers.Control.OverviewMap');
-        if ( ovCtrl.length != 0 ) {
-            ovCtrl = ovCtrl[0];
-            if ( ovCtrl.ovmap.layers.length > 1 ) {
-                for ( var i=0, len=ovCtrl.ovmap.layers.length; i<len; i++ ){
-                    var l = ovCtrl.ovmap.layers[i];
-                    if( l.name.toLowerCase() != 'overview' )
-                        l.destroy();
-                }
-            }
-        }
 
       // Connect dock close button
       $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-dock > a').click(); });
