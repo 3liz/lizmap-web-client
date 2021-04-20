@@ -6646,6 +6646,7 @@ lizMap.events.on({
        // IGN base layers
         if ('ignKey' in evt.config.options){
           var ignKey = evt.config.options.ignKey;
+          var isFreeIgnKey = ignKey === "choisirgeoportail" || ignKey === "pratique";
           var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
           
           if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') {
@@ -6701,9 +6702,10 @@ lizMap.events.on({
             var ignplan = new OpenLayers.Layer.WMTS({
               name: "ignplan",
               url: "https://wxs.ign.fr/" + ignKey + "/wmts",
-              layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGN",
+              layer: isFreeIgnKey ? "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2" : "GEOGRAPHICALGRIDSYSTEMS.PLANIGN",
               matrixSet: "PM",
               style: "normal",
+              format: isFreeIgnKey ? "image/png" : "image/jpeg",
               projection: new OpenLayers.Projection("EPSG:3857"),
               attribution: ignAttribution
               , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
@@ -6773,9 +6775,9 @@ lizMap.events.on({
             var igncadastral = new OpenLayers.Layer.WMTS({
               name: "igncadastral",
               url: "https://wxs.ign.fr/" + ignKey + "/wmts",
-              layer: "CADASTRALPARCELS.PARCELS",
+              layer: isFreeIgnKey ? "CADASTRALPARCELS.PARCELLAIRE_EXPRESS" : "CADASTRALPARCELS.PARCELS",
               matrixSet: "PM",
-              style: "normal",
+              style: isFreeIgnKey ? "PCI vecteur" : "normal",
               format: "image/png",
               projection: new OpenLayers.Projection("EPSG:3857"),
               attribution: ignAttribution
