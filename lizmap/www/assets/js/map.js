@@ -6642,152 +6642,160 @@ lizMap.events.on({
           evt.baselayers.push(bhybrid);
           evt.map.allOverlays = false;
        }
-      var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
-       if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True' && ('ignKey' in evt.config.options)) {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:18
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ignmap = new OpenLayers.Layer.WMTS({
-            name: "ignmap",
-            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
-            layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
-            matrixSet: "PM",
-            style: "normal",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-            ,zoomOffset: options.zoomOffset
 
-          });
-          ignmap.maxExtent = maxExtent;
-          var ignmapCfg = {
-             "name":"ignmap"
-            ,"title":"IGN Scan"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['ignmap'] = ignmapCfg;
-          evt.baselayers.push(ignmap);
-          evt.map.allOverlays = false;
-       }
-       if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True' && ('ignKey' in evt.config.options)) {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:18
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ignplan = new OpenLayers.Layer.WMTS({
-            name: "ignplan",
-            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
-            layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGN",
-            matrixSet: "PM",
-            style: "normal",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-            ,zoomOffset: options.zoomOffset
+       // IGN base layers
+        if ('ignKey' in evt.config.options){
+          var ignKey = evt.config.options.ignKey;
+          var isFreeIgnKey = ignKey === "choisirgeoportail" || ignKey === "pratique";
+          var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
+          
+          if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') {
+            var options = {
+              zoomOffset: 0,
+              maxResolution: 156543.03390625,
+              numZoomLevels: 18
+            };
+            if (lOptions.zoomOffset != 0) {
+              options.zoomOffset = lOptions.zoomOffset;
+              options.maxResolution = lOptions.maxResolution;
+            }
+            if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+              options.numZoomLevels = lOptions.numZoomLevels;
+            else
+              options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+            var ignmap = new OpenLayers.Layer.WMTS({
+              name: "ignmap",
+              url: "https://wxs.ign.fr/" + ignKey + "/wmts",
+              layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
+              matrixSet: "PM",
+              style: "normal",
+              projection: new OpenLayers.Projection("EPSG:3857"),
+              attribution: ignAttribution
+              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+              , zoomOffset: options.zoomOffset
 
-          });
-          ignplan.maxExtent = maxExtent;
-          var ignplanCfg = {
-             "name":"ignplan"
-            ,"title":"IGN Plan"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['ignplan'] = ignplanCfg;
-          evt.baselayers.push(ignplan);
-          evt.map.allOverlays = false;
-       }
-       if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True' && ('ignKey' in evt.config.options)) {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:22
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
+            });
+            ignmap.maxExtent = maxExtent;
+            var ignmapCfg = {
+              "name": "ignmap"
+              , "title": "IGN Scan"
+              , "type": "baselayer"
+            };
+            evt.config.layers['ignmap'] = ignmapCfg;
+            evt.baselayers.push(ignmap);
+            evt.map.allOverlays = false;
           }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ignphoto = new OpenLayers.Layer.WMTS({
-            name: "ignphoto",
-            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
-            layer: "ORTHOIMAGERY.ORTHOPHOTOS",
-            matrixSet: "PM",
-            style: "normal",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-            ,zoomOffset: options.zoomOffset
+          if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') {
+            var options = {
+              zoomOffset: 0,
+              maxResolution: 156543.03390625,
+              numZoomLevels: 18
+            };
+            if (lOptions.zoomOffset != 0) {
+              options.zoomOffset = lOptions.zoomOffset;
+              options.maxResolution = lOptions.maxResolution;
+            }
+            if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+              options.numZoomLevels = lOptions.numZoomLevels;
+            else
+              options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+            var ignplan = new OpenLayers.Layer.WMTS({
+              name: "ignplan",
+              url: "https://wxs.ign.fr/" + ignKey + "/wmts",
+              layer: isFreeIgnKey ? "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2" : "GEOGRAPHICALGRIDSYSTEMS.PLANIGN",
+              matrixSet: "PM",
+              style: "normal",
+              format: isFreeIgnKey ? "image/png" : "image/jpeg",
+              projection: new OpenLayers.Projection("EPSG:3857"),
+              attribution: ignAttribution
+              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+              , zoomOffset: options.zoomOffset
 
-          });
-          ignphoto.maxExtent = maxExtent;
-          var ignphotoCfg = {
-             "name":"ignphoto"
-            ,"title":"IGN Photos"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['ignphoto'] = ignphotoCfg;
-          evt.baselayers.push(ignphoto);
-          evt.map.allOverlays = false;
-       }
-       if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True' && ('ignKey' in evt.config.options)) {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:20
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
+            });
+            ignplan.maxExtent = maxExtent;
+            var ignplanCfg = {
+              "name": "ignplan"
+              , "title": "IGN Plan"
+              , "type": "baselayer"
+            };
+            evt.config.layers['ignplan'] = ignplanCfg;
+            evt.baselayers.push(ignplan);
+            evt.map.allOverlays = false;
           }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var igncadastral = new OpenLayers.Layer.WMTS({
-            name: "igncadastral",
-            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
-            layer: "CADASTRALPARCELS.PARCELS",
-            matrixSet: "PM",
-            style: "normal",
-            format: "image/png",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-            ,zoomOffset: options.zoomOffset
+          if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True') {
+            var options = {
+              zoomOffset: 0,
+              maxResolution: 156543.03390625,
+              numZoomLevels: 22
+            };
+            if (lOptions.zoomOffset != 0) {
+              options.zoomOffset = lOptions.zoomOffset;
+              options.maxResolution = lOptions.maxResolution;
+            }
+            if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+              options.numZoomLevels = lOptions.numZoomLevels;
+            else
+              options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+            var ignphoto = new OpenLayers.Layer.WMTS({
+              name: "ignphoto",
+              url: "https://wxs.ign.fr/" + ignKey + "/wmts",
+              layer: "ORTHOIMAGERY.ORTHOPHOTOS",
+              matrixSet: "PM",
+              style: "normal",
+              projection: new OpenLayers.Projection("EPSG:3857"),
+              attribution: ignAttribution
+              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+              , zoomOffset: options.zoomOffset
 
-          });
-          igncadastral.maxExtent = maxExtent;
-          var igncadastralCfg = {
-             "name":"igncadastral"
-            ,"title":"IGN Cadastre"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['igncadastral'] = igncadastralCfg;
-          evt.baselayers.push(igncadastral);
-          evt.map.allOverlays = false;
-       }
+            });
+            ignphoto.maxExtent = maxExtent;
+            var ignphotoCfg = {
+              "name": "ignphoto"
+              , "title": "IGN Photos"
+              , "type": "baselayer"
+            };
+            evt.config.layers['ignphoto'] = ignphotoCfg;
+            evt.baselayers.push(ignphoto);
+            evt.map.allOverlays = false;
+          }
+          if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True') {
+            var options = {
+              zoomOffset: 0,
+              maxResolution: 156543.03390625,
+              numZoomLevels: 20
+            };
+            if (lOptions.zoomOffset != 0) {
+              options.zoomOffset = lOptions.zoomOffset;
+              options.maxResolution = lOptions.maxResolution;
+            }
+            if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+              options.numZoomLevels = lOptions.numZoomLevels;
+            else
+              options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+            var igncadastral = new OpenLayers.Layer.WMTS({
+              name: "igncadastral",
+              url: "https://wxs.ign.fr/" + ignKey + "/wmts",
+              layer: isFreeIgnKey ? "CADASTRALPARCELS.PARCELLAIRE_EXPRESS" : "CADASTRALPARCELS.PARCELS",
+              matrixSet: "PM",
+              style: isFreeIgnKey ? "PCI vecteur" : "normal",
+              format: "image/png",
+              projection: new OpenLayers.Projection("EPSG:3857"),
+              attribution: ignAttribution
+              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+              , zoomOffset: options.zoomOffset
+
+            });
+            igncadastral.maxExtent = maxExtent;
+            var igncadastralCfg = {
+              "name": "igncadastral"
+              , "title": "IGN Cadastre"
+              , "type": "baselayer"
+            };
+            evt.config.layers['igncadastral'] = igncadastralCfg;
+            evt.baselayers.push(igncadastral);
+            evt.map.allOverlays = false;
+          }
+        }
       } catch(e) {
        }
      }

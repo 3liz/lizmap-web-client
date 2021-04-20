@@ -4,6 +4,7 @@ Changelog
 Version 3.3.16
 --------------
 
+- Fix: some IGN base layers with free keys could not be displayed
 - Fix: form filter no more fails when using text values with multiple single quote
 - Fix: tabs in anchored popup were not toggling
 
