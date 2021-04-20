@@ -338,7 +338,6 @@ Timemanager
 /*Overview map*/
 #overview-bar {
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
 }
 
 #overview-bar .label {

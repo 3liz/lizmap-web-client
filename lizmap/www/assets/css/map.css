@@ -1805,12 +1805,18 @@ a.btn.btn-opacity-layer.active {
   position:absolute;
   right:10px;
   bottom:40px;
+  border : solid 1px #606060;
+  border-top: none;
 }
+
+#overview-box > * + *, lizmap-overviewmap .ol-overviewmap{
+  border-top : solid 1px #606060;
+}
+
 #overview-bar {
   position:relative;
   width:220px;
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
   line-height : 12px;
   height: 47px;
 }
@@ -1824,25 +1830,6 @@ a.btn.btn-opacity-layer.active {
   font-size : 0.8em;
 }
 
-#overview-toggle {
-  width : 20px;
-  border-left : solid 1px #606060;
-  border-bottom : none;
-  border-top : none;
-  border-right : none;
-  position : absolute;
-  top : 0px;
-  bottom : 0px;
-  right : 0px;
-  margin : 0px;
-  padding: 0px;
-  border-radius: 0;
-  background : url('images/123_click.png') no-repeat scroll -1px 6px #DDD;
-  transition: none;
-}
-#overview-toggle.active {
-  background-position : -1px -24px;
-}
 #overview-bar .ui-icon {
   background-image : url("images/sprite_menu.png");
 }
@@ -1857,7 +1844,6 @@ a.btn.btn-opacity-layer.active {
 /* Mouse position */
 lizmap-mouse-position{
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
   display: flex;
 }
 lizmap-mouse-position > div.mouse-position{
@@ -1896,33 +1882,7 @@ lizmap-mouse-position > div.coords-unit > select{
   padding: 0px;
 }
 
-/* Overview map */
-#overview-map{
-  position:relative;
-  background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
-  border-bottom : none;
-}
-.olControlOverviewMapContainer {
-  margin:0;
-  padding:0;
-  border:none;
-}
-.olControlOverviewMapElement {
-  padding:0;
-  border-radius:0;
-  /*jquery-ui update*/
-  background-color: rgb(240,240,240);
-}
-.olControlOverviewMapExtentRectangle {
-  /*jquery-ui update*/
-  border: 2px solid #59B4D4;
-}
-.olControlOverviewMapRectReplacement {
-  /*jquery-ui update*/
-  background-image:url(img/overview_replacement.gif);
-}
-
+/* Attribution */
 #attribution-box {
   bottom : 0;
   right : 0;
@@ -2781,4 +2741,45 @@ lizmap-scaleline .ol-scale-text{
 
 lizmap-scaleline .ol-scale-singlebar{
   height: 0;
+}
+
+/* OverviewMap */
+
+lizmap-overviewmap{
+  display: block;
+}
+
+lizmap-overviewmap .ol-overviewmap{
+  left: unset;
+  bottom: unset;
+  position: relative;
+  border-radius: unset;
+}
+
+lizmap-overviewmap .ol-overviewmap.ol-collapsed{
+  padding:0;
+  border: none;
+}
+
+lizmap-overviewmap .ol-overviewmap .ol-overviewmap-map {
+  width: 210px;
+  height: 100px;
+  border: none;
+}
+
+lizmap-overviewmap .ol-overviewmap button{
+  position: absolute;
+  right: 2px;
+  top: -28px;
+}
+
+lizmap-overviewmap .ol-overviewmap:not(.ol-collapsed) button{
+  left: auto;
+  top: unset!important;
+}
+
+lizmap-overviewmap .ol-overviewmap-box{
+  background-image: url(img/overview_replacement.gif);
+  background-repeat: no-repeat;
+  background-position: center;
 }
