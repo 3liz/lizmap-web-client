@@ -7,26 +7,31 @@ export default class Map {
 
     constructor() {
         this._olMap = new olMap({
+            controls: [], // disable default controls
             view: new View({
                 center: [0, 0],
                 zoom: 2,
-                projection: mainLizmap.projection
+                projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection
             }),
             target: 'newOlMap'
         });
 
+        this._olMap.on('moveend', () => {
+            mainLizmap.lizmap3.map.setCenter(this._olMap.getView().getCenter());
+        });
+
         // Init view
-        this.syncViews();
+        this.syncNewOLwithOL2View();
 
         // Listen to old map events to dispatch new ones
         mainLizmap.lizmap3.map.events.on({
             moveend: () => {
-                this.syncViews();
+                this.syncNewOLwithOL2View();
 
                 mainEventDispatcher.dispatch('map.moveend');
             },
             zoomend: () => {
-                this.syncViews();
+                this.syncNewOLwithOL2View();
 
                 mainEventDispatcher.dispatch('map.zoomend');
             }
@@ -34,10 +39,10 @@ export default class Map {
     }
 
     /**
-     * Synchronize new OL view with old one
+     * Synchronize new OL view with OL2 one
      * @memberof Map
      */
-    syncViews(){
+    syncNewOLwithOL2View(){
         this._olMap.getView().setResolution(mainLizmap.lizmap3.map.getResolution());
 
         const lizmap3Center = mainLizmap.lizmap3.map.getCenter();

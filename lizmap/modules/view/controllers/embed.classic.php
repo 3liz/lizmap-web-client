@@ -69,8 +69,6 @@ class embedCtrl extends lizMapCtrl
                 $('#button-locate').click();
               if ( $('#mapmenu li.switcher').hasClass('active') )
                 $('#button-switcher').click();
-              if ( $('#overview-toggle').hasClass('active') )
-                $('#overview-toggle').click();
 
               $('#mapmenu .nav-list > li.permaLink a').attr('data-original-title', lizDict['embed.open.map']);
             },

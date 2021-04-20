@@ -71,6 +71,14 @@ export default class Lizmap {
         return this._lizmap3.getVectorLayerResultFormat();
     }
 
+    get serviceURL() {
+        return lizUrls.wms + '?' + (new URLSearchParams(lizUrls.params).toString());
+    }
+
+    get hasOverview() {
+        return this._lizmap3.config.layers.hasOwnProperty('Overview');
+    }
+
     /**
      * @param {Array} lonlat - lonlat to center to.
      */
