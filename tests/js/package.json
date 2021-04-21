@@ -4,7 +4,7 @@
   "description": "Test Lizmap JavaScript",
   "main": "index.js",
   "devDependencies": {
-    "cypress": "^6.5.0"
+    "cypress": "^7.1.0"
   },
   "scripts": {
     "cypress:open": "cypress open"

@@ -268,10 +268,6 @@ describe('Selection tool', function () {
         // test ends because it's attached to 'cy'
         // TODO : fix the error in datatables "Uncaught TypeError: Cannot read property 'style' of undefined"
         cy.on('uncaught:exception', (err, runnable) => {
-            // using mocha's async done callback to finish
-            // this test so we prove that an uncaught exception
-            // was thrown
-            done()
 
             // return false to prevent the error from
             // failing this test
