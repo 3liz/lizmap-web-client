@@ -522,7 +522,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 featureunselected: function(evt) {
                     if ( evt.feature.geometry == null )
                         return;
-                    updateGeometryColumnFromFeature( evt.feat )
+
+                    updateGeometryColumnFromFeature(evt.feature);
                 },
 
                 sketchmodified: function(evt) {
