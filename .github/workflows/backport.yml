@@ -14,4 +14,4 @@ jobs:
         id: backport
         uses: m-kuhn/backport@v1.2.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.BOT_HUB_TOKEN }}
