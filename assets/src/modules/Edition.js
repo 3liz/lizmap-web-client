@@ -50,6 +50,11 @@ export default class Edition {
         }
     }
 
+    get modifyFeatureControl(){
+        const modifyFeatureCtrls = mainLizmap.lizmap3.map.getControlsByClass('OpenLayers.Control.ModifyFeature');
+        return (modifyFeatureCtrls.filter(ctrl => ctrl.layer.name === "editLayer"))[0];
+    }
+
     get lastSegmentLength() {
         return this._lastSegmentLength;
     }
