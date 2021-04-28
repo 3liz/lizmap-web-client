@@ -111,7 +111,7 @@ class WFSRequest extends OGCRequest
     /**
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
-    protected function getcapabilities()
+    protected function process_getcapabilities()
     {
         $version = $this->param('version');
         // force version if not defined
@@ -119,7 +119,7 @@ class WFSRequest extends OGCRequest
             $this->params['version'] = '1.3.0';
         }
 
-        $result = parent::getcapabilities();
+        $result = parent::process_getcapabilities();
 
         $data = $result->data;
         if (empty($data) || floor($result->code / 100) >= 4) {
@@ -166,7 +166,7 @@ class WFSRequest extends OGCRequest
     /**
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
-    public function describefeaturetype()
+    protected function process_describefeaturetype()
     {
         // Extensions to get aliases and type
         $returnJson = (strtolower($this->param('outputformat', '')) == 'json');
@@ -224,7 +224,7 @@ class WFSRequest extends OGCRequest
     /**
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
-    public function getfeature()
+    protected function process_getfeature()
     {
         if ($this->requestXml !== null) {
             return $this->getfeatureQgis();
@@ -299,7 +299,7 @@ class WFSRequest extends OGCRequest
      *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      */
-    public function getfeatureQgis()
+    protected function getfeatureQgis()
     {
         // Else pass query to QGIS Server
         // Get remote data
@@ -522,7 +522,7 @@ class WFSRequest extends OGCRequest
      * https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      * Queries The PostGreSQL Server for getFeature.
      */
-    public function getfeaturePostgres()
+    protected function getfeaturePostgres()
     {
         $params = $this->parameters();
 

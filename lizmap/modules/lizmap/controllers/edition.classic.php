@@ -270,7 +270,8 @@ class editionCtrl extends jController
             );
 
             $wfsrequest = new \Lizmap\Request\WFSRequest($this->project, $wfsparams, lizmap::getServices(), lizmap::getAppContext());
-            $wfsresponse = $wfsrequest->getfeature();
+            // FIXME no support of the case where $wfsresponse is the content of serviceException?
+            $wfsresponse = $wfsrequest->process();
             if (property_exists($wfsresponse, 'data')) {
                 $data = $wfsresponse->data;
                 if (property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data)) {

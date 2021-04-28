@@ -26,14 +26,29 @@ abstract class OGCRequest
      */
     protected $project;
 
+    /**
+     * @var \Lizmap\Project\Repository
+     */
     protected $repository;
 
+    /**
+     * @var array
+     */
     protected $params;
 
+    /**
+     * @var null|string
+     */
     protected $requestXml;
 
+    /**
+     * @var \lizmapServices
+     */
     protected $services;
 
+    /**
+     * @var string selector of a template
+     */
     protected $tplExceptions;
 
     protected $appContext;
@@ -122,8 +137,11 @@ abstract class OGCRequest
     public function process()
     {
         $req = $this->param('request');
-        if ($req && method_exists($this, $req)) {
-            return $this->{$req}();
+        if ($req) {
+            $reqMeth = 'process_'.$req;
+            if (method_exists($this, $reqMeth)) {
+                return $this->{$reqMeth}();
+            }
         }
 
         if (!$req) {
@@ -197,22 +215,19 @@ abstract class OGCRequest
     protected function serviceException($code = 400)
     {
         $messages = \jMessage::getAll();
-        $mime = 'text/plain';
-        if (!$messages) {
-            $data = '';
-        } else {
-            if (is_array($messages)) {
-                $data = '';
-            } else {
-                $data = implode('\n', $messages);
-            }
-        }
 
         if ($this->tplExceptions !== null) {
             $mime = 'text/xml';
             $tpl = new \jTpl();
             $tpl->assign('messages', $messages);
             $data = $tpl->fetch($this->tplExceptions);
+        } else {
+            $mime = 'text/plain';
+            if (is_array($messages) && count($messages)) {
+                $data = implode('\n', $messages);
+            } else {
+                $data = '';
+            }
         }
         \jMessage::clearAll();
 
@@ -229,7 +244,7 @@ abstract class OGCRequest
      *
      * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
      */
-    protected function getcapabilities()
+    protected function process_getcapabilities()
     {
         $appContext = $this->appContext;
         // Get cached session

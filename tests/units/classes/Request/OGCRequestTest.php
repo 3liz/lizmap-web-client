@@ -72,9 +72,9 @@ class OGCRequestTest extends TestCase
             'request' => 'getcapabilities'
         );
         $ogc = $this->getMockBuilder(OGCRequestForTest::class)
-            ->setMethods(['getcapabilities'])
+            ->setMethods(['process_getcapabilities'])
             ->setConstructorArgs([new ProjectForOGC(), $params, null, new testContext()])->getMock();
-        $ogc->expects($this->once())->method('getcapabilities');
+        $ogc->expects($this->once())->method('process_getcapabilities');
         $ogc->process();
         $params = array(
             'service' => 'WMS',

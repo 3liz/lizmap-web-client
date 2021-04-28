@@ -34,7 +34,7 @@ class WMTSRequest extends OGCRequest
     /**
      * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
      */
-    protected function getcapabilities()
+    protected function process_getcapabilities()
     {
         $tileCapabilities = null;
 
@@ -83,7 +83,7 @@ class WMTSRequest extends OGCRequest
     /**
      * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
      */
-    public function gettile()
+    protected function process_gettile()
     {
         //\jLog::log('GetTile '.http_build_query($this->params));
         // Get the layer
