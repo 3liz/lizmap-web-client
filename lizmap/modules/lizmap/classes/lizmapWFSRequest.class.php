@@ -102,7 +102,10 @@ class lizmapWFSRequest extends lizmapOGCRequest
         return $params;
     }
 
-    protected function getcapabilities()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
+    protected function process_getcapabilities()
     {
         $version = $this->param('version');
         // force version if not defined
@@ -110,7 +113,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
             $this->params['version'] = '1.3.0';
         }
 
-        $result = parent::getcapabilities();
+        $result = parent::process_getcapabilities();
 
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
@@ -154,7 +157,10 @@ class lizmapWFSRequest extends lizmapOGCRequest
         );
     }
 
-    public function describefeaturetype()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
+    protected function process_describefeaturetype()
     {
         // Extensions to get aliases and type
         $returnJson = (strtolower($this->param('outputformat', '')) == 'json');
@@ -219,7 +225,10 @@ class lizmapWFSRequest extends lizmapOGCRequest
         );
     }
 
-    public function getfeature()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
+     */
+    protected function process_getfeature()
     {
         if ($this->requestXml !== null) {
             return $this->getfeatureQgis();
@@ -289,7 +298,12 @@ class lizmapWFSRequest extends lizmapOGCRequest
         return $this->getfeatureQgis();
     }
 
-    public function getfeatureQgis()
+    /**
+     * Queries Qgis Server for getFeature.
+     *
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
+     */
+    protected function getfeatureQgis()
     {
 
         // Else pass query to QGIS Server

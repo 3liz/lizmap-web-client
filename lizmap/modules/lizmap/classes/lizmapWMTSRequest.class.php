@@ -25,7 +25,10 @@ class lizmapWMTSRequest extends lizmapOGCRequest
         return $this->forceRequest = $forced;
     }
 
-    protected function getcapabilities()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
+     */
+    protected function process_getcapabilities()
     {
         $tileCapabilities = null;
 
@@ -71,7 +74,10 @@ class lizmapWMTSRequest extends lizmapOGCRequest
         );
     }
 
-    public function gettile()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
+     */
+    protected function process_gettile()
     {
         //jLog::log('GetTile '.http_build_query($this->params));
         // Get the layer

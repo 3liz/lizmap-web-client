@@ -16,14 +16,29 @@ class lizmapOGCRequest
      */
     protected $project;
 
+    /**
+     * @var lizmapRepository
+     */
     protected $repository;
 
+    /**
+     * @var array
+     */
     protected $params;
 
+    /**
+     * @var null|string
+     */
     protected $requestXml;
 
+    /**
+     * @var lizmapServices
+     */
     protected $services;
 
+    /**
+     * @var string selector of a template
+     */
     protected $tplExceptions;
 
     /**
@@ -177,8 +192,11 @@ class lizmapOGCRequest
     public function process()
     {
         $req = $this->param('request');
-        if ($req && method_exists($this, $req)) {
-            return $this->{$req}();
+        if ($req) {
+            $reqMeth = 'process_'.$req;
+            if (method_exists($this, $reqMeth)) {
+                return $this->{$reqMeth}();
+            }
         }
 
         if (!$req) {
@@ -265,27 +283,24 @@ class lizmapOGCRequest
      *
      * @param int $code The HTTP code to return
      *
-     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     * @return object ['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
      */
     protected function serviceException($code = 400)
     {
         $messages = jMessage::getAll();
-        $mime = 'text/plain';
-        if (!$messages) {
-            $data = '';
-        } else {
-            if (is_array($messages)) {
-                $data = '';
-            } else {
-                $data = implode('\n', $messages);
-            }
-        }
 
         if ($this->tplExceptions !== null) {
             $mime = 'text/xml';
             $tpl = new jTpl();
             $tpl->assign('messages', $messages);
             $data = $tpl->fetch($this->tplExceptions);
+        } else {
+            $mime = 'text/plain';
+            if (is_array($messages) && count($messages)) {
+                $data = implode('\n', $messages);
+            } else {
+                $data = '';
+            }
         }
         jMessage::clearAll();
 
@@ -300,9 +315,9 @@ class lizmapOGCRequest
     /**
      * Perform an OGC GetCapabilities Request.
      *
-     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     * @return object ['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
      */
-    protected function getcapabilities()
+    protected function process_getcapabilities()
     {
         // Get cached session
         $key = session_id().'-'.

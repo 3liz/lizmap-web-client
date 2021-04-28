@@ -92,14 +92,17 @@ class lizmapWMSRequest extends lizmapOGCRequest
         return $params;
     }
 
-    protected function getcapabilities()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
+    protected function process_getcapabilities()
     {
         $version = $this->param('version');
         // force version if noy defined
         if (!$version) {
             $this->params['version'] = '1.3.0';
         }
-        $result = parent::getcapabilities();
+        $result = parent::process_getcapabilities();
 
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
@@ -183,7 +186,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
-    protected function getcontext()
+    protected function process_getcontext()
     {
 
         // Get remote data
@@ -206,7 +209,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
-    protected function getschemaextension()
+    protected function process_getschemaextension()
     {
         $data = '<?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wms="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms" targetNamespace="http://www.qgis.org/wms" elementFormDefault="qualified" version="1.0.0">
@@ -224,7 +227,10 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
-    protected function getmap()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
+    protected function process_getmap()
     {
         if (!$this->checkMaximumWidthHeight()) {
             jMessage::add('The requested map size is too large', 'Size error');
@@ -280,12 +286,15 @@ class lizmapWMSRequest extends lizmapOGCRequest
         return true;
     }
 
-    protected function getlegendgraphic()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
+    protected function process_getlegendgraphic()
     {
-        return $this->getlegendgraphics();
+        return $this->process_getlegendgraphics();
     }
 
-    protected function getlegendgraphics()
+    protected function process_getlegendgraphics()
     {
         $layers = $this->param('Layers', '');
         if ($layers == '') {
@@ -311,7 +320,10 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
-    protected function getfeatureinfo()
+    /**
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
+    protected function process_getfeatureinfo()
     {
         $queryLayers = $this->param('query_layers');
         // QUERY_LAYERS is mandatory
@@ -409,7 +421,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
-    protected function getprint()
+    protected function process_getprint()
     {
 
         // Get remote data
@@ -423,7 +435,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
-    protected function getprintatlas()
+    protected function process_getprintatlas()
     {
         // Trigger optional actions by other modules
         // For example, cadastre module can create a file
@@ -445,7 +457,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
-    protected function getstyles()
+    protected function process_getstyles()
     {
 
         // Get remote data
