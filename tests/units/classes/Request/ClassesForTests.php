@@ -59,7 +59,7 @@ class WMTSRequestForTest extends WMTSRequest
 {
     public function getCapabilitiesForTests()
     {
-        return $this->getcapabilities();
+        return $this->process_getcapabilities();
     }
 }
 
@@ -129,7 +129,7 @@ class WMSRequestForTests extends WMSRequest
 {
     public function getContextForTests()
     {
-        return $this->getcontext();
+        return $this->process_getcontext();
     }
 
     public function checkMaximumWidthHeightForTests()

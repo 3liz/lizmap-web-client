@@ -460,7 +460,8 @@ class datavizPlot
             }
 
             $wfsrequest = new \Lizmap\Request\WFSRequest($this->lproj, $wfsparams, lizmap::getServices(), lizmap::getAppContext());
-            $wfsresponse = $wfsrequest->getfeature();
+            // FIXME no support of the case where $wfsresponse is the content of serviceException?
+            $wfsresponse = $wfsrequest->process();
             $features = null;
 
             // Check data
