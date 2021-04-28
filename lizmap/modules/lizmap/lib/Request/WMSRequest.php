@@ -909,7 +909,9 @@ class WMSRequest extends OGCRequest
                     $mime = 'image/png';
                 }
 
-                \lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
+                \lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE', 'WMS', array(
+                    'qgisParams' => $params,
+                ));
 
                 return array($tile, $mime, 200, true);
             }
@@ -1001,7 +1003,9 @@ class WMSRequest extends OGCRequest
         imagedestroy($original);
         imagedestroy($image);
 
-        \lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
+        \lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE', 'WMS', array(
+            'qgisParams' => $params,
+        ));
 
         return $data;
     }
@@ -1045,7 +1049,9 @@ class WMSRequest extends OGCRequest
         // --> must be done after checking that parent project is involved
         $profile = Proxy::createVirtualProfile($repository, $project, $layers, $crs);
 
-        \lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
+        \lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG', 'WMS', array(
+            'qgisParams' => $params,
+        ));
 
         list($useCache, $wmsClient) = $this->useCache($configLayer, $params, $profile);
 
@@ -1081,7 +1087,10 @@ class WMSRequest extends OGCRequest
             Proxy::constructUrl($params, $this->services)
         );
 
-        \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
+        \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP', 'WMS', array(
+            'qgisParams' => $params,
+            'qgisResponseCode' => $code,
+        ));
 
         if ($useCache && !preg_match('/^image/', $mime)) {
             $useCache = false;
@@ -1111,7 +1120,9 @@ class WMSRequest extends OGCRequest
                 $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
                 $cached = true;
 
-                \lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
+                \lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE', 'WMS', array(
+                    'qgisParams' => $params,
+                ));
             } catch (\Exception $e) {
                 \jLog::logEx($e, 'error');
                 $cached = false;
