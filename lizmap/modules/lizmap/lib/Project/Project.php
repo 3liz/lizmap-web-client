@@ -428,6 +428,9 @@ class Project
         return $this->key;
     }
 
+    /**
+     * @return Repository
+     */
     public function getRepository()
     {
         return $this->repository;
