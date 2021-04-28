@@ -38,9 +38,7 @@ class serviceCtrl extends jController
      */
     public function index()
     {
-
-        // Variable stored to log lizmap metrics
-        $_SERVER['LIZMAP_BEGIN_TIME'] = microtime(true);
+        lizmap::startMetric();
 
         if (isset($_SERVER['PHP_AUTH_USER'])) {
             $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
@@ -640,7 +638,10 @@ class serviceCtrl extends jController
             }
         }
 
-        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP', 'WMS', array(
+            'qgisParams' => $wmsRequest->parameters(),
+            'qgisResponseCode' => $result->code,
+        ));
 
         return $rep;
     }
@@ -1535,7 +1536,10 @@ class serviceCtrl extends jController
             }
         }
 
-        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP', 'WMS', array(
+            'qgisParams' => $wmtsRequest->parameters(),
+            'qgisResponseCode' => $result->code,
+        ));
 
         return $rep;
     }
