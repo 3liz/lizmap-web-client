@@ -9,6 +9,8 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+use Lizmap\Logger as Log;
+
 class UnknownLizmapProjectException extends Exception
 {
 }
@@ -402,42 +404,60 @@ class lizmap
     }
 
     /**
+     * call it at the beginning of your controller if you want to call
+     * logMetric later.
+     *
+     * @param float|string $start indicate the start time. time in Milli-seconds, or
+     *                            'now' for the current time, or 'request' for the PHP Http Request time.
+     */
+    public static function startMetric($start = 'now')
+    {
+        // Choose from when to calculate time: index, request or given $start
+        if ($start == 'now') {
+            $_SERVER['LIZMAP_BEGIN_TIME'] = microtime(true);
+        } elseif ($start == 'request') {
+            // For php < 5.4
+            if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+                $_SERVER['LIZMAP_BEGIN_TIME'] = $_SERVER['REQUEST_TIME'];
+            } else {
+                $_SERVER['LIZMAP_BEGIN_TIME'] = $_SERVER['REQUEST_TIME_FLOAT'];
+            }
+        } else {
+            $_SERVER['LIZMAP_BEGIN_TIME'] = $start;
+        }
+    }
+
+    /**
      * Returns time spent in milliseconds from beginning of request.
      *
-     * @param string $label Name of the action to lo
-     * @param mixed  $start
+     * @param string $label   Name of the action to log
+     * @param string $service name of a service (could be a SIG service like WMD, WFS or any other service into Lizmap
+     * @param array  $payload some values about the action
      */
-    public static function logMetric($label, $start = 'index')
+    public static function logMetric($label, $service, $payload = array())
     {
         if (!self::getServices()->areMetricsEnabled()) {
             return;
         }
 
-        // Choose from when to calculate time: index, request or given $start
-        if ($start == 'index') {
-            $start = $_SERVER['LIZMAP_BEGIN_TIME'];
-        } elseif ($start == 'request') {
-            // For php < 5.4
-            if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-                $start = $_SERVER['REQUEST_TIME'];
-            } else {
-                $start = $_SERVER['REQUEST_TIME_FLOAT'];
-            }
-        }
-
         // Calculate time
-        $time = (microtime(true) - $start) * 1000;
+        $time = (microtime(true) - $_SERVER['LIZMAP_BEGIN_TIME']) * 1000;
 
         // Create log content
         $log = array(
             'NAME' => $label,
+            'SERVICE' => $service,
             'RESPONSE_TIME' => $time,
+            'PAYLOAD' => $payload,
         );
 
         // Add cache parameter if given
         if (isset($_SESSION['LIZMAP_GETMAP_CACHE_STATUS'])) {
             $log['CACHE_STATUS'] = $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'];
         }
-        jLog::log(json_encode($log), 'metric');
+
+        $logMessage = new Log\MetricsLogMessage($log, 'metric');
+
+        jLog::log($logMessage);
     }
 }
