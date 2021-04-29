@@ -49,6 +49,8 @@
                             <i class="icon-none qgis_sprite mActionSplitFeatures"></i>
                         </button>
                     </div>
+                    <lizmap-reverse-geom class="btn btn-small"
+                        data-original-title="{@view~edition.geomtool.reversegeom.title@}"></lizmap-reverse-geom>
                     <form id="edition-point-coord-form" class="form-horizontal" style="display:none;">
                         <fieldset>
                             <div id="edition-point-coord-form-group" class="jforms-table-group">
