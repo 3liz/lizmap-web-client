@@ -389,7 +389,6 @@ class lizmapProxy
                 $tile = false;
             }
             if ($tile) {
-                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
                 $mime = 'image/jpeg';
                 if (preg_match('#png#', $params['format'])) {
                     $mime = 'image/png';
@@ -526,8 +525,6 @@ class lizmapProxy
             ));
         }
 
-        $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
-
         // Store into cache if needed
         $cached = false;
         if ($useCache) {
@@ -539,7 +536,6 @@ class lizmapProxy
 
             try {
                 jCache::set($key, $data, $cacheExpiration, $profile);
-                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
                 $cached = true;
 
                 lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE', 'WMS', array(
