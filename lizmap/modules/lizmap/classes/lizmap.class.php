@@ -451,11 +451,6 @@ class lizmap
             'PAYLOAD' => $payload,
         );
 
-        // Add cache parameter if given
-        if (isset($_SESSION['LIZMAP_GETMAP_CACHE_STATUS'])) {
-            $log['CACHE_STATUS'] = $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'];
-        }
-
         $logMessage = new Log\MetricsLogMessage($log, 'metric');
 
         jLog::log($logMessage);
