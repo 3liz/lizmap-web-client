@@ -8,6 +8,8 @@ import MousePosition from './components/MousePosition.js';
 import Digitizing from './components/Digitizing.js';
 import OverviewMap from './components/OverviewMap.js';
 
+import ReverseGeom from './components/edition/ReverseGeom.js';
+
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 
 lizMap.events.on({
@@ -24,6 +26,8 @@ lizMap.events.on({
         if(mainLizmap.hasOverview){
             window.customElements.define('lizmap-overviewmap', OverviewMap);
         }
+
+        window.customElements.define('lizmap-reverse-geom', ReverseGeom);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;

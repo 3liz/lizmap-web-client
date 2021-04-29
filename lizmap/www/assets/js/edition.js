@@ -943,7 +943,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls.featsplit.activate();
             });
 
-            $('#edition-geomtool-container button').tooltip( {
+            $('#edition-geomtool-container button, lizmap-reverse-geom').tooltip( {
                 placement: 'top'
             } );
 
