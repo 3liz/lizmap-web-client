@@ -28,19 +28,14 @@ class qgisVectorLayerDatasource
         'srid' => 'srid=([0-9]+) ',
         'type' => 'type=([a-zA-Z]+) ',
         'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)' ",
-        'table' => ' table="(.+)" (\([^ ]+\) )?sql=',
-        'geocol' => '\(([^ ]+)\) sql=',
+        'table' => 'table="(.+?)"($|\s)',
+        'geocol' => '\(([^ ]+)\)',
         'sql' => ' sql=(.*)$',
     );
 
     protected $provider;
 
     protected $datasource;
-
-    // /!\ in table and geocol regex above, sql= will be removed when search for table or geocol
-    // to remove issues
-    // better would be to find a robust regex, but it is fragile
-    // See further down: "Avoid issue..."
 
     /**
      * constructor.
@@ -94,11 +89,7 @@ class qgisVectorLayerDatasource
         // For other parameters, use specific parameter regex
         $regex = $this->datasourceRegexes[$param];
 
-        // Avoid issue with sql not given (QGIS > 3.16)
-        if (!preg_match('# sql=#', $this->datasource) and in_array($param, array('table', 'geocol'))) {
-            $regex = preg_replace('# *sql=#', '', $regex);
-        }
-        $test = preg_match(
+        preg_match(
             '#'.$regex.'#s',
             $this->datasource,
             $result
