@@ -19,10 +19,10 @@ class lizmapServices
     private $data = array();
 
     /**
-     * List of all properties of lizmapServices that should be retrieved
-     * from lizmapConfig.ini.php or from the main configuration.
+     * List of all properties of lizmapServices that are editable in the
+     * configuration form of Lizmap
      *
-     * These properties can be editable in the configuration form of Lizmap
+     * properties values are stored into lizmapConfig.ini.php or the main configuration.
      */
     private $properties = array(
         'appName',
@@ -58,7 +58,6 @@ class lizmapServices
         'adminSenderEmail',
         'adminSenderName',
         'googleAnalyticsID',
-        'metricsEnabled',
     );
 
     /**
