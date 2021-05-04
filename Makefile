@@ -248,21 +248,6 @@ docker-release: check-factory
 docker-hub:
 	cd docker && $(FACTORY_SCRIPTS)/push-to-docker-hub.sh --clean
 
-LIZMAP_USER:=$(shell id -u)
-
-docker-run:
-	rm -rf $(shell pwd)/docker/.run
-	docker run -it --rm -p 9000:9000 \
-    -v $(shell pwd)/.run/config:/www/lizmap/var/config \
-    -v $(shell pwd)/.run/web:/www/lizmap/www \
-    -v $(shell pwd)/.run/log:/usr/local/var/log \
-    -v $(shell pwd)/.run/lizmap-theme-config:/www/lizmap/var/lizmap-theme-config \
-    -e LIZMAP_WMSSERVERURL=$(LIZMAP_WMSSERVERURL) \
-    -e LIZMAP_CACHEREDISHOST=$(LIZMAP_CACHEREDISHOST) \
-    -e LIZMAP_USER=$(LIZMAP_USER) \
-    -e LIZMAP_HOME=/srv/lizmap \
-    $(DOCKER_BUILDIMAGE) php-fpm
-
 php-cs-fixer-test:
 	php-cs-fixer fix --config=.php_cs.dist --allow-risky=yes --dry-run --diff
 
