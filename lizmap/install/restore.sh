@@ -41,6 +41,9 @@ if  [ -d $BACKUPDIR ]; then
     cp -p $BACKUPDIR/lizmapConfig.ini.php           $LIZMAP/var/config/lizmapConfig.ini.php
     cp -p $BACKUPDIR/installer.ini.php              $LIZMAP/var/config/installer.ini.php
     cp -p $BACKUPDIR/profiles.ini.php               $LIZMAP/var/config/profiles.ini.php
+    if [ -d $BACKUPDIR/my-packages ]; then
+        cp -Rp $BACKUPDIR/my-packages       $LIZMAP/
+    fi
 else
     echo "backup directory does not exists"
     exit 1
