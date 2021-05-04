@@ -33,6 +33,7 @@ else
 fi
 
 # Update localconfig and lizmapConfig
+echo "Updating configuration"
 update-config.php
 
 # Set up Configuration  

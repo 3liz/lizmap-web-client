@@ -9,6 +9,9 @@ COMPOSER_VERSION:=2.0.8
 
 VERSION_TAG=$(COMPOSER_VERSION)-php$(PHP_VERSION)
 
+all: build
+	$(MAKE) -C .. docker-build docker-tag docker-clean
+
 image:
 	docker build --rm \
 		--build-arg="PHP_VERSION=$(PHP_VERSION)" \
@@ -30,4 +33,5 @@ build: image
 
 clean:
 	rm -rf $(WORKDIR)/.composer $(WORKDIR)/.npm
+
 
