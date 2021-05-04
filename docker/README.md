@@ -20,6 +20,8 @@ The container deploy one lizmap instance and may run php-fpm on commande line.
 - `LIZMAP_ADMIN_LOGIN`: Login of the admin user
 - `LIZMAP_ADMIN_EMAIL`: Email address of the admin user
 - `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password to set for the admin user. Cf [Admin Setup Section](#admin-setup)
+- `LIZMAP_LIZMAPCONFIG_INCLUDE`: Directory for `lizmapConfig` additional configuration. All `*.ini.php` files in this directory will be imported to `lizmapConfig.ini.php`.
+- `LIZMAP_LOCALCONFIG_INCLUDE`: Directory for `localConfig` additional configuration. All `*.ini.php` files in this directory will be imported to `localConfig.ini.php`.
 
 **Important**: `LIZMAP_HOME` is the prefix of the path towards lizmap web files (`lizmap/www`). This prefix
 must be identical to the one given in the nginx *root* directive, ex:

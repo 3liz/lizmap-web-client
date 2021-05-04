@@ -2,6 +2,20 @@
 <?php
 require('/www/lib/jelix/utils/jIniFileModifier.class.php');
 
+
+function load_include_config($varname, $iniFileModifier)
+{
+    $includeConfigDir = getenv($varname);
+    if ($includeConfigDir !== false and is_dir($includeConfigDir)) {
+        echo("Checking for lizmap configuration files in ".$includeConfigDir."\n");
+        foreach (glob(rtrim($includeConfigDir,"/")."/*.ini.php") as $includeFile) {
+            echo("* Loading lizmap configuration: ".$includeFile."\n"); 
+            $includeConfig = new jIniFileModifier($includeFile);
+            $iniFileModifier->import($includeConfig);
+        }  
+    }  
+} 
+
 /**
  * lizmapConfig.ini.php
  */
@@ -23,6 +37,10 @@ foreach(array(
         $lizmapConfig->setValue($key, getenv($envValue), 'services');
     }
 }
+
+// DropIn capabilities: Merge all ini file in LIZMAP_LIZMAPCONFIG_INCLUDE
+load_include_config('LIZMAP_LIZMAPCONFIG_INCLUDE', $lizmapConfig);
+
 $lizmapConfig->save();
 
 /**
@@ -85,9 +103,10 @@ if (getenv('LIZMAP_THEME') !== false) {
     $localConfig->setValue('theme', getenv('LIZMAP_THEME'));
 }
 
+// DropIn capabilities: Merge all ini file in LIZMAP_LOCALCONFIG_INCLUDE
+load_include_config('LIZMAP_LOCALCONFIG_INCLUDE', $localConfig);
 
-// Update mail config
-
+// Do not break older install
 $mailConfigFile = '/srv/etc/mailconfig.ini';
 if (file_exists($mailConfigFile)) {
     $mailConfig = parse_ini_file($mailConfigFile, true);
