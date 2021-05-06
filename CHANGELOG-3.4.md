@@ -1,5 +1,12 @@
 # Changelog Lizmap 3.4
 
+## Version 3.4.4
+
+Release on 2021-05-xx
+
+- Fix QGIS >= 3.16 datasource compatibility
+- Fix Pre-generated cache is not used since Lizmap 3.4.1
+
 ## Version 3.4.3
 
 Release on 2021-03-26
@@ -26,6 +33,7 @@ Release on 2021-03-04
 - UX Display form first in edition mode for desktop and mobile
 - Fix hide digitization tab for non geom layer
 - Hide label in legend for layers with single symbol rendering
+- Fix WMTS Request - use specific $wmsRequest parameters array
 
 ## Version 3.4.1
 
