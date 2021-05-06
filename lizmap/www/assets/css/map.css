@@ -959,6 +959,10 @@ div.modal div.control-group {
 #dock .form-horizontal .control-label,
 div.modal .form-horizontal .control-label {
   width: 90px;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 
