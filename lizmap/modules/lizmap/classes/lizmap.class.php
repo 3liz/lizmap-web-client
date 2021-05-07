@@ -450,7 +450,9 @@ class lizmap
     }
 
     /**
-     * Returns time spent in milliseconds from beginning of request.
+     * Send metrics to the logger
+     *
+     * Metrics contains the time spent to do the action, since the call of startMetric()
      *
      * @param string $label   Name of the action to log
      * @param string $service name of a service (could be a SIG service like WMD, WFS or any other service into Lizmap
@@ -463,7 +465,12 @@ class lizmap
         }
 
         // Calculate time
-        $time = (microtime(true) - $_SERVER['LIZMAP_BEGIN_TIME']) * 1000;
+        if (isset($_SERVER['LIZMAP_BEGIN_TIME'])) {
+            $time = (microtime(true) - $_SERVER['LIZMAP_BEGIN_TIME']) * 1000;
+        }
+        else {
+            $time = -1;
+        }
 
         // Create log content
         $log = array(
