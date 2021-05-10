@@ -6,7 +6,6 @@ Release on 2021-05-xx
 
 - Fix form's labels partialy hidden when too long. A line break and an hyphen are now used when needed
 - Fix QGIS >= 3.16 datasource compatibility
-- Fix Pre-generated cache is not used since Lizmap 3.4.1
 
 ## Version 3.4.3
 
