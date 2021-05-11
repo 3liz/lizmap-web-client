@@ -99,7 +99,7 @@ If you plan to print PDF from Lizmap, you need a fake X Server.
 See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`. 
 It works for Apache and NGINX
 
-###Debug
+### Debug
 
 * Check Lizmap settings
 * Check logs in Apache/Nginx and QGIS Server.
