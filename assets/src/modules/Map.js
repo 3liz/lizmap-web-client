@@ -27,14 +27,27 @@ export default class Map {
             target: 'newOlMap'
         });
 
+        this._refreshOL2View = () => {
+            // This refresh OL2 view and layers
+            mainLizmap.lizmap3.map.setCenter(
+                this._olMap.getView().getCenter(),
+                this._olMap.getView().getZoom()
+            );
+        };
+
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
             moveend: () => {
+                // remove moveend listener and add it after animate ends
+                // to avoid extra sync
+                this._olMap.un('moveend', this._refreshOL2View);
+
                 // Sync center
                 this._olMap.getView().animate({
                     center: this._lizmap3Center,
+                    zoom: mainLizmap.lizmap3.map.getZoom(),
                     duration: 0
-                });
+                }, () => this._olMap.on('moveend', this._refreshOL2View));
 
                 mainEventDispatcher.dispatch('map.moveend');
             },
@@ -64,10 +77,7 @@ export default class Map {
         // TODO: we need a OL6 movestart or zoomstart event giving the target zoom
         // to sync OL2 zoom without waiting moveend event as done with OL2 zoomstart
         // This would avoid a visual shift between OL2 and OL6 when zooming
-        this._olMap.on('moveend', () => {
-            // This refresh OL2 layers
-            mainLizmap.lizmap3.map.zoomToExtent(this._olMap.getView().calculateExtent(), true);
-        });
+        this._olMap.on('moveend', this._refreshOL2View);
 
         // Init view
         this.syncNewOLwithOL2View();
