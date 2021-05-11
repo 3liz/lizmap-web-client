@@ -3,6 +3,7 @@ import olMap from 'ol/Map';
 import View from 'ol/View';
 
 import DragPan from "ol/interaction/DragPan";
+import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { Kinetic } from "ol";
 
@@ -13,8 +14,12 @@ export default class Map {
         this._olMap = new olMap({
             controls: [], // disable default controls
             interactions: defaultInteractions({
-                dragPan: false
-            }).extend([new DragPan({ kinetic: new Kinetic(0, 0, 0) })]),
+                dragPan: false,
+                mouseWheelZoom: false
+            }).extend([
+                new DragPan({ kinetic: new Kinetic(0, 0, 0) }),
+                new MouseWheelZoom({ duration: 0 })
+            ]),
             view: new View({
                 resolutions: mainLizmap.lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
