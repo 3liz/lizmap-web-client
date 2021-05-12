@@ -92,7 +92,7 @@ export default class Map {
      * Returns Lizmap 3 map center
      * @readonly
      * @memberof Map
-     * @returns {[Number, Number]} lon, lat coords
+     * @return {[number, number]} lon, lat coords
      */
     get _lizmap3Center(){
         return [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat];
@@ -108,5 +108,14 @@ export default class Map {
             zoom: mainLizmap.lizmap3.map.getZoom(),
             duration: 0
         });
+    }
+
+    /**
+     * Get the coordinate for a given pixel array.
+     * @param {[number, number]} pixel Pixel.
+     * @return {[number, number]} The coordinate for the pixel position.
+     */
+    getCoordinateFromPixel(pixel){
+        return this._olMap.getCoordinateFromPixel(pixel);
     }
 }
