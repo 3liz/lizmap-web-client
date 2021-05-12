@@ -183,31 +183,32 @@ class lizmapWMTSRequest extends lizmapOGCRequest
             $bbox = (string) round($miny, 6).','.(string) round($minx, 6).','.(string) round($maxy, 6).','.(string) round($maxx, 6);
         }
 
-        $params['service'] = 'WMS';
-        $params['version'] = '1.3.0';
-        $params['request'] = 'GetMap';
-        $params['layers'] = $LayerName;
-        $params['styles'] = '';
-        $params['format'] = $Format;
-        $params['crs'] = $TileMatrixSetId;
-        $params['bbox'] = $bbox;
-        $params['width'] = $tileWidth;
-        $params['height'] = $tileHeight;
-        $params['dpi'] = '96';
+        $wmsParams = array();
+        $wmsParams['service'] = 'WMS';
+        $wmsParams['version'] = '1.3.0';
+        $wmsParams['request'] = 'GetMap';
+        $wmsParams['layers'] = $LayerName;
+        $wmsParams['styles'] = '';
+        $wmsParams['format'] = $Format;
+        $wmsParams['crs'] = $TileMatrixSetId;
+        $wmsParams['bbox'] = $bbox;
+        $wmsParams['width'] = $tileWidth;
+        $wmsParams['height'] = $tileHeight;
+        $wmsParams['dpi'] = '96';
         if (preg_match('#png#', $Format)) {
-            $params['transparent'] = 'true';
+            $wmsParams['transparent'] = 'true';
         }
 
         $filter = $this->param('filter');
         if ($filter) {
-            $params['filter'] = $filter;
+            $wmsParams['filter'] = $filter;
         }
         $exp_filter = $this->param('exp_filter');
         if ($exp_filter) {
-            $params['exp_filter'] = $exp_filter;
+            $wmsParams['exp_filter'] = $exp_filter;
         }
 
-        $wmsRequest = new lizmapWMSRequest($this->project, $params);
+        $wmsRequest = new lizmapWMSRequest($this->project, $wmsParams);
         $wmsRequest->setForceRequest($this->forceRequest);
 
         return $wmsRequest->process();

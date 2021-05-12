@@ -322,14 +322,14 @@ class lizmapProxy
         if (array_key_exists('map', $keyParams)) {
             unset($keyParams['map']);
         }
-        if (array_key_exists('lizmap_user', $keyParams)) {
-            unset($keyParams['lizmap_user']);
+        if (array_key_exists('Lizmap_User', $keyParams)) {
+            unset($keyParams['Lizmap_User']);
         }
-        if (array_key_exists('lizmap_user_groups', $keyParams)) {
-            unset($keyParams['lizmap_user_groups']);
+        if (array_key_exists('Lizmap_User_Groups', $keyParams)) {
+            unset($keyParams['Lizmap_User_Groups']);
         }
-        if (array_key_exists('lizmap_override_filter', $keyParams)) {
-            unset($keyParams['lizmap_override_filter']);
+        if (array_key_exists('Lizmap_Override_Filter', $keyParams)) {
+            unset($keyParams['Lizmap_Override_Filter']);
         }
         ksort($keyParams);
 
