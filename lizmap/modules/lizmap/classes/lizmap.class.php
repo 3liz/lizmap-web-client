@@ -450,7 +450,7 @@ class lizmap
     }
 
     /**
-     * Send metrics to the logger
+     * Send metrics to the logger.
      *
      * Metrics contains the time spent to do the action, since the call of startMetric()
      *
@@ -467,8 +467,7 @@ class lizmap
         // Calculate time
         if (isset($_SERVER['LIZMAP_BEGIN_TIME'])) {
             $time = (microtime(true) - $_SERVER['LIZMAP_BEGIN_TIME']) * 1000;
-        }
-        else {
+        } else {
             $time = -1;
         }
 
