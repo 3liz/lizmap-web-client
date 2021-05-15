@@ -492,7 +492,7 @@ var lizLayerFilterTool = function() {
                         allchecked = false;
                     }else{
                         nonechecked = false;
-                        clist.push(f_val.replace("'", "''"));
+                        clist.push(f_val.replace(/'/g, "''"));
                     }
                     filterConfig[field_item.order]['data'][f_val] = achecked;
                 }
@@ -507,7 +507,7 @@ var lizLayerFilterTool = function() {
                         allchecked = false;
                     }else{
                         nonechecked = false;
-                        clist.push(f_val.replace("'", "''"));
+                        clist.push(f_val.replace(/'/g, "''"));
                     }
                     filterConfig[field_item.order]['data'][f_val] = achecked;
                 }
@@ -640,7 +640,7 @@ var lizLayerFilterTool = function() {
         function setTextFilter(field_item){
 
             var id = '#liz-filter-field-text' + lizMap.cleanName(field_item.title);
-            var val = $(id).val().trim().replace("'", "''");
+            var val = $(id).val().trim().replace(/'/g, "''");
 
             filterConfig[field_item.order]['data'] = {
                 'text': val
