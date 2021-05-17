@@ -388,6 +388,11 @@ var lizDataviz = function() {
                 if($('#mapmenu li.dataviz').hasClass('active')){
                     resizePlot(id);
                 }
+            },
+            lizmapswitcheritemselected: function(e){
+                if($('#mapmenu li.dataviz').hasClass('active')){
+                    resizePlot(id);
+                }
             }
 
         });
