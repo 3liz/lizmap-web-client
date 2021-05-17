@@ -66,6 +66,16 @@ class lizmapOGCRequest
         return $defaultValue;
     }
 
+    /**
+     * Gets the request parameters.
+     *
+     * @return array the request parameters
+     */
+    public function parameters()
+    {
+        return $this->params;
+    }
+
     public function process()
     {
         $req = $this->param('request');
