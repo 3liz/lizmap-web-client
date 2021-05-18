@@ -115,5 +115,16 @@ if (file_exists($mailConfigFile)) {
 
 $localConfig->save();
 
+/**
+ * profiles.ini.php
+ */
+$profilesConfig = new jIniFileModifier('/www/lizmap/var/config/profiles.ini.php');
+
+// DropIn capabilities: Merge all ini file in LIZMAP_PROFILES_INCLUDE
+load_include_config('LIZMAP_PROFILES_INCLUDE', $profilesConfig);
+
+$profilesConfig->save();
+
+
 
 
