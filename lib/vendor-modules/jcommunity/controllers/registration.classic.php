@@ -62,13 +62,13 @@ class registrationCtrl extends \Jelix\JCommunity\AbstractController
             return $rep;
         }
 
-        $login = $form->getData('reg_login');
+        $login = trim($form->getData('reg_login'));
 
         $registration = new Registration();
 
         try {
             $user = $registration->createUser(
-                $form->getData('reg_login'),
+                $login,
                 $form->getData('reg_email'),
                 $form->getData('reg_password')
             );
@@ -141,8 +141,8 @@ class registrationCtrl extends \Jelix\JCommunity\AbstractController
 
         $rep = $this->getResponse('html');
 
-        $login = $this->param('login');
-        $key = $this->param('key');
+        $login = trim($this->param('login'));
+        $key = trim($this->param('key'));
         $registration = new Registration();
 
         $result = $registration->confirm($login, $key);
