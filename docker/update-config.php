@@ -2,6 +2,32 @@
 <?php
 require('/www/lib/jelix/utils/jIniFileModifier.class.php');
 
+function load_include_config($varname, $iniFileModifier)
+{
+    $includeConfigDir = getenv($varname);
+    if ($includeConfigDir !== false and is_dir($includeConfigDir)) {
+        echo("Checking for lizmap configuration files in ".$includeConfigDir."\n");
+        foreach (glob(rtrim($includeConfigDir,"/")."/*.ini.php") as $includeFile) {
+            echo("* Loading lizmap configuration: ".$includeFile."\n"); 
+            $includeConfig = new jIniFileModifier($includeFile);
+            $iniFileModifier->import($includeConfig);
+        }  
+    }  
+} 
+
+/** 
+ * mainconfig.ini.php
+ */
+$mainconfig = new jIniFileModifier('/www/lizmap/var/config/mainconfig.ini.php');
+
+// Configure metric logger
+$logger_metric = getenv('LIZMAP_LOGMETRICS');
+if ($logger_metric !== false) {
+    $mainconfig->setValue('metric', $logger_metric, 'logger');
+}
+
+$mainconfig->save();
+
 /**
  * lizmapConfig.ini.php
  */
@@ -23,6 +49,15 @@ foreach(array(
         $lizmapConfig->setValue($key, getenv($envValue), 'services');
     }
 }
+
+// DropIn capabilities: Merge all ini file in LIZMAP_LIZMAPCONFIG_INCLUDE
+load_include_config('LIZMAP_LIZMAPCONFIG_INCLUDE', $lizmapConfig);
+
+// Enable metrics
+if ($logger_metric !== false) {
+    $lizmapConfig->setValue('metricsEnabled', 1, 'services');
+} 
+
 $lizmapConfig->save();
 
 /**

@@ -9,7 +9,12 @@ COMPOSER_VERSION:=2.0.8
 
 VERSION_TAG=$(COMPOSER_VERSION)-php$(PHP_VERSION)
 
+all: build image
+
 image:
+	$(MAKE) -C .. docker-build docker-tag docker-clean
+
+builder:
 	docker build --rm \
 		--build-arg="PHP_VERSION=$(PHP_VERSION)" \
 		--build-arg="COMPOSER_VERSION=$(COMPOSER_VERSION)" \
@@ -18,7 +23,7 @@ image:
 
 WORKDIR=$(realpath ..)
 
-build: image
+build: builder
 	mkdir -p $(WORKDIR)/.composer $(WORKDIR)/.npm
 	docker run --rm -it --user $$(id -u):$$(id -g) \
 		--workdir /build \
