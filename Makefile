@@ -215,7 +215,7 @@ docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
 
 docker-build-ci: debug $(DOCKER_MANIFEST)
 	cp $(GENERIC_PACKAGE_PATH) docker/
-	docker build --rm --force-rm --no-cache $(DOCKER_BUILD_ARGS) -t $(DOCKER_BUILDIMAGE) docker/
+	docker build --rm $(DOCKER_BUILD_ARGS) -t $(DOCKER_BUILDIMAGE) docker/
 
 docker-tag:
 	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(DOCKER_MANIFEST_VERSION)
