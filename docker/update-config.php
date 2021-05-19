@@ -2,7 +2,6 @@
 <?php
 require('/www/lib/jelix/utils/jIniFileModifier.class.php');
 
-
 function load_include_config($varname, $iniFileModifier)
 {
     $includeConfigDir = getenv($varname);
@@ -15,6 +14,19 @@ function load_include_config($varname, $iniFileModifier)
         }  
     }  
 } 
+
+/** 
+ * mainconfig.ini.php
+ */
+$mainconfig = new jIniFileModifier('/www/lizmap/var/config/mainconfig.ini.php');
+
+// Configure metric logger
+$logger_metric = getenv('LIZMAP_LOGMETRICS');
+if ($logger_metric !== false) {
+    $mainconfig->setValue('metric', $logger_metric, 'logger');
+}
+
+$mainconfig->save();
 
 /**
  * lizmapConfig.ini.php
@@ -40,6 +52,11 @@ foreach(array(
 
 // DropIn capabilities: Merge all ini file in LIZMAP_LIZMAPCONFIG_INCLUDE
 load_include_config('LIZMAP_LIZMAPCONFIG_INCLUDE', $lizmapConfig);
+
+// Enable metrics
+if ($logger_metric !== false) {
+    $lizmapConfig->setValue('metricsEnabled', 1, 'services');
+} 
 
 $lizmapConfig->save();
 
@@ -114,6 +131,17 @@ if (file_exists($mailConfigFile)) {
 }
 
 $localConfig->save();
+
+/**
+ * profiles.ini.php
+ */
+$profilesConfig = new jIniFileModifier('/www/lizmap/var/config/profiles.ini.php');
+
+// DropIn capabilities: Merge all ini file in LIZMAP_PROFILES_INCLUDE
+load_include_config('LIZMAP_PROFILES_INCLUDE', $profilesConfig);
+
+$profilesConfig->save();
+
 
 
 
