@@ -19,13 +19,31 @@ The container deploy one lizmap instance and may run php-fpm on commande line.
 - `LIZMAP_THEME`: Lizmap theme to use
 - `LIZMAP_ADMIN_LOGIN`: Login of the admin user
 - `LIZMAP_ADMIN_EMAIL`: Email address of the admin user
-- `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password to set for the admin user. Cf [Admin Setup Section](#admin-setup)
+- `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password to set for the admin user. See [Admin Setup Section](#admin-setup)
+- `LIZMAP_CONFIG_INCLUDE`: Base directory where to find configurations snippets directories. Default to `/www/lizmap/var/config`.
 
 **Important**: `LIZMAP_HOME` is the prefix of the path towards lizmap web files (`lizmap/www`). This prefix
 must be identical to the one given in the nginx *root* directive, ex:
 ```
 root <LIZMAP_HOME>/www
 ```
+
+### Note about configuration snippets.
+
+Configuration files may be splitted into snippets without tampering with the main configuration files. They must end with `.ini.php` and be valid php ini files.
+
+Configuration snippets are  searched in the following directories:
+
+* `$LIZMAP_CONFIG_INCLUDE/lizmapconfig.d`: all `*.ini.php` files in this directory will be imported to `lizmapConfig.ini.php`
+* `$LIZMAP_CONFIG_INCLUDE/localconfig.d`: all `*.ini.php` files in this directory will be imported to `localConfig.ini.php`.
+* `LIZMAP_PROFILES_INCLUDE`: Override for `$LIZMAP_CONFIG_INCLUDE/profiles.d`: all `*.ini.php` files in this directory will be imported to `profiles.ini.php`.
+
+Each directory location may be overridden with the following variables:
+
+- `LIZMAP_LIZMAPCONFIG_INCLUDE`: Override location for `lizmapConfig.ini.php` snippets.
+- `LIZMAP_LOCALCONFIG_INCLUDE`: Override location for `localconfig.ini.php` snippets
+- `LIZMAP_PROFILES_INCLUDE`: Override locations for  `profiles.ini.php` snippets.
+
 
 ### Admin Setup
 
@@ -120,4 +138,35 @@ server {
     }
 }
 ```
+
+## Installing lizmap modules 
+
+### Install from archive
+
+- Mount `/www/lizmap/lizmap-modules/` at a location on the host or a from a named volume.
+- Get the archive of the lizmap module and extract it in the `/www/lizmap/lizmap-module/` or 
+  Add the module configuration snippet in the appropriate snippets directory (see the module documentation for  the configuration files to modify)
+- Follow module documentation on how to activate the module in lizmap.
+- Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
+
+### Install from composer packages
+
+- Mount `/www/lizmap/my-packages/` at a location on the host or a from a named volume.
+- From inside the container, install your module with the command `lizmap-install-modules <package-name>`
+- Add the module configuration snippet in the appropriate snippets directory (see the module documentation for  the configuration files to modify)
+- Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
+
+### Install for module development
+
+- Mount `/www/lizmap/lizmap-modules/` at the location of your module sources.
+  Add the module configuration snippet in the appropriate snippets directory (see the module documentation for  the configuration files to modify)
+- Follow module documentation on how to activate the module in lizmap.
+- Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
+
+### Install as bundled modules
+
+You may ship preinstalled modules in your image inherited from lizmap image. Simply
+run the following command in your dockerfile: `lizmap-install-modules <package-name>` 
+
+
 
