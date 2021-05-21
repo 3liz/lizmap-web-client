@@ -140,19 +140,20 @@ var lizLayerFilterTool = function() {
                 var field_item = filterConfig[o];
                 if( 'title' in field_item && field_item.layerId == layerId ){
                     formFilterLayersSorted.push(field_item);
+                    $("#filter div.tree").append('<div id="filter-field-order'+String(field_item.order)+'"></div>');
                 }
             }
 
             // Add form fields
             for(var conf in formFilterLayersSorted){
-                var field_item = formFilterLayersSorted[conf];
-                getFormFieldInput(field_item);
+
+            	var field_item = formFilterLayersSorted[conf];
+            	getFormFieldInput(field_item);
             }
         }
 
         // Get the HTML form elemnt for a specific field
         function getFormFieldInput(field_item){
-
             var field_config = filterConfig[field_item.order];
 
             // unique values
@@ -257,8 +258,7 @@ var lizLayerFilterTool = function() {
                 html+= '</div>';
 
                 html+= getFormFieldFooter(field_item);
-
-                $("#filter div.tree").append(html);
+                $("#filter-field-order"+String(field_item.order)).append(html);
                 $("#filter input.liz-filter-field-date").datepicker({
                     dateFormat: 'yy-mm-dd',
                     changeMonth: true,
@@ -307,7 +307,7 @@ var lizLayerFilterTool = function() {
 
                 html+= getFormFieldFooter(field_item);
 
-                $("#filter div.tree").append(html);
+                $("#filter-field-order"+String(field_item.order)).append(html);
 
                 addFieldEvents(field_item);
 
@@ -345,7 +345,7 @@ var lizLayerFilterTool = function() {
                 html += '</div>'
                 html += getFormFieldFooter(field_item);
 
-                $("#filter div.tree").append(html);
+                $("#filter-field-order"+String(field_item.order)).append(html);
                 addFieldEvents(field_item);
 
                 $( "#liz-filter-field-text" + lizMap.cleanName(field_item.title) ).autocomplete({
@@ -387,7 +387,7 @@ var lizLayerFilterTool = function() {
                 }
                 html += getFormFieldFooter(field_item);
 
-                $("#filter div.tree").append(html);
+             	$("#filter-field-order"+String(field_item.order)).append(html);
 
                 if( !('items' in filterConfig[field_item.order]) )
                     filterConfig[field_item.order]['items'] = {};
@@ -666,7 +666,7 @@ var lizLayerFilterTool = function() {
         function setFormFilter(){
             var layerId = filterConfigData.layerId;
 
-            var afilter = []
+            var afilter = [];
             for (var o in filterConfig) {
                 var field_item = filterConfig[o];
                 if( 'title' in field_item && field_item['filter'] && field_item.layerId == layerId){
