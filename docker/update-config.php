@@ -34,15 +34,18 @@ $mainconfig->save();
 $lizmapConfig = new jIniFileModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
 
 $lizmapConfig->setValue('wmsServerURL', getenv('LIZMAP_WMSSERVERURL'), 'services');
-$lizmapConfig->setValue('cacheRedisHost', getenv('LIZMAP_CACHEREDISHOST'), 'services');
+$lizmapConfig->setValue('rootRepositories', getenv('LIZMAP_ROOT_REPOSITORIES'), 'services');
+$lizmapConfig->setValue('relativeWMSPath', true, 'services');
 
 foreach(array(
-        'cacheRedisPort'    => 'LIZMAP_CACHEREDISPORT',
-        'cacheExpiration'   => 'LIZMAP_CACHEEXPIRATION',
-        'debugMode'         => 'LIZMAP_DEBUGMODE',
-        'cacheStorageType'  => 'LIZMAP_CACHESTORAGETYPE',
-        'cacheRedisDb'      => 'LIZMAP_CACHEREDISDB',
+        'cacheRedisPort'      => 'LIZMAP_CACHEREDISPORT',
+        'cacheExpiration'     => 'LIZMAP_CACHEEXPIRATION',
+        'debugMode'           => 'LIZMAP_DEBUGMODE',
+        'cacheStorageType'    => 'LIZMAP_CACHESTORAGETYPE',
+        'cacheRedisDb'        => 'LIZMAP_CACHEREDISDB',
         'cacheRedisKeyPrefix' => 'LIZMAP_CACHEREDISKEYPREFIX',
+        'cacheRedisHost'      => 'LIZMAP_CACHEREDISHOST',
+        'cacheRedisPort'      => 'LIZMAP_CACHEREDISPORT',
         ) as $key => $envValue
 ) {
     if (getenv($envValue) !== false) {
@@ -64,24 +67,6 @@ $lizmapConfig->save();
  * localconfig.ini.php
  */
 $localConfig = new jIniFileModifier('/www/lizmap/var/config/localconfig.ini.php');
-
-// Set up WPS configuration
-if (getenv("LIZMAP_WPS_URL") !== false) {
-    $localConfig->setValue('wps.access', 2, 'modules');
-    $localConfig->setValues(array(
-            'wps_rootUrl' => getenv('LIZMAP_WPS_URL'),
-            'ows_url'     => getenv('LIZMAP_WMSSERVERURL'),
-            'wps_rootDirectories' => "/srv/projects",
-            // Redis config
-            'redis_port' => getenv('LIZMAP_CACHEREDISPORT') ?: 6379,
-            'redis_host' => getenv('LIZMAP_CACHEREDISHOST') ?: 'redis',
-            'redis_db'   => getenv('LIZMAP_CACHEREDISDB')   ?: 1,
-            'redis_key_prefix' => "wpslizmap"
-        ),
-        'wps');
-} else {
-     $localConfig->setValue('wps.access', 0, 'modules');
-}
 
 // Let's modify the install configuration of jcommunity, to not create a default
 // admin account (no `defaultusers` parameter). We're relying on

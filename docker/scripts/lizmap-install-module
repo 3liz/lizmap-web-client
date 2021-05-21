@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -e
+
+function help() {
+    echo "Usage:"
+    echo "lizmap-install-module <package-name>"
+    echo ""
+    exit 1
+}
+
+
+[ $# -lt 1 ] && help
+
+package_name=$1
+
+composer_file=/www/lizmap/my-packages/composer.json
+# Restore composer.json if it does not exists already
+[ ! -e $composer_file ] && cp /my-packages.composer.json.dist $composer_file
+
+composer --working-dir=/www/lizmap/my-packages require "$package_name"
+
+# Reset ownership if running as root
+if [ "$(id -u)" -eq "0" ] && [ ! -z "$LIZMAP_USER" ]; then
+    chown -R $LIZMAP_USER:$LIZMAP_USER /www/lizmap/my-packages
+fi
+
