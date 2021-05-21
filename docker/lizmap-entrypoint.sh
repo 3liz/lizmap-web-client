@@ -7,21 +7,36 @@ LIZMAP_USER=${LIZMAP_USER:-9001}
 LIZMAP_ADMIN_LOGIN=${LIZMAP_ADMIN_LOGIN:-admin}
 LIZMAP_ADMIN_EMAIL=${LIZMAP_ADMIN_EMAIL:-root@local.localhost}
 
+export LIZMAP_USER
+
 # Define default drop-in directories
 LIZMAP_CONFIG_INCLUDE=${LIZMAP_CONFIG_INCLUDE:-/www/lizmap/var/config}
 export LIZMAP_LIZMAPCONFIG_INCLUDE=${LIZMAP_LIZMAPCONFIG_INCLUDE:-$LIZMAP_CONFIG_INCLUDE/lizmapconfig.d}
 export LIZMAP_LOCALCONFIG_INCLUDE=${LIZMAP_LOCALCONFIG_INCLUDE:-$LIZMAP_CONFIG_INCLUDE/localconfig.d}
 export LIZMAP_PROFILES_INCLUDE=${LIZMAP_PROFILES_INCLUDE:-$LIZMAP_CONFIG_INCLUDE/profiles.d}
 
+# Root repository for projects
+export LIZMAP_ROOT_REPOSITORIES=${LIZMAP_ROOT_REPOSITORIES:-/srv/projects}
+
+# Quick module install
+if [ "$1" = "lizmap-install-module" ]; then
+    "$@"
+    exit 0
+fi
+
+# Default redis cache configuration
+export LIZMAP_CACHEREDISHOST=${LIZMAP_CACHEREDISHOST:-redis}
+export LIZMAP_CACHEREDISPORT=${LIZMAP_CACHEREDISPORT:-6379}
+
 # php ini override
 if [ ! -z $PHP_INI ]; then
     echo -e "$PHP_INI" > $PHP_INI_DIR/conf.d/00_lizmap.ini
 fi
 
-# lizmapConfig.ini.php.dist
-
 # Copy config files to mount point
 cp -aR lizmap/var/config.dist/* lizmap/var/config 
+
+# Copy configuration file in their initial states if they do no exists
 [ ! -f lizmap/var/config/lizmapConfig.ini.php ] && cp lizmap/var/config/lizmapConfig.ini.php.dist lizmap/var/config/lizmapConfig.ini.php 
 [ ! -f lizmap/var/config/localconfig.ini.php  ] && cp lizmap/var/config/localconfig.ini.php.dist  lizmap/var/config/localconfig.ini.php 
 [ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php 

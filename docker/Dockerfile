@@ -1,4 +1,9 @@
 ARG REGISTRY_PREFIX=''
+FROM ${REGISTRY_PREFIX}alpine:3 as build
+
+COPY lizmap_web_client.zip .
+RUN unzip lizmap_web_client.zip
+
 FROM ${REGISTRY_PREFIX}alpine:3
 MAINTAINER David Marteau <david.marteau@3liz.com>
 LABEL Description="Lizmap web client" Vendor="3liz.org" Version="21.05.0"
@@ -29,19 +34,22 @@ RUN apk --no-cache add git fcgi php7 php7-fpm \
     php7-gettext \
     php7-ctype \
     php7-zip \
-    php7-ldap
+    php7-ldap \
+    composer 
 
-COPY lizmap_web_client.zip .
-## Install lizmap web client
-RUN echo "installing lizmap from given package" \
-    && unzip lizmap_web_client.zip \
-    && mv lizmap_web_client /www \
-    && mv /www/lizmap/var/config /www/lizmap/var/config.dist \
-    && mv /www/lizmap/www /www/lizmap/www.dist
+COPY --from=build /lizmap_web_client /www
+## Rename original config files so that they wont be overriden at startup
+## Backup lizmap/my-packages/composer.json.dist so it may be reinstalled
+## in mounted volume
+RUN mv /www/lizmap/var/config /www/lizmap/var/config.dist \
+ && mv /www/lizmap/www /www/lizmap/www.dist \
+ && mv /www/lizmap/my-packages/composer.json.dist /my-packages.composer.json.dist
+ 
 
 COPY factory.manifest /build.manifest
-COPY lizmapConfig.ini.php.dist localconfig.ini.php.dist /www/lizmap/var/config.dist/
 COPY lizmap-entrypoint.sh update-config.php /bin/
+COPY scripts/* /usr/local/bin/
+
 ## Install healtcheck script
 COPY php-fpm-healthcheck /usr/local/bin/
 
