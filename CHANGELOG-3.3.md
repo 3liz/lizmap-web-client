@@ -5,6 +5,7 @@ Version 3.3.16
 --------------
 
 - Fix: some IGN base layers with free keys could not be displayed
+- Fix: avoid random display order of form filters
 - Fix: form filter no more fails when using text values with multiple single quote
 - Fix: tabs in anchored popup were not toggling
 - Fix: no more page processing interruption when the logger fails
