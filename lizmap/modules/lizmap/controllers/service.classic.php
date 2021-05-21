@@ -585,7 +585,7 @@ class serviceCtrl extends jController
   <element name="GetPrintAtlas" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
   <element name="GetStyles" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
 </schema>';
-        // Return response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->mimeType = 'text/xml';
         $rep->content = $data;
@@ -1545,7 +1545,7 @@ class serviceCtrl extends jController
         }
 
         lizmap::logMetric('LIZMAP_SERVICE_GETMAP', 'WMS', array(
-            'qgisParams' => $wmtsRequest->parameters(),
+            'qgisParams' => $wmsRequest->parameters(),
             'qgisResponseCode' => $result->code,
         ));
 
