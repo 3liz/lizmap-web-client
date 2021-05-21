@@ -1,7 +1,7 @@
 # Lizmap web client Docker image
 
-The container deploy one lizmap instance and may run php-fpm on commande line.
-(cf [docker/php](https://hub.docker.com/_/php/) )
+The container deploys one Lizmap instance and may run php-fpm on the command line.
+(see [docker/php](https://hub.docker.com/_/php/) )
 
 
 ## Configuration variables
@@ -13,7 +13,7 @@ The container deploy one lizmap instance and may run php-fpm on commande line.
 - `LIZMAP_CACHEREDISPORT`: Redis port (use default if not set)
 - `LIZMAP_CACHEEXPIRATION`: Lizmap cache expiration time 
 - `LIZMAP_CACHEREDISDB`:  Redis Database index used 
-- `LIZMAP_CACHEREDISKEYPREFIX`: the redis key prefix to use
+- `LIZMAP_CACHEREDISKEYPREFIX`: the Redis key prefix to use
 - `LIZMAP_USER`: User used to run Lizmap
 - `LIZMAP_HOME`: The root path for web files used from the web server
 - `LIZMAP_THEME`: Lizmap theme to use
@@ -22,7 +22,7 @@ The container deploy one lizmap instance and may run php-fpm on commande line.
 - `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password to set for the admin user. See [Admin Setup Section](#admin-setup)
 - `LIZMAP_CONFIG_INCLUDE`: Base directory where to find configurations snippets directories. Default to `/www/lizmap/var/config`.
 
-**Important**: `LIZMAP_HOME` is the prefix of the path towards lizmap web files (`lizmap/www`). This prefix
+**Important**: `LIZMAP_HOME` is the prefix of the path towards Lizmap web files (`lizmap/www`). This prefix
 must be identical to the one given in the nginx *root* directive, ex:
 ```
 root <LIZMAP_HOME>/www
@@ -52,7 +52,7 @@ The `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE` value can either be:
 - `__reset`: It will initiate a password reset process, an email will be sent 
   to `LIZMAP_ADMIN_EMAIL` with a link to choose a new password. The web server
   should be configured properly, and the mailer configuration should be set
-  into lizmap. See the Lizmap documentation. 
+  in Lizmap. See the Lizmap documentation. 
 - `__random`: Will set a random password that will be report into the command line (see `docker logs` to access it).
 - `/path/to/pass/file`: The path to a file containing your password. The file must be used as a volume for docker to access it.
 
@@ -62,8 +62,8 @@ The `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE` value can either be:
 - `PM_START_SERVERS`: The number of child processes created on startup.
 - `PM_MIN_SPARE_SERVERS`: The desired minimum number of idle server processes.
 - `PM_MAX_SPARE_SERVERS`: The desired maximum number of idle server processes.
-- `PM_CHILD_PROCESS`: Control the number of child processes values can be (static,dynamic,ondemand)
-- `PM_MAX_REQUESTS`: The number of requests each child process should execute before respawning
+- `PM_CHILD_PROCESS`: Control the number of child processes.  Values can be (static,dynamic,ondemand)
+- `PM_MAX_REQUESTS`: The number of requests each child process should execute before respawning.
 - `PM_PROCESS_IDLE_TIMEOUT`: The number of seconds after which an idle process will be killed.
 
 For more information about these read [PHP](https://www.php.net/manual/en/install.fpm.configuration.php)
@@ -79,7 +79,7 @@ The following volumes are used:
 - `/www/lizmap/var/log` (recommended)
 - `/www/lizmap/www` (required)
 
-**Important**: The folder `/www/lizmap/www` must be binded to a directory that is accessible to the web server (see note above)
+**Important**: The folder `/www/lizmap/www` must be bound to a directory that is accessible to the web server (see note above)
 
 ## Docker compose configuration example
 

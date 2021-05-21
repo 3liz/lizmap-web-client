@@ -105,9 +105,10 @@ if (getenv('LIZMAP_THEME') !== false) {
     $localConfig->setValue('theme', getenv('LIZMAP_THEME'));
 }
 
+// DropIn capabilities: Merge all ini file in LIZMAP_LOCALCONFIG_INCLUDE
+load_include_config('LIZMAP_LOCALCONFIG_INCLUDE', $localConfig);
 
-// Update mail config
-
+// Do not break older install
 $mailConfigFile = '/srv/etc/mailconfig.ini';
 if (file_exists($mailConfigFile)) {
     $mailConfig = parse_ini_file($mailConfigFile, true);

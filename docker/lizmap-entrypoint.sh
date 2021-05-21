@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -e
-set -x
+#set -x
 
 LIZMAP_USER=${LIZMAP_USER:-9001}
 LIZMAP_ADMIN_LOGIN=${LIZMAP_ADMIN_LOGIN:-admin}
@@ -54,6 +54,7 @@ else
 fi
 
 # Update localconfig and lizmapConfig
+echo "Updating configuration"
 update-config.php
 
 # Set up Configuration  

@@ -6,7 +6,7 @@ RUN unzip lizmap_web_client.zip
 
 FROM ${REGISTRY_PREFIX}alpine:3
 MAINTAINER David Marteau <david.marteau@3liz.com>
-LABEL Description="Lizmap web client" Vendor="3liz.org"
+LABEL Description="Lizmap web client" Vendor="3liz.org" Version="21.05.0"
 
 RUN apk update && apk upgrade
 RUN apk --no-cache add git fcgi php7 php7-fpm \
