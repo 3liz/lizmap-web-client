@@ -5,6 +5,7 @@ import GeolocationSurvey from '../modules/GeolocationSurvey.js';
 import SelectionTool from '../modules/SelectionTool.js';
 import Digitizing from '../modules/Digitizing.js';
 import Snapping from '../modules/Snapping.js';
+import Draw from '../modules/interaction/Draw.js';
 
 import { get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
@@ -43,6 +44,7 @@ export default class Lizmap {
                 this.selectionTool = new SelectionTool();
                 this.digitizing = new Digitizing();
                 this.snapping = new Snapping();
+                this.draw = new Draw();
             }
         });
     }
