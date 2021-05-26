@@ -1,10 +1,12 @@
-import Map from '../modules/Map.js';
-import Edition from '../modules/Edition.js';
-import Geolocation from '../modules/Geolocation.js';
-import GeolocationSurvey from '../modules/GeolocationSurvey.js';
-import SelectionTool from '../modules/SelectionTool.js';
-import Digitizing from '../modules/Digitizing.js';
-import Snapping from '../modules/Snapping.js';
+import Map from './Map.js';
+import Edition from './Edition.js';
+import Geolocation from './Geolocation.js';
+import GeolocationSurvey from './GeolocationSurvey.js';
+import SelectionTool from './SelectionTool.js';
+import Digitizing from './Digitizing.js';
+import Snapping from './Snapping.js';
+import Draw from './interaction/Draw.js';
+import Layers from './Layers.js';
 
 import { get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
@@ -43,8 +45,17 @@ export default class Lizmap {
                 this.selectionTool = new SelectionTool();
                 this.digitizing = new Digitizing();
                 this.snapping = new Snapping();
+                this.draw = new Draw();
+                this.layers = new Layers();
             }
         });
+    }
+
+    /**
+     * @param {Boolean} mode - switch new OL map on top of OL2 one
+     */
+    set newOlMap(mode){
+        document.getElementById('newOlMap').style.zIndex = mode ? 750 : 'auto';
     }
 
     get lizmap3() {

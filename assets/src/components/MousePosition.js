@@ -99,12 +99,20 @@ export default class MousePosition extends HTMLElement {
         if (evt == null) {
             return;
         }else{
-            const { lon, lat } = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy);
+            let lon,lat;
+            // OL2
+            if(evt.xy){
+                ({ lon, lat } = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy));
+            } else if (evt.pixel){ //OL6
+                [lon, lat ] = mainLizmap.map.getCoordinateFromPixel(evt.pixel);
+            }
 
-            this._longitude = lon;
-            this._latitude = lat;
+            if(lon && lat){
+                this._longitude = lon;
+                this._latitude = lat;
 
-            this.redraw(lon, lat);
+                this.redraw(lon, lat);
+            }
         }
     }
 
@@ -205,12 +213,20 @@ export default class MousePosition extends HTMLElement {
         this.displayUnit = this._qgisProjectProjectionUnits;
 
         // Listen to mousemove event
+        // OL2
         mainLizmap.lizmap3.map.events.register('mousemove', this, this._mousemove);
+        // OL6
+        // mainLizmap.map._olMap.on('pointermove', (evt) => this._mousemove(evt));
+        mainLizmap.map._olMap.on('pointermove', (evt) => this._mousemove(evt));
+
         // First render
         render(this.mainTemplate(null, null), this);
     }
 
     disconnectedCallback() {
+        // OL2
         mainLizmap.lizmap3.map.events.unregister('mousemove', this, this._mousemove);
+        // OL6
+        mainLizmap.map._olMap.un('pointermove', (evt) => this._mousemove(evt));
     }
 }
