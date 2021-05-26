@@ -11,6 +11,7 @@
 ### Changed
 
 - Replace OpenLayers 2 overviewmap by OL6 one. Overviewmap now zoom in/out with main map.
+- Allow new OpenLayers Map to be used on top of OL2 one
 - Update OpenLayers to 6.5
 
 ### Fixed
