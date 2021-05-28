@@ -4,6 +4,7 @@ import View from 'ol/View';
 
 import DragPan from "ol/interaction/DragPan";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
+import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { Kinetic } from "ol";
 
@@ -18,7 +19,8 @@ export default class Map {
                 mouseWheelZoom: false
             }).extend([
                 new DragPan({ kinetic: new Kinetic(0, 0, 0) }),
-                new MouseWheelZoom({ duration: 0 })
+                new MouseWheelZoom({ duration: 0 }),
+                new DoubleClickZoom({ duration: 0 })
             ]),
             view: new View({
                 resolutions: mainLizmap.lizmap3.map.baseLayer.resolutions,
