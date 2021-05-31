@@ -14,9 +14,10 @@ export default class Draw {
      * @param {string} [geomType="Point"] The geometry type. One of 'Point', 'LineString', 'LinearRing', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon', 'GeometryCollection', 'Circle'.
      * @param {number} [maxFeatures=-1] Limit the draw to maxFeatures features
      * @param {boolean} [modify=true] Allow to modify features after being drawn
+     * @param {StyleLike | null} style Layer style
      * @memberof Draw
      */
-    init(geomType = "Point", maxFeatures = -1, modify = true) {
+    init(geomType = "Point", maxFeatures = -1, modify = true, style) {
         if (this._drawSource){
             this.clear();
         }
@@ -32,7 +33,7 @@ export default class Draw {
 
         this._drawLayer = new VectorLayer({
             source: this._drawSource,
-            style: new Style({
+            style: style !== undefined ? style : new Style({
                 fill: new Fill({
                     color: 'rgba(255, 255, 255, 0.2)',
                 }),
