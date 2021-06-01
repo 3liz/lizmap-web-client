@@ -13,12 +13,14 @@ export default class Layers {
     /**
      * Add a vector layer from a WKT.
      * @param {string} wkt WKT in EPSG:4326 projection
+     * @param {string} dataProjection
+     * @param {StyleLike | null} style Layer style
      * @memberof Layers
      */
-    addLayerFromWKT(wkt){
+    addLayerFromWKT(wkt, dataProjection = 'EPSG:4326', style){
         const format = new WKT();
         const feature = format.readFeature(wkt, {
-            dataProjection: 'EPSG:4326',
+            dataProjection: dataProjection,
             featureProjection: mainLizmap.projection,
         });
 
@@ -26,6 +28,7 @@ export default class Layers {
             source: new VectorSource({
                 features: [feature],
             }),
+            style: style,
         });
 
         mainLizmap.map._olMap.addLayer(vector);
@@ -36,16 +39,19 @@ export default class Layers {
     /**
      * Add a vector layer from a GeoJSON.
      * @param {ArrayBuffer|Document|Element|Object|string} geojson geojson in EPSG:4326 projection
+     * @param {string} dataProjection
+     * @param {StyleLike | null} style Layer style
      * @memberof Layers
      */
-    addLayerFromGeoJSON(geojson) {
+    addLayerFromGeoJSON(geojson, dataProjection = 'EPSG:4326', style) {
         const vector = new VectorLayer({
             source: new VectorSource({
                 features: new GeoJSON().readFeatures(geojson, {
-                    dataProjection: 'EPSG:4326',
+                    dataProjection: dataProjection,
                     featureProjection: mainLizmap.projection
                 }),
             }),
+            style: style,
         });
 
         mainLizmap.map._olMap.addLayer(vector);
