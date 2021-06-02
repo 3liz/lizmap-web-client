@@ -91,6 +91,25 @@ class myHtmlMapResponse extends jResponseHtml
         $this->addJSCode($generalJSConfig);
     }
 
+    protected function outputJsScriptTag($fileUrl, $scriptParams)
+    {
+        var_export($scriptParams);
+        $params = '';
+        if (!isset($scriptParams['type'])) {
+            $params = 'type="text/javascript" ';
+        }
+        $params .= 'src="'.htmlspecialchars($fileUrl).'" ';
+
+        foreach ($scriptParams as $param_name => $param_value) {
+            if ($param_name == '_ieCondition') {
+                continue;
+            }
+            $params .= $param_name.'="'.htmlspecialchars($param_value).'" ';
+        }
+
+        echo '<script ',$params,'></script>',"\n";
+    }
+
     protected function doAfterActions()
     {
         $this->body->assignIfNone('MAIN', '');

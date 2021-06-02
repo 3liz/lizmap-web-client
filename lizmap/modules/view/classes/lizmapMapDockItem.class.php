@@ -17,10 +17,11 @@ class lizmapMapDockItem
     public $order = 0;
     public $css = '';
     public $js = '';
+    public $jsParams = array();
     public $icon = '';
     public $menuIconClasses = '';
 
-    public function __construct($id, $title, $content, $order = 0, $css = '', $js = '')
+    public function __construct($id, $title, $content, $order = 0, $css = '', $js = '', $jsParams = array())
     {
         $this->id = $id;
         $this->title = $title;
@@ -29,6 +30,7 @@ class lizmapMapDockItem
         $this->icon = '<span class="icon"></span>';
         $this->css = $css;
         $this->js = $js;
+        $this->jsParams = $jsParams;
     }
 
     public function copyFrom($item)
@@ -39,6 +41,7 @@ class lizmapMapDockItem
         $this->icon = $item->icon;
         $this->css = $item->css;
         $this->js = $item->js;
+        $this->jsParams = $item->jsParams;
         $this->menuIconClasses = $item->menuIconClasses;
     }
 
