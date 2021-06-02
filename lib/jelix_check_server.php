@@ -336,7 +336,7 @@ class jInstallCheck {
         $this->reporter = $reporter;
         $this->messages = new jInstallerMessageProvider($lang);
         $this->buildProperties = array(
-   'PHP_VERSION_TARGET'=>'7.0',
+   'PHP_VERSION_TARGET'=>'5.6',
         );
     }
 
