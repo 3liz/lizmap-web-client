@@ -525,13 +525,18 @@ class jResponseHtml extends jResponseBasicHtml {
 
     protected function outputJsScriptTag( $fileUrl, $scriptParams ) {
         $params = '';
+        if (!isset($scriptParams['type'])) {
+            $params = 'type="text/javascript" ';
+        }
+        $params .= 'src="'.htmlspecialchars($fileUrl).'" ';
+
         foreach ($scriptParams as $param_name=>$param_value){
             if ($param_name=='_ieCondition')
                 continue ;
             $params .= $param_name.'="'. htmlspecialchars($param_value).'" ';
         }
 
-        echo '<script type="text/javascript" src="',htmlspecialchars($fileUrl),'" ',$params,'></script>',"\n";
+        echo '<script ',$params,'></script>',"\n";
     }
 
 

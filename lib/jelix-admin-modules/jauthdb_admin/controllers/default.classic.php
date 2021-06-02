@@ -201,7 +201,7 @@ class defaultCtrl extends jController {
 
         $form->initFromRequest();
 
-        $login = $form->getData('login');
+        $login = trim($form->getData('login'));
         if (jAuth::getUser($login)) {
             $form->setErrorOn('login', jLocale::get('crud.message.create.existing.user', $login));
             $rep->action = 'default:create';
