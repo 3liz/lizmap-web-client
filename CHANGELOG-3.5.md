@@ -6,6 +6,7 @@
 
 - Add Romanian localization PlotLy file for the dataviz panel (contribution from @ygorigor)
 - Allow PostgreSQL geography type (contribution from @flobz)
+- Allow use of JS modules (ES6) with docks, by indicating the `type` attribute of `<script>` to `lizmapMapDockItem`.
 - Reverse geometry button: when editing a line or polygon feature, you can reverse vertices order.
 
 ### Changed

@@ -19,7 +19,7 @@ class lizmapMapDockItem
 
     /** @var string HTML displayed in content part. */
     public $content = '';
-  
+
     /** @var int display order in the dock. */
     public $order = 0;
 
