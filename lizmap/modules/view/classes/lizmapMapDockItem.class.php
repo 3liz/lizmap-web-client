@@ -11,16 +11,31 @@
  */
 class lizmapMapDockItem
 {
+    /** @var string Unique id of the dock item. */
     public $id = '';
+
+    /** @var string Title visible on hover. */
     public $title = '';
+
+    /** @var string HTML displayed in content part. */
     public $content = '';
+
+    /** @var int display order in the dock. */
     public $order = 0;
+
+    /** @var string URL to CSS */
     public $css = '';
+
+    /** @var string URL to JS */
     public $js = '';
+
+    /** @var array parameters added to script tag. ['type' => 'module'] will override type="text/javascript" */
+    public $jsParams = array();
+
     public $icon = '';
     public $menuIconClasses = '';
 
-    public function __construct($id, $title, $content, $order = 0, $css = '', $js = '')
+    public function __construct($id, $title, $content, $order = 0, $css = '', $js = '', $jsParams = array())
     {
         $this->id = $id;
         $this->title = $title;
@@ -29,6 +44,7 @@ class lizmapMapDockItem
         $this->icon = '<span class="icon"></span>';
         $this->css = $css;
         $this->js = $js;
+        $this->jsParams = $jsParams;
     }
 
     public function copyFrom($item)
@@ -39,6 +55,7 @@ class lizmapMapDockItem
         $this->icon = $item->icon;
         $this->css = $item->css;
         $this->js = $item->js;
+        $this->jsParams = $item->jsParams;
         $this->menuIconClasses = $item->menuIconClasses;
     }
 
