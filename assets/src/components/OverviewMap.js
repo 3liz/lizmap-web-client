@@ -35,14 +35,14 @@ export default class OverviewMap extends HTMLElement {
             label: '\u00AB',
         });
         
-        mainLizmap.map._olMap.addControl(
+        mainLizmap.map.addControl(
             this._olOverviewMap
         );
 
     }
 
     disconnectedCallback() {
-        mainLizmap.map._olMap.removeControl(
+        mainLizmap.map.removeControl(
             this._olOverviewMap
         );
     }

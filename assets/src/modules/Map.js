@@ -9,10 +9,10 @@ import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { Kinetic } from "ol";
 
 /** Class initializing Openlayers Map. */
-export default class Map {
+export default class Map extends olMap {
 
     constructor() {
-        this._olMap = new olMap({
+        super({
             controls: [], // disable default controls
             interactions: defaultInteractions({
                 dragPan: false,
@@ -25,7 +25,7 @@ export default class Map {
             view: new View({
                 resolutions: mainLizmap.lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
-                center: this._lizmap3Center,
+                center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
                 projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection,
                 enableRotation: false,
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
@@ -37,8 +37,8 @@ export default class Map {
         this._refreshOL2View = () => {
             // This refresh OL2 view and layers
             mainLizmap.lizmap3.map.setCenter(
-                this._olMap.getView().getCenter(),
-                this._olMap.getView().getZoom()
+                this.getView().getCenter(),
+                this.getView().getZoom()
             );
         };
 
@@ -47,20 +47,20 @@ export default class Map {
             moveend: () => {
                 // remove moveend listener and add it after animate ends
                 // to avoid extra sync
-                this._olMap.un('moveend', this._refreshOL2View);
+                this.un('moveend', this._refreshOL2View);
 
                 // Sync center
-                this._olMap.getView().animate({
+                this.getView().animate({
                     center: this._lizmap3Center,
                     zoom: mainLizmap.lizmap3.map.getZoom(),
                     duration: 0
-                }, () => this._olMap.on('moveend', this._refreshOL2View));
+                }, () => this.on('moveend', this._refreshOL2View));
 
                 mainEventDispatcher.dispatch('map.moveend');
             },
             zoomstart: (evt) => {
                 // Sync zoom level
-                this._olMap.getView().animate({
+                this.getView().animate({
                     zoom: evt.zoom,
                     duration: 0
                 });
@@ -73,9 +73,9 @@ export default class Map {
         });
 
         // Sync OL2 view with new OL view
-        this._olMap.on('pointerdrag', () => {
+        this.on('pointerdrag', () => {
             mainLizmap.lizmap3.map.setCenter(
-                this._olMap.getView().getCenter(),
+                this.getView().getCenter(),
                 null,
                 true // avoid many WMS request in OL2 map and also movestart/end events.
             );
@@ -84,7 +84,7 @@ export default class Map {
         // TODO: we need a OL6 movestart or zoomstart event giving the target zoom
         // to sync OL2 zoom without waiting moveend event as done with OL2 zoomstart
         // This would avoid a visual shift between OL2 and OL6 when zooming
-        this._olMap.on('moveend', this._refreshOL2View);
+        this.on('moveend', this._refreshOL2View);
 
         // Init view
         this.syncNewOLwithOL2View();
@@ -105,19 +105,10 @@ export default class Map {
      * @memberof Map
      */
     syncNewOLwithOL2View(){
-        this._olMap.getView().animate({
+        this.getView().animate({
             center: this._lizmap3Center,
             zoom: mainLizmap.lizmap3.map.getZoom(),
             duration: 0
         });
-    }
-
-    /**
-     * Get the coordinate for a given pixel array.
-     * @param {[number, number]} pixel Pixel.
-     * @return {[number, number]} The coordinate for the pixel position.
-     */
-    getCoordinateFromPixel(pixel){
-        return this._olMap.getCoordinateFromPixel(pixel);
     }
 }

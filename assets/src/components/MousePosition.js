@@ -216,8 +216,7 @@ export default class MousePosition extends HTMLElement {
         // OL2
         mainLizmap.lizmap3.map.events.register('mousemove', this, this._mousemove);
         // OL6
-        // mainLizmap.map._olMap.on('pointermove', (evt) => this._mousemove(evt));
-        mainLizmap.map._olMap.on('pointermove', (evt) => this._mousemove(evt));
+        mainLizmap.map.on('pointermove', (evt) => this._mousemove(evt));
 
         // First render
         render(this.mainTemplate(null, null), this);
@@ -227,6 +226,6 @@ export default class MousePosition extends HTMLElement {
         // OL2
         mainLizmap.lizmap3.map.events.unregister('mousemove', this, this._mousemove);
         // OL6
-        mainLizmap.map._olMap.un('pointermove', (evt) => this._mousemove(evt));
+        mainLizmap.map.un('pointermove', (evt) => this._mousemove(evt));
     }
 }
