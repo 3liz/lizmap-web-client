@@ -3110,7 +3110,7 @@ var lizMap = function() {
                 var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '">' + popupChildData + '</div>');
 
                 //Manage if the user choose to create a table for children
-                if (configLayer.popupSource == 'qgis' &&
+                if (['qgis', 'form'].indexOf(configLayer.popupSource) !== -1 &&
                   childPopup.find('.lizmap_merged').length != 0) {
                   // save inputs
                   childPopup.find(".lizmapPopupDiv").each(function (i, e) {
