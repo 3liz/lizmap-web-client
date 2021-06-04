@@ -672,7 +672,7 @@ class WMSRequest extends OGCRequest
             // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
             $finalContent = $autoContent;
             if (property_exists($configLayer, 'popupSource')) {
-                if ($configLayer->popupSource == 'qgis' && $maptipValue) {
+                if (in_array($configLayer->popupSource, array('qgis', 'form')) && $maptipValue) {
                     $finalContent = $maptipValue;
                 }
                 if ($configLayer->popupSource == 'lizmap' && $templateConfigured) {
