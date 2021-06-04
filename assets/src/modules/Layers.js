@@ -31,7 +31,7 @@ export default class Layers {
             style: style,
         });
 
-        mainLizmap.map._olMap.addLayer(vector);
+        mainLizmap.map.addLayer(vector);
 
         return vector;
     }
@@ -54,7 +54,7 @@ export default class Layers {
             style: style,
         });
 
-        mainLizmap.map._olMap.addLayer(vector);
+        mainLizmap.map.addLayer(vector);
 
         return vector;
     }
@@ -65,9 +65,9 @@ export default class Layers {
      * @memberof Layers
      */
     removeLayer(layer){
-        for (const _layer of mainLizmap.map._olMap.getLayers().getArray()) {
+        for (const _layer of mainLizmap.map.getLayers().getArray()) {
             if (_layer === layer) {
-                mainLizmap.map._olMap.removeLayer(layer);
+                mainLizmap.map.removeLayer(layer);
             }
         }
     }

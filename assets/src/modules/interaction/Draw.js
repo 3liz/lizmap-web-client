@@ -50,7 +50,7 @@ export default class Draw {
             }),
         });
 
-        mainLizmap.map._olMap.addLayer(this._drawLayer);
+        mainLizmap.map.addLayer(this._drawLayer);
 
         this._drawInteraction = new olDraw({
             source: this._drawSource,
@@ -60,15 +60,15 @@ export default class Draw {
         this._drawInteraction.on('drawend', () => {
             // Limit the draw to maxFeatures features
             if (maxFeatures !== -1 && this._drawSource.getFeatures().length === maxFeatures - 1) {
-                mainLizmap.map._olMap.removeInteraction(this._drawInteraction);
+                mainLizmap.map.removeInteraction(this._drawInteraction);
             }
         });
 
-        mainLizmap.map._olMap.addInteraction(this._drawInteraction);
+        mainLizmap.map.addInteraction(this._drawInteraction);
 
         if (modify) {
             this._modifyInteraction = new olModify({ source: this._drawSource });
-            mainLizmap.map._olMap.addInteraction(this._modifyInteraction);
+            mainLizmap.map.addInteraction(this._modifyInteraction);
         }
     }
 
