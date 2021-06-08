@@ -29,7 +29,7 @@ export LIZMAP_CACHEREDISHOST=${LIZMAP_CACHEREDISHOST:-redis}
 export LIZMAP_CACHEREDISPORT=${LIZMAP_CACHEREDISPORT:-6379}
 
 # php ini override
-if [ ! -z $PHP_INI ]; then
+if [ ! -z "$PHP_INI" ]; then
     echo -e "$PHP_INI" > $PHP_INI_DIR/conf.d/00_lizmap.ini
 fi
 
