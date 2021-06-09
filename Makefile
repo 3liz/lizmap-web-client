@@ -267,4 +267,4 @@ php-cs-fixer-apply:
 	php-cs-fixer fix --config=.php_cs.dist --allow-risky=yes
 
 php-cs-fixer-apply-docker:
-	docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:latest --allow-risky=yes --config=.php_cs.dist -- lizmap/modules
+	docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:2.19.0 --allow-risky=yes --config=.php_cs.dist -- lizmap/modules
