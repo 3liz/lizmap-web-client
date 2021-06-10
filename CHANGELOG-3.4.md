@@ -4,7 +4,8 @@
 
 Release on 2021-05-xx
 
-- Fix form's labels partialy hidden when too long. A line break and an hyphen are now used when needed
+- Fix form's labels partially hidden when too long. A line break and an hyphen are now used when needed
+- Display spinner and disable button while waiting for print.
 - Fix QGIS >= 3.16 datasource compatibility
 - Fix Pre-generated cache is not used since Lizmap 3.4.1
 
@@ -48,7 +49,7 @@ Release on 2021-01-14
   access to every maps
 - Fix cache does not work after authorization
 - Fix edition tab content is not visible on mobile screen
-- Fix regression in edition form with multiple values from relationnal value
+- Fix regression in edition form with multiple values from relational value
 
 - Enhance Drag'N Drop Edition form test to avoid regression
 - Enhance form_type_relational_value test
