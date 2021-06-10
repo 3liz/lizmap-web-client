@@ -63,7 +63,7 @@ var lizMap = function() {
 
   /**
    * PRIVATE Property: getFeatureInfoVendorParams
-   * {object} Additionnal QGIS Server parameter for click tolerance in pixels
+   * {object} Additional QGIS Server parameter for click tolerance in pixels
    */
   var defaultGetFeatureInfoTolerances = {
     'FI_POINT_TOLERANCE': 25,
@@ -936,7 +936,7 @@ var lizMap = function() {
           }
       }
 
-        // Add optionnal filter at start
+        // Add optional filter at start
         if( !( typeof lizLayerFilter === 'undefined' )
           && qgisLayerName in lizLayerFilter
           && lizLayerFilter[ qgisLayerName ]
@@ -1180,7 +1180,7 @@ var lizMap = function() {
   }
 
   function initProjections(firstLayer) {
-    // Insert or update projection liste
+    // Insert or update projection list
     if ( lizProj4 ) {
         for( var ref in lizProj4 ) {
             if ( !(ref in Proj4js.defs) ) {
@@ -3991,7 +3991,22 @@ var lizMap = function() {
         printParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
       }
 
-      downloadFile(url, printParams);
+      // Display spinner and message while waiting for print
+      const printLaunch = document.getElementById('print-launch');
+      printLaunch.disabled = true;
+      printLaunch.classList.add('spinner');
+
+      $("#message .print a").click();
+      mAddMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
+
+      downloadFile(url, printParams, () => {
+        const printLaunch = document.getElementById('print-launch');
+        printLaunch.disabled = false;
+        printLaunch.classList.remove('spinner');
+
+        $("#message .print-in-progress a").click();
+      });
+
       return false;
     });
     map.events.on({
@@ -4623,12 +4638,12 @@ var lizMap = function() {
    * PRIVATE function: downloadFile
    * Send an ajax POST request to download a file
    *
-   * Parameters:
-   * url - {String}
-   * parameters - {Array}
+   * @param {String} url
+   * @param {Array} parameters
+   * @param {Function} callback optionnal callback executed when download ends
    *
    */
-   function downloadFile( url, parameters ) {
+   function downloadFile( url, parameters, callback ) {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
       xhr.responseType = 'arraybuffer';
@@ -4671,6 +4686,10 @@ var lizMap = function() {
 
                   setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
               }
+          }
+          // Execute callback if any
+          if (typeof callback === 'function'){
+            callback();
           }
       };
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

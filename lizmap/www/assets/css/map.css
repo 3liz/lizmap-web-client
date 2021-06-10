@@ -363,7 +363,7 @@ ul.nav.nav-tabs {
 
 #dock-tabs > li > a,
 #right-dock-tabs > li > a {
-  display:none; /* hide unactive tab titles */
+  display:none; /* hide inactive tab titles */
   border:none;
   background:none;
   color:white;
@@ -732,7 +732,7 @@ table.attribute-table-table tr td{
 
 table.attribute-table-table tr.active td,
 table.attribute-table-table tr.active:hover td {
-    background-color: inherit !important; /* Add !important to make sure override datables base styles */
+    background-color: inherit !important; /* Add !important to make sure override datatables base styles */
     color:black;
     border-bottom:2px solid darkgrey;
     border-top:2px solid darkgrey;
@@ -773,7 +773,7 @@ table.attribute-table-table tr td {
     padding: 1px 5px;
 }
 
-/* Override bootstrap td alignement to use datatable className column property */
+/* Override bootstrap td alignment to use datatable className column property */
 td.text-right {
     text-align: right !important;
 }
@@ -1985,7 +1985,7 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 
 /**
- * Icones lizMap
+ * LizMap icons
  */
   .liz-icon-legend-collapsed {
     background-position: -32px -16px;
@@ -2792,4 +2792,12 @@ lizmap-overviewmap .ol-overviewmap-box{
 lizmap-reverse-geom svg{
   width: 24px;
   height: 21px;
+}
+
+#print-launch{
+  position: relative;;
+}
+
+#print-launch.spinner::after{
+  right: 5px;
 }
