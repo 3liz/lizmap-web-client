@@ -253,3 +253,29 @@ div.form-horizontal .control-label {
   float: right;
   margin-left: 1.5em;
 }
+
+/* spinner */
+.spinner::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border: 4px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spinner 1s linear infinite;
+}
+
+@keyframes spinner {
+  from {
+    transform: rotate(0turn);
+  }
+
+  to {
+    transform: rotate(1turn);
+  }
+}
