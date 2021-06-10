@@ -3991,15 +3991,20 @@ var lizMap = function() {
         printParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
       }
 
-      // Display spinner while waiting for print
+      // Display spinner and message while waiting for print
       const printLaunch = document.getElementById('print-launch');
       printLaunch.disabled = true;
       printLaunch.classList.add('spinner');
+
+      $("#message .print a").click();
+      mAddMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
 
       downloadFile(url, printParams, () => {
         const printLaunch = document.getElementById('print-launch');
         printLaunch.disabled = false;
         printLaunch.classList.remove('spinner');
+
+        $("#message .print-in-progress a").click();
       });
 
       return false;
