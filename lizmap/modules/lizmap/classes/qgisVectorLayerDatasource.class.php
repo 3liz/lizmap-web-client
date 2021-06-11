@@ -15,14 +15,14 @@ class qgisVectorLayerDatasource
      * @var array Regexes used to get datasource parameters
      */
     protected $datasourceRegexes = array(
-        'dbname' => "dbname='([^ ]+)' ",
-        'service' => "service='([^ ]+)' ",
-        'host' => 'host=([^ ]+) port=',
+        'dbname' => "dbname='?([^ ']+)'? ",
+        'service' => "service='?([^ ']+)'? ",
+        'host' => "host='?([^ ']+)'? port=",
         'port' => 'port=([0-9]+) ',
-        'user' => "user='([^ ]+)' ",
-        'password' => "password='([^ ]+)' ",
-        'sslmode' => 'sslmode=([^ ]+) ',
-        'key' => "key='([^ ]+)' ",
+        'user' => "user='?([^ ']+)'? ",
+        'password' => "password='?([^ ']+)'? ",
+        'sslmode' => "sslmode='?([^ ']+)'? ",
+        'key' => "key='?([^ ']+)'? ",
         'estimatedmetadata' => 'estimatedmetadata=([^ ]+) ',
         'selectatid' => 'selectatid=([^ ]+) ',
         'srid' => 'srid=([0-9]+) ',
