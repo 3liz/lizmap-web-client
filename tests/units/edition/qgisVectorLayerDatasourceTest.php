@@ -6,6 +6,7 @@ class qgisVectorLayerDatasourceTest extends PHPUnit_Framework_TestCase {
     function testPostgresqlDatasource() {
 
         $provider = 'postgres';
+        // Host without '
         $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=disable key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
@@ -13,6 +14,30 @@ class qgisVectorLayerDatasourceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
         $this->assertEquals('', $element->getDatasourceParameter('service'));
         $this->assertEquals('127.0.0.1', $element->getDatasourceParameter('host'));
+        $this->assertEquals('5432', $element->getDatasourceParameter('port'));
+        $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
+        $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
+        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('id', $element->getDatasourceParameter('key'));
+        $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
+        $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
+        $this->assertEquals('4326', $element->getDatasourceParameter('srid'));
+        $this->assertEquals('Polygon', $element->getDatasourceParameter('type'));
+        $this->assertEquals('1', $element->getDatasourceParameter('checkPrimaryKeyUnicity'));
+        $this->assertEquals('"test_schema"."test_table"', $element->getDatasourceParameter('table'));
+        $this->assertEquals('test_table', $element->getDatasourceParameter('tablename'));
+        $this->assertEquals('test_schema', $element->getDatasourceParameter('schema'));
+        $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
+        $this->assertEquals('', $element->getDatasourceParameter('sql'));
+
+        // Host with '
+        $datasource = "dbname='test_dbname' host='test_host' port=5432 user='test_user' password='test_password' sslmode=disable key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('test_dbname', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('', $element->getDatasourceParameter('service'));
+        $this->assertEquals('test_host', $element->getDatasourceParameter('host'));
         $this->assertEquals('5432', $element->getDatasourceParameter('port'));
         $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
         $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
