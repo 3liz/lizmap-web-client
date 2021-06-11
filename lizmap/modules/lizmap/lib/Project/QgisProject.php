@@ -1392,7 +1392,14 @@ class QgisProject
                     $layer['constraints'] = $constraints;
                     $layer['wfsFields'] = $wfsFields;
 
-                    $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
+                    // Do not expose fields with HideFromWfs parameter
+                    // Format in .qgs has changed in QGIS 3.16
+                    if ($this->qgisProjectVersion >= 31600) {
+                        $excludeFields = $xmlLayer->xpath('.//field[contains(@configurationFlags,"HideFromWfs")]/@name');
+                    } else {
+                        $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
+                    }
+
                     if ($excludeFields && count($excludeFields) > 0) {
                         foreach ($excludeFields as $eField) {
                             $eField = (string) $eField;
