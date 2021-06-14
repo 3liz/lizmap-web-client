@@ -92,7 +92,7 @@ simple_urlengine_https=
 ;   @r       -> for all actions for the request of type "r"
 
 index="@classic"
-admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jcommunity~*@classic"
+admin="jacl2db~*@classic,jacl2db_admin~*@classic,jauthdb_admin~*@classic,master_admin~*@classic,admin~*@classic,jcommunity~*@classic"
 
 
 [basic_significant_urlengine_entrypoints]
@@ -292,17 +292,16 @@ view.access=1
 ldapdao.installparam=noconfigfile
 multiauth.installparam="noconfigfile;localconfig"
 
-ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
 
 [jcommunity]
-loginResponse = htmlauth
-registrationEnabled = off
-resetPasswordEnabled = on
-resetAdminPasswordEnabled = on
-verifyNickname = off
+loginResponse=htmlauth
+registrationEnabled=off
+resetPasswordEnabled=on
+resetAdminPasswordEnabled=on
+verifyNickname=off
 ;passwordChangeEnabled=on
 ;accountDestroyEnabled=on
 useJAuthDbAdminRights=on
