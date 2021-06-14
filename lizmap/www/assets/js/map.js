@@ -3308,7 +3308,7 @@ var lizMap = function() {
                       popup.panMapIfOutOfView = true;
                       map.addPopup(popup);
 
-                      // Activate Boostrap 2 tabs here as they are not 
+                      // Activate Boostrap 2 tabs here as they are not
                       // automatically activated when created in popup anchored
                       $('#' + popupContainerId + ' a[data-toggle="tab"]').on( 'click',function (e) {
                         e.preventDefault();
@@ -3527,6 +3527,18 @@ var lizMap = function() {
     var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
     var w = size.width / 72 / unitsRatio * aScale / 2;
     var h = size.height / 72 / unitsRatio * aScale / 2;
+    var printInProjectProjection = true;
+    if ('printInProjectProjection' in lizMap.config.options && lizMap.config.options.printInProjectProjection != 'True') {
+      printInProjectProjection = false;
+    }
+    if (printInProjectProjection
+      && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
+    ) {
+      // If we change the projection, we need to increase a little bit the size of the rectangle
+      var qgis_dpi = 96;
+      w = w * qgis_dpi / 72;
+      h = h * qgis_dpi / 72;
+    }
     if ( aLayer.features.length == 0 ) {
         var center = map.getCenter();
         var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
@@ -3554,6 +3566,18 @@ var lizMap = function() {
     var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
     var w = size.width / 72 / unitsRatio * aScale;
     var h = size.height / 72 / unitsRatio * aScale;
+    var printInProjectProjection = true;
+    if ('printInProjectProjection' in lizMap.config.options && lizMap.config.options.printInProjectProjection != 'True') {
+      printInProjectProjection = false;
+    }
+    if (printInProjectProjection
+      && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
+    ) {
+      // If we change the projection, we need to increase a little bit the size of the rectangle
+      var qgis_dpi = 96;
+      w = w * qgis_dpi / 72;
+      h = h * qgis_dpi / 72;
+    }
 
       var refScale = w > h ? w : h;
       var newScales = [];
@@ -3787,6 +3811,30 @@ var lizMap = function() {
 
       // Projection code and reverseAxisOrder
       var projCode = map.projection.getCode();
+      var project_projection = null;
+      // We print the map in the QGIS project projection, not in the web map projection
+      // This allow to avoid error of wrong scales when using external baselayers in EPSG:3857
+      // and the project in for example in Lambert 93
+      // Caveat: the map printed does not exactly matches the drawn rectangle
+      var printInProjectProjection = true;
+      if ('printInProjectProjection' in lizMap.config.options && lizMap.config.options.printInProjectProjection != 'True') {
+        printInProjectProjection = false;
+      }
+      if (printInProjectProjection
+        && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
+      ) {
+        // If we print in the QGIS project projection
+        var project_proj = config.options.qgisProjectProjection;
+        if (!(project_proj.ref in Proj4js.defs)) {
+          Proj4js.defs[project_proj.ref]=project_proj.proj4;
+        }
+        project_projection = new OpenLayers.Projection(project_proj.ref);
+        projCode = project_projection.getCode();
+
+        // Reproject extent
+        extent.transform(map.projection, project_projection);
+      }
+
       var reverseAxisOrder = (OpenLayers.Projection.defaults[projCode] && OpenLayers.Projection.defaults[projCode].yx);
 
       // Build URL
@@ -3920,6 +3968,12 @@ var lizMap = function() {
           && config.options.hasOverview ) {
         var bbox = config.options.bbox;
         var oExtent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+        if (printInProjectProjection
+          && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
+        ) {
+          // If we print in the QGIS project projection
+          oExtent.transform(map.projection, project_projection);
+        }
         printParams[dragCtrl.layout.overviewId + ':extent'] = oExtent;
         printParams[dragCtrl.layout.overviewId + ':LAYERS'] = 'Overview';
 
@@ -3975,20 +4029,27 @@ var lizMap = function() {
       }
 
       // if user has made a visible draw, print it with redlining
+      const formatWKT = new OpenLayers.Format.WKT();
+      const highlightGeom = [];
+      const highlightSymbol = [];
       if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
-        const formatWKT = new OpenLayers.Format.WKT();
-
-        const highlightGeom = [];
-        const highlightSymbol = [];
-
         for (let index = 0; index < lizMap.mainLizmap.digitizing.featureDrawn.length; index++) {
-          highlightGeom.push(formatWKT.write(lizMap.mainLizmap.digitizing.featureDrawn[index]));
+          var draw_feature = lizMap.mainLizmap.digitizing.featureDrawn[index];
+          if (printInProjectProjection
+            && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
+          ) {
+            // If we print in the QGIS project projection
+            draw_feature.geometry.transform(map.projection, project_projection);
+          }
+          highlightGeom.push(formatWKT.write(draw_feature));
           highlightSymbol.push(lizMap.mainLizmap.digitizing.getFeatureDrawnSLD(index));
 
         }
+      }
 
-        printParams['map0:HIGHLIGHT_GEOM'] = highlightGeom.join(';');
-        printParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
+      if (highlightGeom.length > 0) {
+        printParams[dragCtrl.layout.mapId+':HIGHLIGHT_GEOM'] = highlightGeom.join(';');
+        printParams[dragCtrl.layout.mapId+':HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
       }
 
       // Display spinner and message while waiting for print
@@ -6667,7 +6728,7 @@ lizMap.events.on({
           var ignKey = evt.config.options.ignKey;
           var isFreeIgnKey = ignKey === "choisirgeoportail" || ignKey === "pratique";
           var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
-          
+
           if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') {
             var options = {
               zoomOffset: 0,
