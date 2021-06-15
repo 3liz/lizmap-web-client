@@ -2,10 +2,11 @@
 
 ## Version 3.4.4
 
-Release on 2021-05-xx
+Release on 2021-06-xx
 
 - Fix form's labels partially hidden when too long. A line break and an hyphen are now used when needed
 - Display spinner and disable button while waiting for print.
+- Fix fields are correctly hidden when 'Do not expose via WFS' is set in QGIS >=3.16
 - Fix QGIS >= 3.16 datasource compatibility
 - Fix Pre-generated cache is not used since Lizmap 3.4.1
 
