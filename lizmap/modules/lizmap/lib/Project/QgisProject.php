@@ -1058,22 +1058,7 @@ class QgisProject
         }
 
         // get QGIS project version
-        $qgisRoot = $qgsXml->xpath('//qgis');
-        $qgisRootZero = $qgisRoot[0];
-        $qgisProjectVersion = (string) $qgisRootZero->attributes()->version;
-        $qgisProjectVersion = explode('-', $qgisProjectVersion);
-        $qgisProjectVersion = $qgisProjectVersion[0];
-        $qgisProjectVersion = explode('.', $qgisProjectVersion);
-        $a = '';
-        foreach ($qgisProjectVersion as $k) {
-            if (strlen($k) == 1) {
-                $a .= '0'.$k;
-            } else {
-                $a .= $k;
-            }
-        }
-        $qgisProjectVersion = (int) $a;
-        $this->qgisProjectVersion = $qgisProjectVersion;
+        $this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
 
         $this->WMSInformation = $this->readWMSInformation($qgsXml);
         $this->canvasColor = $this->readCanvasColor($qgsXml);
@@ -1138,6 +1123,29 @@ class QgisProject
             'WMSContactPerson' => $WMSContactPerson,
             'WMSContactPhone' => $WMSContactPhone,
         );
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     */
+    protected function readQgisProjectVersion($xml)
+    {
+        $qgisRoot = $xml->xpath('//qgis');
+        $qgisRootZero = $qgisRoot[0];
+        $qgisProjectVersion = (string) $qgisRootZero->attributes()->version;
+        $qgisProjectVersion = explode('-', $qgisProjectVersion);
+        $qgisProjectVersion = $qgisProjectVersion[0];
+        $qgisProjectVersion = explode('.', $qgisProjectVersion);
+        $a = '';
+        foreach ($qgisProjectVersion as $k) {
+            if (strlen($k) == 1) {
+                $a .= '0'.$k;
+            } else {
+                $a .= $k;
+            }
+        }
+
+        return (int) $a;
     }
 
     /**
@@ -1392,7 +1400,14 @@ class QgisProject
                     $layer['constraints'] = $constraints;
                     $layer['wfsFields'] = $wfsFields;
 
-                    $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
+                    // Do not expose fields with HideFromWfs parameter
+                    // Format in .qgs has changed in QGIS 3.16
+                    if ($this->qgisProjectVersion >= 31600) {
+                        $excludeFields = $xmlLayer->xpath('.//field[contains(@configurationFlags,"HideFromWfs")]/@name');
+                    } else {
+                        $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
+                    }
+
                     if ($excludeFields && count($excludeFields) > 0) {
                         foreach ($excludeFields as $eField) {
                             $eField = (string) $eField;

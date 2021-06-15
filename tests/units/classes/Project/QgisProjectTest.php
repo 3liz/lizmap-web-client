@@ -160,6 +160,23 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedThemes, $themes);
     }
 
+    public function testReadLayers()
+    {
+        // Test if WFS 'label' field is not exposed in 3.10 and 3.16
+        $expectedWfsFields = array(
+            0 => 'id',
+        );
+        $testQgis = new qgisProjectForTests();
+
+        $fileVersions = array('310', '316');
+
+        foreach ($fileVersions as $fileVersion) {
+            $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_'.$fileVersion.'.qgs');
+            $layers = $testQgis->readLayersForTests($xml);
+            $this->assertEquals($expectedWfsFields, $layers[0]['wfsFields']);
+        }
+    }
+
     public function testReadRelations()
     {
         $expectedRelations = array(
