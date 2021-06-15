@@ -36,6 +36,14 @@ class qgisProjectForTests extends QgisProject
         return $this->readThemes($xml);
     }
 
+    public function readLayersForTests($xml)
+    {
+        // readLayers() needs $this->qgisProjectVersion to be set
+        $this->qgisProjectVersion = $this->readQgisProjectVersion($xml);
+
+        return $this->readLayers($xml);
+    }
+
     public function readRelationsForTests($xml)
     {
         return $this->readRelations($xml);
