@@ -1,10 +1,13 @@
-Changelog
-=========
+Changelog Lizmap 3.3
+====================
 
 Version 3.3.16
 --------------
 
 - Fix: some IGN base layers with free keys could not be displayed
+- Fix: always display form filters in the same order
+- Fix: remove spaces at begin and end in registration login before using it
+- Fix: lizmap stop loading baselayers from WMS source or XML file
 - Fix: form filter no more fails when using text values with multiple single quote
 - Fix: tabs in anchored popup were not toggling
 - Fix: no more page processing interruption when the logger fails
