@@ -20,12 +20,14 @@
 - Overviewmap now zoom in/out with main map. Replace OpenLayers 2 overviewmap by the OpenLayers 6 one.
 - Allow new OpenLayers Map to be used on top of OL2 one
 - Update OpenLayers to 6.5
+- Action popup module has been improved with new options: confirm property, display a message if configured, raise a JS event with the returned result.
 
 ### Fixed
 
 ### New JS events
 
 - `lizmappopupallchildrendisplayed` is raised when all children popups have been displayed
+- `actionResultReceived` is raised when a popup action result is returned
 
 ### Backend
 
