@@ -114,7 +114,7 @@ class Registration
         $tpl->assign('domain_name', $domain);
         $basePath = \jApp::urlBasePath();
         $tpl->assign('basePath', ($basePath == '/'?'':$basePath));
-        $tpl->assign('website_uri', $websiteUri);
+        $tpl->assign('website_uri', $websiteUri.($basePath == '/'?'':$basePath));
         $tpl->assign('confirmation_link', \jUrl::getFull(
             $mailLinkAction,
             array('login' => $user->login, 'key' => substr($user->keyactivate, 2))

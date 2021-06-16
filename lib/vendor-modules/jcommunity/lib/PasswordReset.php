@@ -84,7 +84,7 @@ class PasswordReset {
         $tpl->assign('domain_name', $domain);
         $basePath = \jApp::urlBasePath();
         $tpl->assign('basePath', ($basePath == '/'?'':$basePath));
-        $tpl->assign('website_uri', $websiteUri);
+        $tpl->assign('website_uri', $websiteUri.($basePath == '/'?'':$basePath));
         $tpl->assign('confirmation_link', \jUrl::getFull(
             'jcommunity~password_reset:resetform@classic',
             array('login' => $user->login, 'key' => $key)

@@ -20,7 +20,10 @@ class userCtrl extends jControllerCmdLine {
             '--admin' => false,
             '-v' => false,
             '--no-error-if-exists' => false
-        )
+        ),
+        'delete' => array(
+            '-v' => false
+        ),
     );
 
     protected $allowed_parameters = array(
@@ -35,6 +38,9 @@ class userCtrl extends jControllerCmdLine {
             'login' => true,
             'email' => true,
             'password' => false
+        ),
+        'delete' => array(
+            'login' => true,
         ),
     );
 
@@ -217,6 +223,24 @@ class userCtrl extends jControllerCmdLine {
                 $message = $message.jLocale::get('password.reset.cmdline.error').PHP_EOL;
                 $code = 1;
             }
+        }
+
+        return $this->exitMessage($rep, $code, $message, $verbose);
+    }
+
+    public function delete()
+    {
+        $rep = $this->getResponse();
+
+        $login = $this->param('login');
+        $verbose = $this->option('-v');
+        $code = 0;
+        $message = '';
+
+
+        $removed = jAuth::removeUser($login);
+        if (!$removed) {
+            $code = 1;
         }
 
         return $this->exitMessage($rep, $code, $message, $verbose);
