@@ -32,49 +32,42 @@ function getItemByName(layerId, name){
 
 function getActionData(layerId, fid, name){
 
-    // Empty actionLayer
-    var layer = lizMap.layers['actionLayer'];
-    layer.destroyFeatures();
-
-    // Do nothing if geometry was already set
-    // This allow to delete the current geometry
-    if(
-        action_current_object == layerId + '.' + fid + '.' + name
-    ){
-        //console.log("no api call");
-        action_current_object = null;
-        return true;
-    }
-
     var options = {
         "layerId": layerId,
         "featureId": fid,
         "name": name
     };
     var item = getItemByName(layerId, name);
-    //console.log(item);
-    if( 'options' in item && item.options != {} ) {
-        for(let o in item.options) {
-            options[o] = item.options[o];
-        }
-    }
 
     // Request action and get data
     var url = actionConfigData.url;
     $.get( url, options, function(data) {
+
         // Report errors
-        if('errors' in data){
+        if ('errors' in data) {
             lizMap.addMessage(data.errors.title, 'error', true).attr('id','lizmap-action-message');
             console.log(data.errors.detail);
             return false;
         }
 
-        // Add returned features
+        // Returned features
         var features = addFeatures(layerId, item, data);
-        //console.log(features);
+
+        // Display a message if given
+        if (features.length > 0) {
+            var feat = features[0];
+            var message_field = 'message';
+            if ('attributes' in feat && message_field in feat.attributes) {
+                $('#lizmap-action-message').remove();
+                var message = feat.attributes[message_field].trim();
+                if (message) {
+                    lizMap.addMessage(message, 'info', true).attr('id','lizmap-action-message');
+                }
+            }
+        }
 
         // Callbacks
-        if( features.length > 0
+        if (features.length > 0
             && 'callbacks' in item
             && item.callbacks.length > 0 ) {
             for(let c in item.callbacks) {
@@ -118,8 +111,20 @@ function getActionData(layerId, fid, name){
             }
 
         }
+
+        // Lizmap event to allow other scripts to process the data if needed
+        lizMap.events.triggerEvent("actionResultReceived",
+            {
+                'layerId': layerId,
+                'featureId': fid,
+                'action': item,
+                'features': features
+            }
+        );
+
     }, 'json');
 
+    // Set the action as active
     action_current_object = layerId + '.' + fid + '.' + name;
 
 }
@@ -137,7 +142,7 @@ function addFeatures(layerId, item, data){
     });
 
     // Change layer style
-    if( 'style' in item ){
+    if ('style' in item) {
         layer.styleMap.styles.default.defaultStyle = item.style;
     }
 
@@ -159,8 +164,8 @@ function addActionButton(layerId, fid, item, popupitem){
     ihtml+= '&nbsp;</button>';
     var toolbar = popupitem.next('span.popupButtonBar').find('button.popup-action[value="'+ btname + '"]');
     var popupButtonBar = popupitem.next('span.popupButtonBar');
-    if ( popupButtonBar.length != 0 ) {
-        if ( toolbar.length == 0 )
+    if (popupButtonBar.length != 0) {
+        if (toolbar.length == 0)
             popupButtonBar.append(ihtml);
         else
             toolbar.before(ihtml);
@@ -168,17 +173,46 @@ function addActionButton(layerId, fid, item, popupitem){
         ihtml = '<span class="popupButtonBar">' + ihtml + '</span></br>';
         popupitem.after(ihtml);
     }
-    popupitem.find('button.btn').tooltip( {
+    popupitem.find('button.btn').tooltip({
         placement: 'bottom'
-    } );
+    });
 
     // Trigger action when clicking on button
     $('div.lizmapPopupContent button.popup-action[value="'+ btname + '"]').click(function(){
+        // Clear message
+        $('#lizmap-action-message').remove();
+
+        // Empty actionLayer: do it if button & action was active or not
+        var layer = lizMap.layers['actionLayer'];
+        layer.destroyFeatures();
+
         var val = $(this).val();
         var vals = val.split('.');
         var layerId = vals[0];
         var fid = vals[1];
         var name = vals[2];
+
+        // Do nothing if geometry was already set
+        // This allow to delete the current geometry
+        if (action_current_object) {
+            // deactivate if the current action was this one
+            if (action_current_object == layerId + '.' + fid + '.' + name) {
+                action_current_object = null;
+                return true;
+            }
+        }
+        action_current_object = null;
+
+        // Get action item data
+        // And add confirm question if needed
+        var item = getItemByName(layerId, name);
+        if ('confirm' in item && item.confirm.trim() != '') {
+            var msg = item.confirm.trim();
+            var go_on = confirm(msg);
+            if (!go_on) {
+                return false;
+            }
+        }
 
         // Toggle given geometry
         getActionData(layerId, fid, name);
@@ -209,16 +243,16 @@ lizMap.events.on({
 
             // Get layer lizmap config
             var getLayerConfig = lizMap.getLayerConfigById( layerId );
-            if ( !getLayerConfig )
+            if (!getLayerConfig)
                 return true;
 
             // Do nothing if layer is not found in action config
-            if( !(layerId in actionConfig) ){
+            if (!(layerId in actionConfig)) {
                 return true;
             }
 
             // Add buttons for this layer
-            for(var i in actionConfig[layerId]){
+            for (var i in actionConfig[layerId]) {
                 var item = actionConfig[layerId][i];
                 //console.log(item);
                 addActionButton(layerId, fid, item, self);
