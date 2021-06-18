@@ -1,0 +1,8 @@
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd">
+    <Placemark>
+        <Point>
+            <coordinates>-22.66406257159697,8.983749593486152</coordinates>
+        </Point>
+    </Placemark>
+</kml>
+

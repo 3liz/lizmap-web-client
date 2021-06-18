@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="kml_multipolygon" id="kml_multipolygon">
+	<SimpleField name="id" type="int"></SimpleField>
+</Schema>
+<Folder><name>kml_multipolygon</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#kml_multipolygon">
+		<SimpleData name="id">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>4.95721709264516,43.8094561931994 4.95779442387041,43.8057789991901 4.951733479231,43.8045522248494 4.95190414506588,43.8095514504677 4.95721709264516,43.8094561931994</coordinates></LinearRing></outerBoundaryIs></Polygon><Polygon><outerBoundaryIs><LinearRing><coordinates>4.95779442387041,43.8057789991901 4.95721709264516,43.8094561931994 4.96241743079266,43.809362703927 4.96277258353613,43.8067863201941 4.95779442387041,43.8057789991901</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#kml_multipolygon">
+		<SimpleData name="id">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>4.95078853151971,43.8171593580996 4.95354416405127,43.8144178600489 4.95203255554756,43.8133123459654 4.94695774395043,43.8131736288342 4.94587141900353,43.8166349707374 4.95078853151971,43.8171593580996</coordinates></LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>4.94852353057107,43.8154222489767 4.94856451031335,43.8140946131962 4.9505330768881,43.8142935709681 4.95031232755392,43.8154058753991 4.95031232755392,43.8154058753991 4.94852353057107,43.8154222489767</coordinates></LinearRing></innerBoundaryIs></Polygon><Polygon><outerBoundaryIs><LinearRing><coordinates>4.95354416405127,43.8144178600489 4.95078853151971,43.8171593580996 4.95840301438158,43.8179709514265 4.95354416405127,43.8144178600489</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>
