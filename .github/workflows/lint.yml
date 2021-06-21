@@ -1,5 +1,15 @@
-on: [push, pull_request]
 name: "Lint"
+
+on:
+  push:
+    branches:
+      - master
+      - release_3_*
+  pull_request:
+    branches:
+      - master
+      - release_3_*
+
 jobs:
   php-cs-fixer:
     name: "PHP-CS-Fixer"
