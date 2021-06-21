@@ -4,13 +4,11 @@ on:
   push:
     branches:
       - master
-      - release_3_4
-      - release_3_3
+      - release_3_*
   pull_request:
     branches:
       - master
-      - release_3_4
-      - release_3_3
+      - release_3_*
 
 defaults:
   run:
