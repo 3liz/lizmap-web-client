@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - master
-      - release_3_4
+      - release_3_*
   pull_request:
     branches:
       - master
-      - release_3_4
+      - release_3_*
 jobs:
   cypress:
     name: "Cypress"
