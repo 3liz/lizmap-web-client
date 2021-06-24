@@ -924,7 +924,6 @@ class Project
                 'title' => $title,
                 'plot' => array(
                     'type' => $lc->type,
-                    'x_field' => $lc->x_field,
                 ),
             );
 
