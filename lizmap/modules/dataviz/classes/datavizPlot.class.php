@@ -122,17 +122,19 @@ class datavizPlot
         if (!empty($plotConfig['plot']['x_field'])) {
             $x_fields[] = $plotConfig['plot']['x_field'];
         }
-        $traces = $plotConfig['plot']['traces'];
-        foreach ($traces as $trace) {
-            $y_fields[] = $trace->y_field;
-            if (property_exists($trace, 'color')) {
-                $colors[] = $trace->color;
-            }
-            if (property_exists($trace, 'colorfield')) {
-                $colorfields[] = $trace->colorfield;
-            }
-            if (property_exists($trace, 'z_field')) {
-                $z_fields[] = $trace->z_field;
+
+        if (!empty($plotConfig['plot']['traces'])) {
+            foreach ($plotConfig['plot']['traces'] as $trace) {
+                $y_fields[] = $trace->y_field;
+                if (property_exists($trace, 'color')) {
+                    $colors[] = $trace->color;
+                }
+                if (property_exists($trace, 'colorfield')) {
+                    $colorfields[] = $trace->colorfield;
+                }
+                if (property_exists($trace, 'z_field')) {
+                    $z_fields[] = $trace->z_field;
+                }
             }
         }
 
