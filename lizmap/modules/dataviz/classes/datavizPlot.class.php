@@ -119,70 +119,21 @@ class datavizPlot
         $colorfields = array();
 
         // Since Lizmap 3.4, a traces property contains all Y/color/Z
-        if (array_key_exists('traces', $plotConfig['plot'])) {
-            if (!empty($plotConfig['plot']['x_field'])) {
-                $x_fields[] = $plotConfig['plot']['x_field'];
-            }
-            $traces = $plotConfig['plot']['traces'];
-            foreach ($traces as $trace) {
-                $y_fields[] = $trace->y_field;
-                if (property_exists($trace, 'color')) {
-                    $colors[] = $trace->color;
-                }
-                if (property_exists($trace, 'colorfield')) {
-                    $colorfields[] = $trace->colorfield;
-                }
-                if (property_exists($trace, 'z_field')) {
-                    $z_fields[] = $trace->z_field;
-                }
-            }
-        } else {
-            // LEGACY CODE:  LIZMAP < 3.4
-            // Fields
-            $str_x_fields = $plotConfig['plot']['x_field'];
-            $exp_x_fields = explode(',', $str_x_fields);
-            if (count($exp_x_fields) > 0 and $exp_x_fields != array('')) {
-                $x_fields = $exp_x_fields;
-            }
-            $str_y_fields = $plotConfig['plot']['y_field'];
-            if (array_key_exists('y2_field', $plotConfig['plot'])) {
-                $str_y_fields .= ','.$plotConfig['plot']['y2_field'];
-            }
-            $exp_y_fields = explode(',', $str_y_fields);
-            if (count($exp_y_fields) > 0 and $exp_y_fields != array('')) {
-                $y_fields = $exp_y_fields;
-            }
-            $str_z_fields = '';
-            if (array_key_exists('z_field', $plotConfig['plot'])) {
-                $str_z_fields = $plotConfig['plot']['z_field'];
-            }
-            $exp_z_fields = explode(',', $str_z_fields);
-            if (count($exp_z_fields) > 0 and $exp_z_fields != array('')) {
-                $z_fields = $exp_z_fields;
-            }
-
-            // Colors
-            if (array_key_exists('color', $plotConfig['plot'])) {
-                $color = $plotConfig['plot']['color'];
-                $colors[] = $color;
-            }
-            if (array_key_exists('colorfield', $plotConfig['plot'])) {
-                $colorfield = $plotConfig['plot']['colorfield'];
-                $colorfields[] = $colorfield;
-            }
-            if (array_key_exists('color2', $plotConfig['plot'])) {
-                $color2 = $plotConfig['plot']['color2'];
-                $colors[] = $color2;
-            }
-            if (array_key_exists('colorfield2', $plotConfig['plot'])) {
-                $colorfield2 = $plotConfig['plot']['colorfield2'];
-                $colorfields[] = $colorfield2;
-            }
+        if (!empty($plotConfig['plot']['x_field'])) {
+            $x_fields[] = $plotConfig['plot']['x_field'];
         }
-
-        // Optionnal layout additionnal options (legacy code)
-        if (array_key_exists('layout_config', $plotConfig['plot'])) {
-            $this->layout = $plotConfig['plot']['layout_config'];
+        $traces = $plotConfig['plot']['traces'];
+        foreach ($traces as $trace) {
+            $y_fields[] = $trace->y_field;
+            if (property_exists($trace, 'color')) {
+                $colors[] = $trace->color;
+            }
+            if (property_exists($trace, 'colorfield')) {
+                $colorfields[] = $trace->colorfield;
+            }
+            if (property_exists($trace, 'z_field')) {
+                $z_fields[] = $trace->z_field;
+            }
         }
 
         // Aggregation
