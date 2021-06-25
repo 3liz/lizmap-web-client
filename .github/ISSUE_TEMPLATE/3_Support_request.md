@@ -1,10 +1,12 @@
 ---
-name: ❓ Support/Questions
+name: "❓ Support/Questions"
 about: Questions about using or installing Lizmap.
-labels: 'question'
-
+title: ''
+labels: question
+assignees: ''
 
 ---
+
 ### Description
 <!-- Before asking your question, please check that the response is not 
 in the documentation: https://docs.3liz.com/ -->
@@ -19,4 +21,4 @@ in the documentation: https://docs.3liz.com/ -->
  - QGIS Desktop FULL version:
  - OS (Windows, Linux, MacOS, Android…): 
  - Browser (Firefox, Chrome…):
- - Lizmap admin information (users, logs…) stored into Sqlite (default)? PostgreSQL? MySQL? 
+ - Lizmap admin information (users, logs…) stored into Sqlite (default)? PostgreSQL? MySQL?
