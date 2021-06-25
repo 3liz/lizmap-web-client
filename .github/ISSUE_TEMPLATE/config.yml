@@ -6,6 +6,3 @@ contact_links:
   - name: Lizmap QGIS plugin issue
     url: https://github.com/3liz/lizmap-plugin/issues
     about: Please fill an issue about Lizmap QGIS plugin here.
-  - name: Security
-    url: https://www.3liz.com/contacts.html
-    about: Report a security vulnerability at info@3liz.com
