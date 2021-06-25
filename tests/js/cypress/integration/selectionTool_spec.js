@@ -287,9 +287,6 @@ describe('Selection tool', function () {
     })
 
     it('selects multiple selectable and visible layers', function () {
-        // Stub getProjectConfig request to have a new Lizmap configuration with less visible layers
-        cy.server()
-        cy.route('GET', 'index.php/lizmap/service/getProjectConfig?repository=montpellier&project=montpellier', 'fixture:getProjectConfig.json')
         // runs once before the first test in this block
         cy.visit('/index.php/view/map/?repository=montpellier&project=montpellier')
         // Todo wait for map to be fully loaded
