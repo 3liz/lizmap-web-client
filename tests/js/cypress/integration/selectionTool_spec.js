@@ -228,7 +228,7 @@ describe('Selection tool', function () {
 
     it('selects one feature then revert selection', function () {
         // Select one feature...
-        cy.get('lizmap-selection-tool .selectiontool-layer-list').select('points of interest')
+        cy.get('lizmap-selection-tool .selectiontool-layer-list').select('points_of_interest')
 
         cy.get('#map')
             .click(650, 200)

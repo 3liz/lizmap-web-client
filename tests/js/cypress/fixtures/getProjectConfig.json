@@ -99,9 +99,9 @@
       "cached": "False",
       "clientCacheExpiration": 300
     },
-    "points of interest": {
+    "points_of_interest": {
       "id": "edition_point20130118171631518",
-      "name": "points of interest",
+      "name": "points_of_interest",
       "type": "layer",
       "geometryType": "point",
       "extent": [
@@ -1142,7 +1142,7 @@
         "columns": {}
       }
     },
-    "points of interest": {
+    "points_of_interest": {
       "primaryKey": "pkuid",
       "hiddenFields": "",
       "pivot": "False",
@@ -1243,7 +1243,7 @@
     }
   },
   "editionLayers": {
-    "points of interest": {
+    "points_of_interest": {
       "layerId": "edition_point20130118171631518",
       "geometryType": "point",
       "capabilities": {
