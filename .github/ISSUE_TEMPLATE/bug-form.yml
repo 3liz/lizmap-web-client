@@ -1,0 +1,85 @@
+name: 🐞 Bug Report
+description: Report errors and problems. The more precise is your bug report, the more quickly it will be fixed.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        Tip: small projects and screenshots/gifs help a lot debugging ;)
+  - type: textarea
+    id: what
+    attributes:
+      label: What is the bug?
+      placeholder: When clicking on button...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce the issue
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+  - type: input
+    id: lizmap-version
+    attributes:
+      label: Lizmap version
+      placeholder: 3.4.4
+    validations:
+      required: true
+  - type: input
+    id: qgis-desktop-version
+    attributes:
+      label: QGIS desktop version
+      placeholder: 3.16.8
+    validations:
+      required: true
+  - type: input
+    id: qgis-server-version
+    attributes:
+      label: QGIS server version
+      placeholder: 3.16.8
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: Ubuntu 20.04, Windows 10, ...
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browsers
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+    validations:
+      required: true
+  - type: input
+    id: browsers-version
+    attributes:
+      label: Browsers version
+      placeholder: Firefox 89, Chrome 90, ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        WARNING: obfuscate all sensible data (IP, passwords, domain name...).
+        Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+        To find logs in your browser, open developer console (F12 or Ctrl + Shift + I).
+        Lizmap error logs can be found in admin panel.
+      render: shell
