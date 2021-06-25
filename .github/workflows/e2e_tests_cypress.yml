@@ -1,13 +1,5 @@
 name: "Cypress 🎳"
-on:
-  push:
-    branches:
-      - master
-      - release_3_*
-  pull_request:
-    branches:
-      - master
-      - release_3_*
+on: workflow_dispatch
 jobs:
   cypress:
     name: "Cypress"
