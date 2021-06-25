@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/3liz/lizmap-documentation/issues
+    about: Please fill an issue about documentation here.
+  - name: Security
+    url: https://www.3liz.com/contacts.html
+    about: Report a security vulnerability at info@3liz.com
