@@ -34,12 +34,16 @@ export default class Map extends olMap {
             target: 'newOlMap'
         });
 
+        this._newOlMap = false;
+
         this._refreshOL2View = () => {
             // This refresh OL2 view and layers
-            mainLizmap.lizmap3.map.setCenter(
-                this.getView().getCenter(),
-                this.getView().getZoom()
-            );
+            if (this._newOlMap){
+                mainLizmap.lizmap3.map.setCenter(
+                    this.getView().getCenter(),
+                    this.getView().getZoom()
+                );
+            }
         };
 
         // Sync new OL view with OL2 view

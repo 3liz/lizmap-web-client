@@ -55,6 +55,7 @@ export default class Lizmap {
      * @param {Boolean} mode - switch new OL map on top of OL2 one
      */
     set newOlMap(mode){
+        this.map._newOlMap = mode;
         document.getElementById('newOlMap').style.zIndex = mode ? 750 : 'auto';
     }
 
