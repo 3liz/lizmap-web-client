@@ -1,6 +1,9 @@
 ---
-name: ❗️ QGIS plugin issue
-about: ❗️ See https://github.com/3liz/lizmap-plugin/ instead
+name: "❗️ QGIS plugin issue"
+about: "❗️ See https://github.com/3liz/lizmap-plugin/ instead"
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
