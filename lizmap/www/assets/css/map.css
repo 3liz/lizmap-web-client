@@ -1147,6 +1147,7 @@ transform: none !important;
 
 /* Right Dock */
 #right-dock {
+  height: 100%;
   margin-left: auto;
   width:30%;
   background: #4A4A4A;
