@@ -8,6 +8,7 @@ body:
       value: |
         Thanks for taking the time to fill out this bug report!
         Tip: small projects and screenshots/gifs help a lot debugging ;)
+        QGIS project must be valid. Project => Properties => QGIS Server => Test Configuration => Launch
   - type: textarea
     id: what
     attributes:
