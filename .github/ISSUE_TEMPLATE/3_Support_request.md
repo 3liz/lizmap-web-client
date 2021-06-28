@@ -1,6 +1,6 @@
 ---
 name: "❓ Support/Questions"
-about: Questions about using or installing Lizmap.
+about: Questions about using or installing Lizmap. 3Liz's paid support => https://www.3liz.com/services.html#3liz-support-offer
 title: ''
 labels: question
 assignees: ''
