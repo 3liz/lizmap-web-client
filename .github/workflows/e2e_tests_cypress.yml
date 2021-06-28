@@ -1,13 +1,9 @@
 name: "Cypress 🎳"
 on:
-  push:
-    branches:
-      - master
-      - release_3_*
-  pull_request:
-    branches:
-      - master
-      - release_3_*
+  schedule:
+    # Run every monday at 3:00
+    - cron:  '0 3 * * 1'
+  workflow_dispatch:
 jobs:
   cypress:
     name: "Cypress"
