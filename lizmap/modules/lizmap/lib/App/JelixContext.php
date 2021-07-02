@@ -26,7 +26,7 @@ class JelixContext implements AppContextInterface
 
     public function appConfigPath($file = '')
     {
-        return \jApp::configPath($file);
+        return \jApp::varConfigPath($file);
     }
 
     public function appVarPath($file = '')
