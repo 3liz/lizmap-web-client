@@ -156,7 +156,7 @@ class lizmapRepositoryTest extends TestCase
 
 /*  public function testGetProject()
     {
-        $ini = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+        $ini = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
         $services = new lizmapServices($ini, jApp::config(), true, jApp::varPath());
         $rep = $services->getLizmapRepository('montpellier');
         $proj = $rep->getProject('events');
@@ -178,7 +178,7 @@ class lizmapRepositoryTest extends TestCase
         );
 
         $projKeys = array('events', 'montpellier');
-        $ini = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+        $ini = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
         $services = new lizmapServices($ini, jApp::config(), true, jApp::varPath());
         $rep = $services->getLizmapRepository('montpellier');
         $projects = $rep->getProjects();
