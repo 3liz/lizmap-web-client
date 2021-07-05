@@ -30,6 +30,9 @@
         <class name="qgisLayerDbFieldsInfo" file="classes/qgisLayerDbFieldsInfo.class.php"/>
         <class name="lizmapServices" file="classes/lizmapServices.class.php"/>
         <class name="qgisExpressionUtils" file="classes/qgisExpressionUtils.class.php"/>
+        <!-- legacy classes -->
+        <class name="lizmapProxy" file="classes/lizmapProxy.class.php"/>
+        <class name="lizmapOGCRequest" file="classes/lizmapOGCRequest.class.php"/>
         <namespacePathMap name="Lizmap" dir="lib"/>
     </autoload>
 </module>
