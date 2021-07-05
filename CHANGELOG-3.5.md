@@ -37,5 +37,6 @@
 ### Backend
 
 - Major refactoring of Lizmap source code done by @alagroy-42
+- Keep lizmapProxy and lizmapOGCRequest classes for modules compatibility
 - Upgrade Jelix to 1.6.32
 - Improve testings using Docker, Cypress, PHPUnit etc
