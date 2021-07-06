@@ -3107,7 +3107,7 @@ var lizMap = function() {
                   clname = cleanName(configLayer.name);
                   configLayer.cleanname = clname;
                 }
-                var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '">' + popupChildData + '</div>');
+                var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + popupChildData + '</div>');
 
                 //Manage if the user choose to create a table for children
                 if (['qgis', 'form'].indexOf(configLayer.popupSource) !== -1 &&
