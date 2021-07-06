@@ -533,9 +533,9 @@ class qgisForm implements qgisFormControlsInterface
                 and $this->formControls[$ref]->fieldDataType === 'boolean') {
                 $form->getControl($ref)->setDataFromDao($value, 'boolean');
             }
-            // ValueRelation can be an array (i.e. {1,2,3})
+            // ValueRelation can be an array (i.e. {1,2,3} or {'foo', 'bar'})
             elseif ($this->formControls[$ref]->isValueRelation() && $value[0] === '{') {
-                $arrayValue = array_map('intval', explode(',', trim($value, '{}')));
+                $arrayValue = explode(',', trim($value, '{}'));
                 $form->setData($ref, $arrayValue);
             } elseif ($this->formControls[$ref]->isUploadControl()) {
                 $ctrl = $form->getControl($this->formControls[$ref]->getControlName());
@@ -724,7 +724,7 @@ class qgisForm implements qgisFormControlsInterface
     public function convertQgisFormatToPHP($fieldFormat)
     {
         $dateFormat = $fieldFormat;
-        // convertion from QGIS to PHP format
+        // conversion from QGIS to PHP format
         $format = $this->getDateTimeConversionTab();
         $format12h = array('a', 'ap', 'A', 'AP');
         foreach ($format12h as $am) {
@@ -765,7 +765,7 @@ class qgisForm implements qgisFormControlsInterface
      * @param null|mixed $feature
      * @param array      $modifiedControls
      *
-     * @return array|false|int value of primary key or false if an error occured
+     * @return array|false|int value of primary key or false if an error occurred
      */
     public function saveToDb($feature = null, $modifiedControls = array())
     {
