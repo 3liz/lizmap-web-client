@@ -25,6 +25,7 @@
 ###  Boolean
 
 **Note from Etienne 14/01/21**, these 2 tests below are failing for now, and it seems expected for now :(
+**Note from Nicolas 06/07/21**, `boolean_notnull_for_checkbox` has been removed as it is blocking other tests
 
 * [ ] `boolean_notnull_for_checkbox` field should be submitted with or without being checked
 * [ ] `boolean_nullable` should show a dropdown menu with :
