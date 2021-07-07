@@ -1,4 +1,4 @@
-describe('Form edition', function() {
+describe('Form edition all field type', function() {
     beforeEach(function(){
         // Runs before each tests in the block
         cy.visit('/index.php/view/map/?repository=testsrepository&project=form_edition_all_field_type')
