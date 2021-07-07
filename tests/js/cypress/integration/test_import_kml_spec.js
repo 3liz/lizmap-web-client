@@ -1,4 +1,4 @@
-describe('Form edition', function() {
+describe('Import KML', function() {
     // Link to describe how to import a file
     // https://stackoverflow.com/questions/47074225/how-to-test-file-inputs-with-cypress
 
@@ -22,7 +22,7 @@ describe('Form edition', function() {
         })
 
         // Wait for the kml file to be fully loaded
-        cy.wait(1000)
+        cy.wait(500)
         // Take a snapshot to compare it to the `test_kml_multilinestring` snapshot
         // Check that KML file is properly imported 
         // Check that map is zoomed and centered to exported fixtures
@@ -39,7 +39,7 @@ describe('Form edition', function() {
                 mimeType: 'kml'
             })
         })
-        cy.wait(1000)
+        cy.wait(500)
         cy.get('#map').matchImageSnapshot('test_kml_multipoint', {clip: {x: 150, y:260, width: 970, height: 200}})
     })
 
@@ -51,7 +51,7 @@ describe('Form edition', function() {
                 mimeType: 'kml'
             })
         })
-        cy.wait(1000)
+        cy.wait(500)
         cy.get('#button-draw').click()
         cy.get('#map').matchImageSnapshot('test_kml_multipolygon', {clip: {x: 260, y:70, width: 730, height: 580}})
     })
@@ -64,7 +64,7 @@ describe('Form edition', function() {
                 mimeType: 'kml'
             })
         })
-        cy.wait(1000)
+        cy.wait(500)
         cy.get('#button-draw').click()
         cy.get('#map').matchImageSnapshot('test_kml_polygon', {clip: {x: 120, y:50, width: 898, height: 620}})
     })
@@ -77,7 +77,7 @@ describe('Form edition', function() {
                 mimeType: 'kml'
             })
         })
-        cy.wait(1000)
+        cy.wait(500)
         cy.get('#map').matchImageSnapshot('test_kml_without_xml_header', {clip: {x: 613, y:350, width: 25, height: 25}})
     })
 
@@ -89,7 +89,7 @@ describe('Form edition', function() {
                 mimeType: 'kml'
             })
         })
-        cy.wait(1000)
+        cy.wait(500)
         cy.get('#map').matchImageSnapshot('test_kml_with_xml_header', {clip: {x: 613, y:350, width: 25, height: 25}})
     })
 })
