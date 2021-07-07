@@ -2,12 +2,44 @@ describe('Form edition', function() {
     beforeEach(function(){
         // Runs before each tests in the block
         cy.visit('/index.php/view/map/?repository=testsrepository&project=form_edition_all_field_type')
-        // Start by creating a new feature
-        cy.get('#button-edition').click() 
+        // Start by launching feature form
+        cy.get('#button-edition').click()
         cy.get('#edition-draw').click()
     })
 
-    /*it('expected error, string', function(){
+    it('should submit multiple selections with integer array field', function () {
+        // Select two values
+        cy.get('#jforms_view_edition_integer_array_0').click()
+        cy.get('#jforms_view_edition_integer_array_1').click()
+        cy.get('#jforms_view_edition__submit_submit').click()
+
+        // Assert both values are selected when editing previously submitted feature
+        cy.get('#button-attributeLayers').click()
+        cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({force: true})
+
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+
+        cy.get("#jforms_view_edition_integer_array_0").should('be.checked')
+        cy.get("#jforms_view_edition_integer_array_1").should('be.checked')
+    })
+
+    it('should submit multiple selections with text field', function () {
+        // Select two values
+        cy.get('#jforms_view_edition_text_0').click()
+        cy.get('#jforms_view_edition_text_1').click()
+        cy.get('#jforms_view_edition__submit_submit').click()
+
+        // Assert both values are selected when editing previously submitted feature
+        cy.get('#button-attributeLayers').click()
+        cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({ force: true })
+
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+
+        cy.get("#jforms_view_edition_text_0").should('be.checked')
+        cy.get("#jforms_view_edition_text_1").should('be.checked')
+    })
+
+    it('expects error, string in integer field', function(){
         // Typing text `foo` in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('foo')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -15,7 +47,7 @@ describe('Form edition', function() {
         cy.get('#jforms_view_edition_errors > p').should('be.visible')
     })
 
-    it('expected error, value too big', function(){
+    it('expects error, value too big', function(){
         // Typing `2147483648` value (too big) in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('2147483648')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -23,7 +55,7 @@ describe('Form edition', function() {
         cy.get('#jforms_view_edition_errors > p').should('be.visible')
     })
 
-    it('expected error, negative value too big', function(){
+    it('expects error, negative value too big', function(){
         // Typing `-2147483649` value (negative too big) in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('-2147483649')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -39,7 +71,7 @@ describe('Form edition', function() {
         cy.get('#lizmap-edition-message').should('be.visible')
     })
 
-    it('success,zero value', function(){
+    it('success, zero value', function(){
         // Typing zero value in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('0')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -53,20 +85,7 @@ describe('Form edition', function() {
         cy.get('#jforms_view_edition__submit_submit').click()
         // A message should confirm form had been saved
         cy.get('#lizmap-edition-message').should('be.visible')
-    })*/
-
-    it('boolean, boolean_notnull_for_checkbox check', function(){
-        // `boolean_notnull_for_checkbox` field should be submitted with being checked
-        cy.get('#jforms_view_edition_boolean_notnull_for_checkbox').click()
-        cy.get('#jforms_view_edition__submit_submit').click()
-        cy.get('#lizmap-edition-message').should('be.visible')
     })
-
-   /* it('boolean, boolean_notnull_for_checkbox uncheck', function(){
-        // `boolean_notnull_for_checkbox` field should be submitted without being checked
-        cy.get('#jforms_view_edition__submit_submit').click()
-        cy.get('#lizmap-edition-message').should('be.visible')
-    })*/
 
     it('boolean, dropdown menu', function(){
         // `boolean_nullable` should show a dropdown menu with :
@@ -80,5 +99,4 @@ describe('Form edition', function() {
         cy.get('#jforms_view_edition_boolean_nullable').select('False')
         cy.get('#jforms_view_edition_boolean_nullable').should('have.value', 'false')
     })
-
 })
