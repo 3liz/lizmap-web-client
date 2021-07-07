@@ -1,5 +1,11 @@
 # Changelog Lizmap 3.4
 
+## Version 3.4.5
+
+Not released yet
+
+- Fix: multiple selection edition w/ text field. Values can be integer but also string
+
 ## Version 3.4.4
 
 Release on 2021-06-17
