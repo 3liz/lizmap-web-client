@@ -110,10 +110,11 @@ class filterDatasource
             }
         } catch (Exception $e) {
             jLog::log($e->getMessage(), 'error');
+
             $this->errors = array(
                 'status' => 'error',
                 'title' => 'Invalid Query',
-                'detail' => $e->getMessage(),
+                'detail' => '',
             );
 
             return $this->errors;
@@ -284,7 +285,6 @@ class filterDatasource
                 $sql .= ' ORDER BY v';
             }
         }
-        //jLog::log($sql);
 
         return $this->getData($sql);
     }
