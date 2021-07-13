@@ -9,15 +9,15 @@
     "pretest-fix": "eslint --fix src"
   },
   "devDependencies": {
-    "eslint": "^7.29.0",
+    "eslint": "^7.30.0",
     "jsts": "^2.7.1",
     "lit-html": "^1.4.1",
-    "ol": "^6.5.1-dev.1618210365834",
+    "ol": "^6.6.0",
     "proj4": "^2.7.4",
     "svg-sprite-loader": "^6.0.9",
     "svgo": "^2.3.1",
     "svgo-loader": "^3.0.0",
-    "webpack": "^5.40.0",
+    "webpack": "^5.44.0",
     "webpack-cli": "^4.7.2",
     "webpack-merge": "^5.8.0"
   },
