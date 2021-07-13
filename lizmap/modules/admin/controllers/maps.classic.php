@@ -183,8 +183,6 @@ class mapsCtrl extends jController
      *
      * @param object $form       jform object concerned
      * @param object $repository repository key
-     *
-     * @return bool success or failure of the saving
      */
     protected function saveRepositoryRightsFromRequest($form, $repository)
     {
