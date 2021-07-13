@@ -1,0 +1,23 @@
+{
+    "sEmptyTable":     "Nu există date disponibile în tabel",
+    "sInfo":           "Afișare _START_ - _END_ din _TOTAL_ înregistrări.",
+    "sInfoEmpty":      "Afișare 0 - 0 din 0 înregistrări",
+    "sInfoFiltered":   "(filtrat din _MAX_ înregistrări totale)",
+    "sInfoPostFix":    "",
+    "sInfoThousands":  ",",
+    "sLengthMenu":     "Afișare _MENU_ înregistrări",
+    "sLoadingRecords": "Se încarcă...",
+    "sProcessing":     "Se procesează...",
+    "sSearch":         "Căutare:",
+    "sZeroRecords":    "Nu au fost găsite înregistrări care să se potrivească",
+    "oPaginate": {
+        "sFirst":    "Prima",
+        "sLast":     "Ultima",
+        "sNext":     "Următoarea",
+        "sPrevious": "Precedenta"
+    },
+    "oAria": {
+        "sSortAscending":  ": activați pentru a sorta coloana în ordine crescătoare",
+        "sSortDescending": ": activați pentru a sorta coloana în ordine descrescătoare"
+    }
+}
