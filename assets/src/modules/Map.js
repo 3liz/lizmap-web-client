@@ -38,18 +38,16 @@ export default class Map extends olMap {
 
         this._refreshOL2View = () => {
             // This refresh OL2 view and layers
-            if (this._newOlMap){
-                mainLizmap.lizmap3.map.setCenter(
-                    this.getView().getCenter(),
-                    this.getView().getZoom()
-                );
-            }
+            mainLizmap.lizmap3.map.setCenter(
+                this.getView().getCenter(),
+                this.getView().getZoom()
+            );
         };
 
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
             moveend: () => {
-                // remove moveend listener and add it after animate ends
+                // Remove moveend listener and add it after animate ends
                 // to avoid extra sync
                 this.un('moveend', this._refreshOL2View);
 
@@ -63,11 +61,15 @@ export default class Map extends olMap {
                 mainEventDispatcher.dispatch('map.moveend');
             },
             zoomstart: (evt) => {
+                // Remove moveend listener and add it after animate ends
+                // to avoid extra sync
+                this.un('moveend', this._refreshOL2View);
+
                 // Sync zoom level
                 this.getView().animate({
                     zoom: evt.zoom,
                     duration: 0
-                });
+                }, () => this.on('moveend', this._refreshOL2View));
 
                 mainEventDispatcher.dispatch('map.zoomstart');
             },
