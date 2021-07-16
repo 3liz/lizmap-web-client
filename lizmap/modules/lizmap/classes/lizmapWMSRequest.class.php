@@ -9,6 +9,9 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Lizmap\App;
+
 class lizmapWMSRequest extends lizmapOGCRequest
 {
     protected $tplExceptions = 'lizmap~wms_exception';
@@ -481,18 +484,12 @@ class lizmapWMSRequest extends lizmapOGCRequest
     protected function gfiXmlToHtml($xmldata)
     {
         // Get data from XML
-        $use_errors = libxml_use_internal_errors(true);
-        $errorlist = array();
         // Create a DOM instance
-        $xml = simplexml_load_string($xmldata);
-        if (!$xml) {
-            foreach (libxml_get_errors() as $error) {
-                $errorlist[] = $error;
-            }
-            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
-            $errormsg .= '\n'.http_build_query($this->params);
-            $errormsg .= '\n'.$xmldata;
-            $errormsg .= '\n'.implode('\n', $errorlist);
+        $xml = App\XmlTools::xmlFromString($xmldata);
+        if (!is_object($xml)) {
+            $errormsg = '\n'.$xmldata.'\n'.$xml;
+            $errormsg = '\n'.http_build_query($this->params).$errormsg;
+            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:'.$errormsg;
             jLog::log($errormsg, 'error');
             // return empty html string
             return '';
@@ -818,18 +815,12 @@ class lizmapWMSRequest extends lizmapOGCRequest
     protected function gfiGmlToHtml($gmldata, $configLayer)
     {
         // Get data from XML
-        $use_errors = libxml_use_internal_errors(true);
-        $errorlist = array();
         // Create a DOM instance
-        $xml = simplexml_load_string($gmldata);
-        if (!$xml) {
-            foreach (libxml_get_errors() as $error) {
-                $errorlist[] = $error;
-            }
-            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
-            $errormsg .= '\n'.http_build_query($this->params);
-            $errormsg .= '\n'.$gmldata;
-            $errormsg .= '\n'.implode('\n', $errorlist);
+        $xml = App\XmlTools::xmlFromString($gmldata);
+        if (!is_object($xml)) {
+            $errormsg = '\n'.$gmldata.'\n'.$xml;
+            $errormsg = '\n'.http_build_query($this->params).$errormsg;
+            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:'.$errormsg;
             jLog::log($errormsg, 'error');
             // return empty html string
             return '';
