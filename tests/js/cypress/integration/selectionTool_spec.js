@@ -1,14 +1,6 @@
 describe('Selection tool', function () {
     before(function () {
-        // Stub to have a lightweight config
-        cy.intercept(
-            {
-                method: 'GET',
-                url: 'index.php/lizmap/service/getProjectConfig?repository=montpellier&project=montpellier'
-            },
-            {fixture: 'getProjectConfigSelection.json'}
-        )
-        // Runs once before the first test in this block
+        // runs once before the first test in this block
         cy.visit('/index.php/view/map/?repository=montpellier&project=montpellier')
         // Todo wait for map to be fully loaded
         cy.wait(30000)
