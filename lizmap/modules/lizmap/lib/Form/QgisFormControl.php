@@ -145,6 +145,7 @@ class QgisFormControl
         'int8' => 'integer',
         'bigint' => 'integer',
         'smallint' => 'integer',
+        '_int' => 'integer[]',
         'text' => 'text',
         'string' => 'text',
         'varchar' => 'text',
