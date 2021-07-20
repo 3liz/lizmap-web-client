@@ -6,6 +6,7 @@ Not released yet
 
 - Fix: multiple selection edition w/ text field. Values can be integer but also string
 - Translation: add Romamian for dataTables (contribution from @ygorigor)
+- Create utils method to parse XML and get error parsing message
 
 ## Version 3.4.4
 
