@@ -128,11 +128,9 @@ class jConfigCompiler {
     static public function getCacheFilename($configFile)
     {
         $filename = jApp::tempPath().str_replace('/','~',$configFile);
-        if (isset($_SERVER['HTTP_HOST'])) {
-            $filename .= '.'.str_replace(':', '-', $_SERVER['HTTP_HOST']);
-        }
-        elseif (isset($_SERVER['SERVER_NAME'])) {
-            $filename .= '.'.$_SERVER['SERVER_NAME'];
+        list($domain, $port) = jServer::getDomainPortFromServer();
+        if ($domain) {
+            $filename.= '.'.$domain.'-'.$port;
         }
         if (BYTECODE_CACHE_EXISTS) {
             $filename .= '.conf.php';
@@ -168,8 +166,21 @@ class jConfigCompiler {
             $config->startAction = ':';
         }
 
-        if ($config->domainName == "" && isset($_SERVER['SERVER_NAME']))
-            $config->domainName = $_SERVER['SERVER_NAME'];
+        if ($config->domainName == "") {
+            // as each compiled config is stored in a file based on the domain
+            // name/port, we can store the guessed domain name into the configuration
+            list($domain, $port) = jServer::getDomainPortFromServer();
+            if ($domain) {
+                $config->domainName = $domain;
+                $isHttps = jServer::isHttpsFromServer();
+                if ($config->forceHTTPPort == '' && !$isHttps && $port != '80') {
+                    $config->forceHTTPPort = $port;
+                }
+                else if ($config->forceHTTPSPort == '' && $isHttps && $port != '443') {
+                    $config->forceHTTPSPort = $port;
+                }
+            }
+        }
 
         $config->_allBasePath = array();
 
