@@ -46,9 +46,8 @@ class jBasicErrorHandler {
      * @param   string      $errmsg     error message
      * @param   string      $filename   filename where the error appears
      * @param   integer     $linenum    line number where the error appears
-     * @param   array       $errcontext
      */
-    static function errorHandler($errno, $errmsg, $filename, $linenum, $errcontext) {
+    static function errorHandler($errno, $errmsg, $filename, $linenum) {
 
         if (error_reporting() == 0)
             return;

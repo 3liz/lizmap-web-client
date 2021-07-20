@@ -336,7 +336,7 @@ class jInstallCheck {
         $this->reporter = $reporter;
         $this->messages = new jInstallerMessageProvider($lang);
         $this->buildProperties = array(
-   'PHP_VERSION_TARGET'=>'5.6',
+   'PHP_VERSION_TARGET'=>'7.4',
         );
     }
 
@@ -706,7 +706,7 @@ class jDbParameters
             if (isset(self::$JdbDriverIndex[$driver])) {
                 $info = self::$driversInfos[self::$JdbDriverIndex[$driver]];
             } else {
-                $info = array('', '', '', $driver, '', '');
+                $info = array('', '', '', $driver, '');
                 $info[0] = (isset($profile['dbtype']) ? $profile['dbtype'] : '');
                 $info[1] = (isset($profile['phpext']) ? $profile['phpext'] : '');
             }
