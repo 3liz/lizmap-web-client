@@ -134,7 +134,7 @@ class jDbParameters
             if (isset(self::$JdbDriverIndex[$driver])) {
                 $info = self::$driversInfos[self::$JdbDriverIndex[$driver]];
             } else {
-                $info = array('', '', '', $driver, '', '');
+                $info = array('', '', '', $driver, '');
                 $info[0] = (isset($profile['dbtype']) ? $profile['dbtype'] : '');
                 $info[1] = (isset($profile['phpext']) ? $profile['phpext'] : '');
             }
