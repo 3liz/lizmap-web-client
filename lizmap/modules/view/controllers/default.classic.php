@@ -77,7 +77,7 @@ class defaultCtrl extends jController
 
         if ($repository) {
             $lrep = lizmap::getRepository($repository);
-            $title = $lrep->getData('label').' - '.$title;
+            $title = $lrep->getLabel().' - '.$title;
         }
         $rep->title = $title;
 

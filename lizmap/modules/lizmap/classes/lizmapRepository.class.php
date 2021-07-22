@@ -78,6 +78,21 @@ class lizmapRepository
         return $this->repo->getPath();
     }
 
+    public function getOriginalPath()
+    {
+        return $this->repo->getOriginalPath();
+    }
+
+    public function getLabel()
+    {
+        return $this->repo->getLabel();
+    }
+
+    public function allowUserDefinedThemes()
+    {
+        return $this->repo->allowUserDefinedThemes();
+    }
+
     public static function getProperties()
     {
         return self::$properties;
