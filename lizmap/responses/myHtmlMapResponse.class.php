@@ -30,8 +30,8 @@ class myHtmlMapResponse extends jResponseHtml
         }
         $this->addCSSLink($bp.'assets/css/bootstrap.css');
         $this->addCSSLink($bp.'assets/css/bootstrap-responsive.css');
-        $this->addCSSLink($bp.'assets/css/jquery.dataTables.css');
-        $this->addCSSLink($bp.'assets/css/jquery.dataTables.bootstrap.css');
+        $this->addCSSLink($bp.'assets/css/jquery.dataTables.min.css');
+        $this->addCSSLink($bp.'assets/css/dataTables.bootstrap.min.css');
         $this->addCSSLink($bp.'assets/js/TreeTable/stylesheets/jquery.treeTable.css');
         $this->addCSSLink($bp.'assets/js/OpenLayers-2.13/theme/default/style.css');
         $this->addCSSLink($bp.'assets/css/ol.css');
@@ -81,7 +81,7 @@ class myHtmlMapResponse extends jResponseHtml
         $this->addJSLink($bp.'assets/js/bootstrap.js');
         $this->addJSLink($bp.'assets/js/TreeTable/javascripts/jquery.treeTable.js');
         $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js');
-        $this->addJSLink($bp.'assets/js/jquery.dataTables.bootstrap.js');
+        $this->addJSLink($bp.'assets/js/dataTables.bootstrap.min.js');
         $this->addJSLink($bp.'assets/js/map.js');
         $this->addJSLink($bp.'assets/js/lizmap.js');
 
