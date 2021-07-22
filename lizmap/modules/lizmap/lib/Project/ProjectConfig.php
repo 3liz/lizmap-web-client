@@ -75,11 +75,20 @@ class ProjectConfig
     }
 
     /**
+     * @deprecated
+     * @see ProjectConfig::getConfigContent()
+     */
+    public function getData()
+    {
+        return $this->cfgContent;
+    }
+
+    /**
      * Return the config file as an array.
      *
      * @return object
      */
-    public function getData()
+    public function getConfigContent()
     {
         return $this->cfgContent;
     }

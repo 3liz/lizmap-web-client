@@ -1208,7 +1208,7 @@ class Project
      */
     public function getUpdatedConfig()
     {
-        $configJson = $this->cfg->getData();
+        $configJson = $this->cfg->getConfigContent();
 
         // Add an option to display buttons to remove the cache for cached layer
         // Only if appropriate right is found
@@ -1491,7 +1491,7 @@ class Project
      */
     public function getFullCfg()
     {
-        return $this->cfg->getData();
+        return $this->cfg->getConfigContent();
     }
 
     /**
