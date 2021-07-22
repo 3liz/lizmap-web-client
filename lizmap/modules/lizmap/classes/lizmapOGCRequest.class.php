@@ -9,6 +9,9 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Lizmap\App;
+
 class lizmapOGCRequest
 {
     /**
@@ -66,15 +69,18 @@ class lizmapOGCRequest
 
         // Parse request XML
         if ($requestXml) {
-            $xml = simplexml_load_string($requestXml);
-            if ($xml) {
+            $xml = App\XmlTools::xmlFromString($requestXml);
+            if (!is_object($xml)) {
+                $errormsg = '\n'.$requestXml.'\n'.$xml;
+                $errormsg = 'An error has been raised when loading requestXml:'.$errormsg;
+                jLog::log($errormsg, 'error');
+                $requestXml = null;
+            } else {
                 $request = $xml->getName();
                 if (property_exists($xml->attributes(), 'service')) {
                     // OGC service has to be upper case for QGIS Server
                     $service = strtoupper($xml['service']);
                 }
-            } else {
-                $requestXml = null;
             }
         }
 

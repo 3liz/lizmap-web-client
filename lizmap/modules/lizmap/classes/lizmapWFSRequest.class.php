@@ -9,6 +9,9 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Lizmap\App;
+
 class lizmapWFSRequest extends lizmapOGCRequest
 {
     protected $tplExceptions = 'lizmap~wfs_exception';
@@ -181,19 +184,13 @@ class lizmapWFSRequest extends lizmapOGCRequest
             if ($layer != null) {
 
                 // Get data from XML
-                $use_errors = libxml_use_internal_errors(true);
                 $go = true;
                 // Create a DOM instance
-                $xml = simplexml_load_string($data);
-                if (!$xml) {
-                    $errorlist = array();
-                    foreach (libxml_get_errors() as $error) {
-                        $errorlist[] = $error;
-                    }
-                    $errormsg = 'An error has been raised when loading DescribeFeatureType:';
-                    $errormsg .= '\n'.http_build_query($this->params);
-                    $errormsg .= '\n'.$data;
-                    $errormsg .= '\n'.implode('\n', $errorlist);
+                $xml = App\XmlTools::xmlFromString($data);
+                if (!is_object($xml)) {
+                    $errormsg = '\n'.$data.'\n'.$xml;
+                    $errormsg = '\n'.http_build_query($this->params).$errormsg;
+                    $errormsg = 'An error has been raised when loading DescribeFeatureType:'.$errormsg;
                     jLog::log($errormsg, 'error');
                     $go = false;
                 }
