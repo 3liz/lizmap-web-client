@@ -100,6 +100,44 @@ class Repository
         return $this->key;
     }
 
+
+    /**
+     * Get the repository label.
+     *
+     * @return string the repository label
+     */
+    public function getLabel()
+    {
+        return $this->getData('label');
+    }
+    /**
+     * Indicate if user defined themes are allowed
+     *
+     * @return boolean true if it is allowed
+     */
+    public function allowUserDefinedThemes()
+    {
+        $value = $this->getData('allowUserDefinedThemes');
+        if (empty($value)) {
+            return false;
+        }
+        if (is_bool($value)) {
+            return $value;
+        }
+        if (is_numeric($value)) {
+            return intval($value) > 0;
+        }
+        $strVal = strtolower($value);
+        if ($strVal === 'true' && $strVal === 't'
+            && $strVal === 'on' && $strVal === '1')
+        {
+            return true;
+        }
+        return false;
+    }
+
+    protected $cleanedPath = null;
+
     /**
      * @return false|string the path of the repository
      */
@@ -108,13 +146,16 @@ class Repository
         if ($this->data['path'] == '') {
             return false;
         }
-        // add a trailing slash if needed
-        if (!preg_match('#/$#', $this->data['path'])) {
-            $this->data['path'] .= '/';
+        if ($this->cleanedPath !== null) {
+            return $this->cleanedPath;
         }
         $path = $this->data['path'];
+        // add a trailing slash if needed
+        if (!preg_match('#/$#', $path)) {
+            $path .= '/';
+        }
         // if path is relative, get full path
-        if ($this->data['path'][0] != '/' and $this->data['path'][1] != ':') {
+        if ($this->data['path'][0] != '/' && $this->data['path'][1] != ':') {
             $path = realpath($this->varPath.$this->data['path']).'/';
         }
         if (strstr($this->data['path'], './')) {
@@ -124,11 +165,16 @@ class Repository
             return false;
         }
         if (file_exists($path)) {
-            $this->data['path'] = $path;
+            $this->cleanedPath = $path;
         } else {
             return false;
         }
 
+        return $this->cleanedPath;
+    }
+
+    public function getOriginalPath()
+    {
         return $this->data['path'];
     }
 
@@ -147,6 +193,12 @@ class Repository
         return self::$propertiesOptions;
     }
 
+    /**
+     * @deprecated
+     * @param string $key
+     *
+     * @return mixed|null
+     */
     public function getData($key)
     {
         if (!array_key_exists($key, $this->data)) {

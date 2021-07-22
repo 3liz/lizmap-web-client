@@ -392,13 +392,24 @@ class lizmapServicesTest extends PHPUnit_Framework_TestCase
             return;
         }
         $this->assertEquals($key, $repo->getKey());
-        $properties = lizmapRepository::getProperties();
-        foreach ($properties as $prop) {
-            if (!isset($repoInfos['repository:'.$key][$prop])) {
-                continue;
-            }
-            $this->assertEquals($repoInfos['repository:'.$key][$prop], $repo->getData($prop));
+
+        $repInfosValues = $repoInfos['repository:'.$key];
+
+        if (isset($repInfosValues['label'])) {
+            $this->assertEquals($repInfosValues['label'], $repo->getLabel());
         }
+        if (isset($repInfosValues['path'])) {
+            $this->assertEquals($repInfosValues['path'], $repo->getOriginalPath());
+        }
+        if (isset($repInfosValues['allowUserDefinedThemes'])) {
+            if ($repInfosValues['allowUserDefinedThemes'] == '1') {
+                $this->assertTrue($repo->allowUserDefinedThemes());
+            }
+            else {
+                $this->assertFalse($repo->allowUserDefinedThemes());
+            }
+        }
+
         unset($testLizmapServices, $repo);
     }
 

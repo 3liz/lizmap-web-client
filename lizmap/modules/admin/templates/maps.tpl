@@ -30,6 +30,7 @@
                                         <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$d}</td>
                                     {/if}
                                 {else}
+                                    <!-- FIXME don't use getData() which is deprecated -->
                                     <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$repo->getData($prop)}</td>
                                 {/if}
                             </tr>

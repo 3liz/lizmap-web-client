@@ -35,7 +35,7 @@ class ajax_viewZone extends jZone
         foreach ($repositories as $r) {
             if (jAcl2::check('lizmap.repositories.view', $r)) {
                 $lrep = lizmap::getRepository($r);
-                $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
+                $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
                 $metadata = $lrep->getProjectsMetadata();
                 foreach ($metadata as $meta) {
                     // Avoid project with no access rights
@@ -53,9 +53,9 @@ class ajax_viewZone extends jZone
                         $meta->getId(),
                         $meta->getTitle(),
                         $meta->getAbstract(),
-                        $meta->getData('keywordList'),
-                        $meta->getData('proj'),
-                        $meta->getData('bbox'),
+                        $meta->getKeywordList(),
+                        $meta->getProj(),
+                        $meta->getBbox(),
                         jUrl::getFull('view~map:index', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
                         jUrl::getFull('view~media:illustration', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
                         0,

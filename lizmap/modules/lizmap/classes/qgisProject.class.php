@@ -149,6 +149,12 @@ class qgisProject
         return $this->path;
     }
 
+    /**
+     * @deprecated
+     * @param string $key
+     *
+     * @return mixed|null
+     */
     public function getData($key)
     {
         if (!array_key_exists($key, $this->data)) {
