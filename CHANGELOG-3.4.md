@@ -5,6 +5,7 @@
 Not released yet
 
 - Fix: multiple selection edition w/ text field. Values can be integer but also string
+- Translation: add Romamian for dataTables (contribution from @ygorigor)
 
 ## Version 3.4.4
 
