@@ -276,7 +276,7 @@ class lizMapCtrl extends jController
             $lrep->getKey()
         );
         if ($wmsGetCapabilitiesUrl) {
-            $wmsGetCapabilitiesUrl = $lproj->getData('wmsGetCapabilitiesUrl');
+            $wmsGetCapabilitiesUrl = $lproj->getWMSGetCapabilitiesUrl();
         }
         $assign['wmsGetCapabilitiesUrl'] = $wmsGetCapabilitiesUrl;
 

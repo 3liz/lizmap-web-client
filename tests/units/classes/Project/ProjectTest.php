@@ -13,14 +13,6 @@ class ProjectTest extends TestCase
 {
     public function testReadProject()
     {
-        $props = array(
-            'repository' => 'key',
-            'id' => 'test',
-            'title' => 'Test',
-            'abstract' => '',
-            'proj' => 'EPSG:4242',
-            'bbox' => '42.42, 21.21, 20.2, 48.84',
-        );
         $data = array(
             'WMSInformation' => array(),
             'layers' => array(),
@@ -33,10 +25,17 @@ class ProjectTest extends TestCase
         $config = new Project\ProjectConfig('', array('cfgContent' => $cfg, 'options' => $cfg->options));
         $proj->setCfg($config);
         $proj->setQgis($qgis_default);
+        $proj->setRepo($rep);
+        $proj->setKey('test');
         $proj->readProjectForTest('test', $rep);
-        foreach ($props as $prop => $expectedValue) {
-            $this->assertEquals($expectedValue, $proj->getData($prop));
-        }
+
+        $this->assertEquals('key', $proj->getRepositoryKey());
+        $this->assertEquals('test', $proj->getKey());
+        $this->assertEquals('Test', $proj->getTitle());
+        $this->assertEquals('', $proj->getAbstract());
+        $this->assertEquals('EPSG:4242', $proj->getProj());
+        $this->assertEquals('42.42, 21.21, 20.2, 48.84', $proj->getBbox());
+
     }
 
     public function getQgisPathData()

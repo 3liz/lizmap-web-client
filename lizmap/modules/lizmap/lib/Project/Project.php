@@ -436,6 +436,104 @@ class Project
         return $this->repository;
     }
 
+    /**
+     * @return string
+     */
+    public function getRepositoryKey()
+    {
+        return $this->repository->getKey();
+    }
+
+    /**
+     * Get the project title.
+     *
+     * @return string the project title
+     */
+    public function getTitle()
+    {
+        return $this->getData('title');
+    }
+
+    /**
+     * Get the abstract.
+     *
+     * @return string abstract
+     */
+    public function getAbstract()
+    {
+        return $this->getData('abstract');
+    }
+
+    /**
+     * Get the keywords list.
+     *
+     * @return array list of keywords
+     */
+    public function getKeywordsList()
+    {
+        return $this->qgis->getKeywordList();
+    }
+
+    /**
+     * Get proj.
+     *
+     * @return string
+     */
+    public function getProj()
+    {
+        return $this->getData('proj');
+    }
+
+    /**
+     * Get the bbox.
+     *
+     * @return string
+     */
+    public function getBbox()
+    {
+        return $this->getData('bbox');
+    }
+
+    /**
+     * WMS Max Width.
+     *
+     * @return int
+     */
+    public function getWMSMaxWidth()
+    {
+        return $this->getData('wmsMaxWidth');
+    }
+
+    /**
+     * WMS Max Height.
+     *
+     * @return int
+     */
+    public function getWMSMaxHeight()
+    {
+        return $this->getData('wmsMaxHeight');
+    }
+
+    /**
+     * Get the WMS GetCapabilities Url.
+     *
+     * @return string
+     */
+    public function getWMSGetCapabilitiesUrl()
+    {
+        return $this->getData('wmsGetCapabilitiesUrl');
+    }
+
+    /**
+     * Get the WMTS GetCapabilities Url.
+     *
+     * @return string
+     */
+    public function getWMTSGetCapabilitiesUrl()
+    {
+        return $this->getData('wmtsGetCapabilitiesUrl');
+    }
+
     public function getFileTime()
     {
         return $this->cacheHandler->getFileTime();
@@ -483,6 +581,13 @@ class Project
         return $this->qgis->getXmlLayer($layerId);
     }
 
+    /**
+     * @deprecated
+     *
+     * @param string $key
+     *
+     * @return null|mixed
+     */
     public function getData($key)
     {
         if (array_key_exists($key, $this->data)) {
@@ -1543,8 +1648,8 @@ class Project
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {
-            $wmsGetCapabilitiesUrl = $this->getData('wmsGetCapabilitiesUrl');
-            $wmtsGetCapabilitiesUrl = $this->getData('wmtsGetCapabilitiesUrl');
+            $wmsGetCapabilitiesUrl = $this->getWMSGetCapabilitiesUrl();
+            $wmtsGetCapabilitiesUrl = $this->getWMTSGetCapabilitiesUrl();
         }
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel' => $this->repository->getLabel(),
