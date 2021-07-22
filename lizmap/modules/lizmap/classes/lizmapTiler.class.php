@@ -80,15 +80,30 @@ class lizmapTiler
             $wmsResult = $wmsRequest->process();
             // Http code error
             if (($wmsResult->code / 100) >= 4) {
+                $errormsg = 'An error has been raised when loading WMS GetCapabilities: HTTP Code '.$wmsResult->code;
+                \jLog::log($errormsg, 'error');
+
                 return null;
             }
             $wms = $wmsResult->data;
             // empty data or service exception, WMS not available
             if (empty($wms) or preg_match('/ServiceExceptionReport/', $wms)) {
+                $errormsg = 'An error has been raised when loading WMS GetCapabilities: ServiceExceptionReport';
+                $errormsg .= '\n'.$wms;
+                \jLog::log($errormsg, 'error');
+
                 return null;
             }
 
-            $wms_xml = simplexml_load_string($wms);
+            $wms_xml = \Lizmap\App\XmlTools::xmlFromString($wms);
+            if (!is_object($wms_xml)) {
+                $errormsg = '\n'.$file.'\n'.$wms_xml;
+                $errormsg = 'An error has been raised when loading WMS GetCapabilities:'.$errormsg;
+                \jLog::log($errormsg, 'error');
+
+                return null;
+            }
+
             $wms_xml->registerXPathNamespace('wms', 'http://www.opengis.net/wms');
             $wms_xml->registerXPathNamespace('xlink', 'http://www.w3.org/1999/xlink');
 
@@ -109,6 +124,7 @@ class lizmapTiler
             'tileMatrixSetList' => null,
             'layerTileInfoList' => null,
         );
+
         if (is_array($tileMatrixSetList) && is_array($layers)) {
             $tileCapabilities->tileMatrixSetList = $tileMatrixSetList;
             $tileCapabilities->layerTileInfoList = $layers;

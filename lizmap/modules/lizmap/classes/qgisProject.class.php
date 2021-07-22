@@ -376,8 +376,13 @@ class qgisProject
         if (!file_exists($qgs_path)) {
             throw new Exception('The QGIS project '.$qgs_path.' does not exist!');
         }
-        $xml = simplexml_load_file($qgs_path);
-        if ($xml === false) {
+
+        $xml = \Lizmap\App\XmlTools::xmlFromFile($qgs_path);
+        if (!is_object($xml)) {
+            $errormsg = '\n'.$qgs_path.'\n'.$xml;
+            $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
+            \jLog::log($errormsg, 'error');
+
             throw new Exception('The QGIS project '.$qgs_path.' has invalid content!');
         }
         $this->xml = $xml;
@@ -396,8 +401,12 @@ class qgisProject
             throw new Exception('The QGIS project '.basename($qgs_path).' does not exist!');
         }
 
-        $qgs_xml = simplexml_load_file($qgs_path);
-        if ($qgs_xml === false) {
+        $qgs_xml = \Lizmap\App\XmlTools::xmlFromFile($qgs_path);
+        if (!is_object($qgs_xml)) {
+            $errormsg = '\n'.$qgs_path.'\n'.$qgs_xml;
+            $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
+            \jLog::log($errormsg, 'error');
+
             throw new Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }
         $this->path = $qgs_path;
