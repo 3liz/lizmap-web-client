@@ -130,6 +130,12 @@ class QgisProject
         return $data;
     }
 
+    /**
+     * @deprecated
+     * @param string $key
+     *
+     * @return mixed|null
+     */
     public function getData($key)
     {
         if (!array_key_exists($key, $this->data)) {
@@ -137,6 +143,56 @@ class QgisProject
         }
 
         return $this->data[$key];
+    }
+
+    /**
+     * Get the project title.
+     *
+     * @return string the project title
+     */
+    public function getTitle()
+    {
+        return $this->getData('title');
+    }
+
+    /**
+     * Get the project abstract.
+     *
+     * @return string the project abstract
+     */
+    public function getAbstract()
+    {
+        return $this->getData('abstract');
+    }
+
+    /**
+     * List of keywords
+     *
+     * @return array
+     */
+    public function getKeywordList()
+    {
+        return $this->getData('keywordList');
+    }
+
+    /**
+     * WMS Max Width
+     *
+     * @return integer
+     */
+    public function getWMSMaxWidth()
+    {
+        return $this->getData('wmsMaxWidth');
+    }
+
+    /**
+     * WMS Max Height
+     *
+     * @return integer
+     */
+    public function getWMSMaxHeight()
+    {
+        return $this->getData('wmsMaxHeight');
     }
 
     public function getQgisProjectVersion()

@@ -29,15 +29,15 @@ class ProjectMetadata
     public function __construct(Project $project)
     {
         $metadata = array(
-            'id' => $project->getData('id'),
-            'repository' => $project->getData('repository'),
-            'title' => $project->getData('title'),
-            'abstract' => $project->getData('abstract'),
-            'keywordList' => $project->getData('keywordList'),
-            'proj' => $project->getData('proj'),
-            'bbox' => $project->getData('bbox'),
-            'wmsGetCapabilitiesUrl' => $project->getData('wmsGetCapabilitiesUrl'),
-            'wmtsGetCapabilitiesUrl' => $project->getData('wmtsGetCapabilitiesUrl'),
+            'id' => $project->getKey(),
+            'repository' => $project->getRepositoryKey(),
+            'title' => $project->getTitle(),
+            'abstract' => $project->getAbstract(),
+            'keywordList' => $project->getKeywordsList(),
+            'proj' => $project->getProj(),
+            'bbox' => $project->getBbox(),
+            'wmsGetCapabilitiesUrl' => $project->getWMSGetCapabilitiesUrl(),
+            'wmtsGetCapabilitiesUrl' => $project->getWMTSGetCapabilitiesUrl(),
             'map' => $project->getRelativeQgisPath(),
             'acl' => $project->checkAcl(),
         );
