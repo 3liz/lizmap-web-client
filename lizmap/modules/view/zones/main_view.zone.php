@@ -44,7 +44,7 @@ class main_viewZone extends jZone
         foreach ($repositories as $r) {
             if (jAcl2::check('lizmap.repositories.view', $r)) {
                 $lrep = lizmap::getRepository($r);
-                $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
+                $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
 
                 // WMS GetCapabilities Url
                 $wmsGetCapabilitiesUrl = jAcl2::check(

@@ -1547,7 +1547,7 @@ class Project
             $wmtsGetCapabilitiesUrl = $this->getData('wmtsGetCapabilitiesUrl');
         }
         $metadataTpl->assign(array_merge(array(
-            'repositoryLabel' => $this->repository->getData('label'),
+            'repositoryLabel' => $this->repository->getLabel(),
             'repository' => $this->repository->getKey(),
             'project' => $this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
