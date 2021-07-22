@@ -67,17 +67,17 @@ class main_viewZone extends jZone
 
                     // Get project information
                     if ($wmsGetCapabilitiesUrl) {
-                        $wmsGetCapabilitiesUrl = $meta->getData('wmsGetCapabilitiesUrl');
-                        $wmtsGetCapabilitiesUrl = $meta->getData('wmtsGetCapabilitiesUrl');
+                        $wmsGetCapabilitiesUrl = $meta->getWMSGetCapabilitiesUrl();
+                        $wmtsGetCapabilitiesUrl = $meta->getWMTSGetCapabilitiesUrl();
                     }
                     if ($lrep->getKey().'~'.$meta->getId() != $excludedProject) {
                         $mrep->childItems[] = new lizmapMainViewItem(
                             $meta->getId(),
                             $meta->getTitle(),
                             $meta->getAbstract(),
-                            $meta->getData('keywordList'),
-                            $meta->getData('proj'),
-                            $meta->getData('bbox'),
+                            $meta->getKeywordList(),
+                            $meta->getProj(),
+                            $meta->getBbox(),
                             jUrl::get('view~map:index', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
                             jUrl::get('view~media:illustration', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
                             0,
