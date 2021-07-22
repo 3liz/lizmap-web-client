@@ -501,8 +501,13 @@ class QgisProject
         if (!file_exists($qgs_path)) {
             throw new \Exception('The QGIS project '.$qgs_path.' does not exist!');
         }
-        $xml = simplexml_load_file($qgs_path);
-        if ($xml === false) {
+
+        $xml = App\XmlTools::xmlFromFile($qgs_path);
+        if (!is_object($xml)) {
+            $errormsg = '\n'.$qgs_path.'\n'.$xml;
+            $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
+            \jLog::log($errormsg, 'error');
+
             throw new \Exception('The QGIS project '.$qgs_path.' has invalid content!');
         }
         $this->xml = $xml;
@@ -1004,16 +1009,22 @@ class QgisProject
      * Read the qgis files.
      *
      * @param mixed $qgs_path
-     * @param mixed $qgsPath
      */
-    protected function readXmlProject($qgsPath)
+    protected function readXmlProject($qgs_path)
     {
-        if (!file_exists($qgsPath)) {
-            throw new \Exception('The QGIS project '.basename($qgsPath).' does not exist!');
+        if (!file_exists($qgs_path)) {
+            throw new \Exception('The QGIS project '.basename($qgs_path).' does not exist!');
         }
 
-        $this->xml = simplexml_load_file($qgsPath);
-        $qgsXml = $this->xml;
+        $qgsXml = App\XmlTools::xmlFromFile($qgs_path);
+        if (!is_object($qgsXml)) {
+            $errormsg = '\n'.$qgs_path.'\n'.$qgsXml;
+            $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
+            \jLog::log($errormsg, 'error');
+
+            throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
+        }
+        $this->xml = $qgsXml;
         // Build data
         $this->data = array(
         );

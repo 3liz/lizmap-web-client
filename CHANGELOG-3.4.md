@@ -6,6 +6,10 @@ Not released yet
 
 - Fix: multiple selection edition w/ text field. Values can be integer but also string
 - Translation: add Romamian for dataTables (contribution from @ygorigor)
+- Create utils method to parse XML and get error parsing message
+- Fix: Object of class LibXMLError could not be converted to string
+- Fix: Log errors about loading QGIS Project and provides errors messages
+- Fix: lizmapTiler log errors when loading WMS GetCapabilities
 
 ## Version 3.4.4
 

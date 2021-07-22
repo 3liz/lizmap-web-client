@@ -312,23 +312,27 @@ abstract class OGCRequest
         );
     }
 
+    /*
+     * Interprets a string of XML into an object
+     *
+     * @param string $xmldata a well-formed XML string
+     * @param string $name    an XML name
+     *
+     * @return SimpleXMLElement|null an object with properties containing
+     *                               the data held within the XML document
+     *                               or null
+     */
     protected function loadXmlString($xmldata, $name)
     {
         // Get data from XML
-        $use_errors = libxml_use_internal_errors(true);
-        $errorlist = array();
         // Create a DOM instance
-        $xml = simplexml_load_string($xmldata);
-        if (!$xml) {
-            foreach (libxml_get_errors() as $error) {
-                $errorlist[] = $error;
-            }
-            $errormsg = 'An error has been raised when loading '.$name.':';
-            $errormsg .= '\n'.http_build_query($this->params);
-            $errormsg .= '\n'.$xmldata;
-            $errormsg .= '\n'.implode('\n', $errorlist);
+        $xml = App\XmlTools::xmlFromString($xmldata);
+        if (!is_object($xml)) {
+            $errormsg = '\n'.$xmldata.'\n'.$xml;
+            $errormsg = '\n'.http_build_query($this->params).$errormsg;
+            $errormsg = 'An error has been raised when loading '.$name.':'.$errormsg;
             \jLog::log($errormsg, 'error');
-            // return empty html string
+
             return null;
         }
 
