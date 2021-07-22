@@ -122,7 +122,7 @@ class Project
     protected $formFilterLayers = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $editionLayers = array();
 
@@ -1798,17 +1798,19 @@ class Project
     {
 
         // Check right on repository
-        if (!$this->appContext->aclCheck($login, 'lizmap.repositories.view', $this->repository->getKey())) {
+        if (!$this->appContext->aclCheck('lizmap.repositories.view', $this->repository->getKey())) {
             return false;
         }
 
+        $options = $this->getOptions();
+
         // Check acl option is configured in project config
-        if (!property_exists($this->cfg->options, 'acl') || !is_array($this->cfg->options->acl) || empty($this->cfg->options->acl)) {
+        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
             return true;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $this->cfg->options->acl;
+        $aclGroups = $options->acl;
         $userGroups = $this->appContext->aclGroupsIdByUser($login);
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
