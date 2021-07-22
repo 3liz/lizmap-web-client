@@ -14,7 +14,7 @@ class listRepositoryDatasource implements jIFormsDatasource
         $mydata = array();
         foreach (lizmap::getRepositoryList() as $repo) {
             $rep = lizmap::getRepository($repo);
-            $mydata[$repo] = (string) $rep->getData('label');
+            $mydata[$repo] = (string) $rep->getLabel();
         }
         $this->data = $mydata;
     }

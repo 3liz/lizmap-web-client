@@ -200,7 +200,7 @@ class lizAjaxCtrl extends jController
         }
 
         $assign = array_merge(array(
-            'repositoryLabel' => $lrep->getData('label'),
+            'repositoryLabel' => $lrep->getLabel(),
             'repository' => $lrep->getKey(),
             'project' => $project,
         ), $wmsInfo);
