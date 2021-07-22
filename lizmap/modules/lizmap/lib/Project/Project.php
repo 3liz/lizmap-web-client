@@ -1543,11 +1543,11 @@ class Project
         );
         $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ($wmsGetCapabilitiesUrl) {
-            $wmsGetCapabilitiesUrl = $this->qgis->getData('wmsGetCapabilitiesUrl');
-            $wmtsGetCapabilitiesUrl = $this->qgis->getData('wmtsGetCapabilitiesUrl');
+            $wmsGetCapabilitiesUrl = $this->getData('wmsGetCapabilitiesUrl');
+            $wmtsGetCapabilitiesUrl = $this->getData('wmtsGetCapabilitiesUrl');
         }
         $metadataTpl->assign(array_merge(array(
-            'repositoryLabel' => $this->qgis->getData('label'),
+            'repositoryLabel' => $this->repository->getData('label'),
             'repository' => $this->repository->getKey(),
             'project' => $this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
