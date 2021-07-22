@@ -225,6 +225,7 @@ class lizmap
         }
         if ($rep) {
             foreach (lizmapRepository::getProperties() as $k) {
+                // FIXME don't use getData() which is deprecated
                 $v = $rep->getData($k);
                 if ($k == 'path' && $rootRepositories != ''
                     && substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
