@@ -236,7 +236,11 @@ class QgisFormControl
                 $class = '\jFormsControl'.$controlName;
                 $this->ctrl = new $class($this->ref);
                 if (in_array($controlName, $fillMethods)) {
-                    $this->fillControlDatasource();
+                    if ($controlName === 'Checkbox') {
+                        $this->fillCheckboxValues();
+                    } else {
+                        $this->fillControlDatasource();
+                    }
                 }
                 $markup = null;
             }
