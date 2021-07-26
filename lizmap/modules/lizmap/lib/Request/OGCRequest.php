@@ -3,7 +3,7 @@
  * Manage OGC request.
  *
  * @author    3liz
- * @copyright 2015 3liz
+ * @copyright 2015-2021 3liz
  *
  * @see      http://3liz.com
  *
@@ -132,7 +132,8 @@ abstract class OGCRequest
      * Process the OGC Request
      * Checks the request parameter and performs the right method.
      *
-     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     * @return object The request result with HTTP code, response mime-type, response data
+     *                (properties $code, $mime, $data, $cached)
      */
     public function process()
     {
@@ -210,7 +211,8 @@ abstract class OGCRequest
      *
      * @param int $code The HTTP code to return
      *
-     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     * @return object The request result with HTTP code, response mime-type, response data
+     *                (properties $code, $mime, $data, $cached)
      */
     protected function serviceException($code = 400)
     {
@@ -242,37 +244,27 @@ abstract class OGCRequest
     /**
      * Perform an OGC GetCapabilities Request.
      *
-     * @return array['code', 'mime', 'data', 'cached'] The request result with HTTP code, response mime-type and response data
+     * @return object The request result with HTTP code, response mime-type, response data
+     *                (properties $code, $mime, $data, $cached)
      */
     protected function process_getcapabilities()
     {
         $appContext = $this->appContext;
         // Get cached session
-        $key = session_id().'-'.
-               $this->project->getRepository()->getKey().'-'.
-               $this->project->getKey().'-'.
-               $this->param('service').'-getcapabilities';
+        $key = session_id().'-'.$this->param('service');
         if ($appContext->UserIsConnected()) {
             $juser = $appContext->getUserSession();
             $key .= '-'.$juser->login;
         }
-        $key = sha1($key);
+        $key = 'getcapabilities-'.sha1($key);
         $cached = false;
 
         try {
-            $cached = $appContext->getCache($key, 'qgisprojects');
+            $cached = $this->project->getCacheHandler()->getProjectRelatedDataCache($key);
         } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
             \jLog::logEx($e, 'error');
-        }
-        // invalid cache
-        if ($cached !== false
-            && $cached['mtime'] < $this->project->getFileTime()
-            && (!array_key_exists('ctime', $cached)
-              || $cached['ctime'] < $this->project->getCfgFileTime())
-            ) {
-            $cached = false;
         }
         // return cached data
         if ($cached !== false) {
@@ -294,14 +286,12 @@ abstract class OGCRequest
         }
 
         if ($response->code == 200) {
-            $cached = array(
-                'mtime' => $this->project->getFileTime(),
-                'ctime' => $this->project->getCfgFileTime(),
+            $cachedContent = array(
                 'code' => $response->code,
                 'mime' => $response->mime,
                 'data' => $response->data,
             );
-            $cached = $appContext->setCache($key, $cached, 3600, 'qgisprojects');
+            $cached = $this->project->getCacheHandler()->setProjectRelatedDataCache($key, $cachedContent, 3600);
         }
 
         return (object) array(

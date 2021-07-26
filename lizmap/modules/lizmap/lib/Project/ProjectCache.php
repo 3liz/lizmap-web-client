@@ -53,7 +53,10 @@ class ProjectCache
     const CACHE_FORMAT_VERSION = 2;
 
     /**
-     * Construct the object.
+     * Initialize the cache of a Qgis project.
+     *
+     * The given Qgis file should exist, as well as the corresponding lizmap
+     * cfg file.
      *
      * @param string                  $file       The full path of the project
      * @param App\AppContextInterface $appContext The interface to call Jelix
@@ -63,6 +66,8 @@ class ProjectCache
         $this->file = $file;
         $this->appContext = $appContext;
         $this->fileKey = $this->appContext->normalizeCacheKey($file);
+        $this->qgsMtime = filemtime($this->file);
+        $this->qgsCfgMtime = filemtime($this->file.'.cfg');
     }
 
     /**
@@ -81,16 +86,12 @@ class ProjectCache
         try {
             $data = $this->appContext->getCache($this->fileKey, $this->profile);
             if ($data === false
-                || $data['qgsmtime'] < filemtime($this->file)
-                || $data['qgscfgmtime'] < filemtime($this->file.'.cfg')
+                || $data['qgsmtime'] < $this->qgsMtime
+                || $data['qgscfgmtime'] < $this->qgsCfgMtime
                 || !isset($data['format_version'])
                 || $data['format_version'] != self::CACHE_FORMAT_VERSION
             ) {
                 $data = false;
-            }
-            if ($data) {
-                $this->qgsMtime = $data['qgsmtime'];
-                $this->qgsCfgMtime = $data['qgscfgmtime'];
             }
         } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
@@ -109,8 +110,8 @@ class ProjectCache
     public function storeProjectData($data)
     {
         try {
-            $data['qgsmtime'] = filemtime($this->file);
-            $data['qgscfgmtime'] = filemtime($this->file.'.cfg');
+            $data['qgsmtime'] = $this->qgsMtime;
+            $data['qgscfgmtime'] = $this->qgsCfgMtime;
             $data['format_version'] = self::CACHE_FORMAT_VERSION;
             $this->appContext->setCache($this->fileKey, $data, null, $this->profile);
         } catch (\Exception $e) {
@@ -172,6 +173,70 @@ class ProjectCache
         }
 
         return $cacheContent;
+    }
+
+    /**
+     * store some data into the project cache, related to the project.
+     *
+     * @param string $key
+     * @param mixed  $data
+     * @param int the life time of the cache, in seconds
+     * @param mixed $ttl
+     *
+     * @return bool false if failure
+     */
+    public function setProjectRelatedDataCache($key, $data, $ttl = 7200)
+    {
+        $cacheContent = array(
+            'qgsmtime' => $this->qgsMtime,
+            'qgscfgmtime' => $this->qgsCfgMtime,
+            'format_version' => self::CACHE_FORMAT_VERSION,
+            'data' => $data,
+        );
+
+        $cacheKey = $this->fileKey.'.'.$key;
+
+        try {
+            return $this->appContext->setCache($cacheKey, $cacheContent, $ttl, $this->profile);
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'error');
+
+            return false;
+        }
+    }
+
+    /**
+     * Read some data from the project cache, related to the project.
+     *
+     * It checks if the cache is belong with the current project cache.
+     *
+     * @param string $key
+     *
+     * @return false|mixed false if there is no cache, else the data
+     */
+    public function getProjectRelatedDataCache($key)
+    {
+        $data = false;
+
+        try {
+            $cacheKey = $this->fileKey.'.'.$key;
+            $cacheContent = $this->appContext->getCache($cacheKey, $this->profile);
+            // check if the cache correspond to the current project
+            if ($cacheContent === false
+                || $cacheContent['qgsmtime'] < $this->qgsMtime
+                || $cacheContent['qgscfgmtime'] < $this->qgsCfgMtime
+                || $cacheContent['format_version'] != self::CACHE_FORMAT_VERSION
+            ) {
+                return false;
+            }
+            $data = $cacheContent['data'];
+        } catch (\Exception $e) {
+            // if qgisprojects profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            $this->appContext->logException($e, 'error');
+        }
+
+        return $data;
     }
 
     public function getFileTime()
