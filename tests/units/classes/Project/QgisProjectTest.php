@@ -983,4 +983,43 @@ class QgisProjectTest extends TestCase
         $prop = $props['label'];
         $this->assertEquals($prop['fieldEditType'], '');
     }
+
+    public function testGetValuesFromOptions() {
+        $testProj = new qgisProjectForTests();
+
+        $xmlStr = '
+              <Option type="Map">
+                <Option value="false" type="bool" name="IsMultiline"/>
+                <Option value="false" type="bool" name="UseHtml"/>
+              </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $options = $testProj->getValuesFromOptionsForTest($xml);
+        $this->assertTrue(is_array($options));
+        $this->assertCount(2, $options);
+        $this->assertTrue(property_exists($options[0], 'key'));
+        $this->assertTrue(property_exists($options[0], 'value'));
+
+        $xmlStr = '
+           <Option type="List" name="map">
+             <Option type="Map">
+               <Option value="A" type="QString" name="Zone A"/>
+             </Option>
+             <Option type="Map">
+               <Option value="B" type="QString" name="Zone B"/>
+             </Option>
+             <Option type="Map">
+               <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
+             </Option>
+           </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $options = $testProj->getValuesFromOptionsForTest($xml, false);
+        $this->assertTrue(is_array($options));
+        $this->assertCount(3, $options);
+        $this->assertTrue(property_exists($options[0], 'key'));
+        $this->assertTrue(property_exists($options[0], 'value'));
+    }
 }
