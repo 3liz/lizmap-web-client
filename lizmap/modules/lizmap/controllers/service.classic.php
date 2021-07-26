@@ -437,6 +437,7 @@ class serviceCtrl extends jController
             return $this->serviceException();
         }
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, '');
         $rep->mimeType = $result->mime;
