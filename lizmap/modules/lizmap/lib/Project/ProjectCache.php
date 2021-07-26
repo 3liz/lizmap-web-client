@@ -50,7 +50,7 @@ class ProjectCache
      * So you'll be sure that the cache will be updated when Lizmap code source
      * is updated on a server
      */
-    const CACHE_FORMAT_VERSION = 1;
+    const CACHE_FORMAT_VERSION = 2;
 
     /**
      * Construct the object.
@@ -80,8 +80,12 @@ class ProjectCache
 
         try {
             $data = $this->appContext->getCache($this->fileKey, $this->profile);
-            if ($data === false || $data['qgsmtime'] < filemtime($this->file) || $data['qgscfgmtime'] < filemtime($this->file.'.cfg')
-                || !isset($data['format_version']) || $data['format_version'] != self::CACHE_FORMAT_VERSION) {
+            if ($data === false
+                || $data['qgsmtime'] < filemtime($this->file)
+                || $data['qgscfgmtime'] < filemtime($this->file.'.cfg')
+                || !isset($data['format_version'])
+                || $data['format_version'] != self::CACHE_FORMAT_VERSION
+            ) {
                 $data = false;
             }
             if ($data) {
@@ -126,6 +130,48 @@ class ProjectCache
             // other error about the cache, let's log it
             $this->appContext->logException($e, 'error');
         }
+    }
+
+    /**
+     * Stores form properties from an editable Layer into cache.
+     *
+     * It should be called during the read of the project, before the project
+     * properties are stored into the cache.
+     * as the getEditableLayerFormCache method does not check the validity
+     * of the cache.
+     *
+     * @param string  $layerId
+     * @param array[] $formControls
+     */
+    public function setEditableLayerFormCache($layerId, $formControls)
+    {
+        $cacheKey = $this->fileKey.'.layer-'.$layerId.'-form';
+        $this->appContext->setCache($cacheKey, $formControls, null, $this->profile);
+    }
+
+    /**
+     * Read the form properties of the corresponding editable layer.
+     *
+     * Is assumes that the cache exists, as it should be created during the
+     * first project parsing.
+     *
+     * @param string $layerId
+     *
+     * @throws \Exception
+     *
+     * @return array[]
+     */
+    public function getEditableLayerFormCache($layerId)
+    {
+        $cacheKey = $this->fileKey.'.layer-'.$layerId.'-form';
+
+        try {
+            $cacheContent = $this->appContext->getCache($cacheKey, $this->profile);
+        } catch (\Exception $e) {
+            throw new \Exception('Can\'t read the layer form properties from cache, try to clear your cache and reload the page.');
+        }
+
+        return $cacheContent;
     }
 
     public function getFileTime()
