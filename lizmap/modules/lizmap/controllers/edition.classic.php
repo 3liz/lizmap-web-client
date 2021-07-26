@@ -1417,7 +1417,7 @@ class editionCtrl extends jController
      */
     public function getGroupVisibilities()
     {
-        if (!$this->request->isPostMethod() || !$this->request->isAjax()) {
+        if (!$this->request->isPostMethod()) {
             $rep = $this->getResponse('text', true);
             $rep->setHttpStatus('405', 'Method Not Allowed');
 
