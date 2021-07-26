@@ -508,7 +508,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             }
         }
 
-        // Effectivly redraw layers
+        // Effectively redraw layers
         var redrawnLayerIds = [];
         while( willBeRedrawnLayerIds.length > 0 ) {
             var lid = willBeRedrawnLayerIds.shift();
@@ -1597,83 +1597,84 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     function dynamicGroupVisibilities( form ){
-        var tForm = jFormsJQ.getForm(form.attr('id'));
+        const tForm = jFormsJQ.getForm(form.attr('id'));
 
-        var token = tForm.element.elements['__JFORMS_TOKEN__'];
-        if (typeof token == "undefined" ) {
-            token = '';
-        }
-        else
-            token = token.value;
+        // Copy only necessary parameters before fetch
+        const currentFormData = new FormData(tForm.element);
+        const sentFormData = new FormData();
 
-        var param = {
-            '__form': tForm.selector,
-            '__formid' : tForm.formId,
-            '__JFORMS_TOKEN__' : token
-        };
+        // Append form parameters for validation
+        sentFormData.append('__form', tForm.selector);
+        sentFormData.append('__formid', tForm.formId);
+        sentFormData.append('__JFORMS_TOKEN__', currentFormData.get('__JFORMS_TOKEN__'));
 
-        var dependencies = tForm.groupDependencies;
-        for(var i=0, len=dependencies.length; i< len; i++) {
-            var depName = dependencies[i];
-            param[depName] = jFormsJQ.getValue(tForm.element.elements[depName]);
+        // Append form parameters used in expression related to group visibilities
+        for (const depName of tForm.groupDependencies) {
+            for (const value of currentFormData.getAll(depName)) {
+                sentFormData.append(depName, value);
+            }
         }
 
-        jQuery.post(jFormsJQ.groupVisibilitiesUrl, param,
-            function(data){
-                for (groupId in data) {
-                    var group = $('#'+groupId);
-                    if (group.hasClass('tab-pane')) {
-                        // group is tab content
-                        // so manage tab visibility
-                        var tab = form.children('ul.nav-tabs').find('li a[href="#'+groupId+'"]');
-                        var tabParent = tab.parent();
-                        if (data[groupId]) {
-                            // tab has to be visible
-                            if (!tabParent.is(':visible')) {
-                                tabParent.show();
-                            }
-                            var tabContent = $('#'+form.attr('id')+'-tab-content');
-                            if (tabContent.is(':hidden')) {
-                                // the tab content has to be displaied
-                                // because at least one tab is visible
-                                tabContent.show();
-                                tab.click().blur();
-                            }
-                        } else {
-                            // tab will be hidden
-                            if (!tabParent.hasClass('active')) {
-                                // it is not the active one
-                                // just hide it
-                                tabParent.hide();
-                            } else {
-                                if (tabParent.prev(':visible').length > 0) {
-                                    // the previous tab is visible
-                                    // it can become the new active
-                                    tabParent.prev().children('a').first().click().blur();
-                                    tabParent.hide();
-                                } else if (tabParent.next(':visible').length > 0) {
-                                    // the next tab is visible
-                                    // it can become the new active
-                                    tabParent.next().children('a').first().click().blur();
-                                    tabParent.hide();
-                                } else {
-                                    // no siblings tabs are visible
-                                    // hide the tab content
-                                    tabParent.hide();
-                                    $('#'+form.attr('id')+'-tab-content').hide();
-                                }
-                            }
+        fetch(jFormsJQ.groupVisibilitiesUrl,{
+            method: "POST",
+            body: sentFormData
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            for (groupId in data) {
+                var group = $('#' + groupId);
+                if (group.hasClass('tab-pane')) {
+                    // group is tab content
+                    // so manage tab visibility
+                    var tab = form.children('ul.nav-tabs').find('li a[href="#' + groupId + '"]');
+                    var tabParent = tab.parent();
+                    if (data[groupId]) {
+                        // tab has to be visible
+                        if (!tabParent.is(':visible')) {
+                            tabParent.show();
+                        }
+                        var tabContent = $('#' + form.attr('id') + '-tab-content');
+                        if (tabContent.is(':hidden')) {
+                            // the tab content has to be displayed
+                            // because at least one tab is visible
+                            tabContent.show();
+                            tab.click().blur();
                         }
                     } else {
-                        // for other groups just hide or show
-                        if (data[groupId]) {
-                            group.show();
+                        // tab will be hidden
+                        if (!tabParent.hasClass('active')) {
+                            // it is not the active one
+                            // just hide it
+                            tabParent.hide();
                         } else {
-                            group.hide();
+                            if (tabParent.prev(':visible').length > 0) {
+                                // the previous tab is visible
+                                // it can become the new active
+                                tabParent.prev().children('a').first().click().blur();
+                                tabParent.hide();
+                            } else if (tabParent.next(':visible').length > 0) {
+                                // the next tab is visible
+                                // it can become the new active
+                                tabParent.next().children('a').first().click().blur();
+                                tabParent.hide();
+                            } else {
+                                // no siblings tabs are visible
+                                // hide the tab content
+                                tabParent.hide();
+                                $('#' + form.attr('id') + '-tab-content').hide();
+                            }
                         }
                     }
+                } else {
+                    // for other groups just hide or show
+                    if (data[groupId]) {
+                        group.show();
+                    } else {
+                        group.hide();
+                    }
                 }
-            }, "json");
+            }
+        });
     }
 
     function handleGroupVisibilities( form ){
