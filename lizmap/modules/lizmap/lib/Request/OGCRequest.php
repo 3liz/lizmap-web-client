@@ -252,7 +252,7 @@ abstract class OGCRequest
                $this->project->getRepository()->getKey().'-'.
                $this->project->getKey().'-'.
                $this->param('service').'-getcapabilities';
-        if ($appContext->UserisConnected()) {
+        if ($appContext->UserIsConnected()) {
             $juser = $appContext->getUserSession();
             $key .= '-'.$juser->login;
         }

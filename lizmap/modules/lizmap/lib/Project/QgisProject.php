@@ -949,7 +949,7 @@ class QgisProject
             }
             $layerXmlZero = $layerXml[0];
             $formControls = $this->readFormControls($layerXmlZero, $obj->layerId, $proj);
-            file_put_contents($this->appContext->getFormPath().$proj->getKey().'.'.$obj->layerId.'.form.json', json_encode($formControls, JSON_PRETTY_PRINT));
+            $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
         }
     }
 
