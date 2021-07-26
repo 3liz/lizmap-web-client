@@ -88,4 +88,9 @@ class QgisProjectForTests extends QgisProject
     {
         return $this->getFieldConfiguration($layerXml);
     }
+
+    public function getValuesFromOptionsForTest($optionList, $name = true)
+    {
+        return $this->getValuesFromOptions($optionList, $name = true);
+    }
 }
