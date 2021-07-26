@@ -102,12 +102,10 @@ class QgisForm implements QgisFormControlsInterface
         $dataFields = $dbFieldsInfo->dataFields;
         $toDeactivate = array();
         $toSetReadOnly = array();
-        $formPath = $this->appContext->getFormPath();
-        $json = file_get_contents($formPath.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
-        if (!$json) {
-            throw new \Exception('Can\'t read the Json form file, try to clear your cache and reload the page.');
-        }
-        $formInfos = json_decode($json);
+
+        $cacheHandler = $layer->getProject()->getCacheHandler();
+        $formInfos = $cacheHandler->getEditableLayerFormCache($layer->getId());
+
         foreach ($dataFields as $fieldName => $prop) {
             $defaultValue = $this->getDefaultValue($fieldName);
 
@@ -367,7 +365,7 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * Reset the form controls data to Null.
      *
-     * @return jFormsBase the Jelix jForm object
+     * @return \jFormsBase the Jelix jForm object
      */
     public function resetFormData()
     {
@@ -387,7 +385,7 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * Set the form controls data from the database default value.
      *
-     * @return jFormsBase the Jelix jForm object
+     * @return \jFormsBase the Jelix jForm object
      */
     public function setFormDataFromDefault()
     {
@@ -423,7 +421,7 @@ class QgisForm implements QgisFormControlsInterface
      *
      * @param mixed $feature
      *
-     * @return jFormsBase the Jelix jForm object
+     * @return \jFormsBase the Jelix jForm object
      */
     public function setFormDataFromFields($feature)
     {

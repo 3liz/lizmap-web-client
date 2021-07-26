@@ -159,9 +159,25 @@ class Project
     /**
      * @var array List of cached properties
      */
-    protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
-        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfgContent', 'options', 'QgisProjectVersion', );
+    protected $cachedProperties = array(
+        'WMSInformation',
+        'canvasColor',
+        'allProj4',
+        'relations',
+        'themes',
+        'layersOrder',
+        'printCapabilities',
+        'locateByLayer',
+        'formFilterLayers',
+        'editionLayers',
+        'attributeLayers',
+        'useLayerIDs',
+        'layers',
+        'data',
+        'cfgContent',
+        'options',
+        'QgisProjectVersion',
+    );
 
     /**
      * @var string
@@ -228,6 +244,8 @@ class Project
                 throw $e;
             }
             $this->readProject($key, $rep);
+
+            // set project data in cache
             foreach ($this->cachedProperties as $prop) {
                 if (isset($this->{$prop}) && !empty($this->{$prop})) {
                     $data[$prop] = $this->{$prop};
@@ -276,6 +294,14 @@ class Project
         }
 
         $this->path = $file;
+    }
+
+    /**
+     * @return ProjectCache
+     */
+    public function getCacheHandler()
+    {
+        return $this->cacheHandler;
     }
 
     public function clearCache()
