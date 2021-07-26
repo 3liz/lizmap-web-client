@@ -78,4 +78,9 @@ class QgisProjectForTests extends QgisProject
     {
         return $this->readAttributeLayers($aLayer);
     }
+
+    public function getEditTypeForTest($layerXml)
+    {
+        return $this->getEditType($layerXml);
+    }
 }
