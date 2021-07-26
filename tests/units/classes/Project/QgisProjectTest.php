@@ -378,4 +378,60 @@ class QgisProjectTest extends TestCase
             $this->assertObjectNotHasAttribute('shortname', $layer->{$lname});
         }
     }
+
+    public function testGetEditType() {
+        $xmlStr = '
+        <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="0" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Point" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPoint" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
+          <edittypes>
+            <edittype widgetv2type="TextEdit" name="OGC_FID">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="osm_id">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="name">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="ref">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="from">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="to">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="colour">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="Hidden" name="html">
+              <widgetv2config fieldEditable="1" labelOnTop="0"/>
+            </edittype>
+            <edittype widgetv2type="Hidden" name="wkt">
+              <widgetv2config fieldEditable="1" labelOnTop="0"/>
+            </edittype>
+          </edittypes>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $testProj = new qgisProjectForTests();
+        $props = $testProj->getEditTypeForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(9, $props);
+        $this->assertTrue(array_key_exists('name', $props));
+        $prop = $props['name'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'IsMultiline'));
+        $this->assertEquals($prop['widgetv2configAttr']->IsMultiline, '0');
+        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'UseHtml'));
+        $this->assertEquals($prop['widgetv2configAttr']->UseHtml, '0');
+        $this->assertTrue(array_key_exists('wkt', $props));
+        $prop = $props['wkt'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'Hidden');
+    }
 }
