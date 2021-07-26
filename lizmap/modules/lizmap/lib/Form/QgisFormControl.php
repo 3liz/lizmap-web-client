@@ -240,6 +240,9 @@ class QgisFormControl
                         $this->fillCheckboxValues();
                     } else {
                         $this->fillControlDatasource();
+                        if ($this->fieldDataType === 'boolean' && $prop->notNull) {
+                            $this->reworkBooleanControl($markup);
+                        }
                     }
                 }
                 $markup = null;
@@ -291,34 +294,6 @@ class QgisFormControl
                 $this->ctrl = new \jFormsControlInput($this->ref);
 
                 break;
-        }
-
-        // Rework for boolean
-        if ($this->fieldDataType == 'boolean'
-            && in_array($markup, array('menulist', 'checkboxes'))) {
-            // Get data list, to use label
-            $data = $this->ctrl->datasource->data;
-            // Set edit type
-            $this->fieldEditType = 'CheckBox';
-            // Checkbox should not be required
-            $this->required = false;
-            // Set control
-            $this->ctrl = new \jFormsControlCheckbox($this->ref);
-            // Check data list
-            foreach ($data as $k => $v) {
-                $strK = strtolower($k);
-                if ($strK === 'true' || $strK === 't'
-                    || intval($k) === 1 || $strK === 'on') {
-                    // Check info
-                    $this->ctrl->valueOnCheck = $k;
-                    $this->ctrl->valueLabelOnCheck = $v;
-                } elseif ($strK === 'false' || $strK === 'f'
-                    || intval($k) === 0 || $strK === 'off') {
-                    // Uncheck info
-                    $this->ctrl->valueOnUncheck = $k;
-                    $this->ctrl->valueLabelOnUncheck = $v;
-                }
-            }
         }
 
         // Set control main properties
@@ -767,6 +742,52 @@ class QgisFormControl
 
         $dataSource->data = $data;
         $this->ctrl->datasource = $dataSource;
+    }
+
+    /*
+    * For boolean not null field, jForms control has to be a checkbox not a list of values
+    *
+    * @param string $markup the jForms markup
+    *
+    * @return object Modified jForms control.
+    */
+    protected function reworkBooleanControl($markup)
+    {
+        if ($this->fieldDataType !== 'boolean') {
+            return;
+        }
+        if (!in_array($markup, array('menulist', 'checkboxes'))) {
+            return;
+        }
+
+        // Get data list, to use label
+        $data = $this->ctrl->datasource->data;
+        // Set edit type
+        $this->fieldEditType = 'CheckBox';
+        // Checkbox should not be required
+        $this->required = false;
+        // Set control
+        $this->ctrl = new \jFormsControlCheckbox($this->ref);
+        // Check data list
+        foreach ($data as $k => $v) {
+            if ($k === '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}') {
+                // it is a null value for QGIS and
+                // intval('{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}') === 0
+                continue;
+            }
+            $strK = strtolower($k);
+            if ($strK === 'true' || $strK === 't'
+                || intval($k) === 1 || $strK === 'on') {
+                // Check info
+                $this->ctrl->valueOnCheck = $k;
+                $this->ctrl->valueLabelOnCheck = $v;
+            } elseif ($strK === 'false' || $strK === 'f'
+                || intval($k) === 0 || $strK === 'off') {
+                // Uncheck info
+                $this->ctrl->valueOnUncheck = $k;
+                $this->ctrl->valueLabelOnUncheck = $v;
+            }
+        }
     }
 
     public function isUniqueValue()
