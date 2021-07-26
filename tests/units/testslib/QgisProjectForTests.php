@@ -93,4 +93,9 @@ class QgisProjectForTests extends QgisProject
     {
         return $this->getValuesFromOptions($optionList, $name = true);
     }
+
+    public function getMarkupForTest($props)
+    {
+        return $this->getMarkup($props);
+    }
 }
