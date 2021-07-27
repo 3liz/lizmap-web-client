@@ -112,4 +112,92 @@ class QgisFormControlTest extends TestCase
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
     }
+
+    public function testConstructCheckbox()
+    {
+        $appContext = new ContextForTests();
+        # DB properties - Bool
+        $prop = (object) array(
+            'type' => 'bool',
+            'autoIncrement' => False,
+            'notNull' => True,
+        );
+        # QGIS properties
+        $properties = (object) array(
+            'markup' => 'checkbox',
+            'fieldEditType' => 'CheckBox',
+            'widgetv2configAttr' => (object) array(
+                'CheckedState' => '',
+                'UncheckedState' => '',
+            ),
+        );
+        # QGIS Constraints
+        $constraints = array(
+            'constraints' => 0,
+            'notNull' => false,
+            'unique' => false,
+            'exp' => false,
+        );
+
+        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $this->assertEquals($control->ref, 'checked');
+        $this->assertEquals($control->fieldName, 'checked');
+        $this->assertEquals($control->fieldDataType, 'boolean');
+        $this->assertEquals($control->fieldEditType, 'CheckBox');
+        $this->assertEquals($control->ctrl->getWidgetType(), 'checkbox');
+        $this->assertEquals($control->ctrl->valueOnCheck, 't');
+        $this->assertEquals($control->ctrl->valueOnUncheck, 'f');
+        $this->assertFalse($control->isReadOnly);
+        $this->assertFalse($control->required);
+
+        # DB properties - int
+        $prop->type = 'int';
+        # QGIS properties
+        $properties->widgetv2configAttr->CheckedState = '1';
+        $properties->widgetv2configAttr->UncheckedState = '0';
+
+        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $this->assertEquals($control->fieldDataType, 'integer');
+        $this->assertEquals($control->ctrl->valueOnCheck, '1');
+        $this->assertEquals($control->ctrl->valueOnUncheck, '0');
+
+        # DB properties - text
+        $prop->type = 'text';
+        # QGIS properties
+        $properties->widgetv2configAttr->CheckedState = 'y';
+        $properties->widgetv2configAttr->UncheckedState = 'n';
+
+        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $this->assertEquals($control->fieldDataType, 'text');
+        $this->assertEquals($control->ctrl->valueOnCheck, 'y');
+        $this->assertEquals($control->ctrl->valueOnUncheck, 'n');
+
+        # Test Rework ValueMap to CheckBox for nor null boolean field
+        $prop->type = 'boolean';
+        $prop->notNull = True;
+        # QGIS properties
+        $properties->markup = 'menulist';
+        $properties->fieldEditType = 'ValueMap';
+        $properties->widgetv2configAttr = (object) array(
+            'map' => null,
+        );
+        $properties->widgetv2configAttr->map = array(
+            (object) array('key'=>'Yes', 'value'=>'true'),
+            (object) array('key'=>'No', 'value'=>'false'),
+            (object) array('key'=>'<NULL>', 'value'=>'{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}'),
+        );
+        $properties->edittype = (object) array(
+            'editable' => 1,
+            'options' => (object) array('map' => null),
+        );
+        $properties->edittype->options->map = $properties->widgetv2configAttr->map;
+        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $this->assertEquals($control->fieldDataType, 'boolean');
+        $this->assertEquals($control->fieldEditType, 'CheckBox');
+        $this->assertEquals($control->ctrl->getWidgetType(), 'checkbox');
+        $this->assertEquals($control->ctrl->valueOnCheck, 'true');
+        $this->assertEquals($control->ctrl->valueLabelOnCheck, 'Yes');
+        $this->assertEquals($control->ctrl->valueOnUncheck, 'false');
+        $this->assertEquals($control->ctrl->valueLabelOnUncheck, 'No');
+    }
 }
