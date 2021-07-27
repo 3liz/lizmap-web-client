@@ -4,10 +4,6 @@ use Lizmap\Form\QgisFormControl;
 use Lizmap\Project;
 use PHPUnit\Framework\TestCase;
 
-require_once 'QgisLayerForTests.php';
-require_once 'QgisFormForTests.php';
-require_once __DIR__.'/../Project/TestContext.php';
-require_once __DIR__.'/../Project/ProjectForTests.php';
 require_once __DIR__.'/../../../../lib/jelix/forms/jFormsBase.class.php';
 
 class dummyForm
@@ -62,7 +58,7 @@ class QgisFormTest extends TestCase
     public function setUpEnv($file, $fields)
     {
         $ids = explode('.', $file);
-        $appContext = new testContext();
+        $appContext = new ContextForTests();
         $appContext->setResult(array('path' => __DIR__.'/forms/'));
         $this->appContext = $appContext;
         $layer = new QgisLayerForTests();
@@ -125,7 +121,7 @@ class QgisFormTest extends TestCase
         if (!$fields) {
             $this->expectException('Exception');
         }
-        $form = new QgisFormForConstructTests($layer, new dummyForm(), null, false, $this->appContext, true);
+        $form = new QgisForm2ForTests($layer, new dummyForm(), null, false, $this->appContext, true);
         if ($fields) {
             $controls = $form->getQgisControls();
             $this->assertEquals(count((array) $fields), count($controls));
@@ -165,7 +161,7 @@ class QgisFormTest extends TestCase
 
     public function testGetAttributeEditorForm()
     {
-        $proj = new Project\QgisProject(__DIR__.'/forms/attributeEditorTest.qgs', new lizmapServices(array(), (object) array(), false, '', null), new testContext());
+        $proj = new Project\QgisProject(__DIR__.'/forms/attributeEditorTest.qgs', new lizmapServices(array(), (object) array(), false, '', null), new ContextForTests());
         $layer = $proj->getLayer('LayerId', $proj);
         $layerFalse = $proj->getLayer('LayerFalse', $proj);
         $form = new QgisFormForTests();
@@ -251,7 +247,7 @@ class QgisFormTest extends TestCase
             }
         }
         $formMock->dbFieldsInfo = $dbFieldsInfo;
-        $formMock->appContext = new testContext();
+        $formMock->appContext = new ContextForTests();
         $jForm = new dummyForm();
         $jForm->check = $check;
         $jForm->data = $data;
@@ -297,7 +293,7 @@ class QgisFormTest extends TestCase
         $formMock->setLayer($layerMock);
         $formMock->setForm($jForm);
         $formMock->method('getFieldList')->willReturn(array_keys($controls));
-        $formMock->appContext = new TestContext();
+        $formMock->appContext = new ContextForTests();
         $formMock->method('getParsedValue')->willReturn(true);
         $formMock->saveToDb();
     }
@@ -338,7 +334,7 @@ class QgisFormTest extends TestCase
         $formMock->method('processUploadedFile')->willReturn(true);
         $formMock->expects($this->once())->method('processUploadedFile');
         $formMock->expects($this->once())->method('filterDataByLogin')->with($this->equalTo('name'));
-        $formMock->appContext = new TestContext();
+        $formMock->appContext = new ContextForTests();
         $formMock->saveToDb('feature');
     }
 
@@ -483,7 +479,7 @@ class QgisFormTest extends TestCase
         $layer = new QgisLayerForTests();
         $layer->dbFieldValues = $dbFieldValues;
         $form->setLayer($layer);
-        $form->appContext = new TestContext();
+        $form->appContext = new ContextForTests();
         $form->fillControlFromUniqueValuesForTests('test', $control);
         $this->assertEquals($expectedData, $control->ctrl->datasource->data);
         $this->assertEquals($expectedRequired, $control->ctrl->required);

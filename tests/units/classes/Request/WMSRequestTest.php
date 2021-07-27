@@ -4,8 +4,6 @@ use Lizmap\Project\Repository;
 use PHPUnit\Framework\TestCase;
 use Lizmap\Request\WMSRequest;
 
-require_once __DIR__.'/ClassesForTests.php';
-
 class WMSRequestTest extends TestCase
 {
     public function testParameters()
@@ -21,7 +19,7 @@ class WMSRequestTest extends TestCase
             'Lizmap_User' => '',
             'Lizmap_User_Groups' => '',
         );
-        $wms = new WMSRequest(new ProjectForOGC(), $params, null, new testContext());
+        $wms = new WMSRequest(new ProjectForOGCForTests(), $params, null, new ContextForTests());
         $this->assertEquals($expectedParams, $wms->parameters());
         $params = array(
             'request' => 'getmap',
@@ -34,9 +32,9 @@ class WMSRequestTest extends TestCase
             'Lizmap_User' => '',
             'Lizmap_User_Groups' => '',
         );
-        $proj = new ProjectForOGC();
-        $proj->setRepo(new Repository('key', array(), '', null, new testContext()));
-        $wms = new WMSRequest($proj, $params, null, new testContext());
+        $proj = new ProjectForOGCForTests();
+        $proj->setRepo(new Repository('key', array(), '', null, new ContextForTests()));
+        $wms = new WMSRequest($proj, $params, null, new ContextForTests());
         $this->assertEquals($expectedParams, $wms->parameters());
     }
 
@@ -62,10 +60,10 @@ class WMSRequestTest extends TestCase
      */
     public function testParametersWithFilters($loginFilter, $filter, $expectedFilter)
     {
-        $proj = new ProjectForOGC();
-        $proj->setRepo(new Repository('key', array(), '', null, new testContext()));
+        $proj = new ProjectForOGCForTests();
+        $proj->setRepo(new Repository('key', array(), '', null, new ContextForTests()));
         $proj->loginFilters = $loginFilter;
-        $testContext = new testContext();
+        $testContext = new ContextForTests();
         $testContext->setResult(array('lizmap.tools.loginFilteredLayers.override' => false));
         $params = array(
             'request' => 'getmap',
@@ -137,10 +135,10 @@ class WMSRequestTest extends TestCase
      */
     public function testGetContext($response, $url, $expectedResponse)
     {
-        $proj = new ProjectForOGC();
+        $proj = new ProjectForOGCForTests();
         $proj->setKey('proj');
-        $proj->setRepo(new Repository('key', array(), '', null, new testContext()));
-        $testContext = new testContext();
+        $proj->setRepo(new Repository('key', array(), '', null, new ContextForTests()));
+        $testContext = new ContextForTests();
         $testContext->setResult(array('fullUrl' => $url));
         $wmsMock = $this->getMockBuilder(WMSRequestForTests::class)->setMethods(['request'])->setConstructorArgs([$proj, array(), null, $testContext])->getMock();
         $wmsMock->method('request')->willReturn($response);
@@ -171,14 +169,14 @@ class WMSRequestTest extends TestCase
             'width' => $width,
             'height' => $height
         );
-        $proj = new ProjectForOGC();
+        $proj = new ProjectForOGCForTests();
         $proj->setData('wmsMaxWidth', $useServices ? '' : $maxWidth);
         $proj->setData('wmsMaxHeight', $useServices ? '' : $maxHeight);
         $services = (object)array(
             'wmsMaxWidth' => $useServices ? $maxWidth : '',
             'wmsMaxHeight' => $useServices ? $maxHeight : '',
         );
-        $wms = new WMSRequestForTests($proj, $params, $services, new testContext());
+        $wms = new WMSRequestForTests($proj, $params, $services, new ContextForTests());
         $this->assertEquals($expectedBool, $wms->checkMaximumWidthHeightForTests());
     }
 
@@ -200,9 +198,9 @@ class WMSRequestTest extends TestCase
      */
     public function testUseCache($params, $cacheDriver, $cached, $expectedUseCache, $expectedWmsClient)
     {
-        $testContext = new testContext();
+        $testContext = new ContextForTests();
         $testContext->setResult(array('cacheDriver' => $cacheDriver));
-        $wms = new WMSRequestForTests(new ProjectForOGC(), array(), null, $testContext);
+        $wms = new WMSRequestForTests(new ProjectForOGCForTests(), array(), null, $testContext);
         $configLayer = (object)array('cached' => $cached);
         list($useCache, $wmsClient) = $wms->useCacheForTests($configLayer, $params, '');
         $this->assertEquals($expectedUseCache, $useCache);

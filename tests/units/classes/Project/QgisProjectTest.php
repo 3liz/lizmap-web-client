@@ -1,7 +1,5 @@
 <?php
 
-require_once 'qgisProjectForTests.php';
-
 use Lizmap\Project;
 use PHPUnit\Framework\TestCase;
 
@@ -211,7 +209,7 @@ class QgisProjectTest extends TestCase
             $data[$prop] = 'some stuff about'.$prop;
         }
         $services = new lizmapServices(array(), (object) array(), false, '', '');
-        $testQgis = new Project\QgisProject(null, $services, new TestContext(), $data);
+        $testQgis = new Project\QgisProject(null, $services, new ContextForTests(), $data);
         $this->assertEquals($data, $testQgis->getCacheData($emptyData));
     }
 

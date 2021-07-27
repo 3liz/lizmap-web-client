@@ -1,7 +1,5 @@
 <?php
 
-require_once 'ProjectForTests.php';
-
 use Lizmap\Project;
 use PHPUnit\Framework\TestCase;
 
@@ -209,7 +207,7 @@ class ProjectTest extends TestCase
         }
         $config = new Project\ProjectConfig(null, array('editionLayers' => $eLayers));
         $rep = new Project\Repository(null, array(), null, null, null);
-        $context = new testContext();
+        $context = new ContextForTests();
         $context->setResult($acl);
         $proj = new ProjectForTests($context);
         $proj->setRepo($rep);
@@ -292,7 +290,7 @@ class ProjectTest extends TestCase
             'edition_line' => array_merge(json_decode(file_get_contents($file), true)['loginFilteredLayers']['edition_line'], array('layername' => 'edition_line', 'filter' => $expectedFilters)),
         );
         $config = new Project\ProjectConfig($file);
-        $context = new testContext();
+        $context = new ContextForTests();
         $context->setResult($aclData);
         $proj = new ProjectForTests($context);
         $proj->setCfg($config);
@@ -400,7 +398,7 @@ class ProjectTest extends TestCase
     public function testCheckAcl($aclData, $options, $expectedRet)
     {
         $rep = new Project\Repository('key', array(), null, null, null);
-        $context = new testContext();
+        $context = new ContextForTests();
         $context->setResult($aclData);
         $config = new Project\ProjectConfig(null, array('options' => $options));
         $proj = new ProjectForTests($context);

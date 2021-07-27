@@ -2,9 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once 'QgisFormControlForTests.php';
-require_once __DIR__.'/../Project/TestContext.php';
-require_once __DIR__.'/../Project/ProjectForTests.php';
 require_once __DIR__.'/../../../../lib/jelix/forms/jFormsBase.class.php';
 
 /**
