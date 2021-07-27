@@ -243,7 +243,10 @@ class Project
             }
             $rewriteCache = false;
             foreach ($this->layers as $index => $layer) {
-                if (array_key_exists('embedded', $layer) && $layer['embedded'] == '1' && $layer['qgsmtime'] < filemtime($layer['file'])) {
+                if (array_key_exists('embedded', $layer)
+                    && $layer['embedded'] == '1'
+                    && $layer['qgsmtime'] < filemtime($layer['file'])
+                ) {
                     $qgsProj = new QgisProject($layer['file'], $services, $this->appContext);
                     $newLayer = $qgsProj->getLayerDefinition($layer['id']);
                     $newLayer['qsgmtime'] = filemtime($layer['file']);
