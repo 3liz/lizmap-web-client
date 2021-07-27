@@ -221,7 +221,7 @@ class lizMapCtrl extends jController
             $title = $wmsInfo['WMSServiceTitle'];
         }
 
-        $title .= ' - '.$lrep->getData('label');
+        $title .= ' - '.$lrep->getLabel();
         $title .= ' - '.$lser->appName;
         $rep->title = $title;
 
@@ -264,7 +264,7 @@ class lizMapCtrl extends jController
 
         // Assign variables to template
         $assign = array_merge(array(
-            'repositoryLabel' => $lrep->getData('label'),
+            'repositoryLabel' => $lrep->getLabel(),
             'repository' => $lrep->getKey(),
             'project' => $project,
             'onlyMaps' => $lser->onlyMaps,
@@ -276,7 +276,7 @@ class lizMapCtrl extends jController
             $lrep->getKey()
         );
         if ($wmsGetCapabilitiesUrl) {
-            $wmsGetCapabilitiesUrl = $lproj->getData('wmsGetCapabilitiesUrl');
+            $wmsGetCapabilitiesUrl = $lproj->getWMSGetCapabilitiesUrl();
         }
         $assign['wmsGetCapabilitiesUrl'] = $wmsGetCapabilitiesUrl;
 
@@ -335,12 +335,12 @@ class lizMapCtrl extends jController
         // or the project name and only apply to it
         // Also if media/themes/default/css is found one directory above repositorie's one
         // it will apply to all repositories
-        if ($lrep->getData('allowUserDefinedThemes')) {
+        if ($lrep->allowUserDefinedThemes()) {
             $repositoryPath = $lrep->getPath();
             $cssArray = array('main', 'map', 'media');
             $themeArray = array('default', $project);
             foreach ($cssArray as $k) {
-                // Handle theme applying to all repositorie's projects in the same directory
+                // Handle theme applying to all repository's projects in the same directory
                 $cssRelPath = '../media/themes/default/css/'.$k.'.css';
                 $cssPath = realpath($repositoryPath.$cssRelPath);
                 if (file_exists($cssPath)) {

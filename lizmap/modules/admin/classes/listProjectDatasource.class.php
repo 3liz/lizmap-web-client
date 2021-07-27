@@ -16,6 +16,11 @@ class listProjectDatasource extends jFormsDynamicDatasource
         }
     }
 
+    /**
+     * @param jFormsBase $form
+     *
+     * @return array
+     */
     public function getData($form)
     {
         $pdata = array();
@@ -42,7 +47,7 @@ class listProjectDatasource extends jFormsDynamicDatasource
             try {
                 $p = lizmap::getProject($criteria.'~'.$key);
                 if ($p) {
-                    return (string) $p->getData('title');
+                    return (string) $p->getTitle();
                 }
             } catch (UnknownLizmapProjectException $e) {
                 jLog::logEx($e, 'error');

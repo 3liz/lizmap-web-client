@@ -254,18 +254,22 @@ class WMSRequest extends OGCRequest
      */
     protected function checkMaximumWidthHeight()
     {
-        $dimensions = array('Width', 'Height');
+        $max = $this->project->getWMSMaxWidth();
+        if (!$max) {
+            $max = $this->services->wmsMaxWidth ?: 3000;
+        }
+        $dim = $this->param('width');
+        if ($dim == null || !is_numeric($dim) || intval($dim) > $max) {
+            return false;
+        }
 
-        foreach ($dimensions as $d) {
-            $var = 'wmsMax'.$d;
-            $max = $this->project->getData($var);
-            if (!$max) {
-                $max = $this->services->{$var} ? $this->services->{$var} : 3000;
-            }
-            $dim = $this->param(lcfirst($d));
-            if ($dim == null || !is_numeric($dim) || intval($dim) > $max) {
-                return false;
-            }
+        $max = $this->project->getWMSMaxHeight();
+        if (!$max) {
+            $max = $this->services->wmsMaxHeight ?: 3000;
+        }
+        $dim = $this->param('height');
+        if ($dim == null || !is_numeric($dim) || intval($dim) > $max) {
+            return false;
         }
 
         return true;
