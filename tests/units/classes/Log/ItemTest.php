@@ -10,7 +10,7 @@ class ItemTest extends TestCase
     public function setUp()
     {
         if (!$this->context) {
-            $this->context = new testContext();
+            $this->context = new ContextForTests();
         }
     }
 
@@ -79,7 +79,7 @@ class ItemTest extends TestCase
      */
     public function testInsertLogDetail($data)
     {
-        $context = new TestContext();
+        $context = new ContextForTests();
         $context->setResult(array(
             'getDao' => $context,
             'createDaoRecord' => (object)array(

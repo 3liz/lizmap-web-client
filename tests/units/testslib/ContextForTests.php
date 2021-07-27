@@ -2,7 +2,7 @@
 
 use Lizmap\App\AppContextInterface;
 
-class testContext implements AppContextInterface
+class ContextForTests implements AppContextInterface
 {
     protected $result = array();
 
@@ -204,6 +204,6 @@ class testContext implements AppContextInterface
 
     public function getTileCaps($project)
     {
-        return lizmapTilerForTests::getTileCapabilities($project);
+        return LizmapTilerForTests::getTileCapabilities($project);
     }
 }

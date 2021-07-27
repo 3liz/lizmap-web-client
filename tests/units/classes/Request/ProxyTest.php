@@ -1,16 +1,13 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Lizmap\App;
 use Lizmap\Request;
-
-require_once __DIR__.'/ClassesForTests.php';
 
 class ProxyTest extends TestCase
 {
     public function setUp()
     {
-        $appContext = new testContext();
+        $appContext = new ContextForTests();
         Request\Proxy::setServices(new lizmapServices(array(), (object)array(), false, '', $appContext));
         Request\Proxy::setAppContext($appContext);
     }
@@ -44,7 +41,7 @@ class ProxyTest extends TestCase
      */
     public function testBuild($params, $requestXml, $expectedClass)
     {
-        $project = new ProjectForOGC();
+        $project = new ProjectForOGCForTests();
         $requestObj = Request\Proxy::build($project, $params, $requestXml);
         if (!$expectedClass) {
             $this->assertNull($requestObj);
@@ -264,7 +261,7 @@ class ProxyTest extends TestCase
             'userSession' => (object)$userSession,
             'groups' => $userGroups
         );
-        $testContext = new testContext();
+        $testContext = new ContextForTests();
         $testContext->setResult($contextResult);
         ProxyForTests::setAppContext($testContext);
         $userHeaders = ProxyForTests::userHttpHeadersForTests();

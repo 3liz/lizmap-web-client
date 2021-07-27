@@ -45,12 +45,7 @@ class QgisFormForTests extends Form\QgisForm
     }
 }
 
-class QgisFormForConstructTests extends Form\QgisForm
-{
-    public function getAttributesEditorForm()
-    {
-    }
-}
+
 
 class jAcl2
 {
