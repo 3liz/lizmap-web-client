@@ -17,7 +17,7 @@ pluginsPath="app:plugins,lib:jelix-plugins,module:jacl2db/plugins"
 modulesPath="lib:jelix-admin-modules,lib:jelix-modules,app:modules,app:lizmap-modules,app:vendor/jelix/jcommunity-module/modules"
 
 ; the locales available in the application
-availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it_IT,nl_NL,pl_PL,pt_BR,pt_PT,ro_RO,ru_RU,sl_SI,sv_SE,sk_SK"
+availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it_IT,ja_JP,nl_NL,pl_PL,pt_BR,pt_PT,ro_RO,ru_RU,sl_SI,sv_SE,sk_SK"
 ; the locale to fallback when the asked string doesn't exist in the current locale
 fallbackLocale=en_US
 
