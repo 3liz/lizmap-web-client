@@ -1,7 +1,5 @@
 <?php
 
-require_once 'TestContext.php';
-
 use Lizmap\Project;
 
 class ProjectForTests extends Project\Project
@@ -11,7 +9,7 @@ class ProjectForTests extends Project\Project
         if ($appContext) {
             $this->appContext = $appContext;
         } else {
-            $this->appContext = new testContext();
+            $this->appContext = new ContextForTests();
         }
     }
 

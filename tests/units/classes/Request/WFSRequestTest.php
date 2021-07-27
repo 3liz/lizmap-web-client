@@ -3,13 +3,11 @@
 use PHPUnit\Framework\TestCase;
 use Lizmap\Request\WFSRequest;
 
-require_once __DIR__.'/ClassesForTests.php';
-
 class WFSRequestTest extends TestCase
 {
     public function testParameters()
     {
-        $wfs = new WFSRequest(new ProjectForOGC(), array('request' => 'notGetFeature'), null, new testContext());
+        $wfs = new WFSRequest(new ProjectForOGCForTests(), array('request' => 'notGetFeature'), null, new ContextForTests());
         $expectedParameters = array(
             'request' => 'notGetFeature',
             'map' => null,
@@ -18,9 +16,9 @@ class WFSRequestTest extends TestCase
         );
         $parameters = $wfs->parameters();
         $this->assertEquals($expectedParameters, $parameters);
-        $proj = new ProjectForOGC();
-        $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, new testContext()));
-        $wfs = new WFSRequest($proj, array('request' => 'notGetFeature'), null, new testContext());
+        $proj = new ProjectForOGCForTests();
+        $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, new ContextForTests()));
+        $wfs = new WFSRequest($proj, array('request' => 'notGetFeature'), null, new ContextForTests());
         $parameters = $wfs->parameters();
         $this->assertEquals($expectedParameters, $parameters);
     }
@@ -76,9 +74,9 @@ class WFSRequestTest extends TestCase
      */
     public function testParametersWithFilters($params, $loginFilters, $expectedParameters)
     {
-        $testContext = new testContext();
+        $testContext = new ContextForTests();
         $testContext->setResult(array('lizmap.tools.loginFilteredLayers.override' => false));
-        $proj = new ProjectForOGC();
+        $proj = new ProjectForOGCForTests();
         $proj->loginFilters = $loginFilters;
         $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, $testContext));
         $wfs = new WFSRequest($proj, $params, null, $testContext);
@@ -144,7 +142,7 @@ class WFSRequestTest extends TestCase
         $wfs->datasource = (object)array(
             'geocol' => $geocol,
         );
-        $wfs->qgisLayer = new LayerForWFS();
+        $wfs->qgisLayer = new LayerWFSForTests();
         $sql = $wfs->getBboxSqlForTests($params);
         $this->assertEquals($expectedSql, $sql);
     }
@@ -166,7 +164,7 @@ class WFSRequestTest extends TestCase
     public function testParseExpFilter($params, $key, $expectedSql)
     {
         $wfs = new WFSRequestForTests();
-        $wfs->appContext = new testContext();
+        $wfs->appContext = new ContextForTests();
         $wfs->datasource = (object)array('key' => $key, 'geocol' => 'geom');
         $result = $wfs->parseExpFilterForTests(new jDbConnectionForTests(), $params);
         $this->assertEquals($expectedSql, $result);
@@ -234,7 +232,7 @@ class WFSRequestTest extends TestCase
     public function testValidateFilter($filter, $expectedFilter)
     {
         $wfs = new WFSRequestForTests();
-        $wfs->appContext = new testContext();
+        $wfs->appContext = new ContextForTests();
         $wfs->datasource = (object)array(
             'geocol' => 'column'
         );
