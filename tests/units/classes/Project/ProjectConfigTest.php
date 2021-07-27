@@ -1,12 +1,12 @@
 <?php
-
+use PHPUnit\Framework\TestCase;
 use Lizmap\Project;
 
 /**
  * @internal
  * @coversNothing
  */
-class projectConfigTest extends PHPUnit_Framework_TestCase
+class projectConfigTest extends TestCase
 {
     public function getConstructData()
     {

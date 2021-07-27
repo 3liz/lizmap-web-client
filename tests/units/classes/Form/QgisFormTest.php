@@ -121,7 +121,7 @@ class QgisFormTest extends TestCase
         if (!$fields) {
             $this->expectException('Exception');
         }
-        $form = new QgisForm2ForTests($layer, new dummyForm(), null, false, $this->appContext, true);
+        $form = new QgisForm2ForTests($layer, new dummyForm(), null, false, $this->appContext);
         if ($fields) {
             $controls = $form->getQgisControls();
             $this->assertEquals(count((array) $fields), count($controls));

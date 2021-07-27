@@ -58,7 +58,7 @@ class XmlToolsTest extends TestCase
         $this->assertTrue(!is_object($xml));
         $this->assertTrue(is_string($xml));
         $this->assertStringStartsNotWith('\n', $xml);
-        $this->assertContains('Fatal', $xml);
+        $this->assertStringContainsString('Fatal', $xml);
     }
 
     function testXmlFromFile() {
@@ -75,6 +75,6 @@ class XmlToolsTest extends TestCase
         $this->assertTrue(!is_object($xml));
         $this->assertTrue(is_string($xml));
         $this->assertStringStartsNotWith('\n', $xml);
-        $this->assertContains('Fatal', $xml);
+        $this->assertStringContainsString('Fatal', $xml);
     }
 }

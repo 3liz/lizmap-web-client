@@ -7,7 +7,7 @@ class ItemTest extends TestCase
 {
     protected $context = null;
 
-    public function setUp()
+    public function setUp() : void
     {
         if (!$this->context) {
             $this->context = new ContextForTests();
@@ -94,12 +94,25 @@ class ItemTest extends TestCase
         ));
         $item = new Log\Item('test', array(), $context);
         $item->insertLogDetail($data);
+        $resultRecord = $context->getResult()['createDaoRecord'];
         if (!$data) {
+            $this->assertNull($resultRecord->key);
+            $this->assertNull($resultRecord->user);
+            $this->assertNull($resultRecord->content);
+            $this->assertNull($resultRecord->repository);
+            $this->assertNull($resultRecord->project);
+            $this->assertNull($resultRecord->ip);
+            $this->assertNull($resultRecord->email);
             return ;
         }
+
+
         foreach ($data as $key => $value) {
             if (in_array($key, $item->getRecordKeys())) {
-                $this->assertEquals($value, $context->getResult()['createDaoRecord']->$key);
+                $this->assertEquals($value, $resultRecord->$key);
+            }
+            else {
+                $this->assertFalse(isset($resultRecord->$key));
             }
         }
     }
