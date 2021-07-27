@@ -1,6 +1,5 @@
 <?php
 
-require 'ConfigForTests.php';
 
 use Lizmap\Logger as Log;
 
@@ -17,7 +16,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         if ($this->context) {
             return;
         }
-        $this->context = new testContext();
+        $this->context = new ContextForTests();
     }
 
     public function getTestModifyData()
