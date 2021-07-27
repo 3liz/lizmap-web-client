@@ -3,7 +3,7 @@
  * Get access to the Lizmap project metadata.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2021 3liz
  *
  * @see      http://3liz.com
  *
@@ -29,15 +29,15 @@ class ProjectMetadata
     public function __construct(Project $project)
     {
         $metadata = array(
-            'id' => $project->getData('id'),
-            'repository' => $project->getData('repository'),
-            'title' => $project->getData('title'),
-            'abstract' => $project->getData('abstract'),
-            'keywordList' => $project->getData('keywordList'),
-            'proj' => $project->getData('proj'),
-            'bbox' => $project->getData('bbox'),
-            'wmsGetCapabilitiesUrl' => $project->getData('wmsGetCapabilitiesUrl'),
-            'wmtsGetCapabilitiesUrl' => $project->getData('wmtsGetCapabilitiesUrl'),
+            'id' => $project->getKey(),
+            'repository' => $project->getRepositoryKey(),
+            'title' => $project->getTitle(),
+            'abstract' => $project->getAbstract(),
+            'keywordList' => $project->getKeywordsList(),
+            'proj' => $project->getProj(),
+            'bbox' => $project->getBbox(),
+            'wmsGetCapabilitiesUrl' => $project->getWMSGetCapabilitiesUrl(),
+            'wmtsGetCapabilitiesUrl' => $project->getWMTSGetCapabilitiesUrl(),
             'map' => $project->getRelativeQgisPath(),
             'acl' => $project->checkAcl(),
         );
@@ -122,11 +122,65 @@ class ProjectMetadata
     }
 
     /**
+     * List of keywords.
+     *
+     * @return array
+     */
+    public function getKeywordList()
+    {
+        return $this->data['keywordList'];
+    }
+
+    /**
+     * FIXME what is the returned content ?
+     *
+     * @return mixed
+     */
+    public function getProj()
+    {
+        return $this->data['proj'];
+    }
+
+    /**
+     * Get the bounding box.
+     *
+     * FIXME what is the returned content ?
+     *
+     * @return mixed
+     */
+    public function getBbox()
+    {
+        return $this->data['bbox'];
+    }
+
+    /**
+     * The url of WMS GetCapabilities.
+     *
+     * @return string
+     */
+    public function getWMSGetCapabilitiesUrl()
+    {
+        return $this->data['wmsGetCapabilitiesUrl'];
+    }
+
+    /**
+     * The url of WMTS GetCapabilities.
+     *
+     * @return string
+     */
+    public function getWMTSGetCapabilitiesUrl()
+    {
+        return $this->data['wmtsGetCapabilitiesUrl'];
+    }
+
+    /**
      * Get any project property.
+     *
+     * @deprecated  use other get* methods
      *
      * @param string $key The property to get
      *
-     * @return the project title
+     * @return mixed
      */
     public function getData($key)
     {
