@@ -1,10 +1,10 @@
 <?php
-
+use PHPUnit\Framework\TestCase;
 /**
  * @internal
  * @coversNothing
  */
-class lizmapServicesTest extends PHPUnit_Framework_TestCase
+class lizmapServicesTest extends TestCase
 {
     public function getContactEmail()
     {
