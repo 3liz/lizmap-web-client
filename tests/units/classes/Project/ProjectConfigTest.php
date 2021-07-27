@@ -28,7 +28,7 @@ class projectConfigTest extends PHPUnit_Framework_TestCase
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $testCfg = new Project\ProjectConfig($file, $data);
-        $this->assertEquals($expectedData, $testCfg->getData());
+        $this->assertEquals($expectedData, $testCfg->getConfigContent());
     }
 
     public function testConstructCache()
