@@ -2,12 +2,12 @@
 
 use Lizmap\Project\QgisProject;
 
-class qgisProjectForTests extends QgisProject
+class QgisProjectForTests extends QgisProject
 {
     public function __construct($data = null)
     {
         if ($data) {
-            parent::__construct(null, new lizmapServices(null, null, false, '', ''), new TestContext(), $data);
+            parent::__construct(null, new lizmapServices(null, null, false, '', ''), new ContextForTests(), $data);
         }
     }
 
