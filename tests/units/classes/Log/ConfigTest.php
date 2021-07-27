@@ -1,5 +1,5 @@
 <?php
-
+use PHPUnit\Framework\TestCase;
 
 use Lizmap\Logger as Log;
 
@@ -7,11 +7,11 @@ use Lizmap\Logger as Log;
  * @internal
  * @coversNothing
  */
-class ConfigTest extends PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
     protected $context;
 
-    public function setUp()
+    public function setUp() : void
     {
         if ($this->context) {
             return;

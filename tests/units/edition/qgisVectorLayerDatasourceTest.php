@@ -1,6 +1,7 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-class qgisVectorLayerDatasourceTest extends PHPUnit_Framework_TestCase {
+class qgisVectorLayerDatasourceTest extends TestCase {
 
 
     function testPostgresqlDatasource() {
