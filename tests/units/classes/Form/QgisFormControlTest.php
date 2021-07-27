@@ -113,6 +113,69 @@ class QgisFormControlTest extends TestCase
         $this->assertEquals($control->fieldDataType, 'geometry');
     }
 
+    public function testConstructInput()
+    {
+        $appContext = new ContextForTests();
+        # DB properties - Text
+        $prop = (object) array(
+            'type' => 'text',
+            'autoIncrement' => False,
+            'notNull' => False,
+        );
+        # QGIS properties
+        $properties = (object) array(
+            'markup' => 'input',
+            'fieldEditType' => 'TextEdit',
+            'widgetv2configAttr' => (object) array(
+                'IsMultiline' => '0',
+                'UseHtml' => '0',
+            ),
+            'edittype' => (object) array(
+                'editable' => 1,
+            ),
+        );
+        # QGIS Constraints
+        $constraints = array(
+            'constraints' => 0,
+            'notNull' => false,
+            'unique' => false,
+            'exp' => false,
+        );
+
+        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $this->assertEquals($control->ref, 'label');
+        $this->assertEquals($control->fieldName, 'label');
+        $this->assertEquals($control->fieldDataType, 'text');
+        $this->assertEquals($control->fieldEditType, 'TextEdit');
+        $this->assertEquals($control->ctrl->getWidgetType(), 'input');
+        $this->assertFalse($control->isReadOnly);
+        $this->assertFalse($control->required);
+
+        # DB properties - Text - not null
+        $prop->notNull = True;
+        # QGIS constraints
+        $constraints['notNull'] = False;
+        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $this->assertTrue($control->required);
+
+        # DB properties - Text
+        $prop->norNull = False;
+        # QGIS constraints - not null
+        $constraints['notNull'] = True;
+        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $this->assertTrue($control->required);
+
+        # DB properties - Text
+        $prop->norNull = False;
+        # QGIS properties
+        $properties->edittype->editable = 0;
+        # QGIS constraints
+        $constraints['notNull'] = False;
+        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $this->assertTrue($control->isReadOnly);
+        $this->assertFalse($control->required);
+    }
+
     public function testConstructCheckbox()
     {
         $appContext = new ContextForTests();
