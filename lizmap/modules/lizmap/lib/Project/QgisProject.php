@@ -1610,18 +1610,21 @@ class QgisProject
         $edittypes = $layerXml->edittypes;
         $editTab = array();
 
-        foreach ($edittypes as $edittype) {
-            $attributes = $edittype->attributes();
-            $editTab[$attributes->name] = array();
-            $editTab[$attributes->name]['eddittype'] = $edittype;
+        foreach ($edittypes->edittype as $edittype) {
+            if (!property_exists($edittype->attributes(), 'name')) {
+                continue;
+            }
+            $fieldName = (string) $edittype->attributes()->name;
+            $editTab[$fieldName] = array();
+            $editTab[$fieldName]['edittype'] = $edittype;
             // New QGIS 2.4 edittypes : use widgetv2type property
             if (property_exists($edittype->attributes(), 'widgetv2type')) {
-                $editTab[$attributes->name]['widgetv2configAttr'] = $edittype->widgetv2config->attributes();
-                $editTab[$attributes->name]['fieldEditType'] = (string) $edittype->attributes()->widgetv2type;
+                $editTab[$fieldName]['widgetv2configAttr'] = $edittype->widgetv2config->attributes();
+                $editTab[$fieldName]['fieldEditType'] = (string) $edittype->attributes()->widgetv2type;
             }
             // Before QGIS 2.4
             else {
-                $editTab[$attributes->name]['fieldEditType'] = (int) $edittype->attributes()->type;
+                $editTab[$fieldName]['fieldEditType'] = (int) $edittype->attributes()->type;
             }
         }
 
@@ -1705,7 +1708,7 @@ class QgisProject
             return array();
         }
 
-        if ($layerXml->eddittype && count($layerXml->eddittypes)) {
+        if ($layerXml->edittype && count($layerXml->edittypes)) {
             $props = $this->getEditType($layerXml);
         } elseif ($layerXml->fieldConfiguration && count($layerXml->fieldConfiguration)) {
             $props = $this->getFieldConfiguration($layerXml);
