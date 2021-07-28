@@ -378,4 +378,988 @@ class QgisProjectTest extends TestCase
             $this->assertObjectNotHasAttribute('shortname', $layer->{$lname});
         }
     }
+
+    public function testGetEditType() {
+        $xmlStr = '
+        <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="0" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Point" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPoint" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
+          <edittypes>
+            <edittype widgetv2type="TextEdit" name="OGC_FID">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="osm_id">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="name">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="ref">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="from">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="to">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="TextEdit" name="colour">
+              <widgetv2config fieldEditable="1" labelOnTop="0" UseHtml="0" IsMultiline="0"/>
+            </edittype>
+            <edittype widgetv2type="Hidden" name="html">
+              <widgetv2config fieldEditable="1" labelOnTop="0"/>
+            </edittype>
+            <edittype widgetv2type="Hidden" name="wkt">
+              <widgetv2config fieldEditable="1" labelOnTop="0"/>
+            </edittype>
+          </edittypes>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $testProj = new qgisProjectForTests();
+        $props = $testProj->getEditTypeForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(9, $props);
+        $this->assertTrue(array_key_exists('name', $props));
+        $prop = $props['name'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'IsMultiline'));
+        $this->assertEquals($prop['widgetv2configAttr']->IsMultiline, '0');
+        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'UseHtml'));
+        $this->assertEquals($prop['widgetv2configAttr']->UseHtml, '0');
+        $this->assertTrue(array_key_exists('wkt', $props));
+        $prop = $props['wkt'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'Hidden');
+    }
+
+    public function testGetFieldConfiguration() {
+        $testProj = new qgisProjectForTests();
+
+        $xmlStr = '
+        <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="0" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Point" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPoint" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
+          <fieldConfiguration>
+            <field name="OGC_FID">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option type="Map">
+                    <Option value="0" type="QString" name="IsMultiline"/>
+                    <Option value="0" type="QString" name="UseHtml"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field name="osm_id">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option type="Map">
+                    <Option value="0" type="QString" name="IsMultiline"/>
+                    <Option value="0" type="QString" name="UseHtml"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field name="name">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option type="Map">
+                    <Option value="0" type="QString" name="IsMultiline"/>
+                    <Option value="0" type="QString" name="UseHtml"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field name="wkt">
+              <editWidget type="Hidden">
+                <config>
+                  <Option/>
+                </config>
+              </editWidget>
+            </field>
+            <field name="unique_name">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option type="Map">
+                    <Option value="0" type="QString" name="IsMultiline"/>
+                    <Option value="0" type="QString" name="UseHtml"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(5, $props);
+        $this->assertTrue(array_key_exists('name', $props));
+        $prop = $props['name'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'IsMultiline'));
+        $this->assertEquals($options->IsMultiline, '0');
+        $this->assertTrue(property_exists($options, 'UseHtml'));
+        $this->assertEquals($options->UseHtml, '0');
+        $this->assertTrue(array_key_exists('wkt', $props));
+        $prop = $props['wkt'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'Hidden');
+
+        # TextEdit widget editable
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="id">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option/>
+                </config>
+              </editWidget>
+            </field>
+            <field name="label">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option/>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+          <editable>
+            <field name="id" editable="0"/>
+            <field name="label" editable="1"/>
+          </editable>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(2, $props);
+        $this->assertTrue(array_key_exists('id', $props));
+        $prop = $props['id'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertFalse(property_exists($options, 'IsMultiline'));
+        $this->assertFalse(property_exists($options, 'UseHtml'));
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'editable'));
+        $this->assertEquals($prop['edittype']->editable, 0);
+        $this->assertTrue(array_key_exists('label', $props));
+        $prop = $props['label'];
+        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertFalse(property_exists($options, 'IsMultiline'));
+        $this->assertFalse(property_exists($options, 'UseHtml'));
+        $this->assertTrue(property_exists($prop['edittype'], 'editable'));
+        $this->assertEquals($prop['edittype']->editable, 1);
+
+        # DateTime widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="date">
+              <editWidget type="DateTime">
+                <config>
+                  <Option type="Map">
+                    <Option value="false" type="bool" name="allow_null"/>
+                    <Option value="false" type="bool" name="calendar_popup"/>
+                    <Option value="" type="QString" name="display_format"/>
+                    <Option value="yyyy-MM-dd" type="QString" name="field_format"/>
+                    <Option value="false" type="bool" name="field_iso_format"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('date', $props));
+        $prop = $props['date'];
+        $this->assertEquals($prop['fieldEditType'], 'DateTime');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'field_format'));
+        $this->assertEquals($options->field_format, 'yyyy-MM-dd');
+        $this->assertTrue(property_exists($options, 'field_iso_format'));
+        $this->assertEquals($options->field_iso_format, 'false');
+
+        # Classification widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="type">
+              <editWidget type="Classification">
+                <config>
+                  <Option/>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('type', $props));
+        $prop = $props['type'];
+        $this->assertEquals($prop['fieldEditType'], 'Classification');
+
+        # DateTime widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="photo">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option value="1" type="QString" name="DocumentViewer"/>
+                    <Option value="400" type="QString" name="DocumentViewerHeight"/>
+                    <Option value="400" type="QString" name="DocumentViewerWidth"/>
+                    <Option value="1" type="QString" name="FileWidget"/>
+                    <Option value="1" type="QString" name="FileWidgetButton"/>
+                    <Option value="Images (*.gif *.jpeg *.jpg *.png)" type="QString" name="FileWidgetFilter"/>
+                    <Option value="0" type="QString" name="StorageMode"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('photo', $props));
+        $prop = $props['photo'];
+        $this->assertEquals($prop['fieldEditType'], 'ExternalResource');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'FileWidgetFilter'));
+        $this->assertEquals($options->FileWidgetFilter, 'Images (*.gif *.jpeg *.jpg *.png)');
+
+        # UniqueValues widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="author">
+              <editWidget type="UniqueValues">
+                <config>
+                  <Option type="Map">
+                    <Option value="1" type="QString" name="Editable"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('author', $props));
+        $prop = $props['author'];
+        $this->assertEquals($prop['fieldEditType'], 'UniqueValues');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'Editable'));
+        $this->assertEquals($options->Editable, '1');
+
+        # CheckBox widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="checked">
+              <editWidget type="CheckBox">
+                <config>
+                  <Option type="Map">
+                    <Option value="1" type="QString" name="CheckedState"/>
+                    <Option value="0" type="QString" name="UncheckedState"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('checked', $props));
+        $prop = $props['checked'];
+        $this->assertEquals($prop['fieldEditType'], 'CheckBox');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'CheckedState'));
+        $this->assertEquals($options->CheckedState, '1');
+        $this->assertTrue(property_exists($options, 'UncheckedState'));
+        $this->assertEquals($options->UncheckedState, '0');
+
+        # ValueRelation widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="tram_id">
+              <editWidget type="ValueRelation">
+                <config>
+                  <Option type="Map">
+                    <Option value="0" type="QString" name="AllowMulti"/>
+                    <Option value="1" type="QString" name="AllowNull"/>
+                    <Option value="" type="QString" name="FilterExpression"/>
+                    <Option value="osm_id" type="QString" name="Key"/>
+                    <Option value="tramway20150328114206278" type="QString" name="Layer"/>
+                    <Option value="1" type="QString" name="OrderByValue"/>
+                    <Option value="0" type="QString" name="UseCompleter"/>
+                    <Option value="test" type="QString" name="Value"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('tram_id', $props));
+        $prop = $props['tram_id'];
+        $this->assertEquals($prop['fieldEditType'], 'ValueRelation');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'Layer'));
+        $this->assertEquals($options->Layer, 'tramway20150328114206278');
+        $this->assertTrue(property_exists($options, 'Key'));
+        $this->assertEquals($options->Key, 'osm_id');
+        $this->assertTrue(property_exists($options, 'Value'));
+        $this->assertEquals($options->Value, 'test');
+        $this->assertTrue(property_exists($options, 'AllowMulti'));
+        $this->assertEquals($options->AllowMulti, '0');
+        $this->assertTrue(property_exists($options, 'AllowNull'));
+        $this->assertEquals($options->AllowNull, '1');
+        $this->assertTrue(property_exists($options, 'OrderByValue'));
+        $this->assertEquals($options->OrderByValue, '1');
+        $this->assertTrue(property_exists($options, 'FilterExpression'));
+        $this->assertEquals($options->FilterExpression, '');
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="code_with_geom_exp">
+              <editWidget type="ValueRelation">
+                <config>
+                  <Option type="Map">
+                    <Option value="false" type="bool" name="AllowMulti"/>
+                    <Option value="true" type="bool" name="AllowNull"/>
+                    <Option value="intersects(@current_geometry , $geometry)" type="QString" name="FilterExpression"/>
+                    <Option value="code" type="QString" name="Key"/>
+                    <Option value="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173" type="QString" name="Layer"/>
+                    <Option value="form_edition_vr_list" type="QString" name="LayerName"/>
+                    <Option value="postgres" type="QString" name="LayerProviderName"/>
+                    <Option value="service=\'lizmapdb\' sslmode=disable key=\'id\' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity=\'0\' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql=" type="QString" name="LayerSource"/>
+                    <Option value="1" type="int" name="NofColumns"/>
+                    <Option value="false" type="bool" name="OrderByValue"/>
+                    <Option value="false" type="bool" name="UseCompleter"/>
+                    <Option value="label" type="QString" name="Value"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('code_with_geom_exp', $props));
+        $prop = $props['code_with_geom_exp'];
+        $this->assertEquals($prop['fieldEditType'], 'ValueRelation');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'FilterExpression'));
+        $this->assertEquals($options->FilterExpression, 'intersects(@current_geometry , $geometry)');
+
+        # Range widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="integer_field">
+              <editWidget type="Range">
+                <config>
+                  <Option type="Map">
+                    <Option name="AllowNull" type="bool" value="true"></Option>
+                    <Option name="Max" type="int" value="2147483647"></Option>
+                    <Option name="Min" type="int" value="-2147483648"></Option>
+                    <Option name="Precision" type="int" value="0"></Option>
+                    <Option name="Step" type="int" value="1"></Option>
+                    <Option name="Style" type="QString" value="SpinBox"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('integer_field', $props));
+        $prop = $props['integer_field'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'Range');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'AllowNull'));
+        $this->assertEquals($options->AllowNull, 'true');
+        $this->assertTrue(property_exists($options, 'Max'));
+        $this->assertEquals($options->Max, '2147483647');
+        $this->assertTrue(property_exists($options, 'Min'));
+        $this->assertEquals($options->Min, '-2147483648');
+        $this->assertTrue(property_exists($options, 'Precision'));
+        $this->assertEquals($options->Precision, '0');
+        $this->assertTrue(property_exists($options, 'Step'));
+        $this->assertEquals($options->Step, '1');
+        $this->assertTrue(property_exists($options, 'Style'));
+        $this->assertEquals($options->Style, 'SpinBox');
+
+        # ValueMap widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="boolean_nullable">
+              <editWidget type="ValueMap">
+                <config>
+                  <Option type="Map">
+                    <Option name="map" type="List">
+                      <Option type="Map">
+                        <Option name="&lt;NULL>" type="QString" value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}"></Option>
+                      </Option>
+                      <Option type="Map">
+                        <Option name="True" type="QString" value="true"></Option>
+                      </Option>
+                      <Option type="Map">
+                        <Option name="False" type="QString" value="false"></Option>
+                      </Option>
+                    </Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('boolean_nullable', $props));
+        $prop = $props['boolean_nullable'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'ValueMap');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'map'));
+        $this->assertCount(3, $prop['widgetv2configAttr']->map);
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['widgetv2configAttr']->map[0], 'key'));
+        $this->assertTrue(property_exists($prop['widgetv2configAttr']->map[0], 'value'));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'map'));
+        $this->assertCount(3, $options->map);
+        $this->assertTrue(property_exists($options->map[0], 'key'));
+        $this->assertTrue(property_exists($options->map[0], 'value'));
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="code_for_drill_down_exp">
+              <editWidget type="ValueMap">
+                <config>
+                  <Option type="Map">
+                    <Option type="List" name="map">
+                      <Option type="Map">
+                        <Option value="A" type="QString" name="Zone A"/>
+                      </Option>
+                      <Option type="Map">
+                        <Option value="B" type="QString" name="Zone B"/>
+                      </Option>
+                      <Option type="Map">
+                        <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
+                      </Option>
+                    </Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('code_for_drill_down_exp', $props));
+        $prop = $props['code_for_drill_down_exp'];
+        $this->assertTrue(array_key_exists('fieldEditType', $prop));
+        $this->assertEquals($prop['fieldEditType'], 'ValueMap');
+        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
+        $this->assertTrue(array_key_exists('edittype', $prop));
+        $this->assertTrue(property_exists($prop['edittype'], 'options'));
+        $options = $prop['edittype']->options;
+        $this->assertTrue(property_exists($options, 'map'));
+        $this->assertCount(3, $options->map);
+        $this->assertTrue(property_exists($options->map[0], 'key'));
+        $this->assertTrue(property_exists($options->map[0], 'value'));
+
+        # no edit widget type
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="label">
+              <editWidget type="">
+                <config>
+                  <Option/>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('label', $props));
+        $prop = $props['label'];
+        $this->assertEquals($prop['fieldEditType'], '');
+    }
+
+    public function testGetValuesFromOptions() {
+        $testProj = new qgisProjectForTests();
+
+        $xmlStr = '
+              <Option type="Map">
+                <Option value="false" type="bool" name="IsMultiline"/>
+                <Option value="false" type="bool" name="UseHtml"/>
+              </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $options = $testProj->getValuesFromOptionsForTest($xml);
+        $this->assertTrue(is_array($options));
+        $this->assertCount(2, $options);
+        $this->assertTrue(property_exists($options[0], 'key'));
+        $this->assertTrue(property_exists($options[0], 'value'));
+
+        $xmlStr = '
+           <Option type="List" name="map">
+             <Option type="Map">
+               <Option value="A" type="QString" name="Zone A"/>
+             </Option>
+             <Option type="Map">
+               <Option value="B" type="QString" name="Zone B"/>
+             </Option>
+             <Option type="Map">
+               <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
+             </Option>
+           </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $options = $testProj->getValuesFromOptionsForTest($xml, false);
+        $this->assertTrue(is_array($options));
+        $this->assertCount(3, $options);
+        $this->assertTrue(property_exists($options[0], 'key'));
+        $this->assertTrue(property_exists($options[0], 'value'));
+    }
+
+    public function testGetMarkup() {
+        $testProj = new qgisProjectForTests();
+
+        # no widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="label">
+              <editWidget type="">
+                <config>
+                  <Option/>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('label', $props));
+        $markup = $testProj->getMarkupForTest($props['label']);
+        $this->assertEquals($markup, '');
+
+        # TextEdit widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="label">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option/>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('label', $props));
+        $markup = $testProj->getMarkupForTest($props['label']);
+        $this->assertEquals($markup, 'input');
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="label">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option type="Map">
+                    <Option value="false" type="bool" name="IsMultiline"/>
+                    <Option value="false" type="bool" name="UseHtml"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('label', $props));
+        $markup = $testProj->getMarkupForTest($props['label']);
+        $this->assertEquals($markup, 'input');
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="label">
+              <editWidget type="TextEdit">
+                <config>
+                  <Option type="Map">
+                    <Option value="1" type="QString" name="IsMultiline"/>
+                    <Option value="0" type="QString" name="UseHtml"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('label', $props));
+        $markup = $testProj->getMarkupForTest($props['label']);
+        $this->assertEquals($markup, 'textarea');
+
+        # Range widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="integer_field">
+              <editWidget type="Range">
+                <config>
+                  <Option type="Map">
+                    <Option name="AllowNull" type="bool" value="true"></Option>
+                    <Option name="Max" type="int" value="2147483647"></Option>
+                    <Option name="Min" type="int" value="-2147483648"></Option>
+                    <Option name="Precision" type="int" value="0"></Option>
+                    <Option name="Step" type="int" value="1"></Option>
+                    <Option name="Style" type="QString" value="SpinBox"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('integer_field', $props));
+        $markup = $testProj->getMarkupForTest($props['integer_field']);
+        $this->assertEquals($markup, 'input');
+
+        # DateTime widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="date">
+              <editWidget type="DateTime">
+                <config>
+                  <Option type="Map">
+                    <Option value="false" type="bool" name="allow_null"/>
+                    <Option value="false" type="bool" name="calendar_popup"/>
+                    <Option value="" type="QString" name="display_format"/>
+                    <Option value="yyyy-MM-dd" type="QString" name="field_format"/>
+                    <Option value="false" type="bool" name="field_iso_format"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('date', $props));
+        $markup = $testProj->getMarkupForTest($props['date']);
+        $this->assertEquals($markup, 'date');
+
+        # CheckBox widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="checked">
+              <editWidget type="CheckBox">
+                <config>
+                  <Option type="Map">
+                    <Option value="1" type="QString" name="CheckedState"/>
+                    <Option value="0" type="QString" name="UncheckedState"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('checked', $props));
+        $markup = $testProj->getMarkupForTest($props['checked']);
+        $this->assertEquals($markup, 'checkbox');
+
+        # ValueRelation widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="tram_id">
+              <editWidget type="ValueRelation">
+                <config>
+                  <Option type="Map">
+                    <Option value="0" type="QString" name="AllowMulti"/>
+                    <Option value="1" type="QString" name="AllowNull"/>
+                    <Option value="" type="QString" name="FilterExpression"/>
+                    <Option value="osm_id" type="QString" name="Key"/>
+                    <Option value="tramway20150328114206278" type="QString" name="Layer"/>
+                    <Option value="1" type="QString" name="OrderByValue"/>
+                    <Option value="0" type="QString" name="UseCompleter"/>
+                    <Option value="test" type="QString" name="Value"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('tram_id', $props));
+        $markup = $testProj->getMarkupForTest($props['tram_id']);
+        $this->assertEquals($markup, 'menulist');
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="tram_id">
+              <editWidget type="ValueRelation">
+                <config>
+                  <Option type="Map">
+                    <Option value="false" type="bool" name="AllowMulti"/>
+                    <Option value="true" type="bool" name="AllowNull"/>
+                    <Option value="" type="QString" name="FilterExpression"/>
+                    <Option value="osm_id" type="QString" name="Key"/>
+                    <Option value="tramway20150328114206278" type="QString" name="Layer"/>
+                    <Option value="true" type="bool" name="OrderByValue"/>
+                    <Option value="false" type="bool" name="UseCompleter"/>
+                    <Option value="test" type="QString" name="Value"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('tram_id', $props));
+        $markup = $testProj->getMarkupForTest($props['tram_id']);
+        $this->assertEquals($markup, 'menulist');
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="tram_id">
+              <editWidget type="ValueRelation">
+                <config>
+                  <Option type="Map">
+                    <Option value="1" type="QString" name="AllowMulti"/>
+                    <Option value="1" type="QString" name="AllowNull"/>
+                    <Option value="" type="QString" name="FilterExpression"/>
+                    <Option value="osm_id" type="QString" name="Key"/>
+                    <Option value="tramway20150328114206278" type="QString" name="Layer"/>
+                    <Option value="1" type="QString" name="OrderByValue"/>
+                    <Option value="0" type="QString" name="UseCompleter"/>
+                    <Option value="test" type="QString" name="Value"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('tram_id', $props));
+        $markup = $testProj->getMarkupForTest($props['tram_id']);
+        $this->assertEquals($markup, 'checkboxes');
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="tram_id">
+              <editWidget type="ValueRelation">
+                <config>
+                  <Option type="Map">
+                    <Option value="true" type="bool" name="AllowMulti"/>
+                    <Option value="true" type="bool" name="AllowNull"/>
+                    <Option value="" type="QString" name="FilterExpression"/>
+                    <Option value="osm_id" type="QString" name="Key"/>
+                    <Option value="tramway20150328114206278" type="QString" name="Layer"/>
+                    <Option value="true" type="bool" name="OrderByValue"/>
+                    <Option value="false" type="bool" name="UseCompleter"/>
+                    <Option value="test" type="QString" name="Value"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('tram_id', $props));
+        $markup = $testProj->getMarkupForTest($props['tram_id']);
+        $this->assertEquals($markup, 'checkboxes');
+
+        # ValueMap widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="boolean_nullable">
+              <editWidget type="ValueMap">
+                <config>
+                  <Option type="Map">
+                    <Option name="map" type="List">
+                      <Option type="Map">
+                        <Option name="&lt;NULL>" type="QString" value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}"></Option>
+                      </Option>
+                      <Option type="Map">
+                        <Option name="True" type="QString" value="true"></Option>
+                      </Option>
+                      <Option type="Map">
+                        <Option name="False" type="QString" value="false"></Option>
+                      </Option>
+                    </Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('boolean_nullable', $props));
+        $markup = $testProj->getMarkupForTest($props['boolean_nullable']);
+        $this->assertEquals($markup, 'menulist');
+
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="code_for_drill_down_exp">
+              <editWidget type="ValueMap">
+                <config>
+                  <Option type="Map">
+                    <Option type="List" name="map">
+                      <Option type="Map">
+                        <Option value="A" type="QString" name="Zone A"/>
+                      </Option>
+                      <Option type="Map">
+                        <Option value="B" type="QString" name="Zone B"/>
+                      </Option>
+                      <Option type="Map">
+                        <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
+                      </Option>
+                    </Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('code_for_drill_down_exp', $props));
+        $markup = $testProj->getMarkupForTest($props['code_for_drill_down_exp']);
+        $this->assertEquals($markup, 'menulist');
+    }
 }
