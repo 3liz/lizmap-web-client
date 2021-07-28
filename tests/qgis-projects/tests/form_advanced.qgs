@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2021-07-27T11:32:43" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.9-Hannover">
+<qgis projectname="" saveDateTime="2021-07-28T12:27:06" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.9-Hannover">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -22,17 +22,17 @@
     <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5" legend_exp="" legend_split_behavior="0" name="form_advanced_point" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_advanced_point&quot; (geom)">
       <customproperties></customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="quartiers_bf47f0b4_40b0_4adf_889b_82734ab33295" legend_exp="" legend_split_behavior="0" name="quartiers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7" legend_exp="" legend_split_behavior="0" name="quartiers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)">
       <customproperties></customproperties>
     </layer-tree-layer>
     <custom-order enabled="0">
-      <item>quartiers_bf47f0b4_40b0_4adf_889b_82734ab33295</item>
       <item>form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5</item>
+      <item>quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7</item>
     </custom-order>
   </layer-tree-group>
   <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
     <individual-layer-settings>
-      <layer-setting enabled="0" id="quartiers_bf47f0b4_40b0_4adf_889b_82734ab33295" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
     </individual-layer-settings>
   </snapping-settings>
@@ -40,10 +40,10 @@
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>meters</units>
     <extent>
-      <xmin>764850.90141876833513379</xmin>
-      <ymin>6274271.78293759375810623</ymin>
-      <xmax>776346.47090206760913134</xmax>
-      <ymax>6284510.94379962235689163</ymax>
+      <xmin>764750.60299465130083263</xmin>
+      <ymin>6274446.21497953590005636</ymin>
+      <xmax>776246.17247795057483017</xmax>
+      <ymax>6284685.37584156449884176</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -71,7 +71,7 @@
     </legendlayer>
     <legendlayer checked="Qt::Checked" drawingOrder="-1" name="quartiers" open="true" showFeatureCount="0">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="quartiers_bf47f0b4_40b0_4adf_889b_82734ab33295" visible="1"></legendlayerfile>
+        <legendlayerfile isInOverview="0" layerid="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7" visible="1"></legendlayerfile>
       </filegroup>
     </legendlayer>
   </legend>
@@ -219,7 +219,7 @@
           <symbol alpha="1" clip_to_extent="1" force_rhr="0" name="0" type="marker">
             <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
               <prop k="angle" v="0"></prop>
-              <prop k="color" v="243,166,178,255"></prop>
+              <prop k="color" v="26,2,243,255"></prop>
               <prop k="horizontal_anchor_point" v="1"></prop>
               <prop k="joinstyle" v="bevel"></prop>
               <prop k="name" v="circle"></prop>
@@ -232,7 +232,7 @@
               <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"></prop>
               <prop k="outline_width_unit" v="MM"></prop>
               <prop k="scale_method" v="diameter"></prop>
-              <prop k="size" v="2"></prop>
+              <prop k="size" v="3"></prop>
               <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"></prop>
               <prop k="size_unit" v="MM"></prop>
               <prop k="vertical_anchor_point" v="1"></prop>
@@ -250,9 +250,7 @@
         <sizescale></sizescale>
       </renderer-v2>
       <customproperties>
-        <property key="dualview/previewExpressions">
-          <value>"id"</value>
-        </property>
+        <property key="dualview/previewExpressions" value="&quot;id&quot;"></property>
         <property key="embeddedWidgets/count" value="0"></property>
         <property key="variableNames"></property>
         <property key="variableValues"></property>
@@ -347,26 +345,51 @@
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="None" name="quartier">
+          <editWidget type="ValueRelation">
+            <config>
+              <Option type="Map">
+                <Option name="AllowMulti" type="bool" value="false"></Option>
+                <Option name="AllowNull" type="bool" value="false"></Option>
+                <Option name="Description" type="QString" value=""></Option>
+                <Option name="FilterExpression" type="QString" value="intersects($geometry, transform(@current_geometry,'EPSG:2154','EPSG:4326'))"></Option>
+                <Option name="Key" type="QString" value="quartier"></Option>
+                <Option name="Layer" type="QString" value="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7"></Option>
+                <Option name="LayerName" type="QString" value="quartiers"></Option>
+                <Option name="LayerProviderName" type="QString" value="postgres"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' user='lizmap' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)"></Option>
+                <Option name="NofColumns" type="int" value="1"></Option>
+                <Option name="OrderByValue" type="bool" value="false"></Option>
+                <Option name="UseCompleter" type="bool" value="false"></Option>
+                <Option name="Value" type="QString" value="libquart"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
         <alias field="id" index="0" name=""></alias>
         <alias field="has_photo" index="1" name=""></alias>
         <alias field="website" index="2" name=""></alias>
+        <alias field="quartier" index="3" name=""></alias>
       </aliases>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
         <default applyOnUpdate="0" expression="" field="has_photo"></default>
         <default applyOnUpdate="0" expression="" field="website"></default>
+        <default applyOnUpdate="0" expression="" field="quartier"></default>
       </defaults>
       <constraints>
         <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
         <constraint constraints="0" exp_strength="0" field="has_photo" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="4" exp_strength="1" field="website" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="1" exp_strength="0" field="quartier" notnull_strength="1" unique_strength="0"></constraint>
       </constraints>
       <constraintExpressions>
         <constraint desc="" exp="" field="id"></constraint>
         <constraint desc="" exp="" field="has_photo"></constraint>
         <constraint desc="Web site URL must start with 'http'" exp="left( &quot;website&quot;, 4) = 'http'" field="website"></constraint>
+        <constraint desc="" exp="" field="quartier"></constraint>
       </constraintExpressions>
       <expressionfields></expressionfields>
       <attributeactions>
@@ -378,6 +401,7 @@
           <column hidden="0" name="has_photo" type="field" width="-1"></column>
           <column hidden="1" type="actions" width="-1"></column>
           <column hidden="0" name="website" type="field" width="-1"></column>
+          <column hidden="0" name="quartier" type="field" width="-1"></column>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -412,17 +436,20 @@ def my_form_open(dialog, layer, feature):
           <attributeEditorField index="0" name="id" showLabel="1"></attributeEditorField>
           <attributeEditorField index="1" name="has_photo" showLabel="1"></attributeEditorField>
           <attributeEditorField index="2" name="website" showLabel="1"></attributeEditorField>
+          <attributeEditorField index="3" name="quartier" showLabel="1"></attributeEditorField>
         </attributeEditorContainer>
         <attributeEditorContainer columnCount="1" groupBox="0" name="photo" showLabel="1" visibilityExpression=" &quot;has_photo&quot; = true OR &quot;has_photo&quot; = 't'" visibilityExpressionEnabled="1"></attributeEditorContainer>
       </attributeEditorForm>
       <editable>
         <field editable="1" name="has_photo"></field>
         <field editable="1" name="id"></field>
+        <field editable="1" name="quartier"></field>
         <field editable="1" name="website"></field>
       </editable>
       <labelOnTop>
         <field labelOnTop="0" name="has_photo"></field>
         <field labelOnTop="0" name="id"></field>
+        <field labelOnTop="0" name="quartier"></field>
         <field labelOnTop="0" name="website"></field>
       </labelOnTop>
       <dataDefinedFieldProperties></dataDefinedFieldProperties>
@@ -437,7 +464,7 @@ def my_form_open(dialog, layer, feature):
         <xmax>3.94133068060566982</xmax>
         <ymax>43.65337122449290064</ymax>
       </extent>
-      <id>quartiers_bf47f0b4_40b0_4adf_889b_82734ab33295</id>
+      <id>quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7</id>
       <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
       <keywordList>
         <value></value>
@@ -463,15 +490,6 @@ def my_form_open(dialog, layer, feature):
         <type>dataset</type>
         <title></title>
         <abstract></abstract>
-        <contact>
-          <name></name>
-          <organization></organization>
-          <position></position>
-          <voice></voice>
-          <fax></fax>
-          <email></email>
-          <role></role>
-        </contact>
         <links></links>
         <fees></fees>
         <encoding></encoding>
@@ -488,15 +506,7 @@ def my_form_open(dialog, layer, feature):
             <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
-        <extent>
-          <spatial crs="EPSG:4326" dimensions="2" maxx="0" maxy="0" maxz="0" minx="0" miny="0" minz="0"></spatial>
-          <temporal>
-            <period>
-              <start></start>
-              <end></end>
-            </period>
-          </temporal>
-        </extent>
+        <extent></extent>
       </resourceMetadata>
       <provider encoding="">postgres</provider>
       <vectorjoins></vectorjoins>
@@ -523,7 +533,7 @@ def my_form_open(dialog, layer, feature):
           <symbol alpha="1" clip_to_extent="1" force_rhr="0" name="0" type="fill">
             <layer class="SimpleFill" enabled="1" locked="0" pass="0">
               <prop k="border_width_map_unit_scale" v="3x:0,0,0,0,0,0"></prop>
-              <prop k="color" v="232,113,141,0"></prop>
+              <prop k="color" v="164,113,88,0"></prop>
               <prop k="joinstyle" v="bevel"></prop>
               <prop k="offset" v="0,0"></prop>
               <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"></prop>
@@ -613,7 +623,7 @@ def my_form_open(dialog, layer, feature):
               <Option name="drawToAllParts" type="bool" value="false"></Option>
               <Option name="enabled" type="QString" value="0"></Option>
               <Option name="labelAnchorPoint" type="QString" value="point_on_exterior"></Option>
-              <Option name="lineSymbol" type="QString" value="&lt;symbol type=&quot;line&quot; force_rhr=&quot;0&quot; clip_to_extent=&quot;1&quot; alpha=&quot;1&quot; name=&quot;symbol&quot;>&lt;layer pass=&quot;0&quot; locked=&quot;0&quot; class=&quot;SimpleLine&quot; enabled=&quot;1&quot;>&lt;prop k=&quot;align_dash_pattern&quot; v=&quot;0&quot;/>&lt;prop k=&quot;capstyle&quot; v=&quot;square&quot;/>&lt;prop k=&quot;customdash&quot; v=&quot;5;2&quot;/>&lt;prop k=&quot;customdash_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;customdash_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;dash_pattern_offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;dash_pattern_offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;dash_pattern_offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;draw_inside_polygon&quot; v=&quot;0&quot;/>&lt;prop k=&quot;joinstyle&quot; v=&quot;bevel&quot;/>&lt;prop k=&quot;line_color&quot; v=&quot;60,60,60,255&quot;/>&lt;prop k=&quot;line_style&quot; v=&quot;solid&quot;/>&lt;prop k=&quot;line_width&quot; v=&quot;0.3&quot;/>&lt;prop k=&quot;line_width_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;offset&quot; v=&quot;0&quot;/>&lt;prop k=&quot;offset_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;prop k=&quot;offset_unit&quot; v=&quot;MM&quot;/>&lt;prop k=&quot;ring_filter&quot; v=&quot;0&quot;/>&lt;prop k=&quot;tweak_dash_pattern_on_corners&quot; v=&quot;0&quot;/>&lt;prop k=&quot;use_custom_dash&quot; v=&quot;0&quot;/>&lt;prop k=&quot;width_map_unit_scale&quot; v=&quot;3x:0,0,0,0,0,0&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option type=&quot;QString&quot; value=&quot;&quot; name=&quot;name&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option type=&quot;QString&quot; value=&quot;collection&quot; name=&quot;type&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
+              <Option name="lineSymbol" type="QString" value="&lt;symbol force_rhr=&quot;0&quot; name=&quot;symbol&quot; clip_to_extent=&quot;1&quot; type=&quot;line&quot; alpha=&quot;1&quot;>&lt;layer class=&quot;SimpleLine&quot; locked=&quot;0&quot; enabled=&quot;1&quot; pass=&quot;0&quot;>&lt;prop v=&quot;0&quot; k=&quot;align_dash_pattern&quot;/>&lt;prop v=&quot;square&quot; k=&quot;capstyle&quot;/>&lt;prop v=&quot;5;2&quot; k=&quot;customdash&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;customdash_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;customdash_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;dash_pattern_offset&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;dash_pattern_offset_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;dash_pattern_offset_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;draw_inside_polygon&quot;/>&lt;prop v=&quot;bevel&quot; k=&quot;joinstyle&quot;/>&lt;prop v=&quot;60,60,60,255&quot; k=&quot;line_color&quot;/>&lt;prop v=&quot;solid&quot; k=&quot;line_style&quot;/>&lt;prop v=&quot;0.3&quot; k=&quot;line_width&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;line_width_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;offset&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;offset_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;offset_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;ring_filter&quot;/>&lt;prop v=&quot;0&quot; k=&quot;tweak_dash_pattern_on_corners&quot;/>&lt;prop v=&quot;0&quot; k=&quot;use_custom_dash&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;width_map_unit_scale&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option value=&quot;&quot; name=&quot;name&quot; type=&quot;QString&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option value=&quot;collection&quot; name=&quot;type&quot; type=&quot;QString&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"></Option>
               <Option name="minLength" type="double" value="0"></Option>
               <Option name="minLengthMapUnitScale" type="QString" value="3x:0,0,0,0,0,0"></Option>
               <Option name="minLengthUnit" type="QString" value="MM"></Option>
@@ -628,7 +638,6 @@ def my_form_open(dialog, layer, feature):
         </settings>
       </labeling>
       <customproperties>
-        <property key="dualview/previewExpressions" value="&quot;quartier&quot;"></property>
         <property key="embeddedWidgets/count" value="0"></property>
         <property key="variableNames"></property>
         <property key="variableValues"></property>
@@ -727,7 +736,7 @@ def my_form_open(dialog, layer, feature):
           </editWidget>
         </field>
         <field configurationFlags="None" name="photo">
-          <editWidget type="TextEdit">
+          <editWidget type="">
             <config>
               <Option></Option>
             </config>
@@ -781,9 +790,8 @@ def my_form_open(dialog, layer, feature):
         <columns>
           <column hidden="0" name="quartier" type="field" width="-1"></column>
           <column hidden="0" name="quartmno" type="field" width="-1"></column>
-          <column hidden="0" name="libquart" type="field" width="297"></column>
+          <column hidden="0" name="libquart" type="field" width="-1"></column>
           <column hidden="0" name="squartmno" type="field" width="-1"></column>
-          <column hidden="0" name="photo" type="field" width="-1"></column>
           <column hidden="0" name="url" type="field" width="-1"></column>
           <column hidden="1" type="actions" width="-1"></column>
         </columns>
@@ -817,7 +825,6 @@ def my_form_open(dialog, layer, feature):
       <editorlayout>generatedlayout</editorlayout>
       <editable>
         <field editable="1" name="libquart"></field>
-        <field editable="1" name="photo"></field>
         <field editable="1" name="quartier"></field>
         <field editable="1" name="quartmno"></field>
         <field editable="1" name="squartmno"></field>
@@ -825,7 +832,6 @@ def my_form_open(dialog, layer, feature):
       </editable>
       <labelOnTop>
         <field labelOnTop="0" name="libquart"></field>
-        <field labelOnTop="0" name="photo"></field>
         <field labelOnTop="0" name="quartier"></field>
         <field labelOnTop="0" name="quartmno"></field>
         <field labelOnTop="0" name="squartmno"></field>
@@ -838,8 +844,8 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
   </projectlayers>
   <layerorder>
-    <layer id="quartiers_bf47f0b4_40b0_4adf_889b_82734ab33295"></layer>
     <layer id="form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5"></layer>
+    <layer id="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7"></layer>
   </layerorder>
   <properties>
     <DefaultStyles>
@@ -1001,7 +1007,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="779647.34833618858829141" xmin="761550.02398464735597372" ymax="6284510.94379962235689163" ymin="6274271.78293759375810623">
+    <DefaultViewExtent xmax="779547.04991207155399024" xmin="761449.72556053032167256" ymax="6284685.37584156449884176" ymin="6274446.21497953590005636">
       <spatialrefsys>
         <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
         <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
