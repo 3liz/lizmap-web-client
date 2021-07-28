@@ -5,7 +5,7 @@ use Lizmap\Request;
 
 class ProxyTest extends TestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $appContext = new ContextForTests();
         Request\Proxy::setServices(new lizmapServices(array(), (object)array(), false, '', $appContext));

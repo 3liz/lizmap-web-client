@@ -1,10 +1,10 @@
 <?php
-
+use PHPUnit\Framework\TestCase;
 /**
  * @internal
  * @coversNothing
  */
-class lizmapRepositoryTest extends PHPUnit_Framework_TestCase
+class lizmapRepositoryTest extends TestCase
 {
     public function getTestGetPathData()
     {

@@ -1,7 +1,7 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-
-class qgisExpressionUtilsTest extends PHPUnit_Framework_TestCase {
+class qgisExpressionUtilsTest extends TestCase {
 
     function testCriteriaFromExpression() {
         $exp = '"name" IS NOT NULL AND "name" <> \'\'';

@@ -1,7 +1,7 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-
-class lizmapWktTest extends PHPUnit_Framework_TestCase {
+class lizmapWktTest extends TestCase {
 
     function testPoint() {
         $wkt = 'POINT (30 10)';
