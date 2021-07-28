@@ -67,7 +67,7 @@ describe('Form edition all field type', function() {
         // Typing negative value `-1` in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('-1')
         cy.get('#jforms_view_edition__submit_submit').click()
-        // A  message should confirm form had been saved
+        // A message should confirm form had been saved
         cy.get('#lizmap-edition-message').should('be.visible')
     })
 

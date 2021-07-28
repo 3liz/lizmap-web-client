@@ -280,10 +280,10 @@ class QgisProject
         $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
         $layers = $cfg->getProperty('layers');
         if ($layerWithOpacities && count($layerWithOpacities)) {
-            foreach ($layerWithOpacities as $layerWithOpacitiy) {
-                $name = (string) $layerWithOpacitiy->layername;
+            foreach ($layerWithOpacities as $layerWithOpacity) {
+                $name = (string) $layerWithOpacity->layername;
                 if ($layers && property_exists($layers, $name)) {
-                    $opacity = (float) $layerWithOpacitiy->layerOpacity;
+                    $opacity = (float) $layerWithOpacity->layerOpacity;
                     $layers->{$name}->opacity = $opacity;
                 }
             }
@@ -1459,6 +1459,28 @@ class QgisProject
                                 $c['exp'] = ((int) $constraint['exp_strength'] > 0);
                             }
                             $constraints[(string) $constraint['field']] = $c;
+                        }
+                    }
+
+                    if (isset($xmlLayer->constraintExpressions->constraint)) {
+                        foreach ($xmlLayer->constraintExpressions->constraint as $constraint) {
+                            $f = (string) $constraint['field'];
+                            $c = array(
+                                'constraints' => 0,
+                                'notNull' => false,
+                                'unique' => false,
+                                'exp' => false,
+                            );
+                            if (array_key_exists($f, $constraints)) {
+                                $c = $constraints[$f];
+                            }
+                            $exp_val = (string) $constraint['exp'];
+                            if ($exp_val !== '') {
+                                $c['exp'] = true;
+                                $c['exp_value'] = $exp_val;
+                                $c['exp_desc'] = (string) $constraint['desc'];
+                            }
+                            $constraints[$f] = $c;
                         }
                     }
 
