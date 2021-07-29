@@ -21,7 +21,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: demo@demo
+-- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: lizmap
 --
 
 CREATE TABLE tests_projects.quartiers (
@@ -35,10 +35,10 @@ CREATE TABLE tests_projects.quartiers (
 );
 
 
-ALTER TABLE tests_projects.quartiers OWNER TO "demo@demo";
+ALTER TABLE tests_projects.quartiers OWNER TO lizmap;
 
 --
--- Data for Name: quartiers; Type: TABLE DATA; Schema: tests_projects; Owner: demo@demo
+-- Data for Name: quartiers; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
 --
 
 COPY tests_projects.quartiers (quartier, geom, quartmno, libquart, squartmno, photo, url) FROM stdin;
@@ -53,7 +53,7 @@ COPY tests_projects.quartiers (quartier, geom, quartmno, libquart, squartmno, ph
 
 
 --
--- Name: quartiers quartiers_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: demo@demo
+-- Name: quartiers quartiers_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
 --
 
 ALTER TABLE ONLY tests_projects.quartiers
@@ -61,7 +61,7 @@ ALTER TABLE ONLY tests_projects.quartiers
 
 
 --
--- Name: sidx_quartiers_geom; Type: INDEX; Schema: tests_projects; Owner: demo@demo
+-- Name: sidx_quartiers_geom; Type: INDEX; Schema: tests_projects; Owner: lizmap
 --
 
 CREATE INDEX "sidx_quartiers_geom" ON tests_projects.quartiers USING gist (geom);
