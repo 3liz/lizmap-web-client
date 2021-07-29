@@ -44,7 +44,7 @@ describe('Form edition all field type', function() {
         cy.get('#jforms_view_edition_integer_field').type('foo')
         cy.get('#jforms_view_edition__submit_submit').click()
         // An error message should warn about invalidity
-        cy.get('#jforms_view_edition_errors > p').should('be.visible')
+        cy.get('#jforms_view_edition_errors > p').should('have.class', 'error')
     })
 
     it('expects error, value too big', function(){
@@ -52,7 +52,7 @@ describe('Form edition all field type', function() {
         cy.get('#jforms_view_edition_integer_field').type('2147483648')
         cy.get('#jforms_view_edition__submit_submit').click()
         // An error message should warn about invalidity
-        cy.get('#jforms_view_edition_errors > p').should('be.visible')
+        cy.get('#jforms_view_edition_errors > p').should('have.class', 'error')
     })
 
     it('expects error, negative value too big', function(){
@@ -60,7 +60,7 @@ describe('Form edition all field type', function() {
         cy.get('#jforms_view_edition_integer_field').type('-2147483649')
         cy.get('#jforms_view_edition__submit_submit').click()
         // An error message should warn about invalidity
-        cy.get('#jforms_view_edition_errors > p').should('be.visible')
+        cy.get('#jforms_view_edition_errors > p').should('have.class', 'error')
     })
 
     it('success, negative value', function(){
