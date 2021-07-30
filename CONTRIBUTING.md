@@ -1,5 +1,11 @@
 # Contribution guidelines
 
+## Geting in touch
+
+- People working on lizmap are available throught email on the lizmap mailing list
+at https://lists.osgeo.org/pipermail/lizmap/
+- We are also hanging out on #lizmap on https://libera.chat
+
 ## Pull request
 
 To contribute you should clone the 3liz/lizmap-web-client repository into your
