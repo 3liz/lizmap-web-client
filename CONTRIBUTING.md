@@ -1,8 +1,8 @@
 # Contribution guidelines
 
-## Geting in touch
+## Getting in touch
 
-- People working on lizmap are available throught email on the lizmap mailing list
+- People working on Lizmap are available through email on the Lizmap mailing list
 at https://lists.osgeo.org/pipermail/lizmap/
 - We are also hanging out on #lizmap on https://libera.chat
 
@@ -170,4 +170,3 @@ please go on Transifex:
 
 For core developers, see the repository https://github.com/3liz/lizmap-locales/
 and https://github.com/jelix/jelix-langpacks.
-
