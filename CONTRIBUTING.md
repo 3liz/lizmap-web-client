@@ -1,5 +1,11 @@
 # Contribution guidelines
 
+## Getting in touch
+
+- People working on Lizmap are available through email on the Lizmap mailing list
+at https://lists.osgeo.org/pipermail/lizmap/
+- We are also hanging out on #lizmap on https://libera.chat
+
 ## Pull request
 
 To contribute you should clone the 3liz/lizmap-web-client repository into your
@@ -164,4 +170,3 @@ please go on Transifex:
 
 For core developers, see the repository https://github.com/3liz/lizmap-locales/
 and https://github.com/jelix/jelix-langpacks.
-
