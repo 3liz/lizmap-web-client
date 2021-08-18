@@ -1,16 +1,17 @@
 <?php
 
 use Lizmap\Project;
+use Lizmap\Project\ProjectCache;
 
 class ProjectForTests extends Project\Project
 {
     public function __construct($appContext = null)
     {
-        if ($appContext) {
-            $this->appContext = $appContext;
-        } else {
-            $this->appContext = new ContextForTests();
+        if (!$appContext) {
+            $appContext = new ContextForTests();
         }
+        $this->appContext = $appContext;
+        $this->cacheHandler = new ProjectCache('/test.qgs', time(), time(), $this->appContext);
     }
 
     public function setRepo($rep)
@@ -38,9 +39,10 @@ class ProjectForTests extends Project\Project
         $this->services = $services;
     }
 
-    public function setFile($file)
+    public function setFile($file, $modifiedTime, $cfgModifiedTime)
     {
         $this->file = $file;
+        $this->cacheHandler = new ProjectCache($file, $modifiedTime, $cfgModifiedTime, $this->appContext);
     }
 
     public function readProjectForTest($key, $rep)

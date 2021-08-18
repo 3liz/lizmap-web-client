@@ -64,9 +64,9 @@ class ProjectTest extends TestCase
     public function getRelativeQgisPathData()
     {
         return array(
-            array('', null, '/srv/lzm/absolute/path', '/srv/lzm/absolute/path'),
-            array('1', '/srv/lzm/repo/root/path', '/srv/lzm/repo/root/path/project.qgs', 'project.qgs'),
-            array('1', '/srv/lzm/repo/root/path', '/srv/lzm/not/the/same/project.qgs', '/srv/lzm/not/the/same/project.qgs'),
+            array('',   null,                      '/srv/lzm/absolute/path',              '/srv/lzm/absolute/path'),
+            array('1',  '/srv/lzm/repo/root/path', '/srv/lzm/repo/root/path/project.qgs', 'project.qgs'),
+            array('1', '/srv/lzm/repo/root/path',  '/srv/lzm/not/the/same/project.qgs',   '/srv/lzm/not/the/same/project.qgs'),
         );
     }
 
@@ -88,7 +88,7 @@ class ProjectTest extends TestCase
         $proj = new ProjectForTests();
         $proj->setRepo(new Project\Repository(null, array('path' => ''), null, null, null));
         $proj->setServices($services);
-        $proj->setFile($file);
+        $proj->setFile($file, 0, 0);
         $path = $proj->getRelativeQgisPath();
         $this->assertEquals($expectedPath, $path);
     }
