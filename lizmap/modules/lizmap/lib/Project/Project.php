@@ -204,9 +204,9 @@ class Project
     /**
      * constructor.
      *
-     * @param string                  $key        : the project name
-     * @param Repository              $rep        : the repository
-     * @param App\AppContextInterface $appContext the instance of jelixInfos
+     * @param string                  $key        the project name
+     * @param Repository              $rep        the repository
+     * @param App\AppContextInterface $appContext context
      */
     public function __construct($key, Repository $rep, App\AppContextInterface $appContext, \LizmapServices $services)
     {
@@ -224,8 +224,10 @@ class Project
         if (!file_exists($file.'.cfg')) {
             throw new UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
         }
+        $qgsMtime = filemtime($file);
+        $qgsCfgMtime = filemtime($file.'.cfg');
 
-        $this->cacheHandler = new ProjectCache($file, $this->appContext);
+        $this->cacheHandler = new ProjectCache($file, $qgsMtime, $qgsCfgMtime, $this->appContext);
 
         $data = $this->cacheHandler->retrieveProjectData();
         if ($data === false) {
