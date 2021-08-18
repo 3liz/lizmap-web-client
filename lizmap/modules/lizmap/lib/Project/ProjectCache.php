@@ -35,12 +35,12 @@ class ProjectCache
     /**
      * @var int
      */
-    protected $qgsMtime;
+    protected $qgsMtime = 0;
 
     /**
      * @var int
      */
-    protected $qgsCfgMtime;
+    protected $qgsCfgMtime = 0;
 
     /**
      * version of the format of data stored in the cache.
@@ -58,16 +58,18 @@ class ProjectCache
      * The given Qgis file should exist, as well as the corresponding lizmap
      * cfg file.
      *
-     * @param string                  $file       The full path of the project
-     * @param App\AppContextInterface $appContext The interface to call Jelix
+     * @param string                  $file            The full path of the QGIS project file
+     * @param int                     $modifiedTime    Modification time of the file
+     * @param int                     $cfgModifiedTime Modification time of the lizmap configuration file for the QGIS project
+     * @param App\AppContextInterface $appContext      The interface to call Jelix
      */
-    public function __construct($file, App\AppContextInterface $appContext)
+    public function __construct($file, $modifiedTime, $cfgModifiedTime, App\AppContextInterface $appContext)
     {
         $this->file = $file;
         $this->appContext = $appContext;
         $this->fileKey = $this->appContext->normalizeCacheKey($file);
-        $this->qgsMtime = filemtime($this->file);
-        $this->qgsCfgMtime = filemtime($this->file.'.cfg');
+        $this->qgsMtime = $modifiedTime;
+        $this->qgsCfgMtime = $cfgModifiedTime;
     }
 
     /**
