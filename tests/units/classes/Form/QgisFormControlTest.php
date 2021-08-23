@@ -135,6 +135,10 @@ class QgisFormControlTest extends TestCase
             ),
         );
         # QGIS Constraints
+        # constraints is the number of contraints, 0 for no constraints
+        # notNull defined if the not null contraint is activated
+        # unique defined if the unique contraint is activated
+        # exp defined if the expression contraint is activated
         $constraints = array(
             'constraints' => 0,
             'notNull' => false,
@@ -154,22 +158,25 @@ class QgisFormControlTest extends TestCase
         # DB properties - Text - not null
         $prop->notNull = True;
         # QGIS constraints
+        $constraints['constraints'] = 0;
         $constraints['notNull'] = False;
         $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->required);
 
         # DB properties - Text
-        $prop->norNull = False;
+        $prop->notNull = False;
         # QGIS constraints - not null
+        $constraints['constraints'] = 1;
         $constraints['notNull'] = True;
         $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->required);
 
         # DB properties - Text
-        $prop->norNull = False;
+        $prop->notNull = False;
         # QGIS properties
         $properties->edittype->editable = 0;
         # QGIS constraints
+        $constraints['constraints'] = 0;
         $constraints['notNull'] = False;
         $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->isReadOnly);
