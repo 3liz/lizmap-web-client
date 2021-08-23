@@ -113,6 +113,55 @@ class QgisFormControlTest extends TestCase
         $this->assertEquals($control->fieldDataType, 'geometry');
     }
 
+    public function testConstructPrimaryKey()
+    {
+        $appContext = new ContextForTests();
+        # DB properties - Text
+        $prop = (object) array(
+            'type' => 'int',
+            'autoIncrement' => True,
+            'notNull' => True,
+        );
+        # QGIS properties
+        $properties = (object) array(
+            'markup' => 'input',
+            'fieldEditType' => 'TextEdit',
+            'widgetv2configAttr' => (object) array(
+                'IsMultiline' => '0',
+                'UseHtml' => '0',
+            ),
+            'edittype' => (object) array(
+                'editable' => 1,
+            ),
+        );
+        # QGIS Constraints
+        # constraints is the number of contraints, 0 for no constraints
+        # notNull defined if the not null contraint is activated
+        # unique defined if the unique contraint is activated
+        # exp defined if the expression contraint is activated
+        $constraints = array(
+            'constraints' => 0,
+            'notNull' => false,
+            'unique' => false,
+            'exp' => false,
+        );
+
+        $control = new QgisFormControl('id', $properties, $prop, null, $constraints, $appContext);
+        $this->assertEquals($control->ref, 'id');
+        $this->assertEquals($control->fieldName, 'id');
+        $this->assertEquals($control->fieldDataType, 'integer');
+        $this->assertEquals($control->fieldEditType, 'TextEdit');
+        $this->assertEquals($control->ctrl->getWidgetType(), 'input');
+        $this->assertFalse($control->isReadOnly);
+        $this->assertFalse($control->required);
+
+        # QGIS properties - not editable
+        $properties->edittype->editable = 0;
+        $control = new QgisFormControl('id', $properties, $prop, null, $constraints, $appContext);
+        $this->assertTrue($control->isReadOnly);
+        $this->assertFalse($control->required);
+    }
+
     public function testConstructInput()
     {
         $appContext = new ContextForTests();
