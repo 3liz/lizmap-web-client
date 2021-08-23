@@ -23,13 +23,6 @@ class QgisFormControl
      */
     public $ctrl;
 
-    /**
-     * Qgis edittype as a simpleXml object.
-     *
-     * @var \SimpleXMLElement
-     */
-    protected $edittype;
-
     // Qgis field name
     public $fieldName = '';
 
@@ -39,10 +32,18 @@ class QgisFormControl
     // Qgis field type
     public $fieldEditType = '';
 
-    // Qgis field alias
+    /**
+     * Qgis field alias.
+     *
+     * @deprecated use getFieldAlias()
+     */
     public $fieldAlias = '';
 
-    // Qgis rendererCategories
+    /**
+     * Qgis rendererCategories.
+     *
+     * @deprecated use getRendererCategories
+     */
     public $rendererCategories = '';
 
     // Qgis data type (text, float, integer, etc.)
@@ -62,6 +63,8 @@ class QgisFormControl
     public $uniqueValuesData;
 
     public $DefaultRoot;
+
+    const QGIS_NULL_VALUE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
 
     // Table mapping QGIS and jelix forms
     protected static $qgisEdittypeMap = array(
@@ -133,7 +136,7 @@ class QgisFormControl
     );
 
     // Table to map arbitrary data types to expected ones
-    public $castDataType = array(
+    const castDataType = array(
         'float' => 'float',
         'real' => 'float',
         'double' => 'float',
@@ -171,26 +174,25 @@ class QgisFormControl
         'time' => 'time',
     );
 
-    /**
-     * @var \SimpleXMLElement attributes on the widgetv2config element
-     */
-    protected $widgetv2configAttr;
-
     /** @var App\AppContextInterface */
     protected $appContext;
+
+    /**
+     * @var QgisFormControlProperties
+     */
+    protected $properties;
 
     /**
      * Create an jForms control object based on a qgis edit widget.
      * And add it to the passed form.
      *
-     * @param string              $ref                name of the control
-     * @param \SimpleXMLElement   $edittype           simplexml object corresponding to the QGIS edittype for this field
-     * @param object              $prop               Jelix object with field properties (datatype, required, etc.)
-     * @param array|object|string $aliasXml           simplexml object corresponding to the QGIS alias for this field
-     * @param null|string         $defaultValue       the QGIS expression of the default value
-     * @param null|array          $constraints        the QGIS constraints
-     * @param object              $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
-     * @param mixed               $properties
+     * @param string                    $ref                name of the control
+     * @param QgisFormControlProperties $properties
+     * @param object                    $prop               Jelix object with field properties (datatype, required, etc.)
+     * @param array|object|string       $aliasXml           simplexml object corresponding to the QGIS alias for this field
+     * @param null|string               $defaultValue       the QGIS expression of the default value
+     * @param null|array                $constraints        the QGIS constraints
+     * @param object                    $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      */
     public function __construct($ref, $properties, $prop, $defaultValue, $constraints, App\AppContextInterface $appContext)
     {
@@ -198,14 +200,11 @@ class QgisFormControl
         $this->ref = $ref;
         $this->fieldName = $ref;
         $this->appContext = $appContext;
-        $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
+        $this->fieldDataType = self::castDataType[strtolower($prop->type)];
         $this->defaultValue = $defaultValue;
-        $propTab = array('edittype', 'fieldEditType', 'fieldAlias', 'widgetv2configAttr', 'rendererCategories');
 
-        foreach ($propTab as $elem) {
-            if ($properties && property_exists($properties, $elem)) {
-                $this->{$elem} = $properties->{$elem};
-            }
+        if ($properties) {
+            $this->setProperties($properties);
         }
 
         $this->getEditTypeMap();
@@ -215,8 +214,11 @@ class QgisFormControl
                 $this->required = true;
             }
 
-            if ($constraints !== null && !$prop->notNull
-                && $constraints['constraints'] > 0 && $constraints['notNull']) {
+            if ($constraints !== null
+                && !$prop->notNull
+                && $constraints['constraints'] > 0
+                && $constraints['notNull']
+            ) {
                 $this->required = true;
             }
         } else {
@@ -225,55 +227,28 @@ class QgisFormControl
 
         if ($this->fieldDataType == 'geometry') {
             $markup = 'hidden';
+        } elseif ($properties) {
+            $markup = $properties->getMarkup();
         } else {
-            $markup = $properties->markup;
-        }
-
-        $controlNames = array('Menulist', 'Hidden', 'Checkboxes', 'Checkbox', 'Textarea', 'HtmlEditor', 'Date', 'Datetime');
-        $fillMethods = array('Menulist', 'Checkboxes', 'Checkbox');
-        foreach ($controlNames as $controlName) {
-            if (strtolower($controlName) === $markup) {
-                $class = '\jFormsControl'.$controlName;
-                $this->ctrl = new $class($this->ref);
-                if (in_array($controlName, $fillMethods)) {
-                    if ($controlName === 'Checkbox') {
-                        $this->fillCheckboxValues();
-                    } else {
-                        $this->fillControlDatasource();
-                        if ($this->fieldDataType === 'boolean' && $prop->notNull) {
-                            $this->reworkBooleanControl($markup);
-                        }
-                    }
-                }
-                $markup = null;
-            }
+            $markup = 'input';
         }
 
         // Create the control
         switch ($markup) {
-            case null:
-                break;
-
             case 'input':
                 $this->ctrl = new \jFormsControlInput($this->ref);
-                if ($this->fieldEditType === 15) {
+                if ($this->fieldEditType === 15
+                    || $this->fieldEditType === 'Range'
+                    || $this->fieldEditType === 'EditRange'
+                ) {
                     $this->ctrl->datatype = new \jDatatypeDecimal();
-                    $attributes = $this->edittype->attributes();
-                    if (property_exists($attributes, 'min')) {
-                        $this->ctrl->datatype->addFacet('minValue', (float) $attributes->min);
+                    $min = $this->getEditAttribute('Min');
+                    if ($min !== null) {
+                        $this->ctrl->datatype->addFacet('minValue', $min);
                     }
-                    if (property_exists($attributes, 'max')) {
-                        $this->ctrl->datatype->addFacet('maxValue', (float) $attributes->max);
-                    }
-                } elseif ($this->fieldEditType === 'Range'
-                         || $this->fieldEditType === 'EditRange') {
-                    $this->ctrl->datatype = new \jDatatypeDecimal();
-                    $attributes = $this->widgetv2configAttr;
-                    if (property_exists($attributes, 'Min')) {
-                        $this->ctrl->datatype->addFacet('minValue', (float) $attributes->Min);
-                    }
-                    if (property_exists($attributes, 'Max')) {
-                        $this->ctrl->datatype->addFacet('maxValue', (float) $attributes->Max);
+                    $max = $this->getEditAttribute('Max');
+                    if ($max !== null) {
+                        $this->ctrl->datatype->addFacet('maxValue', $max);
                     }
                 }
 
@@ -287,6 +262,30 @@ class QgisFormControl
 
             case 'upload':
                 $this->getUploadControl();
+
+                break;
+
+            case 'checkbox':
+                $this->ctrl = new \jFormsControlCheckbox($this->ref);
+                $this->fillCheckboxValues();
+
+                break;
+
+            case 'menulist':
+            case 'hidden':
+            case 'checkboxes':
+            case 'textarea':
+            case 'htmlEditor':
+            case 'date':
+            case 'datetime':
+                $class = '\jFormsControl'.ucfirst($markup);
+                $this->ctrl = new $class($this->ref);
+                if ($markup == 'menulist' || $markup == 'checkboxes') {
+                    $this->fillControlDatasource();
+                    if ($this->fieldDataType === 'boolean' && $prop->notNull) {
+                        $this->reworkBooleanControl($markup);
+                    }
+                }
 
                 break;
 
@@ -309,6 +308,18 @@ class QgisFormControl
         }
     }
 
+    /**
+     * @param QgisFormControlProperties $properties
+     */
+    protected function setProperties($properties)
+    {
+        $this->properties = $properties;
+
+        $this->fieldEditType = $properties->getFieldEditType();
+        $this->fieldAlias = $properties->getFieldAlias();
+        $this->rendererCategories = $properties->getRendererCategories();
+    }
+
     protected function getUploadControl()
     {
         $choice = new \jFormsControlChoice($this->ref.'_choice');
@@ -321,9 +332,10 @@ class QgisFormControl
             $upload->capture = 'camera';
         } elseif ($this->fieldEditType === 'ExternalResource') {
             $upload->accept = '';
-            if (property_exists($this->widgetv2configAttr, 'FileWidgetFilter')) {
+            $FileWidgetFilter = $this->getEditAttribute('FileWidgetFilter');
+            if ($FileWidgetFilter) {
                 //QFileDialog::getOpenFileName filter
-                $FileWidgetFilter = explode(';;', $this->widgetv2configAttr->FileWidgetFilter);
+                $FileWidgetFilter = explode(';;', $FileWidgetFilter);
                 $accepts = array();
                 $re = '/(\*\.\w{3,6})/';
                 foreach ($FileWidgetFilter as $FileFilter) {
@@ -338,8 +350,7 @@ class QgisFormControl
                     $upload->accept = implode(', ', array_unique($accepts));
                 }
             }
-            if (property_exists($this->widgetv2configAttr, 'DocumentViewer')
-                && ($this->widgetv2configAttr->DocumentViewer === '1' || $this->widgetv2configAttr->DocumentViewer === 'true')) {
+            if ($this->getEditAttribute('DocumentViewer')) {
                 if ($upload->accept != '') {
                     $mimetypes = array();
                     $accepts = explode(', ', $upload->accept);
@@ -377,10 +388,12 @@ class QgisFormControl
                 }
                 $upload->capture = 'camera';
             }
-            if (property_exists($this->widgetv2configAttr, 'DefaultRoot')
-                && (preg_match('#^../media(/)?#', $this->widgetv2configAttr->DefaultRoot)
-                    || preg_match('#^media(/)?#', $this->widgetv2configAttr->DefaultRoot))) {
-                $this->DefaultRoot = $this->widgetv2configAttr->DefaultRoot.'/';
+            $defaultRoot = $this->getEditAttribute('DefaultRoot');
+
+            if ($defaultRoot
+                && (preg_match('#^../media(/)?#', $defaultRoot)
+                    || preg_match('#^media(/)?#', $defaultRoot))) {
+                $this->DefaultRoot = $defaultRoot.'/';
             } else {
                 $this->DefaultRoot = '';
             }
@@ -439,8 +452,9 @@ class QgisFormControl
     {
 
         // Label
-        if ($this->fieldAlias) {
-            $this->ctrl->label = $this->fieldAlias;
+        $alias = $this->getFieldAlias();
+        if ($alias) {
+            $this->ctrl->label = $alias;
         } else {
             $this->ctrl->label = $this->fieldName;
         }
@@ -468,22 +482,7 @@ class QgisFormControl
             if ($this->fieldEditType !== '' && array_key_exists('readonly', self::$qgisEdittypeMap[$this->fieldEditType]['jform'])) {
                 $this->isReadOnly = true;
             }
-            if ($this->edittype && ($this->edittype instanceof \SimpleXMLElement)) {
-                $isEditable = true;
-                // Also use "editable" property
-                if (property_exists($this->edittype->attributes(), 'editable')) {
-                    $isEditable = filter_var((string) $this->edittype->attributes()->editable, FILTER_VALIDATE_BOOLEAN);
-                }
-                // Also use "fieldEditable" property
-                elseif (property_exists($this->edittype->attributes(), 'widgetv2type')
-                        && property_exists($this->widgetv2configAttr, 'fieldEditable')
-                ) {
-                    $isEditable = filter_var((string) $this->widgetv2configAttr->fieldEditable, FILTER_VALIDATE_BOOLEAN);
-                }
-                if (!$isEditable) {
-                    $this->isReadOnly = true;
-                }
-            } elseif ($this->edittype && is_object($this->edittype) && $this->edittype->editable === 0) {
+            if ($this->properties !== null && !$this->properties->isEditable()) {
                 $this->isReadOnly = true;
             }
         }
@@ -509,14 +508,12 @@ class QgisFormControl
     */
     protected function fillCheckboxValues()
     {
-        $checked = null;
-        $unchecked = null;
+        $checked = $this->getEditAttribute('CheckedState');
+        $unchecked = $this->getEditAttribute('UncheckedState');
+
         if ($this->fieldEditType === 'CheckBox') {
-            $checked = (string) ($this->widgetv2configAttr->CheckedState === '' ? 't' : $this->widgetv2configAttr->CheckedState);
-            $unchecked = (string) ($this->widgetv2configAttr->UncheckedState === '' ? 'f' : $this->widgetv2configAttr->UncheckedState);
-        } else {
-            $checked = (string) $this->edittype->attributes()->checked;
-            $unchecked = (string) $this->edittype->attributes()->unchecked;
+            $checked = $checked === '' ? 't' : $checked;
+            $unchecked = $unchecked === '' ? 'f' : $unchecked;
         }
         $this->ctrl->valueOnCheck = $checked;
         $this->ctrl->valueOnUncheck = $unchecked;
@@ -556,49 +553,30 @@ class QgisFormControl
             case 'UniqueValuesEditable':
             case 'UniqueValues':
                 $this->uniqueValuesData = array(
-                    'notNull' => false,
-                    'editable' => false,
+                    'notNull' => $this->getEditAttribute('notNull'),
+                    'editable' => $this->properties->isEditable(),
                 );
                 if ($this->fieldEditType === 'UniqueValuesEditable') {
                     $this->uniqueValuesData['editable'] = true;
-                }
-                if (($this->edittype instanceof \SimpleXMLElement) && $this->edittype->widgetv2config) {
-                    $this->uniqueValuesData['notNull'] = filter_var($this->widgetv2configAttr->notNull, FILTER_VALIDATE_BOOLEAN);
-                    $this->uniqueValuesData['editable'] = filter_var($this->widgetv2configAttr->Editable, FILTER_VALIDATE_BOOLEAN);
-                } elseif (is_object($this->edittype)) {
-                    if (property_exists($this->widgetv2configAttr, 'notNull')) {
-                        $this->uniqueValuesData['notNull'] = filter_var($this->widgetv2configAttr->notNull, FILTER_VALIDATE_BOOLEAN);
-                    }
-                    if (property_exists($this->widgetv2configAttr, 'Editable')) {
-                        $this->uniqueValuesData['editable'] = filter_var($this->widgetv2configAttr->Editable, FILTER_VALIDATE_BOOLEAN);
-                    }
                 }
 
                 break;
 
             // Value map
             case 3:
-                foreach ($this->edittype->xpath('valuepair') as $valuepair) {
-                    $k = (string) $valuepair->attributes()->key;
-                    $v = (string) $valuepair->attributes()->value;
-                    $data[$v] = $k;
-                }
-
-                break;
-
             case 'ValueMap':
-                if ($this->edittype instanceof \SimpleXMLElement) {
-                    foreach ($this->edittype->widgetv2config->xpath('value') as $value) {
-                        $k = (string) $value->attributes()->key;
-                        $v = (string) $value->attributes()->value;
-                        $data[$v] = $k;
+                $valueMap = $this->properties->getValueMap();
+                if (is_array($valueMap)) {
+                    // remove the QGIS null value if the control value is not
+                    // required, as the widget will have a possibility to choose
+                    // no value (so null value... ?)
+                    if (!$this->required
+                        && $this->fieldDataType == 'boolean'
+                        && isset($valueMap[self::QGIS_NULL_VALUE])
+                    ) {
+                        unset($valueMap[self::QGIS_NULL_VALUE]);
                     }
-                } elseif (is_object($this->edittype)) {
-                    foreach ($this->widgetv2configAttr->map as $value) {
-                        $k = (string) $value->key;
-                        $v = (string) $value->value;
-                        $data[$v] = $k;
-                    }
+                    $data = array_merge($data, $valueMap);
                 }
 
                 break;
@@ -606,44 +584,24 @@ class QgisFormControl
             // Classification
             case 4:
             case 'Classification':
-                $data = $this->rendererCategories;
+                $data = $this->properties->getRendererCategories();
 
                 break;
 
             // Range
             case 5:
-                // Get range of data
-                if ($this->fieldDataType == 'float') {
-                    $min = (float) $this->edittype->attributes()->min;
-                    $max = (float) $this->edittype->attributes()->max;
-                    $step = (float) $this->edittype->attributes()->step;
-                } else {
-                    $min = (int) $this->edittype->attributes()->min;
-                    $max = (int) $this->edittype->attributes()->max;
-                    $step = (int) $this->edittype->attributes()->step;
-                }
-                $data[(string) $min] = $min;
-                for ($i = $min; $i <= $max; $i += $step) {
-                    $data[(string) $i] = $i;
-                }
-                $data[(string) $max] = $max;
-                asort($data);
-
-                break;
-
             case 'Range':
             case 'EditRange':
             case 'SliderRange':
             case 'DialRange':
                 // Get range of data
-                if ($this->fieldDataType == 'float') {
-                    $min = (float) $this->widgetv2configAttr->Min;
-                    $max = (float) $this->widgetv2configAttr->Max;
-                    $step = (float) $this->widgetv2configAttr->Step;
-                } else {
-                    $min = (int) $this->widgetv2configAttr->Min;
-                    $max = (int) $this->widgetv2configAttr->Max;
-                    $step = (int) $this->widgetv2configAttr->Step;
+                $min = $this->getEditAttribute('Min');
+                $max = $this->getEditAttribute('Max');
+                $step = $this->getEditAttribute('Step');
+                if ($this->fieldDataType != 'float') {
+                    // XXX why ?
+                    $min = (int) $min;
+                    $max = (int) $max;
                 }
                 $data[(string) $min] = $min;
                 for ($i = $min; $i <= $max; $i += $step) {
@@ -656,85 +614,13 @@ class QgisFormControl
 
             // Value relation
             case 15:
-                $allowNull = filter_var($this->edittype->attributes()->allowNull, FILTER_VALIDATE_BOOLEAN);
-                $orderByValue = (string) $this->edittype->attributes()->orderByValue;
-                $layer = (string) $this->edittype->attributes()->layer;
-                $key = (string) $this->edittype->attributes()->key;
-                $value = (string) $this->edittype->attributes()->value;
-                $allowMulti = filter_var($this->edittype->attributes()->allowMulti, FILTER_VALIDATE_BOOLEAN);
-                $filterExpression = (string) $this->edittype->attributes()->filterExpression;
-                $this->valueRelationData = array(
-                    'allowNull' => $allowNull,
-                    'orderByValue' => $orderByValue,
-                    'layer' => $layer,
-                    'key' => $key,
-                    'value' => $value,
-                    'allowMulti' => $allowMulti,
-                    'filterExpression' => $filterExpression,
-                );
-
-                break;
-
             case 'ValueRelation':
-                $allowNull = filter_var($this->widgetv2configAttr->AllowNull, FILTER_VALIDATE_BOOLEAN);
-                $orderByValue = (string) $this->widgetv2configAttr->OrderByValue;
-                $layer = (string) $this->widgetv2configAttr->Layer;
-                $key = (string) $this->widgetv2configAttr->Key;
-                $value = (string) $this->widgetv2configAttr->Value;
-                $allowMulti = filter_var($this->widgetv2configAttr->AllowMulti, FILTER_VALIDATE_BOOLEAN);
-                $filterExpression = (string) $this->widgetv2configAttr->FilterExpression;
-                $useCompleter = filter_var($this->widgetv2configAttr->UseCompleter, FILTER_VALIDATE_BOOLEAN);
-                $fieldEditable = true;
-                if (($this->edittype instanceof \SimpleXMLElement) && property_exists($this->widgetv2configAttr, 'fieldEditable')) {
-                    $fieldEditable = filter_var($this->widgetv2configAttr->fieldEditable, FILTER_VALIDATE_BOOLEAN);
-                } elseif (is_object($this->edittype) && property_exists($this->edittype, 'editable')) {
-                    $fieldEditable = filter_var($this->edittype->editable, FILTER_VALIDATE_BOOLEAN);
-                }
-
-                $this->valueRelationData = array(
-                    'allowNull' => $allowNull,
-                    'orderByValue' => $orderByValue,
-                    'layer' => $layer,
-                    'key' => $key,
-                    'value' => $value,
-                    'allowMulti' => $allowMulti,
-                    'filterExpression' => $filterExpression,
-                    'useCompleter' => $useCompleter,
-                    'fieldEditable' => $fieldEditable,
-                );
+                $this->valueRelationData = $this->properties->getValueRelationData();
 
                 break;
 
             case 'RelationReference':
-                $allowNull = filter_var($this->widgetv2configAttr->AllowNull, FILTER_VALIDATE_BOOLEAN);
-                $orderByValue = filter_var($this->widgetv2configAttr->OrderByValue, FILTER_VALIDATE_BOOLEAN);
-                $Relation = (string) $this->widgetv2configAttr->Relation;
-                $MapIdentification = filter_var($this->widgetv2configAttr->MapIdentification, FILTER_VALIDATE_BOOLEAN);
-                $chainFilters = false;
-                $filters = array();
-                if (($this->edittype instanceof \SimpleXMLElement)) {
-                    if (property_exists($this->edittype->widgetv2config, 'FilterFields')) {
-                        foreach ($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
-                            $filters[] = (string) $f->attributes()->name;
-                        }
-                        $chainFilters = filter_var($this->edittype->widgetv2config->FilterFields->attributes()->ChainFilters, FILTER_VALIDATE_BOOLEAN);
-                    }
-                } elseif (is_object($this->edittype)) {
-                    if (property_exists($this->widgetv2configAttr, 'FilterFields')) {
-                        $filters = $this->widgetv2configAttr->FilterFields;
-                    }
-                    if (property_exists($this->widgetv2configAttr, 'ChainFilters')) {
-                        $chainFilters = filter_var($this->widgetv2configAttr->ChainFilters, FILTER_VALIDATE_BOOLEAN);
-                    }
-                }
-                $this->relationReferenceData = array(
-                    'allowNull' => $allowNull,
-                    'orderByValue' => $orderByValue,
-                    'relation' => $Relation,
-                    'mapIdentification' => $MapIdentification,
-                    'filters' => $filters,
-                    'chainFilters' => $chainFilters,
-                );
+                $this->relationReferenceData = $this->properties->getRelationReference();
 
                 break;
 
@@ -769,23 +655,23 @@ class QgisFormControl
         // Set control
         $this->ctrl = new \jFormsControlCheckbox($this->ref);
         // Check data list
-        foreach ($data as $k => $v) {
-            if ($k === '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}') {
+        foreach ($data as $v => $label) {
+            if ($v === self::QGIS_NULL_VALUE) {
                 // it is a null value for QGIS and
                 // intval('{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}') === 0
                 continue;
             }
-            $strK = strtolower($k);
-            if ($strK === 'true' || $strK === 't'
-                || intval($k) === 1 || $strK === 'on') {
+            $strV = strtolower($v);
+            if ($strV === 'true' || $strV === 't'
+                || intval($v) === 1 || $strV === 'on') {
                 // Check info
-                $this->ctrl->valueOnCheck = $k;
-                $this->ctrl->valueLabelOnCheck = $v;
-            } elseif ($strK === 'false' || $strK === 'f'
-                || intval($k) === 0 || $strK === 'off') {
+                $this->ctrl->valueOnCheck = $v;
+                $this->ctrl->valueLabelOnCheck = $label;
+            } elseif ($strV === 'false' || $strV === 'f'
+                || intval($v) === 0 || $strV === 'off') {
                 // Uncheck info
-                $this->ctrl->valueOnUncheck = $k;
-                $this->ctrl->valueLabelOnUncheck = $v;
+                $this->ctrl->valueOnUncheck = $v;
+                $this->ctrl->valueLabelOnUncheck = $label;
             }
         }
     }
@@ -824,8 +710,41 @@ class QgisFormControl
         return $this->isUploadControl() ? $this->ref.'_choice' : $this->ref;
     }
 
-    public function getEditType()
+    /**
+     * @return array
+     */
+    public function getRendererCategories()
     {
-        return $this->edittype;
+        if ($this->properties) {
+            return $this->properties->getRendererCategories();
+        }
+
+        return array();
+    }
+
+    /**
+     * @return string
+     */
+    public function getFieldAlias()
+    {
+        if ($this->properties) {
+            return $this->properties->getFieldAlias();
+        }
+
+        return '';
+    }
+
+    /**
+     * @param mixed $name
+     *
+     * @return mixed
+     */
+    public function getEditAttribute($name)
+    {
+        if ($this->properties) {
+            return $this->properties->getEditAttribute($name);
+        }
+
+        return null;
     }
 }
