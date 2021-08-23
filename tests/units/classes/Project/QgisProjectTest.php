@@ -420,19 +420,15 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($props));
         $this->assertCount(9, $props);
         $this->assertTrue(array_key_exists('name', $props));
+
         $prop = $props['name'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'IsMultiline'));
-        $this->assertEquals($prop['widgetv2configAttr']->IsMultiline, '0');
-        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'UseHtml'));
-        $this->assertEquals($prop['widgetv2configAttr']->UseHtml, '0');
+        $this->assertEquals($prop->getFieldEditType(), 'TextEdit');
+        $this->assertFalse($prop->isMultiline());
+        $this->assertFalse($prop->useHtml());
         $this->assertTrue(array_key_exists('wkt', $props));
+
         $prop = $props['wkt'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'Hidden');
+        $this->assertEquals($prop->getFieldEditType(), 'Hidden');
     }
 
     public function testGetFieldConfiguration() {
@@ -497,21 +493,15 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($props));
         $this->assertCount(5, $props);
         $this->assertTrue(array_key_exists('name', $props));
+
         $prop = $props['name'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
-        $this->assertTrue(property_exists($options, 'IsMultiline'));
-        $this->assertEquals($options->IsMultiline, '0');
-        $this->assertTrue(property_exists($options, 'UseHtml'));
-        $this->assertEquals($options->UseHtml, '0');
+        $this->assertEquals($prop->getFieldEditType(), 'TextEdit');
+        $this->assertFalse($prop->isMultiline());
+        $this->assertFalse($prop->useHtml());
         $this->assertTrue(array_key_exists('wkt', $props));
+
         $prop = $props['wkt'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'Hidden');
+        $this->assertEquals($prop->getFieldEditType(), 'Hidden');
 
         # TextEdit widget editable
         $xmlStr = '
@@ -543,31 +533,20 @@ class QgisProjectTest extends TestCase
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(is_array($props));
         $this->assertCount(2, $props);
+
         $this->assertTrue(array_key_exists('id', $props));
         $prop = $props['id'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
-        $this->assertFalse(property_exists($options, 'IsMultiline'));
-        $this->assertFalse(property_exists($options, 'UseHtml'));
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'editable'));
-        $this->assertEquals($prop['edittype']->editable, 0);
+        $this->assertEquals($prop->getFieldEditType(), 'TextEdit');
+        $this->assertFalse($prop->isMultiline());
+        $this->assertFalse($prop->useHtml());
+        $this->assertFalse($prop->isEditable());
+
         $this->assertTrue(array_key_exists('label', $props));
         $prop = $props['label'];
-        $this->assertEquals($prop['fieldEditType'], 'TextEdit');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
-        $this->assertFalse(property_exists($options, 'IsMultiline'));
-        $this->assertFalse(property_exists($options, 'UseHtml'));
-        $this->assertTrue(property_exists($prop['edittype'], 'editable'));
-        $this->assertEquals($prop['edittype']->editable, 1);
+        $this->assertEquals($prop->getFieldEditType(), 'TextEdit');
+        $this->assertFalse($prop->isMultiline());
+        $this->assertFalse($prop->useHtml());
+        $this->assertTrue($prop->isEditable());
 
         # DateTime widget
         $xmlStr = '
@@ -595,16 +574,14 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($props));
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('date', $props));
+
         $prop = $props['date'];
-        $this->assertEquals($prop['fieldEditType'], 'DateTime');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+        $this->assertEquals($prop->getFieldEditType(), 'DateTime');
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'field_format'));
         $this->assertEquals($options->field_format, 'yyyy-MM-dd');
         $this->assertTrue(property_exists($options, 'field_iso_format'));
-        $this->assertEquals($options->field_iso_format, 'false');
+        $this->assertFalse($options->field_iso_format);
 
         # Classification widget
         $xmlStr = '
@@ -626,8 +603,9 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($props));
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('type', $props));
+
         $prop = $props['type'];
-        $this->assertEquals($prop['fieldEditType'], 'Classification');
+        $this->assertEquals($prop->getFieldEditType(), 'Classification');
 
         # DateTime widget
         $xmlStr = '
@@ -658,11 +636,9 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('photo', $props));
         $prop = $props['photo'];
-        $this->assertEquals($prop['fieldEditType'], 'ExternalResource');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+        $this->assertEquals($prop->getFieldEditType(), 'ExternalResource');
+
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'FileWidgetFilter'));
         $this->assertEquals($options->FileWidgetFilter, 'Images (*.gif *.jpeg *.jpg *.png)');
 
@@ -689,13 +665,8 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('author', $props));
         $prop = $props['author'];
-        $this->assertEquals($prop['fieldEditType'], 'UniqueValues');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
-        $this->assertTrue(property_exists($options, 'Editable'));
-        $this->assertEquals($options->Editable, '1');
+        $this->assertEquals($prop->getFieldEditType(), 'UniqueValues');
+        $this->assertTrue($prop->isEditable());
 
         # CheckBox widget
         $xmlStr = '
@@ -721,11 +692,9 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('checked', $props));
         $prop = $props['checked'];
-        $this->assertEquals($prop['fieldEditType'], 'CheckBox');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+        $this->assertEquals($prop->getFieldEditType(), 'CheckBox');
+
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'CheckedState'));
         $this->assertEquals($options->CheckedState, '1');
         $this->assertTrue(property_exists($options, 'UncheckedState'));
@@ -761,11 +730,10 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('tram_id', $props));
         $prop = $props['tram_id'];
-        $this->assertEquals($prop['fieldEditType'], 'ValueRelation');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+        $this->assertEquals($prop->getFieldEditType(), 'ValueRelation');
+
+
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'Layer'));
         $this->assertEquals($options->Layer, 'tramway20150328114206278');
         $this->assertTrue(property_exists($options, 'Key'));
@@ -773,9 +741,9 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'Value'));
         $this->assertEquals($options->Value, 'test');
         $this->assertTrue(property_exists($options, 'AllowMulti'));
-        $this->assertEquals($options->AllowMulti, '0');
+        $this->assertFalse($options->AllowMulti);
         $this->assertTrue(property_exists($options, 'AllowNull'));
-        $this->assertEquals($options->AllowNull, '1');
+        $this->assertTrue($options->AllowNull);
         $this->assertTrue(property_exists($options, 'OrderByValue'));
         $this->assertEquals($options->OrderByValue, '1');
         $this->assertTrue(property_exists($options, 'FilterExpression'));
@@ -814,11 +782,9 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('code_with_geom_exp', $props));
         $prop = $props['code_with_geom_exp'];
-        $this->assertEquals($prop['fieldEditType'], 'ValueRelation');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+        $this->assertEquals($prop->getFieldEditType(), 'ValueRelation');
+
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'FilterExpression'));
         $this->assertEquals($options->FilterExpression, 'intersects(@current_geometry , $geometry)');
 
@@ -850,22 +816,20 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('integer_field', $props));
         $prop = $props['integer_field'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'Range');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+
+        $this->assertEquals($prop->getFieldEditType(), 'Range');
+
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'AllowNull'));
-        $this->assertEquals($options->AllowNull, 'true');
+        $this->assertTrue($options->AllowNull);
         $this->assertTrue(property_exists($options, 'Max'));
-        $this->assertEquals($options->Max, '2147483647');
+        $this->assertEquals($options->Max, 2147483647);
         $this->assertTrue(property_exists($options, 'Min'));
-        $this->assertEquals($options->Min, '-2147483648');
+        $this->assertEquals($options->Min, -2147483648);
         $this->assertTrue(property_exists($options, 'Precision'));
-        $this->assertEquals($options->Precision, '0');
+        $this->assertEquals($options->Precision, 0);
         $this->assertTrue(property_exists($options, 'Step'));
-        $this->assertEquals($options->Step, '1');
+        $this->assertEquals($options->Step, 1);
         $this->assertTrue(property_exists($options, 'Style'));
         $this->assertEquals($options->Style, 'SpinBox');
 
@@ -901,21 +865,19 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($props));
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('boolean_nullable', $props));
+
         $prop = $props['boolean_nullable'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'ValueMap');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(property_exists($prop['widgetv2configAttr'], 'map'));
-        $this->assertCount(3, $prop['widgetv2configAttr']->map);
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['widgetv2configAttr']->map[0], 'key'));
-        $this->assertTrue(property_exists($prop['widgetv2configAttr']->map[0], 'value'));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+
+        $this->assertEquals($prop->getFieldEditType(), 'ValueMap');
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'map'));
         $this->assertCount(3, $options->map);
-        $this->assertTrue(property_exists($options->map[0], 'key'));
-        $this->assertTrue(property_exists($options->map[0], 'value'));
+        $expectedOptions = array(
+            '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => '<NULL>',
+            'true' => 'True',
+            'false' => 'False',
+        );
+        $this->assertEquals($expectedOptions, $options->map);
 
         $xmlStr = '
         <maplayer>
@@ -949,16 +911,18 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('code_for_drill_down_exp', $props));
         $prop = $props['code_for_drill_down_exp'];
-        $this->assertTrue(array_key_exists('fieldEditType', $prop));
-        $this->assertEquals($prop['fieldEditType'], 'ValueMap');
-        $this->assertTrue(array_key_exists('widgetv2configAttr', $prop));
-        $this->assertTrue(array_key_exists('edittype', $prop));
-        $this->assertTrue(property_exists($prop['edittype'], 'options'));
-        $options = $prop['edittype']->options;
+
+        $this->assertEquals($prop->getFieldEditType(), 'ValueMap');
+
+        $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'map'));
         $this->assertCount(3, $options->map);
-        $this->assertTrue(property_exists($options->map[0], 'key'));
-        $this->assertTrue(property_exists($options->map[0], 'value'));
+        $expectedOptions = array(
+            'A' => 'Zone A',
+            'B' => 'Zone B',
+            '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => 'No Zone',
+        );
+        $this->assertEquals($expectedOptions, $options->map);
 
         # no edit widget type
         $xmlStr = '
@@ -981,11 +945,25 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $props);
         $this->assertTrue(array_key_exists('label', $props));
         $prop = $props['label'];
-        $this->assertEquals($prop['fieldEditType'], '');
+        $this->assertEquals($prop->getFieldEditType(), '');
     }
 
     public function testGetValuesFromOptions() {
         $testProj = new qgisProjectForTests();
+
+        $xmlStr = '
+          <Option type="Map">
+            <Option value="0" type="QString" name="IsMultiline"/>
+            <Option value="0" type="QString" name="UseHtml"/>
+          </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $options = $testProj->getFieldConfigurationOptionsForTest($xml);
+        $expectedOptions = array(
+            'IsMultiline' => '0',
+            'UseHtml' => '0',
+        );
+        $this->assertEquals($expectedOptions, $options);
 
         $xmlStr = '
               <Option type="Map">
@@ -998,10 +976,29 @@ class QgisProjectTest extends TestCase
         $options = $testProj->getValuesFromOptionsForTest($xml);
         $this->assertTrue(is_array($options));
         $this->assertCount(2, $options);
-        $this->assertTrue(property_exists($options[0], 'key'));
-        $this->assertTrue(property_exists($options[0], 'value'));
+        $expectedOptions = array(
+            'IsMultiline' =>'false',
+            'UseHtml' =>'false',
+        );
+        $this->assertEquals($expectedOptions, $options);
 
         $xmlStr = '
+              <Option type="Map">
+                <Option value="A" type="QString" name="Zone A"/>
+              </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $options = $testProj->getValuesFromOptionsForTest($xml);
+        $this->assertTrue(is_array($options));
+        $this->assertCount(1, $options);
+        $expectedOptions = array(
+            'Zone A' =>'A'
+        );
+        $this->assertEquals($expectedOptions, $options);
+
+        $xmlStr = '
+           <Option type="Map">
            <Option type="List" name="map">
              <Option type="Map">
                <Option value="A" type="QString" name="Zone A"/>
@@ -1013,14 +1010,19 @@ class QgisProjectTest extends TestCase
                <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
              </Option>
            </Option>
+           </Option>
         ';
         $xml = simplexml_load_string($xmlStr);
-
-        $options = $testProj->getValuesFromOptionsForTest($xml, false);
+        $options = $testProj->getFieldConfigurationOptionsForTest($xml);
         $this->assertTrue(is_array($options));
-        $this->assertCount(3, $options);
-        $this->assertTrue(property_exists($options[0], 'key'));
-        $this->assertTrue(property_exists($options[0], 'value'));
+        $expectedOptions = array(
+            'map' => array(
+                'A' => 'Zone A',
+                'B' => 'Zone B',
+                '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => 'No Zone',
+            )
+        );
+        $this->assertEquals($expectedOptions, $options);
     }
 
     public function testGetMarkup() {
@@ -1043,8 +1045,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('label', $props));
-        $markup = $testProj->getMarkupForTest($props['label']);
-        $this->assertEquals($markup, '');
+        $this->assertEquals($props['label']->getMarkup(), '');
 
         # TextEdit widget
         $xmlStr = '
@@ -1063,8 +1064,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('label', $props));
-        $markup = $testProj->getMarkupForTest($props['label']);
-        $this->assertEquals($markup, 'input');
+        $this->assertEquals($props['label']->getMarkup(), 'input');
 
         $xmlStr = '
         <maplayer>
@@ -1085,8 +1085,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('label', $props));
-        $markup = $testProj->getMarkupForTest($props['label']);
-        $this->assertEquals($markup, 'input');
+        $this->assertEquals($props['label']->getMarkup(), 'input');
 
         $xmlStr = '
         <maplayer>
@@ -1107,8 +1106,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('label', $props));
-        $markup = $testProj->getMarkupForTest($props['label']);
-        $this->assertEquals($markup, 'textarea');
+        $this->assertEquals($props['label']->getMarkup(), 'textarea');
 
         # Range widget
         $xmlStr = '
@@ -1134,8 +1132,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('integer_field', $props));
-        $markup = $testProj->getMarkupForTest($props['integer_field']);
-        $this->assertEquals($markup, 'input');
+        $this->assertEquals($props['integer_field']->getMarkup(), 'input');
 
         # DateTime widget
         $xmlStr = '
@@ -1160,8 +1157,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('date', $props));
-        $markup = $testProj->getMarkupForTest($props['date']);
-        $this->assertEquals($markup, 'date');
+        $this->assertEquals($props['date']->getMarkup(), 'date');
 
         # CheckBox widget
         $xmlStr = '
@@ -1183,8 +1179,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('checked', $props));
-        $markup = $testProj->getMarkupForTest($props['checked']);
-        $this->assertEquals($markup, 'checkbox');
+        $this->assertEquals($props['checked']->getMarkup(), 'checkbox');
 
         # ValueRelation widget
         $xmlStr = '
@@ -1212,8 +1207,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('tram_id', $props));
-        $markup = $testProj->getMarkupForTest($props['tram_id']);
-        $this->assertEquals($markup, 'menulist');
+        $this->assertEquals($props['tram_id']->getMarkup(), 'menulist');
 
         $xmlStr = '
         <maplayer>
@@ -1240,8 +1234,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('tram_id', $props));
-        $markup = $testProj->getMarkupForTest($props['tram_id']);
-        $this->assertEquals($markup, 'menulist');
+        $this->assertEquals($props['tram_id']->getMarkup(), 'menulist');
 
         $xmlStr = '
         <maplayer>
@@ -1268,8 +1261,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('tram_id', $props));
-        $markup = $testProj->getMarkupForTest($props['tram_id']);
-        $this->assertEquals($markup, 'checkboxes');
+        $this->assertEquals($props['tram_id']->getMarkup(), 'checkboxes');
 
         $xmlStr = '
         <maplayer>
@@ -1296,8 +1288,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('tram_id', $props));
-        $markup = $testProj->getMarkupForTest($props['tram_id']);
-        $this->assertEquals($markup, 'checkboxes');
+        $this->assertEquals($props['tram_id']->getMarkup(), 'checkboxes');
 
         # ValueMap widget
         $xmlStr = '
@@ -1328,8 +1319,7 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('boolean_nullable', $props));
-        $markup = $testProj->getMarkupForTest($props['boolean_nullable']);
-        $this->assertEquals($markup, 'menulist');
+        $this->assertEquals($props['boolean_nullable']->getMarkup(), 'menulist');
 
         $xmlStr = '
         <maplayer>
@@ -1359,7 +1349,6 @@ class QgisProjectTest extends TestCase
         $xml = simplexml_load_string($xmlStr);
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('code_for_drill_down_exp', $props));
-        $markup = $testProj->getMarkupForTest($props['code_for_drill_down_exp']);
-        $this->assertEquals($markup, 'menulist');
+        $this->assertEquals($props['code_for_drill_down_exp']->getMarkup(), 'menulist');
     }
 }

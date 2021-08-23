@@ -60,8 +60,8 @@ class QgisFormTest extends TestCase
         $appContext = new ContextForTests();
         $appContext->setResult(array('path' => __DIR__.'/forms/'));
         $this->appContext = $appContext;
-        $appContext->setCache('/test.qgs.layer-line-form', json_decode(file_get_contents(__DIR__.'/forms/montpellier.line.form.json')), null, 'qgisprojects');
-        $appContext->setCache('/test.qgs.layer-date-form', json_decode(file_get_contents(__DIR__.'/forms/test.date.form.json')), null, 'qgisprojects');
+        $appContext->setCache('/test.qgs.layer-line-form', $this->readFormCache(__DIR__.'/forms/montpellier.line.form.json'), null, 'qgisprojects');
+        $appContext->setCache('/test.qgs.layer-date-form', $this->readFormCache(__DIR__.'/forms/test.date.form.json'), null, 'qgisprojects');
         $layer = new QgisLayerForTests();
         $layer->fields = $fields;
         $layer->setId($layerId);
@@ -71,6 +71,27 @@ class QgisFormTest extends TestCase
         $layer->setProject($proj);
         return $layer;
     }
+
+    protected function readFormCache($file)
+    {
+        $formCache = json_decode(file_get_contents($file), true);
+        $properties = array();
+        foreach($formCache as $ref => $props) {
+            $prop = new \Lizmap\Form\QgisFormControlProperties(
+                $ref,
+                $props['fieldEditType'],
+                $props['markup'],
+                $props['editAttr']
+            );
+            if (isset($props['rendererCategories'])) {
+                $prop->setRendererCategories($props['rendererCategories']);
+            }
+            $properties[$ref] = $prop;
+        }
+        return $properties;
+    }
+
+
 
     public function getConstructData()
     {
