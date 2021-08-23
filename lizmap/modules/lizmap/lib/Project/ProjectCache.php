@@ -3,6 +3,7 @@
 namespace Lizmap\Project;
 
 use Lizmap\App;
+use Lizmap\Form\QgisFormControlProperties;
 
 class ProjectCache
 {
@@ -143,8 +144,8 @@ class ProjectCache
      * as the getEditableLayerFormCache method does not check the validity
      * of the cache.
      *
-     * @param string  $layerId
-     * @param array[] $formControls
+     * @param string                      $layerId
+     * @param QgisFormControlProperties[] $formControls
      */
     public function setEditableLayerFormCache($layerId, $formControls)
     {
@@ -162,7 +163,7 @@ class ProjectCache
      *
      * @throws \Exception
      *
-     * @return array[]
+     * @return QgisFormControlProperties[]
      */
     public function getEditableLayerFormCache($layerId)
     {

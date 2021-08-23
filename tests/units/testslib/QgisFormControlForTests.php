@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Form\QgisFormControl;
+use Lizmap\Form\QgisFormControlProperties;
 
 class QgisFormControlForTests extends QgisFormControl
 {
@@ -11,8 +12,13 @@ class QgisFormControlForTests extends QgisFormControl
         self::buildEditTypeMap();
     }
 
-    public function setControlMainPropertiesForTests()
+
+    /**
+     * @param QgisFormControlProperties $properties
+     */
+    public function setControlMainPropertiesForTests($properties)
     {
+        $this->setProperties($properties);
         $this->setControlMainProperties();
     }
 }
