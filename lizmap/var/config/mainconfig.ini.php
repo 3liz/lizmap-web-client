@@ -215,24 +215,24 @@ datetimepicker=default
 
 [jquery]
 jquery="assets/js/jquery/jquery-3.5.1.min.js"
-jqueryui.js[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.js"
-jqueryui.css[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.css"
+jqueryui.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
+jqueryui.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
 
 [datepickers]
 default="$jelix/js/jforms/datepickers/default/init.js"
-default.js[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.js"
+default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
 default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
 default.js[]="$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js"
 default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
-default.css[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.css"
+default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
 
 [datetimepickers]
 default="$jelix/js/jforms/datepickers/default/init.js"
-default.js[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.js"
+default.js[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.js"
 default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
 default.js[]="$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js"
 default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
-default.css[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.css"
+default.css[]="assets/js/jquery/ui-1.12.1/jquery-ui.min.css"
 
 [htmleditors]
 default.engine.name=ckeditor
