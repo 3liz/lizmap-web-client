@@ -582,12 +582,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-waiter').hide();
 
         // Display create tools back if there are eligible layers
-        if( $('#edition-layer').html().trim() != '' ){
-            $('#edition-layer').show();
-            $('#edition-draw').removeClass('disabled').show();
+        if( hasCreateLayers() ){
+            $('#edition-creation').show();
         }else{
+            $('#edition-modification-msg').show();
             $('#dock-close').click();
-            $('#button-edition').hide();
         }
 
         // Hide edition tabs
@@ -597,16 +596,23 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('.edition-tabs a[href="#tabdigitization"]').show();
     }
 
+    // Is there at least one layer with creation capability?
+    function hasCreateLayers(){
+        if ('editionLayers' in config) {
+            for (const name in config.editionLayers) {
+                const editionLayer = config.editionLayers[name];
+                if(editionLayer.capabilities.createFeature === "True"){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     function addEditionControls() {
         // Edition layers
         if ('editionLayers' in config) {
-            //initialize edition
-            var service = OpenLayers.Util.urlAppend(lizUrls.edition
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-            );
-
             // fill in the combobox containing editable layers
-            var hasCreateLayers = false;
             var elconfig = {};
             var elk = [];
             for (var alName in config.editionLayers) {
@@ -625,7 +631,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     alName in config.layers
                     && al.capabilities.createFeature == "True"
                 ) {
-                    hasCreateLayers = true;
                     var alConfig = config.layers[alName];
                     elconfig[al.order] = {
                        id: alConfig.id,
@@ -643,14 +648,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 var alConfig = elconfig[elk[i]];
                 $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
             }
-            if( hasCreateLayers ){
-                $('#edition-layer').prop("disabled", false).show();
-                $('#edition-draw').removeClass('disabled').show();
+            if( hasCreateLayers() ){
+                $('#edition-modification-msg').hide();
             }
             else{
-                $('#button-edition').hide();
-                $('#edition-layer').prop("disabled", true).hide();
-                $('#edition-draw').addClass('disabled').hide();
+                $('#edition-creation').hide();
             }
 
             editionLayer.createLayers();
@@ -1259,8 +1261,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 return false;
 
             // Hide drawfeature controls : they will go back when finishing edition or canceling
-            $('#edition-layer').hide();
-            $('#edition-draw').addClass('disabled').hide();
+            $('#edition-modification-msg').hide();
+            $('#edition-creation').hide();
 
             // Show edition tabs
             $('.edition-tabs').show();
