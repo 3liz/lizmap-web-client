@@ -35,7 +35,7 @@ class adminHtmlResponse extends jResponseHtml
             $this->addCSSLink($file);
         }
 
-        $this->addJSLink($bp.'assets/js/bootstrap.js');
+        $this->addJSLink($bp.'assets/js/bootstrap.min.js');
 
         // Favicon
         $this->addHeadContent('<link rel="shortcut icon" href="'.$bp.'assets/favicon/favicon.ico">');
