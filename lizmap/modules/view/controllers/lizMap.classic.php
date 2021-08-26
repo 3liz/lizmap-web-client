@@ -154,7 +154,7 @@ class lizMapCtrl extends jController
         if ($lproj->hasEditionLayers()) {
             $lang = jLocale::getCurrentLang();
             $www = $confUrlEngine['jelixWWWPath'];
-            
+
             $rep->addJSLink($www.'jquery/include/jquery.include.js');
             $rep->addJSLink($www.'js/jforms_jquery.js');
 
