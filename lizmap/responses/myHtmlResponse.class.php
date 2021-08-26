@@ -31,8 +31,8 @@ class myHtmlResponse extends jResponseHtml
         foreach ($css as $file) {
             $this->addCSSLink($file);
         }
-        $this->addCSSLink($bp.'assets/css/bootstrap.css');
-        $this->addCSSLink($bp.'assets/css/bootstrap-responsive.css');
+        $this->addCSSLink($bp.'assets/css/bootstrap.min.css');
+        $this->addCSSLink($bp.'assets/css/bootstrap-responsive.min.css');
         $this->addCSSLink($bp.'assets/css/main.css');
         $this->addCSSLink($bp.'assets/css/view.css');
         $this->addCSSLink($bp.'assets/css/media.css');
@@ -73,7 +73,7 @@ class myHtmlResponse extends jResponseHtml
         foreach ($js as $file) {
             $this->addJSLink($file);
         }
-        $this->addJSLink($bp.'assets/js/bootstrap.js');
+        $this->addJSLink($bp.'assets/js/bootstrap.min.js');
     }
 
     protected function doAfterActions()
