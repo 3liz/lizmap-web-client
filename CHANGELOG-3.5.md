@@ -17,6 +17,7 @@
 
 ### Changed
 
+- Speed up map page loading.
 - Overviewmap now zoom in/out with main map. Replace OpenLayers 2 overviewmap by the OpenLayers 6 one.
 - Allow new OpenLayers Map to be used on top of OL2 one
 - Update OpenLayers to 6.6.1
