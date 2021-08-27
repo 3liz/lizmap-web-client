@@ -147,33 +147,37 @@ class lizMapCtrl extends jController
             }
         }
 
-        // Add the jForms js
-        $lang = jLocale::getCurrentLang();
         $confUrlEngine = &jApp::config()->urlengine;
         $bp = $confUrlEngine['basePath'];
-        $www = $confUrlEngine['jelixWWWPath'];
-        $rep->addJSLink($www.'jquery/include/jquery.include.js');
-        $rep->addJSLink($www.'js/jforms_jquery.js');
 
-        // Add datepickers jForms js
-        $confDate = &jApp::config()->datepickers;
-        $rep->addJSLink($confDate['default']);
-        if (isset($confDate['default.js'])) {
-            $js = $confDate['default.js'];
-            foreach ($js as $file) {
-                $file = str_replace('$lang', $lang, $file);
-                if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
-                    continue;
+        // Add the jForms js
+        if ($lproj->hasEditionLayers()) {
+            $lang = jLocale::getCurrentLang();
+            $www = $confUrlEngine['jelixWWWPath'];
+
+            $rep->addJSLink($www.'jquery/include/jquery.include.js');
+            $rep->addJSLink($www.'js/jforms_jquery.js');
+
+            // Add datepickers jForms js
+            $confDate = &jApp::config()->datepickers;
+            $rep->addJSLink($confDate['default']);
+            if (isset($confDate['default.js'])) {
+                $js = $confDate['default.js'];
+                foreach ($js as $file) {
+                    $file = str_replace('$lang', $lang, $file);
+                    if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
+                        continue;
+                    }
+                    $rep->addJSLink($file);
                 }
-                $rep->addJSLink($file);
             }
-        }
 
-        // Add other jForms js
-        $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor.js');
-        $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor_lizmap.js');
-        $rep->addJSLink($bp.'assets/js/fileUpload/jquery.fileupload.js');
-        $rep->addJSLink($bp.'assets/js/bootstrapErrorDecoratorHtml.js');
+            // Add other jForms js
+            $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor.js');
+            $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor_lizmap.js');
+            $rep->addJSLink($bp.'assets/js/fileUpload/jquery.fileupload.js');
+            $rep->addJSLink($bp.'assets/js/bootstrapErrorDecoratorHtml.js');
+        }
 
         // Add bottom dock js
         $rep->addJSLink($bp.'assets/js/bottom-dock.js');
