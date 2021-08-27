@@ -41,7 +41,7 @@ jobs:
         with:
           browser: chrome
           headless: true
-          working-directory: tests/js
+          working-directory: tests/end2end
           wait-on: http://localhost:8130
           # Some tests might pass in local but not in CI, we don't add them below (e.g. popup_spec.js)
           spec: |
@@ -56,7 +56,7 @@ jobs:
         if: failure()
         with:
           name: cypress-screenshots
-          path: tests/js/cypress/screenshots
+          path: tests/end2end/cypress/screenshots
 
       - name: Display Lizmap errors.log and fail if not empty
         run: |
