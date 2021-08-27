@@ -147,11 +147,23 @@ To launch PHP tests:
 - Launch the lizmap application as indicated above.
 - launch `./lizmap-ctl unittests`
 
+## Testing data
+
+You must execute `tests/qgis_projects/tests/load_sql.sh` to populate postgreSQL database with testing data.
+
 ## Automatic End-to-End tests
 
-The `js` directory contains some end-to-end tests.
+*First add testing data as explained above.*
+
+The `end2end` directory contains some end-to-end tests made for Cypress.
+Go in `end2end` directory then : 
+- execute `npm install` to install Cypress (only the first time).
+- execute `npm run cypress:open` to open Cypress window.
+- select the target browser then click one of the integration tests or 'Run n integration specs' to run all.
 
 ## Manual tests
+
+*First add testing data as explained above.*
 
 Put your projects into `tests/qgis_projects/tests/` (replace `tests` by the name
 of your choice), and then you can declare `tests` projects into
