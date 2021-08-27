@@ -1,7 +1,7 @@
     <div>
       <div>
         <p>
-          <img src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}" alt="project image" class="img-polaroid liz-project-img" width="200">
+          <img src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}" alt="project image" class="img-polaroid liz-project-img" width="200" height="200" loading="lazy">
 
 
           <dl class="dl-vertical">
