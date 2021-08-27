@@ -1,13 +1,18 @@
 <div class="edition">
     <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~edition.toolbar.title@}</span></span></h3>
     <div class="menu-content">
-        <div>
-            <select id="edition-layer"></select>
-        </div>
+        <p id="edition-modification-msg">
+            {@view~edition.modification.msg@}
+        </p>
+        <div id="edition-creation">
+            <div>
+                <select id="edition-layer"></select>
+            </div>
 
-        <a id="edition-draw" class="btn btn-small disabled" href="#" rel="tooltip"
-            title="{@view~edition.toolbar.draw.tooltip@}"
-            data-placement="bottom">{@view~edition.toolbar.draw.title@}</a>
+            <a id="edition-draw" class="btn btn-small" href="#" rel="tooltip"
+                title="{@view~edition.toolbar.draw.tooltip@}"
+                data-placement="bottom">{@view~edition.toolbar.draw.title@}</a>
+        </div>
 
         <form id="edition-hidden-form" style="display:none;">
             <input type="hidden" name="liz_wkt" value="" />
