@@ -5,6 +5,11 @@ set -e
 export LZMBRANCH=${LZMBRANCH:-$(git rev-parse --abbrev-ref HEAD)}
 
 CMD=$1;
+if [ -z "$CMD" ]; then
+    CMD="up"
+else
+    shift
+fi
 
 if [ "$CMD" == "reset" ]; then
     # Stop/Remove containers
@@ -14,10 +19,10 @@ if [ "$CMD" == "reset" ]; then
     # Clean up lizmap config
     ./lizmap-ctl clean
     exit 0
-elif [ -z "$CMD" ]; then
-    CMD="up"
-else
-    shift
+elif [ "$CMD" == "build" ]; then
+    if [ ! -d qgis-server-plugins/lizmap ]; then
+        ./add_server_plugins.sh
+    fi
 fi
 
 # Create a .env file so that we may use subsequent docker-compose 
