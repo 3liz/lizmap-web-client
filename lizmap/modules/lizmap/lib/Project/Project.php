@@ -159,7 +159,7 @@ class Project
     /**
      * @var array List of cached properties
      */
-    protected $cachedProperties = array(
+    protected static $cachedProperties = array(
         'WMSInformation',
         'canvasColor',
         'allProj4',
@@ -248,7 +248,7 @@ class Project
             $this->readProject($key, $rep);
 
             // set project data in cache
-            foreach ($this->cachedProperties as $prop) {
+            foreach (self::$cachedProperties as $prop) {
                 if (isset($this->{$prop}) && !empty($this->{$prop})) {
                     $data[$prop] = $this->{$prop};
                 }
@@ -256,7 +256,7 @@ class Project
             $data = array_merge($data, $this->qgis->getCacheData($data), $this->cfg->getCacheData($data));
             $this->cacheHandler->storeProjectData($data);
         } else {
-            foreach ($this->cachedProperties as $prop) {
+            foreach (self::$cachedProperties as $prop) {
                 if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
                 }
@@ -365,19 +365,23 @@ class Project
 
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
+        $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
+        $this->locateByLayers = $this->readLocateByLayers($qgsXml, $this->cfg);
+        $this->editionLayers = $this->readEditionLayers($qgsXml);
+        $this->layersOrder = $this->readLayersOrder($qgsXml);
+        $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
+
         $props = array(
             'printCapabilities',
             'locateByLayers',
-            // 'formFilterLayers',
             'editionLayers',
             'layersOrder',
             'attributeLayers',
         );
         foreach ($props as $prop) {
-            $method = 'read'.ucfirst($prop);
-            $this->{$prop} = $this->{$method}($qgsXml, $this->cfg);
             $this->cfg->setProperty($prop, $this->{$prop});
         }
+
         $this->qgis->readEditionForms($this->getEditionLayers(), $this);
     }
 
@@ -1189,7 +1193,7 @@ class Project
         return $gKey;
     }
 
-    protected function readPrintCapabilities(QgisProject $qgsLoad, ProjectConfig $cfg)
+    protected function readPrintCapabilities(QgisProject $qgsLoad)
     {
         $printTemplates = array();
         $options = $this->getOptions();
@@ -1224,7 +1228,7 @@ class Project
         return $formFilterLayers;
     }
 
-    protected function readEditionLayers(QgisProject $xml, ProjectConfig $cfg)
+    protected function readEditionLayers(QgisProject $xml)
     {
         $editionLayers = $this->getEditionLayers();
 
@@ -1270,7 +1274,7 @@ class Project
      *
      * @return int[]
      */
-    protected function readLayersOrder(QgisProject $xml, ProjectConfig $cfg)
+    protected function readLayersOrder(QgisProject $xml)
     {
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }

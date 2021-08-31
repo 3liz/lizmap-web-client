@@ -49,7 +49,7 @@ class ProjectConfig
      */
     protected $options;
 
-    protected $cachedProperties = array(
+    protected static $cachedProperties = array(
         'layersOrder',
         'locateByLayer',
         'formFilterLayers',
@@ -69,7 +69,7 @@ class ProjectConfig
             }
         } else {
             foreach ($data as $prop => $value) {
-                if (in_array($prop, $this->cachedProperties)) {
+                if (in_array($prop, self::$cachedProperties)) {
                     // if ($prop == 'cfgContent') {
                     //     $this->{$prop} = json_decode(json_encode($value));
 
@@ -109,7 +109,7 @@ class ProjectConfig
      */
     public function getCacheData($data)
     {
-        foreach ($this->cachedProperties as $prop) {
+        foreach (self::$cachedProperties as $prop) {
             if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
                 // }
@@ -152,7 +152,7 @@ class ProjectConfig
     public function unsetProperty($propName, $propName2 = '', $propName3 = '')
     {
         $rootProp = $this->cfgContent;
-        if (in_array($propName, $this->cachedProperties)) {
+        if (in_array($propName, self::$cachedProperties)) {
             $rootProp = $this;
         }
         if (isset($rootProp->{$propName}) && $propName2 == '') {
