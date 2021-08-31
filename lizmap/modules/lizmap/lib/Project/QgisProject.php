@@ -373,7 +373,7 @@ class QgisProject
             }
         }
         //unset cache for editionLayers
-        $eLayers = $cfg->getProperty('editionLayers');
+        $eLayers = $cfg->getEditionLayers();
         $layers = $cfg->getProperty('layers');
         if ($eLayers) {
             foreach ($eLayers as $key => $obj) {

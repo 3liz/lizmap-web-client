@@ -151,7 +151,7 @@ class lizMapCtrl extends jController
         $bp = $confUrlEngine['basePath'];
 
         // Add the jForms js
-        if ($lproj->hasEditionLayers()) {
+        if ($lproj->hasEditionLayersForCurrentUser()) {
             $lang = jLocale::getCurrentLang();
             $www = $confUrlEngine['jelixWWWPath'];
 
