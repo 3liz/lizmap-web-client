@@ -127,6 +127,11 @@ class Project
     protected $editionLayers = array();
 
     /**
+     * @var null|object[] layer names => layers
+     */
+    protected $editionLayersForCurrentUser;
+
+    /**
      * @var array
      */
     protected $attributeLayers = array();
@@ -815,45 +820,144 @@ class Project
         );
     }
 
+    /**
+     * same as hasEditionLayersForCurrentUser.
+     *
+     * @return bool
+     *
+     * @deprecated will returns all edition layers, regarding ACL
+     */
     public function hasEditionLayers()
     {
-        $editionLayers = $this->cfg->getProperty('editionLayers');
-        if ($editionLayers) {
-            if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
-                return false;
+        return $this->hasEditionLayersForCurrentUser();
+    }
+
+    public function hasEditionLayersForCurrentUser()
+    {
+        if ($this->editionLayersForCurrentUser === null) {
+            $this->readEditionLayersForCurrentUser();
+        }
+
+        if (count($this->editionLayersForCurrentUser) != 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function readEditionLayersForCurrentUser()
+    {
+        if (!$this->cfg->hasEditionLayers()) {
+            $this->editionLayersForCurrentUser = array();
+
+            return;
+        }
+
+        if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
+            $this->editionLayersForCurrentUser = array();
+
+            return;
+        }
+
+        $editionLayers = $this->cfg->getEditionLayers();
+        $this->editionLayersForCurrentUser = array();
+        $isAdmin = $this->appContext->aclCheck('lizmap.admin.repositories.delete');
+        $userGroups = $this->appContext->aclUserGroupsId();
+
+        foreach ($editionLayers as $key => $eLayer) {
+            if ($this->_checkEditionLayerAcl($eLayer, $isAdmin, $userGroups)) {
+                $this->editionLayersForCurrentUser[$key] = $eLayer;
             }
-            $count = 0;
-            foreach ($editionLayers as $key => $eLayer) {
-                // Check if user groups intersects groups allowed by project editor
-                // If user is admin, no need to check for given groups
-                if (property_exists($eLayer, 'acl') && $eLayer->acl) {
-                    // Check if configured groups white list and authenticated user groups list intersects
-                    $editionGroups = $eLayer->acl;
-                    $editionGroups = array_map('trim', explode(',', $editionGroups));
-                    if (is_array($editionGroups) && count($editionGroups) > 0) {
-                        $userGroups = $this->appContext->aclUserGroupsId();
-                        if (array_intersect($editionGroups, $userGroups) || $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
-                            // User group(s) correspond to the groups given for this edition layer
-                            // or user is admin
-                            ++$count;
-                            $this->cfg->unsetProperty('editionLayers', $key, 'acl');
-                        } else {
-                            // No match found, we deactivate the edition layer
-                            $this->cfg->unsetProperty('editionLayers', $key);
-                        }
-                    }
-                } else {
-                    ++$count;
-                }
-            }
-            if ($count != 0) {
+        }
+    }
+
+    /**
+     * Indicate if the edition layer can be edit by the current user.
+     *
+     * @param object $eLayer edition layer object
+     */
+    public function checkEditionLayerAcl($eLayer)
+    {
+        $isAdmin = $this->appContext->aclCheck('lizmap.admin.repositories.delete');
+        $userGroups = $this->appContext->aclUserGroupsId();
+
+        return $this->_checkEditionLayerAcl($eLayer, $isAdmin, $userGroups);
+    }
+
+    /**
+     * @param object   $eLayer     the edition layer
+     * @param bool     $isAdmin
+     * @param string[] $userGroups
+     *
+     * @return bool
+     */
+    protected function _checkEditionLayerAcl($eLayer, $isAdmin, $userGroups)
+    {
+        // Check if user groups intersects groups allowed by project editor
+        // If user is admin, no need to check for given groups
+        if (property_exists($eLayer, 'acl') && $eLayer->acl) {
+            // Check if configured groups white list and authenticated user
+            // groups list intersects
+            $editionGroups = preg_split('/\\s*,\\s*/', $eLayer->acl);
+            if ($isAdmin || ($editionGroups
+                             && array_intersect($editionGroups, $userGroups))) {
+                // User group(s) correspond to the groups given for this edition layer
+                // or user is admin: we take the layer.
+                unset($eLayer->acl);
+
                 return true;
             }
 
             return false;
         }
 
-        return false;
+        return true;
+    }
+
+    /**
+     * @param $layerName
+     *
+     * @return null|object the layer or null if does not exist
+     */
+    public function getEditionLayerForCurrentUser($layerName)
+    {
+        if ($this->editionLayersForCurrentUser !== null) {
+            // we already read all edition layers, just pick the corresponding one
+            if (isset($this->editionLayersForCurrentUser[$layerName])) {
+                return $this->editionLayersForCurrentUser[$layerName];
+            }
+
+            return null;
+        }
+
+        // we didn't yet retrieve all edition layer. Just pick and check the
+        // given edition layer. We do not call readEditionLayersForCurrentUser
+        // because we may need only the given layer during the php request process
+        // and we don't want to spend time on all others layers
+
+        $layer = $this->cfg->getEditionLayerByName($layerName);
+        if (!$layer) {
+            return null;
+        }
+
+        if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
+            return null;
+        }
+
+        if ($this->checkEditionLayerAcl($layer)) {
+            return $layer;
+        }
+
+        return null;
+    }
+
+    public function getEditionLayersForCurrentUser()
+    {
+        if ($this->editionLayersForCurrentUser === null) {
+            $this->readEditionLayersForCurrentUser();
+        }
+
+        return $this->editionLayersForCurrentUser;
     }
 
     public function getEditionLayers()
@@ -861,27 +965,65 @@ class Project
         return $this->cfg->getProperty('editionLayers');
     }
 
-    public function findEditionLayerByName($name)
+    /**
+     * Return the given edition layer, whether the user has the right to edit
+     * or not.
+     *
+     * @param $layerName
+     */
+    public function getEditionLayerByName($layerName)
     {
-        if (!$this->hasEditionLayers()) {
+        $eLayers = $this->getEditionLayers();
+        if (!property_exists($eLayers, $layerName)) {
             return null;
         }
 
-        return $this->cfg->getEditionLayerByName($name);
+        return $eLayers->{$layerName};
     }
 
     /**
-     * @param $layerId
+     * Return the given edition layer if it exists and if the
+     * current user can edit it.
      *
-     * @return null|array
+     * Similar to getEditionLayerForCurrentUser except that
+     * findEditionLayerByName loads alls edition layers if not already done.
+     * Use it in a layers loop instead of getEditionLayerForCurrentUser.
+     *
+     * @param $name
+     *
+     * @return null|object
      */
-    public function findEditionLayerByLayerId($layerId)
+    public function findEditionLayerByName($name)
     {
-        if (!$this->hasEditionLayers()) {
+        if (!$this->hasEditionLayersForCurrentUser()) {
             return null;
         }
 
-        return $this->cfg->getEditionLayerByLayerId($layerId);
+        return $this->getEditionLayerForCurrentUser($name);
+    }
+
+    /**
+     * Return the given edition layer if it exists and if the
+     * current user can edit it.
+     *
+     * notice: it checks all edition layers.
+     *
+     * @param $layerId
+     *
+     * @return null|object
+     */
+    public function findEditionLayerByLayerId($layerId)
+    {
+        if (!$this->hasEditionLayersForCurrentUser()) {
+            return null;
+        }
+
+        $layer = $this->cfg->getEditionLayerByLayerId($layerId);
+        if ($layer && $this->checkEditionLayerAcl($layer)) {
+            return $layer;
+        }
+
+        return null;
     }
 
     /**
@@ -1285,8 +1427,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $name
      */
     public function findLayerByAnyName($name)
@@ -1295,8 +1435,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $name
      */
     public function findLayerByName($name)
@@ -1305,8 +1443,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $shortName
      */
     public function findLayerByShortName($shortName)
@@ -1315,8 +1451,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $title
      */
     public function findLayerByTitle($title)
@@ -1325,8 +1459,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $layerId
      */
     public function findLayerByLayerId($layerId)
@@ -1335,8 +1467,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $typeName
      */
     public function findLayerByTypeName($typeName)
@@ -1700,7 +1830,7 @@ class Project
             2
         );
 
-        if ($this->hasEditionLayers()) {
+        if ($this->hasEditionLayersForCurrentUser()) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'edition',
@@ -1756,7 +1886,7 @@ class Project
         if (property_exists($configOptions, 'geolocation')
             && $configOptions->geolocation == 'True') {
             $tpl = new \jTpl();
-            $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
+            $tpl->assign('hasEditionLayers', $this->hasEditionLayersForCurrentUser());
             $dockable[] = new \lizmapMapDockItem(
                 'geolocation',
                 $this->appContext->getLocale('view~map.geolocate.navbar.title'),

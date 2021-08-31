@@ -98,8 +98,7 @@ class QgisForm implements QgisFormControlsInterface
         $this->appContext = $appContext;
         $this->dbFieldsInfo = $dbFieldsInfo;
 
-        $eCapabilities = $layer->getEditionCapabilities();
-        $capabilities = $eCapabilities->capabilities;
+        $capabilities = $layer->getRealEditionCapabilities();
         $dataFields = $dbFieldsInfo->dataFields;
         $toDeactivate = array();
         $toSetReadOnly = array();
@@ -487,7 +486,7 @@ class QgisForm implements QgisFormControlsInterface
         $check = $form->check();
 
         // Geom check
-        $allow_without_geom = $this->layer->getEditionCapabilities()->capabilities->allow_without_geom;
+        $allow_without_geom = $this->layer->getRealEditionCapabilities()->allow_without_geom;
         if (strtolower($allow_without_geom) == 'false' && $geometryColumn != '' && $form->getData($geometryColumn) == '') {
             $check = false;
             $form->setErrorOn($geometryColumn, $this->appContext->getLocale('view~edition.message.error.no.geometry'));
@@ -773,8 +772,7 @@ class QgisForm implements QgisFormControlsInterface
 
     protected function getFieldList($geometryColumn, $insertAction, $modifiedControls)
     {
-        $eCapabilities = $this->layer->getEditionCapabilities();
-        $capabilities = $eCapabilities->capabilities;
+        $capabilities = $this->layer->getRealEditionCapabilities();
 
         $dataFields = $this->dbFieldsInfo->dataFields;
 
