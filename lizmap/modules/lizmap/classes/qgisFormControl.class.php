@@ -145,6 +145,7 @@ class qgisFormControl
         'varchar' => 'text',
         'bpchar' => 'text',
         'char' => 'text',
+        '_text' => 'text[]',
         'blob' => 'blob',
         'bytea' => 'blob',
         'geometry' => 'geometry',
@@ -176,7 +177,7 @@ class qgisFormControl
      *
      * @param string              $ref                name of the control
      * @param SimpleXMLElement    $edittype           simplexml object corresponding to the QGIS edittype for this field
-     * @param object              $prop               Jelix object with field properties (datatype, required, etc.)
+     * @param jDbFieldProperties  $prop               Jelix object with field properties (datatype, required, etc.)
      * @param array|object|string $aliasXml           simplexml object corresponding to the QGIS alias for this field
      * @param string              $defaultValue       the QGIS expression of the default value
      * @param array               $constraints        the QGIS constraints
