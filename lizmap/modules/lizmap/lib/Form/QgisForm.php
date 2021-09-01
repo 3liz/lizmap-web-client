@@ -102,19 +102,17 @@ class QgisForm implements QgisFormControlsInterface
         $dataFields = $dbFieldsInfo->dataFields;
         $toDeactivate = array();
         $toSetReadOnly = array();
-        $formPath = $this->appContext->getFormPath();
-        $json = file_get_contents($formPath.$layer->getProject()->getKey().'.'.$layer->getId().'.form.json');
-        if (!$json) {
-            throw new \Exception('Can\'t read the Json form file, try to clear your cache and reload the page.');
-        }
-        $formInfos = json_decode($json);
+
+        $cacheHandler = $layer->getProject()->getCacheHandler();
+        $formInfos = $cacheHandler->getEditableLayerFormCache($layer->getId());
+
         foreach ($dataFields as $fieldName => $prop) {
             $defaultValue = $this->getDefaultValue($fieldName);
 
             $constraints = $this->getConstraints($fieldName);
 
-            if (property_exists($formInfos, $fieldName)) {
-                $formControl = new QgisFormControl($fieldName, $formInfos->{$fieldName}, $prop, $defaultValue, $constraints, $this->appContext);
+            if (isset($formInfos[$fieldName])) {
+                $formControl = new QgisFormControl($fieldName, $formInfos[$fieldName], $prop, $defaultValue, $constraints, $this->appContext);
             } else {
                 // The geometry field is not present in the .XML
                 $formControl = new QgisFormControl($fieldName, null, $prop, null, $constraints, $this->appContext);
@@ -254,6 +252,11 @@ class QgisForm implements QgisFormControlsInterface
         return null;
     }
 
+    /**
+     * @param QgisFormControl $formControl
+     * @param string          $fieldName
+     * @param \jFormsBase     $form
+     */
     protected function fillFormControl($formControl, $fieldName, $form)
     {
         if ($formControl->isUniqueValue()) {
@@ -367,7 +370,7 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * Reset the form controls data to Null.
      *
-     * @return jFormsBase the Jelix jForm object
+     * @return \jFormsBase the Jelix jForm object
      */
     public function resetFormData()
     {
@@ -387,7 +390,7 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * Set the form controls data from the database default value.
      *
-     * @return jFormsBase the Jelix jForm object
+     * @return \jFormsBase the Jelix jForm object
      */
     public function setFormDataFromDefault()
     {
@@ -423,7 +426,7 @@ class QgisForm implements QgisFormControlsInterface
      *
      * @param mixed $feature
      *
-     * @return jFormsBase the Jelix jForm object
+     * @return \jFormsBase the Jelix jForm object
      */
     public function setFormDataFromFields($feature)
     {
@@ -456,10 +459,9 @@ class QgisForm implements QgisFormControlsInterface
                 $form->setData($ref.'_hidden', $value);
             } else {
                 if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
-                    $edittype = $this->formControls[$ref]->getEditType();
-                    if ($edittype && property_exists($edittype, 'options')
-                            && property_exists($edittype->options, 'field_format') && $value) {
-                        $format = $this->convertQgisFormatToPHP($edittype->options->field_format);
+                    $format = $this->formControls[$ref]->getEditAttribute('field_format');
+                    if ($format && $value) {
+                        $format = $this->convertQgisFormatToPHP($format);
                         $date = \DateTime::createFromFormat($format, $value);
                         if ($date) {
                             $value = $date->format('Y-m-d H:i:s');
@@ -834,10 +836,9 @@ class QgisForm implements QgisFormControlsInterface
         $convertDate = array('date', 'time', 'datetime');
 
         if (in_array(strtolower($this->formControls[$ref]->fieldEditType), $convertDate)) {
-            $edittype = $this->formControls[$ref]->getEditType();
-            if ($edittype && property_exists($edittype, 'options')
-                    && property_exists($edittype->options, 'field_format')) {
-                $value = $this->convertDateTimeToFormat($value, $edittype->options->field_format);
+            $format = $this->formControls[$ref]->getEditAttribute('field_format');
+            if ($format) {
+                $value = $this->convertDateTimeToFormat($value, $format);
             }
         }
 
