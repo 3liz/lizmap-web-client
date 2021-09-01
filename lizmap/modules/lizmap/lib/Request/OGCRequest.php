@@ -108,7 +108,7 @@ abstract class OGCRequest
     {
         $appContext = $this->appContext;
         // Check if a user is authenticated
-        if (!$appContext->UserisConnected()) {
+        if (!$appContext->UserIsConnected()) {
             // return parameters with empty user param
             return array_merge($this->params, array(
                 'Lizmap_User' => '',
@@ -251,6 +251,8 @@ abstract class OGCRequest
     {
         $appContext = $this->appContext;
         // Get cached session
+        // the cache should be unique between each user/service because the
+        // request content depends on rights of the user
         $key = session_id().'-'.$this->param('service');
         if ($appContext->UserIsConnected()) {
             $juser = $appContext->getUserSession();
