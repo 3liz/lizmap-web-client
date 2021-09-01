@@ -64,7 +64,7 @@ tests/qgis-projects/*
 !tests/qgis-projects/tests
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
-tests/js/node_modules/
+tests/end2end/node_modules/
 tests/.env
 .vscode/
 /.composer

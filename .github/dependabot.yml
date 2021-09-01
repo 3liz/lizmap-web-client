@@ -4,26 +4,26 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-    reviewers:
+    assignees:
       - "Gustry"
 
   - package-ecosystem: "composer"
     directory: "/lizmap"
     schedule:
       interval: "monthly"
-    reviewers:
+    assignees:
       - "laurentj"
 
   - package-ecosystem: "docker"
     directory: "/tests"
     schedule:
       interval: "monthly"
-    reviewers:
+    assignees:
       - "dmarteau"
 
   - package-ecosystem: "npm"
     directory: "/assets"
     schedule:
       interval: "monthly"
-    reviewers:
+    assignees:
       - "nboisteault"

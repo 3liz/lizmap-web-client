@@ -1,38 +1,25 @@
 {
     "pkuid": {
-        "edittype": {
-            "type": "TextEdit",
-            "options": {},
-            "editable": 1
+        "editAttr": {
+            "editable": 1,
+            "fieldAlias": ""
         },
-        "widgetv2configAttr": {},
         "fieldEditType": "TextEdit",
-        "fieldAlias": "",
         "markup": "input",
-        "rendererCategories": null
+        "rendererCategories": []
     },
     "customdate": {
-        "edittype": {
-            "type": "DateTime",
-            "options": {
-                "allow_null": "true",
-                "calendar_popup": "true",
-                "display_format": "MM-d-yy",
-                "field_format": "MM-d-yy",
-                "field_iso_format": "false"
-            },
-            "editable": 1
-        },
-        "widgetv2configAttr": {
-            "allow_null": "true",
+        "editAttr": {
+            "AllowNull": "true",
             "calendar_popup": "true",
             "display_format": "MM-d-yy",
             "field_format": "MM-d-yy",
-            "field_iso_format": "false"
+            "field_iso_format": false,
+            "Editable": true,
+            "fieldAlias": ""
         },
         "fieldEditType": "DateTime",
-        "fieldAlias": "",
         "markup": "date",
-        "rendererCategories": null
+        "rendererCategories": []
     }
 }

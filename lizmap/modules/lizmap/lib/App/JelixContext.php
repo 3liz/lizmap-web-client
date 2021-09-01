@@ -128,10 +128,12 @@ class JelixContext implements AppContextInterface
      * @param mixed  $value   The data to store in the cache
      * @param mixed  $ttl     data time expiration
      * @param string $profile the cache profile to use
+     *
+     * @return bool false if failure
      */
     public function setCache($key, $value, $ttl = null, $profile = '')
     {
-        \jCache::set($key, $value, $ttl, $profile);
+        return \jCache::set($key, $value, $ttl, $profile);
     }
 
     /**

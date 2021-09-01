@@ -89,13 +89,13 @@ class QgisProjectForTests extends QgisProject
         return $this->getFieldConfiguration($layerXml);
     }
 
-    public function getValuesFromOptionsForTest($optionList, $name = true)
+    public function getValuesFromOptionsForTest($optionList, $valuesExtract = 0)
     {
-        return $this->getValuesFromOptions($optionList, $name = true);
+        return $this->getValuesFromOptions($optionList, $valuesExtract);
     }
 
-    public function getMarkupForTest($props)
+    public function getFieldConfigurationOptionsForTest($optionList)
     {
-        return $this->getMarkup($props);
+        return $this->getFieldConfigurationOptions($optionList);
     }
 }

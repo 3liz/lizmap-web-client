@@ -55,21 +55,43 @@ class QgisFormTest extends TestCase
 {
     protected $appContext;
 
-    public function setUpEnv($file, $fields)
+    protected function setUpEnv($projectKey, $layerId, $fields)
     {
-        $ids = explode('.', $file);
         $appContext = new ContextForTests();
         $appContext->setResult(array('path' => __DIR__.'/forms/'));
         $this->appContext = $appContext;
+        $appContext->setCache('/test.qgs.layer-line-form', $this->readFormCache(__DIR__.'/forms/montpellier.line.form.json'), null, 'qgisprojects');
+        $appContext->setCache('/test.qgs.layer-date-form', $this->readFormCache(__DIR__.'/forms/test.date.form.json'), null, 'qgisprojects');
         $layer = new QgisLayerForTests();
         $layer->fields = $fields;
-        $layer->setId($ids[1]);
-        $proj = new ProjectForTests();
-        $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, null));
-        $proj->setKey($ids[0]);
+        $layer->setId($layerId);
+        $proj = new ProjectForTests($appContext);
+        $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, $appContext));
+        $proj->setKey($projectKey);
         $layer->setProject($proj);
         return $layer;
     }
+
+    protected function readFormCache($file)
+    {
+        $formCache = json_decode(file_get_contents($file), true);
+        $properties = array();
+        foreach($formCache as $ref => $props) {
+            $prop = new \Lizmap\Form\QgisFormControlProperties(
+                $ref,
+                $props['fieldEditType'],
+                $props['markup'],
+                $props['editAttr']
+            );
+            if (isset($props['rendererCategories'])) {
+                $prop->setRendererCategories($props['rendererCategories']);
+            }
+            $properties[$ref] = $prop;
+        }
+        return $properties;
+    }
+
+
 
     public function getConstructData()
     {
@@ -103,9 +125,9 @@ class QgisFormTest extends TestCase
         );
 
         return array(
-            array('test.date.form.json', $fields),
-            array('montpellier.line.form.json', $fields2),
-            array('not.existing.form.php', null),
+            array('test','date', $fields),
+            array('montpellier','line', $fields2),
+            array('not','existing', null),
         );
     }
 
@@ -115,9 +137,9 @@ class QgisFormTest extends TestCase
      * @param mixed $file
      * @param mixed $fields
      */
-    public function testContruct($file, $fields)
+    public function testConstruct($projectKey, $layer, $fields)
     {
-        $layer = $this->setUpEnv($file, $fields);
+        $layer = $this->setUpEnv($projectKey, $layer, $fields);
         if (!$fields) {
             $this->expectException('Exception');
         }
