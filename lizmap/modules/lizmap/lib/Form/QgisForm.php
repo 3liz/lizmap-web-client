@@ -1523,47 +1523,43 @@ class QgisForm implements QgisFormControlsInterface
 
         // Optionnaly add a filter parameter
         $lproj = $this->layer->getProject();
-        $pConfig = $lproj->getFullCfg();
+        $loginFilteredConfig = $lproj->getLoginFilteredConfig($layername);
 
-        if ($pConfig->loginFilteredLayers) {
-            if (property_exists($pConfig->loginFilteredLayers, $layername)) {
-                $v = '';
-                $where = '';
-                $type = 'groups';
-                $attribute = $pConfig->loginFilteredLayers->{$layername}->filterAttribute;
+        if ($loginFilteredConfig) {
+            $type = 'groups';
+            $attribute = $loginFilteredConfig->filterAttribute;
 
-                // check filter type
-                if (property_exists($pConfig->loginFilteredLayers->{$layername}, 'filterPrivate')
-                     && $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True') {
-                    $type = 'login';
-                }
+            // check filter type
+            if (property_exists($loginFilteredConfig, 'filterPrivate')
+                 && $loginFilteredConfig->filterPrivate == 'True') {
+                $type = 'login';
+            }
 
-                // Check if a user is authenticated
-                $isConnected = $this->appContext->userIsConnected();
-                $cnx = $this->appContext->getDbConnection($this->layer->getId());
-                if ($isConnected) {
-                    $user = $this->appContext->getUserSession();
-                    $login = $user->login;
-                    if ($type == 'login') {
-                        $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
-                    } else {
-                        $userGroups = $this->appContext->aclUserGroupsId();
-                        // Set XML Filter if getFeature request
-                        $flatGroups = implode("' , '", $userGroups);
-                        $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
-                    }
+            // Check if a user is authenticated
+            $isConnected = $this->appContext->userIsConnected();
+            $cnx = $this->appContext->getDbConnection($this->layer->getId());
+            if ($isConnected) {
+                $user = $this->appContext->getUserSession();
+                $login = $user->login;
+                if ($type == 'login') {
+                    $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
                 } else {
-                    // The user is not authenticated: only show data with attribute = 'all'
-                    $where = ' "'.$attribute.'" = '.$cnx->quote('all');
+                    $userGroups = $this->appContext->aclUserGroupsId();
+                    // Set XML Filter if getFeature request
+                    $flatGroups = implode("' , '", $userGroups);
+                    $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
                 }
-                // Set filter when multiple layers concerned
-                if ($where) {
-                    return array(
-                        'where' => $where,
-                        'type' => $type,
-                        'attribute' => $attribute,
-                    );
-                }
+            } else {
+                // The user is not authenticated: only show data with attribute = 'all'
+                $where = ' "'.$attribute.'" = '.$cnx->quote('all');
+            }
+            // Set filter when multiple layers concerned
+            if ($where) {
+                return array(
+                    'where' => $where,
+                    'type' => $type,
+                    'attribute' => $attribute,
+                );
             }
         }
 

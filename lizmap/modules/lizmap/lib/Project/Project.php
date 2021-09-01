@@ -743,20 +743,29 @@ class Project
         $attributeLayers = $this->cfg->getProperty('attributeLayers');
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
-            foreach ($attributeLayers as $key => $obj) {
-                if ($onlyDisplayedLayers
-                    && (!property_exists($obj, 'hideLayer')
-                    || strtolower($obj->hideLayer) != 'true')
-                ) {
-                    $hasDisplayedLayer = true;
+            if ($onlyDisplayedLayers) {
+                foreach ($attributeLayers as $key => $obj) {
+                    if (!property_exists($obj, 'hideLayer')
+                        || strtolower($obj->hideLayer) != 'true'
+                    ) {
+                        $hasDisplayedLayer = true;
+                    }
                 }
             }
+
             if (count((array) $attributeLayers) && $hasDisplayedLayer) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function hasAttributeLayersForLayer($layerName)
+    {
+        $attributeLayers = $this->cfg->getProperty('attributeLayers');
+
+        return property_exists($attributeLayers, $layerName);
     }
 
     public function hasFtsSearches()
@@ -1758,7 +1767,11 @@ class Project
     }
 
     /**
+     * access to configuration raw content.
+     *
      * @return object
+     *
+     * @deprecated Don't access directly to configuration, use Project methods
      */
     public function getFullCfg()
     {
