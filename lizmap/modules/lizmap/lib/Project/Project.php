@@ -159,9 +159,25 @@ class Project
     /**
      * @var array List of cached properties
      */
-    protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
-        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfgContent', 'options', 'QgisProjectVersion', );
+    protected $cachedProperties = array(
+        'WMSInformation',
+        'canvasColor',
+        'allProj4',
+        'relations',
+        'themes',
+        'layersOrder',
+        'printCapabilities',
+        'locateByLayer',
+        'formFilterLayers',
+        'editionLayers',
+        'attributeLayers',
+        'useLayerIDs',
+        'layers',
+        'data',
+        'cfgContent',
+        'options',
+        'QgisProjectVersion',
+    );
 
     /**
      * @var string
@@ -188,9 +204,9 @@ class Project
     /**
      * constructor.
      *
-     * @param string                  $key        : the project name
-     * @param Repository              $rep        : the repository
-     * @param App\AppContextInterface $appContext the instance of jelixInfos
+     * @param string                  $key        the project name
+     * @param Repository              $rep        the repository
+     * @param App\AppContextInterface $appContext context
      */
     public function __construct($key, Repository $rep, App\AppContextInterface $appContext, \LizmapServices $services)
     {
@@ -208,8 +224,10 @@ class Project
         if (!file_exists($file.'.cfg')) {
             throw new UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
         }
+        $qgsMtime = filemtime($file);
+        $qgsCfgMtime = filemtime($file.'.cfg');
 
-        $this->cacheHandler = new ProjectCache($file, $this->appContext);
+        $this->cacheHandler = new ProjectCache($file, $qgsMtime, $qgsCfgMtime, $this->appContext);
 
         $data = $this->cacheHandler->retrieveProjectData();
         if ($data === false) {
@@ -228,6 +246,8 @@ class Project
                 throw $e;
             }
             $this->readProject($key, $rep);
+
+            // set project data in cache
             foreach ($this->cachedProperties as $prop) {
                 if (isset($this->{$prop}) && !empty($this->{$prop})) {
                     $data[$prop] = $this->{$prop};
@@ -276,6 +296,14 @@ class Project
         }
 
         $this->path = $file;
+    }
+
+    /**
+     * @return ProjectCache
+     */
+    public function getCacheHandler()
+    {
+        return $this->cacheHandler;
     }
 
     public function clearCache()

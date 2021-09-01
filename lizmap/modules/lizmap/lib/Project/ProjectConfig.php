@@ -49,8 +49,15 @@ class ProjectConfig
      */
     protected $options;
 
-    protected $cachedProperties = array('layersOrder', 'locateByLayer', 'formFilterLayers', 'editionLayers',
-        'attributeLayers', 'cfgContent', 'options', );
+    protected $cachedProperties = array(
+        'layersOrder',
+        'locateByLayer',
+        'formFilterLayers',
+        'editionLayers',
+        'attributeLayers',
+        'cfgContent',
+        'options',
+    );
 
     public function __construct($cfgFile, $data = null)
     {

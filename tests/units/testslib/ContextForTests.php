@@ -6,6 +6,8 @@ class ContextForTests implements AppContextInterface
 {
     protected $result = array();
 
+    protected $cache = array();
+
     public function appConfig()
     {
     }
@@ -73,6 +75,19 @@ class ContextForTests implements AppContextInterface
 
     public function getCache($key, $profile = '')
     {
+        if ($profile == '') {
+            $profile = 'default';
+        }
+
+        if (isset($this->cache[$profile][$key])) {
+            return $this->cache[$profile][$key];
+        }
+        return null;
+    }
+
+    public function getAllCacheForTests()
+    {
+        return $this->cache;
     }
 
     public function getCacheDriver($profile)
@@ -86,18 +101,31 @@ class ContextForTests implements AppContextInterface
 
     public function normalizeCacheKey($key)
     {
+        return $key;
     }
 
     public function setCache($key, $value, $ttl = null, $profile = '')
     {
+        if ($profile == '') {
+            $profile = 'default';
+        }
+        $this->cache[$profile][$key] = $value;
     }
 
     public function clearCache($key, $profile = '')
     {
+        if ($profile == '') {
+            $profile = 'default';
+        }
+        unset($this->cache[$profile]);
     }
 
     public function flushCache($profile = '')
     {
+        if ($profile == '') {
+            $profile = 'default';
+        }
+        unset($this->cache[$profile]);
     }
     
     public function logMessage($message, $cat = 'default')
