@@ -67,6 +67,7 @@ class QgisForm implements QgisFormControlsInterface
      * @param \jFormsBase                    $form
      * @param string                         $featureId
      * @param bool                           $loginFilteredOverride
+     * @param \AppContextInterface           $appContext
      *
      * @throws \Exception
      */
