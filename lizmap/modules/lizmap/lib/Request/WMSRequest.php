@@ -396,6 +396,8 @@ class WMSRequest extends OGCRequest
         if ($toHtml and preg_match('#/xml#', $mime)) {
             $rep .= $this->gfiXmlToHtml($data);
             $mime = 'text/html';
+        } else {
+            $rep .= $data;
         }
 
         return (object) array(
