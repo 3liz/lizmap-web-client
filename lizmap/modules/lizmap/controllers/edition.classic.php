@@ -1229,10 +1229,9 @@ class editionCtrl extends jController
         $layerName2 = $layer2->getName();
 
         // verifying layers in attribute config
-        $pConfig = $lproj->getFullCfg();
         if (!$lproj->hasAttributeLayers()
-            or !property_exists($pConfig->attributeLayers, $layerName1)
-            or !property_exists($pConfig->attributeLayers, $layerName2)
+            or !$lproj->hasAttributeLayersForLayer($layerName1)
+            or !$lproj->hasAttributeLayersForLayer($layerName2)
         ) {
             jMessage::add(jLocale::get('view~edition.link.error.not.attribute.layer'), 'error');
 
