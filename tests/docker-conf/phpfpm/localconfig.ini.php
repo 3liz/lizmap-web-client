@@ -43,3 +43,5 @@ auth = file
 [jcommunity]
 registrationEnabled=off
 
+[error_handling]
+messageLogFormat = "[%code%]\t%msg%\n  %file%\t%line%\n %url%\n %params%\n ref:%referer%\n%trace%\n\n"
