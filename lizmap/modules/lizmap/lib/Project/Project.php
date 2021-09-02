@@ -371,21 +371,12 @@ class Project
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
         $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
+        $this->cfg->setPrintCapabilities($this->printCapabilities);
         $this->locateByLayers = $this->readLocateByLayers($qgsXml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
+        $this->cfg->setLayersOrder($this->layersOrder);
         $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
-
-        $props = array(
-            'printCapabilities',
-            'locateByLayers',
-            'editionLayers',
-            'layersOrder',
-            'attributeLayers',
-        );
-        foreach ($props as $prop) {
-            $this->cfg->setProperty($prop, $this->{$prop});
-        }
 
         $this->qgis->readEditionForms($this->getEditionLayers(), $this);
     }
@@ -611,7 +602,7 @@ class Project
 
     public function getLayers()
     {
-        return $this->cfg->getProperty('layers');
+        return $this->cfg->getLayers();
     }
 
     /**
@@ -688,7 +679,7 @@ class Project
 
     public function hasLocateByLayer()
     {
-        $locate = $this->cfg->getProperty('locateByLayer');
+        $locate = $this->cfg->getLocateByLayer();
         if ($locate && count((array) $locate)) {
             return true;
         }
@@ -698,7 +689,7 @@ class Project
 
     public function hasFormFilterLayers()
     {
-        $form = $this->cfg->getProperty('formFilterLayers');
+        $form = $this->cfg->getFormFilterLayers();
         if ($form && count((array) $form)) {
             return true;
         }
@@ -708,12 +699,12 @@ class Project
 
     public function getFormFilterLayersConfig()
     {
-        return $this->cfg->getProperty('formFilterLayers');
+        return $this->cfg->getFormFilterLayers();
     }
 
     public function hasTimemanagerLayers()
     {
-        $timeManager = $this->cfg->getProperty('timemanagerLayers');
+        $timeManager = $this->cfg->getTimemanagerLayers();
         if ($timeManager && count((array) $timeManager)) {
             return true;
         }
@@ -724,7 +715,7 @@ class Project
     public function hasAtlasEnabled()
     {
         $atlasEnabled = $this->cfg->getOption('atlasEnabled');
-        $atlas = $this->cfg->getProperty('atlas');
+        $atlas = $this->cfg->getAtlas();
 
         if (($atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
             || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas->layers) > 0)) { // Multiple atlas
@@ -746,7 +737,7 @@ class Project
 
     public function hasTooltipLayers()
     {
-        $tooltip = $this->cfg->getProperty('tooltipLayers');
+        $tooltip = $this->cfg->getTooltipLayers();
         if ($tooltip && count((array) $tooltip)) {
             return true;
         }
@@ -756,7 +747,7 @@ class Project
 
     public function hasAttributeLayers($onlyDisplayedLayers = false)
     {
-        $attributeLayers = $this->cfg->getProperty('attributeLayers');
+        $attributeLayers = $this->cfg->getAttributeLayers();
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
             if ($onlyDisplayedLayers) {
@@ -779,7 +770,7 @@ class Project
 
     public function hasAttributeLayersForLayer($layerName)
     {
-        $attributeLayers = $this->cfg->getProperty('attributeLayers');
+        $attributeLayers = $this->cfg->getAttributeLayers();
 
         return property_exists($attributeLayers, $layerName);
     }
@@ -985,9 +976,12 @@ class Project
         return $this->editionLayersForCurrentUser;
     }
 
+    /**
+     * @return object
+     */
     public function getEditionLayers()
     {
-        return $this->cfg->getProperty('editionLayers');
+        return $this->cfg->getEditionLayers();
     }
 
     /**
@@ -1056,7 +1050,7 @@ class Project
      */
     public function hasLoginFilteredLayers()
     {
-        $login = (array) $this->cfg->getProperty('loginFilteredLayers');
+        $login = (array) $this->cfg->getLoginFilteredLayers();
         if ($login && count((array) $login)) {
             return true;
         }
@@ -1077,7 +1071,7 @@ class Project
             $ln = $layerByTypeName->name;
         }
 
-        $login = $this->cfg->getProperty('loginFilteredLayers');
+        $login = $this->cfg->getLoginFilteredLayers();
         if (!$login || !property_exists($login, $ln)) {
             return null;
         }
@@ -1204,7 +1198,7 @@ class Project
      */
     public function getDatavizLayersConfig()
     {
-        $datavizLayers = $this->cfg->getProperty('datavizLayers');
+        $datavizLayers = $this->cfg->getDatavizLayers();
         if (!$datavizLayers) {
             return false;
         }
@@ -1374,31 +1368,35 @@ class Project
 
     protected function readLocateByLayers(QgisProject $xml, ProjectConfig $cfg)
     {
-        $locateByLayer = $cfg->getProperty('locateByLayer');
+        $locateByLayer = $cfg->getLocateByLayer();
         if ($locateByLayer) {
             // The method takes a reference
             $xml->readLocateByLayers($locateByLayer);
-            // so we can modify it here
-            $this->cfg->setProperty('locateByLayer', $locateByLayer);
         }
 
         return $locateByLayer;
     }
 
+    /**
+     * @return object
+     */
     protected function readFormFilterLayers(QgisProject $xml, ProjectConfig $cfg)
     {
-        $formFilterLayers = $cfg->getProperty('formFilterLayer');
+        $formFilterLayers = $cfg->getFormFilterLayers();
 
         if (!$formFilterLayers) {
-            $formFilterLayers = array();
+            $formFilterLayers = new \stdClass();
         }
 
         return $formFilterLayers;
     }
 
+    /**
+     * @return object
+     */
     protected function readEditionLayers(QgisProject $xml)
     {
-        $editionLayers = $this->getEditionLayers();
+        $editionLayers = $this->cfg->getEditionLayers();
 
         if ($editionLayers) {
             // Check ability to load spatialite extension
@@ -1410,27 +1408,29 @@ class Project
             if (!$spatialiteExt) {
                 $this->appContext->logMessage('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
-                // so we can ste the data here
-                $this->cfg->setProperty('EditionLayers', $editionLayers);
             }
         } else {
-            $editionLayers = array();
+            $editionLayers = new \stdClass();
         }
+        $this->cfg->setEditionLayers($editionLayers);
 
         return $editionLayers;
     }
 
+    /**
+     * @return object
+     */
     protected function readAttributeLayers(QgisProject $xml, ProjectConfig $cfg)
     {
-        $attributeLayers = $cfg->getProperty('attributeLayers');
+        $attributeLayers = $cfg->getAttributeLayers();
 
         if ($attributeLayers) {
             // method takes a reference
             $xml->readAttributeLayers($attributeLayers);
             // so we can modify data here
-            $this->cfg->setProperty('attributeLayers', $attributeLayers);
+            $cfg->setAttributeLayers($attributeLayers);
         } else {
-            $attributeLayers = array();
+            $attributeLayers = new \stdClass();
         }
 
         return $attributeLayers;
@@ -1438,7 +1438,6 @@ class Project
 
     /**
      * @param \SimpleXMLElement $xml
-     * @param $cfg
      *
      * @return int[]
      */
@@ -1447,6 +1446,11 @@ class Project
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }
 
+    /**
+     * @param string $layerId
+     *
+     * @return null|string
+     */
     public function getLayerNameByIdFromConfig($layerId)
     {
         return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->layers);
