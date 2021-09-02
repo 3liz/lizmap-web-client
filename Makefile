@@ -113,7 +113,7 @@ build: debug
 	cd assets/ && npm run build
 
 tests: debug build
-	composer install --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
+	composer update --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
 	cd tests/units/ && php vendor/bin/phpunit -v
 
 quicktests: debug
