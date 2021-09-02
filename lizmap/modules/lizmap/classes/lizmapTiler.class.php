@@ -171,8 +171,8 @@ class lizmapTiler
     /**
      * Get a list of tileMatrixSet.
      *
-     * @param mixed $project
-     * @param mixed $wms_xml
+     * @param \Lizmap\Project\Project $project
+     * @param mixed                   $wms_xml
      */
     public static function getTileMatrixSetList($project, $wms_xml)
     {
@@ -220,9 +220,10 @@ class lizmapTiler
             $rootExtent[3] = $geoExtent[3];
         }
 
-        $opt = $project->getOptions();
-        $scales = array_merge(array(), $opt->mapScales);
+        $scales = array_merge(array(), $project->getOption('mapScales'));
         rsort($scales);
+
+        $projection = $project->getOption('projection');
 
         $tileMatrixSetList = array();
         foreach ($rootLayer[0]->CRS as $CRS) {
@@ -282,11 +283,11 @@ class lizmapTiler
                 $tileMatrixSet->extent = $extent;
                 $tileMatrixSet->tileMatrixList = $tileMatrixList;
                 $tileMatrixSetList[] = $tileMatrixSet;
-            } elseif ($CRS == $opt->projection->ref) {
+            } elseif ($CRS == $projection->ref) {
                 $proj4 = new Proj4php();
-                Proj4php::$defs[$CRS] = $opt->projection->proj4;
+                Proj4php::$defs[$CRS] = $projection->proj4;
                 $sourceProj = new Proj4phpProj('EPSG:4326', $proj4);
-                $destProj = new Proj4phpProj($opt->projection->ref, $proj4);
+                $destProj = new Proj4phpProj($projection->ref, $proj4);
 
                 $sourceMinPt = new proj4phpPoint($rootExtent[0], $rootExtent[1]);
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
@@ -296,7 +297,7 @@ class lizmapTiler
 
                 $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
 
-                preg_match('/ \+units=(?P<unit>\w+) /', $opt->projection->proj4, $matches);
+                preg_match('/ \+units=(?P<unit>\w+) /', $projection->proj4, $matches);
                 $unit = $matches['unit'];
 
                 //$res = 0.28E-3 * $scales[0] / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
@@ -421,8 +422,7 @@ class lizmapTiler
             $rootExtent[3] = $geoExtent[3];
         }
 
-        $opt = $project->getOptions();
-        $scales = array_merge(array(), $opt->mapScales);
+        $scales = array_merge(array(), $project->getOption('mapScales'));
         rsort($scales);
 
         $layers = $project->getLayers();
@@ -492,9 +492,9 @@ class lizmapTiler
             'y' => $layerExtent[3],
         );
 
-        $opt = $project->getOptions();
+        $projection = $project->getOption('projection');
         $proj4 = new Proj4php();
-        Proj4php::$defs[$opt->projection->ref] = $opt->projection->proj4;
+        Proj4php::$defs[$projection->ref] = $projection->proj4;
         $sourceProj = new Proj4phpProj('EPSG:4326', $proj4);
 
         $tileMatrixSetLinkList = array();
