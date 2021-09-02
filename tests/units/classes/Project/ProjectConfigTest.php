@@ -11,10 +11,20 @@ class projectConfigTest extends TestCase
     public function getConstructData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
+        $json = json_decode(file_get_contents($file));
 
+        $expected = clone $json;
+        $expected->layersOrder = array ();
+        $expected->printCapabilities = new stdClass();
+
+        $expected->editionLayers = new stdClass();
+        $expected->timemanagerLayers = new stdClass();
+        $expected->atlas = new stdClass();
+        $expected->tooltipLayers = new stdClass();
+        $expected->loginFilteredLayers = new stdClass();
         return array(
-            array(null, json_decode(file_get_contents($file))),
-            array(array('cfgContent' => json_decode(file_get_contents($file))), json_decode(file_get_contents($file))),
+            array(null, $expected),
+            array($json, $expected),
         );
     }
 
@@ -27,6 +37,7 @@ class projectConfigTest extends TestCase
     public function testConstruct($data, $expectedData)
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
+
         $testCfg = new Project\ProjectConfig($file, $data);
         $this->assertEquals($expectedData, $testCfg->getConfigContent());
     }
@@ -34,17 +45,14 @@ class projectConfigTest extends TestCase
     public function testConstructCache()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $data = array('cfgContent' => $json);
-        foreach ($json as $key => $prop) {
-            $data[$key] = $json->{$key};
-        }
+        $data = json_decode(file_get_contents($file));
         $cachedProperties = array('layersOrder', 'locateByLayer', 'formFilterLayers', 'editionLayers',
-            'attributeLayers', 'cfgContent', 'options', 'layers', );
+            'attributeLayers', 'options', 'layers', );
         $testCfg = new Project\ProjectConfig($file, $data);
         foreach ($cachedProperties as $prop) {
-            if (array_key_exists($prop, $data)) {
-                $this->assertEquals($data[$prop], $testCfg->getProperty($prop), 'failed Prop = '.$prop);
+            if (property_exists($data, $prop)) {
+                $meth = 'get'.ucfirst($prop);
+                $this->assertEquals($data->$prop, $testCfg->$meth(), 'failed Prop = '.$prop);
             }
         }
     }
@@ -52,9 +60,8 @@ class projectConfigTest extends TestCase
     public function getFindLayerData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $layers = array('cfgContent' => (object) array('layers' => $json->layers));
-        $layersNull = array('cfgContent' => (object) array('layers' => null));
+        $layers = json_decode(file_get_contents($file));
+        $layersNull = (object) array('layers' => null);
 
         return array(
             array($layers, 'events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101', 'montpellier_events'),

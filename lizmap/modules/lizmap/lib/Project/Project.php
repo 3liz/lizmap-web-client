@@ -157,11 +157,6 @@ class Project
     protected $options;
 
     /**
-     * @var mixed
-     */
-    protected $cfgContent;
-
-    /**
      * @var array List of cached properties
      */
     protected static $cachedProperties = array(
@@ -179,7 +174,6 @@ class Project
         'useLayerIDs',
         'layers',
         'data',
-        'cfgContent',
         'options',
         'QgisProjectVersion',
     );
