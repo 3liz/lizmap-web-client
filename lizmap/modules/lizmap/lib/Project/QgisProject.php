@@ -261,7 +261,6 @@ class QgisProject
     protected function setShortNames(ProjectConfig $cfg)
     {
         $shortNames = $this->xpathQuery('//maplayer/shortname');
-        $layers = $cfg->getProperty('layers');
         if ($shortNames) {
             foreach ($shortNames as $sname) {
                 $sname = (string) $sname;
@@ -271,12 +270,12 @@ class QgisProject
                 }
                 $xmlLayer = $xmlLayer[0];
                 $name = (string) $xmlLayer->layername;
-                if ($layers && property_exists($layers, $name)) {
-                    $layers->{$name}->shortname = $sname;
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
+                    $layerCfg->shortname = $sname;
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -287,17 +286,16 @@ class QgisProject
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
         $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
-        $layers = $cfg->getProperty('layers');
         if ($layerWithOpacities && count($layerWithOpacities)) {
             foreach ($layerWithOpacities as $layerWithOpacity) {
                 $name = (string) $layerWithOpacity->layername;
-                if ($layers && property_exists($layers, $name)) {
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
                     $opacity = (float) $layerWithOpacity->layerOpacity;
-                    $layers->{$name}->opacity = $opacity;
+                    $layerCfg->opacity = $opacity;
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -308,7 +306,6 @@ class QgisProject
     protected function setLayerGroupData(ProjectConfig $cfg)
     {
         $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        $layers = $cfg->getProperty('layers');
         if ($groupsWithShortName) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
@@ -316,8 +313,9 @@ class QgisProject
                 if ($shortNameProperty && count($shortNameProperty) > 0) {
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
-                    if ($layers && property_exists($layers, $name)) {
-                        $layers->{$name}->shortname = $sname;
+                    $layerCfg = $cfg->getLayer($name);
+                    if ($layerCfg) {
+                        $layerCfg->shortname = $sname;
                     }
                 }
             }
@@ -326,12 +324,12 @@ class QgisProject
         if ($groupsMutuallyExclusive) {
             foreach ($groupsMutuallyExclusive as $group) {
                 $name = (string) $group['name'];
-                if ($layers && property_exists($layers, $name)) {
-                    $layers->{$name}->mutuallyExclusive = 'True';
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
+                    $layerCfg->mutuallyExclusive = 'True';
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -345,12 +343,11 @@ class QgisProject
         if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount)) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
-                $cfgLayers = $cfg->getProperty('layers');
-                if ($cfgLayers && property_exists($cfgLayers, $name)) {
-                    $cfgLayers->{$name}->showFeatureCount = 'True';
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
+                    $layerCfg->showFeatureCount = 'True';
                 }
             }
-            $cfg->setProperty('layers', $cfgLayers);
         }
     }
 
@@ -366,53 +363,50 @@ class QgisProject
         if ($pluginLayers && count($pluginLayers)) {
             foreach ($pluginLayers as $layer) {
                 $name = (string) $layer->layername;
-                $layers = $cfg->getProperty('layers');
-                if ($layers && property_exists($layers, $name)) {
-                    $cfg->unsetProperty('layers', $name);
-                }
+                $cfg->removeLayer($name);
             }
         }
         //unset cache for editionLayers
         $eLayers = $cfg->getEditionLayers();
-        $layers = $cfg->getProperty('layers');
         if ($eLayers) {
             foreach ($eLayers as $key => $obj) {
-                if (property_exists($layers, $key)) {
-                    $layers->{$key}->cached = 'False';
-                    $layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($layers->{$key}, 'cacheExpiration')) {
-                        unset($layers->{$key}->cacheExpiration);
+                $layerCfg = $cfg->getLayer($key);
+                if ($layerCfg) {
+                    $layerCfg->cached = 'False';
+                    $layerCfg->clientCacheExpiration = 0;
+                    if (property_exists($layerCfg, 'cacheExpiration')) {
+                        unset($layerCfg->cacheExpiration);
                     }
-                    $cfg->setProperty('layers', $layers);
                 }
             }
         }
         //unset cache for loginFilteredLayers
-        $loginFiltered = $cfg->getProperty('loginFilteredLayers');
-        $layers = $cfg->getProperty('layers');
+        $loginFiltered = $cfg->getLoginFilteredLayers();
+
         if ($loginFiltered) {
             foreach ($loginFiltered as $key => $obj) {
-                if (property_exists($layers, $key)) {
-                    $layers->{$key}->cached = 'False';
-                    $layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($layers->{$key}, 'cacheExpiration')) {
-                        unset($layers->{$key}->cacheExpiration);
+                $layerCfg = $cfg->getLayer($key);
+                if ($layerCfg) {
+                    $layerCfg->cached = 'False';
+                    $layerCfg->clientCacheExpiration = 0;
+                    if (property_exists($layerCfg, 'cacheExpiration')) {
+                        unset($layerCfg->cacheExpiration);
                     }
                 }
             }
         }
         //unset displayInLegend for geometryType none or unknown
+        $layers = $cfg->getLayers();
         if ($layers) {
-            foreach ($layers as $key => $obj) {
-                if (property_exists($layers->{$key}, 'geometryType')
-                    && ($layers->{$key}->geometryType == 'none'
-                        || $layers->{$key}->geometryType == 'unknown')
+            foreach ($layers as $key => $layerCfg) {
+                if (property_exists($layerCfg, 'geometryType')
+                    && ($layerCfg->geometryType == 'none'
+                        || $layerCfg->geometryType == 'unknown')
                 ) {
-                    $layers->{$key}->displayInLegend = 'False';
+                    $layerCfg->displayInLegend = 'False';
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -868,7 +862,10 @@ class QgisProject
         return $printTemplates;
     }
 
-    public function readLocateByLayers(&$locateByLayer)
+    /**
+     * @param object $locateByLayer
+     */
+    public function readLocateByLayers($locateByLayer)
     {
         // collect layerIds
         $locateLayerIds = array();
@@ -918,6 +915,9 @@ class QgisProject
         }
     }
 
+    /**
+     * @param object $editionLayers
+     */
     public function readEditionLayers($editionLayers)
     {
         foreach ($editionLayers as $key => $obj) {
@@ -988,7 +988,6 @@ class QgisProject
                 json_encode($attributetableconfigXml[0])
             );
             $obj->attributetableconfig = json_decode($attributetableconfig);
-            $attributeLayers->{$key} = $obj;
         }
     }
 

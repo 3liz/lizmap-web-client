@@ -223,7 +223,7 @@ class QgisProjectTest extends TestCase
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
         $testProj->setLayerOpacityForTest($cfg);
-        $this->assertEquals($expectedLayer, $cfg->getProperty('layers'));
+        $this->assertEquals($expectedLayer, $cfg->getLayers());
     }
 
     public function getLayerData()
@@ -371,7 +371,7 @@ class QgisProjectTest extends TestCase
         $testProj->setXml(simplexml_load_file($file));
         $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object) array('layers' => (object) $layers)));
         $testProj->setShortNamesForTest($cfg);
-        $layer = $cfg->getProperty('layers');
+        $layer = $cfg->getLayers();
         if ($sname) {
             $this->assertEquals($sname, $layer->{$lname}->shortname);
         } else {

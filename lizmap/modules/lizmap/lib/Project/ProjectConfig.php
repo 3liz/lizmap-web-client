@@ -15,9 +15,9 @@ class ProjectConfig
     protected $cacheHandler;
 
     /**
-     * @var mixed
+     * @var int[] keys are layer name
      */
-    protected $layersOrder;
+    protected $layersOrder = array();
 
     /**
      * @var mixed
@@ -43,6 +43,36 @@ class ProjectConfig
      * @var object
      */
     protected $attributeLayers;
+
+    /**
+     * @var object
+     */
+    protected $layers;
+
+    /**
+     * @var object
+     */
+    protected $timemanagerLayers;
+
+    /**
+     * @var object
+     */
+    protected $atlas;
+
+    /**
+     * @var object
+     */
+    protected $tooltipLayers;
+
+    /**
+     * @var object
+     */
+    protected $loginFilteredLayers;
+
+    /**
+     * @var object
+     */
+    protected $datavizLayers;
 
     /**
      * @var mixed
@@ -87,7 +117,7 @@ class ProjectConfig
      */
     public function getData()
     {
-        return $this->cfgContent;
+        return $this->getConfigContent();
     }
 
     /**
@@ -123,51 +153,75 @@ class ProjectConfig
     }
 
     /**
-     * Return the value of a given property.
-     *
-     * @param string $propName The property to get
+     * @return int[] keys are layer name
      */
-    public function getProperty($propName)
+    public function getLayersOrder()
     {
-        if (property_exists($this, $propName) && isset($this->{$propName})) {
-            return $this->{$propName};
-        }
-        if (property_exists($this->cfgContent, $propName)) {
-            return $this->cfgContent->{$propName};
+        return $this->layersOrder;
+    }
+
+    /**
+     * @param int[] $layersOrder
+     */
+    public function setLayersOrder($layersOrder)
+    {
+        $this->layersOrder = $layersOrder;
+    }
+
+    public function getLayers()
+    {
+        return $this->layers;
+    }
+
+    public function getLayer($layerName)
+    {
+        if (property_exists($this->layers, $layerName)) {
+            return $this->layers->{$layerName};
         }
 
         return null;
     }
 
-    public function setProperty($prop, $value)
+    /**
+     * @param string $layerName
+     * @param object $layer
+     */
+    public function setLayer($layerName, $layer)
     {
-        if (property_exists($this, $prop)) {
-            $this->{$prop} = $value;
-        }
-        if (property_exists($this->cfgContent, $prop)) {
-            $this->cfgContent->{$prop} = $value;
+        $this->layers->{$layerName} = $layer;
+    }
+
+    public function removeLayer($layerName)
+    {
+        if (property_exists($this->layers, $layerName)) {
+            unset($this->layers->{$layerName});
         }
     }
 
-    public function unsetProperty($propName, $propName2 = '', $propName3 = '')
+    public function getAttributeLayers()
     {
-        $rootProp = $this->cfgContent;
-        if (in_array($propName, self::$cachedProperties)) {
-            $rootProp = $this;
-        }
-        if (isset($rootProp->{$propName}) && $propName2 == '') {
-            unset($rootProp->{$propName});
-        } elseif (isset($rootProp->{$propName})
-                  && property_exists($rootProp->{$propName}, $propName2)
-                  && $propName3 == ''
-        ) {
-            unset($rootProp->{$propName}->{$propName2});
-        } elseif (isset($rootProp->{$propName})
-                  && property_exists($rootProp->{$propName}, $propName2)
-                  && property_exists($rootProp->{$propName}->{$propName2}, $propName3)
-        ) {
-            unset($rootProp->{$propName}->{$propName2}->{$propName3});
-        }
+        return $this->attributeLayers;
+    }
+
+    public function setAttributeLayers($attributeLayers)
+    {
+        $this->attributeLayers = $attributeLayers;
+    }
+
+    /**
+     * @return object
+     */
+    public function getLocateByLayer()
+    {
+        return $this->locateByLayer;
+    }
+
+    /**
+     * @param object $locateByLayer
+     */
+    public function setLocateByLayer($locateByLayer)
+    {
+        $this->locateByLayer = $locateByLayer;
     }
 
     /**
@@ -180,7 +234,7 @@ class ProjectConfig
     public function findLayerByAnyName($name)
     {
         // name null or empty string
-        if ($name == null || empty($name) || !isset($this->cfgContent->layers)) {
+        if ($name == null || empty($name) || !isset($this->layers)) {
             return null;
         }
 
@@ -220,8 +274,8 @@ class ProjectConfig
             return null;
         }
 
-        if (property_exists($this->cfgContent->layers, $name)) {
-            return $this->cfgContent->layers->{$name};
+        if (property_exists($this->layers, $name)) {
+            return $this->layers->{$name};
         }
 
         return null;
@@ -239,7 +293,7 @@ class ProjectConfig
             return null;
         }
 
-        foreach ($this->cfgContent->layers as $layer) {
+        foreach ($this->layers as $layer) {
             if (!property_exists($layer, 'shortname')) {
                 continue;
             }
@@ -263,7 +317,7 @@ class ProjectConfig
             return null;
         }
 
-        foreach ($this->cfgContent->layers as $layer) {
+        foreach ($this->layers as $layer) {
             if (!property_exists($layer, 'title')) {
                 continue;
             }
@@ -287,7 +341,7 @@ class ProjectConfig
             return null;
         }
 
-        foreach ($this->cfgContent->layers as $layer) {
+        foreach ($this->layers as $layer) {
             if (!property_exists($layer, 'id')) {
                 continue;
             }
@@ -312,11 +366,11 @@ class ProjectConfig
         }
 
         // typeName is layerName
-        if (property_exists($this->cfgContent->layers, $typeName)) {
-            return $this->cfgContent->layers->{$typeName};
+        if (property_exists($this->layers, $typeName)) {
+            return $this->layers->{$typeName};
         }
         // typeName is cleanName or shortName
-        foreach ($this->cfgContent->layers as $layer) {
+        foreach ($this->layers as $layer) {
             if (str_replace(' ', '_', $layer->name) == $typeName) {
                 return $layer;
             }
@@ -332,19 +386,19 @@ class ProjectConfig
     }
 
     /**
-     * @return object[] layer names => layers
+     * @return object {layer names : layers}
      */
     public function getEditionLayers()
     {
-        if ($this->editionLayers) {
-            return (array) $this->editionLayers;
-        }
+        return $this->editionLayers;
+    }
 
-        if (isset($this->cfgContent->editionLayers)) {
-            return (array) $this->cfgContent->editionLayers;
-        }
-
-        return array();
+    /**
+     * @param object $editionLayers
+     */
+    public function setEditionLayers($editionLayers)
+    {
+        $this->editionLayers = $editionLayers;
     }
 
     public function getEditionLayerByName($name)
@@ -380,15 +434,12 @@ class ProjectConfig
         return null;
     }
 
+    /**
+     * @return bool
+     */
     public function hasEditionLayers()
     {
-        if ($this->editionLayers) {
-            return true;
-        }
-
-        if (isset($this->cfgContent->editionLayers)
-            && $this->cfgContent->editionLayers
-        ) {
+        if (count((array) $this->editionLayers)) {
             return true;
         }
 
@@ -415,5 +466,60 @@ class ProjectConfig
         }
 
         return null;
+    }
+
+    /**
+     * @return object
+     */
+    public function getPrintCapabilities()
+    {
+        return $this->printCapabilities;
+    }
+
+    public function setPrintCapabilities($printCapabilities)
+    {
+        $this->printCapabilities = $printCapabilities;
+    }
+
+    public function getFormFilterLayers()
+    {
+        return $this->formFilterLayers;
+    }
+
+    public function getTimemanagerLayers()
+    {
+        return $this->timemanagerLayers;
+    }
+
+    /**
+     * @return object
+     */
+    public function getAtlas()
+    {
+        return $this->atlas;
+    }
+
+    /**
+     * @return object
+     */
+    public function getTooltipLayers()
+    {
+        return $this->tooltipLayers;
+    }
+
+    /**
+     * @return object
+     */
+    public function getLoginFilteredLayers()
+    {
+        return $this->loginFilteredLayers;
+    }
+
+    /**
+     * @return object
+     */
+    public function getDatavizLayers()
+    {
+        return $this->datavizLayers;
     }
 }
