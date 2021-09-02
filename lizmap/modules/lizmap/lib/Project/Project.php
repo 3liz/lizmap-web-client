@@ -324,7 +324,7 @@ class Project
     protected function readProject($key, Repository $rep)
     {
         $qgsXml = $this->qgis;
-        $configOptions = $this->cfg->getProperty('options');
+        $configOptions = $this->cfg->getOptions();
 
         $this->options = $configOptions;
         // Complete data
@@ -589,9 +589,24 @@ class Project
         return $this->properties;
     }
 
+    /**
+     * @return object
+     *
+     * @deprecated use getOption() instead
+     */
     public function getOptions()
     {
-        return $this->cfg->getProperty('options');
+        return $this->cfg->getOptions();
+    }
+
+    /**
+     * @param string $name the option name
+     *
+     * @return null|mixed
+     */
+    public function getOption($name)
+    {
+        return $this->cfg->getOption($name);
     }
 
     public function getLayers()
@@ -708,9 +723,10 @@ class Project
 
     public function hasAtlasEnabled()
     {
-        $options = $this->getOptions();
+        $atlasEnabled = $this->cfg->getOption('atlasEnabled');
         $atlas = $this->cfg->getProperty('atlas');
-        if ((property_exists($options, 'atlasEnabled') && $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+
+        if (($atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
             || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas->layers) > 0)) { // Multiple atlas
             return true;
         }
@@ -1293,16 +1309,17 @@ class Project
             'location' => 'dock',
             'theme' => 'dark',
         );
-        $options = $this->getOptions();
-        if ($options && property_exists($options, 'datavizLocation')
-            && in_array($options->datavizLocation, array('dock', 'bottomdock', 'right-dock'))
+        $optionDatavizLocation = $this->cfg->getOption('datavizLocation');
+        if (in_array(
+            $optionDatavizLocation,
+            array('dock', 'bottomdock', 'right-dock')
+        )
         ) {
-            $config['dataviz']['location'] = $options->datavizLocation;
+            $config['dataviz']['location'] = $optionDatavizLocation;
         }
-        if (property_exists($options, 'theme')
-            and in_array($options->theme, array('dark', 'light'))
-        ) {
-            $config['dataviz']['theme'] = $options->theme;
+        $theme = $this->cfg->getOption('theme');
+        if (in_array($theme, array('dark', 'light'))) {
+            $config['dataviz']['theme'] = $theme;
         }
 
         return $config;
@@ -1313,7 +1330,6 @@ class Project
      */
     public function needsGoogle()
     {
-        $configOptions = $this->getOptions();
         $googleProps = array(
             'googleStreets',
             'googleSatellite',
@@ -1322,12 +1338,14 @@ class Project
         );
 
         foreach ($googleProps as $google) {
-            if (property_exists($configOptions, $google) && $this->optionToBoolean($configOptions->{$google})) {
+            $value = $this->cfg->getOption($google);
+            if ($value !== null && $this->optionToBoolean($value)) {
                 return true;
             }
         }
+        $externalSearch = $this->cfg->getOption('externalSearch');
 
-        return property_exists($configOptions, 'externalSearch') && $configOptions->externalSearch == 'google';
+        return $externalSearch == 'google';
     }
 
     /**
@@ -1335,10 +1353,9 @@ class Project
      */
     public function getGoogleKey()
     {
-        $configOptions = $this->getOptions();
-        $gKey = '';
-        if (property_exists($configOptions, 'googleKey')) {
-            $gKey = $configOptions->googleKey;
+        $gKey = $this->cfg->getOption('googleKey');
+        if ($gKey === null) {
+            $gKey = '';
         }
 
         return $gKey;
@@ -1347,8 +1364,8 @@ class Project
     protected function readPrintCapabilities(QgisProject $qgsLoad)
     {
         $printTemplates = array();
-        $options = $this->getOptions();
-        if ($options && property_exists($options, 'print') && $options->print == 'True') {
+        $print = $this->cfg->getOption('print');
+        if ($print == 'True') {
             $printTemplates = $qgsLoad->getPrintTemplates();
         }
 
@@ -1779,7 +1796,7 @@ class Project
     }
 
     /**
-     * @throws jExceptionSelector
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
@@ -1859,19 +1876,17 @@ class Project
     }
 
     /**
-     * @throws jException
-     * @throws jExceptionSelector
+     * @throws \jException
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
         $dockable = array();
-        $configOptions = $this->getOptions();
         $bp = $this->appContext->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers()) {
-            $tpl = new \jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
             $layerExport = $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ? 'layer-export' : '';
             $dock = new \lizmapMapDockItem(
@@ -1896,8 +1911,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'geolocation')
-            && $configOptions->geolocation == 'True') {
+        if ($this->cfg->getOption('geolocation') == 'True') {
             $tpl = new \jTpl();
             $tpl->assign('hasEditionLayers', $this->hasEditionLayersForCurrentUser());
             $dockable[] = new \lizmapMapDockItem(
@@ -1908,8 +1922,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'print')
-            && $configOptions->print == 'True') {
+        if ($this->cfg->getOption('print') == 'True') {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'print',
@@ -1919,8 +1932,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'measure')
-            && $configOptions->measure == 'True') {
+        if ($this->cfg->getOption('measure') == 'True') {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'measure',
@@ -1994,8 +2006,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'draw')
-            && $configOptions->draw == 'True') {
+        if ($this->cfg->getOption('draw') == 'True') {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'draw',
@@ -2009,7 +2020,7 @@ class Project
     }
 
     /**
-     * @throws jExceptionSelector
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
@@ -2041,15 +2052,14 @@ class Project
      */
     public function checkAcl()
     {
-        $options = $this->getOptions();
-
         // Check right on repository
         if (!$this->appContext->aclCheck('lizmap.repositories.view', $this->repository->getKey())) {
             return false;
         }
 
         // Check acl option is configured in project config
-        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
+        $aclGroups = $this->cfg->getOption('acl');
+        if ($aclGroups === null || !is_array($aclGroups) || empty($aclGroups)) {
             return true;
         }
 
@@ -2059,7 +2069,6 @@ class Project
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $options->acl;
         $userGroups = $this->appContext->aclUserGroupsId();
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
@@ -2085,15 +2094,13 @@ class Project
             return false;
         }
 
-        $options = $this->getOptions();
-
         // Check acl option is configured in project config
-        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
+        $aclGroups = $this->cfg->getOption('acl');
+        if ($aclGroups === null || !is_array($aclGroups) || empty($aclGroups)) {
             return true;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $options->acl;
         $userGroups = $this->appContext->aclGroupsIdByUser($login);
         if (array_intersect($aclGroups, $userGroups)) {
             return true;

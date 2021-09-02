@@ -147,4 +147,44 @@ class projectConfigTest extends TestCase
             $this->assertNull($testCfg->getEditionLayerByLayerId($id));
         }
     }
+
+    public function getOptionsValues()
+    {
+        return array(
+            array('mapScales', [
+                1000,
+                2500,
+                5000,
+                10000,
+                25000,
+                50000,
+                100000,
+                150000
+            ]),
+            array('minScale', 1000),
+            array('maxScale', 150000),
+            array('initialExtent',  [
+                417006.613738,
+                5394910.3409,
+                447158.048911,
+                5414844.99481
+            ]),
+            array('osmMapnik', "True"),
+            array('measure', "True"),
+            array('atlasDuration', 5),
+        );
+    }
+
+    /**
+     * @dataProvider getOptionsValues
+     *
+     * @param mixed $option
+     * @param mixed $expectedValue
+     */
+    public function testGetOption($option, $expectedValue)
+    {
+        $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
+        $testCfg = new Project\ProjectConfig($file);
+        $this->assertEquals($expectedValue, $testCfg->getOption($option));
+    }
 }

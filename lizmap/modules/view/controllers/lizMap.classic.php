@@ -114,12 +114,9 @@ class lizMapCtrl extends jController
             return $rep;
         }
 
-        $pOptions = $lproj->getOptions();
         // Redirect if project is hidden (lizmap plugin option)
         if (!$this->forceHiddenProjectVisible) {
-            if (property_exists($pOptions, 'hideProject')
-                && $pOptions->hideProject == 'True'
-            ) {
+            if ($lproj->getOption('hideProject') == 'True') {
                 jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
 
                 return $rep;
@@ -254,8 +251,7 @@ class lizMapCtrl extends jController
             $rep->addJSLink($bp.'assets/js/atlas.js');
 
             // Add CSS
-            $options = $lproj->getOptions();
-            $atlasWidth = $options->atlasMaxWidth;
+            $atlasWidth = $lproj->getOption('atlasMaxWidth');
             $cssContent = '';
             $cssContent .= "#content.atlas-visible:not(.mobile) #right-dock {width: ${atlasWidth}%; max-width: ${atlasWidth}%;}";
             $cssContent .= "#content.atlas-visible:not(.mobile) #map-content {margin-right: ${atlasWidth}%;}";
@@ -441,9 +437,7 @@ class lizMapCtrl extends jController
         $mapMenuCss = '';
         $h = $this->intParam('h', 1);
         if ($h == 0
-            or (property_exists($pOptions, 'hideHeader')
-                && $pOptions->hideHeader == 'True'
-            )
+            || $lproj->getOption('hideHeader') == 'True'
         ) {
             $h = 0;
             $rep->addStyle('#body', 'padding-top:0px;');
@@ -453,10 +447,7 @@ class lizMapCtrl extends jController
         // menu = left vertical menu with icons
         $m = $this->intParam('m', 1);
         if ($m == 0
-            or (
-              property_exists($pOptions, 'hideMenu')
-              && $pOptions->hideMenu == 'True'
-            )
+            || $lproj->getOption('hideMenu') == 'True'
         ) {
             $m = 0;
             $rep->addStyle('#mapmenu', 'display:none !important; width:0px;');
@@ -468,10 +459,7 @@ class lizMapCtrl extends jController
         // legend = legend open at startup
         $l = $this->intParam('l', 1);
         if ($l == 0
-            || (
-                property_exists($pOptions, 'hideLegend')
-                && $pOptions->hideLegend == 'True'
-            )
+            || $lproj->getOption('hideLegend') == 'True'
         ) {
             $l = 0;
             //~ $rep->addStyle('#dock', 'display:none;');
@@ -489,10 +477,7 @@ class lizMapCtrl extends jController
         // navbar
         $n = $this->intParam('n', 1);
         if ($n == 0
-            or (
-                property_exists($pOptions, 'hideNavbar')
-                && $pOptions->hideNavbar == 'True'
-            )
+            || $lproj->getOption('hideNavbar') == 'True'
         ) {
             $rep->addStyle('#navbar', 'display:none !important;');
         }
@@ -500,10 +485,7 @@ class lizMapCtrl extends jController
         // overview-box = scale & overview
         $o = $this->intParam('o', 1);
         if ($o == 0
-            || (
-                property_exists($pOptions, 'hideOverview')
-                && $pOptions->hideOverview == 'True'
-            )
+            || $lproj->getOption('hideOverview') == 'True'
         ) {
             $rep->addStyle('#overview-box', 'display:none !important;');
         }
@@ -514,9 +496,7 @@ class lizMapCtrl extends jController
         }
 
         // Hide groups checkboxes
-        if (property_exists($pOptions, 'hideGroupCheckbox')
-            && $pOptions->hideGroupCheckbox == 'True'
-        ) {
+        if ($lproj->getOption('hideGroupCheckbox') == 'True') {
             $rep->addStyle('#switcher-layers button[name="group"]', 'display:none !important;');
         }
 

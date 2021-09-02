@@ -394,4 +394,26 @@ class ProjectConfig
 
         return false;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return null|mixed
+     */
+    public function getOption($name)
+    {
+        if (property_exists($this->options, $name)) {
+            return $this->options->{$name};
+        }
+
+        return null;
+    }
 }
