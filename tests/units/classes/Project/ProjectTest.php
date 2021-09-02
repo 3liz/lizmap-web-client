@@ -20,7 +20,7 @@ class ProjectTest extends TestCase
         $rep = new Project\Repository('key', array(), null, null, null);
         $proj = new ProjectForTests();
         $cfg = json_decode(file_get_contents(__DIR__.'/Ressources/readProject.qgs.cfg'));
-        $config = new Project\ProjectConfig('', array('cfgContent' => $cfg, 'options' => $cfg->options));
+        $config = new Project\ProjectConfig('', $cfg);
         $proj->setCfg($config);
         $proj->setQgis($qgis_default);
         $proj->setRepo($rep);
@@ -132,7 +132,7 @@ class ProjectTest extends TestCase
      */
     public function testHasAttributeLayer($only, $attributeLayers, $expectedReturn)
     {
-        $config = new Project\ProjectConfig(null, array('attributeLayers' => $attributeLayers));
+        $config = new Project\ProjectConfig(null, (object)array('attributeLayers' => $attributeLayers));
         $proj = new ProjectForTests();
         $proj->setCfg($config);
         $this->assertEquals($expectedReturn, $proj->hasAttributeLayers($only));
@@ -205,7 +205,7 @@ class ProjectTest extends TestCase
         foreach ($editionLayers as $key => $obj) {
             $eLayers->{$key} = clone $obj;
         }
-        $config = new Project\ProjectConfig(null, array('editionLayers' => $eLayers));
+        $config = new Project\ProjectConfig(null, (object) array('editionLayers' => $eLayers));
         $rep = new Project\Repository(null, array(), null, null, null);
         $context = new ContextForTests();
         $context->setResult($acl);
@@ -252,7 +252,9 @@ class ProjectTest extends TestCase
      */
     public function testGetLoginFilteredConfig($lfLayers, $layers, $ln, $expectedLn)
     {
-        $config = new Project\ProjectConfig(null, array('cfgContent' => (object) array('loginFilteredLayers' => $lfLayers, 'layers' => $layers)));
+        $config = new Project\ProjectConfig(null, (object) array(
+            'loginFilteredLayers' => $lfLayers,
+            'layers' => $layers));
         $proj = new ProjectForTests();
         $proj->setCfg($config);
         $this->assertEquals($expectedLn, $proj->getLoginFilteredConfig($ln));
@@ -286,8 +288,11 @@ class ProjectTest extends TestCase
     public function testGetLoginFilters($aclData, $expectedFilters)
     {
         $file = __DIR__.'/Ressources/montpellier_filtered.qgs.cfg';
+        $json = json_decode(file_get_contents($file));
         $expectedFilters = array(
-            'edition_line' => array_merge(json_decode(file_get_contents($file), true)['loginFilteredLayers']['edition_line'], array('layername' => 'edition_line', 'filter' => $expectedFilters)),
+            'edition_line' => array_merge((array)$json->loginFilteredLayers->edition_line,
+                                          array('layername' => 'edition_line',
+                                                'filter' => $expectedFilters)),
         );
         $config = new Project\ProjectConfig($file);
         $context = new ContextForTests();
@@ -343,7 +348,7 @@ class ProjectTest extends TestCase
      */
     public function testGoogle($options, $needGoogle, $gKey)
     {
-        $config = new Project\ProjectConfig(null, array('options' => $options));
+        $config = new Project\ProjectConfig(null, (object) array('options' => $options));
         $proj = new ProjectForTests();
         $proj->setCfg($config);
         $this->assertEquals($needGoogle, $proj->needsGoogle());
@@ -400,7 +405,7 @@ class ProjectTest extends TestCase
         $rep = new Project\Repository('key', array(), null, null, null);
         $context = new ContextForTests();
         $context->setResult($aclData);
-        $config = new Project\ProjectConfig(null, array('options' => $options));
+        $config = new Project\ProjectConfig(null, (object)array('options' => $options));
         $proj = new ProjectForTests($context);
         $proj->setRepo($rep);
         $proj->setCfg($config);

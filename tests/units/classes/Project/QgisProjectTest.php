@@ -219,7 +219,7 @@ class QgisProjectTest extends TestCase
         $json = json_decode(file_get_contents($file));
         $expectedLayer = clone $json->layers;
         $expectedLayer->montpellier_events->opacity = (float) 0.85;
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object) array('layers' => $json->layers)));
+        $cfg = new Project\ProjectConfig(null, (object) array('layers' => $json->layers));
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
         $testProj->setLayerOpacityForTest($cfg);
@@ -369,7 +369,7 @@ class QgisProjectTest extends TestCase
         );
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file($file));
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object) array('layers' => (object) $layers)));
+        $cfg = new Project\ProjectConfig(null, (object) array('layers' => (object) $layers));
         $testProj->setShortNamesForTest($cfg);
         $layer = $cfg->getLayers();
         if ($sname) {
