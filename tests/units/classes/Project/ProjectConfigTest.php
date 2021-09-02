@@ -79,7 +79,7 @@ class projectConfigTest extends TestCase
     {
         $testCfg = new Project\ProjectConfig(null, $layers);
         if ($layerName) {
-            $this->assertSame($testCfg->getProperty('layers')->{$layerName}, $testCfg->findLayerByAnyName($key));
+            $this->assertSame($testCfg->getLayer($layerName), $testCfg->findLayerByAnyName($key));
         } else {
             $this->assertNull($testCfg->findLayerByAnyName($key));
         }
@@ -88,9 +88,8 @@ class projectConfigTest extends TestCase
     public function getEditionLayerByNameData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $eLayer = array('editionLayers' => $json->editionLayers);
-        $eLayerNull = array('editionLayers' => null);
+        $eLayer = json_decode(file_get_contents($file));
+        $eLayerNull = (object) array('editionLayers' => null);
 
         return array(
             array($eLayer, 'tramstop'),
@@ -109,7 +108,7 @@ class projectConfigTest extends TestCase
     {
         $testCfg = new Project\ProjectConfig(null, $eLayers);
         if ($name) {
-            $this->assertSame($testCfg->getProperty('editionLayers')->{$name}, $testCfg->getEditionLayerByName($name));
+            $this->assertSame($eLayers->editionLayers->{$name}, $testCfg->getEditionLayerByName($name));
         } else {
             $this->assertNull($testCfg->getEditionLayerByName($name));
         }
@@ -118,8 +117,7 @@ class projectConfigTest extends TestCase
     public function getEditionLayerByLayerIdData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $eLayer = array('editionLayers' => $json->editionLayers);
+        $eLayer = json_decode(file_get_contents($file));
         $eLayerNull = array('editionLayers' => null);
 
         return array(
@@ -142,7 +140,7 @@ class projectConfigTest extends TestCase
     {
         $testCfg = new Project\ProjectConfig(null, $eLayers);
         if ($eLayerName) {
-            $this->assertSame($testCfg->getProperty('editionLayers')->{$eLayerName}, $testCfg->getEditionLayerByLayerId($id));
+            $this->assertSame($eLayers->editionLayers->$eLayerName, $testCfg->getEditionLayerByLayerId($id));
         } else {
             $this->assertNull($testCfg->getEditionLayerByLayerId($id));
         }
