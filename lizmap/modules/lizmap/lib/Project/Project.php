@@ -247,21 +247,27 @@ class Project
             $this->readProject($key, $rep);
 
             // set project data in cache
+            $dataProj = array();
             foreach (self::$cachedProperties as $prop) {
                 if (isset($this->{$prop}) && !empty($this->{$prop})) {
-                    $data[$prop] = $this->{$prop};
+                    $dataProj[$prop] = $this->{$prop};
                 }
             }
-            $data = array_merge($data, $this->qgis->getCacheData($data), $this->cfg->getCacheData($data));
+
+            $data = array(
+                'project' => $dataProj,
+                'qgis' => $this->qgis->getCacheData(),
+                'cfg' => $this->cfg->getCacheData(),
+            );
             $this->cacheHandler->storeProjectData($data);
         } else {
             foreach (self::$cachedProperties as $prop) {
-                if (array_key_exists($prop, $data)) {
-                    $this->{$prop} = $data[$prop];
+                if (array_key_exists($prop, $data['project'])) {
+                    $this->{$prop} = $data['project'][$prop];
                 }
             }
             $rewriteCache = false;
-            foreach ($this->layers as $index => $layer) {
+            foreach ($data['qgis']['layers'] as $index => $layer) {
                 if (array_key_exists('embedded', $layer)
                     && $layer['embedded'] == '1'
                     && $layer['qgsmtime'] < filemtime($layer['file'])
@@ -272,8 +278,7 @@ class Project
                     $newLayer['file'] = $layer['file'];
                     $newLayer['embedded'] = 1;
                     $newLayer['projectPath'] = $layer['projectPath'];
-                    $this->layers[$index] = $newLayer;
-                    $data['layers'][$index] = $newLayer;
+                    $data['qgis']['layers'][$index] = $newLayer;
                     $rewriteCache = true;
                 }
             }
@@ -282,13 +287,13 @@ class Project
             }
 
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg', $data);
+                $this->cfg = new ProjectConfig($file.'.cfg', $data['cfg']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
 
             try {
-                $this->qgis = new QgisProject($file, $services, $appContext, $data);
+                $this->qgis = new QgisProject($file, $services, $appContext, $data['qgis']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -1447,7 +1452,7 @@ class Project
      */
     public function getLayerNameByIdFromConfig($layerId)
     {
-        return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->layers);
+        return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->cfg->getLayers());
     }
 
     /**
