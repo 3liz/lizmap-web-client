@@ -5,16 +5,6 @@ namespace Lizmap\Project;
 class ProjectConfig
 {
     /**
-     * @var object
-     */
-    protected $cfgContent;
-
-    /**
-     * @var ProjectCache
-     */
-    protected $cacheHandler;
-
-    /**
      * @var int[] keys are layer name
      */
     protected $layersOrder = array();
@@ -81,31 +71,36 @@ class ProjectConfig
 
     protected static $cachedProperties = array(
         'layersOrder',
+        'printCapabilities',
         'locateByLayer',
         'formFilterLayers',
         'editionLayers',
         'attributeLayers',
-        'cfgContent',
+        'layers',
         'options',
+        'timemanagerLayers',
+        'atlas',
+        'tooltipLayers',
+        'loginFilteredLayers',
+        'datavizLayers',
     );
 
     public function __construct($cfgFile, $data = null)
     {
         if ($data === null) {
             $fileContent = file_get_contents($cfgFile);
-            $this->cfgContent = json_decode($fileContent);
-            if ($this->cfgContent === null) {
+            $data = json_decode($fileContent);
+            if ($data === null) {
                 throw new UnknownLizmapProjectException('The file '.$cfgFile.' cannot be decoded.');
             }
-        } else {
-            foreach ($data as $prop => $value) {
-                if (in_array($prop, self::$cachedProperties)) {
-                    // if ($prop == 'cfgContent') {
-                    //     $this->{$prop} = json_decode(json_encode($value));
+        }
 
-                    //     continue;
-                    // }
-                    $this->{$prop} = $value;
+        foreach (self::$cachedProperties as $prop) {
+            if (isset($data->{$prop})) {
+                $this->{$prop} = $data->{$prop};
+            } else {
+                if ($prop != 'layersOrder') {
+                    $this->{$prop} = new \stdClass();
                 }
             }
         }
@@ -121,13 +116,13 @@ class ProjectConfig
     }
 
     /**
-     * Return the config file as an array.
+     * Return the config content.
      *
      * @return object
      */
     public function getConfigContent()
     {
-        return $this->cfgContent;
+        return (object) get_object_vars($this);
     }
 
     /**
@@ -135,21 +130,15 @@ class ProjectConfig
      *
      * @param mixed $data
      *
-     * @return array
+     * @return object
      */
     public function getCacheData($data)
     {
         foreach (self::$cachedProperties as $prop) {
-            if (!isset($this->{$prop}) || isset($data[$prop])) {
-                continue;
-                // }
-            // if ($prop == 'cfgContent') {
-            //     $data['cfgContent'] = json_decode(json_encode($this->cfgContent), true);
-            }
             $data[$prop] = $this->{$prop};
         }
 
-        return $data;
+        return (object) $data;
     }
 
     /**
