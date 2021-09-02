@@ -128,12 +128,11 @@ class ProjectConfig
     /**
      * Return the properties to store in the cache.
      *
-     * @param mixed $data
-     *
      * @return object
      */
-    public function getCacheData($data)
+    public function getCacheData()
     {
+        $data = array();
         foreach (self::$cachedProperties as $prop) {
             $data[$prop] = $this->{$prop};
         }
@@ -157,6 +156,9 @@ class ProjectConfig
         $this->layersOrder = $layersOrder;
     }
 
+    /**
+     * @return object
+     */
     public function getLayers()
     {
         return $this->layers;

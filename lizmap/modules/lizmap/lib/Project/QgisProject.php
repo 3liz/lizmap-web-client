@@ -127,8 +127,9 @@ class QgisProject
         $this->path = $file;
     }
 
-    public function getCacheData($data)
+    public function getCacheData()
     {
+        $data = array();
         foreach (self::$cachedProperties as $prop) {
             if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
@@ -597,7 +598,7 @@ class QgisProject
 
     /**
      * @param string $layerId
-     * @param mixed  $layers
+     * @param object $layers
      *
      * @return null|string
      */
