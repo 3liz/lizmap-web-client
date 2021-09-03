@@ -37,6 +37,9 @@ class wmtsCtrl extends jControllerCmdLine
             '-f' => false,
             '-bbox' => true,
         ),
+        'cleaning' => array(
+            '-v' => false,
+        ),
     );
 
     /**
@@ -59,6 +62,11 @@ class wmtsCtrl extends jControllerCmdLine
             'TileMatrixSet' => true,
             'TileMatrixMin' => true,
             'TileMatrixMax' => true,
+        ),
+        'cleaning' => array(
+            'repository' => true,
+            'project' => true,
+            'layer' => false,
         ),
     );
 
@@ -92,6 +100,17 @@ class wmtsCtrl extends jControllerCmdLine
         TileMatrixMax   the min zoom level to generate
     Use:
         php lizmap/scripts/script.php lizmap~wmts:seeding [-v] [-f] [-bbox xmin,ymin,xmax,ymax] repository project layer TileMatrixSet TileMatrixMin TileMatrixMax
+        ',
+        'cleaning' => 'Cleaning cache
+    options:
+        -v  verbose
+    parameters:
+        repository      the repository id
+        project         the project name
+    optional prameters:
+        layer           the layer name for which you want to clean the cache
+    Use:
+        php lizmap/scripts/script.php lizmap~wmts:cleaning [-v] repository project [layer]
         ',
     );
 
@@ -438,6 +457,88 @@ class wmtsCtrl extends jControllerCmdLine
             }
             $rep->addContent("================\n");
             $rep->addContent("End generation\n");
+        }
+
+        return $rep;
+    }
+
+    public function cleaning()
+    {
+        $fakeServer = new jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
+
+        $verbose = $this->option('-v');
+
+        $rep = $this->getResponse(); // cmdline response by default
+
+        $project = null;
+
+        try {
+            $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
+            // Project not found
+            if (!$project) {
+                $rep->addContent("The project has not be found!\n");
+                $rep->setExitCode(1);
+
+                return $rep;
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            $rep->addContent("The project has not be found!\n");
+            $rep->setExitCode(1);
+
+            return $rep;
+        }
+        $repository = $project->getRepository();
+
+        $tileCapabilities = null;
+
+        try {
+            $tileCapabilities = lizmapTiler::getTileCapabilities($project);
+        } catch (Exception $e) {
+            // if default profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::logEx($e, 'error');
+            // Error message
+            $rep->addContent("The cache is not available!\n");
+            $rep->addContent($e->getMessage()."\n");
+            $rep->setExitCode(1);
+
+            return $rep;
+        }
+
+        if ($tileCapabilities === null
+             || $tileCapabilities->tileMatrixSetList === null
+             || $tileCapabilities->layerTileInfoList === null
+        ) {
+            // Error message
+            $rep->addContent("The cache is not available!\n");
+            $rep->addContent("The WMTS Service can't be initialized!\n");
+            $rep->setExitCode(1);
+
+            return $rep;
+        }
+
+        $layerId = $this->param('layer');
+
+        if (count($tileCapabilities->layerTileInfoList) === 0) {
+            $rep->addContent("No layers configured with cache!\n");
+            $rep->setExitCode(1);
+
+            return $rep;
+        }
+
+        $rep->addContent("Start cleaning\n");
+        $rep->addContent("================\n");
+        if ($layerId) {
+            $result = \Lizmap\Request\Proxy::clearLayerCache($repository->getKey(), $project->getKey(), $layerId);
+        } else {
+            $result = \Lizmap\Request\Proxy::clearProjectCache($repository->getKey(), $project->getKey());
+        }
+        $rep->addContent("================\n");
+        if (!$result) {
+            $rep->addContent("End cleaning\n");
+        } else {
+            $rep->addContent("Error cleaning\n");
+            $rep->setExitCode(1);
         }
 
         return $rep;

@@ -646,6 +646,54 @@ class Proxy
         return false;
     }
 
+    /**
+     * @param string $repository
+     * @param string $project
+     *
+     * @return boolean the project cache has been clear or not
+     */
+    public static function clearProjectCache($repository, $project)
+    {
+        // Storage type
+        $ser = self::getServices();
+        $appContext = self::getAppContext();
+        $cacheStorageType = $ser->cacheStorageType;
+        $clearCacheOk = false;
+
+        // Cache root directory
+        if ($cacheStorageType != 'redis') {
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if (!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)) {
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
+
+            // Directory where cached files are stored for the project
+            $cacheProjectDir = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
+            $results = array();
+            if (file_exists($cacheProjectDir)) {
+                $clearCacheOk = \jFile::removeDir($cacheProjectDir);
+            } else {
+                return true;
+            }
+        } else {
+            // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
+            $cacheName = 'lizmapCache_'.$repository.'_'.$project;
+            self::declareRedisProfile($ser, $cacheName, $repository, $project);
+            $appContext->flushCache($cacheName);
+            $clearCacheOk = true;
+        }
+        $appContext->eventNotify('lizmapProxyClearProjectCache', array('repository' => $repository, 'project' => $project));
+
+        return $clearCacheOk;
+    }
+
+    /**
+     * @param string $repository
+     * @param string $project
+     * @param string $layer
+     *
+     * @return boolean the layer cache has been clear or not
+     */
     public static function clearLayerCache($repository, $project, $layer)
     {
         // Storage type
@@ -675,6 +723,9 @@ class Proxy
                     }
                 }
                 closedir($handle);
+                if (count($results) === 0) {
+                    return true;
+                }
                 foreach ($results as $rem) {
                     if (is_dir($rem)) {
                         \jFile::removeDir($rem);
@@ -682,6 +733,8 @@ class Proxy
                         unlink($rem);
                     }
                 }
+            } else {
+                return true;
             }
         } else {
             // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
@@ -690,6 +743,8 @@ class Proxy
             $appContext->flushCache($cacheName);
         }
         $appContext->eventNotify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
+
+        return true;
     }
 }
 
