@@ -407,6 +407,12 @@ class QgisFormControl
 
     protected static function buildEditTypeMap()
     {
+        if (self::$qgisEdittypeMap['builded']) {
+            // as self::$qgisEdittypeMap is static, it may already exists
+            // if a QgisFormControl has already been instanciated
+            return;
+        }
+
         // Add new editTypes naming convention since QGIS 2.4
         self::$qgisEdittypeMap['LineEdit'] = self::$qgisEdittypeMap[0];
         self::$qgisEdittypeMap['UniqueValues'] = self::$qgisEdittypeMap[2];

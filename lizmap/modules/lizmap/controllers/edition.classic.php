@@ -183,22 +183,11 @@ class editionCtrl extends jController
 
             return false;
         }
-        $eLayer = $layer->getEditionCapabilities();
 
-        // Check if user groups intersects groups allowed by project editor
-        // If user is admin, no need to check for given groups
-        if (jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') and $eLayer->acl) {
-            // Check if configured groups white list and authenticated user groups list intersects
-            $editionGroups = $eLayer->acl;
-            $editionGroups = array_map('trim', explode(',', $editionGroups));
-            if (is_array($editionGroups) and count($editionGroups) > 0) {
-                $userGroups = jAcl2DbUserGroup::getGroups();
-                if (!array_intersect($editionGroups, $userGroups)) {
-                    $this->setErrorMessage(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+        if (!$layer->canCurrentUserEdit()) {
+            $this->setErrorMessage(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
 
-                    return false;
-                }
-            }
+            return false;
         }
 
         // feature Id (optional, only for edition and save)
@@ -305,8 +294,8 @@ class editionCtrl extends jController
         }
 
         // Get editLayer capabilities
-        $eCapabilities = $this->layer->getEditionCapabilities();
-        if ($eCapabilities->capabilities->createFeature != 'True') {
+        $eCapabilities = $this->layer->getRealEditionCapabilities();
+        if ($eCapabilities->createFeature != 'True') {
             jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
 
             return $this->serviceAnswer();
@@ -510,11 +499,11 @@ class editionCtrl extends jController
         // Redirect to the edition form or to the validate message
         $faCtrl = $form->getControl('liz_future_action');
         $faData = $faCtrl->datasource->data;
-        $eCapabilities = $this->layer->getEditionCapabilities();
-        if ($eCapabilities->capabilities->createFeature != 'True') {
+        $eCapabilities = $this->layer->getRealEditionCapabilities();
+        if ($eCapabilities->createFeature != 'True') {
             unset($faData['create']);
         }
-        if ($eCapabilities->capabilities->modifyAttribute != 'True') {
+        if ($eCapabilities->modifyAttribute != 'True') {
             unset($faData['edit']);
         }
         $faCtrl->datasource = new jFormsStaticDatasource();
@@ -548,7 +537,7 @@ class editionCtrl extends jController
                 }
 
                 if (!is_dir($targetFullPath)) {
-                    $createDir = jFile::createDir($targetFullPath);
+                    jFile::createDir($targetFullPath);
                 }
 
                 $choiceRef = $upload->ref.'_choice';
@@ -761,11 +750,11 @@ class editionCtrl extends jController
         }
 
         // Use edition capabilities
-        $eCapabilities = $this->layer->getEditionCapabilities();
+        $eCapabilities = $this->layer->getRealEditionCapabilities();
 
         // CREATE NEW FEATURE
         if ($next_action == 'create'
-            && $eCapabilities->capabilities->createFeature == 'True'
+            && $eCapabilities->createFeature == 'True'
         ) {
             jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
             $rep->params = array(
@@ -788,7 +777,7 @@ class editionCtrl extends jController
         // for the newly created or the updated feature
         if ($next_action == 'edit'
             // and if capabilities is ok for attribute modification
-            && $eCapabilities->capabilities->modifyAttribute == 'True'
+            && $eCapabilities->modifyAttribute == 'True'
             // if we have retrieved the pkeys only one integer pkey
             && is_array($pkvals) and count($pkvals) == 1
         ) {
@@ -880,8 +869,8 @@ class editionCtrl extends jController
         }
 
         // Get editLayer capabilities
-        $eCapabilities = $this->layer->getEditionCapabilities();
-        if ($eCapabilities->capabilities->deleteFeature != 'True') {
+        $eCapabilities = $this->layer->getRealEditionCapabilities();
+        if ($eCapabilities->deleteFeature != 'True') {
             jMessage::add(jLocale::get('view~edition.message.error.layer.editable.delete'), 'LayerNotEditable');
 
             return $this->serviceAnswer();
@@ -1048,7 +1037,7 @@ class editionCtrl extends jController
         }
 
         // Check geometry
-        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
+        $modifyGeometry = $this->layer->getRealEditionCapabilities()->modifyGeometry;
         if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
             $rep->data['success'] = false;
             $rep->data['message'] = jLocale::get('view~edition.message.error.no.geometry');
@@ -1258,17 +1247,17 @@ class editionCtrl extends jController
         $this->layer = $layer;
 
         // Get editLayer capabilities
-        $eLayer = $layer->getEditionCapabilities();
+        $capabilities = $layer->getRealEditionCapabilities();
         if ($layerNamePivot == $layerName2) {
             // pivot layer (n:m)
-            if ($eLayer->capabilities->createFeature != 'True') {
+            if ($capabilities->createFeature != 'True') {
                 jMessage::add(jLocale::get('view~edition.link.error.no.create.feature', array($layerNamePivot)), 'LayerNotEditable');
 
                 return $this->serviceAnswer();
             }
         } else {
             // child layer (1:n)
-            if ($eLayer->capabilities->modifyAttribute != 'True') {
+            if ($capabilities->modifyAttribute != 'True') {
                 jMessage::add(jLocale::get('view~edition.link.error.no.modify.attributes', array($layerNamePivot)), 'LayerNotEditable');
 
                 return $this->serviceAnswer();
@@ -1380,8 +1369,8 @@ class editionCtrl extends jController
         $this->layer = $layer;
 
         // Get editLayer capabilities
-        $eLayer = $layer->getEditionCapabilities();
-        if ($eLayer->capabilities->modifyAttribute != 'True') {
+        $capabilities = $layer->getRealEditionCapabilities();
+        if ($capabilities->modifyAttribute != 'True') {
             jMessage::add(jLocale::get('view~edition.link.error.no.modify.attributes', array($layerName)), 'LayerNotEditable');
 
             return $this->serviceAnswer();

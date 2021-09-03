@@ -212,8 +212,8 @@ class ProjectTest extends TestCase
         $proj = new ProjectForTests($context);
         $proj->setRepo($rep);
         $proj->setCfg($config);
-        $this->assertEquals($expectedRet, $proj->hasEditionLayers());
-        $eLayer = $proj->getEditionLayers();
+        $this->assertEquals($expectedRet, $proj->hasEditionLayersForCurrentUser());
+        $eLayer = $proj->getEditionLayersForCurrentUser();
         foreach ($unset as $key => $value) {
             if ($value) {
                 $this->assertFalse(isset($eLayer->{$key}));
