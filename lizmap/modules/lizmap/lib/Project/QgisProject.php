@@ -84,8 +84,17 @@ class QgisProject
     /**
      * @var array List of cached properties
      */
-    protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+    protected static $cachedProperties = array(
+        'WMSInformation',
+        'canvasColor',
+        'allProj4',
+        'relations',
+        'themes',
+        'useLayerIDs',
+        'layers',
+        'data',
+        'qgisProjectVersion',
+    );
 
     /**
      * @var App\AppContextInterface
@@ -106,7 +115,7 @@ class QgisProject
             // have a kind of lock to avoid this issue.
             $this->readXmlProject($file);
         } else {
-            foreach ($this->cachedProperties as $prop) {
+            foreach (self::$cachedProperties as $prop) {
                 if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
                 }
@@ -120,7 +129,7 @@ class QgisProject
 
     public function getCacheData($data)
     {
-        foreach ($this->cachedProperties as $prop) {
+        foreach (self::$cachedProperties as $prop) {
             if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
             }
@@ -364,7 +373,7 @@ class QgisProject
             }
         }
         //unset cache for editionLayers
-        $eLayers = $cfg->getProperty('editionLayers');
+        $eLayers = $cfg->getEditionLayers();
         $layers = $cfg->getProperty('layers');
         if ($eLayers) {
             foreach ($eLayers as $key => $obj) {
