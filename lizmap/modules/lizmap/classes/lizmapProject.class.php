@@ -241,12 +241,22 @@ class lizmapProject
 
     public function hasEditionLayers()
     {
-        return $this->proj->hasEditionLayers();
+        return $this->proj->hasEditionLayersForCurrentUser();
+    }
+
+    public function hasEditionLayersForCurrentUser()
+    {
+        return $this->proj->hasEditionLayersForCurrentUser();
     }
 
     public function getEditionLayers()
     {
         return $this->proj->getEditionLayers();
+    }
+
+    public function getEditionLayersForCurrentUser()
+    {
+        return $this->proj->getEditionLayersForCurrentUser();
     }
 
     public function findEditionLayerByName($name)
@@ -257,7 +267,7 @@ class lizmapProject
     /**
      * @param $layerId
      *
-     * @return null|array
+     * @return null|object
      */
     public function findEditionLayerByLayerId($layerId)
     {

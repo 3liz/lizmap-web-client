@@ -1047,14 +1047,45 @@ class qgisVectorLayer extends qgisMapLayer
         return true;
     }
 
+    /**
+     * @return bool
+     */
+    public function canCurrentUserEdit()
+    {
+        $eLayer = $this->project->getEditionLayerByName($this->name);
+
+        return $this->project->checkEditionLayerAcl($eLayer);
+    }
+
+    /**
+     * @return null|object the edition layer object
+     *
+     * @deprecated return the edition layer object to be compatible with external
+     *  modules. It will returns the capabilities object in the future.
+     *  Use getRealEditionCapabilities() for the moment.
+     * @see getRealEditionCapabilities()
+     */
     public function getEditionCapabilities()
     {
-        $layerName = $this->name;
-        $eLayers = $this->project->getEditionLayers();
-        if (!property_exists($eLayers, $layerName)) {
-            return null;
+        return $this->project->getEditionLayerByName($this->name);
+    }
+
+    /**
+     * @return object the capabilities object
+     */
+    public function getRealEditionCapabilities()
+    {
+        $eLayer = $this->project->getEditionLayerByName($this->name);
+        if (property_exists($eLayer, 'capabilities')) {
+            return $eLayer->capabilities;
         }
 
-        return $eLayers->{$layerName};
+        return (object) array(
+            'createFeature' => 'False',
+            'allow_without_geom' => 'False',
+            'modifyAttribute' => 'False',
+            'modifyGeometry' => 'False',
+            'deleteFeature' => 'False',
+        );
     }
 }

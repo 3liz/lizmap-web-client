@@ -53,7 +53,7 @@ class map_menuZone extends jZone
                 $assign['print'] = true;
             }
 
-            $assign['edition'] = $lproj->hasEditionLayers();
+            $assign['edition'] = $lproj->hasEditionLayersForCurrentUser();
 
             if (property_exists($configOptions, 'geolocation')
                 && $configOptions->geolocation == 'True'

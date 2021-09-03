@@ -25,22 +25,22 @@ class ProjectConfig
     protected $printCapabilities;
 
     /**
-     * @var mixed
+     * @var object
      */
     protected $locateByLayer;
 
     /**
-     * @var mixed
+     * @var object
      */
     protected $formFilterLayers;
 
     /**
-     * @var mixed
+     * @var object
      */
     protected $editionLayers;
 
     /**
-     * @var mixed
+     * @var object
      */
     protected $attributeLayers;
 
@@ -49,7 +49,7 @@ class ProjectConfig
      */
     protected $options;
 
-    protected $cachedProperties = array(
+    protected static $cachedProperties = array(
         'layersOrder',
         'locateByLayer',
         'formFilterLayers',
@@ -69,7 +69,7 @@ class ProjectConfig
             }
         } else {
             foreach ($data as $prop => $value) {
-                if (in_array($prop, $this->cachedProperties)) {
+                if (in_array($prop, self::$cachedProperties)) {
                     // if ($prop == 'cfgContent') {
                     //     $this->{$prop} = json_decode(json_encode($value));
 
@@ -109,7 +109,7 @@ class ProjectConfig
      */
     public function getCacheData($data)
     {
-        foreach ($this->cachedProperties as $prop) {
+        foreach (self::$cachedProperties as $prop) {
             if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
                 // }
@@ -152,14 +152,20 @@ class ProjectConfig
     public function unsetProperty($propName, $propName2 = '', $propName3 = '')
     {
         $rootProp = $this->cfgContent;
-        if (in_array($propName, $this->cachedProperties)) {
+        if (in_array($propName, self::$cachedProperties)) {
             $rootProp = $this;
         }
         if (isset($rootProp->{$propName}) && $propName2 == '') {
             unset($rootProp->{$propName});
-        } elseif (isset($rootProp->{$propName}) && property_exists($rootProp->{$propName}, $propName2) && $propName3 == '') {
+        } elseif (isset($rootProp->{$propName})
+                  && property_exists($rootProp->{$propName}, $propName2)
+                  && $propName3 == ''
+        ) {
             unset($rootProp->{$propName}->{$propName2});
-        } elseif (isset($rootProp->{$propName}) && property_exists($rootProp->{$propName}, $propName2) && property_exists($rootProp->{$propName}->{$propName2}, $propName3)) {
+        } elseif (isset($rootProp->{$propName})
+                  && property_exists($rootProp->{$propName}, $propName2)
+                  && property_exists($rootProp->{$propName}->{$propName2}, $propName3)
+        ) {
             unset($rootProp->{$propName}->{$propName2}->{$propName3});
         }
     }
@@ -168,6 +174,8 @@ class ProjectConfig
      * Call every findLayerBy function to get a layer.
      *
      * @param string $name The name, shortname, typename, id or title of the layer to get
+     *
+     * @see findLayerByName, findLayerByShortName, findLayerByTypeName, findLayerByLayerId, findLayerByTitle
      */
     public function findLayerByAnyName($name)
     {
@@ -176,7 +184,6 @@ class ProjectConfig
             return null;
         }
 
-        $layer = null;
         $methods = array(
             // Get by name ie as written in QGIS Desktop legend
             'Name',
@@ -324,6 +331,22 @@ class ProjectConfig
         return null;
     }
 
+    /**
+     * @return object[] layer names => layers
+     */
+    public function getEditionLayers()
+    {
+        if ($this->editionLayers) {
+            return (array) $this->editionLayers;
+        }
+
+        if (isset($this->cfgContent->editionLayers)) {
+            return (array) $this->cfgContent->editionLayers;
+        }
+
+        return array();
+    }
+
     public function getEditionLayerByName($name)
     {
         $editionLayers = $this->editionLayers;
@@ -337,7 +360,7 @@ class ProjectConfig
     /**
      * @param $layerId
      *
-     * @return null|array
+     * @return null|object
      */
     public function getEditionLayerByLayerId($layerId)
     {
@@ -355,5 +378,20 @@ class ProjectConfig
         }
 
         return null;
+    }
+
+    public function hasEditionLayers()
+    {
+        if ($this->editionLayers) {
+            return true;
+        }
+
+        if (isset($this->cfgContent->editionLayers)
+            && $this->cfgContent->editionLayers
+        ) {
+            return true;
+        }
+
+        return false;
     }
 }

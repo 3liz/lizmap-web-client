@@ -59,6 +59,15 @@ class QgisLayerForTests extends qgisVectorLayer
         return (object) array('capabilities' => null);
     }
 
+    public function getRealEditionCapabilities()
+    {
+        if (isset($this->eCapabilities)) {
+            return $this->eCapabilities->capabilities;
+        }
+
+        return null;
+    }
+
     public function getDbFieldValues($feature)
     {
         return $this->dbFieldValues;
