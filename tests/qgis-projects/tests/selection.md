@@ -1,5 +1,7 @@
 # Tests selection tool
 
+!!! This test is now made with `selectionTool_spec.js` in Cypress !!!
+
 ## Requirements
 
 - `testsrepository` repository must not have any checked checkbox in `Always see complete layers data, even if filtered by login` (Lizmap configuration)!
