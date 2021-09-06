@@ -2,6 +2,10 @@
 
 namespace Lizmap\Project;
 
+/**
+ * It allows to access to configuration properties stored into the cfg file
+ * of a project, and to access to some "calculated" properties.
+ */
 class ProjectConfig
 {
     /**
@@ -85,16 +89,11 @@ class ProjectConfig
         'datavizLayers',
     );
 
-    public function __construct($cfgFile, $data = null)
+    /**
+     * @param object $data properties of the QGIS project, coming from the cfg file
+     */
+    public function __construct($data)
     {
-        if ($data === null) {
-            $fileContent = file_get_contents($cfgFile);
-            $data = json_decode($fileContent);
-            if ($data === null) {
-                throw new UnknownLizmapProjectException('The file '.$cfgFile.' cannot be decoded.');
-            }
-        }
-
         foreach (self::$cachedProperties as $prop) {
             if (isset($data->{$prop})) {
                 $this->{$prop} = $data->{$prop};
