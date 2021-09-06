@@ -88,18 +88,12 @@ class Project
     protected $editionLayersForCurrentUser;
 
     /**
-     * @var bool
-     */
-    protected $useLayerIDs = false;
-
-    /**
      * @var array List of cached properties
      */
     protected static $cachedProperties = array(
         'WMSInformation',
         'layersOrder',
         'printCapabilities',
-        'useLayerIDs',
         'data',
     );
 
@@ -1465,7 +1459,7 @@ class Project
         if ($themes) {
             $configJson->themes = $themes;
         }
-        if ($this->useLayerIDs) {
+        if ($this->qgis->isUsingLayerIDs()) {
             $configJson->options->useLayerIDs = 'True';
         }
 
