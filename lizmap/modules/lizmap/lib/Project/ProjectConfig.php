@@ -460,6 +460,22 @@ class ProjectConfig
     }
 
     /**
+     * Retrieve the given option as a boolean value.
+     *
+     * @param string $name option name
+     *
+     * @return null|bool true if the option value is 'True', null if it does not exist
+     */
+    public function getBooleanOption($name)
+    {
+        if (property_exists($this->options, $name)) {
+            return strtolower($this->options->{$name}) == 'true';
+        }
+
+        return null;
+    }
+
+    /**
      * @return object
      */
     public function getPrintCapabilities()

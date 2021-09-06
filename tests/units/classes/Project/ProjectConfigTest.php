@@ -192,4 +192,14 @@ class projectConfigTest extends TestCase
         $testCfg = new Project\ProjectConfig($file);
         $this->assertEquals($expectedValue, $testCfg->getOption($option));
     }
+
+    /**
+     */
+    public function testGetBooleanOption()
+    {
+        $file = __DIR__.'/Ressources/events.qgs.cfg';
+        $testCfg = new Project\ProjectConfig($file);
+        $this->assertTrue($testCfg->getBooleanOption('atlasHighlightGeometry'));
+        $this->assertNull($testCfg->getBooleanOption('atlasEnabled'));
+    }
 }
