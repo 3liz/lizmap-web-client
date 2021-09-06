@@ -25,8 +25,6 @@ class lizmapProject
      */
     protected $proj;
 
-    const CACHE_FORMAT_VERSION = 1;
-
     /**
      * constructor.
      *
