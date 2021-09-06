@@ -14,9 +14,6 @@ class projectConfigTest extends TestCase
         $json = json_decode(file_get_contents($file));
 
         $expected = clone $json;
-        $expected->layersOrder = array ();
-        $expected->printCapabilities = new stdClass();
-
         $expected->editionLayers = new stdClass();
         $expected->timemanagerLayers = new stdClass();
         $expected->atlas = new stdClass();
