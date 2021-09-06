@@ -68,38 +68,9 @@ class Project
     protected $data = array();
 
     /**
-     * Version of QGIS which wrote the project.
-     *
-     * @var null|int
-     */
-    protected $QgisProjectVersion;
-
-    /**
      * @var array contains WMS info
      */
     protected $WMSInformation;
-
-    /**
-     * @var string
-     */
-    protected $canvasColor = '';
-
-    /**
-     * @var array authid => proj4
-     */
-    protected $allProj4 = array();
-
-    /**
-     * @var array for each referenced layer, there is an item
-     *            with referencingLayer, referencedField, referencingField keys.
-     *            There is also a 'pivot' key
-     */
-    protected $relations = array();
-
-    /**
-     * @var array list of themes
-     */
-    protected $themes = array();
 
     /**
      * @var array list of layer orders: layer name => order
@@ -142,29 +113,10 @@ class Project
     protected $useLayerIDs = false;
 
     /**
-     * @var array
-     */
-    protected $layers = array();
-
-    /**
-     * @var null
-     */
-    protected $xml;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
      * @var array List of cached properties
      */
     protected static $cachedProperties = array(
         'WMSInformation',
-        'canvasColor',
-        'allProj4',
-        'relations',
-        'themes',
         'layersOrder',
         'printCapabilities',
         'locateByLayer',
@@ -172,10 +124,7 @@ class Project
         'editionLayers',
         'attributeLayers',
         'useLayerIDs',
-        'layers',
         'data',
-        'options',
-        'QgisProjectVersion',
     );
 
     /**
@@ -184,16 +133,6 @@ class Project
     private $spatialiteExt;
 
     protected $path;
-
-    /**
-     * version of the format of data stored in the cache.
-     *
-     * This number should be increased each time you change the structure of the
-     * properties of QgisProject (ex: adding some new data properties into the $layers).
-     * So you'll be sure that the cache will be updated when Lizmap code source
-     * is updated on a server
-     */
-    const CACHE_FORMAT_VERSION = 1;
 
     /**
      * @var ProjectCache
@@ -331,7 +270,6 @@ class Project
         $qgsXml = $this->qgis;
         $configOptions = $this->cfg->getOptions();
 
-        $this->options = $configOptions;
         // Complete data
         $this->data['repository'] = $rep->getKey();
         $this->data['id'] = $key;
