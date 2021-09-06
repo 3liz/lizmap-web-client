@@ -23,7 +23,6 @@ class projectConfigTest extends TestCase
         $expected->tooltipLayers = new stdClass();
         $expected->loginFilteredLayers = new stdClass();
         return array(
-            array(null, $expected),
             array($json, $expected),
         );
     }
@@ -36,9 +35,7 @@ class projectConfigTest extends TestCase
      */
     public function testConstruct($data, $expectedData)
     {
-        $file = __DIR__.'/Ressources/events.qgs.cfg';
-
-        $testCfg = new Project\ProjectConfig($file, $data);
+        $testCfg = new Project\ProjectConfig($data);
         $this->assertEquals($expectedData, $testCfg->getConfigContent());
     }
 
@@ -48,7 +45,7 @@ class projectConfigTest extends TestCase
         $data = json_decode(file_get_contents($file));
         $cachedProperties = array('layersOrder', 'locateByLayer', 'formFilterLayers', 'editionLayers',
             'attributeLayers', 'options', 'layers', );
-        $testCfg = new Project\ProjectConfig($file, $data);
+        $testCfg = new Project\ProjectConfig($data);
         foreach ($cachedProperties as $prop) {
             if (property_exists($data, $prop)) {
                 $meth = 'get'.ucfirst($prop);
@@ -84,7 +81,7 @@ class projectConfigTest extends TestCase
      */
     public function testFindLayer($layers, $key, $layerName)
     {
-        $testCfg = new Project\ProjectConfig(null, $layers);
+        $testCfg = new Project\ProjectConfig($layers);
         if ($layerName) {
             $this->assertSame($testCfg->getLayer($layerName), $testCfg->findLayerByAnyName($key));
         } else {
@@ -113,7 +110,7 @@ class projectConfigTest extends TestCase
      */
     public function testGetEditionLayerByName($eLayers, $name)
     {
-        $testCfg = new Project\ProjectConfig(null, $eLayers);
+        $testCfg = new Project\ProjectConfig($eLayers);
         if ($name) {
             $this->assertSame($eLayers->editionLayers->{$name}, $testCfg->getEditionLayerByName($name));
         } else {
@@ -145,7 +142,7 @@ class projectConfigTest extends TestCase
      */
     public function testGetEditionLayerByLayerId($eLayers, $id, $eLayerName)
     {
-        $testCfg = new Project\ProjectConfig(null, $eLayers);
+        $testCfg = new Project\ProjectConfig($eLayers);
         if ($eLayerName) {
             $this->assertSame($eLayers->editionLayers->$eLayerName, $testCfg->getEditionLayerByLayerId($id));
         } else {
@@ -189,7 +186,8 @@ class projectConfigTest extends TestCase
     public function testGetOption($option, $expectedValue)
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
-        $testCfg = new Project\ProjectConfig($file);
+        $data = json_decode(file_get_contents($file));
+        $testCfg = new Project\ProjectConfig($data);
         $this->assertEquals($expectedValue, $testCfg->getOption($option));
     }
 
@@ -198,7 +196,8 @@ class projectConfigTest extends TestCase
     public function testGetBooleanOption()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
-        $testCfg = new Project\ProjectConfig($file);
+        $data = json_decode(file_get_contents($file));
+        $testCfg = new Project\ProjectConfig($data);
         $this->assertTrue($testCfg->getBooleanOption('atlasHighlightGeometry'));
         $this->assertNull($testCfg->getBooleanOption('atlasEnabled'));
     }
