@@ -245,6 +245,14 @@ class QgisProject
         return $this->themes;
     }
 
+    /**
+     * @return bool
+     */
+    public function isUsingLayerIDs()
+    {
+        return $this->useLayerIDs;
+    }
+
     public function setPropertiesAfterRead(ProjectConfig $cfg)
     {
         $this->setShortNames($cfg);
