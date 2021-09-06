@@ -9,16 +9,6 @@ namespace Lizmap\Project;
 class ProjectConfig
 {
     /**
-     * @var int[] keys are layer name
-     */
-    protected $layersOrder = array();
-
-    /**
-     * @var mixed
-     */
-    protected $printCapabilities;
-
-    /**
      * @var object
      */
     protected $locateByLayer;
@@ -74,8 +64,6 @@ class ProjectConfig
     protected $options;
 
     protected static $cachedProperties = array(
-        'layersOrder',
-        'printCapabilities',
         'locateByLayer',
         'formFilterLayers',
         'editionLayers',
@@ -98,9 +86,7 @@ class ProjectConfig
             if (isset($data->{$prop})) {
                 $this->{$prop} = $data->{$prop};
             } else {
-                if ($prop != 'layersOrder') {
-                    $this->{$prop} = new \stdClass();
-                }
+                $this->{$prop} = new \stdClass();
             }
         }
     }
@@ -137,22 +123,6 @@ class ProjectConfig
         }
 
         return (object) $data;
-    }
-
-    /**
-     * @return int[] keys are layer name
-     */
-    public function getLayersOrder()
-    {
-        return $this->layersOrder;
-    }
-
-    /**
-     * @param int[] $layersOrder
-     */
-    public function setLayersOrder($layersOrder)
-    {
-        $this->layersOrder = $layersOrder;
     }
 
     /**
@@ -454,19 +424,6 @@ class ProjectConfig
         }
 
         return null;
-    }
-
-    /**
-     * @return object
-     */
-    public function getPrintCapabilities()
-    {
-        return $this->printCapabilities;
-    }
-
-    public function setPrintCapabilities($printCapabilities)
-    {
-        $this->printCapabilities = $printCapabilities;
     }
 
     public function getFormFilterLayers()
