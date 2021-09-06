@@ -234,7 +234,13 @@ class Project
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg');
+                $fileContent = file_get_contents($file.'.cfg');
+                $cfgContent = json_decode($fileContent);
+                if ($cfgContent === null) {
+                    throw new UnknownLizmapProjectException('The file '.$file.'.cfg cannot be decoded.');
+                }
+
+                $this->cfg = new ProjectConfig($cfgContent);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -287,7 +293,7 @@ class Project
             }
 
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg', $data['cfg']);
+                $this->cfg = new ProjectConfig($data['cfg']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
