@@ -188,14 +188,12 @@ class ProjectConfig
         }
     }
 
+    /**
+     * @return object
+     */
     public function getAttributeLayers()
     {
         return $this->attributeLayers;
-    }
-
-    public function setAttributeLayers($attributeLayers)
-    {
-        $this->attributeLayers = $attributeLayers;
     }
 
     /**

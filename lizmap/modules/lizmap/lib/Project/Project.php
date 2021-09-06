@@ -88,11 +88,6 @@ class Project
     protected $editionLayersForCurrentUser;
 
     /**
-     * @var object
-     */
-    protected $attributeLayers = array();
-
-    /**
      * @var bool
      */
     protected $useLayerIDs = false;
@@ -104,7 +99,6 @@ class Project
         'WMSInformation',
         'layersOrder',
         'printCapabilities',
-        'attributeLayers',
         'useLayerIDs',
         'data',
     );
@@ -301,7 +295,7 @@ class Project
         $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
         $this->cfg->setLayersOrder($this->layersOrder);
-        $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
+        $this->readAttributeLayers($qgsXml, $this->cfg);
 
         $this->qgis->readEditionForms($this->getEditionLayers(), $this);
     }
@@ -1328,23 +1322,13 @@ class Project
         }
     }
 
-    /**
-     * @return object
-     */
     protected function readAttributeLayers(QgisProject $xml, ProjectConfig $cfg)
     {
         $attributeLayers = $cfg->getAttributeLayers();
 
         if ($attributeLayers) {
-            // method takes a reference
             $xml->readAttributeLayers($attributeLayers);
-            // so we can modify data here
-            $cfg->setAttributeLayers($attributeLayers);
-        } else {
-            $attributeLayers = new \stdClass();
         }
-
-        return $attributeLayers;
     }
 
     /**
@@ -1435,8 +1419,6 @@ class Project
 
         // set printTemplates in config
         $configJson->printTemplates = $this->printCapabilities;
-        // Update attributeLayers with attributetableconfig
-        $configJson->attributeLayers = $this->attributeLayers;
 
         // Remove FTP remote directory
         if (property_exists($configJson->options, 'remoteDir')) {
