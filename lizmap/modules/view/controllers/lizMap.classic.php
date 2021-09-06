@@ -116,7 +116,7 @@ class lizMapCtrl extends jController
 
         // Redirect if project is hidden (lizmap plugin option)
         if (!$this->forceHiddenProjectVisible) {
-            if ($lproj->getOption('hideProject') == 'True') {
+            if ($lproj->getBooleanOption('hideProject')) {
                 jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
 
                 return $rep;
@@ -437,7 +437,7 @@ class lizMapCtrl extends jController
         $mapMenuCss = '';
         $h = $this->intParam('h', 1);
         if ($h == 0
-            || $lproj->getOption('hideHeader') == 'True'
+            || $lproj->getBooleanOption('hideHeader')
         ) {
             $h = 0;
             $rep->addStyle('#body', 'padding-top:0px;');
@@ -447,7 +447,7 @@ class lizMapCtrl extends jController
         // menu = left vertical menu with icons
         $m = $this->intParam('m', 1);
         if ($m == 0
-            || $lproj->getOption('hideMenu') == 'True'
+            || $lproj->getBooleanOption('hideMenu')
         ) {
             $m = 0;
             $rep->addStyle('#mapmenu', 'display:none !important; width:0px;');
@@ -459,7 +459,7 @@ class lizMapCtrl extends jController
         // legend = legend open at startup
         $l = $this->intParam('l', 1);
         if ($l == 0
-            || $lproj->getOption('hideLegend') == 'True'
+            || $lproj->getBooleanOption('hideLegend')
         ) {
             $l = 0;
             //~ $rep->addStyle('#dock', 'display:none;');
@@ -477,7 +477,7 @@ class lizMapCtrl extends jController
         // navbar
         $n = $this->intParam('n', 1);
         if ($n == 0
-            || $lproj->getOption('hideNavbar') == 'True'
+            || $lproj->getBooleanOption('hideNavbar')
         ) {
             $rep->addStyle('#navbar', 'display:none !important;');
         }
@@ -485,7 +485,7 @@ class lizMapCtrl extends jController
         // overview-box = scale & overview
         $o = $this->intParam('o', 1);
         if ($o == 0
-            || $lproj->getOption('hideOverview') == 'True'
+            || $lproj->getBooleanOption('hideOverview')
         ) {
             $rep->addStyle('#overview-box', 'display:none !important;');
         }
@@ -496,7 +496,7 @@ class lizMapCtrl extends jController
         }
 
         // Hide groups checkboxes
-        if ($lproj->getOption('hideGroupCheckbox') == 'True') {
+        if ($lproj->getBooleanOption('hideGroupCheckbox')) {
             $rep->addStyle('#switcher-layers button[name="group"]', 'display:none !important;');
         }
 

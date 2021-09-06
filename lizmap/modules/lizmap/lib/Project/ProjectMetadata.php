@@ -42,8 +42,7 @@ class ProjectMetadata
             'acl' => $project->checkAcl(),
         );
 
-        $hideProject = $project->getOption('hideProject');
-        $metadata['hidden'] = ($hideProject == 'True');
+        $metadata['hidden'] = $project->getBooleanOption('hideProject');
 
         $this->data = $metadata;
     }
