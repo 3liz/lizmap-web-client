@@ -207,14 +207,6 @@ class ProjectConfig
     }
 
     /**
-     * @param object $locateByLayer
-     */
-    public function setLocateByLayer($locateByLayer)
-    {
-        $this->locateByLayer = $locateByLayer;
-    }
-
-    /**
      * Call every findLayerBy function to get a layer.
      *
      * @param string $name The name, shortname, typename, id or title of the layer to get
