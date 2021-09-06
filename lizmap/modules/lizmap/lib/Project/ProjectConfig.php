@@ -375,14 +375,6 @@ class ProjectConfig
         return $this->editionLayers;
     }
 
-    /**
-     * @param object $editionLayers
-     */
-    public function setEditionLayers($editionLayers)
-    {
-        $this->editionLayers = $editionLayers;
-    }
-
     public function getEditionLayerByName($name)
     {
         $editionLayers = $this->editionLayers;
