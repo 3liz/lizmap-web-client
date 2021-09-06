@@ -83,11 +83,6 @@ class Project
     protected $printCapabilities = array();
 
     /**
-     * @var object
-     */
-    protected $editionLayers = array();
-
-    /**
      * @var null|object[] layer names => layers
      */
     protected $editionLayersForCurrentUser;
@@ -109,7 +104,6 @@ class Project
         'WMSInformation',
         'layersOrder',
         'printCapabilities',
-        'editionLayers',
         'attributeLayers',
         'useLayerIDs',
         'data',
@@ -304,7 +298,7 @@ class Project
         $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
         $this->cfg->setPrintCapabilities($this->printCapabilities);
         $this->readLocateByLayer($qgsXml, $this->cfg);
-        $this->editionLayers = $this->readEditionLayers($qgsXml);
+        $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
         $this->cfg->setLayersOrder($this->layersOrder);
         $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
@@ -1316,9 +1310,6 @@ class Project
         }
     }
 
-    /**
-     * @return object
-     */
     protected function readEditionLayers(QgisProject $xml)
     {
         $editionLayers = $this->cfg->getEditionLayers();
@@ -1334,12 +1325,7 @@ class Project
                 $this->appContext->logMessage('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
             }
-        } else {
-            $editionLayers = new \stdClass();
         }
-        $this->cfg->setEditionLayers($editionLayers);
-
-        return $editionLayers;
     }
 
     /**
@@ -1458,33 +1444,11 @@ class Project
         }
 
         // Remove editionLayers from config if no right to access this tool
-        if (property_exists($configJson, 'editionLayers')) {
-            if ($this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
-                $configJson->editionLayers = clone $this->editionLayers;
-                // Check right to edit this layer (if property "acl" is in config)
-                foreach ($configJson->editionLayers as $key => $eLayer) {
-                    // Check if user groups intersects groups allowed by project editor
-                    // If user is admin, no need to check for given groups
-                    if (property_exists($eLayer, 'acl') and $eLayer->acl) {
-                        // Check if configured groups white list and authenticated user groups list intersects
-                        $editionGroups = $eLayer->acl;
-                        $editionGroups = array_map('trim', explode(',', $editionGroups));
-                        if (is_array($editionGroups) and count($editionGroups) > 0) {
-                            $userGroups = $this->appContext->aclUserGroupsId();
-                            if (array_intersect($editionGroups, $userGroups) or $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
-                                // User group(s) correspond to the groups given for this edition layer
-                                // or the user is admin
-                                unset($configJson->editionLayers->{$key}->acl);
-                            } else {
-                                // No match found, we deactivate the edition layer
-                                unset($configJson->editionLayers->{$key});
-                            }
-                        }
-                    }
-                }
-            } else {
-                unset($configJson->editionLayers);
-            }
+        if ($this->hasEditionLayersForCurrentUser()) {
+            // give only layer that the user has the right to edit
+            $configJson->editionLayers = $this->editionLayersForCurrentUser;
+        } else {
+            unset($configJson->editionLayers);
         }
 
         // Add export layer right
