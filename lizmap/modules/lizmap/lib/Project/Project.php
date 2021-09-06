@@ -582,7 +582,7 @@ class Project
     /**
      * @return object
      *
-     * @deprecated use getOption() instead
+     * @deprecated use getOption() or getBooleanOption() instead
      */
     public function getOptions()
     {
@@ -597,6 +597,18 @@ class Project
     public function getOption($name)
     {
         return $this->cfg->getOption($name);
+    }
+
+    /**
+     * Retrieve the given option as a boolean value.
+     *
+     * @param string $name the option name
+     *
+     * @return null|bool true if the option value is 'True', null if it does not exist
+     */
+    public function getBooleanOption($name)
+    {
+        return $this->cfg->getBooleanOption($name);
     }
 
     public function getLayers()
@@ -713,10 +725,10 @@ class Project
 
     public function hasAtlasEnabled()
     {
-        $atlasEnabled = $this->cfg->getOption('atlasEnabled');
+        $atlasEnabled = $this->cfg->getBooleanOption('atlasEnabled');
         $atlas = $this->cfg->getAtlas();
 
-        if (($atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+        if ($atlasEnabled // Legacy LWC < 3.4 (only one layer)
             || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas->layers) > 0)) { // Multiple atlas
             return true;
         }
@@ -1331,11 +1343,11 @@ class Project
         );
 
         foreach ($googleProps as $google) {
-            $value = $this->cfg->getOption($google);
-            if ($value !== null && $this->optionToBoolean($value)) {
+            if ($this->cfg->getBooleanOption($google)) {
                 return true;
             }
         }
+
         $externalSearch = $this->cfg->getOption('externalSearch');
 
         return $externalSearch == 'google';
@@ -1357,8 +1369,7 @@ class Project
     protected function readPrintCapabilities(QgisProject $qgsLoad)
     {
         $printTemplates = array();
-        $print = $this->cfg->getOption('print');
-        if ($print == 'True') {
+        if ($this->cfg->getBooleanOption('print')) {
             $printTemplates = $qgsLoad->getPrintTemplates();
         }
 
@@ -1914,7 +1925,7 @@ class Project
             );
         }
 
-        if ($this->cfg->getOption('geolocation') == 'True') {
+        if ($this->cfg->getBooleanOption('geolocation')) {
             $tpl = new \jTpl();
             $tpl->assign('hasEditionLayers', $this->hasEditionLayersForCurrentUser());
             $dockable[] = new \lizmapMapDockItem(
@@ -1925,7 +1936,7 @@ class Project
             );
         }
 
-        if ($this->cfg->getOption('print') == 'True') {
+        if ($this->cfg->getBooleanOption('print')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'print',
@@ -1935,7 +1946,7 @@ class Project
             );
         }
 
-        if ($this->cfg->getOption('measure') == 'True') {
+        if ($this->cfg->getBooleanOption('measure')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'measure',
@@ -2009,7 +2020,7 @@ class Project
             );
         }
 
-        if ($this->cfg->getOption('draw') == 'True') {
+        if ($this->cfg->getBooleanOption('draw')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'draw',
