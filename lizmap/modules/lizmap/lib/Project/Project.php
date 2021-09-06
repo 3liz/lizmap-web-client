@@ -85,16 +85,6 @@ class Project
     /**
      * @var object
      */
-    protected $locateByLayer = array();
-
-    /**
-     * @var object
-     */
-    protected $formFilterLayers = array();
-
-    /**
-     * @var object
-     */
     protected $editionLayers = array();
 
     /**
@@ -119,8 +109,6 @@ class Project
         'WMSInformation',
         'layersOrder',
         'printCapabilities',
-        'locateByLayer',
-        'formFilterLayers',
         'editionLayers',
         'attributeLayers',
         'useLayerIDs',
@@ -315,7 +303,7 @@ class Project
 
         $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
         $this->cfg->setPrintCapabilities($this->printCapabilities);
-        $this->locateByLayer = $this->readLocateByLayer($qgsXml, $this->cfg);
+        $this->readLocateByLayer($qgsXml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
         $this->cfg->setLayersOrder($this->layersOrder);
@@ -1324,25 +1312,8 @@ class Project
     {
         $locateByLayer = $cfg->getLocateByLayer();
         if ($locateByLayer) {
-            // The method takes a reference
             $xml->readLocateByLayer($locateByLayer);
         }
-
-        return $locateByLayer;
-    }
-
-    /**
-     * @return object
-     */
-    protected function readFormFilterLayers(QgisProject $xml, ProjectConfig $cfg)
-    {
-        $formFilterLayers = $cfg->getFormFilterLayers();
-
-        if (!$formFilterLayers) {
-            $formFilterLayers = new \stdClass();
-        }
-
-        return $formFilterLayers;
     }
 
     /**
@@ -1478,13 +1449,6 @@ class Project
 
         // set printTemplates in config
         $configJson->printTemplates = $this->printCapabilities;
-
-        // Update locate by layer with vecctorjoins
-        $configJson->locateByLayer = $this->locateByLayer;
-
-        // Update filter form layers with vecctorjoins
-        $configJson->formFilterLayers = $this->formFilterLayers;
-
         // Update attributeLayers with attributetableconfig
         $configJson->attributeLayers = $this->attributeLayers;
 
