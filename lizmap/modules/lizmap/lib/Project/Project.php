@@ -107,17 +107,17 @@ class Project
     protected $layersOrder = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $printCapabilities = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $locateByLayer = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $formFilterLayers = array();
 
@@ -132,7 +132,7 @@ class Project
     protected $editionLayersForCurrentUser;
 
     /**
-     * @var array
+     * @var object
      */
     protected $attributeLayers = array();
 
@@ -157,11 +157,6 @@ class Project
     protected $options;
 
     /**
-     * @var mixed
-     */
-    protected $cfgContent;
-
-    /**
      * @var array List of cached properties
      */
     protected static $cachedProperties = array(
@@ -179,7 +174,6 @@ class Project
         'useLayerIDs',
         'layers',
         'data',
-        'cfgContent',
         'options',
         'QgisProjectVersion',
     );
@@ -253,21 +247,27 @@ class Project
             $this->readProject($key, $rep);
 
             // set project data in cache
+            $dataProj = array();
             foreach (self::$cachedProperties as $prop) {
                 if (isset($this->{$prop}) && !empty($this->{$prop})) {
-                    $data[$prop] = $this->{$prop};
+                    $dataProj[$prop] = $this->{$prop};
                 }
             }
-            $data = array_merge($data, $this->qgis->getCacheData($data), $this->cfg->getCacheData($data));
+
+            $data = array(
+                'project' => $dataProj,
+                'qgis' => $this->qgis->getCacheData(),
+                'cfg' => $this->cfg->getCacheData(),
+            );
             $this->cacheHandler->storeProjectData($data);
         } else {
             foreach (self::$cachedProperties as $prop) {
-                if (array_key_exists($prop, $data)) {
-                    $this->{$prop} = $data[$prop];
+                if (array_key_exists($prop, $data['project'])) {
+                    $this->{$prop} = $data['project'][$prop];
                 }
             }
             $rewriteCache = false;
-            foreach ($this->layers as $index => $layer) {
+            foreach ($data['qgis']['layers'] as $index => $layer) {
                 if (array_key_exists('embedded', $layer)
                     && $layer['embedded'] == '1'
                     && $layer['qgsmtime'] < filemtime($layer['file'])
@@ -278,8 +278,7 @@ class Project
                     $newLayer['file'] = $layer['file'];
                     $newLayer['embedded'] = 1;
                     $newLayer['projectPath'] = $layer['projectPath'];
-                    $this->layers[$index] = $newLayer;
-                    $data['layers'][$index] = $newLayer;
+                    $data['qgis']['layers'][$index] = $newLayer;
                     $rewriteCache = true;
                 }
             }
@@ -288,13 +287,13 @@ class Project
             }
 
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg', $data);
+                $this->cfg = new ProjectConfig($file.'.cfg', $data['cfg']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
 
             try {
-                $this->qgis = new QgisProject($file, $services, $appContext, $data);
+                $this->qgis = new QgisProject($file, $services, $appContext, $data['qgis']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -324,7 +323,7 @@ class Project
     protected function readProject($key, Repository $rep)
     {
         $qgsXml = $this->qgis;
-        $configOptions = $this->cfg->getProperty('options');
+        $configOptions = $this->cfg->getOptions();
 
         $this->options = $configOptions;
         // Complete data
@@ -371,21 +370,12 @@ class Project
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
         $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
-        $this->locateByLayers = $this->readLocateByLayers($qgsXml, $this->cfg);
+        $this->cfg->setPrintCapabilities($this->printCapabilities);
+        $this->locateByLayer = $this->readLocateByLayer($qgsXml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
+        $this->cfg->setLayersOrder($this->layersOrder);
         $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
-
-        $props = array(
-            'printCapabilities',
-            'locateByLayers',
-            'editionLayers',
-            'layersOrder',
-            'attributeLayers',
-        );
-        foreach ($props as $prop) {
-            $this->cfg->setProperty($prop, $this->{$prop});
-        }
 
         $this->qgis->readEditionForms($this->getEditionLayers(), $this);
     }
@@ -589,14 +579,41 @@ class Project
         return $this->properties;
     }
 
+    /**
+     * @return object
+     *
+     * @deprecated use getOption() or getBooleanOption() instead
+     */
     public function getOptions()
     {
-        return $this->cfg->getProperty('options');
+        return $this->cfg->getOptions();
+    }
+
+    /**
+     * @param string $name the option name
+     *
+     * @return null|mixed
+     */
+    public function getOption($name)
+    {
+        return $this->cfg->getOption($name);
+    }
+
+    /**
+     * Retrieve the given option as a boolean value.
+     *
+     * @param string $name the option name
+     *
+     * @return null|bool true if the option value is 'True', null if it does not exist
+     */
+    public function getBooleanOption($name)
+    {
+        return $this->cfg->getBooleanOption($name);
     }
 
     public function getLayers()
     {
-        return $this->cfg->getProperty('layers');
+        return $this->cfg->getLayers();
     }
 
     /**
@@ -673,7 +690,7 @@ class Project
 
     public function hasLocateByLayer()
     {
-        $locate = $this->cfg->getProperty('locateByLayer');
+        $locate = $this->cfg->getLocateByLayer();
         if ($locate && count((array) $locate)) {
             return true;
         }
@@ -683,7 +700,7 @@ class Project
 
     public function hasFormFilterLayers()
     {
-        $form = $this->cfg->getProperty('formFilterLayers');
+        $form = $this->cfg->getFormFilterLayers();
         if ($form && count((array) $form)) {
             return true;
         }
@@ -693,12 +710,12 @@ class Project
 
     public function getFormFilterLayersConfig()
     {
-        return $this->cfg->getProperty('formFilterLayers');
+        return $this->cfg->getFormFilterLayers();
     }
 
     public function hasTimemanagerLayers()
     {
-        $timeManager = $this->cfg->getProperty('timemanagerLayers');
+        $timeManager = $this->cfg->getTimemanagerLayers();
         if ($timeManager && count((array) $timeManager)) {
             return true;
         }
@@ -708,9 +725,10 @@ class Project
 
     public function hasAtlasEnabled()
     {
-        $options = $this->getOptions();
-        $atlas = $this->cfg->getProperty('atlas');
-        if ((property_exists($options, 'atlasEnabled') && $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+        $atlasEnabled = $this->cfg->getBooleanOption('atlasEnabled');
+        $atlas = $this->cfg->getAtlas();
+
+        if ($atlasEnabled // Legacy LWC < 3.4 (only one layer)
             || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas->layers) > 0)) { // Multiple atlas
             return true;
         }
@@ -730,7 +748,7 @@ class Project
 
     public function hasTooltipLayers()
     {
-        $tooltip = $this->cfg->getProperty('tooltipLayers');
+        $tooltip = $this->cfg->getTooltipLayers();
         if ($tooltip && count((array) $tooltip)) {
             return true;
         }
@@ -740,23 +758,32 @@ class Project
 
     public function hasAttributeLayers($onlyDisplayedLayers = false)
     {
-        $attributeLayers = $this->cfg->getProperty('attributeLayers');
+        $attributeLayers = $this->cfg->getAttributeLayers();
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
-            foreach ($attributeLayers as $key => $obj) {
-                if ($onlyDisplayedLayers
-                    && (!property_exists($obj, 'hideLayer')
-                    || strtolower($obj->hideLayer) != 'true')
-                ) {
-                    $hasDisplayedLayer = true;
+            if ($onlyDisplayedLayers) {
+                foreach ($attributeLayers as $key => $obj) {
+                    if (!property_exists($obj, 'hideLayer')
+                        || strtolower($obj->hideLayer) != 'true'
+                    ) {
+                        $hasDisplayedLayer = true;
+                    }
                 }
             }
+
             if (count((array) $attributeLayers) && $hasDisplayedLayer) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function hasAttributeLayersForLayer($layerName)
+    {
+        $attributeLayers = $this->cfg->getAttributeLayers();
+
+        return property_exists($attributeLayers, $layerName);
     }
 
     public function hasFtsSearches()
@@ -960,9 +987,12 @@ class Project
         return $this->editionLayersForCurrentUser;
     }
 
+    /**
+     * @return object
+     */
     public function getEditionLayers()
     {
-        return $this->cfg->getProperty('editionLayers');
+        return $this->cfg->getEditionLayers();
     }
 
     /**
@@ -1031,7 +1061,7 @@ class Project
      */
     public function hasLoginFilteredLayers()
     {
-        $login = (array) $this->cfg->getProperty('loginFilteredLayers');
+        $login = (array) $this->cfg->getLoginFilteredLayers();
         if ($login && count((array) $login)) {
             return true;
         }
@@ -1052,7 +1082,7 @@ class Project
             $ln = $layerByTypeName->name;
         }
 
-        $login = $this->cfg->getProperty('loginFilteredLayers');
+        $login = $this->cfg->getLoginFilteredLayers();
         if (!$login || !property_exists($login, $ln)) {
             return null;
         }
@@ -1179,7 +1209,7 @@ class Project
      */
     public function getDatavizLayersConfig()
     {
-        $datavizLayers = $this->cfg->getProperty('datavizLayers');
+        $datavizLayers = $this->cfg->getDatavizLayers();
         if (!$datavizLayers) {
             return false;
         }
@@ -1284,16 +1314,17 @@ class Project
             'location' => 'dock',
             'theme' => 'dark',
         );
-        $options = $this->getOptions();
-        if ($options && property_exists($options, 'datavizLocation')
-            && in_array($options->datavizLocation, array('dock', 'bottomdock', 'right-dock'))
+        $optionDatavizLocation = $this->cfg->getOption('datavizLocation');
+        if (in_array(
+            $optionDatavizLocation,
+            array('dock', 'bottomdock', 'right-dock')
+        )
         ) {
-            $config['dataviz']['location'] = $options->datavizLocation;
+            $config['dataviz']['location'] = $optionDatavizLocation;
         }
-        if (property_exists($options, 'theme')
-            and in_array($options->theme, array('dark', 'light'))
-        ) {
-            $config['dataviz']['theme'] = $options->theme;
+        $theme = $this->cfg->getOption('theme');
+        if (in_array($theme, array('dark', 'light'))) {
+            $config['dataviz']['theme'] = $theme;
         }
 
         return $config;
@@ -1304,7 +1335,6 @@ class Project
      */
     public function needsGoogle()
     {
-        $configOptions = $this->getOptions();
         $googleProps = array(
             'googleStreets',
             'googleSatellite',
@@ -1313,12 +1343,14 @@ class Project
         );
 
         foreach ($googleProps as $google) {
-            if (property_exists($configOptions, $google) && $this->optionToBoolean($configOptions->{$google})) {
+            if ($this->cfg->getBooleanOption($google)) {
                 return true;
             }
         }
 
-        return property_exists($configOptions, 'externalSearch') && $configOptions->externalSearch == 'google';
+        $externalSearch = $this->cfg->getOption('externalSearch');
+
+        return $externalSearch == 'google';
     }
 
     /**
@@ -1326,10 +1358,9 @@ class Project
      */
     public function getGoogleKey()
     {
-        $configOptions = $this->getOptions();
-        $gKey = '';
-        if (property_exists($configOptions, 'googleKey')) {
-            $gKey = $configOptions->googleKey;
+        $gKey = $this->cfg->getOption('googleKey');
+        if ($gKey === null) {
+            $gKey = '';
         }
 
         return $gKey;
@@ -1338,41 +1369,44 @@ class Project
     protected function readPrintCapabilities(QgisProject $qgsLoad)
     {
         $printTemplates = array();
-        $options = $this->getOptions();
-        if ($options && property_exists($options, 'print') && $options->print == 'True') {
+        if ($this->cfg->getBooleanOption('print')) {
             $printTemplates = $qgsLoad->getPrintTemplates();
         }
 
         return $printTemplates;
     }
 
-    protected function readLocateByLayers(QgisProject $xml, ProjectConfig $cfg)
+    protected function readLocateByLayer(QgisProject $xml, ProjectConfig $cfg)
     {
-        $locateByLayer = $cfg->getProperty('locateByLayer');
+        $locateByLayer = $cfg->getLocateByLayer();
         if ($locateByLayer) {
             // The method takes a reference
-            $xml->readLocateByLayers($locateByLayer);
-            // so we can modify it here
-            $this->cfg->setProperty('locateByLayer', $locateByLayer);
+            $xml->readLocateByLayer($locateByLayer);
         }
 
         return $locateByLayer;
     }
 
+    /**
+     * @return object
+     */
     protected function readFormFilterLayers(QgisProject $xml, ProjectConfig $cfg)
     {
-        $formFilterLayers = $cfg->getProperty('formFilterLayer');
+        $formFilterLayers = $cfg->getFormFilterLayers();
 
         if (!$formFilterLayers) {
-            $formFilterLayers = array();
+            $formFilterLayers = new \stdClass();
         }
 
         return $formFilterLayers;
     }
 
+    /**
+     * @return object
+     */
     protected function readEditionLayers(QgisProject $xml)
     {
-        $editionLayers = $this->getEditionLayers();
+        $editionLayers = $this->cfg->getEditionLayers();
 
         if ($editionLayers) {
             // Check ability to load spatialite extension
@@ -1384,27 +1418,29 @@ class Project
             if (!$spatialiteExt) {
                 $this->appContext->logMessage('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
-                // so we can ste the data here
-                $this->cfg->setProperty('EditionLayers', $editionLayers);
             }
         } else {
-            $editionLayers = array();
+            $editionLayers = new \stdClass();
         }
+        $this->cfg->setEditionLayers($editionLayers);
 
         return $editionLayers;
     }
 
+    /**
+     * @return object
+     */
     protected function readAttributeLayers(QgisProject $xml, ProjectConfig $cfg)
     {
-        $attributeLayers = $cfg->getProperty('attributeLayers');
+        $attributeLayers = $cfg->getAttributeLayers();
 
         if ($attributeLayers) {
             // method takes a reference
             $xml->readAttributeLayers($attributeLayers);
             // so we can modify data here
-            $this->cfg->setProperty('attributeLayers', $attributeLayers);
+            $cfg->setAttributeLayers($attributeLayers);
         } else {
-            $attributeLayers = array();
+            $attributeLayers = new \stdClass();
         }
 
         return $attributeLayers;
@@ -1412,7 +1448,6 @@ class Project
 
     /**
      * @param \SimpleXMLElement $xml
-     * @param $cfg
      *
      * @return int[]
      */
@@ -1421,9 +1456,14 @@ class Project
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }
 
+    /**
+     * @param string $layerId
+     *
+     * @return null|string
+     */
     public function getLayerNameByIdFromConfig($layerId)
     {
-        return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->layers);
+        return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->cfg->getLayers());
     }
 
     /**
@@ -1758,7 +1798,11 @@ class Project
     }
 
     /**
+     * access to configuration raw content.
+     *
      * @return object
+     *
+     * @deprecated Don't access directly to configuration, use Project methods
      */
     public function getFullCfg()
     {
@@ -1766,7 +1810,7 @@ class Project
     }
 
     /**
-     * @throws jExceptionSelector
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
@@ -1846,19 +1890,17 @@ class Project
     }
 
     /**
-     * @throws jException
-     * @throws jExceptionSelector
+     * @throws \jException
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
         $dockable = array();
-        $configOptions = $this->getOptions();
         $bp = $this->appContext->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers()) {
-            $tpl = new \jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
             $layerExport = $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ? 'layer-export' : '';
             $dock = new \lizmapMapDockItem(
@@ -1883,8 +1925,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'geolocation')
-            && $configOptions->geolocation == 'True') {
+        if ($this->cfg->getBooleanOption('geolocation')) {
             $tpl = new \jTpl();
             $tpl->assign('hasEditionLayers', $this->hasEditionLayersForCurrentUser());
             $dockable[] = new \lizmapMapDockItem(
@@ -1895,8 +1936,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'print')
-            && $configOptions->print == 'True') {
+        if ($this->cfg->getBooleanOption('print')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'print',
@@ -1906,8 +1946,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'measure')
-            && $configOptions->measure == 'True') {
+        if ($this->cfg->getBooleanOption('measure')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'measure',
@@ -1981,8 +2020,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'draw')
-            && $configOptions->draw == 'True') {
+        if ($this->cfg->getBooleanOption('draw')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'draw',
@@ -1996,7 +2034,7 @@ class Project
     }
 
     /**
-     * @throws jExceptionSelector
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
@@ -2028,15 +2066,14 @@ class Project
      */
     public function checkAcl()
     {
-        $options = $this->getOptions();
-
         // Check right on repository
         if (!$this->appContext->aclCheck('lizmap.repositories.view', $this->repository->getKey())) {
             return false;
         }
 
         // Check acl option is configured in project config
-        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
+        $aclGroups = $this->cfg->getOption('acl');
+        if ($aclGroups === null || !is_array($aclGroups) || empty($aclGroups)) {
             return true;
         }
 
@@ -2046,7 +2083,6 @@ class Project
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $options->acl;
         $userGroups = $this->appContext->aclUserGroupsId();
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
@@ -2072,15 +2108,13 @@ class Project
             return false;
         }
 
-        $options = $this->getOptions();
-
         // Check acl option is configured in project config
-        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
+        $aclGroups = $this->cfg->getOption('acl');
+        if ($aclGroups === null || !is_array($aclGroups) || empty($aclGroups)) {
             return true;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $options->acl;
         $userGroups = $this->appContext->aclGroupsIdByUser($login);
         if (array_intersect($aclGroups, $userGroups)) {
             return true;

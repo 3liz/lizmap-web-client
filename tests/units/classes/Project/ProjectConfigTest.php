@@ -11,10 +11,20 @@ class projectConfigTest extends TestCase
     public function getConstructData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
+        $json = json_decode(file_get_contents($file));
 
+        $expected = clone $json;
+        $expected->layersOrder = array ();
+        $expected->printCapabilities = new stdClass();
+
+        $expected->editionLayers = new stdClass();
+        $expected->timemanagerLayers = new stdClass();
+        $expected->atlas = new stdClass();
+        $expected->tooltipLayers = new stdClass();
+        $expected->loginFilteredLayers = new stdClass();
         return array(
-            array(null, json_decode(file_get_contents($file))),
-            array(array('cfgContent' => json_decode(file_get_contents($file))), json_decode(file_get_contents($file))),
+            array(null, $expected),
+            array($json, $expected),
         );
     }
 
@@ -27,6 +37,7 @@ class projectConfigTest extends TestCase
     public function testConstruct($data, $expectedData)
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
+
         $testCfg = new Project\ProjectConfig($file, $data);
         $this->assertEquals($expectedData, $testCfg->getConfigContent());
     }
@@ -34,17 +45,14 @@ class projectConfigTest extends TestCase
     public function testConstructCache()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $data = array('cfgContent' => $json);
-        foreach ($json as $key => $prop) {
-            $data[$key] = $json->{$key};
-        }
+        $data = json_decode(file_get_contents($file));
         $cachedProperties = array('layersOrder', 'locateByLayer', 'formFilterLayers', 'editionLayers',
-            'attributeLayers', 'cfgContent', 'options', 'layers', );
+            'attributeLayers', 'options', 'layers', );
         $testCfg = new Project\ProjectConfig($file, $data);
         foreach ($cachedProperties as $prop) {
-            if (array_key_exists($prop, $data)) {
-                $this->assertEquals($data[$prop], $testCfg->getProperty($prop), 'failed Prop = '.$prop);
+            if (property_exists($data, $prop)) {
+                $meth = 'get'.ucfirst($prop);
+                $this->assertEquals($data->$prop, $testCfg->$meth(), 'failed Prop = '.$prop);
             }
         }
     }
@@ -52,9 +60,8 @@ class projectConfigTest extends TestCase
     public function getFindLayerData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $layers = array('cfgContent' => (object) array('layers' => $json->layers));
-        $layersNull = array('cfgContent' => (object) array('layers' => null));
+        $layers = json_decode(file_get_contents($file));
+        $layersNull = (object) array('layers' => null);
 
         return array(
             array($layers, 'events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101', 'montpellier_events'),
@@ -79,7 +86,7 @@ class projectConfigTest extends TestCase
     {
         $testCfg = new Project\ProjectConfig(null, $layers);
         if ($layerName) {
-            $this->assertSame($testCfg->getProperty('layers')->{$layerName}, $testCfg->findLayerByAnyName($key));
+            $this->assertSame($testCfg->getLayer($layerName), $testCfg->findLayerByAnyName($key));
         } else {
             $this->assertNull($testCfg->findLayerByAnyName($key));
         }
@@ -88,9 +95,8 @@ class projectConfigTest extends TestCase
     public function getEditionLayerByNameData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $eLayer = array('editionLayers' => $json->editionLayers);
-        $eLayerNull = array('editionLayers' => null);
+        $eLayer = json_decode(file_get_contents($file));
+        $eLayerNull = (object) array('editionLayers' => null);
 
         return array(
             array($eLayer, 'tramstop'),
@@ -109,7 +115,7 @@ class projectConfigTest extends TestCase
     {
         $testCfg = new Project\ProjectConfig(null, $eLayers);
         if ($name) {
-            $this->assertSame($testCfg->getProperty('editionLayers')->{$name}, $testCfg->getEditionLayerByName($name));
+            $this->assertSame($eLayers->editionLayers->{$name}, $testCfg->getEditionLayerByName($name));
         } else {
             $this->assertNull($testCfg->getEditionLayerByName($name));
         }
@@ -118,8 +124,7 @@ class projectConfigTest extends TestCase
     public function getEditionLayerByLayerIdData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $eLayer = array('editionLayers' => $json->editionLayers);
+        $eLayer = json_decode(file_get_contents($file));
         $eLayerNull = array('editionLayers' => null);
 
         return array(
@@ -142,9 +147,59 @@ class projectConfigTest extends TestCase
     {
         $testCfg = new Project\ProjectConfig(null, $eLayers);
         if ($eLayerName) {
-            $this->assertSame($testCfg->getProperty('editionLayers')->{$eLayerName}, $testCfg->getEditionLayerByLayerId($id));
+            $this->assertSame($eLayers->editionLayers->$eLayerName, $testCfg->getEditionLayerByLayerId($id));
         } else {
             $this->assertNull($testCfg->getEditionLayerByLayerId($id));
         }
+    }
+
+    public function getOptionsValues()
+    {
+        return array(
+            array('mapScales', [
+                1000,
+                2500,
+                5000,
+                10000,
+                25000,
+                50000,
+                100000,
+                150000
+            ]),
+            array('minScale', 1000),
+            array('maxScale', 150000),
+            array('initialExtent',  [
+                417006.613738,
+                5394910.3409,
+                447158.048911,
+                5414844.99481
+            ]),
+            array('osmMapnik', "True"),
+            array('measure', "True"),
+            array('atlasDuration', 5),
+        );
+    }
+
+    /**
+     * @dataProvider getOptionsValues
+     *
+     * @param mixed $option
+     * @param mixed $expectedValue
+     */
+    public function testGetOption($option, $expectedValue)
+    {
+        $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
+        $testCfg = new Project\ProjectConfig($file);
+        $this->assertEquals($expectedValue, $testCfg->getOption($option));
+    }
+
+    /**
+     */
+    public function testGetBooleanOption()
+    {
+        $file = __DIR__.'/Ressources/events.qgs.cfg';
+        $testCfg = new Project\ProjectConfig($file);
+        $this->assertTrue($testCfg->getBooleanOption('atlasHighlightGeometry'));
+        $this->assertNull($testCfg->getBooleanOption('atlasEnabled'));
     }
 }
