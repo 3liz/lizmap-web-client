@@ -866,7 +866,7 @@ class QgisProject
     /**
      * @param object $locateByLayer
      */
-    public function readLocateByLayers($locateByLayer)
+    public function readLocateByLayer($locateByLayer)
     {
         // collect layerIds
         $locateLayerIds = array();
