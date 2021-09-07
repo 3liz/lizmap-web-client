@@ -107,17 +107,17 @@ class Project
     protected $layersOrder = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $printCapabilities = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $locateByLayer = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $formFilterLayers = array();
 
@@ -132,7 +132,7 @@ class Project
     protected $editionLayersForCurrentUser;
 
     /**
-     * @var array
+     * @var object
      */
     protected $attributeLayers = array();
 
@@ -371,7 +371,7 @@ class Project
 
         $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
         $this->cfg->setPrintCapabilities($this->printCapabilities);
-        $this->locateByLayers = $this->readLocateByLayers($qgsXml, $this->cfg);
+        $this->locateByLayer = $this->readLocateByLayer($qgsXml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
         $this->cfg->setLayersOrder($this->layersOrder);
@@ -1376,12 +1376,12 @@ class Project
         return $printTemplates;
     }
 
-    protected function readLocateByLayers(QgisProject $xml, ProjectConfig $cfg)
+    protected function readLocateByLayer(QgisProject $xml, ProjectConfig $cfg)
     {
         $locateByLayer = $cfg->getLocateByLayer();
         if ($locateByLayer) {
             // The method takes a reference
-            $xml->readLocateByLayers($locateByLayer);
+            $xml->readLocateByLayer($locateByLayer);
         }
 
         return $locateByLayer;
