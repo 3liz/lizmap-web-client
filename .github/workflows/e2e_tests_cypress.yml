@@ -45,11 +45,12 @@ jobs:
           wait-on: http://localhost:8130
           # Some tests might pass in local but not in CI, we don't add them below (e.g. popup_spec.js)
           spec: |
+            cypress/integration/form_advanced_spec.js
             cypress/integration/form_edition_all_field_type_spec.js
             cypress/integration/form_edition_reverse_geom_spec.js
             cypress/integration/form_edition_spec.js
+            cypress/integration/form_edition_without_creation_spec.js
             cypress/integration/selectionTool_spec.js
-            cypress/integration/test_import_kml_spec.js
 
       - name: Save screenshots as artifacts if a test fails to ease debug
         uses: actions/upload-artifact@v2
