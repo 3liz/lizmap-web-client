@@ -6,9 +6,11 @@ describe('Advanced form', function () {
         cy.get('#button-edition').click()
         cy.get('#edition-draw').click()
 
-        cy.wait(300)
+        cy.wait(1500)
         // Click on map as form needs a geometry
         cy.get('#map').click(600, 250)
+
+        cy.wait(1500)
     })
 
     it('should toggle tab visibility when toggling checkbox', function () {
