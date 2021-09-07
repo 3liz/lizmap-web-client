@@ -46,10 +46,10 @@ class map_headermenuZone extends jZone
 
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
-            $configOptions = $lproj->getOptions();
+            $externalSearch = $lproj->getOption('externalSearch');
 
-            if (property_exists($configOptions, 'externalSearch')) {
-                $assign['externalSearch'] = $configOptions->externalSearch;
+            if ($externalSearch !== null) {
+                $assign['externalSearch'] = $externalSearch;
             }
         } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');

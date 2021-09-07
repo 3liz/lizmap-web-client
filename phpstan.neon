@@ -12,11 +12,6 @@ parameters:
       # This error is normal, the undefined variables are dynamically assigned.
       message: '#Undefined variable: #'
       path: lizmap/modules/lizmap/lib/Request/WMTSRequest.php
-    -
-      # Same false positive
-      message: '#Access to an undefined property#'
-      path: lizmap/modules/lizmap/lib/Project/Project.php
     - "#Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function\\, class method\\, or a top-level-defined function\\.#"
   paths:
     - lizmap/modules
-  
