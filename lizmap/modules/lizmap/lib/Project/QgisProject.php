@@ -245,6 +245,14 @@ class QgisProject
         return $this->themes;
     }
 
+    /**
+     * @return bool
+     */
+    public function isUsingLayerIDs()
+    {
+        return $this->useLayerIDs;
+    }
+
     public function setPropertiesAfterRead(ProjectConfig $cfg)
     {
         $this->setShortNames($cfg);
@@ -947,7 +955,7 @@ class QgisProject
     }
 
     /**
-     * @param $editionLayers
+     * @param object  $editionLayers
      * @param Project $proj
      */
     public function readEditionForms($editionLayers, $proj)
@@ -963,6 +971,9 @@ class QgisProject
         }
     }
 
+    /**
+     * @param object $attributeLayers
+     */
     public function readAttributeLayers($attributeLayers)
     {
         // Get field order & visibility

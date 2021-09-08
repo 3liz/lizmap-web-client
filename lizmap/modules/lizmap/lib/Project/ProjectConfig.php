@@ -2,18 +2,12 @@
 
 namespace Lizmap\Project;
 
+/**
+ * It allows to access to configuration properties stored into the cfg file
+ * of a project, and to access to some "calculated" properties.
+ */
 class ProjectConfig
 {
-    /**
-     * @var int[] keys are layer name
-     */
-    protected $layersOrder = array();
-
-    /**
-     * @var mixed
-     */
-    protected $printCapabilities;
-
     /**
      * @var object
      */
@@ -70,8 +64,6 @@ class ProjectConfig
     protected $options;
 
     protected static $cachedProperties = array(
-        'layersOrder',
-        'printCapabilities',
         'locateByLayer',
         'formFilterLayers',
         'editionLayers',
@@ -85,23 +77,16 @@ class ProjectConfig
         'datavizLayers',
     );
 
-    public function __construct($cfgFile, $data = null)
+    /**
+     * @param object $data properties of the QGIS project, coming from the cfg file
+     */
+    public function __construct($data)
     {
-        if ($data === null) {
-            $fileContent = file_get_contents($cfgFile);
-            $data = json_decode($fileContent);
-            if ($data === null) {
-                throw new UnknownLizmapProjectException('The file '.$cfgFile.' cannot be decoded.');
-            }
-        }
-
         foreach (self::$cachedProperties as $prop) {
             if (isset($data->{$prop})) {
                 $this->{$prop} = $data->{$prop};
             } else {
-                if ($prop != 'layersOrder') {
-                    $this->{$prop} = new \stdClass();
-                }
+                $this->{$prop} = new \stdClass();
             }
         }
     }
@@ -141,22 +126,6 @@ class ProjectConfig
     }
 
     /**
-     * @return int[] keys are layer name
-     */
-    public function getLayersOrder()
-    {
-        return $this->layersOrder;
-    }
-
-    /**
-     * @param int[] $layersOrder
-     */
-    public function setLayersOrder($layersOrder)
-    {
-        $this->layersOrder = $layersOrder;
-    }
-
-    /**
      * @return object
      */
     public function getLayers()
@@ -189,14 +158,12 @@ class ProjectConfig
         }
     }
 
+    /**
+     * @return object
+     */
     public function getAttributeLayers()
     {
         return $this->attributeLayers;
-    }
-
-    public function setAttributeLayers($attributeLayers)
-    {
-        $this->attributeLayers = $attributeLayers;
     }
 
     /**
@@ -205,14 +172,6 @@ class ProjectConfig
     public function getLocateByLayer()
     {
         return $this->locateByLayer;
-    }
-
-    /**
-     * @param object $locateByLayer
-     */
-    public function setLocateByLayer($locateByLayer)
-    {
-        $this->locateByLayer = $locateByLayer;
     }
 
     /**
@@ -384,14 +343,6 @@ class ProjectConfig
         return $this->editionLayers;
     }
 
-    /**
-     * @param object $editionLayers
-     */
-    public function setEditionLayers($editionLayers)
-    {
-        $this->editionLayers = $editionLayers;
-    }
-
     public function getEditionLayerByName($name)
     {
         $editionLayers = $this->editionLayers;
@@ -473,19 +424,6 @@ class ProjectConfig
         }
 
         return null;
-    }
-
-    /**
-     * @return object
-     */
-    public function getPrintCapabilities()
-    {
-        return $this->printCapabilities;
-    }
-
-    public function setPrintCapabilities($printCapabilities)
-    {
-        $this->printCapabilities = $printCapabilities;
     }
 
     public function getFormFilterLayers()
