@@ -68,38 +68,9 @@ class Project
     protected $data = array();
 
     /**
-     * Version of QGIS which wrote the project.
-     *
-     * @var null|int
-     */
-    protected $QgisProjectVersion;
-
-    /**
      * @var array contains WMS info
      */
     protected $WMSInformation;
-
-    /**
-     * @var string
-     */
-    protected $canvasColor = '';
-
-    /**
-     * @var array authid => proj4
-     */
-    protected $allProj4 = array();
-
-    /**
-     * @var array for each referenced layer, there is an item
-     *            with referencingLayer, referencedField, referencingField keys.
-     *            There is also a 'pivot' key
-     */
-    protected $relations = array();
-
-    /**
-     * @var array list of themes
-     */
-    protected $themes = array();
 
     /**
      * @var array list of layer orders: layer name => order
@@ -112,70 +83,18 @@ class Project
     protected $printCapabilities = array();
 
     /**
-     * @var object
-     */
-    protected $locateByLayer = array();
-
-    /**
-     * @var object
-     */
-    protected $formFilterLayers = array();
-
-    /**
-     * @var object
-     */
-    protected $editionLayers = array();
-
-    /**
      * @var null|object[] layer names => layers
      */
     protected $editionLayersForCurrentUser;
-
-    /**
-     * @var object
-     */
-    protected $attributeLayers = array();
-
-    /**
-     * @var bool
-     */
-    protected $useLayerIDs = false;
-
-    /**
-     * @var array
-     */
-    protected $layers = array();
-
-    /**
-     * @var null
-     */
-    protected $xml;
-
-    /**
-     * @var array
-     */
-    protected $options;
 
     /**
      * @var array List of cached properties
      */
     protected static $cachedProperties = array(
         'WMSInformation',
-        'canvasColor',
-        'allProj4',
-        'relations',
-        'themes',
         'layersOrder',
         'printCapabilities',
-        'locateByLayer',
-        'formFilterLayers',
-        'editionLayers',
-        'attributeLayers',
-        'useLayerIDs',
-        'layers',
         'data',
-        'options',
-        'QgisProjectVersion',
     );
 
     /**
@@ -184,16 +103,6 @@ class Project
     private $spatialiteExt;
 
     protected $path;
-
-    /**
-     * version of the format of data stored in the cache.
-     *
-     * This number should be increased each time you change the structure of the
-     * properties of QgisProject (ex: adding some new data properties into the $layers).
-     * So you'll be sure that the cache will be updated when Lizmap code source
-     * is updated on a server
-     */
-    const CACHE_FORMAT_VERSION = 1;
 
     /**
      * @var ProjectCache
@@ -234,7 +143,13 @@ class Project
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg');
+                $fileContent = file_get_contents($file.'.cfg');
+                $cfgContent = json_decode($fileContent);
+                if ($cfgContent === null) {
+                    throw new UnknownLizmapProjectException('The file '.$file.'.cfg cannot be decoded.');
+                }
+
+                $this->cfg = new ProjectConfig($cfgContent);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -287,7 +202,7 @@ class Project
             }
 
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg', $data['cfg']);
+                $this->cfg = new ProjectConfig($data['cfg']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -325,7 +240,6 @@ class Project
         $qgsXml = $this->qgis;
         $configOptions = $this->cfg->getOptions();
 
-        $this->options = $configOptions;
         // Complete data
         $this->data['repository'] = $rep->getKey();
         $this->data['id'] = $key;
@@ -369,13 +283,11 @@ class Project
 
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
-        $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
-        $this->cfg->setPrintCapabilities($this->printCapabilities);
-        $this->locateByLayer = $this->readLocateByLayer($qgsXml, $this->cfg);
-        $this->editionLayers = $this->readEditionLayers($qgsXml);
+        $this->readPrintCapabilities($qgsXml);
+        $this->readLocateByLayer($qgsXml, $this->cfg);
+        $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
-        $this->cfg->setLayersOrder($this->layersOrder);
-        $this->attributeLayers = $this->readAttributeLayers($qgsXml, $this->cfg);
+        $this->readAttributeLayers($qgsXml, $this->cfg);
 
         $this->qgis->readEditionForms($this->getEditionLayers(), $this);
     }
@@ -1380,30 +1292,10 @@ class Project
     {
         $locateByLayer = $cfg->getLocateByLayer();
         if ($locateByLayer) {
-            // The method takes a reference
             $xml->readLocateByLayer($locateByLayer);
         }
-
-        return $locateByLayer;
     }
 
-    /**
-     * @return object
-     */
-    protected function readFormFilterLayers(QgisProject $xml, ProjectConfig $cfg)
-    {
-        $formFilterLayers = $cfg->getFormFilterLayers();
-
-        if (!$formFilterLayers) {
-            $formFilterLayers = new \stdClass();
-        }
-
-        return $formFilterLayers;
-    }
-
-    /**
-     * @return object
-     */
     protected function readEditionLayers(QgisProject $xml)
     {
         $editionLayers = $this->cfg->getEditionLayers();
@@ -1419,31 +1311,16 @@ class Project
                 $this->appContext->logMessage('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
             }
-        } else {
-            $editionLayers = new \stdClass();
         }
-        $this->cfg->setEditionLayers($editionLayers);
-
-        return $editionLayers;
     }
 
-    /**
-     * @return object
-     */
     protected function readAttributeLayers(QgisProject $xml, ProjectConfig $cfg)
     {
         $attributeLayers = $cfg->getAttributeLayers();
 
         if ($attributeLayers) {
-            // method takes a reference
             $xml->readAttributeLayers($attributeLayers);
-            // so we can modify data here
-            $cfg->setAttributeLayers($attributeLayers);
-        } else {
-            $attributeLayers = new \stdClass();
         }
-
-        return $attributeLayers;
     }
 
     /**
@@ -1535,48 +1412,17 @@ class Project
         // set printTemplates in config
         $configJson->printTemplates = $this->printCapabilities;
 
-        // Update locate by layer with vecctorjoins
-        $configJson->locateByLayer = $this->locateByLayer;
-
-        // Update filter form layers with vecctorjoins
-        $configJson->formFilterLayers = $this->formFilterLayers;
-
-        // Update attributeLayers with attributetableconfig
-        $configJson->attributeLayers = $this->attributeLayers;
-
         // Remove FTP remote directory
         if (property_exists($configJson->options, 'remoteDir')) {
             unset($configJson->options->remoteDir);
         }
 
         // Remove editionLayers from config if no right to access this tool
-        if (property_exists($configJson, 'editionLayers')) {
-            if ($this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
-                $configJson->editionLayers = clone $this->editionLayers;
-                // Check right to edit this layer (if property "acl" is in config)
-                foreach ($configJson->editionLayers as $key => $eLayer) {
-                    // Check if user groups intersects groups allowed by project editor
-                    // If user is admin, no need to check for given groups
-                    if (property_exists($eLayer, 'acl') and $eLayer->acl) {
-                        // Check if configured groups white list and authenticated user groups list intersects
-                        $editionGroups = $eLayer->acl;
-                        $editionGroups = array_map('trim', explode(',', $editionGroups));
-                        if (is_array($editionGroups) and count($editionGroups) > 0) {
-                            $userGroups = $this->appContext->aclUserGroupsId();
-                            if (array_intersect($editionGroups, $userGroups) or $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
-                                // User group(s) correspond to the groups given for this edition layer
-                                // or the user is admin
-                                unset($configJson->editionLayers->{$key}->acl);
-                            } else {
-                                // No match found, we deactivate the edition layer
-                                unset($configJson->editionLayers->{$key});
-                            }
-                        }
-                    }
-                }
-            } else {
-                unset($configJson->editionLayers);
-            }
+        if ($this->hasEditionLayersForCurrentUser()) {
+            // give only layer that the user has the right to edit
+            $configJson->editionLayers = $this->editionLayersForCurrentUser;
+        } else {
+            unset($configJson->editionLayers);
         }
 
         // Add export layer right
@@ -1611,7 +1457,7 @@ class Project
         if ($themes) {
             $configJson->themes = $themes;
         }
-        if ($this->useLayerIDs) {
+        if ($this->qgis->isUsingLayerIDs()) {
             $configJson->options->useLayerIDs = 'True';
         }
 
