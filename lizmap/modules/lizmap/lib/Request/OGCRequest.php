@@ -99,10 +99,12 @@ abstract class OGCRequest
     }
 
     /**
-     * Provide the parameters with the lizmap extra parameters for filtering request
-     * Lizmap_User, Lizmap_User_Groups and Lizmap_Override_Filter has been added to the OGC request parameters.
+     * Provide the parameters with the lizmap extra parameters for filtering the request.
      *
-     * @return array the OGC request aprameters with lizmap extra parameters for filtering request
+     * Lizmap_User, Lizmap_User_Groups, Lizmap_Override_Filter
+     * have been added to the OGC request parameters.
+     *
+     * @return array the OGC request parameters with Lizmap extra parameters for filtering request
      */
     public function parameters()
     {
