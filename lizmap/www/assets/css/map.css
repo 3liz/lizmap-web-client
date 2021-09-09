@@ -178,6 +178,10 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 #mapmenu .nav-list > li.edition a:hover .icon {
   background-position: -450px 0px;
 }
+/* Change background color when edition is pending */
+#mapmenu .nav-list > li.edition.edition-pending:not(.active) #button-edition{
+  background-color: #9DBE3E;
+}
 #mapmenu .nav-list > li.geolocation .icon {
   background-position: -325px 0px;
 }
