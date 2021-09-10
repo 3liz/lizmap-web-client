@@ -650,7 +650,7 @@ class Proxy
      * @param string $repository
      * @param string $project
      *
-     * @return boolean the project cache has been clear or not
+     * @return bool the project cache has been clear or not
      */
     public static function clearProjectCache($repository, $project)
     {
@@ -692,7 +692,7 @@ class Proxy
      * @param string $project
      * @param string $layer
      *
-     * @return boolean the layer cache has been clear or not
+     * @return bool the layer cache has been clear or not
      */
     public static function clearLayerCache($repository, $project, $layer)
     {
