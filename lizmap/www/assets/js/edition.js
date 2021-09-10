@@ -560,6 +560,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     function finishEdition() {
         // Lift the constraint on edition
         lizMap.editionPending = false;
+        $('#mapmenu .edition').removeClass('edition-pending');
 
         // Deactivate edition map controls
         if( editCtrls ){
@@ -1192,6 +1193,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             return false;
 
         lizMap.editionPending = true;
+        $('#mapmenu .edition').addClass('edition-pending');
 
         // check that layers for edition are there
         editionLayer.createLayers();
@@ -1200,6 +1202,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         var getLayer = lizMap.getLayerConfigById( editedFeature.layerId, config.editionLayers, 'layerId' );
         if (!getLayer) {
             lizMap.editionPending = false;
+            $('#mapmenu .edition').removeClass('edition-pending');
             return false;
         }
 
