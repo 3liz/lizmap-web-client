@@ -5,6 +5,8 @@
 Not released yet
 
 - Fix: multiple selection edition w/ text field. Values can be integer but also string
+- UI: when dock is closed, show edition is pending with green background on dock button
+- UI: replace dock close button text by icon. This makes it more clear the dock is closed but tool can remain active
 - Translation: add Romamian for dataTables (contribution from @ygorigor)
 - Create utils method to parse XML and get error parsing message
 - Fix: Object of class LibXMLError could not be converted to string

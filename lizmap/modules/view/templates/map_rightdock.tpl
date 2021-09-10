@@ -13,4 +13,4 @@
       </div>
     </div>
 
-<button id="right-dock-close" class="btn"> {@view~map.bottomdock.toolbar.btn.clear.title@}</button>
+<button id="right-dock-close" class="btn"></button>
