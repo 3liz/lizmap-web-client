@@ -25,7 +25,7 @@ class ProjectTest extends TestCase
         $proj->setQgis($qgis_default);
         $proj->setRepo($rep);
         $proj->setKey('test');
-        $proj->readProjectForTest('test', $rep);
+        $proj->readProjectForTest();
 
         $this->assertEquals('key', $proj->getRepositoryKey());
         $this->assertEquals('test', $proj->getKey());

@@ -14,8 +14,27 @@ class ProjectForOGCForTests extends ProjectForTests
         return $this->loginFilters;
     }
 
-    public function setData($key, $value)
+    protected $testWMSMaxWidth;
+    protected $testWMSMaxHeight;
+
+    public function setWMSMaxWidthHeight($w, $h)
     {
-        $this->data[$key] = $value;
+        $this->testWMSMaxHeight = $h;
+        $this->testWMSMaxWidth = $w;
+    }
+
+    public function getWMSMaxWidth()
+    {
+        return $this->testWMSMaxWidth;
+    }
+
+    /**
+     * WMS Max Height.
+     *
+     * @return int
+     */
+    public function getWMSMaxHeight()
+    {
+        return $this->testWMSMaxHeight;
     }
 }
