@@ -170,8 +170,10 @@ class WMSRequestTest extends TestCase
             'height' => $height
         );
         $proj = new ProjectForOGCForTests();
-        $proj->setData('wmsMaxWidth', $useServices ? '' : $maxWidth);
-        $proj->setData('wmsMaxHeight', $useServices ? '' : $maxHeight);
+        $proj->setWMSMaxWidthHeight(
+            $useServices ? '' : $maxWidth,
+            $useServices ? '' : $maxHeight
+        );
         $services = (object)array(
             'wmsMaxWidth' => $useServices ? $maxWidth : '',
             'wmsMaxHeight' => $useServices ? $maxHeight : '',
