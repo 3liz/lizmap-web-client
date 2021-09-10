@@ -2,7 +2,6 @@ var addDescriptionSlider = function(){
     $('.liz-project-img').parent().mouseenter(function(){
       var self = $(this);
       self.find('.liz-project-desc').slideDown();
-      self.css('cursor','pointer');
     }).mouseleave(function(){
       var self = $(this);
       self.find('.liz-project-desc').hide();
