@@ -1,12 +1,10 @@
-.thumbnail {
-  background-color: white;
-}
 .thumbnail h5 {
   text-align: center;
 }
 .liz-project {
   position:relative;
   text-align:center;
+  cursor: pointer;
 }
 .liz-project-img {
   width : 250px;
@@ -32,6 +30,32 @@
   padding:5px;
   margin:0px;
   overflow-wrap: break-word;
+}
+
+.liz-project-title{
+  overflow-wrap: anywhere;
+}
+
+.liz-project-title ~ p {
+  text-align: center;
+  margin: 0;
+}
+
+.liz-repository-project-list{
+  display: grid;
+  list-style: none;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.liz-repository-project-item{
+  display: inline-block;
+}
+
+.liz-repository-project-item .thumbnail{
+  background-color: white;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 #headermenu .input-prepend {
@@ -92,6 +116,12 @@
 .project-keyword .highlight{
   font-weight: bold;
   font-size: 1.1em;
+}
+
+@media (max-width: 767px) {
+  .liz-repository-project-list{
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-height: 500px) {
