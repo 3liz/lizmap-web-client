@@ -16,9 +16,9 @@
       <div class="liz-project">
         <img width="250" height="250" src="{$p->img}" alt="project image" class="liz-project-img">
         <p class="liz-project-desc" style="display:none;">
-          <b>{$p->title}</b>
+          <b class="title">{$p->title}</b>
           <br/>
-          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: {$p->abstract|strip_tags|truncate:100}
+          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: <span class="abstract">{$p->abstract|strip_tags|truncate:100}</span>
           <br/>
           <br/><b>{@default.project.keywordList.label@}</b>&nbsp;: <span class="keywordList">{$p->keywordList}</span>
           <br/>
