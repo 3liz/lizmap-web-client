@@ -30,18 +30,6 @@ class Project
     protected $cfg;
 
     /**
-     * @var array services properties
-     */
-    protected $properties = array(
-        'repository',
-        'id',
-        'title',
-        'abstract',
-        'proj',
-        'bbox',
-    );
-
-    /**
      * @var App\AppContextInterface The jelixInfos instance
      */
     protected $appContext;
@@ -63,16 +51,6 @@ class Project
     protected $key = '';
 
     /**
-     * @var array Lizmap repository configuration data
-     */
-    protected $data = array();
-
-    /**
-     * @var array contains WMS info
-     */
-    protected $WMSInformation;
-
-    /**
      * @var array list of layer orders: layer name => order
      */
     protected $layersOrder = array();
@@ -91,10 +69,8 @@ class Project
      * @var array List of cached properties
      */
     protected static $cachedProperties = array(
-        'WMSInformation',
         'layersOrder',
         'printCapabilities',
-        'data',
     );
 
     /**
@@ -159,7 +135,7 @@ class Project
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
-            $this->readProject($key, $rep);
+            $this->readProject();
 
             // set project data in cache
             $dataProj = array();
@@ -232,54 +208,10 @@ class Project
 
     /**
      * Read the qgis files.
-     *
-     * @param string $key
      */
-    protected function readProject($key, Repository $rep)
+    protected function readProject()
     {
         $qgsXml = $this->qgis;
-        $configOptions = $this->cfg->getOptions();
-
-        // Complete data
-        $this->data['repository'] = $rep->getKey();
-        $this->data['id'] = $key;
-        if (!array_key_exists('title', $this->data)) {
-            $this->data['title'] = ucfirst($key);
-        }
-        if (!array_key_exists('abstract', $this->data)) {
-            $this->data['abstract'] = '';
-        }
-        $this->data['proj'] = $configOptions->projection->ref;
-        $this->data['bbox'] = implode(', ', $configOptions->bbox);
-
-        // Update WMSInformation
-        // $this->WMSInformation = array($this->qgis->getWMSInformation(), 'ProjectCrs' => $this->data['proj']);
-        $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
-        $this->WMSInformation = array_merge($this->qgis->getWMSInformation(), $this->WMSInformation);
-
-        // get WMS getCapabilities full URL
-        $this->data['wmsGetCapabilitiesUrl'] = $this->appContext->getFullUrl(
-            'lizmap~service:index',
-            array(
-                'repository' => $rep->getKey(),
-                'project' => $key,
-                'SERVICE' => 'WMS',
-                'VERSION' => '1.3.0',
-                'REQUEST' => 'GetCapabilities',
-            )
-        );
-
-        // get WMTS getCapabilities full URL
-        $this->data['wmtsGetCapabilitiesUrl'] = $this->appContext->getFullUrl(
-            'lizmap~service:index',
-            array(
-                'repository' => $rep->getKey(),
-                'project' => $key,
-                'SERVICE' => 'WMTS',
-                'VERSION' => '1.0.0',
-                'REQUEST' => 'GetCapabilities',
-            )
-        );
 
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
@@ -393,7 +325,12 @@ class Project
      */
     public function getTitle()
     {
-        return $this->getData('title');
+        $title = $this->qgis->getTitle();
+        if ($title == null) {
+            $title = ucfirst($this->key);
+        }
+
+        return $title;
     }
 
     /**
@@ -403,7 +340,9 @@ class Project
      */
     public function getAbstract()
     {
-        return $this->getData('abstract');
+        $abstract = $this->qgis->getAbstract();
+
+        return $abstract ?: '';
     }
 
     /**
@@ -423,7 +362,7 @@ class Project
      */
     public function getProj()
     {
-        return $this->getData('proj');
+        return $this->cfg->getOption('projection')->ref;
     }
 
     /**
@@ -433,7 +372,7 @@ class Project
      */
     public function getBbox()
     {
-        return $this->getData('bbox');
+        return implode(', ', $this->cfg->getOption('bbox'));
     }
 
     /**
@@ -443,7 +382,7 @@ class Project
      */
     public function getWMSMaxWidth()
     {
-        return $this->getData('wmsMaxWidth');
+        return $this->qgis->getWMSMaxWidth();
     }
 
     /**
@@ -453,7 +392,7 @@ class Project
      */
     public function getWMSMaxHeight()
     {
-        return $this->getData('wmsMaxHeight');
+        return $this->qgis->getWMSMaxHeight();
     }
 
     /**
@@ -463,7 +402,16 @@ class Project
      */
     public function getWMSGetCapabilitiesUrl()
     {
-        return $this->getData('wmsGetCapabilitiesUrl');
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+                'SERVICE' => 'WMS',
+                'VERSION' => '1.3.0',
+                'REQUEST' => 'GetCapabilities',
+            )
+        );
     }
 
     /**
@@ -473,7 +421,16 @@ class Project
      */
     public function getWMTSGetCapabilitiesUrl()
     {
-        return $this->getData('wmtsGetCapabilitiesUrl');
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+                'SERVICE' => 'WMTS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetCapabilities',
+            )
+        );
     }
 
     public function getFileTime()
@@ -486,9 +443,23 @@ class Project
         return $this->cacheHandler->getCfgFileTime();
     }
 
+    /**
+     * unknown purpose.
+     *
+     * @deprecated
+     *
+     * @return array|string[]
+     */
     public function getProperties()
     {
-        return $this->properties;
+        return array(
+            'repository',
+            'id',
+            'title',
+            'abstract',
+            'proj',
+            'bbox',
+        );
     }
 
     /**
@@ -559,8 +530,30 @@ class Project
      */
     public function getData($key)
     {
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
+        switch ($key) {
+            case 'id':
+                return $this->key;
+
+            case 'repository':
+                return $this->repository->getKey();
+
+            case 'title':
+                return $this->getTitle();
+
+            case 'abstract':
+                return $this->getAbstract();
+
+            case 'proj':
+                return $this->getProj();
+
+            case 'bbox':
+                return $this->getBbox();
+
+            case 'wmsGetCapabilitiesUrl':
+                return $this->getWMSGetCapabilitiesUrl();
+
+            case 'wmtsGetCapabilitiesUrl':
+                return $this->getWMTSGetCapabilitiesUrl();
         }
 
         return $this->qgis->getData($key);
@@ -593,11 +586,10 @@ class Project
 
     public function getWMSInformation()
     {
-        if (isset($this->WMSInformation) && count($this->WMSInformation) > 1) {
-            return $this->WMSInformation;
-        }
+        $WMSInformation = $this->qgis->getWMSInformation();
+        $WMSInformation['ProjectCrs'] = $this->cfg->getOption('projection')->ref;
 
-        return $this->qgis->getWMSInformation();
+        return $WMSInformation;
     }
 
     public function hasLocateByLayer()
@@ -1432,16 +1424,12 @@ class Project
 
         // Add WMS max width ad height
         $services = $this->services;
-        if (array_key_exists('wmsMaxWidth', $this->data)) {
-            $configJson->options->wmsMaxWidth = $this->data['wmsMaxWidth'];
-        } else {
-            $configJson->options->wmsMaxWidth = $services->wmsMaxWidth;
-        }
-        if (array_key_exists('wmsMaxHeight', $this->data)) {
-            $configJson->options->wmsMaxHeight = $this->data['wmsMaxHeight'];
-        } else {
-            $configJson->options->wmsMaxHeight = $services->wmsMaxHeight;
-        }
+
+        $wmsMaxWidth = $this->qgis->getWMSMaxWidth();
+        $configJson->options->wmsMaxWidth = $wmsMaxWidth ?: $services->wmsMaxWidth;
+
+        $wmsMaxHeight = $this->qgis->getWMSMaxHeight();
+        $configJson->options->wmsMaxHeight = $wmsMaxHeight ?: $services->wmsMaxHeight;
 
         // Add QGS Server version
         $configJson->options->qgisServerVersion = $services->qgisServerVersion;
@@ -1492,7 +1480,14 @@ class Project
             );
         }
         // Events to get additional searches
-        $searchServices = $this->appContext->eventNotify('searchServiceItem', array('repository' => $this->repository->getKey(), 'project' => $this->getKey()))->getResponse();
+        $searchServices = $this->appContext->eventNotify(
+            'searchServiceItem',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->getKey(),
+            )
+        )->getResponse();
+
         foreach ($searchServices as $searchService) {
             if (is_array($searchService)) {
                 if (array_key_exists('type', $searchService) && array_key_exists('url', $searchService)) {
