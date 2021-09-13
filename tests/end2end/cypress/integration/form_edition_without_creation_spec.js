@@ -19,7 +19,7 @@ describe('Form edition without creation', function () {
         cy.get('.edition-tabs').should('be.visible')
 
         // ... even after toggling dock visibility
-        cy.get('#dock-close').click()
+        cy.get('#dock-close').click({force: true})
         cy.get('li.edition #button-edition').click()
 
         cy.get('#edition-modification-msg').should('not.be.visible')
