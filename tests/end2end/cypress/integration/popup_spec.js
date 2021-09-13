@@ -1,5 +1,3 @@
-// These tests does not pass in Github CI because layer does not display
-// FIXME: find why layer does not display in CI
 describe('Popup', function() {
     beforeEach(function(){
         // Runs before each tests in this block
