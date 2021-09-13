@@ -505,7 +505,7 @@ class jConfigCompiler {
     }
 
     /**
-     * calculate miscelaneous path, depending of the server configuration and other informations
+     * calculate miscellaneous path, depending of the server configuration and other information
      * in the given array : script path, script name, documentRoot ..
      * @param array $urlconf urlengine configuration. scriptNameServerVariable, basePath,
      * jelixWWWPath and jqueryPath should be present
