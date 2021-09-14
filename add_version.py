@@ -19,7 +19,7 @@ for item in tag:
     try:
         int(item)
     except ValueError:
-        print('The component "{}" is not an integer, skipping the tag {}.'.format(item, sys.argv[1]))
+        print(f'The component "{item}" is not an integer, skipping the tag {sys.argv[1]}.')
         exit(0)
 
 major, minor, bugfix = tag
@@ -29,15 +29,15 @@ with open(json_file, 'r') as f:
     versions = json.load(f)
 
 for version in versions:
-    if version['branch'] == '{}.{}'.format(major, minor):
+    if version['branch'] == f'{major}.{minor}':
         version['latest_release_date'] = datetime.today().strftime('%Y-%m-%d')
-        version['latest_release_version'] = '{}.{}.{}'.format(major, minor, bugfix)
+        version['latest_release_version'] = f'{major}.{minor}.{bugfix}'
         break
 else:
-    print('Branch for {}.{}.{} is not found.'.format(major, minor, bugfix))
+    print(f'Branch for {major}.{minor}.{bugfix} is not found.')
     exit(0)
 
 with open('versions.json', 'w') as f:
     json.dump(versions, f, sort_keys=True, indent=4)
 
-print("Version {} added into versions.json".format(sys.argv[1]))
+print(f"Version {sys.argv[1]} added into versions.json")
