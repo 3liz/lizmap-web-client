@@ -1,6 +1,6 @@
 # Changelog Lizmap 3.5
 
-## Version 3.5.0
+## Unreleased
 
 ### Added
 
