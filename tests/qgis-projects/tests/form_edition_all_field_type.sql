@@ -62,7 +62,8 @@ CREATE TABLE tests_projects.form_edition_all_fields_types (
     boolean_nullable boolean,
     boolean_notnull_for_checkbox boolean NOT NULL,
     integer_array integer[],
-    text text
+    text text,
+    time_field time without time zone DEFAULT LOCALTIME(0)
 );
 
 
@@ -126,7 +127,7 @@ COPY tests_projects.data_integers (id, label) FROM stdin;
 -- Data for Name: form_edition_all_fields_types; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
 --
 
-COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text) FROM stdin;
+COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text, time_field) FROM stdin;
 \.
 
 

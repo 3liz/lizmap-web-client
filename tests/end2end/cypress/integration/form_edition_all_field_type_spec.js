@@ -106,12 +106,37 @@ describe('Form edition all field type', function() {
         // A message should confirm form had been saved
         cy.get('#lizmap-edition-message').should('be.visible')
 
-        // Assert both values are selected when editing previously submitted feature
+        // Assert checkbox is not checked when editing previously submitted feature
         cy.get('#button-attributeLayers').click()
         cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({ force: true })
 
         cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
 
         cy.get("#jforms_view_edition_boolean_notnull_for_checkbox").should('not.be.checked')
+    })
+
+    it('time', function () {
+        // Time has HH:mm:ss format
+        cy.get('#jforms_view_edition_time_field').should(($input) => {
+            const value = $input.val()
+
+            expect(value).to.match(/^(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])$/)
+        })
+
+        cy.get('#jforms_view_edition__submit_submit').click()
+        // A message should confirm form had been saved
+        cy.get('#lizmap-edition-message').should('be.visible')
+
+        // Assert time has still HH:mm:ss format when editing previously submitted feature
+        cy.get('#button-attributeLayers').click()
+        cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({ force: true })
+
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+
+        cy.get('#jforms_view_edition_time_field').should(($input) => {
+            const value = $input.val()
+
+            expect(value).to.match(/^(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])$/)
+        })
     })
 })

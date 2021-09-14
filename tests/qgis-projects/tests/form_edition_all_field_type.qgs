@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2021-09-14T14:41:10" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.11-Hannover">
+<qgis projectname="" saveDateTime="2021-09-14T16:04:45" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.11-Hannover">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -341,9 +341,7 @@
         </fixedRange>
       </temporal>
       <customproperties>
-        <property key="dualview/previewExpressions">
-          <value>"id"</value>
-        </property>
+        <property key="dualview/previewExpressions" value="&quot;id&quot;"></property>
         <property key="embeddedWidgets/count" value="0"></property>
         <property key="variableNames"></property>
         <property key="variableValues"></property>
@@ -448,6 +446,19 @@
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="None" name="time_field">
+          <editWidget type="DateTime">
+            <config>
+              <Option type="Map">
+                <Option name="allow_null" type="bool" value="true"></Option>
+                <Option name="calendar_popup" type="bool" value="false"></Option>
+                <Option name="display_format" type="QString" value="HH:mm:ss"></Option>
+                <Option name="field_format" type="QString" value="HH:mm:ss"></Option>
+                <Option name="field_iso_format" type="bool" value="false"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
         <alias field="id" index="0" name=""></alias>
@@ -456,6 +467,7 @@
         <alias field="boolean_notnull_for_checkbox" index="3" name=""></alias>
         <alias field="integer_array" index="4" name=""></alias>
         <alias field="text" index="5" name=""></alias>
+        <alias field="time_field" index="6" name=""></alias>
       </aliases>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
@@ -464,6 +476,7 @@
         <default applyOnUpdate="0" expression="" field="boolean_notnull_for_checkbox"></default>
         <default applyOnUpdate="0" expression="" field="integer_array"></default>
         <default applyOnUpdate="0" expression="" field="text"></default>
+        <default applyOnUpdate="0" expression="make_time( hour(now()), minute(now()), second(now()))" field="time_field"></default>
       </defaults>
       <constraints>
         <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
@@ -472,6 +485,7 @@
         <constraint constraints="1" exp_strength="0" field="boolean_notnull_for_checkbox" notnull_strength="1" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="integer_array" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="text" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="time_field" notnull_strength="0" unique_strength="0"></constraint>
       </constraints>
       <constraintExpressions>
         <constraint desc="" exp="" field="id"></constraint>
@@ -480,6 +494,7 @@
         <constraint desc="" exp="" field="boolean_notnull_for_checkbox"></constraint>
         <constraint desc="" exp="" field="integer_array"></constraint>
         <constraint desc="" exp="" field="text"></constraint>
+        <constraint desc="" exp="" field="time_field"></constraint>
       </constraintExpressions>
       <expressionfields></expressionfields>
       <attributeactions>
@@ -494,6 +509,7 @@
           <column hidden="0" name="integer_array" type="field" width="288"></column>
           <column hidden="0" name="text" type="field" width="-1"></column>
           <column hidden="0" name="boolean_notnull_for_checkbox" type="field" width="-1"></column>
+          <column hidden="0" name="time_field" type="field" width="-1"></column>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -532,6 +548,7 @@ def my_form_open(dialog, layer, feature):
         <field editable="1" name="integer_array"></field>
         <field editable="1" name="integer_field"></field>
         <field editable="1" name="text"></field>
+        <field editable="1" name="time_field"></field>
       </editable>
       <labelOnTop>
         <field labelOnTop="0" name="boolean_notnull_for_checkbox"></field>
@@ -541,6 +558,7 @@ def my_form_open(dialog, layer, feature):
         <field labelOnTop="0" name="integer_array"></field>
         <field labelOnTop="0" name="integer_field"></field>
         <field labelOnTop="0" name="text"></field>
+        <field labelOnTop="0" name="time_field"></field>
       </labelOnTop>
       <dataDefinedFieldProperties></dataDefinedFieldProperties>
       <widgets></widgets>
