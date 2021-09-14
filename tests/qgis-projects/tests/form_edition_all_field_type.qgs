@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2021-07-06T14:19:40" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.8-Hannover">
+<qgis projectname="" saveDateTime="2021-09-14T14:41:10" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.11-Hannover">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -395,6 +395,17 @@
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="None" name="boolean_notnull_for_checkbox">
+          <editWidget type="CheckBox">
+            <config>
+              <Option type="Map">
+                <Option name="CheckedState" type="QString" value=""></Option>
+                <Option name="TextDisplayMethod" type="int" value="0"></Option>
+                <Option name="UncheckedState" type="QString" value=""></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
         <field configurationFlags="None" name="integer_array">
           <editWidget type="ValueRelation">
             <config>
@@ -442,13 +453,15 @@
         <alias field="id" index="0" name=""></alias>
         <alias field="integer_field" index="1" name=""></alias>
         <alias field="boolean_nullable" index="2" name=""></alias>
-        <alias field="integer_array" index="3" name=""></alias>
-        <alias field="text" index="4" name=""></alias>
+        <alias field="boolean_notnull_for_checkbox" index="3" name=""></alias>
+        <alias field="integer_array" index="4" name=""></alias>
+        <alias field="text" index="5" name=""></alias>
       </aliases>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
         <default applyOnUpdate="0" expression="" field="integer_field"></default>
         <default applyOnUpdate="0" expression="" field="boolean_nullable"></default>
+        <default applyOnUpdate="0" expression="" field="boolean_notnull_for_checkbox"></default>
         <default applyOnUpdate="0" expression="" field="integer_array"></default>
         <default applyOnUpdate="0" expression="" field="text"></default>
       </defaults>
@@ -456,6 +469,7 @@
         <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
         <constraint constraints="0" exp_strength="0" field="integer_field" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="boolean_nullable" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="1" exp_strength="0" field="boolean_notnull_for_checkbox" notnull_strength="1" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="integer_array" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="text" notnull_strength="0" unique_strength="0"></constraint>
       </constraints>
@@ -463,6 +477,7 @@
         <constraint desc="" exp="" field="id"></constraint>
         <constraint desc="" exp="" field="integer_field"></constraint>
         <constraint desc="" exp="" field="boolean_nullable"></constraint>
+        <constraint desc="" exp="" field="boolean_notnull_for_checkbox"></constraint>
         <constraint desc="" exp="" field="integer_array"></constraint>
         <constraint desc="" exp="" field="text"></constraint>
       </constraintExpressions>
@@ -476,8 +491,9 @@
           <column hidden="0" name="integer_field" type="field" width="-1"></column>
           <column hidden="1" type="actions" width="-1"></column>
           <column hidden="0" name="boolean_nullable" type="field" width="184"></column>
-          <column hidden="0" name="integer_array" type="field" width="-1"></column>
+          <column hidden="0" name="integer_array" type="field" width="288"></column>
           <column hidden="0" name="text" type="field" width="-1"></column>
+          <column hidden="0" name="boolean_notnull_for_checkbox" type="field" width="-1"></column>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
@@ -696,7 +712,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="1.76746166950596262" xmin="-1.76746166950596262" ymax="1" ymin="-1">
+    <DefaultViewExtent xmax="1.78998911860718168" xmin="-1.78998911860718168" ymax="1" ymin="-1">
       <spatialrefsys>
         <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
         <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
