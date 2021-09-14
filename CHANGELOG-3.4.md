@@ -2,10 +2,11 @@
 
 ## Version 3.4.5
 
-Not released yet
+Release on 2021-09-14
 
 - Fix: multiple selection edition w/ text field. Values can be integer but also string
 - UI: when dock is closed, show edition is pending with green background on dock button
+- Fix: use IGN PLANIGNV2 with free and paid keys
 - UI: replace dock close button text by icon. This makes it more clear the dock is closed but tool can remain active
 - Translation: add Romamian for dataTables (contribution from @ygorigor)
 - Create utils method to parse XML and get error parsing message

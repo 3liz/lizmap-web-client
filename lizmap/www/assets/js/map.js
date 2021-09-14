@@ -6782,10 +6782,10 @@ lizMap.events.on({
             var ignplan = new OpenLayers.Layer.WMTS({
               name: "ignplan",
               url: "https://wxs.ign.fr/" + ignKey + "/wmts",
-              layer: isFreeIgnKey ? "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2" : "GEOGRAPHICALGRIDSYSTEMS.PLANIGN",
+              layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
               matrixSet: "PM",
               style: "normal",
-              format: isFreeIgnKey ? "image/png" : "image/jpeg",
+              format: "image/png",
               projection: new OpenLayers.Projection("EPSG:3857"),
               attribution: ignAttribution
               , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
