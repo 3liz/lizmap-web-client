@@ -2008,7 +2008,8 @@ class lizmapProject extends qgisProject
                 unset($configJson->tooltipLayers->{$key});
             }
             // editionLayers
-            if (property_exists($configJson->editionLayers, $key)) {
+            if (property_exists($configJson, 'editionLayers')
+                && property_exists($configJson->editionLayers, $key)) {
                 unset($configJson->editionLayers->{$key});
             }
             // datavizLayers (array)
