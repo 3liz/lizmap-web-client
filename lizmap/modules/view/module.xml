@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="view" createdate="2011-09-12">
-        <version date="2021-06-21">3.5.0-rc.1</version>
+        <version date="2021-09-14">3.5.0-rc.2</version>
         <label lang="en_US">view</label>
         <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
