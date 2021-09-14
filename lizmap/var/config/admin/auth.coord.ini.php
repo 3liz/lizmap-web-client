@@ -183,3 +183,27 @@ automaticAccountCreation = on
 [multiauth_ldap]
 ; profile to use for ldap
 ldapprofile = "lizmapldap"
+
+
+[saml]
+
+compatiblewithdb = on
+
+; name of the dao to get user data
+dao = "lizmap~user"
+
+; profile to use for jDb
+profile = "jauth"
+
+; name of the php function to crypt the password in the database
+password_crypt_function = sha1
+
+
+; name of the form for the jauthdb_admin module
+form = "lizmap~account_admin"
+; name of the form for the user to modify its account data
+userform = "lizmap~account"
+
+; path of the directory where to store files uploaded by the form (jauthdb_admin module)
+; should be related to the var directory of the application
+uploadsDirectory= ""
