@@ -293,6 +293,10 @@ ldapdao.installparam=noconfigfile
 multiauth.installparam="noconfigfile;localconfig"
 
 ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
+
+saml.installparam="localconfig"
+
+
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
