@@ -1,8 +1,6 @@
-Changelog Lizmap 3.3
-====================
+# Changelog Lizmap 3.3
 
-Version 3.3.16
---------------
+## 3.3.16 - 2021-06-17
 
 - Fix: some IGN base layers with free keys could not be displayed
 - Fix: always display form filters in the same order
@@ -11,26 +9,21 @@ Version 3.3.16
 - Fix: form filter no more fails when using text values with multiple single quote
 - Fix: tabs in anchored popup were not toggling
 
-Version 3.3.15
---------------
-
-Release on 2021-03-25
+## 3.3.15 - 2021-03-25
 
 - Fix database migrator: sequence should be updated 
 - Update Jelix to fix an issue in the installer
 - Fix 'Undefined index' notice
 
-Version 3.3.14
---------------
+## 3.3.14 - 2021-03-04
 
 - Fix the sqlite to pgsql migrator
 - Fix some issues with PHP 8.0 and PHP 7.x
 - Fix geobookmark sql: remove explicit public schema
-- Fix latest issues with rights management in some specific case
+- Fix the latest issues with rights management in some specific case
 - Improved the interface management to be more understandable
 
-Version 3.3.13
---------------
+## 3.3.13 - 2021-01-14
 
 - Fix assert crs is not empty before loading
 - Remove warning about lizmap_search
@@ -39,13 +32,11 @@ Version 3.3.13
 - new config parameter to disable the behavior change of the login page,
   introduced in lizmap 3.3.12, which redirect to the main page when the user
   is already authenticated. You can disable it by setting `noRedirectionOnAuthenticatedLoginPage=on`
-  into the jcommunity section of the configuration (localconfig.ini.php).
+  into the jcommunity section of the configuration (`localconfig.ini.php`).
 - Fix attribute edition sets to null unedited fields
 - Search - Use a transaction to avoid PostgreSQL connection issue
 
-
-Version 3.3.12
---------------
+## 3.3.12 - 2020-12-07
 
 - Add 'empty-data' class in auto popup when value is empty or NULL
 - Fix QGIS Date format support
@@ -68,9 +59,7 @@ php scripts/script.php jcommunity~user:create [--reset] [--admin] [--no-error-if
   form whereas he is authenticated.
 - bugs fixes from 3.2.18
 
-
-Version 3.3.11
----------------------
+## 3.3.11- 2020-10-13
 
 - Fix QGIS custom dates in forms
 - Add zoomlevels to baselayers
@@ -85,8 +74,7 @@ Version 3.3.11
 - Fix the user table name into the Sqlite to Postgresql migrator
 - localization updated. New supported language: Slovak
 
-Version 3.3.10
----------------------
+## 3.3.10 - 2020-08-31
 
 - Fix account management (module jCommunity 1.3.5):
   - Hide reset password links in user profile when password change is not possible
@@ -106,4 +94,3 @@ Version 3.3.10
 - A new command to test the mailer configuration:
   php scripts/script.php jelix~mailer:test your.email@example.com
 - Fix show feature count
-
