@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.12 (Debian 11.12-1.pgdg100+1)
--- Dumped by pg_dump version 13.3 (Ubuntu 13.3-1.pgdg18.04+1)
+-- Dumped by pg_dump version 13.4 (Ubuntu 13.4-1.pgdg18.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -60,6 +60,7 @@ CREATE TABLE tests_projects.form_edition_all_fields_types (
     id integer NOT NULL,
     integer_field integer,
     boolean_nullable boolean,
+    boolean_notnull_for_checkbox boolean NOT NULL,
     integer_array integer[],
     text text
 );
@@ -72,6 +73,7 @@ ALTER TABLE tests_projects.form_edition_all_fields_types OWNER TO lizmap;
 --
 
 CREATE SEQUENCE tests_projects.form_edition_all_fields_types_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -124,7 +126,7 @@ COPY tests_projects.data_integers (id, label) FROM stdin;
 -- Data for Name: form_edition_all_fields_types; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
 --
 
-COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, integer_array, text) FROM stdin;
+COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text) FROM stdin;
 \.
 
 

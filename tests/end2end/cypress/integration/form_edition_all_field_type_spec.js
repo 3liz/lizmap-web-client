@@ -99,4 +99,19 @@ describe('Form edition all field type', function() {
         cy.get('#jforms_view_edition_boolean_nullable').select('False')
         cy.get('#jforms_view_edition_boolean_nullable').should('have.value', 'false')
     })
+
+    it('boolean, not null', function () {
+        cy.get('#jforms_view_edition_boolean_notnull_for_checkbox').should('have.class', 'jforms-ctrl-checkbox')
+        cy.get('#jforms_view_edition__submit_submit').click()
+        // A message should confirm form had been saved
+        cy.get('#lizmap-edition-message').should('be.visible')
+
+        // Assert both values are selected when editing previously submitted feature
+        cy.get('#button-attributeLayers').click()
+        cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({ force: true })
+
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+
+        cy.get("#jforms_view_edition_boolean_notnull_for_checkbox").should('not.be.checked')
+    })
 })
