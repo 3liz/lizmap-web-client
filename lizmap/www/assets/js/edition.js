@@ -2030,48 +2030,99 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         selector = '#'+ e.containerId +' '+ selector;
                     }
 
-                    // Get editable features
                     if ($(selector).val()){
-                        $.post(lizUrls.edition.replace('getFeature', 'editableFeatures'), {
-                            repository: lizUrls.params.repository,
-                            project: lizUrls.params.project,
-                            layerId: $(selector).val().split('.')[0]
-                        }, function (data) {
-                            let hasRestriction = false;
-                            let editableFeaturesId = [];
 
-                            if ('success' in data &&
-                                data['success'] &&
-                                'status' in data &&
-                                data['status'] == 'restricted') {
+                        // Get editable features for each editable layer
+                        // -----
+                        // 1/ Get the distinct layers id and config
+                        var edition_layers = {};
+                        var edition_layers_ids = [];
+                        var fetchers = [];
+                        $(selector).each(function () {
+                            // Get layer id and feature id
+                            var self = $(this);
+                            var val = self.val();
+                            var fid = val.split('.').pop();
+                            var layerId = val.replace('.' + fid, '');
+                            var layerConfig = lizMap.getLayerConfigById(layerId);
 
-                                hasRestriction = true;
-                                for (const feature of data.features) {
-                                    editableFeaturesId.push(feature.id.split('.')[1]);
+                            // No editing for this layer
+                            if ('editionLayers' in config && !(layerId in edition_layers)) {
+                                // Get edition config
+                                var eConfig = null;
+                                if ('editionLayers' in config) {
+                                    eConfig = lizMap.getLayerConfigById(
+                                        layerId,
+                                        config.editionLayers,
+                                        'layerId'
+                                    );
+
+                                    // Add the layer
+                                    edition_layers_ids.push(layerId);
+                                    edition_layers[layerId] = {'edition_config': eConfig};
                                 }
                             }
+                        });
 
-                            // Add action buttons if needed
+                        // 2/ Add promises to get the editable features for each editable layer
+                        for (const i in edition_layers_ids) {
+                            var id = edition_layers_ids[i];
+                            var fetch_params = {
+                                repository: lizUrls.params.repository,
+                                project: lizUrls.params.project,
+                                layerId: id
+                            };
+                            var fetch_url = OpenLayers.Util.urlAppend(
+                                lizUrls.edition.replace('getFeature', 'editableFeatures'),
+                                OpenLayers.Util.getParameterString(fetch_params)
+                            );
+                            const fetcher = fetch(fetch_url).then(function (response) {
+                                return response.json()
+                            });
+                            fetchers.push(fetcher);
+                        }
+
+                        // 3/ Request editable features in parallel
+                        Promise.all(fetchers).then(responses => {
+                            for (const i in edition_layers_ids) {
+                                var data = responses[i];
+                                var layerId = edition_layers_ids[i];
+                                let hasRestriction = false;
+                                let editableFeaturesId = [];
+
+                                if ('success' in data &&
+                                    data['success'] &&
+                                    'status' in data &&
+                                    data['status'] == 'restricted') {
+
+                                    hasRestriction = true;
+                                    for (const feature of data.features) {
+                                        editableFeaturesId.push(feature.id.split('.')[1]);
+                                    }
+
+                                }
+                                edition_layers[layerId]['editable_feature_ids'] = editableFeaturesId;
+                                edition_layers[layerId]['has_restriction'] = hasRestriction;
+                            }
+
+                            // Add the needed action buttons
                             $(selector).each(function () {
+
                                 var self = $(this);
                                 var val = self.val();
                                 var fid = val.split('.').pop();
                                 var layerId = val.replace('.' + fid, '');
                                 var layerConfig = lizMap.getLayerConfigById(layerId);
-
-                                if (!hasRestriction || editableFeaturesId.includes(fid)){
+                                var e_layer = null;
+                                var eConfig = null;
+                                if (layerId in edition_layers) {
+                                    e_layer = edition_layers[layerId];
+                                    eConfig = e_layer['edition_config'];
+                                }
+                                if (e_layer && (!e_layer['has_restriction'] || e_layer['editable_feature_ids'].includes(fid))){
                                     var eHtml = '';
 
-                                    // Edit button
-                                    var eConfig = null;
-                                    if ('editionLayers' in config) {
-                                        eConfig = lizMap.getLayerConfigById(
-                                            layerId,
-                                            config.editionLayers,
-                                            'layerId'
-                                        );
-                                    }
-
+                                    // Feature editing button
                                     if (eConfig &&
                                         (eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True")
                                         && self.next('span.popupButtonBar').find('button.popup-layer-feature-edit').length == 0
