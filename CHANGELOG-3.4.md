@@ -24,7 +24,7 @@
 - Fix: Pre-generated cache is not used since Lizmap 3.4.1
 - Fix: links into mails for registration or password recovery
 
-## Version 3.4.3 - 2021-03-26
+## 3.4.3 - 2021-03-26
 
 - Fix form not displayed when editing an existing feature
 - Some fixes in the js to getprint
