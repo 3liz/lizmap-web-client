@@ -5,6 +5,10 @@
 - Fix: issue during the installation of the ldapdao module. Upgrade it to 2.2.1
 - Fix: export button allowed in filter data with form when format is ODS
 - Fix: integer key column sorted as text in attribute table tool
+- Fix: Editing
+  - In case of more than one editable layers, when there is a filter by login (or by polygon) activated,
+  some of the popup items could miss the pencil button to open the editing form. Corrected by requesting
+  the editable features for all the editable layers of the displayed popup items, and not only the first.
 
 ## 3.4.5 - 2021-09-14
 
