@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.5.0-pre
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.6.0-pre
 ------------------------------------------------------------------
 
 ![Unit tests](https://github.com/3liz/lizmap-web-client/workflows/Unit%20tests%20%F0%9F%8E%B3/badge.svg)
@@ -9,7 +9,7 @@
 Lizmap web application, by 3LIZ.
 
     begin       : 2011-11-01
-    copyright   : (C) 2011-2020 by 3liz
+    copyright   : (C) 2011-2021 by 3liz
     authors     : René-Luc D'Hont and Michaël Douchin
     email       : info@3liz.com
     website     : http://www.3liz.com
