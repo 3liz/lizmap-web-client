@@ -40,7 +40,7 @@ class ldapdaoModuleInstaller extends jInstallerModule {
     }
 
     protected function getAuthConfFile() {
-        $authconfig = $this->entrypoint->config->coordplugins['auth'];
+        $authconfig = $this->entryPoint->config->coordplugins['auth'];
         return jApp::configPath($authconfig);
     }
 }

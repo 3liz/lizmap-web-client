@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="ldapdao@3liz.com" name="ldapdao" createdate="2014-11-18">
-        <version date="2020-11-09">2.2.0</version>
+        <version date="2021-09-16">2.2.1</version>
         <label lang="en_US">ldapdao</label>
         <description lang="en_US" />
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
-        <copyright>2014-2020 3liz, 2017-2020 Innophi</copyright>
+        <copyright>2014-2021 3liz, 2017-2020 Innophi</copyright>
     </info>
     <dependencies>
         <jelix minversion="1.6.21" maxversion="1.7.*"/>
