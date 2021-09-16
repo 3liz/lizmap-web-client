@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix: issue during the installation of the ldapdao module. Upgrade it to 2.2.1 
+
 ## 3.4.5 - 2021-09-14
 
 - Fix: multiple selection edition w/ text field. Values can be integer but also string
