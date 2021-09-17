@@ -276,8 +276,13 @@ class QgisFormTest extends TestCase
         $layer = new QgisLayerForTests();
         $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'True', 'allow_without_geom' => $allowWithoutGeom));
         $layer->dbFieldValues = array();
+
+        $testCfg = new Project\ProjectConfig(new StdClass());
+
         $proj = new ProjectForTests();
         $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, null));
+        $proj->setCfg($testCfg);
+
         $layer->setProject($proj);
         $formMock->setForm($jForm);
         $formMock->setLayer($layer);
