@@ -6,9 +6,9 @@
             (<a href="{jurl 'jcommunity~login:out'}">{@jcommunity~login.logout@}</a>,
             <a href="{jurl 'jcommunity~account:show', array('user'=>$login)}">{@jcommunity~login.login.account@}</a>)
         </div>
-
+        {hook 'JauthLoginFormExtraAuthenticated'}
     {else}
-
+    {hook 'JauthLoginFormExtraBefore'}
     {form $form, 'jcommunity~login:in', array(), 'htmlbootstrap'}
         <fieldset>
             <div class="control-group">
@@ -44,6 +44,6 @@
             {if $canResetPassword}{if $canRegister}<span class="loginbox-links-separator"> - </span>{/if}
                 <a href="{jurl 'jcommunity~password_reset:index'}" class="loginbox-links-resetpass">{@jcommunity~login.login.password.reset@}</a>{/if}
         </div>
-
+    {hook 'JauthLoginFormExtraAfter'}
     {/ifuserconnected}
 </div>
