@@ -51,6 +51,9 @@ abstract class OGCRequest
      */
     protected $tplExceptions;
 
+    /**
+     * @var App\AppContextInterface
+     */
     protected $appContext;
 
     /**
@@ -61,14 +64,14 @@ abstract class OGCRequest
      * @param \lizmapServices         $services
      * @param string                  $requestXml the params array
      */
-    public function __construct($project, $params, $services, App\AppContextInterface $appContext, $requestXml = null)
+    public function __construct($project, $params, $services, $requestXml = null)
     {
         //print_r( $project != null );
         $this->project = $project;
         $this->repository = $project->getRepository();
 
         $this->services = $services;
-        $this->appContext = $appContext;
+        $this->appContext = $this->project->getAppContext();
 
         $params['map'] = $project->getRelativeQgisPath();
         $this->params = Proxy::normalizeParams($params);

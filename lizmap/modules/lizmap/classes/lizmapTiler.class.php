@@ -74,8 +74,7 @@ class lizmapTiler
                     'service' => 'WMS',
                     'request' => 'GetCapabilities',
                 ),
-                lizmap::getServices(),
-                lizmap::getAppContext()
+                lizmap::getServices()
             );
             $wmsResult = $wmsRequest->process();
             // Http code error
