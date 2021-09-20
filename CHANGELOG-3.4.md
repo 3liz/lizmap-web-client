@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Fix: issue during the installation of the ldapdao module. Upgrade it to 2.2.1 
+- Fix: export button allowed in filter data with form when format is ODS
 
 ## 3.4.5 - 2021-09-14
 
