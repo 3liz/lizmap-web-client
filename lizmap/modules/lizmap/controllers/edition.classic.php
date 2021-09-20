@@ -283,8 +283,7 @@ class editionCtrl extends jController
             $wfs_request = new \Lizmap\Request\WFSRequest(
                 $this->project,
                 $wfs_params,
-                lizmap::getServices(),
-                lizmap::getAppContext()
+                lizmap::getServices()
             );
             // FIXME no support of the case where $wfs_response is the content of serviceException?
             $wfs_response = $wfs_request->process();
