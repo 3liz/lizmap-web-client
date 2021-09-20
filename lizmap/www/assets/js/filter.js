@@ -47,7 +47,9 @@ var lizLayerFilterTool = function() {
             html+= '<br/><button id="liz-filter-zoom" class="btn btn-mini btn-primary" title="'+lizDict['filter.btn.zoom.title']+'">'+lizDict['filter.btn.zoom.label']+'</button>';
 
             // Add export button
-            html+= '&nbsp;&nbsp;<button id="liz-filter-export" class="btn btn-mini btn-primary" title="'+lizDict['filter.btn.export.title']+'">'+lizDict['filter.btn.export.label']+'</button>';
+            if (lizMap.getVectorLayerResultFormat().includes('ODS')) {
+                html+= '&nbsp;&nbsp;<button id="liz-filter-export" class="btn btn-mini btn-primary" title="'+lizDict['filter.btn.export.title']+'">'+lizDict['filter.btn.export.label']+'</button>';
+	        }
 
             // Add unfilter link
             html+= '&nbsp;&nbsp;<button id="liz-filter-unfilter" class="btn btn-mini btn-primary" title="'+lizDict['filter.btn.reset.title']+'">'+lizDict['filter.btn.reset.label']+'</button>';
@@ -88,12 +90,14 @@ var lizLayerFilterTool = function() {
             });
 
             // Activate the export button
-            $('#liz-filter-export').click(function(){
-                lizMap.config.layers[filterConfigData.layerName].request_params['filter'] = filterConfigData.filter;
-                lizMap.exportVectorLayer(filterConfigData.layerName, 'ODS', false);
-                delete lizMap.config.layers[filterConfigData.layerName].request_params['filter'];
-                return false;
-            });
+            if (lizMap.getVectorLayerResultFormat().includes('ODS')) {
+                $('#liz-filter-export').click(function(){
+                    lizMap.config.layers[filterConfigData.layerName].request_params['filter'] = filterConfigData.filter;
+                    lizMap.exportVectorLayer(filterConfigData.layerName, 'ODS', false);
+                    delete lizMap.config.layers[filterConfigData.layerName].request_params['filter'];
+                    return false;
+                });
+            }
 
             // Add tooltip
             $('#filter-content [title]').tooltip();
