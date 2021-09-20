@@ -1323,15 +1323,20 @@ var lizAttributeTable = function() {
             }
 
             function valueMapInAttributeTable( aName, data, type, full, meta ){
-            // Translate field ( language translation OR code->label translation )
+                // Translate field ( language translation OR code->label translation )
                 var colMeta = meta.settings.aoColumns[meta.col];
                 var colName = colMeta.mData
                 var translation_dict = null;
                 var tdata = data;
-                if(data || data === 0)
+                if (data || data === 0) {
                     tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
-                if( tdata === null )
+                }
+                // lizMap.translateWfsFieldValues() change `data` type integer to string
+                // so we return original `data` if its value has not changed or is null
+                // it avoids wrong sorting in attribute table column
+                if (tdata == data || tdata === null) {
                     tdata = data;
+                }
 
                 return tdata;
             }
