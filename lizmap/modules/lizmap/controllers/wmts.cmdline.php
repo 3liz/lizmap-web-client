@@ -429,8 +429,7 @@ class wmtsCtrl extends jControllerCmdLine
                                     'TileRow' => $row,
                                     'TileCol' => $col,
                                 ),
-                                lizmap::getServices(),
-                                lizmap::getAppContext()
+                                lizmap::getServices()
                             );
                             if ($forced) {
                                 $request->setForceRequest(true);
