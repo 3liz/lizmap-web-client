@@ -50,7 +50,7 @@ describe('Filter layer data by polygon for groups', function () {
         // Runs before each tests in the block
         cy.visit('/index.php/view/map/?repository=testsrepository&project=filter_layer_data_by_polygon_for_groups')
 
-        cy.wait(1000)
+        cy.wait(3000)
         // The user can see the data in the map, popup and attribute table only for the layer`townhalls_pg`
 
         // 1/ map
