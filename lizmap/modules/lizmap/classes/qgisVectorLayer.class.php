@@ -1058,7 +1058,7 @@ class qgisVectorLayer extends qgisMapLayer
         );
 
         // Perform the request to get the editable features
-        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, lizmap::getServices(), lizmap::getAppContext());
+        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, lizmap::getServices());
         $result = $wfsRequest->process();
 
         // Check code
@@ -1285,7 +1285,7 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         // Check if the current user is connected
-        $appContext = \lizmap::getAppContext();
+        $appContext = $this->project->getAppContext();
         $is_connected = $appContext->UserIsConnected();
         $user_key = 'anonymous';
         if ($is_connected) {
