@@ -459,7 +459,7 @@ class datavizPlot
                 $wfsparams['EXP_FILTER'] = $exp_filter;
             }
 
-            $wfsrequest = new \Lizmap\Request\WFSRequest($this->lproj, $wfsparams, lizmap::getServices(), lizmap::getAppContext());
+            $wfsrequest = new \Lizmap\Request\WFSRequest($this->lproj, $wfsparams, lizmap::getServices());
             // FIXME no support of the case where $wfsresponse is the content of serviceException?
             $wfsresponse = $wfsrequest->process();
             $features = null;
