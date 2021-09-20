@@ -199,4 +199,36 @@ class projectConfigTest extends TestCase
         $this->assertTrue($testCfg->getBooleanOption('atlasHighlightGeometry'));
         $this->assertNull($testCfg->getBooleanOption('atlasEnabled'));
     }
+
+    /**
+     * Test an empty project config
+     */
+    public function testEmptyConfig()
+    {
+        $testCfg = new Project\ProjectConfig(new StdClass());
+        $this->assertEquals(new stdClass(), $testCfg->getLayers());
+        $this->assertNull($testCfg->getLayer('SousQuartiers'));
+        $this->assertEquals(new stdClass(), $testCfg->getAttributeLayers());
+        $this->assertEquals(new stdClass(), $testCfg->getLocateByLayer());
+        $this->assertNull($testCfg->findLayerByAnyName('Sous-Quartiers'));
+        $this->assertNull($testCfg->findLayerByName('SousQuartiers'));
+        $this->assertNull($testCfg->findLayerByShortName('test_shortname'));
+        $this->assertNull($testCfg->findLayerByTitle('Points of interest'));
+        $this->assertNull($testCfg->findLayerByLayerId('edition_line20130409161630329'));
+        $this->assertNull($testCfg->findLayerByTypeName('tramstop'));
+        $this->assertEquals(new stdClass(), $testCfg->getEditionLayers());
+        $this->assertNull($testCfg->getEditionLayerByName('tramstop'));
+        $this->assertNull($testCfg->getEditionLayerByLayerId('edition_line20130409161630329'));
+        $this->assertFalse($testCfg->hasEditionLayers());
+        $this->assertEquals(new stdClass(), $testCfg->getOptions());
+        $this->assertNull($testCfg->getOption('atlasDuration'));
+        $this->assertNull($testCfg->getBooleanOption('atlasEnabled'));
+        $this->assertEquals(new stdClass(), $testCfg->getFormFilterLayers());
+        $this->assertEquals(new stdClass(), $testCfg->getTimemanagerLayers());
+        $this->assertEquals(new stdClass(), $testCfg->getAtlas());
+        $this->assertEquals(new stdClass(), $testCfg->getTooltipLayers());
+        $this->assertEquals(new stdClass(), $testCfg->getLoginFilteredLayers());
+        $this->assertEquals(new stdClass(), $testCfg->getPolygonFilterConfig());
+        $this->assertEquals(new stdClass(), $testCfg->getDatavizLayers());
+    }
 }
