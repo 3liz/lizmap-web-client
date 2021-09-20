@@ -2,8 +2,6 @@
 
 ## Version 3.5.0
 
-- Fix: export button allowed in filter data with form when format is ODS
-
 ### Added
 
 - User experience
@@ -38,6 +36,7 @@
   - In case of more than one editable layers, when there is a filter by login (or by polygon) activated,
   some of the popup items could miss the pencil button to open the editing form. Corrected by requesting
   the editable features for all the editable layers of the displayed popup items, and not only the first.
+- Before the button export to ODS was always visible. The button is now shown only if available
 
 ### New JS events
 
