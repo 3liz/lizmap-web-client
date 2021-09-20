@@ -1093,6 +1093,83 @@ class Project
         return $loginFilters[$layerName];
     }
 
+    /** Checks if the project has a configuration and layers for the filter by polygon.
+     *
+     * @return bool
+     */
+    public function hasPolygonFilteredLayers()
+    {
+        $filter_config = (array) $this->cfg->getPolygonFilterConfig();
+        if (!$filter_config) {
+            return false;
+        }
+
+        if (!array_key_exists('config', $filter_config)) {
+            return false;
+        }
+
+        if (array_key_exists('layers', $filter_config) && count($filter_config['layers']) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the configuration for the polygon filter of the given layer
+     * from the Lizmap JSON config file.
+     *
+     * If the polygon filter is configured for editing only
+     * and we are not in an editing context we return null
+     * to tell there is no filter in this context.
+     *
+     * @param string $layerName        : the layer name
+     * @param bool   $editing_context: we are in editing context
+     *
+     * @return null|array the configuration for the polygon filter the given layer
+     */
+    public function getLayerPolygonFilterConfig($layerName, $editing_context = false)
+    {
+        if (!$this->hasPolygonFilteredLayers()) {
+            return null;
+        }
+
+        // Get layer ID
+        $layer = $this->cfg->findLayerByAnyName($layerName);
+        if (!$layer) {
+            return null;
+        }
+
+        // Get the global filter by polygon config in cfg
+        $polygon_filter_config = $this->cfg->getPolygonFilterConfig();
+
+        // Find the given layer among the layers object of the config
+        // layers is an array of objects with keys: layer, primary_key & filter_mode
+        $filtered_layers = (array) $polygon_filter_config->layers;
+
+        $layer_config = null;
+        foreach ($filtered_layers as $filtered_layer) {
+            if ($filtered_layer->layer == $layer->id) {
+                $layer_config = $filtered_layer;
+
+                break;
+            }
+        }
+        if (!$layer_config) {
+            return null;
+        }
+        $layer_config = (array) $layer_config;
+
+        // If the polygon filter is configured for editing only
+        // and we are not in an editing context
+        // No need to return the filter config
+        if (!$editing_context && $layer_config['filter_mode'] == 'editing_only') {
+            return null;
+        }
+
+        return $layer_config;
+    }
+
     private function optionToBoolean($configString)
     {
         $ret = false;

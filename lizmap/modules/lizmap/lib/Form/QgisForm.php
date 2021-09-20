@@ -17,7 +17,7 @@ use Lizmap\App;
 class QgisForm implements QgisFormControlsInterface
 {
     /**
-     * @var \qgisMapLayer|\qgisVectorLayer
+     * @var \qgisVectorLayer
      */
     protected $layer;
 
@@ -63,11 +63,11 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * QgisForm constructor.
      *
-     * @param \qgisMapLayer|\qgisVectorLayer $layer
-     * @param \jFormsBase                    $form
-     * @param string                         $featureId
-     * @param bool                           $loginFilteredOverride
-     * @param \AppContextInterface           $appContext
+     * @param \qgisVectorLayer     $layer
+     * @param \jFormsBase          $form
+     * @param string               $featureId
+     * @param bool                 $loginFilteredOverride
+     * @param \AppContextInterface $appContext
      *
      * @throws \Exception
      */
@@ -503,7 +503,7 @@ class QgisForm implements QgisFormControlsInterface
             $values = $this->layer->getDbFieldValues($feature);
         }
 
-        // Get list of fields diplayed in form
+        // Get list of fields displayed in form
         // can be an empty list
         $attributeEditorForm = $this->getAttributesEditorForm();
         if ($attributeEditorForm) {
@@ -520,6 +520,14 @@ class QgisForm implements QgisFormControlsInterface
                 $constraintExpressions[$fieldName] = $constraints['exp_value'];
             }
         }
+
+        // Check the geometry is inside the filtering polygons, if relevant
+        $geomInPolygon = $this->layer->checkFeatureAgainstPolygonFilter($values);
+        if (!$geomInPolygon) {
+            $check = false;
+            $form->setErrorOn($geometryColumn, $this->appContext->getLocale('view~edition.message.error.geometry.outside.polygons'));
+        }
+
         // Get filter by login
         $expByUserKey = 'filterByLogin';
         $expByUser = \qgisExpressionUtils::getExpressionByUser($this->layer, true);
