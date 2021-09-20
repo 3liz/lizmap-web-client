@@ -80,6 +80,12 @@ class WFSRequest extends OGCRequest
             return $params;
         }
 
+        // filter by polygon: no need to add the expression here as it is done QGIS Server side
+        // or in the method getfeaturePostgres
+        // filter by polygon is compatible for
+        // QGIS >= 3.10 and LWC >= 3.5 and Lizmap plugin >= 3.6.x
+
+        // Initialize the list of filters to add
         $expFilters = array();
 
         // Get client exp_filter parameter
@@ -205,6 +211,7 @@ class WFSRequest extends OGCRequest
                         $jsonData['types'] = (object) $types;
                     }
                 }
+                /** @var qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $jsonData['aliases'] = (object) $layer->getAliasFields();
                 $jsonData['defaults'] = (object) $layer->getDefaultValues();
@@ -251,6 +258,7 @@ class WFSRequest extends OGCRequest
 
             return $this->serviceException();
         }
+        /** @var qgisVectorLayer $qgisLayer The QGIS vector layer instance */
         $qgisLayer = $this->project->getLayer($lizmapLayer->id);
         $this->qgisLayer = $qgisLayer;
 
@@ -312,6 +320,7 @@ class WFSRequest extends OGCRequest
             $mime = 'text/json';
             $layer = $this->project->findLayerByAnyName($this->param('typename'));
             if ($layer != null) {
+                /** @var qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $aliases = $layer->getAliasFields();
                 $layer = json_decode($data);
@@ -564,11 +573,19 @@ class WFSRequest extends OGCRequest
         $sql .= $this->getbboxSql($params);
 
         // EXP_FILTER
+        // This also include the filter by login, as done above in the function "parameters"
         $expFilterSql = $this->parseExpFilter($cnx, $params);
         if ($expFilterSql === false) {
+            // Do not use direct SQL query to PostgreSQL but a request to QGIS Server
             return $this->getfeatureQgis();
         }
         $sql .= $expFilterSql;
+
+        // Filter by polygon
+        $polygonFilter = $this->qgisLayer->getPolygonFilter(false, 5);
+        if ($polygonFilter) {
+            $sql .= ' AND ( '.$polygonFilter.' ) ';
+        }
 
         // FEATUREID
         $sql .= $this->parseFeatureId($cnx, $params);

@@ -578,6 +578,100 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
+     * Check if the given edited feature intersects the filtering polygon
+     * for the current user.
+     *
+     * If there is no filter by polygon, this method returns true.
+     *
+     * @param array $values values computed from the form
+     *
+     * @throws Exception
+     *
+     * @return bool false when there is a filter by polygon and the geometry is outside the polygon(s)
+     */
+    public function checkFeatureAgainstPolygonFilter($values)
+    {
+        $project = $this->getProject();
+        $repository = $project->getRepository();
+
+        // Optional filters
+        // By login and/or by polygon
+        // Return empty data if no filter is configured for this project
+        if (!$project->hasPolygonFilteredLayers()) {
+            return true;
+        }
+
+        // Get configuration
+        $polygonFilterConfig = $project->getLayerPolygonFilterConfig($this->getName(), true);
+        if (!$polygonFilterConfig) {
+            return true;
+        }
+
+        // Filter override by the acl configuration for this repository
+        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $repository->getKey())) {
+            return true;
+        }
+
+        $dbFieldsInfo = $this->getDbFieldsInfo();
+        $geometryColumn = $dbFieldsInfo->geometryColumn;
+
+        // Nothing to check if there is no geometry
+        if (empty($geometryColumn) || empty($values[$geometryColumn])) {
+            return true;
+        }
+        $geometry_value = $values[$geometryColumn];
+        $geometry_sql = $this->getGeometryAsSql($geometry_value);
+
+        // Get polygon
+        $polygon = $this->getPolygonFilterGeometry(true, 5);
+        if (empty($polygon)) {
+            return true;
+        }
+
+        // Get the polygon filter config to get the spatial relation
+        $spatial_relationship = 'ST_Intersects';
+        $allowed_relationships = array('intersects', 'contains');
+        if (array_key_exists('spatial_relationship', $polygonFilterConfig)) {
+            if (in_array($polygonFilterConfig['spatial_relationship'], $allowed_relationships)) {
+                $spatial_relationship = 'ST_'.$polygonFilterConfig['spatial_relationship'];
+            }
+        }
+
+        // Query PostgreSQL to get the intersection between the geometry and the polygons
+        $sql = "
+        WITH
+        polygon AS (
+            SELECT ST_Transform(ST_GeomFromEWKT('".$polygon."'), ".$this->srid.') AS geom
+        ),
+        feature AS (
+            SELECT '.$geometry_sql.' AS geom
+        )
+        SELECT 1 AS status
+        FROM polygon AS p, feature AS f
+        WHERE '.$spatial_relationship.'(p.geom, f.geom)
+        ';
+
+        // Try the query and get result if successful
+        // The query returns 1 line if the two geometries intersects, else 0
+        $cnx = $this->getDatasourceConnection();
+
+        try {
+            $rs = $cnx->query($sql);
+            foreach ($rs as $line) {
+                return true;
+            }
+
+            return false;
+        } catch (Exception $e) {
+            jLog::log('SQL = '.$sql);
+
+            throw $e;
+        }
+
+        return false;
+    }
+
+    /**
      * @param array $values
      *
      * @throws Exception
@@ -620,7 +714,7 @@ class qgisVectorLayer extends qgisMapLayer
             $returnKeys[] = $cnx->encloseName($key);
         }
         $returnKeysString = implode(', ', $returnKeys);
-        // For spatialite, we will run a complentary query to retrieve the pkeys
+        // For spatialite, we will run a complementary query to retrieve the pkeys
         if ($this->provider == 'postgres') {
             $sql .= '  RETURNING '.$returnKeysString;
         }
@@ -846,9 +940,17 @@ class qgisVectorLayer extends qgisMapLayer
         }
     }
 
+    /**
+     * Get the layer editable features.
+     * Used client-side (JS) to fetch the features which are editable by the authenticated user
+     * when there is a filter by login (or by polygon). This allows to deactivate the editing icon
+     * for the non-editable features inside the popup and attribute table.
+     *
+     * @return array Data containing the status (restricted|unrestricted) and the features if restricted
+     */
     public function editableFeatures()
     {
-        $data = array(
+        $unrestricted_empty_data = array(
             'status' => 'unrestricted',
             'features' => array(),
         );
@@ -856,39 +958,92 @@ class qgisVectorLayer extends qgisMapLayer
         $project = $this->getProject();
         $rep = $project->getRepository();
 
-        // login filtered override
+        // Optional filters
+        // By login and/or by polygon
+        // Return empty data if no filter is configured for this project
+        if (!$project->hasLoginFilteredLayers() && !$project->hasPolygonFilteredLayers()) {
+            return $unrestricted_empty_data;
+        }
+
+        // Filter override by the acl configuration for this repository
         if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $rep->getKey())) {
-            return $data;
+            return $unrestricted_empty_data;
         }
 
-        // Get filter by login
+        // We first assume there are some filters
+        // We will then check if there is one for the login filter & for the polygon filter
+        $exp_filters = array();
+        $loginRestricted = true;
+        $polygonRestricted = true;
+
+        // Get and check the filter by login for the layer
         $loginFilter = $project->getLoginFilter($this->getName(), true);
-        // login filters array is empty
         if (empty($loginFilter)) {
-            return $data;
+            // login filters array is empty
+            $loginRestricted = false;
+        } else {
+            if (!array_key_exists('filter', $loginFilter)) {
+                // layer not in login filters array
+                $loginRestricted = false;
+            }
+        }
+        if ($loginRestricted) {
+            $exp_filters[] = $loginFilter['filter'];
         }
 
-        // layer not in login filters array
-        if (!array_key_exists('filter', $loginFilter)) {
-            return $data;
+        // Get and check the polygon filter configuration for the layer for the editing context
+        $polygonFilterConfig = $project->getLayerPolygonFilterConfig($this->getName(), true);
+        $polygonFilterExpression = '';
+        if (!$polygonFilterConfig) {
+            // polygon filter config array is empty
+            $polygonRestricted = false;
+        } else {
+            // Get the filter
+            $polygonFilterExpression = $this->getPolygonFilter(true, 5);
+            if (!empty($polygonFilterExpression)) {
+                $exp_filters[] = $polygonFilterExpression;
+            }
+        }
+
+        // No filter for this layer: return empty data
+        if (!$loginRestricted && !$polygonRestricted) {
+            return $unrestricted_empty_data;
         }
 
         // Editable features are a restricted list
-        $data['status'] = 'restricted';
+        $restricted_empty_data = array(
+            'status' => 'restricted',
+            'features' => array(),
+        );
 
-        // Filter
-        $expByUser = $loginFilter['filter'];
+        // Build the combined filter
+        // We need to add the filters in the EXP_FILTER parameter
+        // login expression filter and the polygon expression filter
+        $exp_filter = implode(' AND ', $exp_filters);
 
-        // Typename
+        // But we need to add the needed property for the WFS filter to work
+        // (Some QGIS Server versions could return no data
+        // if the fields used in filter were not added in propertyname parameter)
+
+        // Get layer typename
         $typename = $this->getShortName();
         if (!$typename) {
             $typename = $this->getName();
         }
         $typename = str_replace(' ', '_', $typename);
 
+        // Get the needed fields to retrieve
         $dbFieldsInfo = $this->getDbFieldsInfo();
         $pKeys = $dbFieldsInfo->primaryKeys;
-        $properties = array_merge($pKeys, array($loginFilter['filterAttribute']));
+        $loginProperties = array();
+        $polygonProperties = array();
+        if ($loginRestricted) {
+            $loginProperties[] = $loginFilter['filterAttribute'];
+        }
+        if ($polygonRestricted) {
+            $polygonProperties[] = $polygonFilterConfig['primary_key'];
+        }
+        $properties = array_merge($pKeys, $loginProperties, $polygonProperties);
 
         $params = array(
             'MAP' => $project->getPath(),
@@ -899,21 +1054,21 @@ class qgisVectorLayer extends qgisMapLayer
             'PROPERTYNAME' => implode(',', $properties),
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
-            'EXP_FILTER' => $expByUser,
+            'EXP_FILTER' => $exp_filter,
         );
 
-        // Perform request
+        // Perform the request to get the editable features
         $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, lizmap::getServices(), lizmap::getAppContext());
         $result = $wfsRequest->process();
 
         // Check code
         if (floor($result->code / 100) >= 4) {
-            return $data;
+            return $restricted_empty_data;
         }
 
         // Check mime/type
         if (in_array(strtolower($result->mime), array('text/html', 'text/xml'))) {
-            return $data;
+            return $restricted_empty_data;
         }
 
         // Get data
@@ -922,16 +1077,18 @@ class qgisVectorLayer extends qgisMapLayer
             $wfsData = jFile::read($wfsData);
         }
 
-        // Check data
+        // Check data: if there is no data returned by WFS, the user has not access to it
         if (!$wfsData) {
-            return $data;
+            return $restricted_empty_data;
         }
 
         // Get data from layer
         $wfsData = json_decode($wfsData);
-        $data['features'] = $wfsData->features;
 
-        return $data;
+        return array(
+            'status' => 'restricted',
+            'features' => $wfsData->features,
+        );
     }
 
     public function linkChildren($fkey, $fval, $pkey, $pvals)
@@ -1083,5 +1240,171 @@ class qgisVectorLayer extends qgisMapLayer
             'modifyGeometry' => 'False',
             'deleteFeature' => 'False',
         );
+    }
+
+    /**
+     * Get the polygon filter expression and the polygon geometry eWKT representation
+     * as returned by Lizmap plugin for QGIS Server for the layer,
+     * depending on the authenticated (or not) user and groups.
+     *
+     * The filter expression will be used to filter the layer data by polygon.
+     * The geometry eWKT representation to check that the edited features intersects the polygon.
+     *
+     * This is used only when querying the data directly from PostgreSQL
+     * via a SQL query (for WFS or in the editing related classes).
+     * For example, the filter is added in the WHERE clause when needed.
+     *
+     * @param bool $editing_context If we are in a editing context or no. Default false
+     * @param int  $ttl             Cache TTL in seconds. Default 60. Use -1 to deactivate the cache.
+     *
+     * @return array associative array containing the keys 'expression' and 'polygon'
+     */
+    protected function requestPolygonFilter($editing_context = false, $ttl = 60)
+    {
+        // No filter is the user can see all data
+        $repository = $this->project->getRepository();
+
+        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $repository->getKey())) {
+            return array(
+                'expression' => '',
+                'polygon' => '',
+            );
+        }
+
+        // Default filter to return no data, i.e "False"
+        // It needs to be compatible with all providers
+        $no_data_array = array(
+            'expression' => '1 = 0',
+            'polygon' => 'SRID=2154;POLYGON((0 0.1,0.1 0.1,0.1 0,0 0.1))',
+        );
+
+        // No filter if Lizmap plugin is not installed server side
+        $plugins = $this->project->getQgisServerPlugins();
+        if (!array_key_exists('Lizmap', $plugins)) {
+            return $no_data_array;
+        }
+
+        // Check if the current user is connected
+        $appContext = \lizmap::getAppContext();
+        $is_connected = $appContext->UserIsConnected();
+        $user_key = 'anonymous';
+        if ($is_connected) {
+            $user = $appContext->getUserSession();
+            $user_key = $user->login;
+        }
+
+        // Get cached filter for this repository, project, layer, login and editing context
+        // TODO: Use the project cache tools
+        $use_cache = false;
+        // $use_cache = ($ttl > 0);
+        // $key = $this->project->getKey().'_'.$repository->getKey();
+        // $key .= '_'.$this->id.'_'.$user_key;
+        // $key .= '_'.(string) $editing_context;
+        // $cache_key = md5($key);
+        // $cached_filter = jCache::get($cache_key);
+        // if ($cached_filter && $use_cache) {
+        //     return json_decode($cached_filter);
+        // }
+
+        // Request the "polygon filter" string from QGIS Server lizmap plugin
+        $params = array(
+            'service' => 'LIZMAP',
+            'request' => 'GetSubsetString',
+            'map' => $this->project->getRelativeQgisPath(),
+            'layer' => $this->name,
+        );
+
+        // Add user and groups in parameters
+        $user_and_groups = array(
+            'Lizmap_User' => '',
+            'Lizmap_User_Groups' => '',
+            'Lizmap_Edition_Context' => $editing_context,
+        );
+        if ($is_connected) {
+            $userGroups = $appContext->aclUserGroupsId();
+            $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $repository->getKey());
+            $user_and_groups['Lizmap_User'] = $user->login;
+            $user_and_groups['Lizmap_User_Groups'] = implode(', ', $userGroups);
+            $user_and_groups['Lizmap_Override_Filter'] = $loginFilteredOverride;
+        }
+
+        $params = array_merge($params, $user_and_groups);
+        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
+
+        if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
+            $json = json_decode($data);
+        } else {
+            return $no_data_array;
+        }
+
+        if (property_exists($json, 'status')) {
+            if ($json->status == 'success'
+                && property_exists($json, 'filter')
+                && property_exists($json, 'polygons')
+            ) {
+                // Get results
+                $filter = (string) $json->filter;
+                $polygon = (string) $json->polygons;
+                $polygon_filter_data = array(
+                    'expression' => $filter,
+                    'polygon' => $polygon,
+                );
+
+                if ($use_cache) {
+                    // Todo: use the project cache tools
+                    // jCache::set($cache_key, json_encode($polygon_filter_data), $ttl);
+                }
+
+                return $polygon_filter_data;
+            }
+
+            // No success or no filter
+            if (property_exists($json, 'message')) {
+                jLog::log('LIZMAP GetSubString from QGIS Server error: '.$json->message, 'error');
+            }
+
+            return $no_data_array;
+        }
+
+        // Wrong output format from QGIS Sever Lizmap plugin
+        jLog::log('LIZMAP GetSubString JSON response is not well formed - Layer: '.$this->name, 'error');
+
+        return $no_data_array;
+    }
+
+    /**
+     * Returns the expression used to filter the layer data by polygon.
+     *
+     * It is requested from Lizmap plugin and used only when querying the data
+     * directly from PostgreSQL via a SQL query. The filter is added in the WHERE clause.
+     *
+     * @param bool $editing_context If we are in a editing context or no. Default false
+     * @param int  $ttl             Cache TTL in seconds. Default 60. Use -1 to deactivate the cache.
+     *
+     * @return string the expression to filter the layer by polygon
+     */
+    public function getPolygonFilter($editing_context = false, $ttl = 60)
+    {
+        $filter_from_lizmap = $this->requestPolygonFilter($editing_context, $ttl);
+
+        return $filter_from_lizmap['expression'];
+    }
+
+    /**
+     * Returns the geometry in eWKT of the authorized polygon for this layer and the current user.
+     *
+     * It is requested from Lizmap plugin and used only if a filter by polygon is active.
+     *
+     * @param bool $editing_context If we are in a editing context or no. Default false
+     * @param int  $ttl             Cache TTL in seconds. Default 60. Use -1 to deactivate the cache.
+     *
+     * @return string the geometry of the polygons in eWKT format
+     */
+    public function getPolygonFilterGeometry($editing_context = false, $ttl = 60)
+    {
+        $filter_from_lizmap = $this->requestPolygonFilter($editing_context, $ttl);
+
+        return $filter_from_lizmap['polygon'];
     }
 }
