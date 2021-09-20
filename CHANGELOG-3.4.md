@@ -1,9 +1,10 @@
 # Changelog Lizmap 3.4
 
-## Unreleased
+## 3.4.6 - Unreleased
 
-- Fix: issue during the installation of the ldapdao module. Upgrade it to 2.2.1 
+- Fix: issue during the installation of the ldapdao module. Upgrade it to 2.2.1
 - Fix: export button allowed in filter data with form when format is ODS
+- Fix: integer key column sorted as text in attribute table tool
 
 ## 3.4.5 - 2021-09-14
 
