@@ -188,13 +188,13 @@ class qgisExpressionUtils
      * Request QGIS Server to provide features with a form scope used for drilling down select.
      *
      * @param qgisVectorLayer $layer        A QGIS vector layer
-     * @param string          $expresion    The expressions' list to evaluate
-     * @param array()         $form_feature The feature in the form
-     * @param array()         $fields       List of requested fields
-     * @param bool            $edition      It's for editon
+     * @param string          $expression   The expressions' list to evaluate
+     * @param array           $form_feature The feature in the form
+     * @param array           $fields       List of requested fields
+     * @param bool            $edition      It's for edition
      * @param mixed           $expression
      *
-     * @return array() the features filtered with a form scope
+     * @return array the features filtered with a form scope
      */
     public static function getFeatureWithFormScope($layer, $expression, $form_feature, $fields, $edition = false)
     {
@@ -238,7 +238,7 @@ class qgisExpressionUtils
         if ($attributeEditorForm === null || $form === null) {
             return array();
         }
-        // Get criterias and expressions to evaluate
+        // Get criteria and expressions to evaluate
         // and prepare visibilities
         $criteriaFrom = array();
         $expressions = array();

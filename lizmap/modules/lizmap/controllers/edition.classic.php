@@ -38,7 +38,7 @@ class editionCtrl extends jController
     /** @var SimpleXMLElement Layer data as simpleXml object */
     private $layerXml = '';
 
-    /** @var qgisMapLayer|qgisVectorLayer Layer data */
+    /** @var qgisVectorLayer Layer data */
     private $layer = '';
 
     /** @var string[] Primary key for getWfsFeature */
@@ -92,6 +92,7 @@ class editionCtrl extends jController
             }
         }
 
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $tpl = new jTpl();
         $tpl->assign('title', $title);
@@ -168,7 +169,9 @@ class editionCtrl extends jController
             return false;
         }
 
+        /** @var qgisVectorLayer $layer The QGIS vector layer instance */
         $layer = $lproj->getLayer($layerId);
+
         if (!$layer) {
             $this->setErrorMessage(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
 
@@ -209,7 +212,7 @@ class editionCtrl extends jController
         $this->layerXml = $layerXml;
         $this->layerName = $layerName;
 
-        // Optionnaly filter data by login
+        // Optionally filter data by login or/and by polygon
         $this->loginFilteredOverride = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
 
         $dbFieldsInfo = $this->layer->getDbFieldsInfo();
@@ -221,6 +224,15 @@ class editionCtrl extends jController
         return true;
     }
 
+    /*
+     * Get the WFS feature for the editing object
+     * and set the controller property: featureData.
+     *
+     * This method will always return an object if the feature exists in the layer
+     * even if there are some filters by login or by polygon !
+     * /!\ This is not the responsibility of this method to know if the user has the right to edit !
+     *
+     */
     private function getWfsFeature()
     {
         $featureId = $this->featureId;
@@ -239,15 +251,25 @@ class editionCtrl extends jController
                 $featureId = $typename.'.'.$featureId;
             }
 
+            // We must give the fields used in the filters (featureid and exp_filter)
             $propertyName = array_merge(array(), $this->primaryKeys);
+
             if (!$this->loginFilteredOverride) {
+                // login filter
                 $loginFilteredConfig = $this->project->getLoginFilteredConfig($this->layer->getName());
                 if ($loginFilteredConfig && property_exists($loginFilteredConfig, 'filterAttribute')) {
                     $propertyName[] = $loginFilteredConfig->filterAttribute;
                 }
+
+                // polygon filter
+                $polygonFilter = $this->project->getLayerPolygonFilterConfig($this->layer->getName(), false);
+                if ($polygonFilter && !in_array($polygonFilter['primary_key'], $propertyName)) {
+                    $propertyName[] = $polygonFilter['primary_key'];
+                }
             }
 
-            $wfsparams = array(
+            // Build the WFS request
+            $wfs_params = array(
                 'SERVICE' => 'WFS',
                 'VERSION' => '1.0.0',
                 'REQUEST' => 'GetFeature',
@@ -258,12 +280,17 @@ class editionCtrl extends jController
                 'FEATUREID' => $featureId,
             );
 
-            $wfsrequest = new \Lizmap\Request\WFSRequest($this->project, $wfsparams, lizmap::getServices(), lizmap::getAppContext());
-            // FIXME no support of the case where $wfsresponse is the content of serviceException?
-            $wfsresponse = $wfsrequest->process();
-            if (property_exists($wfsresponse, 'data')) {
-                $data = $wfsresponse->data;
-                if (property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data)) {
+            $wfs_request = new \Lizmap\Request\WFSRequest(
+                $this->project,
+                $wfs_params,
+                lizmap::getServices(),
+                lizmap::getAppContext()
+            );
+            // FIXME no support of the case where $wfs_response is the content of serviceException?
+            $wfs_response = $wfs_request->process();
+            if (property_exists($wfs_response, 'data')) {
+                $data = $wfs_response->data;
+                if (property_exists($wfs_response, 'file') and $wfs_response->file and is_file($data)) {
                     $data = jFile::read($data);
                 }
                 $this->featureData = json_decode($data);
@@ -274,6 +301,52 @@ class editionCtrl extends jController
                 }
             }
         }
+    }
+
+    /**
+     * Check if the WFS feature is editable by the authenticated user
+     * We check the filter by login & the filter by polygon.
+     *
+     * @return bool
+     */
+    private function featureIsEditable()
+    {
+        // Get filter by login
+        $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
+        if ($expByUser !== '') {
+            $results = qgisExpressionUtils::evaluateExpressions(
+                $this->layer,
+                array('filterByLogin' => $expByUser),
+                $this->featureData->features[0]
+            );
+
+            if ($results
+                && property_exists($results, 'filterByLogin')
+                && $results->filterByLogin !== 1) {
+                return false;
+            }
+        }
+
+        // Get the Filter by polygon
+        // for the PostgreSQL layer
+        $polygonFilter = $this->layer->getPolygonFilter(true, 5);
+
+        // Check if the feature can be accessed with this filter
+        if ($polygonFilter && !empty($polygonFilter)) {
+            $results = qgisExpressionUtils::evaluateExpressions(
+                $this->layer,
+                array('filterByPolygon' => $polygonFilter),
+                $this->featureData->features[0]
+            );
+
+            if ($results
+                && property_exists($results, 'filterByPolygon')
+                && $results->filterByPolygon !== 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -356,22 +429,11 @@ class editionCtrl extends jController
         }
 
         if (!$this->loginFilteredOverride) {
-            // Get filter by login
-            $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
-            if ($expByUser !== '') {
-                $results = qgisExpressionUtils::evaluateExpressions(
-                    $this->layer,
-                    array('filterByLogin' => $expByUser),
-                    $this->featureData->features[0]
-                );
+            $is_editable = $this->featureIsEditable();
+            if (!$is_editable) {
+                $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
 
-                if ($results
-                    && property_exists($results, 'filterByLogin')
-                    && $results->filterByLogin !== 1) {
-                    $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
-
-                    return $this->serviceAnswer();
-                }
+                return $this->serviceAnswer();
             }
         }
 
@@ -432,22 +494,11 @@ class editionCtrl extends jController
         }
 
         if (!$this->loginFilteredOverride and $this->featureId and $this->featureData) {
-            // Get filter by login
-            $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
-            if ($expByUser !== '') {
-                $results = qgisExpressionUtils::evaluateExpressions(
-                    $this->layer,
-                    array('filterByLogin' => $expByUser),
-                    $this->featureData->features[0]
-                );
+            $is_editable = $this->featureIsEditable();
+            if (!$is_editable) {
+                $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
 
-                if ($results
-                    && property_exists($results, 'filterByLogin')
-                    && $results->filterByLogin !== 1) {
-                    $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
-
-                    return $this->serviceAnswer();
-                }
+                return $this->serviceAnswer();
             }
         }
 
@@ -492,7 +543,7 @@ class editionCtrl extends jController
         $form->setData('liz_proj4', $this->proj4);
         $form->setData('liz_geometryColumn', $this->geometryColumn);
 
-        // Set status data to communicate client that the form is reopened after successfull save
+        // Set status data to communicate client that the form is reopened after successfully save
         $form->setData('liz_status', $this->param('status', 0));
 
         // Set future action (close forme, reopen saved form, create new feature)
@@ -605,6 +656,7 @@ class editionCtrl extends jController
         $content = $tpl->fetch('view~edition_form');
 
         // Return html fragment response
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $rep->addContent($content);
 
@@ -639,6 +691,7 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
+        // Get the data via a WFS request
         $this->getWfsFeature();
 
         // event to add custom field into the jForms form before setting data in it
@@ -698,7 +751,7 @@ class editionCtrl extends jController
         }
         $check = $qgisForm->check($feature);
 
-        // event to add additionnal checks
+        // event to add additional checks
         $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
         if ($event->allResponsesByKeyAreTrue('check') === false) {
             $check = false;
@@ -1075,6 +1128,11 @@ class editionCtrl extends jController
     /**
      * Editable features.
      *
+     * Get the layer editable features.
+     * Used client-side to fetch the features which are editable by the authenticated user
+     * when there is a filter by login (and/or by polygon). This allows to deactivate the editing icon
+     * for the other non-editable features inside the popup and attribute table.
+     *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      * @urlparam string $layerId Qgis id of the layer
@@ -1135,6 +1193,7 @@ class editionCtrl extends jController
             return $rep;
         }
 
+        /** @var qgisVectorLayer $layer The QGIS vector layer instance */
         $layer = $lproj->getLayer($layerId);
         if (!$layer) {
             $rep->data['message'] = jLocale::get('view~edition.message.error.layer.editable');
@@ -1245,6 +1304,7 @@ class editionCtrl extends jController
         }
 
         // Get pivot layer information
+        /** @var qgisVectorLayer $layer The QGIS vector layer instance */
         $layer = $lproj->getLayer($pivotId);
         $layerNamePivot = $layer->getName();
         $this->layerId = $pivotId;

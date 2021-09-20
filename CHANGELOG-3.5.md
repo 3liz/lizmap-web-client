@@ -16,11 +16,13 @@
   - Allow to use the new Lizmap "form" from the QGIS Desktop plugin
 - Javascript
   - Allow use of JS modules (ES6) with docks, by indicating the `type` attribute of `<script>` to `lizmapMapDockItem`.
+- Editing
+  - New feature `Filter data with polygon` allowing to filter the layers data spatially by testing the intersection of the features against a chosen polygon layer. The filtering polygons are selected based on a field containing a list of user groups.
 
 ### Changed
 
 - Speed up map page loading.
-- Overviewmap now zoom in/out with main map. Replace OpenLayers 2 overviewmap by the OpenLayers 6 one.
+- Overview map now zoom in/out with main map. Replace OpenLayers 2 overview map by the OpenLayers 6 one.
 - Allow new OpenLayers Map to be used on top of OL2 one
 - Update OpenLayers to 6.6.1
 - Update jQuery-ui to 1.12.1
@@ -29,7 +31,7 @@
 ### Fixed
 
 - Print
-  - If the map has external baselayers such as OpenStreetMap, and is then displayed in Pseudo Mercator (EPSG:3857),
+  - If the map has external base layers such as OpenStreetMap, and is then displayed in Pseudo Mercator (EPSG:3857),
   the exported map is now printed in the QGIS project projection (e.g. EPSG:2154) to avoid wrong scale.
   You can now use your ruler in the printed paper and trust your measure.
 

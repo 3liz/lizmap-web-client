@@ -56,6 +56,11 @@ class ProjectConfig
     /**
      * @var object
      */
+    protected $filter_by_polygon;
+
+    /**
+     * @var object
+     */
     protected $datavizLayers;
 
     /**
@@ -74,6 +79,7 @@ class ProjectConfig
         'atlas',
         'tooltipLayers',
         'loginFilteredLayers',
+        'filter_by_polygon',
         'datavizLayers',
     );
 
@@ -458,6 +464,15 @@ class ProjectConfig
     public function getLoginFilteredLayers()
     {
         return $this->loginFilteredLayers;
+    }
+
+    /** Contains the configuration and layers of the polygon by layer feature.
+     *
+     * @return object
+     */
+    public function getPolygonFilterConfig()
+    {
+        return $this->filter_by_polygon;
     }
 
     /**
