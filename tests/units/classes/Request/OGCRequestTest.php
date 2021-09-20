@@ -11,7 +11,7 @@ class OGCRequestTest extends TestCase
             'service' => 'WMS',
             'empty' => ''
         );
-        $ogc = new OGCRequestForTests(new ProjectForOGCForTests(), $params, null, new ContextForTests());
+        $ogc = new OGCRequestForTests(new ProjectForOGCForTests(), $params, null);
         foreach ($params as $key => $value) {
             $this->assertEquals($value, $ogc->param($key));
         }
@@ -39,10 +39,13 @@ class OGCRequestTest extends TestCase
         );
         $testContext = new ContextForTests();
         $testContext->setResult($contextResult);
-        $ogc = new OGCRequestForTests(new ProjectForOGCForTests(), $params, null, $testContext);
+
+        $ogc = new OGCRequestForTests(new ProjectForOGCForTests($testContext), $params, null);
         $parameters = $ogc->parameters();
         $this->assertEquals($expectedParameters, $parameters);
-        $proj = new ProjectForOGCForTests();
+
+
+        $proj = new ProjectForOGCForTests($testContext);
         $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, $testContext));
         $contextResult = array(
             'userIsConnected' => true,
@@ -58,7 +61,7 @@ class OGCRequestTest extends TestCase
             'Lizmap_User_Groups' => 'admins, users',
             'Lizmap_Override_Filter' => true
         );
-        $ogc = new OGCRequestForTests($proj, $params, null, $testContext);
+        $ogc = new OGCRequestForTests($proj, $params, null);
         $parameters = $ogc->parameters();
         $this->assertEquals($expectedParameters, $parameters);
     }
@@ -71,7 +74,8 @@ class OGCRequestTest extends TestCase
         );
         $ogc = $this->getMockBuilder(OGCRequestForTests::class)
             ->setMethods(['process_getcapabilities'])
-            ->setConstructorArgs([new ProjectForOGCForTests(), $params, null, new ContextForTests()])->getMock();
+            ->setConstructorArgs([new ProjectForOGCForTests(), $params, null])
+            ->getMock();
         $ogc->expects($this->once())->method('process_getcapabilities');
         $ogc->process();
         $params = array(
@@ -80,7 +84,8 @@ class OGCRequestTest extends TestCase
         );
         $ogc = $this->getMockBuilder(OGCRequestForTests::class)
             ->setMethods(['serviceException'])
-            ->setConstructorArgs([new ProjectForOGCForTests(), $params, null, new ContextForTests()])->getMock();
+            ->setConstructorArgs([new ProjectForOGCForTests(), $params, null])
+            ->getMock();
         $ogc->expects($this->once())->method('serviceException')->with(501);
         $testMock = $ogc->process();
     }

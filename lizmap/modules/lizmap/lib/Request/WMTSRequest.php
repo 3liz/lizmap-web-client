@@ -189,7 +189,7 @@ class WMTSRequest extends OGCRequest
             $wmsParams['exp_filter'] = $exp_filter;
         }
 
-        $wmsRequest = new WMSRequest($this->project, $wmsParams, $this->services, $this->appContext);
+        $wmsRequest = new WMSRequest($this->project, $wmsParams, $this->services);
         $wmsRequest->setForceRequest($this->forceRequest);
 
         return $wmsRequest->process();

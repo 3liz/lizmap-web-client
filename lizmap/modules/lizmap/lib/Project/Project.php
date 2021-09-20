@@ -297,6 +297,14 @@ class Project
         return $this->qgis->findLayersByKeyword($key, $this);
     }
 
+    /**
+     * @return App\AppContextInterface
+     */
+    public function getAppContext()
+    {
+        return $this->appContext;
+    }
+
     public function getKey()
     {
         return $this->key;

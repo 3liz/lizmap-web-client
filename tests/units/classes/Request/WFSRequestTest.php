@@ -7,7 +7,7 @@ class WFSRequestTest extends TestCase
 {
     public function testParameters()
     {
-        $wfs = new WFSRequest(new ProjectForOGCForTests(), array('request' => 'notGetFeature'), null, new ContextForTests());
+        $wfs = new WFSRequest(new ProjectForOGCForTests(), array('request' => 'notGetFeature'), null);
         $expectedParameters = array(
             'request' => 'notGetFeature',
             'map' => null,
@@ -18,7 +18,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedParameters, $parameters);
         $proj = new ProjectForOGCForTests();
         $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, new ContextForTests()));
-        $wfs = new WFSRequest($proj, array('request' => 'notGetFeature'), null, new ContextForTests());
+        $wfs = new WFSRequest($proj, array('request' => 'notGetFeature'), null);
         $parameters = $wfs->parameters();
         $this->assertEquals($expectedParameters, $parameters);
     }
@@ -76,10 +76,10 @@ class WFSRequestTest extends TestCase
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('lizmap.tools.loginFilteredLayers.override' => false));
-        $proj = new ProjectForOGCForTests();
+        $proj = new ProjectForOGCForTests($testContext);
         $proj->loginFilters = $loginFilters;
         $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, $testContext));
-        $wfs = new WFSRequest($proj, $params, null, $testContext);
+        $wfs = new WFSRequest($proj, $params, null);
         $parameters = $wfs->parameters();
         $this->assertEquals($expectedParameters, $parameters);
     }
