@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix: export button allowed in filter data with form when format is ODS
+
 ### Added
 
 - User experience
