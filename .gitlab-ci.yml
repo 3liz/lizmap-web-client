@@ -179,5 +179,16 @@ docker-release:
   tags:
     - infrav3
 
-
-
+tickets:
+  stage: release
+  only:
+    - tags
+  image:
+    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+  script:
+    - create_ticket.py
+  tags:
+    - factory-plain
+  variables:
+    FACTORY_PRODUCT_NAME: lizmap-web-client
+    FACTORY_PACKAGE_TYPE: application
