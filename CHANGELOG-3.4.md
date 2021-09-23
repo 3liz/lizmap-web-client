@@ -1,6 +1,6 @@
 # Changelog Lizmap 3.4
 
-## 3.4.6 - Unreleased
+## 3.4.6 - 2021-09-21
 
 - Fix: issue during the installation of the ldapdao module. Upgrade it to 2.2.1
 - Fix: export button allowed in filter data with form when format is ODS
