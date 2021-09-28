@@ -28,6 +28,7 @@ export default class Digitizing {
         this._featureDrawnVisibility = true;
 
         this._isEdited = false;
+        this._isSaved = false;
 
         // Draw tools style
         const drawStyle = new OpenLayers.Style({
@@ -313,6 +314,9 @@ export default class Digitizing {
             }
         }
     }
+    get isSaved() {
+        return this._isSaved;
+    }
 
     // Get SLD for featureDrawn[index]
     getFeatureDrawnSLD(index) {
@@ -390,11 +394,19 @@ export default class Digitizing {
         mainEventDispatcher.dispatch('digitizing.erase');
     }
 
+    toggleSave() {
+        this._isSaved = !this._isSaved;
+
+        this.saveFeatureDrawn();
+
+        mainEventDispatcher.dispatch('digitizing.save');
+    }
+
     saveFeatureDrawn() {
         const formatWKT = new OpenLayers.Format.WKT();
 
-        // Save features in WKT format
-        if (this.featureDrawn) {
+        // Save features in WKT format if any and if save mode is on
+        if (this.featureDrawn && this._isSaved) {
             localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.write(this.featureDrawn));
         }
     }

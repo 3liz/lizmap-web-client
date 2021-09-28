@@ -11,6 +11,7 @@ import '../images/svg/freehand.svg';
 import '../images/svg/pencil.svg';
 import '../images/svg/edit.svg';
 import '../images/svg/eraser.svg';
+import '../images/svg/save.svg';
 
 import '../images/svg/file-download.svg';
 import '../images/svg/file-upload.svg';
@@ -100,6 +101,11 @@ export default class Digitizing extends HTMLElement {
             <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
+            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''}" @click=${()=> mainLizmap.digitizing.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
+                <svg>
+                    <use xlink:href="#save" />
+                </svg>
+            </button>
             <div class="${this.hasAttribute('import-export') ? '' : 'hide'}">
                 <div class="btn-group digitizing-export">
                     <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown" data-original-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
@@ -151,7 +157,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawn', 'digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erase', 'digitizing.drawColor']
+            ['digitizing.featureDrawn', 'digitizing.featureDrawnVisibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erase', 'digitizing.drawColor', 'digitizing.save']
         );
     }
 
