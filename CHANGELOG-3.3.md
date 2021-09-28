@@ -59,7 +59,7 @@ php scripts/script.php jcommunity~user:create [--reset] [--admin] [--no-error-if
   form whereas he is authenticated.
 - bugs fixes from 3.2.18
 
-## 3.3.11- 2020-10-13
+## 3.3.11 - 2020-10-13
 
 - Fix QGIS custom dates in forms
 - Add zoomlevels to baselayers
