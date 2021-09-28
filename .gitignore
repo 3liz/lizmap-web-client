@@ -56,6 +56,10 @@ docker/factory.manifest
 docker/.run
 docker/*.zip
 
+# Python
+.venv
+venv
+
 # Tests
 tests/units/vendor/
 tests/units/composer.lock

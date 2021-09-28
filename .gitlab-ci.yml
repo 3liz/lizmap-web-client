@@ -5,6 +5,7 @@ stages:
 - docker-image
 - deploy
 - release
+- post-release
 
 cache:
   key: "$CI_COMMIT_REF_SLUG"
@@ -192,3 +193,16 @@ tickets:
   variables:
     FACTORY_PRODUCT_NAME: lizmap-web-client
     FACTORY_PACKAGE_TYPE: application
+
+github_release:
+  stage: post-release
+  needs:
+    - job: deploy-release
+  only:
+    - tags
+  image:
+    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+  script:
+    - lwc_release.py
+  tags:
+    - factory-plain
