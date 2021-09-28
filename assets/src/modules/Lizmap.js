@@ -8,7 +8,7 @@ import Snapping from './Snapping.js';
 import Draw from './interaction/Draw.js';
 import Layers from './Layers.js';
 
-import { get as getProjection } from 'ol/proj';
+import { transform as transformOL, get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 
 import proj4 from 'proj4';
@@ -116,5 +116,23 @@ export default class Lizmap {
     // Display message on screen for users
     displayMessage(message, type, close) {
         this._lizmap3.addMessage(message, type, close);
+    }
+
+    /**
+     * Expose OpenLayers transform method for external JS.
+     * Transforms a coordinate from source projection to destination projection.
+     * This returns a new coordinate (and does not modify the original).
+     *
+     * See {@link module:ol/proj.transformExtent} for extent transformation.
+     * See the transform method of {@link module:ol/geom/Geometry~Geometry} and its
+     * subclasses for geometry transforms.
+     *
+     * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
+     * @param {ProjectionLike} source Source projection-like.
+     * @param {ProjectionLike} destination Destination projection-like.
+     * @return {import("./coordinate.js").Coordinate} Coordinate.
+     */
+    transform(coordinate, source, destination) {
+        return transformOL(coordinate, source, destination);
     }
 }
