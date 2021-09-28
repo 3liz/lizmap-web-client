@@ -1,6 +1,6 @@
 # Changelog Lizmap 3.5
 
-## Version 3.5.0
+## Unreleased
 
 ### Added
 
@@ -49,3 +49,11 @@
 - Keep lizmapProxy and lizmapOGCRequest classes for modules compatibility
 - Upgrade Jelix to 1.6.32
 - Improve testings using Docker, Cypress, PHPUnit etc
+
+## 3.5.0-rc.2 - 2021-09-14
+
+* Release candidate
+
+## 3.5.0-rc.1 - 2021-06-21
+
+* Release candidate
