@@ -215,7 +215,7 @@ class Project
 
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
-        $this->readPrintCapabilities($qgsXml);
+        $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
         $this->readLocateByLayer($qgsXml, $this->cfg);
         $this->readEditionLayers($qgsXml);
         $this->layersOrder = $this->readLayersOrder($qgsXml);
