@@ -162,7 +162,7 @@ class qgisExpressionUtils
             }
 
             // Request evaluate expression
-            $json = self::request($params);
+            $json = self::request($params, $project);
             if (!$json) {
                 return null;
             }
@@ -213,7 +213,7 @@ class qgisExpressionUtils
             );
 
             // Request getFeatureWithFormsScope
-            $json = self::request($params);
+            $json = self::request($params, $project);
             if (!$json || !property_exists($json, 'features')) {
                 return array();
             }
@@ -341,9 +341,29 @@ class qgisExpressionUtils
         return $visibilities;
     }
 
-    protected static function request($params)
+    protected static function request($params, $project)
     {
-        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        // Add user identification parameters
+        $merged_params = array_merge($params, array(
+            'Lizmap_User' => '',
+            'Lizmap_User_Groups' => '',
+        ));
+
+        // Check authentication
+        $appContext = $project->getAppContext();
+        if ($appContext->UserIsConnected()) {
+            // Provide user and groups to lizmap plugin access control
+            $user = $appContext->getUserSession();
+            $userGroups = $appContext->aclUserGroupsId();
+            $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $project->getRepository()->getKey());
+
+            $merged_params = array_merge($params, array(
+                'Lizmap_User' => $user->login,
+                'Lizmap_User_Groups' => implode(', ', $userGroups),
+                'Lizmap_Override_Filter' => $loginFilteredOverride,
+            ));
+        }
+        $url = \Lizmap\Request\Proxy::constructUrl($merged_params, lizmap::getServices());
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request
