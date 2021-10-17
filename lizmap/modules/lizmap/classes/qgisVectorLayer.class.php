@@ -1261,14 +1261,27 @@ class qgisVectorLayer extends qgisMapLayer
      */
     protected function requestPolygonFilter($editing_context = false, $ttl = 60)
     {
-        // No filter is the user can see all data
-        $repository = $this->project->getRepository();
+        // No filter response
+        $no_filter_array = array(
+            'expression' => '',
+            'polygon' => '',
+        );
 
+        // No filter if the user can always see all data
+        $repository = $this->project->getRepository();
         if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $repository->getKey())) {
-            return array(
-                'expression' => '',
-                'polygon' => '',
-            );
+            return $no_filter_array;
+        }
+
+        // Do not filter if no polygon filter configuration exists for this Lizmap project
+        if (!$this->project->hasPolygonFilteredLayers()) {
+            return $no_filter_array;
+        }
+
+        // Do not filter if the layer is not concerned by the filter by polygon filter
+        $polygonFilterConfig = $this->project->getLayerPolygonFilterConfig($this->getName(), true);
+        if (!$polygonFilterConfig) {
+            return $no_filter_array;
         }
 
         // Default filter to return no data, i.e "False"
@@ -1281,6 +1294,7 @@ class qgisVectorLayer extends qgisMapLayer
         // No filter if Lizmap plugin is not installed server side
         $plugins = $this->project->getQgisServerPlugins();
         if (!array_key_exists('Lizmap', $plugins)) {
+            \jLog::log('requestPolygonFilter: no lizmap plugin installed for QGIS Server');
             return $no_data_array;
         }
 
