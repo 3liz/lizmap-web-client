@@ -28,8 +28,8 @@ describe('Selection tool', function () {
 
         // It should select two features
         cy.get('#map')
-            .click(200, 200)
-            .click(900, 200)
+            .click(200, 350)
+            .click(850, 350)
             .dblclick(550, 650)
 
         cy.get('.selectiontool-results').should(($div) => {
