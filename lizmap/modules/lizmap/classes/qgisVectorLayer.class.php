@@ -1295,6 +1295,7 @@ class qgisVectorLayer extends qgisMapLayer
         $plugins = $this->project->getQgisServerPlugins();
         if (!array_key_exists('Lizmap', $plugins)) {
             \jLog::log('requestPolygonFilter: no lizmap plugin installed for QGIS Server');
+
             return $no_data_array;
         }
 
