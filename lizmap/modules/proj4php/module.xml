@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="proj4php3liz.com" name="proj4php" createdate="2015-03-13">
-        <version date="2021-09-14">3.5.0-rc.2</version>
+        <version date="2021-10-19">3.5.0-rc.3</version>
         <label lang="en_US">proj4php</label>
         <description lang="en_US"/>
         <license URL="https://www.gnu.org/licenses/lgpl.html">GNU LESSER GENERAL PUBLIC LICENSE Version 3</license>
