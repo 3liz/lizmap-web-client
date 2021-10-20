@@ -921,9 +921,10 @@ var lizMap = function() {
       }
 
       // Override WMS url if external WMS server
+      var extConfig = null;
       if ('externalAccess' in layerConfig && layerConfig.externalAccess
        && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess ) {
-          var extConfig = layerConfig.externalAccess;
+          extConfig = layerConfig.externalAccess;
           extConfig.layers = decodeURI(extConfig.layers);
           serviceUrl = extConfig.url;
           layerWmsParams = {
@@ -998,6 +999,14 @@ var lizMap = function() {
               wmsLayer.options.minScale = scales.maxScale;
               wmsLayer.maxScale = scales.minScale;
               wmsLayer.options.maxScale = scales.minScale;
+          }
+          // External WMS layers - respect the image format of the WMS source layer
+          // We do not want to respect the configuration layerConfig.imageFormat
+          // to avoid requesting a format not compatible with the external WMS server
+          // Fix the jpeg WMS layers requesting png
+          if (extConfig && 'format' in layerWmsParams && 'params' in wmsLayer
+              && wmsLayer.params['FORMAT'] != layerWmsParams.format) {
+              wmsLayer.params['FORMAT'] = layerWmsParams.format;
           }
           layers.push( wmsLayer );
       }
