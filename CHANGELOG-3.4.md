@@ -1,9 +1,11 @@
 # Changelog Lizmap 3.4
 
 ## Unreleased
+
 ### Added
 
-- Draw: add save button to let users decide if they want draw to be saved
+- New **save** button to let users decide if they want their drawings to be saved.
+  If drawings are not saved, they will be removed when the webpage is refreshed.
 
 ## 3.4.6 - 2021-09-21
 
