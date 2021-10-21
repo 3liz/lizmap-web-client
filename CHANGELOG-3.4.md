@@ -5,6 +5,8 @@
 ### Fixed
 
 - Expressions: lizmap user and groups was not provided
+- External WMS layers - respect the image format of the source WMS layer
+
 ### Added
 
 - New **save** button to let users decide if they want their drawings to be saved.
