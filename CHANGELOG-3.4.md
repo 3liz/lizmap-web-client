@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Fixed
+
+- Expressions: lizmap user and groups was not provided
 ### Added
 
 - New **save** button to let users decide if they want their drawings to be saved.
