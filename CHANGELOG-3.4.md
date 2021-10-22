@@ -9,6 +9,7 @@
   in an editing form.
 - External WMS layers - respect the image format of the source WMS layer.
   The format specified in the Lizmap configuration is not used.
+- WMS GetPrint Request: do not encode URI labels
 
 ### Added
 
