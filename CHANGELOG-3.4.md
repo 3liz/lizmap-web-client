@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Fixed
+
+- Expressions: Lizmap user and groups was not forwarded to the QGIS Server backend.
+  It's now possible to use `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression
+  in an editing form.
+- External WMS layers - respect the image format of the source WMS layer.
+  The format specified in the Lizmap configuration is not used.
+
 ### Added
 
 - New **save** button to let users decide if they want their drawings to be saved.

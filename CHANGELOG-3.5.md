@@ -28,6 +28,8 @@
 
 ### Fixed
 
+- External WMS layers : respect the image format of the source WMS layer.
+  The format specified in the Lizmap configuration is not used.
 - Print
   - If the map has external base layers such as OpenStreetMap, and is then displayed in Pseudo Mercator (EPSG:3857),
   the exported map is now printed in the QGIS project projection (e.g. EPSG:2154) to avoid wrong scale.
@@ -36,6 +38,8 @@
   - In case of more than one editable layers, when there is a filter by login (or by polygon) activated,
   some of the popup items could miss the pencil button to open the editing form. Corrected by requesting
   the editable features for all the editable layers of the displayed popup items, and not only the first.
+  - Lizmap user and groups was not forwarded to the QGIS Server backend. It's now possible to use 
+   `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form.
 - Before the button export to ODS was always visible. The button is now shown only if available
 
 ### New JS events
