@@ -4,8 +4,11 @@
 
 ### Fixed
 
-- Expressions: lizmap user and groups was not provided
-- External WMS layers - respect the image format of the source WMS layer
+- Expressions: Lizmap user and groups was not forwarded to the QGIS Server backend.
+  It's now possible to use `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression
+  in an editing form.
+- External WMS layers - respect the image format of the source WMS layer.
+  The format specified in the Lizmap configuration is not used.
 
 ### Added
 
