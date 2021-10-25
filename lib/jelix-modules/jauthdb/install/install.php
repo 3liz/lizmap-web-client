@@ -40,14 +40,17 @@ class jauthdbModuleInstaller extends jInstallerModule {
                 $conf->setValue('dao','jauthdb~jelixuser', 'Db');
                 $conf->save();
             }
-            else if ($driver != 'Db') {
-                return;
+            else {
+                $compatibleWithDb = $conf->getValue('compatiblewithdb', $driver);
+                if ($driver != 'Db' && !$compatibleWithDb) {
+                    return;
+                }
             }
 
-            $this->useDbProfile($conf->getValue('profile', 'Db'));
+            $this->useDbProfile($conf->getValue('profile', $driver));
 
             // FIXME: should use the given dao to create the table
-            $daoName = $conf->getValue('dao', 'Db');
+            $daoName = $conf->getValue('dao', $driver);
             if ($daoName == 'jauthdb~jelixuser' && $this->firstDbExec()) {
 
                 $this->execSQLScript('install_jauth.schema');
@@ -60,7 +63,7 @@ class jauthdbModuleInstaller extends jInstallerModule {
 
                         $confIni = parse_ini_file(jApp::configPath($authconfig), true);
                         $authConfig = jAuth::loadConfig($confIni);
-                        $driver = new dbAuthDriver($authConfig['Db']);
+                        $driver = new dbAuthDriver($authConfig[$driver]);
                         $passwordHash = $driver->cryptPassword('admin');
                         $cn->exec("INSERT INTO ".$cn->prefixTable('jlx_user')." (usr_login, usr_password, usr_email ) VALUES
                                 ('admin', ".$cn->quote($passwordHash)." , 'admin@localhost.localdomain')");
