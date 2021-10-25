@@ -3,7 +3,7 @@
 #
 # from https://github.com/dinkel/docker-openldap
 # -----------------
-FROM debian:stretch
+FROM debian:buster-slim
 MAINTAINER 3liz
 
 # properly setup debian sources
