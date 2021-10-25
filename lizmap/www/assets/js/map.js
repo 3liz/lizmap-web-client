@@ -4007,7 +4007,7 @@ var lizMap = function() {
       const customPrintLabels = document.querySelectorAll('#print .print-labels .print-label');
       if (customPrintLabels){
         for (const label of customPrintLabels) {
-          printParams[label.name] = encodeURIComponent(label.value);
+          printParams[label.name] = label.value;
         }
       }
 
