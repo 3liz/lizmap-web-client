@@ -110,11 +110,21 @@ class jCoordinator {
                 if (false === ($conf = parse_ini_file($conff,true)))
                     throw new Exception("Error in a plugin configuration file -- plugin: $name  file: $conff", 13);
             }
-            include_once($config->_pluginsPathList_coord[$name].$name.'.coord.php');
-            $class= $name.'CoordPlugin';
-            if (isset($config->coordplugins[$name.'.name']))
+
+            $className = $name.'CoordPlugin';
+            if (isset($config->coordplugins[$name.'.class'])) {
+                $className = $config->coordplugins[$name.'.class'];
+            }
+
+            if (preg_match('/(.+)CoordPlugin$/', $className, $m)) {
+                $name2 = $m[1];
+                include_once($config->_pluginsPathList_coord[$name2].$name2.'.coord.php');
+            }
+
+            if (isset($config->coordplugins[$name.'.name'])) {
                 $name = $config->coordplugins[$name.'.name'];
-            $this->plugins[strtolower($name)] = new $class($conf);
+            }
+            $this->plugins[strtolower($name)] = new $className($conf);
         }
     }
 
