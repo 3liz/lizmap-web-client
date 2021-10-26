@@ -10,6 +10,7 @@
 *.swp
 *.log
 *.pyc
+*.bak
 
 # Build
 build/
