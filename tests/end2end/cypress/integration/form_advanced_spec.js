@@ -54,7 +54,7 @@ describe('Advanced form', function () {
 
     })
 
-    it('should change selected quartier based on drawn point', function () {
+    it('should change selected quartier and sousquartier based on drawn point', function () {
 
         cy.get('#jforms_view_edition_quartier option').should('have.length', 1)
         cy.get('#jforms_view_edition_quartier option').should('have.text', 'HOPITAUX-FACULTES')
@@ -63,11 +63,14 @@ describe('Advanced form', function () {
         cy.on('window:confirm', () => true);
         cy.get('#jforms_view_edition__submit_cancel').click()
         cy.get('#edition-draw').click()
-        cy.wait(300)
+        cy.wait(800)
 
         // Assert quartier value is good for another drawn point
         cy.get('#map').click(600, 350)
         cy.get('#jforms_view_edition_quartier option').should('have.text', 'MONTPELLIER CENTRE')
+
+        // Assert 11 options are proposed for sousquartier 
+        cy.get('#jforms_view_edition_sousquartier option').should('have.length', 11)
 
         // nboisteault : I tried to drag and drop the point but did not achieve to have this behavior
         // TODO: Try again with OpenLayers >= 6.x
