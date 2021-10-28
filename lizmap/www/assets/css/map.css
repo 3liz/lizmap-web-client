@@ -480,7 +480,7 @@ SubDock
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
   padding:5px;
-  border-left: 1px solid #F0F0F0;
+  border-left: 0px solid #F0F0F0;
 
   flex-grow: 1;
   align-self: flex-end;
