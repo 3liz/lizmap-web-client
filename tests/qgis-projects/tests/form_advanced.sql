@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.12 (Debian 11.12-1.pgdg100+1)
--- Dumped by pg_dump version 13.3 (Ubuntu 13.3-1.pgdg18.04+1)
+-- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
+-- Dumped by pg_dump version 13.4 (Ubuntu 13.4-4.pgdg18.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -27,7 +27,8 @@ CREATE TABLE tests_projects.form_advanced_point (
     geom public.geometry(Point,2154),
     has_photo boolean,
     website text,
-    quartier smallint
+    quartier text,
+    sousquartier text
 );
 
 
@@ -66,7 +67,7 @@ ALTER TABLE ONLY tests_projects.form_advanced_point ALTER COLUMN id SET DEFAULT 
 -- Data for Name: form_advanced_point; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
 --
 
-COPY tests_projects.form_advanced_point (id, geom, has_photo, website, quartier) FROM stdin;
+COPY tests_projects.form_advanced_point (id, geom, has_photo, website, quartier, sousquartier) FROM stdin;
 \.
 
 
