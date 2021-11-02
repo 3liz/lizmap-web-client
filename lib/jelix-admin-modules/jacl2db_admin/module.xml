@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jacl2db_admin@modules.jelix.org" name="jacl2db_admin" createdate="2008-12-27">
-        <version stability="stable" date="2021-02-25">1.6</version>
+        <version stability="stable" date="2021-11-02">1.6.1</version>
         <label lang="en_US">jAcl2.db administration</label>
         <description lang="en_US">Web interface to manage rights with jAcl2 and its driver 'db'</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL 2.0</license>
