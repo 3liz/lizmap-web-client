@@ -3,7 +3,7 @@
 * @package     jelix
 * @subpackage  installer
 * @author      Laurent Jouanneau
-* @copyright   2008-2020 Laurent Jouanneau
+* @copyright   2008-2021 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -229,6 +229,18 @@ class jInstaller {
     public $liveConfig;
 
     /**
+     * localframework.ini.php
+     * @var jIniFileModifier
+     */
+    public $localFrameworkConfig;
+
+    /**
+     * @var array list of new entrypoints. key is ep id, value is
+     *  array('file'=>'', 'config'=>'', 'type'=>'')
+     */
+    protected $newEntryPoints = array();
+
+    /**
      * initialize the installation
      *
      * it reads configurations files of all entry points, and prepare object for
@@ -255,8 +267,15 @@ class jInstaller {
         if (!file_exists($liveConfig)) {
             file_put_contents($liveConfig, ';<'.'?php die(\'\');?'.'> live configuration');
         }
+
+        $localFramework = jApp::configPath('localframework.ini.php');
+        if (!file_exists($localFramework)) {
+            file_put_contents($localFramework, ';<'.'?php die(\'\');?'.'> framework configuration');
+        }
+
         $this->localConfig = new jIniMultiFilesModifier($this->mainConfig, $localConfig);
         $this->liveConfig = new jIniFileModifier($liveConfig);
+        $this->localFrameworkConfig = new jIniFileModifier($localFramework);
         $this->installerIni = $this->getInstallerIni();
         $this->readEntryPointData(simplexml_load_file(jApp::appPath('project.xml')));
         $this->installerIni->save();
@@ -279,69 +298,84 @@ class jInstaller {
     }
 
     /**
-     * read the list of entrypoint from the project.xml file
-     * and read all modules data used by each entry point
+     * Reads the list of entrypoint from the project.xml file and
+     * from the var/config/localframework.ini.php file.
+     * And  It reads all modules data used by each entry point
      * @param SimpleXmlElement $xml
      */
-    protected function readEntryPointData($xml) {
-
+    protected function readEntryPointData($xml)
+    {
         $configFileList = array();
 
         // read all entry points data
         foreach ($xml->entrypoints->entry as $entrypoint) {
 
-            $file = (string)$entrypoint['file'];
             $configFile = (string)$entrypoint['config'];
-            if (isset($entrypoint['type'])) {
-                $type = (string)$entrypoint['type'];
-            }
-            else
-                $type = "classic";
-
             // ignore entry point which have the same config file of an other one
             // FIXME: what about installer.ini ?
-            if (isset($configFileList[$configFile]))
+            if (isset($configFileList[$configFile])) {
                 continue;
-
+            }
             $configFileList[$configFile] = true;
 
-            // we create an object corresponding to the entry point
-            $ep = $this->getEntryPointObject($configFile, $file, $type);
-            // not to the constructor, to not break API. FIXME
-            $ep->localConfigIni =  new jIniMultiFilesModifier($this->localConfig, $ep->getEpConfigIni());
-            $ep->liveConfigIni = $this->liveConfig;
-            $epId = $ep->getEpId();
-
-            $this->epId[$file] = $epId;
-            $this->entryPoints[$epId] = $ep;
-            $this->modules[$epId] = array();
-
-            // now let's read all modules properties
-            $modulesList = $ep->getModulesList();
-            foreach ($modulesList as $name=>$path) {
-                $module = $ep->getModule($name);
-
-                $this->installerIni->setValue($name.'.installed', $module->isInstalled, $epId);
-                $this->installerIni->setValue($name.'.version', $module->version, $epId);
-
-                if (!isset($this->allModules[$path])) {
-                    $this->allModules[$path] = $this->getComponentModule($name, $path, $this);
-                }
-
-                $m = $this->allModules[$path];
-                $m->addModuleInfos($epId, $module);
-                $this->modules[$epId][$name] = $m;
+            $file = (string)$entrypoint['file'];
+            if (isset($entrypoint['type'])) {
+                $type = (string)$entrypoint['type'];
+            } else {
+                $type = "classic";
             }
-            // remove informations about modules that don't exist anymore
-            $modules = $this->installerIni->getValues($epId);
-            foreach($modules as $key=>$value) {
-                $l = explode('.', $key);
-                if (count($l)<=1) {
-                    continue;
-                }
-                if (!isset($modulesList[$l[0]])) {
-                    $this->installerIni->removeValue($key, $epId);
-                }
+
+            $this->setupEntryPointObject($file, $configFile, $type);
+        }
+
+        foreach ($this->localFrameworkConfig->getSectionList() as $sectionName) {
+            if (!preg_match('/^entrypoint:(.*)$/', $sectionName, $m)) {
+                continue;
+            }
+            $configFile = $this->localFrameworkConfig->getValue('config', $sectionName);
+            $type = $this->localFrameworkConfig->getValue('type', $sectionName);
+            $this->setupEntryPointObject($m[1], $configFile, $type);
+        }
+    }
+
+    protected function setupEntryPointObject($file, $configFile, $type)
+    {
+        // we create an object corresponding to the entry point
+        $ep = $this->getEntryPointObject($configFile, $file, $type);
+        // not to the constructor, to not break API. FIXME
+        $ep->localConfigIni =  new jIniMultiFilesModifier($this->localConfig, $ep->getEpConfigIni());
+        $ep->liveConfigIni = $this->liveConfig;
+        $epId = $ep->getEpId();
+
+        $this->epId[$file] = $epId;
+        $this->entryPoints[$epId] = $ep;
+        $this->modules[$epId] = array();
+
+        // now let's read all modules properties
+        $modulesList = $ep->getModulesList();
+        foreach ($modulesList as $name=>$path) {
+            $module = $ep->getModule($name);
+
+            $this->installerIni->setValue($name.'.installed', $module->isInstalled, $epId);
+            $this->installerIni->setValue($name.'.version', $module->version, $epId);
+
+            if (!isset($this->allModules[$path])) {
+                $this->allModules[$path] = $this->getComponentModule($name, $path, $this);
+            }
+
+            $m = $this->allModules[$path];
+            $m->addModuleInfos($epId, $module);
+            $this->modules[$epId][$name] = $m;
+        }
+        // remove informations about modules that don't exist anymore
+        $modules = $this->installerIni->getValues($epId);
+        foreach($modules as $key=>$value) {
+            $l = explode('.', $key);
+            if (count($l)<=1) {
+                continue;
+            }
+            if (!isset($modulesList[$l[0]])) {
+                $this->installerIni->removeValue($key, $epId);
             }
         }
     }
@@ -435,6 +469,14 @@ class jInstaller {
             }
         }
 
+        // we install new entrypoints
+        foreach($this->newEntryPoints as $epId => $ep) {
+            $result = $result & $this->installEntryPointModules($epId, $flags);
+            if (!$result) {
+                break;
+            }
+        }
+
         $this->installerIni->save();
         $this->endMessage();
         return $result;
@@ -445,7 +487,7 @@ class jInstaller {
      * entry point. Only modules which have an access property > 0
      * are installed. Errors appeared during the installation are passed
      * to the reporter.
-     * @param string $entrypoint the entrypoint name as it appears in project.xml
+     * @param string $entrypoint the entrypoint name as it appears in project.xml or in localframework.ini.php
      * @return bool true if succeed, false if there are some errors
      * @throws Exception
      */
@@ -500,7 +542,7 @@ class jInstaller {
     /**
      * install given modules even if they don't have an access property > 0
      * @param string[] $modulesList array of module names
-     * @param string $entrypoint the entrypoint name as it appears in project.xml
+     * @param string $entrypoint the entrypoint name as it appears in project.xml or in localframework.ini.php
      *               or null if modules should be installed for all entry points
      * @return bool true if the installation is ok
      * @throws Exception
@@ -522,6 +564,27 @@ class jInstaller {
         $result = true;
         foreach ($entryPointList as $epId) {
 
+            $allModules = &$this->modules[$epId];
+
+            $modules = array();
+            // always install jelix
+            array_unshift($modulesList, 'jelix');
+            foreach ($modulesList as $name) {
+                if (!isset($allModules[$name])) {
+                    $this->error('module.unknown', $name);
+                }
+                else
+                    $modules[] = $allModules[$name];
+            }
+
+            $result = $this->_installModules($modules, $epId, false);
+            if (!$result)
+                break;
+            $this->installerIni->save();
+        }
+
+        // we install new entrypoints
+        foreach($this->newEntryPoints as $epId => $ep) {
             $allModules = &$this->modules[$epId];
 
             $modules = array();
@@ -581,6 +644,8 @@ class jInstaller {
         $componentsToInstall = array();
 
         foreach($this->_componentsToInstall as $item) {
+            /** @var jInstallerComponentModule $component */
+            /** @var boolean $toInstall */
             list($component, $toInstall) = $item;
             try {
                 if ($flags == self::FLAG_MIGRATION_11X) {
@@ -730,12 +795,14 @@ class jInstaller {
                     if ($installer && ($flags & self::FLAG_INSTALL_MODULE)) {
                         $installer->postInstall();
                         $component->installFinished($ep);
+                        $this->declareNewEntryPoints($installer);
                     }
                 }
                 else if ($flags & self::FLAG_UPGRADE_MODULE){
                     foreach($installer as $upgrader) {
                         $upgrader->postInstall();
                         $component->upgradeFinished($ep, $upgrader);
+                        $this->declareNewEntryPoints($upgrader);
                     }
                 }
                 if ($ep->configIni->isModified() ||
@@ -755,6 +822,9 @@ class jInstaller {
                             $ep->scriptName);
                     jApp::setConfig($ep->config);
                 }
+                if ($this->localFrameworkConfig->isModified()) {
+                    $this->localFrameworkConfig->save();
+                }
             } catch (jInstallerException $e) {
                 $result = false;
                 $this->error ($e->getLocaleKey(), $e->getLocaleParameters());
@@ -769,6 +839,28 @@ class jInstaller {
         return $result;
     }
 
+    /**
+     * @param jInstallerBase $installer
+     */
+    protected function declareNewEntryPoints($installer)
+    {
+        $newEps = $installer->getNewEntrypoints();
+        if (count($newEps) == 0) {
+            return;
+        }
+
+        $this->newEntryPoints = array_merge($this->newEntryPoints, $newEps);
+
+        foreach($newEps as $epId => $ep) {
+            $section = 'entrypoint:'.$ep['file'];
+            $this->localFrameworkConfig->setValue('config', $ep['config'], $section);
+            $this->localFrameworkConfig->setValue('type', $ep['type'], $section);
+            $this->setupEntryPointObject($ep['file'], $ep['config'], $ep['type']);
+
+            file_put_contents(jApp::configPath('config.'.$ep['file']), '<?php '."\n\$var=".var_export($this->getEntryPoint($epId)->getConfigObj(), true));
+        }
+    }
+
     protected $_componentsToInstall = array();
     protected $_checkedComponents = array();
     protected $_checkedCircularDependency = array();
@@ -776,7 +868,7 @@ class jInstaller {
     /**
      * check dependencies of given modules and plugins
      *
-     * @param array $list  list of jInstallerComponentModule/jInstallerComponentPlugin objects
+     * @param jInstallerComponentModule[] $list
      * @return boolean true if the dependencies are ok
      * @throw jException if the install has failed
      */

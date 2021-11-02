@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jelix@modules.jelix.org" name="jelix" createdate="2006-01-01">
-       <version stability="stable" date="2021-10-26 18:01">1.6.35-pre</version>
+       <version stability="stable" date="2021-11-02 22:42">1.6.35-rc.1</version>
         <label lang="en_US">Jelix Main Module</label>
         <description lang="en_US">Main module of jelix which contains some ressources needed by jelix classes</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
-        <copyright>2005-2018 Laurent Jouanneau and other contributors</copyright>
+        <copyright>2005-2021 Laurent Jouanneau and other contributors</copyright>
         <creator name="Laurent Jouanneau" />
         <homepageURL>http://jelix.org</homepageURL>
     </info>
     <dependencies>
-       <jelix minversion="1.6.35-pre" maxversion="1.6.*"/>
+       <jelix minversion="1.6.35-rc.1" maxversion="1.6.*"/>
     </dependencies>
     <autoload>
         <namespacePathMap name="PhpRedis" dir="../../../php5redis/lib" suffix=".php" />

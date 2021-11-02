@@ -36,6 +36,9 @@ if  [ -d $BACKUPDIR ]; then
     if [ -f $LIZMAP/var/config/liveconfig.ini.php ]; then
         cp -p $LIZMAP/var/config/liveconfig.ini.php    $BACKUPDIR/
     fi
+    if [ -f $LIZMAP/var/config/localframework.ini.php ]; then
+        cp -p $LIZMAP/var/config/localframework.ini.php    $BACKUPDIR/
+    fi
     if [ -f $LIZMAP/var/config/authldap.coord.ini.php ]; then
         cp -p $LIZMAP/var/config/authldap.coord.ini.php $BACKUPDIR/
         cp -p $LIZMAP/var/config/mainconfig.ini.php     $BACKUPDIR/
