@@ -98,6 +98,9 @@ if [ "$KEEP_CONFIG" = "N" ]; then
     if [ -f $LIZMAP/var/config/liveconfig.ini.php ]; then
         rm -f $LIZMAP/var/config/liveconfig.ini.php
     fi
+    if [ -f $LIZMAP/var/config/localframework.ini.php ]; then
+        rm -f $LIZMAP/var/config/localframework.ini.php
+    fi
     if [ -f $LIZMAP/var/config/lizmapConfig.ini.php ]; then
         rm -f $LIZMAP/var/config/lizmapConfig.ini.php
     fi

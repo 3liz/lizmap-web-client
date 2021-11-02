@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="junittests@modules.jelix.org" name="junittests" createdate="2007-06-18">
-        <version stability="stable" date="2011-10-18">1.3</version>
+        <version stability="stable" date="2018-02-23">1.4.0</version>
         <label lang="en_US">Web interfaces for simple test</label>
         <description lang="en_US">Provides a web interface to run tests from simpletest</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
-        <copyright>2008-2015 Laurent Jouanneau and other contributors</copyright>
+        <copyright>2008-2018 Laurent Jouanneau and other contributors</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org" />
         <homepageURL>http://jelix.org</homepageURL>
     </info>

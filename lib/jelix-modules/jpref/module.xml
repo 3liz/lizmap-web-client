@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jpref@modules.jelix.org" name="jpref" createdate="2012-11-12">
-        <version stability="stable" date="2012-11-12">1.0</version>
+        <version stability="stable" date="2018-02-23">1.1.0</version>
         <label lang="en_US">jPref</label>
         <description lang="en_US">Module to manage preferences</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
