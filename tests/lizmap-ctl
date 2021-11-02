@@ -34,6 +34,9 @@ function resetfiles() {
   if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
     rm -f $APPDIR/var/config/liveconfig.ini.php
   fi
+  if [ -f $APPDIR/var/config/localframework.ini.php ]; then
+    rm -f $APPDIR/var/config/localframework.ini.php
+  fi
   if [ -f $APPDIR/var/config/localconfig.ini.php ]; then
     rm -f $APPDIR/var/config/localconfig.ini.php
   fi

@@ -3,7 +3,7 @@
 * @package     jelix
 * @subpackage  installer
 * @author      Laurent Jouanneau
-* @copyright   2009-2012 Laurent Jouanneau
+* @copyright   2009-2021 Laurent Jouanneau
 * @link        http://jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -93,6 +93,12 @@ abstract class jInstallerBase {
     protected $parameters = array();
 
     /**
+     * list of new entrypoints.
+     * @var array keys are ep id, value are array with 'file', 'config', 'type' keys
+     */
+    private $newEntrypoints = array();
+
+    /**
      * @param string $componentName name of the component
      * @param string $name name of the installer
      * @param string $path the component path
@@ -143,6 +149,8 @@ abstract class jInstallerBase {
         }
         else
             $this->useDbProfile($dbProfile);
+
+        $this->newEntrypoints = array();
     }
 
     /**
@@ -462,4 +470,39 @@ abstract class jInstallerBase {
         $pluginsPath .= ','.$path;
         $this->config->setValue('pluginsPath', $pluginsPath);
     }
+
+    /**
+     * @param string $entryPointFile path to the entrypoint file to copy, from the install directory
+     * @param string $configurationFile path to the configuration file of the entrypoint to copy, from the install directory
+     * @param string $targetConfigDirName directory name into var/config where to copy the configuration
+     *  file. by default, the directory name is the entrypoint name.
+     * @param string $type type of the entrypoint
+     *
+     */
+    function createEntryPoint($entryPointFile, $configurationFile, $targetConfigDirName= '', $type='classic')
+    {
+        $entryPointFileName = basename($entryPointFile);
+        $entryPointId =  str_replace('.php', '', $entryPointFileName);
+        $configurationFileName = basename($configurationFile);
+        if ($targetConfigDirName == '') {
+            $targetConfigDirName = $entryPointId;
+        }
+
+        $this->copyFile($entryPointFile, jApp::wwwPath($entryPointFileName), true);
+        $this->copyFile($configurationFile, jApp::configPath($targetConfigDirName.'/'.$configurationFileName), false);
+
+        if ($this->firstExec('ep:'.$entryPointFileName)) {
+            $this->newEntrypoints[$entryPointId] = array(
+                'file'=>$entryPointFileName,
+                'config'=> $targetConfigDirName.'/'.$configurationFileName,
+                'type' => $type
+            );
+        }
+    }
+
+    function getNewEntrypoints()
+    {
+        return $this->newEntrypoints;
+    }
+
 }

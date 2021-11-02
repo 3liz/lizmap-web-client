@@ -320,15 +320,33 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
             $configFile = (string)$entrypoint['config'];
             $this->entryPoints[$file] = $configFile;
         }
+        
+        $localFmkFile = jApp::configPath('localframework.ini.php');
+        if (file_exists($localFmkFile)) {
+            $localFmkConfig = parse_ini_file($localFmkFile, true);
+            foreach($localFmkConfig as $section => $epConfig) {
+                if (!is_array($epConfig) ) {
+                    continue;
+                }
+                if (!preg_match('/^entrypoint:(.*)$/', $section, $m)) {
+                    continue;
+                }
+                $file = $m[1];
+                if (substr($file, -4) != '.php')
+                    $file.='.php';
+                $this->entryPoints[$file] = $epConfig['config'];
+            }
+        }
     }
 
     protected function getEntryPointConfig($entrypoint) {
         if (substr($entrypoint, -4) != '.php')
             $entrypoint.='.php';
         if (!isset($this->entryPoints[$entrypoint]))
-            throw new Exception('The entry point "'.$entrypoint.'" is not declared into project.xml');
+            throw new Exception('The entry point "'.$entrypoint.'" is not declared into project.xml or localframework.ini.php');
         return $this->entryPoints[$entrypoint];
     }
+
     /**
      * list all entry points and their config
      */
