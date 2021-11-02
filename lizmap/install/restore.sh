@@ -26,6 +26,9 @@ if  [ -d $BACKUPDIR ]; then
     if [ -f $BACKUPDIR/liveconfig.ini.php ]; then
         cp -p $BACKUPDIR/liveconfig.ini.php        $LIZMAP/var/config/
     fi
+    if [ -f $BACKUPDIR/localframework.ini.php ]; then
+        cp -p $BACKUPDIR/localframework.ini.php        $LIZMAP/var/config/
+    fi
     if [ -f $BACKUPDIR/lizmapLogConfig.ini.php ]; then
         cp -p $BACKUPDIR/lizmapLogConfig.ini.php    $LIZMAP/var/config/lizmapLogConfig.ini.php
     fi

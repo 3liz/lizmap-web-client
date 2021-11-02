@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="master_admin@modules.jelix.org" name="master_admin" createdate="2008-12-22">
-        <version stability="stable" date="2011-10-18">1.2.1</version>
+        <version stability="stable" date="2018-03-09">1.3.0</version>
         <label lang="en_US">Main Administration Interface</label>
         <description lang="en_US">Main Web interface for the administration of an application</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL 2.0</license>
-        <copyright>2008-2018 Laurent Jouanneau</copyright>
+        <copyright>2008-2021 Laurent Jouanneau</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org" />
         <homepageURL>http://jelix.org</homepageURL>
     </info>
