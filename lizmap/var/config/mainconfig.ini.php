@@ -312,3 +312,12 @@ verifyNickname=off
 useJAuthDbAdminRights=on
 ;disableJPref = on
 
+;------- some parameters for the "saml" module
+[saml:sp]
+; list of dao properties that can be used for mapping and that are required
+daoRequiredPropertiesForMapping="login,email"
+
+;list of dao properties that can be used for mapping and that are optional
+;If empty, all dao properties are optional, except if daoRequiredPropertiesForMapping
+;is not empty.
+daoOptionalPropertiesForMapping="firstname,lastname,phonenumber"
