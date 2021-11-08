@@ -5,10 +5,6 @@ parameters:
   level: 0
   ignoreErrors:
     -
-      # This error is normal, the undefined variable is a reference and it's defined in the function it's passed to.
-      message: '#Undefined variable: \$address#'
-      path: lizmap/modules/view/classes/popup.class.php
-    -
       # This error is normal, the undefined variables are dynamically assigned.
       message: '#Undefined variable: #'
       path: lizmap/modules/lizmap/lib/Request/WMTSRequest.php
