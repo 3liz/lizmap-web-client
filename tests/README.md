@@ -149,7 +149,7 @@ To launch PHP tests:
 
 ## Testing data
 
-You must execute `tests/qgis_projects/tests/load_sql.sh` to populate postgreSQL database with testing data.
+You must execute `tests/qgis-projects/tests/load_sql.sh` to populate postgreSQL database with testing data.
 
 ## Automatic End-to-End tests
 
@@ -165,7 +165,7 @@ Go in `end2end` directory then :
 
 *First add testing data as explained above.*
 
-Put your projects into `tests/qgis_projects/tests/` (replace `tests` by the name
+Put your projects into `tests/qgis-projects/tests/` (replace `tests` by the name
 of your choice), and then you can declare `tests` projects into
 the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
 
