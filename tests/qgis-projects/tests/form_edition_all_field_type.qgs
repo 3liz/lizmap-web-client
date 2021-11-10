@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2021-09-14T14:41:10" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.11-Hannover">
+<qgis projectname="" saveDateTime="2021-11-10T12:19:57" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.13-Hannover">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -19,6 +19,9 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties></customproperties>
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" legend_exp="" legend_split_behavior="0" name="form_edition_upload" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload&quot;">
+      <customproperties></customproperties>
+    </layer-tree-layer>
     <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" legend_exp="" legend_split_behavior="0" name="data_integers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
       <customproperties></customproperties>
     </layer-tree-layer>
@@ -58,6 +61,11 @@
   </mapcanvas>
   <projectModels></projectModels>
   <legend updateDrawingOrder="true">
+    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="form_edition_upload" open="true" showFeatureCount="0">
+      <filegroup hidden="false" open="true">
+        <legendlayerfile isInOverview="0" layerid="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" visible="1"></legendlayerfile>
+      </filegroup>
+    </legendlayer>
     <legendlayer checked="Qt::Checked" drawingOrder="-1" name="data_integers" open="true" showFeatureCount="0">
       <filegroup hidden="false" open="true">
         <legendlayerfile isInOverview="0" layerid="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" visible="1"></legendlayerfile>
@@ -122,7 +130,7 @@
   <projectlayers>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" maxScale="0" minScale="1e+8" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table="tests_projects"."data_integers"</datasource>
+      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table="tests_projects"."data_integers"</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -341,9 +349,7 @@
         </fixedRange>
       </temporal>
       <customproperties>
-        <property key="dualview/previewExpressions">
-          <value>"id"</value>
-        </property>
+        <property key="dualview/previewExpressions" value="&quot;id&quot;"></property>
         <property key="embeddedWidgets/count" value="0"></property>
         <property key="variableNames"></property>
         <property key="variableValues"></property>
@@ -547,6 +553,308 @@ def my_form_open(dialog, layer, feature):
       <previewExpression>"id"</previewExpression>
       <mapTip></mapTip>
     </maplayer>
+    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" maxScale="0" minScale="1e+8" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
+      <id>form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204</id>
+      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload"</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>form_edition_upload</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt></wkt>
+          <proj4></proj4>
+          <srsid>0</srsid>
+          <srid>0</srid>
+          <authid></authid>
+          <description></description>
+          <projectionacronym></projectionacronym>
+          <ellipsoidacronym></ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <contact>
+          <name></name>
+          <organization></organization>
+          <position></position>
+          <voice></voice>
+          <fax></fax>
+          <email></email>
+          <role></role>
+        </contact>
+        <links></links>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt></wkt>
+            <proj4></proj4>
+            <srsid>0</srsid>
+            <srid>0</srid>
+            <authid></authid>
+            <description></description>
+            <projectionacronym></projectionacronym>
+            <ellipsoidacronym></ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent>
+          <spatial crs="" dimensions="2" maxx="0" maxy="0" maxz="0" minx="0" miny="0" minz="0"></spatial>
+          <temporal>
+            <period>
+              <start></start>
+              <end></end>
+            </period>
+          </temporal>
+        </extent>
+      </resourceMetadata>
+      <provider encoding="">postgres</provider>
+      <vectorjoins></vectorjoins>
+      <layerDependencies></layerDependencies>
+      <dataDependencies></dataDependencies>
+      <expressionfields></expressionfields>
+      <map-layer-style-manager current="défaut">
+        <map-layer-style name="défaut"></map-layer-style>
+      </map-layer-style-manager>
+      <auxiliaryLayer></auxiliaryLayer>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <temporal accumulate="0" durationField="" durationUnit="min" enabled="0" endExpression="" endField="" fixedDuration="0" mode="0" startExpression="" startField="">
+        <fixedRange>
+          <start></start>
+          <end></end>
+        </fixedRange>
+      </temporal>
+      <customproperties>
+        <property key="embeddedWidgets/count" value="0"></property>
+        <property key="variableNames"></property>
+        <property key="variableValues"></property>
+      </customproperties>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks></activeChecks>
+        <checkConfiguration></checkConfiguration>
+      </geometryOptions>
+      <legend type="default-vector"></legend>
+      <referencedLayers></referencedLayers>
+      <fieldConfiguration>
+        <field configurationFlags="None" name="id">
+          <editWidget type="Hidden">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="generic_file">
+          <editWidget type="ExternalResource">
+            <config>
+              <Option type="Map">
+                <Option name="DocumentViewer" type="int" value="0"></Option>
+                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                <Option name="FileWidget" type="bool" value="true"></Option>
+                <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                <Option name="FileWidgetFilter" type="QString" value=""></Option>
+                <Option name="PropertyCollection" type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties"></Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+                <Option name="RelativeStorage" type="int" value="0"></Option>
+                <Option name="StorageMode" type="int" value="0"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="text_file">
+          <editWidget type="ExternalResource">
+            <config>
+              <Option type="Map">
+                <Option name="DocumentViewer" type="int" value="0"></Option>
+                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                <Option name="FileWidget" type="bool" value="true"></Option>
+                <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                <Option name="FileWidgetFilter" type="QString" value="Text files (*.txt)"></Option>
+                <Option name="PropertyCollection" type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties"></Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+                <Option name="RelativeStorage" type="int" value="0"></Option>
+                <Option name="StorageMode" type="int" value="0"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="image_file">
+          <editWidget type="ExternalResource">
+            <config>
+              <Option type="Map">
+                <Option name="DocumentViewer" type="int" value="0"></Option>
+                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                <Option name="FileWidget" type="bool" value="true"></Option>
+                <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                <Option name="FileWidgetFilter" type="QString" value="Images (*.png *.jpg *.jpeg)"></Option>
+                <Option name="PropertyCollection" type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties"></Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+                <Option name="RelativeStorage" type="int" value="0"></Option>
+                <Option name="StorageMode" type="int" value="0"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="text_file_mandatory">
+          <editWidget type="ExternalResource">
+            <config>
+              <Option type="Map">
+                <Option name="DocumentViewer" type="int" value="0"></Option>
+                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                <Option name="FileWidget" type="bool" value="true"></Option>
+                <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                <Option name="FileWidgetFilter" type="QString" value="*.txt"></Option>
+                <Option name="PropertyCollection" type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties"></Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+                <Option name="RelativeStorage" type="int" value="0"></Option>
+                <Option name="StorageMode" type="int" value="0"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="image_file_mandatory">
+          <editWidget type="ExternalResource">
+            <config>
+              <Option type="Map">
+                <Option name="DocumentViewer" type="int" value="0"></Option>
+                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                <Option name="FileWidget" type="bool" value="true"></Option>
+                <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Images jpeg (*.jpg *.jpeg)"></Option>
+                <Option name="PropertyCollection" type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties"></Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+                <Option name="RelativeStorage" type="int" value="0"></Option>
+                <Option name="StorageMode" type="int" value="0"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias field="id" index="0" name=""></alias>
+        <alias field="generic_file" index="1" name=""></alias>
+        <alias field="text_file" index="2" name=""></alias>
+        <alias field="image_file" index="3" name=""></alias>
+        <alias field="text_file_mandatory" index="4" name=""></alias>
+        <alias field="image_file_mandatory" index="5" name=""></alias>
+      </aliases>
+      <defaults>
+        <default applyOnUpdate="0" expression="" field="id"></default>
+        <default applyOnUpdate="0" expression="" field="generic_file"></default>
+        <default applyOnUpdate="0" expression="" field="text_file"></default>
+        <default applyOnUpdate="0" expression="" field="image_file"></default>
+        <default applyOnUpdate="0" expression="" field="text_file_mandatory"></default>
+        <default applyOnUpdate="0" expression="" field="image_file_mandatory"></default>
+      </defaults>
+      <constraints>
+        <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
+        <constraint constraints="0" exp_strength="0" field="generic_file" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="text_file" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="image_file" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="1" exp_strength="0" field="text_file_mandatory" notnull_strength="1" unique_strength="0"></constraint>
+        <constraint constraints="1" exp_strength="0" field="image_file_mandatory" notnull_strength="1" unique_strength="0"></constraint>
+      </constraints>
+      <constraintExpressions>
+        <constraint desc="" exp="" field="id"></constraint>
+        <constraint desc="" exp="" field="generic_file"></constraint>
+        <constraint desc="" exp="" field="text_file"></constraint>
+        <constraint desc="" exp="" field="image_file"></constraint>
+        <constraint desc="" exp="" field="text_file_mandatory"></constraint>
+        <constraint desc="" exp="" field="image_file_mandatory"></constraint>
+      </constraintExpressions>
+      <expressionfields></expressionfields>
+      <attributeactions>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"></defaultAction>
+      </attributeactions>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column hidden="0" name="id" type="field" width="-1"></column>
+          <column hidden="0" name="text_file" type="field" width="-1"></column>
+          <column hidden="0" name="image_file" type="field" width="-1"></column>
+          <column hidden="0" name="text_file_mandatory" type="field" width="-1"></column>
+          <column hidden="0" name="image_file_mandatory" type="field" width="-1"></column>
+          <column hidden="1" type="actions" width="-1"></column>
+          <column hidden="0" name="generic_file" type="field" width="-1"></column>
+        </columns>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles></rowstyles>
+        <fieldstyles></fieldstyles>
+      </conditionalstyles>
+      <storedexpressions></storedexpressions>
+      <editform tolerant="1"></editform>
+      <editforminit></editforminit>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode># -*- coding: utf-8 -*-
+"""
+Les formulaires QGIS peuvent avoir une fonction Python qui sera appelée à l'ouverture du formulaire.
+
+Utilisez cette fonction pour ajouter plus de fonctionnalités à vos formulaires.
+
+Entrez le nom de la fonction dans le champ "Fonction d'initialisation Python".
+Voici un exemple à suivre:
+"""
+from qgis.PyQt.QtWidgets import QWidget
+
+def my_form_open(dialog, layer, feature):
+	geom = feature.geometry()
+	control = dialog.findChild(QWidget, "MyLineEdit")
+
+</editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable>
+        <field editable="1" name="generic_file"></field>
+        <field editable="1" name="id"></field>
+        <field editable="1" name="image_file"></field>
+        <field editable="1" name="image_file_mandatory"></field>
+        <field editable="1" name="text_file"></field>
+        <field editable="1" name="text_file_mandatory"></field>
+      </editable>
+      <labelOnTop>
+        <field labelOnTop="0" name="generic_file"></field>
+        <field labelOnTop="0" name="id"></field>
+        <field labelOnTop="0" name="image_file"></field>
+        <field labelOnTop="0" name="image_file_mandatory"></field>
+        <field labelOnTop="0" name="text_file"></field>
+        <field labelOnTop="0" name="text_file_mandatory"></field>
+      </labelOnTop>
+      <dataDefinedFieldProperties></dataDefinedFieldProperties>
+      <widgets></widgets>
+      <previewExpression>"id"</previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
   </projectlayers>
   <layerorder></layerorder>
   <properties>
@@ -610,15 +918,27 @@ def my_form_open(dialog, layer, feature):
     <SpatialRefSys>
       <ProjectionsEnabled type="int">1</ProjectionsEnabled>
     </SpatialRefSys>
+    <Variables>
+      <variableNames type="QStringList">
+        <value>lizmap_user</value>
+        <value>lizmap_user_groups</value>
+      </variableNames>
+      <variableValues type="QStringList">
+        <value></value>
+        <value></value>
+      </variableValues>
+    </Variables>
     <WCSLayers type="QStringList"></WCSLayers>
     <WCSUrl type="QString"></WCSUrl>
     <WFSLayers type="QStringList">
       <value>data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7</value>
       <value>form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51</value>
+      <value>form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204</value>
     </WFSLayers>
     <WFSLayersPrecision>
       <data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7 type="int">8</data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7>
       <form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51 type="int">8</form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51>
+      <form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204 type="int">8</form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204>
     </WFSLayersPrecision>
     <WFSTLayers>
       <Delete type="QStringList"></Delete>
@@ -712,7 +1032,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="1.78998911860718168" xmin="-1.78998911860718168" ymax="1" ymin="-1">
+    <DefaultViewExtent xmax="1.82322801024765146" xmin="-1.82322801024765146" ymax="1" ymin="-1">
       <spatialrefsys>
         <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
         <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
