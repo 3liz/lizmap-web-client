@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.12 (Debian 11.12-1.pgdg100+1)
--- Dumped by pg_dump version 13.4 (Ubuntu 13.4-1.pgdg18.04+1)
+-- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
+-- Dumped by pg_dump version 13.4 (Ubuntu 13.4-4.pgdg18.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -91,6 +91,44 @@ ALTER SEQUENCE tests_projects.form_edition_all_fields_types_id_seq OWNED BY test
 
 
 --
+-- Name: form_edition_upload; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.form_edition_upload (
+    id integer NOT NULL,
+    generic_file text,
+    text_file text,
+    image_file text,
+    text_file_mandatory text NOT NULL,
+    image_file_mandatory text NOT NULL
+);
+
+
+ALTER TABLE tests_projects.form_edition_upload OWNER TO lizmap;
+
+--
+-- Name: form_edition_upload_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.form_edition_upload_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.form_edition_upload_id_seq OWNER TO lizmap;
+
+--
+-- Name: form_edition_upload_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.form_edition_upload_id_seq OWNED BY tests_projects.form_edition_upload.id;
+
+
+--
 -- Name: data_integers id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -102,6 +140,13 @@ ALTER TABLE ONLY tests_projects.data_integers ALTER COLUMN id SET DEFAULT nextva
 --
 
 ALTER TABLE ONLY tests_projects.form_edition_all_fields_types ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_all_fields_types_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_upload id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_upload_id_seq'::regclass);
 
 
 --
@@ -131,6 +176,14 @@ COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nu
 
 
 --
+-- Data for Name: form_edition_upload; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file, text_file_mandatory, image_file_mandatory) FROM stdin;
+\.
+
+
+--
 -- Name: data_integers_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
@@ -142,6 +195,13 @@ SELECT pg_catalog.setval('tests_projects.data_integers_id_seq', 10, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.form_edition_all_fields_types_id_seq', 1, false);
+
+
+--
+-- Name: form_edition_upload_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_upload_id_seq', 1, false);
 
 
 --
@@ -158,6 +218,14 @@ ALTER TABLE ONLY tests_projects.data_integers
 
 ALTER TABLE ONLY tests_projects.form_edition_all_fields_types
     ADD CONSTRAINT form_edition_all_fields_types_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_upload form_edition_upload_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload
+    ADD CONSTRAINT form_edition_upload_pkey PRIMARY KEY (id);
 
 
 --
