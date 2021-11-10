@@ -1,5 +1,6 @@
 #!/bin/bash
-DATA=`find ./ -type f -name "*.sql"`
+SCRIPTDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+DATA=$(find $SCRIPTDIR/ -type f -name "*.sql")
 for i in $DATA
 do
     echo "* Run file $i"
