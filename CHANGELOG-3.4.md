@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.4.7 - 2021-11-16
+
 ### Fixed
 
 - Expressions: Lizmap user and groups was not forwarded to the QGIS Server backend.
