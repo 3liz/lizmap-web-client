@@ -491,7 +491,11 @@ var lizLayerFilterTool = function () {
                     var clist = [];
                     for (var f_val in filterConfig[field_item.order]['items']) {
                         // Get checked status
-                        var achecked = (selectVal == lizMap.cleanName(f_val));
+                        if (Array.isArray(selectVal)) {
+                            var achecked = selectVal.includes(lizMap.cleanName(f_val));
+                        } else {
+                            var achecked = (selectVal == lizMap.cleanName(f_val));
+                        }
                         if (!achecked) {
                             allchecked = false;
                         } else {
@@ -735,6 +739,7 @@ var lizLayerFilterTool = function () {
             }
 
             function resetFormField(field_item_order) {
+
                 var field_item = filterConfig[field_item_order];
 
                 if (field_item.type == 'date') {
@@ -750,10 +755,18 @@ var lizLayerFilterTool = function () {
                         $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' button.liz-filter-field-value.checked').removeClass('checked');
                     }
                     else if (field_item.format == 'select') {
-                        $('#liz-filter-field-' + lizMap.cleanName(field_item.title)).val(
-                            $('#liz-filter-field-' + lizMap.cleanName(field_item.title) + ' option:first').val()
-                        );
-
+                        var selectField = $('#liz-filter-field-' + lizMap.cleanName(field_item.title));
+                        // If the select is multiple && sumoSelect has been used to transform the combobox
+                        if ('sumo' in selectField[0]) {
+                            if (selectField[0].hasAttribute('multiple')) {
+                                selectField[0].sumo.unSelectAll();
+                            } else {
+                                selectField[0].sumo.unSelectItem(selectField.val());
+                            }
+                        } else {
+                            var firstOptionValue = selectField.find('option:first').val();
+                            selectField.val(firstOptionValue);
+                        }
                     }
                 }
                 else if (field_item['type'] == 'text') {
