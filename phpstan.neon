@@ -2,7 +2,7 @@ parameters:
   scanDirectories:
     - lib/
     - lizmap/vendor/
-  level: 0
+  level: 4
   ignoreErrors:
     -
       # This error is normal, the undefined variables are dynamically assigned.
