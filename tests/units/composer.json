@@ -9,7 +9,8 @@
     ],
     "require": {
         "php": ">=7.3.0",
-        "phpunit/phpunit": "^9.5.7"
+        "phpunit/phpunit": "^9.5.7",
+        "phpstan/phpstan": "^1.1.2"
     },
     "autoload": {
         "classmap": ["../../lizmap/modules/lizmap/classes/" ],

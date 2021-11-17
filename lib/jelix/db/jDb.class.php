@@ -18,8 +18,8 @@
 /**
  *
  */
-require(JELIX_LIB_PATH.'db/jDbConnection.class.php');
-require(JELIX_LIB_PATH.'db/jDbResultSet.class.php');
+require_once(JELIX_LIB_PATH.'db/jDbConnection.class.php');
+require_once(JELIX_LIB_PATH.'db/jDbResultSet.class.php');
 
 /**
  * class that handles a sql query for a logger
