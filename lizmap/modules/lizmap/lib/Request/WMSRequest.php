@@ -642,7 +642,6 @@ class WMSRequest extends OGCRequest
 
             // Use default template if needed or maptip value if defined
             // Get geometry data
-            $hasGeometry = false;
             $hiddenGeometry = '';
             $maptipValue = null;
 
@@ -665,7 +664,7 @@ class WMSRequest extends OGCRequest
                         'maxx' => 'bbox-maxx',
                         'maxy' => 'bbox-maxy',
                     );
-                    if ($hasGeometry && $feature->BoundingBox) {
+                    if ($feature->BoundingBox) {
                         $hiddenGeometry .= '<input type="hidden" value="'.$attribute['value'].'" class="lizmap-popup-layer-feature-geometry"/>'.PHP_EOL;
                         $bbox = $feature->BoundingBox[0];
                         foreach ($props as $prop => $class) {
