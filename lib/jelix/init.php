@@ -87,6 +87,10 @@ $GLOBALS['gLibPath']=array('Config'=>JELIX_LIB_PATH.'core/',
  'Auth'=>JELIX_LIB_PATH.'auth/', 'Installer'=>JELIX_LIB_PATH.'installer/',
  'KV'=>JELIX_LIB_PATH.'kvdb/');
 
+$GLOBALS['gLibClassPath']=array(
+  'jIInstallerComponent' => JELIX_LIB_PATH.'installer/jIInstallerComponent.iface.php',
+
+);
 /**
  * function used by php to try to load an unknown class
  */
@@ -97,28 +101,30 @@ function jelix_autoload($class) {
     else if(preg_match('/^j(Dao|Tpl|Event|Db|Controller|Forms|Auth|Config|Installer|KV).*/i', $class, $m)){
         $f=$GLOBALS['gLibPath'][$m[1]].$class.'.class.php';
     }
-    elseif(preg_match('/^cDao(?:Record)?_(.+)_Jx_(.+)_Jx_(.+)$/', $class, $m)){
+    elseif(preg_match('/^cDao(?:Record)?_(.+)_Jx_(.+)_Jx_(.+)$/', $class, $m)) {
         // for DAO which are stored in sessions for example
-        if(!isset(jApp::config()->_modulesPathList[$m[1]])){
+        if (!isset(jApp::config()->_modulesPathList[$m[1]])) {
             //this may happen if we have several entry points, but the current one does not have this module accessible
             return;
         }
-        $s = new jSelectorDao($m[1].'~'.$m[2], $m[3], false);
-        if(jApp::config()->compilation['checkCacheFiletime']){
+        $s = new jSelectorDao($m[1] . '~' . $m[2], $m[3], false);
+        if (jApp::config()->compilation['checkCacheFiletime']) {
             // if it is needed to check the filetime, then we use jIncluder
             // because perhaps we will have to recompile the dao before the include
             jIncluder::inc($s);
-        }else{
+        } else {
             $f = $s->getCompiledFilePath();
             // we should verify that the file is here and if not, we recompile
             // (case where the temp has been cleaned, see bug #6062 on berlios.de)
             if (!file_exists($f)) {
                 jIncluder::inc($s);
-            }
-            else
+            } else
                 require($f);
         }
         return;
+    }
+    else if (isset($GLOBALS['gLibClassPath'][$class])) {
+        $f = $GLOBALS['gLibClassPath'][$class];
     }else{
         $f = JELIX_LIB_UTILS_PATH.$class.'.class.php';
     }
