@@ -53,6 +53,7 @@ lizmap/my-packages/*
 !lizmap/my-packages/README.md
 .php_cs
 .php_cs.cache
+.phpstan.cache
 
 .drafts
 docker/factory.manifest
@@ -66,6 +67,7 @@ venv
 # Tests
 tests/units/vendor/
 tests/units/composer.lock
+tests/units/.phpunit.result.cache
 tests/qgis-projects/*
 !tests/qgis-projects/tests
 tests/qgis-server-plugins/*

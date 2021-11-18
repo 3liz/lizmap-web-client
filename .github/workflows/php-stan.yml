@@ -42,5 +42,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: PHPStan version
+        run: phpstan -V
+
       - name: Run PHPStan
         run: phpstan analyse -c ../phpstan.neon
