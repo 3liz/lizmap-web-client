@@ -21,9 +21,11 @@ fi
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
-    echo "Possible commands: clean, clean_tmp, reset, reset-sqlite, install, rights, composer_install, "
-    echo "composer_update, unittests, shell, shellroot, ldapreset, ldapusers"
-    echo "pgsql, redis-cli"
+    echo "Possible commands: "
+    echo " - clean, clean_tmp, reset, reset-sqlite, ldapreset, rights"
+    echo " - install,  composer_install, composer_update"
+    echo " - pgsql, redis-cli, shell, shellroot"
+    echo " - phpstan, unittests, ldapusers"
     exit 1;
 fi
 
@@ -104,6 +106,8 @@ case $COMMAND in
         execInPhp composer_update;;
     unittests)
         execInPhp unittests;;
+    phpstan)
+        execInPhp phpstan;;
     shell)
        docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shellroot)
