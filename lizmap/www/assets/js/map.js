@@ -3819,7 +3819,10 @@ var lizMap = function() {
                 return t.vectorLayer;
           });
       // Print Extent
-      var extent = dragCtrl.layer.features[0].geometry.getBounds();
+      // Clone it to fix transform
+      var extent = new OpenLayers.Bounds(
+          dragCtrl.layer.features[0].geometry.getBounds().toArray()
+      );
 
       // Projection code and reverseAxisOrder
       var projCode = map.projection.getCode();
