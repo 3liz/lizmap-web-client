@@ -1,4 +1,4 @@
-ALTER TABLE %%PREFIX%%jacl2_group ALTER code TYPE character varying(50) NOT NULL;
+ALTER TABLE %%PREFIX%%jacl2_group ALTER code TYPE character varying(50);
 UPDATE %%PREFIX%%jacl2_group SET code = name WHERE (code = '' or code IS NULL);
 
 UPDATE %%PREFIX%%jacl2_group SET code = ('__priv_' || code) WHERE grouptype = 2;

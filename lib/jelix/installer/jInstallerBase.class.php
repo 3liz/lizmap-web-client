@@ -8,6 +8,8 @@
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
+require_once(__DIR__.'/../utils/FileUtilities/Path.php');
+
 /**
 * base class for installers
 * @package     jelix
@@ -488,15 +490,29 @@ abstract class jInstallerBase {
             $targetConfigDirName = $entryPointId;
         }
 
-        $this->copyFile($entryPointFile, jApp::wwwPath($entryPointFileName), true);
-        $this->copyFile($configurationFile, jApp::configPath($targetConfigDirName.'/'.$configurationFileName), false);
-
         if ($this->firstExec('ep:'.$entryPointFileName)) {
+
+            // copy the entrypoint and its configuration
+            $newEpPath = jApp::wwwPath($entryPointFileName);
+            $this->copyFile($entryPointFile, $newEpPath, true);
+            $this->copyFile($configurationFile, jApp::configPath($targetConfigDirName.'/'.$configurationFileName), false);
+
+            // declare to the main installer that there is a new entrypoint
             $this->newEntrypoints[$entryPointId] = array(
                 'file'=>$entryPointFileName,
                 'config'=> $targetConfigDirName.'/'.$configurationFileName,
                 'type' => $type
             );
+
+            // change the path to application.init.php into the entrypoint
+            // depending of the application, the path of www/ is not always at the same place, relatively to
+            // application.init.php
+            $relativePath = \Jelix\FileUtilities\Path::shortestPath(jApp::wwwPath(), jApp::appPath());
+
+            $epCode = file_get_contents($newEpPath);
+            $epCode = preg_replace('#(require\s*\(\s*[\'"])(.*)(application\.init\.php[\'"])#m', '\\1'.$relativePath.'/\\3', $epCode);
+            file_put_contents($newEpPath, $epCode);
+
         }
     }
 
