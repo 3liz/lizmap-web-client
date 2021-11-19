@@ -74,6 +74,7 @@ class usersCtrl extends jController
         }
 
         $tpl->assign(compact('offset', 'grpid', 'listPageSize', 'groups', 'filter', 'last'));
+        $rep->title = jLocale::get('acl2.users.title');
         $rep->body->assign('MAIN', $tpl->fetch('users_list'));
         $rep->body->assign('selectedMenuItem','usersrights');
 
@@ -119,6 +120,7 @@ class usersCtrl extends jController
             $rep->body->assign('MAIN', $tpl->fetch('user_rights_view'));
         }
         $rep->body->assign('selectedMenuItem', 'usersrights');
+        $rep->title = jLocale::get('acl2.user.rights.title'). ' '. $user;
         return $rep;
     }
 
