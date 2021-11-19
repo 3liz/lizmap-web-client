@@ -22,10 +22,10 @@ fi
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
     echo "Possible commands: "
-    echo " - clean, clean_tmp, reset, reset-sqlite, ldapreset, rights"
-    echo " - install,  composer_install, composer_update"
-    echo " - pgsql, redis-cli, shell, shellroot"
-    echo " - phpstan, unittests, ldapusers"
+    echo " - clean, clean-tmp, reset, reset-sqlite, ldap-reset, rights"
+    echo " - install,  composer-install, composer-update"
+    echo " - psql, redis-cli, shell, shell-root, shell-pgsql"
+    echo " - phpstan, unit-tests, ldap-users"
     exit 1;
 fi
 
@@ -90,7 +90,7 @@ case $COMMAND in
     clean)
       resetfiles
       ;;
-    clean_tmp)
+    clean-tmp | clean_tmp)
        execInPhp clean_tmp;;
     reset)
        execInPhp reset;;
@@ -100,26 +100,29 @@ case $COMMAND in
         execInPhp install;;
     rights)
         execInPhp rights;;
-    composer_install)
+    composer-install | composer_install)
         execInPhp composer_install;;
-    composer_update)
+    composer-update | composer_update)
         execInPhp composer_update;;
-    unittests)
+    unit-tests | unittests)
         execInPhp unittests;;
     phpstan)
         execInPhp phpstan;;
     shell)
        docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
-    shellroot)
+    shell-root | shellroot)
        docker exec -it lizmap${LZMBRANCH}_test_php /bin/bash  -l;;
-    ldapreset)
+    ldap-reset | ldapreset)
       docker exec -it lizmap${LZMBRANCH}_test_ldap /bin/ctl.sh reset
       ;;
-    ldapusers)
+    ldap-users | ldapusers)
        docker exec -it lizmap${LZMBRANCH}_test_ldap /bin/ctl.sh showusers
        ;;
-    pgsql)
+    psql | pgsql)
        docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql psql --username=lizmap lizmap
+       ;;
+    shell-pgsql)
+       docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql /bin/bash  -l
        ;;
     redis-cli)
       docker exec -it lizmap${LZMBRANCH}_test_redis redis-cli

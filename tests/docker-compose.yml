@@ -9,6 +9,7 @@ services:
       POSTGRES_USER: lizmap
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - "../:/srv/lzm/"
     ports:
       - ${LZMPGPORT}:5432
     networks:
