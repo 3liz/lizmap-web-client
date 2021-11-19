@@ -463,6 +463,9 @@ captcha.simple.widgettype=captcha
 captcha.recaptcha.validator=\jelix\forms\Captcha\ReCaptchaValidator
 captcha.recaptcha.widgettype=recaptcha
 
+; deprecated
+flagPrepareObjectFromControlsContactArrayValues = 0
+
 [jforms_builder_html]
 ;control type = plugin name
 
@@ -470,6 +473,7 @@ captcha.recaptcha.widgettype=recaptcha
 jquery = $jqueryPath/jquery.js
 jqueryui.js[] = $jqueryPath/ui/jquery-ui-core-widg-mous-posi.custom.min.js
 jqueryui.css[] = $jqueryPath/themes/base/jquery.ui.all.css
+
 
 [datepickers]
 default = $jelix/js/jforms/datepickers/default/init.js

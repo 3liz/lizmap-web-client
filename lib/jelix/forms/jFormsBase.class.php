@@ -193,9 +193,14 @@ abstract class jFormsBase {
                 if (count($this->container->data[$name]) ==1) {
                     $object->$name = $this->container->data[$name][0];
                 }
-                else
-                    // do nothing for arrays ?
-                    continue;
+                else {
+                    if (jApp::config()->forms['flagPrepareObjectFromControlsContactArrayValues']) {
+                        // ugly fix for a specific project
+                        $object->$name = implode('_', $this->container->data[$name]);
+                    } else {
+                        continue;
+                    }
+                }
             }
             else{
                 $object->$name = $this->container->data[$name];
