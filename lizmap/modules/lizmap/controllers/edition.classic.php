@@ -3,7 +3,7 @@
  * Edition tool web services.
  *
  * @author    3liz
- * @copyright 2011-2019 3liz
+ * @copyright 2011-2021 3liz
  *
  * @see      http://3liz.com
  *
@@ -527,8 +527,6 @@ class editionCtrl extends jController
         jEvent::notify('LizmapEditionEditGetForm', $eventParams);
 
         // Dynamically add form controls based on QGIS layer information
-        $qgisForm = null;
-
         try {
             $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
         } catch (Exception $e) {
@@ -567,29 +565,9 @@ class editionCtrl extends jController
         if ($this->featureId) {
             $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
         } elseif ($form->hasUpload()) {
-            $repPath = $this->repository->getPath();
             $dtParams = $this->layer->getDatasourceParameters();
             foreach ($form->getUploads() as $upload) {
-                $DefaultRoot = $qgisForm->getQgisControl($upload->ref)->DefaultRoot;
-                // If not default root is set, the use old method media/upload/projectname/tablename/
-                $targetPath = 'media/upload/'.$this->project->getKey().'/'.$dtParams->tablename.'/'.$upload->ref.'/';
-                $targetFullPath = $repPath.$targetPath;
-                // Else use given root, but only if it is a child or brother of the repository path
-                if (!empty($DefaultRoot)) {
-                    jFile::createDir($repPath.$DefaultRoot); // Need to create it to then make the realpath checks
-                    if (
-                        (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
-                        or (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
-                    ) {
-                        $targetPath = $DefaultRoot;
-                        $targetFullPath = realpath($repPath.$DefaultRoot);
-                    }
-                }
-
-                if (!is_dir($targetFullPath)) {
-                    jFile::createDir($targetFullPath);
-                }
-
+                list($targetPath, $targetFullPath) = $qgisForm->getStoragePathForControl($upload->ref);
                 $choiceRef = $upload->ref.'_choice';
                 $choiceCtrl = $form->getControl($choiceRef);
                 if ($choiceCtrl) {
@@ -598,7 +576,7 @@ class editionCtrl extends jController
                     $choiceCtrl->deactivateItem('keep');
                     $choiceCtrl->deactivateItem('delete');
                 }
-                if (!is_dir($targetFullPath) or !is_writable($targetFullPath)) {
+                if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
                     $form->setErrorOn($upload->ref, jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
                 } else {
                     $refPath = $targetFullPath;

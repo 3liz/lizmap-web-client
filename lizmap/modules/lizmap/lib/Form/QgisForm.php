@@ -3,7 +3,7 @@
  * Create and set \jForms form based on QGIS vector layer.
  *
  * @author    3liz
- * @copyright 2017 3liz
+ * @copyright 2017-2021 3liz
  *
  * @see      http://3liz.com
  *
@@ -307,6 +307,21 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param $ref
+     *
+     * @return null|string[]
+     */
+    public function getStoragePathForControl($ref)
+    {
+        $ctrl = $this->getQgisControl($ref);
+        if ($ctrl) {
+            return $ctrl->getStoragePath($this->layer);
+        }
+
+        return array('', '');
     }
 
     /**
@@ -935,23 +950,12 @@ class QgisForm implements QgisFormControlsInterface
     protected function processUploadedFile($form, $ref, $cnx)
     {
         $project = $this->layer->getProject();
-        $dtParams = $this->layer->getDatasourceParameters();
         $value = $form->getData($ref);
         $choiceValue = $form->getData($ref.'_choice');
         $hiddenValue = $form->getData($ref.'_hidden');
         $repPath = $project->getRepository()->getPath();
 
-        $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$ref;
-        $targetFullPath = $repPath.$targetPath;
-        // Else use given root, but only if it is a child or brother of the repository path
-        if (!empty($this->formControls[$ref]->DefaultRoot)) {
-            \jFile::createDir($repPath.$this->formControls[$ref]->DefaultRoot); // Need to create it to then make the realpath checks
-            if ((substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
-            || (substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))) {
-                $targetPath = $this->formControls[$ref]->DefaultRoot;
-                $targetFullPath = realpath($repPath.$this->formControls[$ref]->DefaultRoot);
-            }
-        }
+        list($targetPath, $targetFullPath) = $this->formControls[$ref]->getStoragePath($this->layer);
 
         // update
         if ($choiceValue == 'update' && $value != '') {
