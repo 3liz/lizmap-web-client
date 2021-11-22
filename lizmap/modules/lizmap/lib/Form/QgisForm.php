@@ -928,9 +928,9 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
-     * @param \jFormsBase   $form
-     * @param string        $ref
-     * @param jDbConnection $cnx
+     * @param \jFormsBase    $form
+     * @param string         $ref
+     * @param \jDbConnection $cnx
      */
     protected function processUploadedFile($form, $ref, $cnx)
     {
