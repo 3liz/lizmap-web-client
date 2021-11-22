@@ -328,82 +328,10 @@ class QgisFormControl
         $choice->createItem('keep', 'keep');
         $choice->createItem('update', 'update');
         $upload = new \jFormsControlUpload($this->ref);
-        if ($this->fieldEditType === 'Photo') {
-            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-            $upload->accept = implode(', ', $upload->mimetype);
-            $upload->capture = 'camera';
-        } elseif ($this->fieldEditType === 'ExternalResource') {
-            $accepts = array();
-            $upload->accept = '';
-            $FileWidgetFilter = $this->getEditAttribute('FileWidgetFilter');
-            if ($FileWidgetFilter) {
-                //QFileDialog::getOpenFileName filter
-                $FileWidgetFilter = explode(';;', $FileWidgetFilter);
-                $re = '/\*(\.\w{3,6})/';
-                foreach ($FileWidgetFilter as $FileFilter) {
-                    $matches = array();
-                    if (preg_match_all($re, $FileFilter, $matches)) {
-                        foreach ($matches[1] as $m) {
-                            $type = \jFile::getMimeTypeFromFilename('f'.$m);
-                            if ($type != 'application/octet-stream') {
-                                $upload->mimetype[] = $type;
-                            }
-                            $accepts[] = $m;
-                        }
-                    }
-                }
-                if (count($accepts) > 0) {
-                    $accepts = array_unique($accepts);
-                    $upload->accept = implode(', ', $accepts);
-                }
-            }
-            if ($this->getEditAttribute('DocumentViewer')) {
-                if (count($accepts)) {
-                    $mimetypes = array();
-                    $typeTab = array(
-                        '.gif' => 'image/gif',
-                        '.png' => 'image/png',
-                        '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
-                        '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
-                        '.bm' => array('image/bmp', 'image/x-windows-bmp'),
-                        '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
-                        '.pbm' => 'image/x-portable-bitmap',
-                        '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
-                        '.ppm' => 'image/x-portable-pixmap',
-                        '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
-                        '.xpm' => array('image/xpm', 'image/x-xpixmap'),
-                        '.svg' => 'image/svg+xml',
-                    );
-                    foreach ($accepts as $a) {
-                        if (array_key_exists($a, $typeTab)) {
-                            if ((in_array($a, array('.jpg', '.jpeg')) && in_array('image/jpg', $mimetypes))
-                            || (in_array($a, array('.bm', '.bmp')) && in_array('image/bmp', $mimetypes))) {
-                                continue;
-                            }
-                            if (is_array($typeTab[$a])) {
-                                $mimetypes = array_merge($mimetypes, $typeTab[$a]);
-                            } else {
-                                $mimetypes[] = $typeTab[$a];
-                            }
-                        }
-                    }
-                    $upload->mimetype = array_unique($mimetypes);
-                } else {
-                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
-                }
-                $upload->capture = 'camera';
-            }
-            $defaultRoot = $this->getEditAttribute('DefaultRoot');
-
-            if ($defaultRoot
-                && (preg_match('#^../media(/)?#', $defaultRoot)
-                    || preg_match('#^media(/)?#', $defaultRoot))) {
-                $this->DefaultRoot = $defaultRoot.'/';
-            } else {
-                $this->DefaultRoot = '';
-            }
-        }
+        $upload->mimetype = $this->properties->getMimeTypes();
+        $upload->accept = $this->properties->getUploadAccept();
+        $upload->capture = $this->properties->getUploadCapture();
+        $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
         $choice->addChildControl($upload, 'update');
         $choice->createItem('delete', 'delete');
         $choice->defaultValue = 'keep';
