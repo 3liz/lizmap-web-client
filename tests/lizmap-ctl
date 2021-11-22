@@ -24,7 +24,7 @@ if [ "$COMMAND" == "" ]; then
     echo "Possible commands: "
     echo " - clean, clean-tmp, reset, reset-sqlite, ldap-reset, rights"
     echo " - install,  composer-install, composer-update"
-    echo " - psql, redis-cli, shell, shell-root, shell-pgsql"
+    echo " - psql, redis-cli, shell, shell-root, shell-pgsql, shell-nginx"
     echo " - phpstan, unit-tests, ldap-users"
     exit 1;
 fi
@@ -112,6 +112,8 @@ case $COMMAND in
        docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shell-root | shellroot)
        docker exec -it lizmap${LZMBRANCH}_test_php /bin/bash  -l;;
+    shell-nginx)
+       docker exec -it lizmap${LZMBRANCH}_test_nginx  /bin/bash -l;;
     ldap-reset | ldapreset)
       docker exec -it lizmap${LZMBRANCH}_test_ldap /bin/ctl.sh reset
       ;;
