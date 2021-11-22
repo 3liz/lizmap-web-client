@@ -3,7 +3,7 @@
  * Create and set jForms controls based on QGIS form edit type.
  *
  * @author    3liz
- * @copyright 2012-2019 3liz
+ * @copyright 2012-2021 3liz
  *
  * @see      http://3liz.com
  *
@@ -13,6 +13,8 @@
 namespace Lizmap\Form;
 
 use Lizmap\App;
+
+require_once JELIX_LIB_UTILS_PATH.'FileUtilities/Path.php';
 
 class QgisFormControl
 {
@@ -756,5 +758,40 @@ class QgisFormControl
         }
 
         return null;
+    }
+
+    /**
+     * gets the path where to store the file.
+     *
+     * @param \qgisVectorLayer $layer the layer which have the column corresponding to the control
+     *
+     * @return string[] the relative path to the project path, and the full path
+     */
+    public function getStoragePath($layer)
+    {
+        $project = $layer->getProject();
+        $dtParams = $layer->getDatasourceParameters();
+        $repPath = $project->getRepository()->getPath();
+
+        // If not default root is set, use the old method media/upload/projectname/tablename/
+        $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$this->ref.'/';
+        $targetFullPath = $repPath.$targetPath;
+        // Else use given root, but only if it is a child or brother of the repository path
+        if (!empty($this->DefaultRoot)) {
+            $fullPath = \Jelix\FileUtilities\Path::normalizePath($repPath.$this->DefaultRoot);
+            $parentPath = realpath($repPath.'../');
+            if (strpos($fullPath, $repPath) === 0
+                || strpos($fullPath, $parentPath) === 0
+            ) {
+                $targetPath = $this->DefaultRoot;
+                $targetFullPath = $fullPath;
+            }
+        }
+
+        if (!is_dir($targetFullPath)) {
+            \jFile::createDir($targetFullPath);
+        }
+
+        return array($targetPath, $targetFullPath);
     }
 }
