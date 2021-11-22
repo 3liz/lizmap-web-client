@@ -63,11 +63,10 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * QgisForm constructor.
      *
-     * @param \qgisVectorLayer     $layer
-     * @param \jFormsBase          $form
-     * @param string               $featureId
-     * @param bool                 $loginFilteredOverride
-     * @param \AppContextInterface $appContext
+     * @param \qgisVectorLayer $layer
+     * @param \jFormsBase      $form
+     * @param string           $featureId
+     * @param bool             $loginFilteredOverride
      *
      * @throws \Exception
      */
@@ -114,7 +113,7 @@ class QgisForm implements QgisFormControlsInterface
             if (isset($formInfos[$fieldName])) {
                 $formControl = new QgisFormControl($fieldName, $formInfos[$fieldName], $prop, $defaultValue, $constraints, $this->appContext);
             } else {
-                // The geometry field is not present in the .XML
+                // The field is not present in the .XML
                 $formControl = new QgisFormControl($fieldName, null, $prop, null, $constraints, $this->appContext);
             }
 

@@ -498,6 +498,12 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), 'TextEdit');
         $this->assertFalse($prop->isMultiline());
         $this->assertFalse($prop->useHtml());
+        $this->assertEquals('input', $prop->getMarkup());
+        $this->assertEquals('', $prop->getUploadCapture());
+        $this->assertEquals('', $prop->getUploadAccept());
+        $this->assertEquals(array(), $prop->getMimeTypes());
+        $this->assertFalse($prop->isImageUpload());
+
         $this->assertTrue(array_key_exists('wkt', $props));
 
         $prop = $props['wkt'];
@@ -1350,5 +1356,246 @@ class QgisProjectTest extends TestCase
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('code_for_drill_down_exp', $props));
         $this->assertEquals($props['code_for_drill_down_exp']->getMarkup(), 'menulist');
+    }
+
+
+    public function testUploadField()
+    {
+        $testProj = new qgisProjectForTests();
+
+        # no widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="generic_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value=""></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            
+            <field configurationFlags="None" name="textorimage_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Text files (*.txt)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="text_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Text files (*.txt)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="image_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images (*.png *.jpg *.jpeg)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="text_file_mandatory">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="*.txt"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="image_file_mandatory">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Images jpeg (*.jpg *.jpeg)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="photo_file">
+              <editWidget type="Photo">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="documentviewer_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="1"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="1000"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="1000"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Images jpeg (*.jpg)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('generic_file', $props));
+        $genericFile = $props['generic_file'];
+        $this->assertEquals('upload', $genericFile->getMarkup());
+        $this->assertEquals('', $genericFile->getUploadCapture());
+        $this->assertEquals('', $genericFile->getUploadAccept());
+        $this->assertEquals(array(), $genericFile->getMimeTypes());
+        $this->assertFalse($genericFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('text_file', $props));
+        $textFile = $props['text_file'];
+        $this->assertEquals('upload', $textFile->getMarkup());
+        $this->assertEquals('', $textFile->getUploadCapture());
+        $this->assertEquals('.txt', $textFile->getUploadAccept());
+        $this->assertEquals(array('text/plain'), $textFile->getMimeTypes());
+        $this->assertFalse($textFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('image_file', $props));
+        $imageFile = $props['image_file'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('', $imageFile->getUploadCapture());
+        $this->assertEquals('.png, .jpg, .jpeg', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/png', 'image/jpeg'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('text_file_mandatory', $props));
+        $textFile = $props['text_file_mandatory'];
+        $this->assertEquals('upload', $textFile->getMarkup());
+        $this->assertEquals('', $textFile->getUploadCapture());
+        $this->assertEquals('.txt', $textFile->getUploadAccept());
+        $this->assertEquals(array('text/plain'), $textFile->getMimeTypes());
+        $this->assertFalse($textFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('image_file_mandatory', $props));
+        $imageFile = $props['image_file_mandatory'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('', $imageFile->getUploadCapture());
+        $this->assertEquals('.png, .jpg, .jpeg', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/png', 'image/jpeg'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('photo_file', $props));
+        $imageFile = $props['photo_file'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('camera', $imageFile->getUploadCapture());
+        $this->assertEquals('image/jpg, image/jpeg, image/pjpeg, image/png, image/gif', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('documentviewer_file', $props));
+        $imageFile = $props['documentviewer_file'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('camera', $imageFile->getUploadCapture());
+        $this->assertEquals('.png, .jpg', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
     }
 }
