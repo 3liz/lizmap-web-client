@@ -189,11 +189,10 @@ class QgisFormControl
      *
      * @param string                    $ref          name of the control
      * @param QgisFormControlProperties $properties
-     * @param jDbFieldProperties        $prop         Jelix object with field properties (datatype, required, etc.)
+     * @param \jDbFieldProperties       $prop         Jelix object with field properties (datatype, required, etc.)
      * @param array|object|string       $aliasXml     simplexml object corresponding to the QGIS alias for this field
      * @param null|string               $defaultValue the QGIS expression of the default value
      * @param null|array                $constraints  the QGIS constraints
-     * @param \AppContextInterface      $appContext
      */
     public function __construct($ref, $properties, $prop, $defaultValue, $constraints, App\AppContextInterface $appContext)
     {
@@ -332,44 +331,48 @@ class QgisFormControl
             $upload->accept = implode(', ', $upload->mimetype);
             $upload->capture = 'camera';
         } elseif ($this->fieldEditType === 'ExternalResource') {
+            $accepts = array();
             $upload->accept = '';
             $FileWidgetFilter = $this->getEditAttribute('FileWidgetFilter');
             if ($FileWidgetFilter) {
                 //QFileDialog::getOpenFileName filter
                 $FileWidgetFilter = explode(';;', $FileWidgetFilter);
-                $accepts = array();
-                $re = '/(\*\.\w{3,6})/';
+                $re = '/\*(\.\w{3,6})/';
                 foreach ($FileWidgetFilter as $FileFilter) {
                     $matches = array();
-                    if (preg_match_all($re, $FileFilter, $matches) == 1) {
-                        foreach (array_slice($matches, 1) as $m) {
-                            $accepts[] = substr($m, 1);
+                    if (preg_match_all($re, $FileFilter, $matches)) {
+                        foreach ($matches[1] as $m) {
+                            $type = \jFile::getMimeTypeFromFilename('f'.$m);
+                            if ($type != 'application/octet-stream') {
+                                $upload->mimetype[] = $type;
+                            }
+                            $accepts[] = $m;
                         }
                     }
                 }
                 if (count($accepts) > 0) {
-                    $upload->accept = implode(', ', array_unique($accepts));
+                    $accepts = array_unique($accepts);
+                    $upload->accept = implode(', ', $accepts);
                 }
             }
             if ($this->getEditAttribute('DocumentViewer')) {
-                if ($upload->accept != '') {
+                if (count($accepts)) {
                     $mimetypes = array();
-                    $accepts = explode(', ', $upload->accept);
+                    $typeTab = array(
+                        '.gif' => 'image/gif',
+                        '.png' => 'image/png',
+                        '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                        '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                        '.bm' => array('image/bmp', 'image/x-windows-bmp'),
+                        '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
+                        '.pbm' => 'image/x-portable-bitmap',
+                        '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
+                        '.ppm' => 'image/x-portable-pixmap',
+                        '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
+                        '.xpm' => array('image/xpm', 'image/x-xpixmap'),
+                        '.svg' => 'image/svg+xml',
+                    );
                     foreach ($accepts as $a) {
-                        $typeTab = array(
-                            '.gif' => 'image/gif',
-                            '.png' => 'image/png',
-                            '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
-                            '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
-                            '.bm' => array('image/bmp', 'image/x-windows-bmp'),
-                            '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
-                            '.pbm' => 'image/x-portable-bitmap',
-                            '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
-                            '.ppm' => 'image/x-portable-pixmap',
-                            '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
-                            '.xpm' => array('image/xpm', 'image/x-xpixmap'),
-                            '.svg' => 'image/svg+xml',
-                        );
                         if (array_key_exists($a, $typeTab)) {
                             if ((in_array($a, array('.jpg', '.jpeg')) && in_array('image/jpg', $mimetypes))
                             || (in_array($a, array('.bm', '.bmp')) && in_array('image/bmp', $mimetypes))) {
