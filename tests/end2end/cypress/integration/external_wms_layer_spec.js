@@ -37,6 +37,7 @@ describe('External WMS layers', function () {
             }).as('getMap')
 
         // Test bakeries layer
+        cy.wait(4000)
         cy.get('#layer-bakeries button').click()
 
         cy.wait('@getMap').then((interception) => {
