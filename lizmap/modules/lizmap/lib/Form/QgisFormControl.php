@@ -327,7 +327,11 @@ class QgisFormControl
         $choice = new \jFormsControlChoice($this->ref.'_choice');
         $choice->createItem('keep', 'keep');
         $choice->createItem('update', 'update');
-        $upload = new \jFormsControlUpload($this->ref);
+        if ($this->properties->isImageUpload()) {
+            $upload = new \jFormsControlImageUpload($this->ref);
+        } else {
+            $upload = new \jFormsControlUpload2($this->ref);
+        }
         $upload->mimetype = $this->properties->getMimeTypes();
         $upload->accept = $this->properties->getUploadAccept();
         $upload->capture = $this->properties->getUploadCapture();
@@ -642,6 +646,11 @@ class QgisFormControl
             || $this->fieldEditType === 'FileName'
             || $this->fieldEditType === 'Photo'
             || $this->fieldEditType === 'ExternalResource';
+    }
+
+    public function isImageUploadControl()
+    {
+        return $this->properties->isImageUpload();
     }
 
     public function getControlName()
