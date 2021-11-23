@@ -11,7 +11,9 @@
 {form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap",
         array("errorDecorator"=>"lizEditionErrorDecorator",
               "plugins"=>$formPlugins,
-              "attributes"=>array('data-new-feature-action'=>$ajaxNewFeatureUrl))}
+              "attributes"=>array('data-new-feature-action'=>$ajaxNewFeatureUrl),
+              "widgetAttributes" => $widgetsAttributes
+        )}
 
 {if $attributeEditorForm}
 

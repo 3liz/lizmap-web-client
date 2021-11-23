@@ -561,33 +561,10 @@ class editionCtrl extends jController
         );
 
         // SELECT data from the database and set the form data accordingly
+        // FIXME: it erases user modifications in case we display the form after some submit errors!
         $form = $qgisForm->setFormDataFromDefault();
         if ($this->featureId) {
             $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
-        } elseif ($form->hasUpload()) {
-            $dtParams = $this->layer->getDatasourceParameters();
-            foreach ($form->getUploads() as $upload) {
-                list($targetPath, $targetFullPath) = $qgisForm->getStoragePathForControl($upload->ref);
-                $choiceRef = $upload->ref.'_choice';
-                $choiceCtrl = $form->getControl($choiceRef);
-                if ($choiceCtrl) {
-                    $form->setData($choiceRef, 'update');
-                    $choiceCtrl->itemsNames['update'] = jLocale::get('view~edition.upload.choice.update');
-                    $choiceCtrl->deactivateItem('keep');
-                    $choiceCtrl->deactivateItem('delete');
-                }
-                if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
-                    $form->setErrorOn($upload->ref, jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
-                } else {
-                    $refPath = $targetFullPath;
-                    if (!is_dir($refPath)) {
-                        jFile::createDir($refPath);
-                    }
-                    if (!is_dir($refPath) or !is_writable($refPath)) {
-                        $form->setErrorOn($upload->ref, jLocale::get('view~edition.message.error.upload.layer.field', array($choiceCtrl->label, $dtParams->tablename)));
-                    }
-                }
-            }
         }
 
         // If the user has been redirected here from the saveFeature method
@@ -620,6 +597,7 @@ class editionCtrl extends jController
         $tpl->assign('title', $title);
         $tpl->assign('form', $form);
         $tpl->assign('formPlugins', $qgisForm->getFormPlugins());
+        $tpl->assign('widgetsAttributes', $qgisForm->getFormWidgetsAttributes());
         $tpl->assign('ajaxNewFeatureUrl', jUrl::get('lizmap~edition:saveNewFeature'));
         $tpl->assign('groupVisibilities', qgisExpressionUtils::evaluateGroupVisibilities($attributeEditorForm, $form));
 
@@ -936,22 +914,11 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
-        $form = $qgisForm->setFormDataFromDefault();
+        $qgisForm->setFormDataFromDefault();
         $feature = $this->featureData->features[0];
         $form = $qgisForm->setFormDataFromFields($feature);
 
-        $deleteFiles = array();
-        if ($form->hasUpload()) {
-            foreach ($form->getUploads() as $upload) {
-                $choiceRef = $upload->ref.'_choice';
-                $value = $form->getData($upload->ref);
-                $hiddenValue = $form->getData($upload->ref.'_hidden');
-                $repPath = $this->repository->getPath();
-                if ($hiddenValue && file_exists(realpath($repPath).'/'.$hiddenValue)) {
-                    $deleteFiles[] = realpath($repPath).'/'.$hiddenValue;
-                }
-            }
-        }
+        $deleteFiles = $qgisForm->getUploadedFiles($form);
 
         // event to add additionnal checks
         $eventParams = array(
