@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2021-11-10T12:19:57" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.13-Hannover">
+<qgis projectname="" saveDateTime="2021-11-23T09:15:30" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.14-Hannover">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -19,10 +19,10 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties></customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" legend_exp="" legend_split_behavior="0" name="form_edition_upload" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" legend_exp="" legend_split_behavior="0" name="form_edition_upload" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload&quot;">
       <customproperties></customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" legend_exp="" legend_split_behavior="0" name="data_integers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" legend_exp="" legend_split_behavior="0" name="data_integers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
       <customproperties></customproperties>
     </layer-tree-layer>
     <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51" legend_exp="" legend_split_behavior="0" name="form_edition_all_fields_types" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_all_fields_types&quot;">
@@ -666,7 +666,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="FileWidgetFilter" type="QString" value=""></Option>
                 <Option name="PropertyCollection" type="Map">
                   <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties"></Option>
+                  <Option name="properties" type="invalid"></Option>
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
                 <Option name="RelativeStorage" type="int" value="0"></Option>
@@ -687,7 +687,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="FileWidgetFilter" type="QString" value="Text files (*.txt)"></Option>
                 <Option name="PropertyCollection" type="Map">
                   <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties"></Option>
+                  <Option name="properties" type="invalid"></Option>
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
                 <Option name="RelativeStorage" type="int" value="0"></Option>
@@ -708,7 +708,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="FileWidgetFilter" type="QString" value="Images (*.png *.jpg *.jpeg)"></Option>
                 <Option name="PropertyCollection" type="Map">
                   <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties"></Option>
+                  <Option name="properties" type="invalid"></Option>
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
                 <Option name="RelativeStorage" type="int" value="0"></Option>
@@ -729,7 +729,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="FileWidgetFilter" type="QString" value="*.txt"></Option>
                 <Option name="PropertyCollection" type="Map">
                   <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties"></Option>
+                  <Option name="properties" type="invalid"></Option>
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
                 <Option name="RelativeStorage" type="int" value="0"></Option>
@@ -750,7 +750,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Images jpeg (*.jpg *.jpeg)"></Option>
                 <Option name="PropertyCollection" type="Map">
                   <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties"></Option>
+                  <Option name="properties" type="invalid"></Option>
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
                 <Option name="RelativeStorage" type="int" value="0"></Option>
@@ -1032,7 +1032,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="1.82322801024765146" xmin="-1.82322801024765146" ymax="1" ymin="-1">
+    <DefaultViewExtent xmax="1.7628992628992628" xmin="-1.7628992628992628" ymax="1.15975002070507682" ymin="-1.15975002070507682">
       <spatialrefsys>
         <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
         <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
