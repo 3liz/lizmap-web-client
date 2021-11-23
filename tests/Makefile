@@ -39,7 +39,7 @@ env:
 	EOF
 
 
-build: 
+build-plugins: 
 	if [ ! -d qgis-server-plugins/lizmap ]; then
 		./add_server_plugins.sh
 	fi
