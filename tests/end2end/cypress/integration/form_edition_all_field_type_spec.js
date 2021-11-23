@@ -15,7 +15,7 @@ describe('Form edition all field type', function() {
 
         // Assert both values are selected when editing previously submitted feature
         cy.get('#button-attributeLayers').click()
-        cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({force: true})
+        cy.get('button[value="form_edition_all_fields_types"].btn-open-attribute-layer').click({ force: true })
 
         cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
 
@@ -31,7 +31,7 @@ describe('Form edition all field type', function() {
 
         // Assert both values are selected when editing previously submitted feature
         cy.get('#button-attributeLayers').click()
-        cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({ force: true })
+        cy.get('button[value="form_edition_all_fields_types"].btn-open-attribute-layer').click({ force: true })
 
         cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
 
@@ -108,7 +108,7 @@ describe('Form edition all field type', function() {
 
         // Assert both values are selected when editing previously submitted feature
         cy.get('#button-attributeLayers').click()
-        cy.get('#attribute-layer-list-table > tbody > tr > td:nth-child(2) > button').click({ force: true })
+        cy.get('button[value="form_edition_all_fields_types"].btn-open-attribute-layer').click({ force: true })
 
         cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
 
