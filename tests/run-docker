@@ -3,16 +3,22 @@
 set -e
 
 CMD=$1;
+if [ -z "$CMD" ]; then
+    CMD="up -d"
+else
+    shift
+fi
+
+# Re-create environment
+make env
 
 if [ "$CMD" == "reset" ]; then
     # Purge docker conainers/volumes
     make reset
     exit 0
 elif [ "$CMD" == "build" ]; then
-    make build
+    make build-plugins
 fi
 
-make up "$@"
-
-echo "Use 'docker-compose logs <service>' to display logs"
+docker-compose $CMD "$@"  
 
