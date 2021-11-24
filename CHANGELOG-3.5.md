@@ -55,6 +55,10 @@
 - Upgrade Jelix to 1.6.32
 - Improve testings using Docker, Cypress, PHPUnit etc
 
+## 3.5.0-rc.4 - 2021-11-24
+
+* Release candidate
+
 ## 3.5.0-rc.3 - 2021-10-19
 
 * Release candidate
