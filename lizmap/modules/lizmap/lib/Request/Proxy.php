@@ -274,6 +274,23 @@ class Proxy
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        // For POST, remove parameters from the URL
+        // and add them to the body of the request
+        // Also change the content type
+        if ($options['method'] === 'post') {
+            if (empty($options['body'])) {
+                $explode_url = explode('?', $url);
+                if (count($explode_url) == 2) {
+                    // Override previous url by removing the parameters after ?
+                    $url = $explode_url[0];
+
+                    // Set the body to use POST instead of GET
+                    $options['body'] = $explode_url[1];
+                    $options['headers']['Content-type'] = 'application/x-www-form-urlencoded';
+                }
+            }
+        }
         curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
         curl_setopt($ch, CURLOPT_URL, $url);
 
@@ -300,7 +317,9 @@ class Proxy
         }
         if ($options['method'] === 'post') {
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
+            if (!empty($options['body'])) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
+            }
         }
         $data = curl_exec($ch);
         $info = curl_getinfo($ch);

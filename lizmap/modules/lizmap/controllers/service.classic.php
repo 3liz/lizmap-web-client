@@ -316,6 +316,8 @@ class serviceCtrl extends jController
         }
 
         // Get the selection token
+        // For WMS, create the content for the SELECTION parameter
+        // For WFS, create it for the FEATUREID parameter
         if (isset($params['request'])) {
             $request = strtolower($params['request']);
             if (isset($params['selectiontoken'])
@@ -324,6 +326,7 @@ class serviceCtrl extends jController
                 $tokens = $params['selectiontoken'];
                 $tokens = explode(';', $tokens);
                 $selections = array();
+                $feature_ids = array();
                 foreach ($tokens as $token) {
                     $data = jCache::get($token);
                     if ($data) {
@@ -333,11 +336,21 @@ class serviceCtrl extends jController
                             && count($data->ids) > 0
                         ) {
                             $selections[] = $data->typename.':'.implode(',', $data->ids);
+                            $data_ids = array();
+                            foreach ($data->ids as $id) {
+                                $data_ids[] = $data->typename.'.'.$id;
+                            }
+                            $feature_ids[] = implode(',', $data_ids);
                         }
                     }
                 }
-                if (count($selections) > 0) {
+                // Add SELECTION for WMS
+                if ($request != 'getfeature' && count($selections) > 0) {
                     $this->params['SELECTION'] = implode(';', $selections);
+                }
+                // Add FEATUREID for WFS GetFeature
+                if ($request == 'getfeature' && count($feature_ids) > 0) {
+                    $this->params['FEATUREID'] = implode(',', $feature_ids);
                 }
             }
         }
