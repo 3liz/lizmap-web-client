@@ -61,10 +61,7 @@ window.addEventListener('load', function() {
                 imgResult.setAttribute('src', imgResultUri);
                 imgResult.setAttribute('alt', labelResult);
                 imgResult.setAttribute('title', labelResult);
-
             }
-
         })
     }
 })
-
