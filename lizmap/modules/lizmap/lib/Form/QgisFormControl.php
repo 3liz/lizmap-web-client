@@ -324,9 +324,6 @@ class QgisFormControl
 
     protected function getUploadControl()
     {
-        $choice = new \jFormsControlChoice($this->ref.'_choice');
-        $choice->createItem('keep', 'keep');
-        $choice->createItem('update', 'update');
         if ($this->properties->isImageUpload()) {
             $upload = new \jFormsControlImageUpload($this->ref);
         } else {
@@ -336,10 +333,7 @@ class QgisFormControl
         $upload->accept = $this->properties->getUploadAccept();
         $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
-        $choice->addChildControl($upload, 'update');
-        $choice->createItem('delete', 'delete');
-        $choice->defaultValue = 'keep';
-        $this->ctrl = $choice;
+        $this->ctrl = $upload;
     }
 
     protected static function buildEditTypeMap()
@@ -655,8 +649,7 @@ class QgisFormControl
 
     public function getControlName()
     {
-        // Change field name to choice for files upload control
-        return $this->isUploadControl() ? $this->ref.'_choice' : $this->ref;
+        return $this->ref;
     }
 
     /**
