@@ -1,11 +1,17 @@
 name: "Cypress 🎳"
 on:
+  pull_request:
+    types: [ labeled ]
+    branches:
+      - master
+      - release_3_*
   schedule:
     # Run every monday at 3:00
     - cron:  '0 3 * * 1'
   workflow_dispatch:
 jobs:
   cypress:
+    if: github.event.label.name == 'run cypress' || github.event_name == 'schedule'
     name: "Cypress"
     runs-on: ubuntu-latest
     steps:
