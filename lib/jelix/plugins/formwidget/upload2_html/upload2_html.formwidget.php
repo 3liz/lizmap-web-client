@@ -54,6 +54,22 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
 
     protected $imgMaxHeight = 0;
 
+
+    /**
+     * @param array $attr
+     */
+    protected function filterUploadAttributes(&$attr)
+    {
+        foreach(array('uriAction', 'uriActionParameters', 'uriActionFileParameter',
+                    'baseURI', 'imgMaxWidth', 'imgMaxHeight') as $parameter) {
+            if (isset($attr[$parameter])) {
+                $this->$parameter = $attr[$parameter];
+                unset($attr[$parameter]);
+            }
+        }
+
+    }
+
     //------ ParentBuilderInterface
 
     function addJs($js) {
@@ -68,18 +84,18 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
         return true;
     }
 
+
     // -------- WidgetInterface
 
-    public function setAttributes($attr) {
+    public function setDefaultAttributes($attr)
+    {
+        $this->filterUploadAttributes($attr);
+        parent::setDefaultAttributes($attr);
+    }
 
-        foreach(array('uriAction', 'uriActionParameters', 'uriActionFileParameter',
-                    'baseURI', 'imgMaxWidth', 'imgMaxHeight') as $parameter) {
-            if (isset($attr[$parameter])) {
-                $this->$parameter = $attr[$parameter];
-                unset($attr[$parameter]);
-            }
-        }
-
+    public function setAttributes($attr)
+    {
+        $this->filterUploadAttributes($attr);
         parent::setAttributes($attr);
     }
 
@@ -261,14 +277,20 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
             ($this->uriAction || $this->baseURI)
         ) {
             if ($this->baseURI) {
-                $url = $this->baseURI.$value;
+                $url = htmlspecialchars($this->baseURI.$value);
             }
             else {
                 $params = $this->uriActionParameters;
                 if ($this->uriActionFileParameter) {
-                    $params[$this->uriActionFileParameter] = $value;
+                    $pname = $this->uriActionFileParameter;
+                    if (isset($params[$pname]) && strpos($params[$pname], '%s') !== false) {
+                        $params[$pname] = str_replace('%s', $value, $params[$pname]);
+                    }
+                    else {
+                        $params[$pname] = $value;
+                    }
                 }
-                $url = jUrl::get($this->uriAction, $params);
+                $url = jUrl::get($this->uriAction, $params, jUrl::XMLSTRING);
             }
             $style = '';
             if ($this->imgMaxHeight) {

@@ -57,7 +57,7 @@ class QgisForm implements QgisFormControlsInterface
     /** @var string[] */
     protected $formPlugins = array();
 
-    /** @var array[] */
+    /** @var array[] keys are control names, values are an associative array of values for jforms widgets */
     protected $formWidgetsAttributes = array();
 
     /** @var App\AppContextInterface */
@@ -277,6 +277,28 @@ class QgisForm implements QgisFormControlsInterface
             } else {
                 $this->formPlugins[$fieldName] = 'upload2_htmlbootstrap';
             }
+
+            list($targetPath, $tfp) = $formControl->getStoragePath($this->layer);
+
+            $this->formWidgetsAttributes[$fieldName] = array(
+                'uriAction' => 'view~media:getMedia',
+                'uriActionParameters' => array(
+                    'repository' => $this->layer->getProject()->getRepository()->getKey(),
+                    'project' => $this->layer->getProject()->getKey(),
+                    'path' => $targetPath.'%s',
+                ),
+                'uriActionFileParameter' => 'path',
+                // maximum size of the image when displayed into the popup
+                'imgMaxWidth' => 260,
+                'imgMaxHeight' => 320,
+                // size of the dialog box where we can modify the image
+                'dialogWidth' => 640,
+                'dialogHeight' => 480,
+                // maximum size of the uploaded image. If its size is larger this maximum
+                // size, the image will be resized.
+                'newImgMaxWidth' => 1250,
+                'newImgMaxHeight' => 1250,
+            );
         } elseif ($formControl->fieldEditType === 'Color') {
             $this->formPlugins[$fieldName] = 'color_html';
         }
@@ -386,8 +408,6 @@ class QgisForm implements QgisFormControlsInterface
     {
         return $this->formPlugins;
     }
-
-    //FIXME remplir formWidgetsAttributes
 
     /**
      * @return array[] keys are control names, values are an associative array of values for jforms widgets
