@@ -12,7 +12,7 @@
         array("errorDecorator"=>"lizEditionErrorDecorator",
               "plugins"=>$formPlugins,
               "attributes"=>array('data-new-feature-action'=>$ajaxNewFeatureUrl),
-              "widgetAttributes" => $widgetsAttributes
+              "widgetsAttributes" => $widgetsAttributes
         )}
 
 {if $attributeEditorForm}

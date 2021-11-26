@@ -26,15 +26,28 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
     protected $newImgMaxWidth = 0;
     protected $newImgMaxHeight = 0;
 
-    public function setAttributes($attr) {
-
+    /**
+     * @param array $attr
+     */
+    protected function filterImageAttributes(&$attr)
+    {
         foreach(array('dialogWidth', 'dialogHeight', 'newImgMaxWidth', 'newImgMaxHeight') as $parameter) {
             if (isset($attr[$parameter])) {
                 $this->$parameter = $attr[$parameter];
                 unset($attr[$parameter]);
             }
         }
+    }
 
+    public function setDefaultAttributes($attr)
+    {
+        $this->filterImageAttributes($attr);
+        parent::setDefaultAttributes($attr);
+    }
+
+    public function setAttributes($attr)
+    {
+        $this->filterImageAttributes($attr);
         parent::setAttributes($attr);
     }
 
