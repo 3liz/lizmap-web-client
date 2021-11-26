@@ -33,6 +33,9 @@ describe('Print', function () {
         cy.get('#button-print').click()
     })
 
+    const path = require("path")
+    const downloadsFolder = Cypress.config("downloadsFolder")
+
     it('shoud print title labels (PNG)', function () {
         cy.get('#print-format').select('png')
         cy.intercept('POST', '*test_print*').as('GetPrint')
@@ -40,11 +43,11 @@ describe('Print', function () {
         // Default values in title labels
         cy.get('#print-launch').click()
 
-        cy.wait('@GetPrint').then((interception) => {
-            const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
-
-            cy.fixture('images/print/print_default_labels.png', 'base64').then((png) => {
-                expect(png, 'expect print default values in the title labels').to.equal(responseBodyAsBase64)
+        cy.wait('@GetPrint').then(() => {
+            cy.fixture('images/print/print_default_labels.png', 'base64').then((fixturePNG) => {
+                cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'base64').then((downloadedPNG) => {
+                    expect(fixturePNG, 'expect print default values in the title labels').to.equal(downloadedPNG)
+                })
             })
         })
 
@@ -57,11 +60,11 @@ describe('Print', function () {
 
         cy.get('#print-launch').click()
 
-        cy.wait('@GetPrint').then((interception) => {
-            const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
-
-            cy.fixture('images/print/print_changed_labels.png', 'base64').then((png) => {
-                expect(png, 'expect print changed values in the title labels').to.equal(responseBodyAsBase64)
+        cy.wait('@GetPrint').then(() => {
+            cy.fixture('images/print/print_changed_labels.png', 'base64').then((fixturePNG) => {
+                cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'base64').then((downloadedPNG) => {
+                    expect(fixturePNG, 'expect print default values in the title labels').to.equal(downloadedPNG)
+                })
             })
         })
     })
