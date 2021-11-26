@@ -273,9 +273,9 @@ class QgisForm implements QgisFormControlsInterface
             $this->fillControlFromRelationReference($fieldName, $formControl);
         } elseif ($formControl->isUploadControl()) {
             if ($formControl->isImageUploadControl()) {
-                $this->formPlugins[$fieldName] = 'imageupload_html';
+                $this->formPlugins[$fieldName] = 'imageupload_htmlbootstrap';
             } else {
-                $this->formPlugins[$fieldName] = 'upload2_html';
+                $this->formPlugins[$fieldName] = 'upload2_htmlbootstrap';
             }
         } elseif ($formControl->fieldEditType === 'Color') {
             $this->formPlugins[$fieldName] = 'color_html';
@@ -997,19 +997,22 @@ class QgisForm implements QgisFormControlsInterface
         /** @var \jFormsControlUpload2 $uploadCtrl */
         $uploadCtrl = $form->getControl($ref);
         $filename = $form->getData($ref);
+        $cnx = $this->layer->getDatasourceConnection();
         $newFilename = $uploadCtrl->getUniqueFileName($targetFullPath);
-        if ($newFilename == '') {
-            // there is no new file
-            if ($filename) {
-                return $targetPath.$filename;
-            }
 
-            return 'NULL';
-        }
-
+        // save new file, delete old file if needed etc.
         $uploadCtrl->saveFile($targetFullPath, $newFilename);
 
-        return $targetPath.$newFilename;
+        if ($newFilename) {
+            // there is a new file
+            return $cnx->quote($targetPath.$newFilename);
+        }
+        if ($filename) {
+            // we keep the current file
+            return $cnx->quote($targetPath.$filename);
+        }
+
+        return 'NULL';
     }
 
     /**

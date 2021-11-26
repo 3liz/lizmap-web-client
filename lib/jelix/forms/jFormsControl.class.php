@@ -234,6 +234,7 @@ require(JELIX_LIB_PATH.'forms/controls/jFormsControlTextarea.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlTime.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlUpload.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlUpload2.class.php');
+require(JELIX_LIB_PATH.'forms/controls/jFormsControlImageUpload.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlDate.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlDatetime.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlWikiEditor.class.php');

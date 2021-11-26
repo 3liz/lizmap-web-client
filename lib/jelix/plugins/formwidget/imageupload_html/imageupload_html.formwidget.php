@@ -220,6 +220,18 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
             $this->parentWidget->addJs('jFormsInitChoiceControl("#'.$attr['id'].'_choice_list", '.$jformsVarName.', function(actionId) { jFormsImageSelectorBtnEnable("#'.$attr['id'].'_choice_list", actionId == "new");});');
         } else {
             echo '<input type="hidden" name="' . $this->ctrl->ref . '_jf_action" value="new" />';
+
+            $inputProp = array(
+                'label' => $this->ctrl->label,
+                'ref' => $this->ctrl->ref,
+                'readOnly' => $this->ctrl->isReadOnly(),
+                'required' => $this->ctrl->required,
+                'alertRequired' => ($this->ctrl->alertRequired?:\jLocale::get('jelix~formserr.js.err.required', $this->ctrl->label)),
+                'alertInvalid' => ($this->ctrl->alertInvalid?:\jLocale::get('jelix~formserr.js.err.invalid', $this->ctrl->label)),
+            );
+
+            $attr['data-jforms-input-props'] = json_encode($inputProp);
+
             $this->_outputInputFile($attr);
             $this->parentWidget->addJs('jFormsInitChoiceControlSingleItem("#'.$attr['id'].'", '.$jformsVarName.');');
         }
