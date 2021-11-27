@@ -9,7 +9,8 @@
     "cypress-image-snapshot": "^4.0.1"
   },
   "scripts": {
-    "cypress:open": "cypress open"
+    "cy:open": "cypress open",
+    "cy:test": "cypress run --headed"
   },
   "author": "3Liz",
   "license": "ISC"
