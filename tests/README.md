@@ -156,10 +156,14 @@ You must execute `tests/qgis-projects/tests/load_sql.sh` to populate postgreSQL 
 *First add testing data as explained above.*
 
 The `end2end` directory contains some end-to-end tests made for Cypress.
-Go in `end2end` directory then : 
-- execute `npm install` to install Cypress (only the first time).
-- execute `npm run cypress:open` to open Cypress window.
+Go in `end2end` directory and execute `npm install` to install Cypress (only the first time).
+You can then :
+- execute `npm run cy:open` to open Cypress window.
 - select the target browser then click one of the integration tests or 'Run n integration specs' to run all.
+
+or
+
+- execute `npm run cy:test` to automatically open Cypress window and run tests in Electron browser.
 
 ## Manual tests
 
