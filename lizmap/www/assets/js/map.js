@@ -4227,10 +4227,11 @@ var lizMap = function() {
         var tf = tconfig['fields'].trim();
         var tooltipFields = tf.split(/[\s,]+/);
         var hiddenFields = [];
-        if ( 'attributeLayers' in lizMap.config && lname in lizMap.config.attributeLayers ) {
-            var attconfig = lizMap.config.attributeLayers[lname];
-            var hf = attconfig['hiddenFields'].trim();
-            var hiddenFields = hf.split(/[\s,]+/);
+        if ( 'attributeLayers' in lizMap.config 
+            && lname in lizMap.config.attributeLayers 
+            && 'hiddenFields' in lizMap.config.attributeLayers[lname]) {
+            var hf = lizMap.config.attributeLayers[lname]['hiddenFields'].trim();
+            hiddenFields = hf.split(/[\s,]+/);
         }
         var cAliases = lconfig['alias'];
         var html = '<div id="tooltipPopupContent">';
