@@ -147,7 +147,7 @@ var lizAtlas = function () {
                 lizMap.getFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType'] + ':', null, 'geom', false, null, null,
                     function (aName, aFilter, aFeatures, aAliases) {
                         lizAtlasConfig['features'] = aFeatures;
-                        prepareFeatures();
+                        prepareFeatures(lizAtlasConfig);
 
                         var options = '<option value="-1"> --- </option>';
                         var pkey_field = lizAtlasConfig['primaryKey'];
