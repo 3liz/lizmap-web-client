@@ -42,6 +42,7 @@ jobs:
           browser: chrome
           headless: true
           working-directory: tests/end2end
+          spec: cypress/integration/*-ghaction.js
           wait-on: http://localhost:8130
 
       - name: Save screenshots as artifacts if a test fails to ease debug
