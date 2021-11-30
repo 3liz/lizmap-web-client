@@ -17,14 +17,21 @@ require_once(__DIR__.'/jFormsControlUpload2.class.php');
  */
 class jFormsControlImageUpload extends jFormsControlUpload2 {
 
-    protected function processNewFile() {
+    protected function processNewFile($fileInfo) {
         $this->error = null;
 
+        // for browsers that don't support canvas.toBlob method, we need to store
+        // the modified image (base64 encoded) and its properties into a JSON object.
+        // This object is send into a '*_jforms_edited_image' parameter.
         $inputRef = $this->ref.'_jforms_edited_image';
 
         if (!array_key_exists($inputRef, $_POST)) {
-            return parent::processNewFile();
+            // the image is sent as usual
+            return parent::processNewFile($fileInfo);
         }
+
+        // the image is sent as base64 encoded string into a json object
+
         $this->fileInfo = @json_decode($_POST[$inputRef], true);
 
         if (!$this->fileInfo) {

@@ -41,7 +41,14 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
     protected $uriActionParameters = array();
 
     /**
-     * @var string parameter name containing the control value, for the jUrl object used to get the URL of the image
+     * parameter name containing the control value, for the jUrl object used
+     * to get the URL of the image.
+     *
+     * The parameter can already exists into $uriActionParameters and could contain
+     * a `%s` pattern that will be replaced by the value. Else the existing parameter
+     * value will be replaced by the new value.
+     *
+     * @var string parameter name containing the control value
      */
     protected $uriActionFileParameter = '';
 
@@ -53,7 +60,6 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
     protected $imgMaxWidth = 0;
 
     protected $imgMaxHeight = 0;
-
 
     /**
      * @param array $attr
@@ -83,7 +89,6 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
     function controlJsChild() {
         return true;
     }
-
 
     // -------- WidgetInterface
 
@@ -282,6 +287,7 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
             else {
                 $params = $this->uriActionParameters;
                 if ($this->uriActionFileParameter) {
+                    // replace %s by the value into the uri action parameter
                     $pname = $this->uriActionFileParameter;
                     if (isset($params[$pname]) && strpos($params[$pname], '%s') !== false) {
                         $params[$pname] = str_replace('%s', $value, $params[$pname]);
