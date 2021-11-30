@@ -35,6 +35,19 @@
             {/formcontrols}
         </table>
     </div>
+
+    <div>
+        <h2>{@admin~admin.configuration.services.section.features.label@}</h2>
+        <table class="table services-table">
+            {formcontrols array('uploadedImageMaxWidthHeight')}
+                <tr>
+                    <th>{ctrl_label}</th><td>{ctrl_control}</td>
+                </tr>
+            {/formcontrols}
+        </table>
+    </div>
+
+
 {if $showSystem}
     <div>
         <h2>{@admin~admin.configuration.services.section.cache.label@}</h2>

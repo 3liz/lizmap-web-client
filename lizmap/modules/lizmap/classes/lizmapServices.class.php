@@ -58,6 +58,7 @@ class lizmapServices
         'adminSenderEmail',
         'adminSenderName',
         'googleAnalyticsID',
+        'uploadedImageMaxWidthHeight',
     );
 
     /**
@@ -196,6 +197,8 @@ class lizmapServices
     public $adminSenderName = '';
     // application id for google analytics
     public $googleAnalyticsID = '';
+
+    public $uploadedImageMaxWidthHeight = 1920;
 
     /**
      * @var bool|int true/1 if metrics should be sent to the metric logger
