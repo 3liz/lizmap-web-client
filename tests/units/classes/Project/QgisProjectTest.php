@@ -1584,7 +1584,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('photo_file', $props));
         $imageFile = $props['photo_file'];
         $this->assertEquals('upload', $imageFile->getMarkup());
-        $this->assertEquals('camera', $imageFile->getUploadCapture());
+        $this->assertEquals('environment', $imageFile->getUploadCapture());
         $this->assertEquals('image/jpg, image/jpeg, image/pjpeg, image/png, image/gif', $imageFile->getUploadAccept());
         $this->assertEquals(array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'), $imageFile->getMimeTypes());
         $this->assertTrue($imageFile->isImageUpload());
@@ -1592,7 +1592,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('documentviewer_file', $props));
         $imageFile = $props['documentviewer_file'];
         $this->assertEquals('upload', $imageFile->getMarkup());
-        $this->assertEquals('camera', $imageFile->getUploadCapture());
+        $this->assertEquals('environment', $imageFile->getUploadCapture());
         $this->assertEquals('.png, .jpg', $imageFile->getUploadAccept());
         $this->assertEquals(array('image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg'), $imageFile->getMimeTypes());
         $this->assertTrue($imageFile->isImageUpload());
