@@ -273,6 +273,10 @@ class QgisFormTest extends TestCase
         $jForm = new dummyForm();
         $jForm->check = $check;
         $jForm->data = $data;
+        $jForm->controls = array();
+        foreach(array_keys((array)$dbFieldsInfo->dataFields) as $key) {
+            $jForm->controls[$key] = new \jFormsControlInput($key);
+        }
         $layer = new QgisLayerForTests();
         $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'True', 'allow_without_geom' => $allowWithoutGeom));
         $layer->dbFieldValues = array();
