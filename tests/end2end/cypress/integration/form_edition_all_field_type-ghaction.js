@@ -39,6 +39,22 @@ describe('Form edition all field type', function() {
         cy.get("#jforms_view_edition_text_1").should('be.checked')
     })
 
+    it('should submit multiple selections with uids field', function () {
+        // Select two values
+        cy.get('#jforms_view_edition_uids_0').click()
+        cy.get('#jforms_view_edition_uids_2').click()
+        cy.get('#jforms_view_edition__submit_submit').click()
+
+        // Assert both values are selected when editing previously submitted feature
+        cy.get('#button-attributeLayers').click()
+        cy.get('button[value="form_edition_all_fields_types"].btn-open-attribute-layer').click({ force: true })
+
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+
+        cy.get("#jforms_view_edition_uids_0").should('be.checked')
+        cy.get("#jforms_view_edition_uids_2").should('be.checked')
+    })
+
     it('expects error, string in integer field', function(){
         // Typing text `foo` in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('foo')

@@ -62,6 +62,41 @@ ALTER SEQUENCE tests_projects.data_integers_id_seq OWNED BY tests_projects.data_
 
 
 --
+-- Name: data_uids; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.data_uids (
+    id integer NOT NULL,
+    uid text,
+    label text
+);
+
+
+ALTER TABLE tests_projects.data_uids OWNER TO lizmap;
+
+--
+-- Name: data_uids_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.data_uids_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.data_uids_id_seq OWNER TO lizmap;
+
+--
+-- Name: data_uids_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.data_uids_id_seq OWNED BY tests_projects.data_uids.id;
+
+
+--
 -- Name: dnd_form; Type: TABLE; Schema: tests_projects; Owner: lizmap
 --
 
@@ -355,7 +390,8 @@ CREATE TABLE tests_projects.form_edition_all_fields_types (
     boolean_nullable boolean,
     boolean_notnull_for_checkbox boolean NOT NULL,
     integer_array integer[],
-    text text
+    text text,
+    uids text
 );
 
 
@@ -1356,6 +1392,13 @@ ALTER TABLE ONLY tests_projects.data_integers ALTER COLUMN id SET DEFAULT nextva
 
 
 --
+-- Name: data_uids id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.data_uids ALTER COLUMN id SET DEFAULT nextval('tests_projects.data_uids_id_seq'::regclass);
+
+
+--
 -- Name: dnd_form id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1608,6 +1651,19 @@ COPY tests_projects.data_integers (id, label) FROM stdin;
 8	eighth
 9	ninth
 10	tenth
+\.
+
+
+--
+-- Data for Name: data_uids; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.data_uids (id, uid, label) FROM stdin;
+1	00304c51-794c-46df-b17f-84dc797fb227	first
+2	4f44046a-88e5-4ec4-bab4-b16d841433c8	second
+3	00cd40ee-c7a0-4d19-8985-86a21fee0502	third
+4	2b91cf36-67c6-40f1-a0cb-af7e57e290d8	fourth
+5	2460e97e-b226-4f53-9f02-bf0d573a8b30	fifth
 \.
 
 
@@ -2022,6 +2078,13 @@ SELECT pg_catalog.setval('tests_projects.data_integers_id_seq', 10, true);
 
 
 --
+-- Name: data_uids_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.data_uids_id_seq', 5, true);
+
+
+--
 -- Name: dnd_form_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2279,6 +2342,14 @@ SELECT pg_catalog.setval('tests_projects."townhalls_EPSG2154_id_seq"', 27, true)
 
 ALTER TABLE ONLY tests_projects.data_integers
     ADD CONSTRAINT data_integers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: data_uids data_uids_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.data_uids
+    ADD CONSTRAINT data_uids_pkey PRIMARY KEY (id);
 
 
 --
@@ -2673,4 +2744,3 @@ CREATE INDEX sousquartiers_geom_geom_idx ON tests_projects.sousquartiers USING g
 --
 -- PostgreSQL database dump complete
 --
-

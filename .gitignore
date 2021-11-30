@@ -77,3 +77,5 @@ tests/end2end/cypress/screenshots/
 tests/.env
 /.composer
 /.npm
+
+*.code-workspace
