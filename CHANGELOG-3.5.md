@@ -58,6 +58,10 @@
   - In case of more than one editable layers, when there is a filter by login (or by polygon) activated,
   some of the popup items could miss the pencil button to open the editing form. Corrected by requesting
   the editable features for all the editable layers of the displayed popup items, and not only the first.
+  - When using a text field with a `value relation` widget, configured with `allow multiple` on, Lizmap could not
+  always set the values for the generated checkboxes when modifying an existing feature. We fix this bug
+  by removing the additionnal double-quotes that QGIS sometimes adds in the array of values 
+  (ex: `{"one_value", "second_value"}`)
   - Lizmap user and groups was not forwarded to the QGIS Server backend. It's now possible to use
    `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form.
 - Selection: improve the export tool to allow bigger selections
