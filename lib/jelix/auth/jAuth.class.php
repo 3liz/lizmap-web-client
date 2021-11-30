@@ -26,7 +26,7 @@ class jAuth {
 
     /**
      * @deprecated
-     * @see jAuth::getConfig()
+     * @see jAuth::loadConfig()
      */
     protected static function _getConfig() {
         return self::loadConfig();
