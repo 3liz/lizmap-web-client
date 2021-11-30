@@ -9,7 +9,7 @@
 <hidden ref="liz_proj4"/>
 <hidden ref="liz_geometryColumn"/>
 <hidden ref="liz_status"/>
-<hidden ref="_submit"/>
+<hidden ref="_submit"/> <!-- why ? duplicated field -->
 
 <menulist ref="liz_future_action" required="true">
     <label  locale="view~edition.form.action.future.label" />
