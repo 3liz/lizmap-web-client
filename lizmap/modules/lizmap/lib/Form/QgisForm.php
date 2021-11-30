@@ -183,6 +183,8 @@ class QgisForm implements QgisFormControlsInterface
 
         // Set form's private data
         $privateData = array();
+
+        // FIXME why ? there is already these fields into the form. We duplicate data here
         $privateData['liz_repository'] = $layer->getProject()->getRepository()->getKey();
         $privateData['liz_project'] = $layer->getProject()->getKey();
         $privateData['liz_layerId'] = $layer->getId();
