@@ -1547,7 +1547,7 @@ class QgisProject
         if ($fieldEditType === 'Photo') {
             $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
             $acceptAttr = implode(', ', $mimeTypes);
-            $captureAttr = 'camera';
+            $captureAttr = 'environment';
             $imageUpload = true;
         } elseif ($fieldEditType === 'ExternalResource') {
             $accepts = array();
@@ -1624,7 +1624,7 @@ class QgisProject
                     $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
                     $acceptAttr = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
                 }
-                $captureAttr = 'camera';
+                $captureAttr = 'environment';
                 $imageUpload = true;
             }
             $defaultRoot = $fieldEditOptions['DefaultRoot'] ?? '';
