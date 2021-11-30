@@ -279,7 +279,7 @@ class QgisForm implements QgisFormControlsInterface
             }
 
             list($targetPath, $tfp) = $formControl->getStoragePath($this->layer);
-
+            $maxWidthHeight = \lizmap::getServices()->uploadedImageMaxWidthHeight;
             $this->formWidgetsAttributes[$fieldName] = array(
                 'uriAction' => 'view~media:getMedia',
                 'uriActionParameters' => array(
@@ -296,8 +296,8 @@ class QgisForm implements QgisFormControlsInterface
                 'dialogHeight' => 480,
                 // maximum size of the uploaded image. If its size is larger this maximum
                 // size, the image will be resized.
-                'newImgMaxWidth' => 1250,
-                'newImgMaxHeight' => 1250,
+                'newImgMaxWidth' => $maxWidthHeight,
+                'newImgMaxHeight' => $maxWidthHeight,
             );
         } elseif ($formControl->fieldEditType === 'Color') {
             $this->formPlugins[$fieldName] = 'color_html';
