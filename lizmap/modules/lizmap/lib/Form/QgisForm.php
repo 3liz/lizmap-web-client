@@ -503,6 +503,12 @@ class QgisForm implements QgisFormControlsInterface
             // ValueRelation can be an array (i.e. {1,2,3} or {'foo', 'bar'})
             elseif ($this->formControls[$ref]->isValueRelation() && strpos($value, '{') === 0) {
                 $arrayValue = explode(',', trim($value, '{}'));
+                // Depending on the QGIS version or values,
+                // QGIS also enclose each single value with double-quotes
+                $func = function (string $str): string {
+                    return trim($str, '"');
+                };
+                $arrayValue = array_map($func, $arrayValue);
                 $form->setData($ref, $arrayValue);
             } elseif ($this->formControls[$ref]->isUploadControl()) {
                 /** @var \jFormsControlUpload2 $ctrl */
