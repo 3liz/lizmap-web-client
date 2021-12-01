@@ -33,7 +33,7 @@ jobs:
           tools: phpstan
 
       - name: Cache dependencies
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: ${{ steps.get-composer-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
