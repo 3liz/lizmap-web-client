@@ -91,7 +91,7 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
         data-dialog-width="'.$this->dialogWidth.'" data-dialog-height="'.$this->dialogHeight.'"
         data-dialog-title="'.jLocale::get('jelix~jforms.upload.picture.dialog.title').'" 
         data-dialog-ok-label="'.jLocale::get('jelix~ui.buttons.ok').'"
-        data-dialog-ok-cancel="'.jLocale::get('jelix~ui.buttons.ok').'">
+        data-dialog-cancel-label="'.jLocale::get('jelix~ui.buttons.cancel').'">
     <div class="jforms-image-dialog-toolbar">
         <button class="rotateleft" type="button">'.jLocale::get('jelix~jforms.upload.picture.edit.rotateleft').'</button>
         <button class="rotateright" type="button">'.jLocale::get('jelix~jforms.upload.picture.edit.rotateRight').'</button>
