@@ -2,19 +2,6 @@ body {
   background : #EFEFEF;
 }
 
-/* for ie 8*/
-a {
-  color: #2B2B2B\9;
-  text-decoration:none\9;
-}
-.active > a,
-a:focus,
-a:hover {
-  color:white\9;
-  text-decoration:none\9;
-}
-/* END for ie 8*/
-
 #header {
   background : url(img/header-background-medium.jpg) repeat fixed #2B2B2B;
   color : #FBFBFB;
@@ -30,8 +17,6 @@ a:hover {
 
 #auth {
   background: transparent;
-}
-.navbar .nav > li > a {
 }
 .navbar .nav .active > a,
 .navbar .nav > li > a:focus ,
@@ -49,8 +34,6 @@ a:hover {
 }
 .dropdown-menu {
   background-color: #F5F5F5;
-}
-.navbar .nav > li.dropdown > a.dropdown-toggle:hover .caret {
 }
 .navbar .navbar-inner .icon {
   background-image:url(images/sprite_20_tools.png);
