@@ -20,7 +20,9 @@ h1, h2, h3, h4, h5 {
   z-index: 1030;
   margin-bottom: 0px;
   overflow: visible;
-  background : url('img/header-background-medium.jpg') repeat fixed #2B2B2B;
+  background-color: #2B2B2B;
+  background-image : url(img/header-background-medium.jpg);
+  background-repeat: repeat;
   color : #FBFBFB;
   font-size:0.8em;
 }

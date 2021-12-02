@@ -3,7 +3,9 @@ body {
 }
 
 #header {
-  background : url(img/header-background-medium.jpg) repeat fixed #2B2B2B;
+  background-color: #2B2B2B;
+  background-image : url(img/header-background-medium.jpg);
+  background-repeat: repeat;
   color : #FBFBFB;
 }
 #logo {
