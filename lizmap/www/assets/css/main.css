@@ -7,24 +7,9 @@ body {
   background : #EFEFEF;
 }
 
-h1, h2, h3, h4, h5
-{
+h1, h2, h3, h4, h5 {
   font-weight: normal !important;
 }
-
-
-/* for ie 8*/
-a {
-  color: #2B2B2B\9;
-  text-decoration:none\9;
-}
-.active > a,
-a:focus,
-a:hover {
-  color:white\9;
-  text-decoration:none\9;
-}
-/* END for ie 8*/
 
 #header {
   height : 75px;
@@ -35,7 +20,9 @@ a:hover {
   z-index: 1030;
   margin-bottom: 0px;
   overflow: visible;
-  background : url('img/header-background-medium.jpg') repeat fixed #2B2B2B;
+  background-color: #2B2B2B;
+  background-image : url(img/header-background-medium.jpg);
+  background-repeat: repeat;
   color : #FBFBFB;
   font-size:0.8em;
 }
@@ -54,7 +41,6 @@ a:hover {
 #logo h1 {
   margin-left : 85px;
   font-size : 2.5em;
-/*  margin-top : 0.75em;*/
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
@@ -64,7 +50,6 @@ a:hover {
   max-width:85%;
   height : auto;
   margin-top : 20px;
-  margin-left : 100px; /* to avoid title to go under the header with ie 8*/
   padding-right:10px;
   text-align : left;
   overflow:hidden;
@@ -93,9 +78,7 @@ a:hover {
   text-decoration : none;
 }
 
-
 #headermenu {
-/*  height:30px;*/
   position: fixed;
   right: 0px;
   left: 0px;
@@ -103,8 +86,6 @@ a:hover {
   z-index: 1030;
   margin-bottom: 0px;
   overflow: visible;
-/*  white-space:nowrap;*/
-/*  background-color:#93C01F; */
   font-size:inherit;
   background:transparent;
 }
@@ -113,29 +94,14 @@ a:hover {
   background: transparent;
 }
 
-
-
 .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
-    padding: 0px 0px;
-    box-shadow: none;
+  padding: 0px 0px;
+  box-shadow: none;
 }
 
 .navbar-inner {
   min-height:30px;
-/*  height:30px;*/
   padding: 0px 10px;
-  filter:none\9;
-}
-
-
-/*  for ie 8*/
-/*.navbar-inner ul {*/
-/*  height:30px\9;*/
-/*}*/
-/*  for ie 8*/
-.navbar-inner ul li{
-  display:inline\9;
-  padding: 0px 5px\9;
 }
 
 .navbar .nav li {
@@ -165,8 +131,6 @@ a:hover {
 }
 .dropdown-menu {
   background-color: #F5F5F5;
-}
-.navbar .nav > li.dropdown > a.dropdown-toggle:hover .caret {
 }
 .navbar .navbar-inner .icon {
   display:inline-block;
@@ -203,7 +167,7 @@ a:hover {
 }
 .navbar .nav .user a:hover .icon,
 .navbar .nav .user.active a .icon,
-.navbar .nav .user.open a .icon    {
+.navbar .nav .user.open a .icon {
   background-position: -550px 0px;
 }
 .navbar .nav .home .icon {
