@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Update URL for IGN basemap
+
 ## 3.4.7 - 2021-11-16
 
 ### Fixed
