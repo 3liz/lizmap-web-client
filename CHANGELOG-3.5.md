@@ -27,6 +27,7 @@
 - Form filter: prepare the possibility to select more than one items in the comboboxes.
 - CSS: make background header easier to override with custom CSS
 - Action popup module has been improved with new options: confirm property, display a message if configured, raise a JS event with the returned result.
+- Update URL for IGN basemap
 
 ### Fixed
 
