@@ -104,8 +104,10 @@ jFormsImageSelector.prototype = {
 
         this.imgDialog.openFromImage(imgElt, this.imageParameters)
             .then((canvas) => {
-                canvas = this.resizeCanvas(canvas, this.imageParameters.maxWidth, this.imageParameters.maxHeight);
-                this._saveCanvas(canvas, format, filename)
+                if (canvas) {
+                    canvas = this.resizeCanvas(canvas, this.imageParameters.maxWidth, this.imageParameters.maxHeight);
+                    this._saveCanvas(canvas, format, filename)
+                }
             });
     },
 
@@ -119,8 +121,10 @@ jFormsImageSelector.prototype = {
             var format = this.imageParameters.format || file.type;
             this.imgDialog.openFromInputFile(file, this.imageParameters)
                 .then((canvas) => {
-                    canvas = this.resizeCanvas(canvas, this.imageParameters.maxWidth, this.imageParameters.maxHeight);
-                    this._saveCanvas(canvas, format, file.name)
+                    if (canvas) {
+                        canvas = this.resizeCanvas(canvas, this.imageParameters.maxWidth, this.imageParameters.maxHeight);
+                        this._saveCanvas(canvas, format, file.name)
+                    }
                 });
         }
         else {
@@ -497,7 +501,7 @@ jFormsImageDialog.prototype = {
                         text: me.dialogCancelLabel,
                         click: function() {
                             $(this).dialog("close");
-                            reject();
+                            resolve(null);
                         }
                     },
                 ],

@@ -16,6 +16,9 @@
   - Allow use of JS modules (ES6) with docks, by indicating the `type` attribute of `<script>` to `lizmapMapDockItem`.
 - Editing
   - New feature `Filter data with polygon` allowing to filter the layers data spatially by testing the intersection of the features against a chosen polygon layer. The filtering polygons are selected based on a field containing a list of user groups.
+  - Enhanced the support of image upload into feature forms: an image editor allows you to crop or to rotate a selected image,
+    and the image is resized if its width or height is higher than a length you can specify into the Lizmap configuration.
+
 
 ### Changed
 
@@ -54,7 +57,7 @@
 
 - Major refactoring of Lizmap source code done by @alagroy-42
 - Keep lizmapProxy and lizmapOGCRequest classes for modules compatibility
-- Upgrade Jelix to 1.6.32
+- Upgrade Jelix to 1.6.35
 - Improve testings using Docker, Cypress, PHPUnit etc
 
 ## 3.5.0-rc.4 - 2021-11-24

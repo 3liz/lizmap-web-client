@@ -99,7 +99,7 @@ class HtmlBuilder extends BuilderBase {
      *      <li>"method" => "post" or "get". default is "post"</li>
      *      <li>"plugins" => list of class names for widget. keys are controls refs</li>
      *      <li>"attributes" => list of html attributes to put on the form element</li>
-     *      <li>"widgetAttributes" => list of attributes for each widget. keys are controls refs</li>
+     *      <li>"widgetsAttributes" => list of attributes for each widget. keys are controls refs</li>
      *      </ul>
      */
     public function setOptions($options) {

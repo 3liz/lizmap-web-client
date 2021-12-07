@@ -3,7 +3,7 @@
  * Create and set jForms controls based on QGIS form edit type.
  *
  * @author    3liz
- * @copyright 2012-2019 3liz
+ * @copyright 2012-2021 3liz
  *
  * @see      http://3liz.com
  *
@@ -13,6 +13,8 @@
 namespace Lizmap\Form;
 
 use Lizmap\App;
+
+require_once JELIX_LIB_UTILS_PATH.'FileUtilities/Path.php';
 
 class QgisFormControl
 {
@@ -322,90 +324,16 @@ class QgisFormControl
 
     protected function getUploadControl()
     {
-        $choice = new \jFormsControlChoice($this->ref.'_choice');
-        $choice->createItem('keep', 'keep');
-        $choice->createItem('update', 'update');
-        $upload = new \jFormsControlUpload($this->ref);
-        if ($this->fieldEditType === 'Photo') {
-            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-            $upload->accept = implode(', ', $upload->mimetype);
-            $upload->capture = 'camera';
-        } elseif ($this->fieldEditType === 'ExternalResource') {
-            $accepts = array();
-            $upload->accept = '';
-            $FileWidgetFilter = $this->getEditAttribute('FileWidgetFilter');
-            if ($FileWidgetFilter) {
-                //QFileDialog::getOpenFileName filter
-                $FileWidgetFilter = explode(';;', $FileWidgetFilter);
-                $re = '/\*(\.\w{3,6})/';
-                foreach ($FileWidgetFilter as $FileFilter) {
-                    $matches = array();
-                    if (preg_match_all($re, $FileFilter, $matches)) {
-                        foreach ($matches[1] as $m) {
-                            $type = \jFile::getMimeTypeFromFilename('f'.$m);
-                            if ($type != 'application/octet-stream') {
-                                $upload->mimetype[] = $type;
-                            }
-                            $accepts[] = $m;
-                        }
-                    }
-                }
-                if (count($accepts) > 0) {
-                    $accepts = array_unique($accepts);
-                    $upload->accept = implode(', ', $accepts);
-                }
-            }
-            if ($this->getEditAttribute('DocumentViewer')) {
-                if (count($accepts)) {
-                    $mimetypes = array();
-                    $typeTab = array(
-                        '.gif' => 'image/gif',
-                        '.png' => 'image/png',
-                        '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
-                        '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
-                        '.bm' => array('image/bmp', 'image/x-windows-bmp'),
-                        '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
-                        '.pbm' => 'image/x-portable-bitmap',
-                        '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
-                        '.ppm' => 'image/x-portable-pixmap',
-                        '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
-                        '.xpm' => array('image/xpm', 'image/x-xpixmap'),
-                        '.svg' => 'image/svg+xml',
-                    );
-                    foreach ($accepts as $a) {
-                        if (array_key_exists($a, $typeTab)) {
-                            if ((in_array($a, array('.jpg', '.jpeg')) && in_array('image/jpg', $mimetypes))
-                            || (in_array($a, array('.bm', '.bmp')) && in_array('image/bmp', $mimetypes))) {
-                                continue;
-                            }
-                            if (is_array($typeTab[$a])) {
-                                $mimetypes = array_merge($mimetypes, $typeTab[$a]);
-                            } else {
-                                $mimetypes[] = $typeTab[$a];
-                            }
-                        }
-                    }
-                    $upload->mimetype = array_unique($mimetypes);
-                } else {
-                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
-                }
-                $upload->capture = 'camera';
-            }
-            $defaultRoot = $this->getEditAttribute('DefaultRoot');
-
-            if ($defaultRoot
-                && (preg_match('#^../media(/)?#', $defaultRoot)
-                    || preg_match('#^media(/)?#', $defaultRoot))) {
-                $this->DefaultRoot = $defaultRoot.'/';
-            } else {
-                $this->DefaultRoot = '';
-            }
+        if ($this->properties->isImageUpload()) {
+            $upload = new \jFormsControlImageUpload($this->ref);
+        } else {
+            $upload = new \jFormsControlUpload2($this->ref);
         }
-        $choice->addChildControl($upload, 'update');
-        $choice->createItem('delete', 'delete');
-        $choice->defaultValue = 'keep';
-        $this->ctrl = $choice;
+        $upload->mimetype = $this->properties->getMimeTypes();
+        $upload->accept = $this->properties->getUploadAccept();
+        $upload->capture = $this->properties->getUploadCapture();
+        $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
+        $this->ctrl = $upload;
     }
 
     protected static function buildEditTypeMap()
@@ -714,10 +642,14 @@ class QgisFormControl
             || $this->fieldEditType === 'ExternalResource';
     }
 
+    public function isImageUploadControl()
+    {
+        return $this->properties->isImageUpload();
+    }
+
     public function getControlName()
     {
-        // Change field name to choice for files upload control
-        return $this->isUploadControl() ? $this->ref.'_choice' : $this->ref;
+        return $this->ref;
     }
 
     /**
@@ -756,5 +688,40 @@ class QgisFormControl
         }
 
         return null;
+    }
+
+    /**
+     * gets the path where to store the file.
+     *
+     * @param \qgisVectorLayer $layer the layer which have the column corresponding to the control
+     *
+     * @return string[] the relative path to the project path, and the full path
+     */
+    public function getStoragePath($layer)
+    {
+        $project = $layer->getProject();
+        $dtParams = $layer->getDatasourceParameters();
+        $repPath = $project->getRepository()->getPath();
+
+        // If not default root is set, use the old method media/upload/projectname/tablename/
+        $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$this->ref.'/';
+        $targetFullPath = $repPath.$targetPath;
+        // Else use given root, but only if it is a child or brother of the repository path
+        if (!empty($this->DefaultRoot)) {
+            $fullPath = \Jelix\FileUtilities\Path::normalizePath($repPath.$this->DefaultRoot);
+            $parentPath = realpath($repPath.'../');
+            if (strpos($fullPath, $repPath) === 0
+                || strpos($fullPath, $parentPath) === 0
+            ) {
+                $targetPath = $this->DefaultRoot;
+                $targetFullPath = $fullPath;
+            }
+        }
+
+        if (!is_dir($targetFullPath)) {
+            \jFile::createDir($targetFullPath);
+        }
+
+        return array($targetPath, $targetFullPath);
     }
 }

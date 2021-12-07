@@ -38,6 +38,12 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
         $resp->addJSLink($www.'js/jforms_jquery.js');
         $resp->addCSSLink($www.'design/jform.css');
 
+        // for imageupload
+        $resp->addJSLink($www.'js/cropper.min.js');
+        $resp->addJSLink($www.'js/jforms/choice.js');
+        $resp->addJSLink($www.'js/jforms/imageSelector.js');
+        $resp->addCSSLink($www.'js/cropper.min.css');
+
         //we loop on root control has they fill call the outputMetaContent recursively
         foreach ($this->_form->getRootControls() as $ctrlref => $ctrl) {
             if ($ctrl->type == 'hidden') {
