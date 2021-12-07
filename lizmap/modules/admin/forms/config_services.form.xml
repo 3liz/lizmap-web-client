@@ -167,6 +167,12 @@
         <help locale="admin~admin.form.admin_services.adminSenderName.help"/>
     </input>
 
+    <!-- uploaded images properties -->
+    <input ref="uploadedImageMaxWidthHeight" type="integer" minvalue="480" maxvalue="3840">
+        <label locale="admin~admin.form.admin_services.uploadedImageMaxWidthHeight.label"/>
+        <help locale="admin~admin.form.admin_services.uploadedImageMaxWidthHeight.help"/>
+    </input>
+
     <submit ref="_submit">
         <label locale="admin~admin.form.admin_services.submit.label"/>
     </submit>

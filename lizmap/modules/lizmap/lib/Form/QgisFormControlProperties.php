@@ -58,8 +58,9 @@ class QgisFormControlProperties
 
     /**
      * @param string     $name
-     * @param int|string $fieldEditType
-     * @param mixed      $markup
+     * @param int|string $fieldEditType the field edit type
+     * @param string     $markup        type of markup for the control
+     * @param array      $attributes    list of qgis/lizmap attributes about the form control
      */
     public function __construct($name, $fieldEditType, $markup, array $attributes)
     {
@@ -235,5 +236,50 @@ class QgisFormControlProperties
     public function getFieldAlias()
     {
         return $this->fieldAlias;
+    }
+
+    public function getMimeTypes()
+    {
+        $mime = $this->getEditAttribute('UploadMimeTypes');
+        if (!is_array($mime)) {
+            return array();
+        }
+
+        return $mime;
+    }
+
+    /**
+     * Get the accept value for upload controls.
+     *
+     * @return string list of type of files separated by a comma. see HTTP accept attribute.
+     */
+    public function getUploadAccept()
+    {
+        $attr = $this->getEditAttribute('UploadAccept');
+        if ($attr === null) {
+            return '';
+        }
+
+        return $attr;
+    }
+
+    /**
+     * Get the capture value for upload controls.
+     *
+     * @return string the type of capture. empty or 'camera'
+     */
+    public function getUploadCapture()
+    {
+        $attr = $this->getEditAttribute('UploadCapture');
+        if ($attr === null) {
+            return '';
+        }
+
+        return $attr;
+    }
+
+    public function isImageUpload()
+    {
+        return $this->getEditAttribute('UploadImage') === true;
     }
 }

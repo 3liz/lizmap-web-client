@@ -19,21 +19,44 @@ class jFormsControlUpload extends jFormsControl {
 
     public $type='upload';
 
+    /**
+     * Used to verify the file mime type after the file was uploaded
+     *
+     * @var array list of possible mime types
+     */
     public $mimetype=array();
 
     public $maxsize=0;
 
+    /**
+     * list of type mime or case-insensitive filename extension
+     * or one of these types audio/*, video/*, or image/*
+     *
+     * All values should be separated by a comma
+     *
+     * This property is used to fill the accept HTML attribute
+     *
+     * @var string the content of the accept HTML attribute
+     */
     public $accept = '';
 
+    /**
+     *
+     * @var string the content of the capture HTML attribute
+     */
     public $capture = '';
 
     public $fileInfo = array();
 
+
+    protected $modified = false;
+
     function check(){
-        if(isset($_FILES[$this->ref]))
+        if (isset($_FILES[$this->ref])) {
             $this->fileInfo = $_FILES[$this->ref];
-        else
-            $this->fileInfo = array('name'=>'','type'=>'','size'=>0, 'tmp_name'=>'', 'error'=>UPLOAD_ERR_NO_FILE);
+        } else {
+            $this->fileInfo = array('name' => '', 'type' => '', 'size' => 0, 'tmp_name' => '', 'error' => UPLOAD_ERR_NO_FILE);
+        }
 
         if($this->fileInfo['error'] == UPLOAD_ERR_NO_FILE) {
             if($this->required)
@@ -69,9 +92,18 @@ class jFormsControlUpload extends jFormsControl {
     function setValueFromRequest($request) {
         if(isset($_FILES[$this->ref])){
             $this->setData($_FILES[$this->ref]['name']);
+            $this->modified = true;
         }else{
             $this->setData('');
         }
+    }
+
+    public function isModified()
+    {
+        if ($this->modified) {
+            return true;
+        }
+        return parent::isModified();
     }
 
     function saveFile($directoryPath, $alternateName='') {

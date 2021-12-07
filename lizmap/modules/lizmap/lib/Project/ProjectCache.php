@@ -47,11 +47,12 @@ class ProjectCache
      * version of the format of data stored in the cache.
      *
      * This number should be increased each time you change the structure of the
-     * properties of qgisProject (ex: adding some new data properties into the $layers).
+     * properties of QgisProject or the content of QgisFormControlProperties
+     * (ex: adding some new data properties into the $layers).
      * So you'll be sure that the cache will be updated when Lizmap code source
      * is updated on a server
      */
-    const CACHE_FORMAT_VERSION = 5;
+    const CACHE_FORMAT_VERSION = 6;
 
     /**
      * Initialize the cache of a Qgis project.
