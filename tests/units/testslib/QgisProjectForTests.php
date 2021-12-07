@@ -36,6 +36,11 @@ class QgisProjectForTests extends QgisProject
         return $this->readThemes($xml);
     }
 
+    public function readCustomProjectVariablesForTests($xml)
+    {
+        return $this->readCustomProjectVariables($xml);
+    }
+
     public function readLayersForTests($xml)
     {
         // readLayers() needs $this->qgisProjectVersion to be set
