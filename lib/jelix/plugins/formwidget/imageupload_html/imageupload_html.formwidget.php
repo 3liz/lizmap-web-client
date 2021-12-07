@@ -26,15 +26,28 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
     protected $newImgMaxWidth = 0;
     protected $newImgMaxHeight = 0;
 
-    public function setAttributes($attr) {
-
+    /**
+     * @param array $attr
+     */
+    protected function filterImageAttributes(&$attr)
+    {
         foreach(array('dialogWidth', 'dialogHeight', 'newImgMaxWidth', 'newImgMaxHeight') as $parameter) {
             if (isset($attr[$parameter])) {
                 $this->$parameter = $attr[$parameter];
                 unset($attr[$parameter]);
             }
         }
+    }
 
+    public function setDefaultAttributes($attr)
+    {
+        $this->filterImageAttributes($attr);
+        parent::setDefaultAttributes($attr);
+    }
+
+    public function setAttributes($attr)
+    {
+        $this->filterImageAttributes($attr);
         parent::setAttributes($attr);
     }
 
@@ -78,7 +91,7 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
         data-dialog-width="'.$this->dialogWidth.'" data-dialog-height="'.$this->dialogHeight.'"
         data-dialog-title="'.jLocale::get('jelix~jforms.upload.picture.dialog.title').'" 
         data-dialog-ok-label="'.jLocale::get('jelix~ui.buttons.ok').'"
-        data-dialog-ok-cancel="'.jLocale::get('jelix~ui.buttons.ok').'">
+        data-dialog-cancel-label="'.jLocale::get('jelix~ui.buttons.cancel').'">
     <div class="jforms-image-dialog-toolbar">
         <button class="rotateleft" type="button">'.jLocale::get('jelix~jforms.upload.picture.edit.rotateleft').'</button>
         <button class="rotateright" type="button">'.jLocale::get('jelix~jforms.upload.picture.edit.rotateRight').'</button>
@@ -220,6 +233,18 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
             $this->parentWidget->addJs('jFormsInitChoiceControl("#'.$attr['id'].'_choice_list", '.$jformsVarName.', function(actionId) { jFormsImageSelectorBtnEnable("#'.$attr['id'].'_choice_list", actionId == "new");});');
         } else {
             echo '<input type="hidden" name="' . $this->ctrl->ref . '_jf_action" value="new" />';
+
+            $inputProp = array(
+                'label' => $this->ctrl->label,
+                'ref' => $this->ctrl->ref,
+                'readOnly' => $this->ctrl->isReadOnly(),
+                'required' => $this->ctrl->required,
+                'alertRequired' => ($this->ctrl->alertRequired?:\jLocale::get('jelix~formserr.js.err.required', $this->ctrl->label)),
+                'alertInvalid' => ($this->ctrl->alertInvalid?:\jLocale::get('jelix~formserr.js.err.invalid', $this->ctrl->label)),
+            );
+
+            $attr['data-jforms-input-props'] = json_encode($inputProp);
+
             $this->_outputInputFile($attr);
             $this->parentWidget->addJs('jFormsInitChoiceControlSingleItem("#'.$attr['id'].'", '.$jformsVarName.');');
         }

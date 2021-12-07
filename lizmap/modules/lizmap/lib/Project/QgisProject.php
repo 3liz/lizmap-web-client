@@ -1536,6 +1536,115 @@ class QgisProject
         return $layers;
     }
 
+    protected function readUploadOptions($fieldEditType, &$fieldEditOptions)
+    {
+        $mimeTypes = array();
+        $acceptAttr = '';
+        $captureAttr = '';
+        $imageUpload = false;
+        $defaultRoot = '';
+
+        if ($fieldEditType === 'Photo') {
+            $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+            $acceptAttr = implode(', ', $mimeTypes);
+            $captureAttr = 'environment';
+            $imageUpload = true;
+        } elseif ($fieldEditType === 'ExternalResource') {
+            $accepts = array();
+            $FileWidgetFilter = $fieldEditOptions['FileWidgetFilter'] ?? '';
+            if ($FileWidgetFilter) {
+                //QFileDialog::getOpenFileName filter
+                $FileWidgetFilter = explode(';;', $FileWidgetFilter);
+                $re = '/\*(\.\w{3,6})/';
+                $hasNoImageItem = false;
+                foreach ($FileWidgetFilter as $FileFilter) {
+                    $matches = array();
+                    if (preg_match_all($re, $FileFilter, $matches)) {
+                        foreach ($matches[1] as $m) {
+                            $type = \jFile::getMimeTypeFromFilename('f'.$m);
+                            if ($type != 'application/octet-stream') {
+                                $mimeTypes[] = $type;
+                            }
+                            if (strpos($type, 'image/') === 0) {
+                                $imageUpload = true;
+                            } else {
+                                $hasNoImageItem = true;
+                            }
+                            $accepts[] = $m;
+                        }
+                    }
+                }
+                if ($hasNoImageItem) {
+                    $imageUpload = false;
+                }
+
+                if (count($accepts) > 0) {
+                    $mimeTypes = array_unique($mimeTypes);
+                    $accepts = array_unique($accepts);
+                    $acceptAttr = implode(', ', $accepts);
+                }
+            }
+            $isDocumentViewer = $fieldEditOptions['DocumentViewer'] ?? '';
+            if ($isDocumentViewer) {
+                if (count($accepts)) {
+                    $mimeTypes = array();
+                    $typeTab = array(
+                        '.gif' => 'image/gif',
+                        '.png' => 'image/png',
+                        '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                        '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                        '.bm' => array('image/bmp', 'image/x-windows-bmp'),
+                        '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
+                        '.pbm' => 'image/x-portable-bitmap',
+                        '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
+                        '.ppm' => 'image/x-portable-pixmap',
+                        '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
+                        '.xpm' => array('image/xpm', 'image/x-xpixmap'),
+                        '.svg' => 'image/svg+xml',
+                    );
+                    $filteredAccepts = array();
+                    foreach ($accepts as $a) {
+                        if (array_key_exists($a, $typeTab)) {
+                            if ((in_array($a, array('.jpg', '.jpeg')) && in_array('image/jpg', $mimeTypes))
+                                || (in_array($a, array('.bm', '.bmp')) && in_array('image/bmp', $mimeTypes))) {
+                                continue;
+                            }
+                            if (is_array($typeTab[$a])) {
+                                $mimeTypes = array_merge($mimeTypes, $typeTab[$a]);
+                            } else {
+                                $mimeTypes[] = $typeTab[$a];
+                            }
+                            $filteredAccepts[] = $a;
+                        }
+                    }
+                    $mimeTypes = array_unique($mimeTypes);
+                    $accepts = array_unique($filteredAccepts);
+                    $acceptAttr = implode(', ', $accepts);
+                } else {
+                    $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+                    $acceptAttr = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                }
+                $captureAttr = 'environment';
+                $imageUpload = true;
+            }
+            $defaultRoot = $fieldEditOptions['DefaultRoot'] ?? '';
+
+            if ($defaultRoot
+                && (preg_match('#^../media(/)?#', $defaultRoot)
+                    || preg_match('#^media(/)?#', $defaultRoot))) {
+                $defaultRoot = $defaultRoot.'/';
+            } else {
+                $defaultRoot = '';
+            }
+        }
+
+        $fieldEditOptions['UploadMimeTypes'] = $mimeTypes;
+        $fieldEditOptions['DefaultRoot'] = $defaultRoot;
+        $fieldEditOptions['UploadAccept'] = $acceptAttr;
+        $fieldEditOptions['UploadCapture'] = $captureAttr;
+        $fieldEditOptions['UploadImage'] = $imageUpload;
+    }
+
     const MAP_VALUES_AS_VALUES = 0;
     const MAP_VALUES_AS_KEYS = 1;
     const MAP_ONLY_VALUES = 2;
@@ -1595,6 +1704,9 @@ class QgisProject
 
             $this->convertTypeOptions($fieldEditOptions);
             $markup = $this->getMarkup($fieldEditType, $fieldEditOptions);
+            if ($markup == 'upload') {
+                $this->readUploadOptions($fieldEditType, $fieldEditOptions);
+            }
             $control = new Form\QgisFormControlProperties($fieldName, $fieldEditType, $markup, $fieldEditOptions);
             $edittypes[$fieldName] = $control;
         }
@@ -1721,6 +1833,9 @@ class QgisProject
 
             $markup = $this->getMarkup($fieldEditType, $attributes);
             $this->convertTypeOptions($attributes);
+            if ($markup == 'upload') {
+                $this->readUploadOptions($fieldEditType, $fieldEditOptions);
+            }
             $control = new Form\QgisFormControlProperties($fieldName, $fieldEditType, $markup, $attributes);
             $editTab[$fieldName] = $control;
         }

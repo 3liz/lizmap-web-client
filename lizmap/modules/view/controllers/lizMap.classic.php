@@ -155,6 +155,12 @@ class lizMapCtrl extends jController
             $rep->addJSLink($www.'jquery/include/jquery.include.js');
             $rep->addJSLink($www.'js/jforms_jquery.js');
 
+            // for imageupload
+            $rep->addJSLink($www.'js/cropper.min.js');
+            $rep->addJSLink($www.'js/jforms/choice.js');
+            $rep->addJSLink($www.'js/jforms/imageSelector.js');
+            $rep->addCSSLink($www.'js/cropper.min.css');
+
             // Add datepickers jForms js
             $confDate = &jApp::config()->datepickers;
             $rep->addJSLink($confDate['default']);

@@ -3,7 +3,7 @@
  * Create and set \jForms form based on QGIS vector layer.
  *
  * @author    3liz
- * @copyright 2017 3liz
+ * @copyright 2017-2021 3liz
  *
  * @see      http://3liz.com
  *
@@ -57,17 +57,19 @@ class QgisForm implements QgisFormControlsInterface
     /** @var string[] */
     protected $formPlugins = array();
 
+    /** @var array[] keys are control names, values are an associative array of values for jforms widgets */
+    protected $formWidgetsAttributes = array();
+
     /** @var App\AppContextInterface */
     protected $appContext;
 
     /**
      * QgisForm constructor.
      *
-     * @param \qgisVectorLayer     $layer
-     * @param \jFormsBase          $form
-     * @param string               $featureId
-     * @param bool                 $loginFilteredOverride
-     * @param \AppContextInterface $appContext
+     * @param \qgisVectorLayer $layer
+     * @param \jFormsBase      $form
+     * @param string           $featureId
+     * @param bool             $loginFilteredOverride
      *
      * @throws \Exception
      */
@@ -114,7 +116,7 @@ class QgisForm implements QgisFormControlsInterface
             if (isset($formInfos[$fieldName])) {
                 $formControl = new QgisFormControl($fieldName, $formInfos[$fieldName], $prop, $defaultValue, $constraints, $this->appContext);
             } else {
-                // The geometry field is not present in the .XML
+                // The field is not present in the .XML
                 $formControl = new QgisFormControl($fieldName, null, $prop, null, $constraints, $this->appContext);
             }
 
@@ -270,11 +272,33 @@ class QgisForm implements QgisFormControlsInterface
             // Query QGIS Server via WFS
             $this->fillControlFromRelationReference($fieldName, $formControl);
         } elseif ($formControl->isUploadControl()) {
-            // Add Hidden Control for upload
-            // help to retrieve file path
-            $hiddenCtrl = new \jFormsControlHidden($fieldName.'_hidden');
-            $form->addControl($hiddenCtrl);
-            $toDeactivate[] = $formControl->getControlName();
+            if ($formControl->isImageUploadControl()) {
+                $this->formPlugins[$fieldName] = 'imageupload_htmlbootstrap';
+            } else {
+                $this->formPlugins[$fieldName] = 'upload2_htmlbootstrap';
+            }
+
+            list($targetPath, $tfp) = $formControl->getStoragePath($this->layer);
+            $maxWidthHeight = \lizmap::getServices()->uploadedImageMaxWidthHeight;
+            $this->formWidgetsAttributes[$fieldName] = array(
+                'uriAction' => 'view~media:getMedia',
+                'uriActionParameters' => array(
+                    'repository' => $this->layer->getProject()->getRepository()->getKey(),
+                    'project' => $this->layer->getProject()->getKey(),
+                    'path' => $targetPath.'%s',
+                ),
+                'uriActionFileParameter' => 'path',
+                // maximum size of the image when displayed into the popup
+                'imgMaxWidth' => 260,
+                'imgMaxHeight' => 320,
+                // size of the dialog box where we can modify the image
+                'dialogWidth' => 640,
+                'dialogHeight' => 480,
+                // maximum size of the uploaded image. If its size is larger this maximum
+                // size, the image will be resized.
+                'newImgMaxWidth' => $maxWidthHeight,
+                'newImgMaxHeight' => $maxWidthHeight,
+            );
         } elseif ($formControl->fieldEditType === 'Color') {
             $this->formPlugins[$fieldName] = 'color_html';
         }
@@ -307,6 +331,44 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param $ref
+     *
+     * @return null|string[]
+     */
+    public function getStoragePathForControl($ref)
+    {
+        $ctrl = $this->getQgisControl($ref);
+        if ($ctrl) {
+            return $ctrl->getStoragePath($this->layer);
+        }
+
+        return array('', '');
+    }
+
+    /**
+     * Return path of all files uploaded with the form.
+     *
+     * @param \jFormsBase $form
+     *
+     * @return string[] the list of path
+     */
+    public function getUploadedFiles($form)
+    {
+        $files = array();
+        if ($form->hasUpload()) {
+            foreach ($form->getUploads() as $upload) {
+                list($path, $fullPath) = $this->getStoragePathForControl($upload->ref);
+                $filename = $form->getData($upload->ref);
+                if ($fullPath && $filename && file_exists($fullPath.'/'.$filename)) {
+                    $files[] = $fullPath.'/'.$filename;
+                }
+            }
+        }
+
+        return $files;
     }
 
     /**
@@ -345,6 +407,14 @@ class QgisForm implements QgisFormControlsInterface
     public function getFormPlugins()
     {
         return $this->formPlugins;
+    }
+
+    /**
+     * @return array[] keys are control names, values are an associative array of values for jforms widgets
+     */
+    public function getFormWidgetsAttributes()
+    {
+        return $this->formWidgetsAttributes;
     }
 
     /**
@@ -439,7 +509,8 @@ class QgisForm implements QgisFormControlsInterface
         foreach ($values as $ref => $value) {
             if (($this->formControls[$ref]->fieldEditType === 7
                 or $this->formControls[$ref]->fieldEditType === 'CheckBox')
-                and $this->formControls[$ref]->fieldDataType === 'boolean') {
+                and $this->formControls[$ref]->fieldDataType === 'boolean'
+            ) {
                 $form->getControl($ref)->setDataFromDao($value, 'boolean');
             }
             // ValueRelation can be an array (i.e. {1,2,3} or {'foo', 'bar'})
@@ -447,16 +518,12 @@ class QgisForm implements QgisFormControlsInterface
                 $arrayValue = explode(',', trim($value, '{}'));
                 $form->setData($ref, $arrayValue);
             } elseif ($this->formControls[$ref]->isUploadControl()) {
+                /** @var \jFormsControlUpload2 $ctrl */
                 $ctrl = $form->getControl($this->formControls[$ref]->getControlName());
-                if ($ctrl && $ctrl->type == 'choice') {
-                    $path = explode('/', $value);
-                    $filename = array_pop($path);
-                    $filename = preg_replace('#_|-#', ' ', $filename);
-                    $ctrl->itemsNames['keep'] = $this->appContext->getLocale('view~edition.upload.choice.keep').' '.$filename;
-                    $ctrl->itemsNames['update'] = $this->appContext->getLocale('view~edition.upload.choice.update');
-                    $ctrl->itemsNames['delete'] = $this->appContext->getLocale('view~edition.upload.choice.delete').' '.$filename;
+                if ($ctrl) {
+                    $filename = basename($value);
+                    $ctrl->setDataFromDao($filename, 'string');
                 }
-                $form->setData($ref.'_hidden', $value);
             } else {
                 if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
                     $format = $this->formControls[$ref]->getEditAttribute('field_format');
@@ -495,9 +562,18 @@ class QgisForm implements QgisFormControlsInterface
         // Get values and form fields
         $values = array();
         $formFields = array();
+        $dtParams = $this->layer->getDatasourceParameters();
         foreach ($dataFields as $fieldName => $prop) {
             $values[$fieldName] = null;
             $formFields[] = $fieldName;
+
+            if ($form->getControl($fieldName) instanceof \jFormsControlUpload2) {
+                list($targetPath, $targetFullPath) = $this->getStoragePathForControl($fieldName);
+                // if the target path to store the file is not valid: error
+                if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
+                    $form->setErrorOn($fieldName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
+                }
+            }
         }
         if ($feature) {
             $values = $this->layer->getDbFieldValues($feature);
@@ -724,8 +800,8 @@ class QgisForm implements QgisFormControlsInterface
                 continue;
             }
             // Control is an upload control
-            if ($jCtrl instanceof \jFormsControlUpload) {
-                $values[$ref] = $this->processUploadedFile($form, $ref, $cnx);
+            if ($jCtrl instanceof \jFormsControlUpload2 || $jCtrl instanceof \jFormsControlUpload) {
+                $values[$ref] = $this->processUploadedFile($form, $ref);
 
                 continue;
             }
@@ -932,72 +1008,31 @@ class QgisForm implements QgisFormControlsInterface
      * @param string         $ref
      * @param \jDbConnection $cnx
      */
-    protected function processUploadedFile($form, $ref, $cnx)
+    protected function processUploadedFile($form, $ref)
     {
-        $project = $this->layer->getProject();
-        $dtParams = $this->layer->getDatasourceParameters();
-        $value = $form->getData($ref);
-        $choiceValue = $form->getData($ref.'_choice');
-        $hiddenValue = $form->getData($ref.'_hidden');
-        $repPath = $project->getRepository()->getPath();
+        list($targetPath, $targetFullPath) = $this->formControls[$ref]->getStoragePath($this->layer);
+        if ($targetFullPath == '') {
+            return 'NULL';
+        }
+        /** @var \jFormsControlUpload2 $uploadCtrl */
+        $uploadCtrl = $form->getControl($ref);
+        $filename = $form->getData($ref);
+        $cnx = $this->layer->getDatasourceConnection();
+        $newFilename = $uploadCtrl->getUniqueFileName($targetFullPath);
 
-        $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$ref;
-        $targetFullPath = $repPath.$targetPath;
-        // Else use given root, but only if it is a child or brother of the repository path
-        if (!empty($this->formControls[$ref]->DefaultRoot)) {
-            \jFile::createDir($repPath.$this->formControls[$ref]->DefaultRoot); // Need to create it to then make the realpath checks
-            if ((substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
-            || (substr(realpath($repPath.$this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))) {
-                $targetPath = $this->formControls[$ref]->DefaultRoot;
-                $targetFullPath = realpath($repPath.$this->formControls[$ref]->DefaultRoot);
-            }
-        }
+        // save new file, delete old file if needed etc.
+        $uploadCtrl->saveFile($targetFullPath, $newFilename);
 
-        // update
-        if ($choiceValue == 'update' && $value != '') {
-            // if the new file and the old file have the same name...
-            if ($hiddenValue == preg_replace('#/{2,3}#', '/', $targetPath.'/'.$value)) {
-                // overwrite the old file by the new one, and don't delete old file
-                $form->saveFile($ref, $targetFullPath, $value);
-                $value = $targetPath.'/'.$value;
-            } else {
-                $alreadyValueIdx = 0;
-                $originalValue = $value;
-                while (file_exists($targetFullPath.'/'.$value)) {
-                    ++$alreadyValueIdx;
-                    $splitValue = explode('.', $originalValue);
-                    $splitValue[0] = $splitValue[0].$alreadyValueIdx;
-                    $value = implode('.', $splitValue);
-                }
-                if ($form->saveFile($ref, $targetFullPath, $value)) {
-                    $value = $targetPath.'/'.$value;
-                    if ($hiddenValue && file_exists(realpath($repPath.'/'.$hiddenValue))) {
-                        unlink(realpath($repPath.'/'.$hiddenValue));
-                    }
-                } else {
-                    // something wrong did happen, let's keep the old file
-                    $value = $hiddenValue;
-                }
-            }
+        if ($newFilename) {
+            // there is a new file
+            return $cnx->quote($targetPath.$newFilename);
         }
-        // delete
-        elseif ($choiceValue == 'delete') {
-            if ($hiddenValue && file_exists(realpath($repPath.'/'.$hiddenValue))) {
-                unlink(realpath($repPath.'/'.$hiddenValue));
-            }
-            $value = 'NULL';
-        } else {
-            $value = $hiddenValue;
-        }
-        if (empty($value)) {
-            $value = 'NULL';
-        } elseif ($value != 'NULL') {
-            $value = $cnx->quote(
-                filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-            );
+        if ($filename) {
+            // we keep the current file
+            return $cnx->quote($targetPath.$filename);
         }
 
-        return preg_replace('#/{2,3}#', '/', $value);
+        return 'NULL';
     }
 
     /**
