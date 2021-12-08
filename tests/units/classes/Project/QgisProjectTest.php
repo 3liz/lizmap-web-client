@@ -158,6 +158,19 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedThemes, $themes);
     }
 
+    public function testReadCustomProjectVariables()
+    {
+        $expectedCustomProjectVariables = array(
+            'lizmap_user' => 'lizmap',
+            'lizmap_user_groups' => 'lizmap-group',
+        );
+        $file = __DIR__.'/Ressources/customProjectVariables.qgs';
+        $xml = simplexml_load_file($file);
+        $testQgis = new qgisProjectForTests();
+        $customProjectVariables = $testQgis->readCustomProjectVariablesForTests($xml);
+        $this->assertEquals($expectedCustomProjectVariables, $customProjectVariables);
+    }
+
     public function testReadLayers()
     {
         // Test if WFS 'label' field is not exposed in 3.10 and 3.16
@@ -202,7 +215,7 @@ class QgisProjectTest extends TestCase
     public function testCacheConstruct()
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-            'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+            'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', 'customProjectVariables', );
         $data = array();
         $emptyData = array();
         foreach ($cachedProperties as $prop) {
@@ -379,7 +392,8 @@ class QgisProjectTest extends TestCase
         }
     }
 
-    public function testGetEditType() {
+    public function testGetEditType()
+    {
         $xmlStr = '
         <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="0" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Point" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPoint" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
           <edittypes>
@@ -431,7 +445,8 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), 'Hidden');
     }
 
-    public function testGetFieldConfiguration() {
+    public function testGetFieldConfiguration()
+    {
         $testProj = new qgisProjectForTests();
 
         $xmlStr = '
@@ -509,7 +524,7 @@ class QgisProjectTest extends TestCase
         $prop = $props['wkt'];
         $this->assertEquals($prop->getFieldEditType(), 'Hidden');
 
-        # TextEdit widget editable
+        // TextEdit widget editable
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -554,7 +569,7 @@ class QgisProjectTest extends TestCase
         $this->assertFalse($prop->useHtml());
         $this->assertTrue($prop->isEditable());
 
-        # DateTime widget
+        // DateTime widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -589,7 +604,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'field_iso_format'));
         $this->assertFalse($options->field_iso_format);
 
-        # Classification widget
+        // Classification widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -613,7 +628,7 @@ class QgisProjectTest extends TestCase
         $prop = $props['type'];
         $this->assertEquals($prop->getFieldEditType(), 'Classification');
 
-        # DateTime widget
+        // DateTime widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -648,7 +663,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'FileWidgetFilter'));
         $this->assertEquals($options->FileWidgetFilter, 'Images (*.gif *.jpeg *.jpg *.png)');
 
-        # UniqueValues widget
+        // UniqueValues widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -674,7 +689,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), 'UniqueValues');
         $this->assertTrue($prop->isEditable());
 
-        # CheckBox widget
+        // CheckBox widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -706,7 +721,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'UncheckedState'));
         $this->assertEquals($options->UncheckedState, '0');
 
-        # ValueRelation widget
+        // ValueRelation widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -737,7 +752,6 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('tram_id', $props));
         $prop = $props['tram_id'];
         $this->assertEquals($prop->getFieldEditType(), 'ValueRelation');
-
 
         $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'Layer'));
@@ -794,7 +808,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'FilterExpression'));
         $this->assertEquals($options->FilterExpression, 'intersects(@current_geometry , $geometry)');
 
-        # Range widget
+        // Range widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -839,7 +853,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'Style'));
         $this->assertEquals($options->Style, 'SpinBox');
 
-        # ValueMap widget
+        // ValueMap widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -930,7 +944,7 @@ class QgisProjectTest extends TestCase
         );
         $this->assertEquals($expectedOptions, $options->map);
 
-        # no edit widget type
+        // no edit widget type
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -954,7 +968,8 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), '');
     }
 
-    public function testGetValuesFromOptions() {
+    public function testGetValuesFromOptions()
+    {
         $testProj = new qgisProjectForTests();
 
         $xmlStr = '
@@ -983,8 +998,8 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($options));
         $this->assertCount(2, $options);
         $expectedOptions = array(
-            'IsMultiline' =>'false',
-            'UseHtml' =>'false',
+            'IsMultiline' => 'false',
+            'UseHtml' => 'false',
         );
         $this->assertEquals($expectedOptions, $options);
 
@@ -999,7 +1014,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($options));
         $this->assertCount(1, $options);
         $expectedOptions = array(
-            'Zone A' =>'A'
+            'Zone A' => 'A',
         );
         $this->assertEquals($expectedOptions, $options);
 
@@ -1026,15 +1041,16 @@ class QgisProjectTest extends TestCase
                 'A' => 'Zone A',
                 'B' => 'Zone B',
                 '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => 'No Zone',
-            )
+            ),
         );
         $this->assertEquals($expectedOptions, $options);
     }
 
-    public function testGetMarkup() {
+    public function testGetMarkup()
+    {
         $testProj = new qgisProjectForTests();
 
-        # no widget
+        // no widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1053,7 +1069,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('label', $props));
         $this->assertEquals($props['label']->getMarkup(), '');
 
-        # TextEdit widget
+        // TextEdit widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1114,7 +1130,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('label', $props));
         $this->assertEquals($props['label']->getMarkup(), 'textarea');
 
-        # Range widget
+        // Range widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1140,7 +1156,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('integer_field', $props));
         $this->assertEquals($props['integer_field']->getMarkup(), 'input');
 
-        # DateTime widget
+        // DateTime widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1165,7 +1181,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('date', $props));
         $this->assertEquals($props['date']->getMarkup(), 'date');
 
-        # CheckBox widget
+        // CheckBox widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1187,7 +1203,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('checked', $props));
         $this->assertEquals($props['checked']->getMarkup(), 'checkbox');
 
-        # ValueRelation widget
+        // ValueRelation widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1296,7 +1312,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('tram_id', $props));
         $this->assertEquals($props['tram_id']->getMarkup(), 'checkboxes');
 
-        # ValueMap widget
+        // ValueMap widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
