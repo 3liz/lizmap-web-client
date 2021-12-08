@@ -272,6 +272,11 @@ class Project
         return $this->qgis->getThemes();
     }
 
+    public function getCustomProjectVariables()
+    {
+        return $this->qgis->getCustomProjectVariables();
+    }
+
     public function getLayerDefinition($layerId)
     {
         return $this->qgis->getLayerDefinition($layerId);

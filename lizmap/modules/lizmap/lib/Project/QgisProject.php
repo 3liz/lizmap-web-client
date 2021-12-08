@@ -77,6 +77,11 @@ class QgisProject
     protected $layers = array();
 
     /**
+     * @var array list of custom project variables defined by user in project
+     */
+    protected $customProjectVariables = array();
+
+    /**
      * @var \LizmapServices
      */
     protected $services;
@@ -94,6 +99,7 @@ class QgisProject
         'layers',
         'data',
         'qgisProjectVersion',
+        'customProjectVariables',
     );
 
     /**
@@ -243,6 +249,11 @@ class QgisProject
     public function getThemes()
     {
         return $this->themes;
+    }
+
+    public function getCustomProjectVariables()
+    {
+        return $this->customProjectVariables;
     }
 
     /**
@@ -1153,6 +1164,7 @@ class QgisProject
         $this->allProj4 = $this->readAllProj4($qgsXml);
         $this->relations = $this->readRelations($qgsXml);
         $this->themes = $this->readThemes($qgsXml);
+        $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
         $this->layers = $this->readLayers($qgsXml);
     }
@@ -1300,6 +1312,29 @@ class QgisProject
             }
 
             return $themes;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     *
+     * @return null|array[] array of custom variable name => variable value
+     */
+    protected function readCustomProjectVariables($xml)
+    {
+        $xmlCustomProjectVariables = $xml->xpath('//properties/Variables');
+        $customProjectVariables = array();
+
+        if ($xmlCustomProjectVariables && count($xmlCustomProjectVariables) === 1) {
+            $variableIndex = 0;
+            foreach ($xmlCustomProjectVariables[0]->variableNames->value as $variableName) {
+                $customProjectVariables[(string) $variableName] = (string) $xmlCustomProjectVariables[0]->variableValues->value[$variableIndex];
+                ++$variableIndex;
+            }
+
+            return $customProjectVariables;
         }
 
         return null;
