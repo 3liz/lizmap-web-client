@@ -5,57 +5,63 @@ var lizSearch = function() {
     var map = null;
 
     function startExternalSearch() {
-        $('#lizmap-search .items li > a').unbind('click');
-        $('#lizmap-search .items').html( '<li class="start"><ul><li>'+lizDict['externalsearch.search']+'</li></ul></li>' );
-        $('#lizmap-search, #lizmap-search-close').addClass('open');
+        if($('#search-query').val().length != 0){
+            $('#lizmap-search .items li > a').unbind('click');
+            $('#lizmap-search .items').html( '<li class="start"><ul><li>'+lizDict['externalsearch.search']+'</li></ul></li>' );
+            $('#lizmap-search, #lizmap-search-close').addClass('open');
+        }else{
+            lizMap.addMessage(lizDict['externalsearch.noquery'], 'info', true).attr('id','lizmap-search-message');
+        }
     }
 
     function updateExternalSearch( aHTML ) {
-        var wgs84 = new OpenLayers.Projection('EPSG:4326');
+        if($('#search-query').val().length != 0){
+            var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
-        $('#lizmap-search .items li > a').unbind('click');
-        if ( $('#lizmap-search .items li.start').length != 0 ){
-            $('#lizmap-search .items').html( aHTML );
-        }
-        else{
-            $('#lizmap-search .items').append( aHTML );
-        }
-        $('#lizmap-search, #lizmap-search-close').addClass('open');
-        $('#lizmap-search .items li > a').click(function() {
-            var bbox = $(this).attr('href').replace('#','');
-            var bbox = OpenLayers.Bounds.fromString(bbox);
-            bbox.transform(wgs84, map.getProjectionObject());
-            map.zoomToExtent(bbox);
-
-            var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
-            var data = $(this).attr('data');
-            if ( data ) {
-                var geom = OpenLayers.Geometry.fromWKT(data);
-                geom.transform(wgs84, map.getProjectionObject());
-                feat = new OpenLayers.Feature.Vector(geom);
+            $('#lizmap-search .items li > a').unbind('click');
+            if ( $('#lizmap-search .items li.start').length != 0 ){
+                $('#lizmap-search .items').html( aHTML );
             }
-
-            var locateLayer = map.getLayersByName('locatelayer');
-            if (locateLayer.length != 0) {
-                locateLayer = locateLayer[0];
-                locateLayer.destroyFeatures();
-                locateLayer.setVisibility(true);
-                locateLayer.addFeatures([feat]);
+            else{
+                $('#lizmap-search .items').append( aHTML );
             }
+            $('#lizmap-search, #lizmap-search-close').addClass('open');
+            $('#lizmap-search .items li > a').click(function() {
+                var bbox = $(this).attr('href').replace('#','');
+                var bbox = OpenLayers.Bounds.fromString(bbox);
+                bbox.transform(wgs84, map.getProjectionObject());
+                map.zoomToExtent(bbox);
 
-            $('#lizmap-search, #lizmap-search-close').removeClass('open');
-            // trigger event containing selected feature
-            lizMap.events.triggerEvent('lizmapexternalsearchitemselected',
-                {
-                    'feature': feat
+                var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
+                var data = $(this).attr('data');
+                if ( data ) {
+                    var geom = OpenLayers.Geometry.fromWKT(data);
+                    geom.transform(wgs84, map.getProjectionObject());
+                    feat = new OpenLayers.Feature.Vector(geom);
                 }
-            );
-            return false;
-        });
-        $('#lizmap-search-close button').click(function() {
-            $('#lizmap-search, #lizmap-search-close').removeClass('open');
-            return false;
-        });
+
+                var locateLayer = map.getLayersByName('locatelayer');
+                if (locateLayer.length != 0) {
+                    locateLayer = locateLayer[0];
+                    locateLayer.destroyFeatures();
+                    locateLayer.setVisibility(true);
+                    locateLayer.addFeatures([feat]);
+                }
+
+                $('#lizmap-search, #lizmap-search-close').removeClass('open');
+                // trigger event containing selected feature
+                lizMap.events.triggerEvent('lizmapexternalsearchitemselected',
+                    {
+                        'feature': feat
+                    }
+                );
+                return false;
+            });
+            $('#lizmap-search-close button').click(function() {
+                $('#lizmap-search, #lizmap-search-close').removeClass('open');
+                return false;
+            });
+        }
     }
 
     function getHighlightRegEx() {
