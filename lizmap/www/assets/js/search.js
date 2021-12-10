@@ -10,7 +10,7 @@ var lizSearch = function() {
             $('#lizmap-search .items').html( '<li class="start"><ul><li>'+lizDict['externalsearch.search']+'</li></ul></li>' );
             $('#lizmap-search, #lizmap-search-close').addClass('open');
         }else{
-            lizMap.addMessage(lizDict['externalsearch.noquery'], 'info', true).attr('id','lizmap-action-message');
+            lizMap.addMessage(lizDict['externalsearch.noquery'], 'info', true).attr('id','lizmap-search-message');
         }
     }
 
