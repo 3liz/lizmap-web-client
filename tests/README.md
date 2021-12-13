@@ -18,6 +18,7 @@ Then:
 ```bash
 ./run-docker
 ./lizmap-ctl install
+./tests/qgis-projects/tests/load_sql.sh # to populate postgreSQL database with testing data
 ```
 
 You must set `lizmap.local` into your `/etc/hosts`:
