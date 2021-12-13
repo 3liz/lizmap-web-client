@@ -71,10 +71,26 @@ class qgisProject
     protected $layers = array();
 
     /**
+     * @var array list of custom project variables defined by user in project
+     */
+    protected $customProjectVariables = array();
+
+    /**
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion',
+        'customProjectVariables', );
+
+    /**
+     * version of the format of data stored in the cache.
+     *
+     * This number should be increased each time you change the structure of the
+     * properties of qgisProject (ex: adding some new data properties into the $layers).
+     * So you'll be sure that the cache will be updated when Lizmap code source
+     * is updated on a server
+     */
+    const CACHE_FORMAT_VERSION = 2;
 
     /**
      * constructor.
@@ -103,12 +119,16 @@ class qgisProject
         }
 
         if ($data === false
-            || $data['qgsmtime'] < filemtime($file)) {
+            || $data['qgsmtime'] < filemtime($file)
+            || !isset($data['format_version'])
+            || $data['format_version'] != self::CACHE_FORMAT_VERSION
+        ) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             $this->readXmlProject($file);
             $data['qgsmtime'] = filemtime($file);
+            $data['format_version'] = self::CACHE_FORMAT_VERSION;
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
             }
@@ -191,6 +211,11 @@ class qgisProject
     public function getThemes()
     {
         return $this->themes;
+    }
+
+    public function getCustomProjectVariables()
+    {
+        return $this->customProjectVariables;
     }
 
     /**
@@ -474,6 +499,7 @@ class qgisProject
         $this->allProj4 = $this->readAllProj4($qgs_xml);
         $this->relations = $this->readRelations($qgs_xml);
         $this->themes = $this->readThemes($qgs_xml);
+        $this->customProjectVariables = $this->readCustomProjectVariables($qgs_xml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
         $this->layers = $this->readLayers($qgs_xml);
     }
@@ -600,6 +626,29 @@ class qgisProject
             }
 
             return $themes;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     *
+     * @return null|array[] array of custom variable name => variable value
+     */
+    protected function readCustomProjectVariables($xml)
+    {
+        $xmlCustomProjectVariables = $xml->xpath('//properties/Variables');
+        $customProjectVariables = array();
+
+        if ($xmlCustomProjectVariables && count($xmlCustomProjectVariables) === 1) {
+            $variableIndex = 0;
+            foreach ($xmlCustomProjectVariables[0]->variableNames->value as $variableName) {
+                $customProjectVariables[(string) $variableName] = (string) $xmlCustomProjectVariables[0]->variableValues->value[$variableIndex];
+                ++$variableIndex;
+            }
+
+            return $customProjectVariables;
         }
 
         return null;

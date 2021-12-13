@@ -138,7 +138,8 @@ class lizmapProject extends qgisProject
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'themes', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
-        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion', );
+        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion',
+        'customProjectVariables', );
 
     /**
      * version of the format of data stored in the cache.
@@ -148,7 +149,7 @@ class lizmapProject extends qgisProject
      * So you'll be sure that the cache will be updated when Lizmap code source
      * is updated on a server
      */
-    const CACHE_FORMAT_VERSION = 1;
+    const CACHE_FORMAT_VERSION = 2;
 
     /**
      * constructor.
