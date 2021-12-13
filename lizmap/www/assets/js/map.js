@@ -4793,10 +4793,16 @@ var lizMap = function() {
       if( !selectionLayer )
         selectionLayer = aName;
 
-      var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
-
       // Get WFS url and options
-      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid, null, restrictToMapExtent );
+      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null, restrictToMapExtent );
+
+      // If there is a selection, use the selectiontoken,
+      // not a list of features ids to avoid too big urls
+      var config_layer = lizMap.config.layers[selectionLayer];
+      if ('request_params' in config_layer && 'selectiontoken' in config_layer['request_params']) {
+        var selection_token = config_layer['request_params']['selectiontoken'];
+        getFeatureUrlData['options']['SELECTIONTOKEN'] = selection_token;
+      }
 
       // Force download
       getFeatureUrlData['options']['dl'] = 1;

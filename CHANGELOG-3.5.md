@@ -46,6 +46,9 @@
   the editable features for all the editable layers of the displayed popup items, and not only the first.
   - Lizmap user and groups was not forwarded to the QGIS Server backend. It's now possible to use 
   `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form. 
+- Selection: improve the export tool to allow bigger selections 
+  - use the selection token instead of a list of feature identifiers
+  - internally use POST instead of GET requests to query data from QGIS Server
 - Before the button export to ODS was always visible. The button is now show only if available
 
 ### New JS events

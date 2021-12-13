@@ -447,7 +447,7 @@ class WMSRequest extends OGCRequest
     {
 
         // Get remote data
-        $response = $this->request();
+        $response = $this->request(true);
 
         return (object) array(
             'code' => $response->code,
@@ -1086,9 +1086,11 @@ class WMSRequest extends OGCRequest
             list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
         }
 
-        // Get data from the map server
+        // Get data from the map server: use POST to avoid too long URLS
+        $options = array('method' => 'post');
         list($data, $mime, $code) = Proxy::getRemoteData(
-            Proxy::constructUrl($params, $this->services)
+            Proxy::constructUrl($params, $this->services),
+            $options
         );
 
         \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP', 'WMS', array(
