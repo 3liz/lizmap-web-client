@@ -16,20 +16,22 @@ class qgisFormListener extends jEventListener
 {
     public function onjformsPrepareToFillDynamicList($event)
     {
+        /** @var jFormsBase $form */
         $form = $event->getParam('form');
-        $privateData = $form->getContainer()->privateData;
-        if (!$privateData
-            || !array_key_exists('liz_repository', $privateData)
-            || !array_key_exists('liz_project', $privateData)
-            || !array_key_exists('liz_layerId', $privateData)) {
+
+        if ($form->getSelector() != 'view~edition'
+            || $form->getData('liz_repository') == ''
+            || $form->getData('liz_project') == ''
+            || $form->getData('liz_layerId') == ''
+        ) {
             // it's not a QGIS Form
             return;
         }
 
-        $repository = $privateData['liz_repository'];
-        $project = $privateData['liz_project'];
-        $layerId = $privateData['liz_layerId'];
-        $featureId = $privateData['liz_featureId'];
+        $repository = $form->getData('liz_repository');
+        $project = $form->getData('liz_project');
+        $layerId = $form->getData('liz_layerId');
+        $featureId = $form->getData('liz_featureId');
 
         $lrep = lizmap::getRepository($repository);
         if (!$lrep) {
