@@ -36,7 +36,7 @@ describe('Print', function () {
     const path = require("path")
     const downloadsFolder = Cypress.config("downloadsFolder")
 
-    it('shoud print title labels (PNG)', function () {
+    it('should print title labels (PNG)', function () {
         cy.get('#print-format').select('png')
         cy.intercept('POST', '*test_print*').as('GetPrint')
 

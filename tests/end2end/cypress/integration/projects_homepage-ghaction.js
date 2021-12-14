@@ -15,7 +15,7 @@ describe('Projects homepage', function () {
         cy.get('@all-metadata').find('.bbox').should('contain.text','-1.2459627329192546, -1.0, 1.2459627329192546, 1.0')
     })
 
-    // Assert metadatas are still visible when backend is hot
+    // Assert metadata are still visible when backend is hot
     it('should display project metadata  (hot cache)', function () {
         cy.get('.liz-project-title:contains("Test tags: nature, flower")')
             .prev('.liz-project')
