@@ -5410,7 +5410,7 @@ var lizMap = function() {
       var docktab = '';
       docktab+='<div class="tab-pane" id="'+dname+'">';
       if( dtype == 'minidock'){
-          docktab+='<div class="mini-dock-close" title="close" style="padding:7px;float:right;cursor:pointer;"><i class="icon-remove icon-white"></i></div>';
+          docktab+='<div class="mini-dock-close" title="' + lizDict['toolbar.content.stop'] + '" style="padding:7px;float:right;cursor:pointer;"><i class="icon-remove icon-white"></i></div>';
           docktab+='    <div class="'+dname+'">';
           docktab+='        <h3>';
           docktab+='            <span class="title">';
