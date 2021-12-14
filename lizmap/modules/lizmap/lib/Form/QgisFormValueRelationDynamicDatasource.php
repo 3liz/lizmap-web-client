@@ -28,8 +28,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         $keyColumn = $valueRelationData['key'];
         $filterExpression = $valueRelationData['filterExpression'];
 
-        $repository = $privateData['liz_repository'];
-        $project = $privateData['liz_project'];
+        $repository = $form->getData('liz_repository');
+        $project = $form->getData('liz_project');
         $lproj = \lizmap::getProject($repository.'~'.$project);
 
         $layer = $lproj->getLayer($layerId);
@@ -43,7 +43,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                 $criteriaControls = $this->getCriteriaControls();
                 if ($criteriaControls !== null && is_array($criteriaControls)) {
                     foreach ($criteriaControls as $ref) {
-                        if ($ref == $privateData['liz_geometryColumn']) {
+                        if ($ref == $form->getData('liz_geometryColumn')) {
                             // from wkt to geom
                             $wkt = trim($form->getData($ref));
                             $geom = \lizmapWkt::parse($wkt);
@@ -137,8 +137,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         $keyColumn = $valueRelationData['key'];
         $filterExpression = $valueRelationData['filterExpression'];
 
-        $repository = $privateData['liz_repository'];
-        $project = $privateData['liz_project'];
+        $repository = $form->getData('liz_repository');
+        $project = $form->getData('liz_project');
         $lproj = \lizmap::getProject($repository.'~'.$project);
 
         $layer = $lproj->getLayer($layerId);

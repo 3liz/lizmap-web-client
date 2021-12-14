@@ -349,6 +349,62 @@ class editionCtrl extends jController
     }
 
     /**
+     * @param jFormsBase $form
+     * @param mixed      $forCreation
+     */
+    private function initializeForm($form, $forCreation = true)
+    {
+        $form->setData('liz_future_action', $this->param('liz_future_action', 'close'));
+
+        // Set lizmap form controls (hard-coded in the form xml file)
+        $form->setData('liz_repository', $this->repository->getKey());
+        $form->setData('liz_project', $this->project->getKey());
+        $form->setData('liz_layerId', $this->layerId);
+        $form->setData('liz_featureId', $this->featureIdParam);
+
+        // Set data for the layer geometry: srid, proj4 and geometryColumn
+        $form->setData('liz_srid', $this->srid);
+        $form->setData('liz_proj4', $this->proj4);
+        $form->setData('liz_geometryColumn', $this->geometryColumn);
+
+        $eventParams = array(
+            'form' => $form,
+            'action' => 'create',
+            'project' => $this->project,
+            'repository' => $this->repository,
+            'layer' => $this->layer,
+            'status' => $this->param('status', 0),
+        );
+
+        if (!$forCreation) {
+            $eventParams['action'] = 'modify';
+            $eventParams['featureId'] = $this->featureId;
+            $eventParams['featureData'] = $this->featureData;
+        }
+
+        // event to add custom field in the jForms form
+        jEvent::notify('LizmapEditionCreateForm', $eventParams);
+
+        try {
+            $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
+        } catch (Exception $e) {
+            jMessage::add($e->getMessage(), 'error');
+
+            return null;
+        }
+
+        // SELECT data from the database and set the form data accordingly
+
+        $qgisForm->setFormDataFromDefault();
+        if ($this->featureId) {
+            $qgisForm->setFormDataFromFields($this->featureData->features[0]);
+            $form->initModifiedControlsList();
+        }
+
+        return $qgisForm;
+    }
+
+    /**
      * Create a feature form based on the edition layer.
      *
      * @urlparam string $repository Lizmap Repository
@@ -376,17 +432,10 @@ class editionCtrl extends jController
         jForms::destroy('view~edition', $this->featureId);
         // Create form instance
         $form = jForms::create('view~edition', $this->featureId);
-        $form->setData('liz_future_action', $this->param('liz_future_action', 'close'));
 
-        // event to add custom field in the jForms form
-        jEvent::notify('LizmapEditionCreateForm', array(
-            'form' => $form,
-            'action' => 'create',
-            'project' => $this->project,
-            'repository' => $this->repository,
-            'layer' => $this->layer,
-            'status' => $this->param('status', 0),
-        ));
+        if (!$this->initializeForm($form)) {
+            return $this->serviceAnswer();
+        }
 
         // Redirect to the display action
         $rep = $this->getResponse('redirect');
@@ -443,18 +492,10 @@ class editionCtrl extends jController
 
             return $this->serviceAnswer();
         }
-        $form->setData('liz_future_action', $this->param('liz_future_action', 'close'));
-        // event to add custom field in the jForms form
-        jEvent::notify('LizmapEditionCreateForm', array(
-            'form' => $form,
-            'action' => 'modify',
-            'project' => $this->project,
-            'repository' => $this->repository,
-            'layer' => $this->layer,
-            'featureId' => $this->featureId,
-            'featureData' => $this->featureData,
-            'status' => $this->param('status', 0),
-        ));
+
+        if (!$this->initializeForm($form)) {
+            return $this->serviceAnswer();
+        }
 
         // Redirect to the display action
         $rep = $this->getResponse('redirect');
@@ -508,11 +549,6 @@ class editionCtrl extends jController
 
             return $this->serviceAnswer();
         }
-        // Set lizmap form controls (hard-coded in the form xml file)
-        $form->setData('liz_repository', $this->repository->getKey());
-        $form->setData('liz_project', $this->project->getKey());
-        $form->setData('liz_layerId', $this->layerId);
-        $form->setData('liz_featureId', $this->featureIdParam);
 
         // event to add custom field into the jForms form before setting data in it
         $eventParams = array(
@@ -535,11 +571,6 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
-        // Set data for the layer geometry: srid, proj4 and geometryColumn
-        $form->setData('liz_srid', $this->srid);
-        $form->setData('liz_proj4', $this->proj4);
-        $form->setData('liz_geometryColumn', $this->geometryColumn);
-
         // Set status data to communicate client that the form is reopened after successfully save
         $form->setData('liz_status', $this->param('status', 0));
 
@@ -560,25 +591,7 @@ class editionCtrl extends jController
             0 => $form->getData('liz_future_action'),
         );
 
-        // SELECT data from the database and set the form data accordingly
-        // FIXME: it erases user modifications in case we display the form after some submit errors!
-        $form = $qgisForm->setFormDataFromDefault();
-        if ($this->featureId) {
-            $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
-        }
-
-        // If the user has been redirected here from the saveFeature method
-        // Set the form controls data from the request parameters
-        if ($this->param('error')) {
-            $token = $this->param('error');
-            if (isset($_SESSION[$token.$this->layerId]) and $_SESSION[$token.$this->layerId]) {
-                foreach ($_SESSION[$token.$this->layerId] as $ctrl => $data) {
-                    $form->setData($ctrl, $data);
-                }
-                unset($_SESSION[$token.$this->layerId]);
-            }
-        }
-        $form = $qgisForm->updateFormByLogin();
+        $qgisForm->updateFormByLogin();
 
         // Get title layer
         $title = $this->layer->getTitle();
@@ -663,8 +676,6 @@ class editionCtrl extends jController
 
         // Dynamically add form controls based on QGIS layer information
         // And save data into the edition table (insert or update line)
-        $save = true;
-        $qgisForm = null;
 
         try {
             $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
@@ -678,24 +689,6 @@ class editionCtrl extends jController
         $eventParams['qgisForm'] = $qgisForm;
         jEvent::notify('LizmapEditionSaveGetQgisForm', $eventParams);
 
-        // SELECT data from the database and set the form data accordingly
-        // or reset form controls data to null to check modified fields
-        // and save default data
-        $defaultFormData = array();
-        if ($this->featureId) {
-            $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
-        } else {
-            $defaultFormData = $form->getAllData();
-            $form = $qgisForm->resetFormData();
-        }
-        // Track modified records
-        $form->initModifiedControlsList();
-        // Apply default data to get save it
-        foreach ($defaultFormData as $ref => $val) {
-            if ($val !== null) {
-                $form->setdata($ref, $val);
-            }
-        }
         // Get data from the request and set the form controls data accordingly
         $form->initFromRequest();
 
@@ -737,18 +730,7 @@ class editionCtrl extends jController
         // Some errors where encoutered
         if (!$check or !$pkvals) {
             // Redirect to the display action
-            $token = uniqid('lizform_');
-            $rep->params['error'] = $token;
             $rep->params['status'] = '1';
-
-            // Build array of data for all the controls
-            // And save it in session
-            $controlData = array();
-            foreach (array_keys($form->getControls()) as $ctrl) {
-                $controlData[$ctrl] = $form->getData($ctrl);
-            }
-            $_SESSION[$token.$this->layerId] = $controlData;
-
             $rep->action = 'lizmap~edition:editFeature';
 
             return $rep;
@@ -756,6 +738,9 @@ class editionCtrl extends jController
 
         // Redirect to the edition form or to the validate message
         $next_action = $form->getData('liz_future_action');
+        jForms::destroy('view~edition', $this->featureId);
+        $form = null;
+
         if ($next_action == 'close') {
             // Redirect to the close action
             $rep->action = 'lizmap~edition:closeFeature';
@@ -778,9 +763,6 @@ class editionCtrl extends jController
                 'liz_future_action' => $next_action,
             );
             // Destroy form and redirect to create
-            if ($form = jForms::get('view~edition', $this->featureId)) {
-                jForms::destroy('view~edition', $this->featureId);
-            }
             $rep->action = 'lizmap~edition:createFeature';
 
             return $rep;
@@ -793,7 +775,7 @@ class editionCtrl extends jController
             // and if capabilities is ok for attribute modification
             && $eCapabilities->modifyAttribute == 'True'
             // if we have retrieved the pkeys only one integer pkey
-            && is_array($pkvals) and count($pkvals) == 1
+            && (is_array($pkvals) && count($pkvals) == 1)
         ) {
             //Get the fields info
             $dbFieldsInfo = $this->layer->getDbFieldsInfo();
@@ -809,17 +791,13 @@ class editionCtrl extends jController
                     'featureId' => $pkvals[$key], // use the one returned by the query, not the one in the class property
                     'liz_future_action' => $next_action,
                 );
-                // Destroy form and redirect to create
-                if ($form = jForms::get('view~edition', $this->featureId)) {
-                    jForms::destroy('view~edition', $this->featureId);
-                }
+                // Redirect to create
                 $rep->action = 'lizmap~edition:modifyFeature';
 
                 return $rep;
             }
         }
 
-        // Else redirect to the validate method to destroy the form
         // Redirect to the close action
         $rep->action = 'lizmap~edition:closeFeature';
 
@@ -845,15 +823,10 @@ class editionCtrl extends jController
         }
 
         // Destroy the form
-        if ($form = jForms::get('view~edition', $this->featureId)) {
-            jForms::destroy('view~edition', $this->featureId);
-            // Return html fragment response
-            jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+        jForms::destroy('view~edition', $this->featureId);
 
-            return $this->serviceAnswer();
-        }
-        // undefined form : redirect to error
-        jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'error');
+        // Return html fragment response
+        jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
 
         return $this->serviceAnswer();
     }
@@ -904,19 +877,10 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
-        $qgisForm = null;
-
-        try {
-            $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
-        } catch (Exception $e) {
-            jMessage::add($e->getMessage(), 'error');
-
+        $qgisForm = $this->initializeForm($form, false);
+        if (!$qgisForm) {
             return $this->serviceAnswer();
         }
-
-        $qgisForm->setFormDataFromDefault();
-        $feature = $this->featureData->features[0];
-        $form = $qgisForm->setFormDataFromFields($feature);
 
         $deleteFiles = $qgisForm->getUploadedFiles($form);
 
@@ -937,11 +901,15 @@ class editionCtrl extends jController
         }
 
         try {
+            $feature = $this->featureData->features[0];
+            // delete record in the database
             $rs = $qgisForm->deleteFromDb($feature);
             if ($rs) {
                 jMessage::add(jLocale::get('view~edition.message.success.delete'), 'success');
                 $eventParams['deleteFiles'] = $deleteFiles;
                 $eventParams['success'] = true;
+
+                // delete associated files to the record
                 foreach ($deleteFiles as $path) {
                     if (file_exists($path)) {
                         unlink($path);
@@ -1411,7 +1379,7 @@ class editionCtrl extends jController
 
     /**
      * web service for XHR request when group visibilities
-     * depending of the value of form controls.
+     * depending on the value of form controls.
      */
     public function getGroupVisibilities()
     {
@@ -1449,14 +1417,11 @@ class editionCtrl extends jController
             }
         }
 
-        // Get Private data
-        $privateData = $form->getContainer()->privateData;
-
         // Build QGIS Form
-        $repository = $privateData['liz_repository'];
-        $project = $privateData['liz_project'];
-        $layerId = $privateData['liz_layerId'];
-        $featureId = $privateData['liz_featureId'];
+        $repository = $form->getData('liz_repository');
+        $project = $form->getData('liz_project');
+        $layerId = $form->getData('liz_layerId');
+        $featureId = $form->getData('liz_featureId');
 
         $lrep = lizmap::getRepository($repository);
         $lproj = lizmap::getProject($repository.'~'.$project);
@@ -1464,7 +1429,8 @@ class editionCtrl extends jController
 
         $qgisForm = new Form\QgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()), lizmap::getAppContext());
 
-        // Update form
+        // Update qgis group dependencies
+        $privateData = $form->getContainer()->privateData;
         $dependencies = $privateData['qgis_groupDependencies'];
         foreach ($dependencies as $ctname) {
             $form->setData($ctname, $this->param($ctname));
