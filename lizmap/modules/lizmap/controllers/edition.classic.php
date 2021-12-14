@@ -1417,14 +1417,11 @@ class editionCtrl extends jController
             }
         }
 
-        // Get Private data
-        $privateData = $form->getContainer()->privateData;
-
         // Build QGIS Form
-        $repository = $privateData['liz_repository'];
-        $project = $privateData['liz_project'];
-        $layerId = $privateData['liz_layerId'];
-        $featureId = $privateData['liz_featureId'];
+        $repository = $form->getData('liz_repository');
+        $project = $form->getData('liz_project');
+        $layerId = $form->getData('liz_layerId');
+        $featureId = $form->getData('liz_featureId');
 
         $lrep = lizmap::getRepository($repository);
         $lproj = lizmap::getProject($repository.'~'.$project);
@@ -1432,7 +1429,8 @@ class editionCtrl extends jController
 
         $qgisForm = new Form\QgisForm($layer, $form, $featureId, jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()), lizmap::getAppContext());
 
-        // Update form
+        // Update qgis group dependencies
+        $privateData = $form->getContainer()->privateData;
         $dependencies = $privateData['qgis_groupDependencies'];
         foreach ($dependencies as $ctname) {
             $form->setData($ctname, $this->param($ctname));
