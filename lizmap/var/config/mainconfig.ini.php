@@ -316,3 +316,10 @@ useJAuthDbAdminRights=on
 [saml:sp]
 ; list of dao properties that can be used for mapping
 daoPropertiesForMapping="login,email,firstname,lastname,phonenumber"
+
+[pgsqlSchemaTimeout]
+; list of timeout for each schema to be sure we have a different connection
+; for each lizmap modules, to not share the same search_path. See QgisVectorLayer.
+cadastre=31
+adresse=32
+openads=33
