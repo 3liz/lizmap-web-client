@@ -168,7 +168,7 @@ interface AppContextInterface
     public function logException($exception, $cat = 'default');
 
     /**
-     * Create a profile to be used with getDbConnection.
+     * Create a profile to be used with jDb or jCache.
      *
      * @param string $category The profile category to create
      * @param string $name     The profile name
