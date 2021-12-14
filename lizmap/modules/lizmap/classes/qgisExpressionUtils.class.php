@@ -282,12 +282,11 @@ class qgisExpressionUtils
             }
         }
 
-        $privateData = $form->getContainer()->privateData;
-        $repository = $privateData['liz_repository'];
-        $project = $privateData['liz_project'];
+        $repository = $form->getData('liz_repository');
+        $project = $form->getData('liz_project');
         $lproj = lizmap::getProject($repository.'~'.$project);
 
-        $layer = $lproj->getLayer($privateData['liz_layerId']);
+        $layer = $lproj->getLayer($form->getData('liz_layerId'));
 
         // Update expressions with filter by user
         $updatedExp = array();
