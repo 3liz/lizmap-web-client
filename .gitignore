@@ -80,3 +80,6 @@ tests/.env
 .vscode/
 /.composer
 /.npm
+
+
+*.code-workspace
