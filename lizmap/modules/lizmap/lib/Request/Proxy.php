@@ -530,6 +530,19 @@ class Proxy
         $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
     }
 
+    /**
+     * Create a profile to cache things related to a project.
+     *
+     * The profile will store content into files, redis or sqlite,
+     * depending on the lizmap configuration
+     *
+     * @param string $repository
+     * @param string $project
+     * @param string $layers
+     * @param string $crs
+     *
+     * @return string the profile name of the cache
+     */
     public static function createVirtualProfile($repository, $project, $layers, $crs)
     {
 

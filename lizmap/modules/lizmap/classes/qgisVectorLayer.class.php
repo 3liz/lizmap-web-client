@@ -204,6 +204,8 @@ class qgisVectorLayer extends qgisMapLayer
             return $this->dbProfile;
         }
 
+        $appContext = $this->project->getAppContext();
+
         $dtParams = $this->getDatasourceParameters();
         if ($this->provider == 'spatialite') {
             $spatialiteExt = $this->project->getSpatialiteExtension();
@@ -240,6 +242,18 @@ class qgisVectorLayer extends qgisMapLayer
             }
             if (!empty($dtParams->schema) && $setSearchPathFromLayer) {
                 $jdbParams['search_path'] = '"'.$dtParams->schema.'",public';
+
+                // to be sure to have a different connection for each search_path, we should set
+                // a different timeout. For the moment, we store an arbitrary timeout into the
+                // configuration, for each schema. Later we should have improvements into jDb/jDao
+                // and other lizmap components in order to be able to use fully qualified name (`schema.table`)
+                // into sql queries.
+                if (isset($appContext->appConfig()->pgsqlSchemaTimeout[$dtParams->schema])) {
+                    $newTimeout = intval($appContext->appConfig()->pgsqlSchemaTimeout[$dtParams->schema]);
+                    if ($newTimeout > 0) {
+                        $jdbParams['timeout'] = $newTimeout;
+                    }
+                }
             }
         } elseif ($this->provider == 'ogr'
             and preg_match('#(gpkg|sqlite)$#', $dtParams->dbname)) {
@@ -262,10 +276,10 @@ class qgisVectorLayer extends qgisMapLayer
 
         try {
             // try to get the profile, it may be already created for an other layer
-            jProfiles::get('jdb', $this->dbProfile, true);
+            $appContext->getProfile('jdb', $this->dbProfile, true);
         } catch (Exception $e) {
             // create the profile
-            jProfiles::createVirtualProfile('jdb', $this->dbProfile, $jdbParams);
+            $appContext->createVirtualProfile('jdb', $this->dbProfile, $jdbParams);
         }
 
         return $this->dbProfile;
