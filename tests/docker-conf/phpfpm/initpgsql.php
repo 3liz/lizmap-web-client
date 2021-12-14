@@ -13,7 +13,6 @@ while($tryAgain) {
     }
     $tryAgain = false;
     pg_query($cnx, 'CREATE SCHEMA IF NOT EXISTS lizmap');
-    pg_query($cnx, 'CREATE SCHEMA IF NOT EXISTS tests_projects');
     pg_query($cnx, 'CREATE EXTENSION IF NOT EXISTS postgis SCHEMA public');
     pg_close($cnx);
 }
