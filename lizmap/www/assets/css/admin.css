@@ -66,6 +66,16 @@ fieldset {
 }
 
 
+#dashboard-content {
+    padding-left: 2.127659574468085%;
+}
+
+.dashboard-widget h3 {
+    background-color: #eeeeee;
+    margin: 0 0 10px 0;
+    padding: 0 10px;
+}
+
 @media (max-width: 480px) {
     .form-horizontal .controls {
         margin-left: 0px;
