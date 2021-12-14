@@ -54,7 +54,7 @@ describe('Selection tool', function () {
     // TODO : tests other geom operators, unselection...
 })
 
-describe('Selection tool connectected as admin', function () {
+describe('Selection tool connected as admin', function () {
     beforeEach(function () {
         // Login as admin and get redirected to selection project
         // TODO: log with request() and not via UI
@@ -78,7 +78,15 @@ describe('Selection tool connectected as admin', function () {
         cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection')
         cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
 
-        cy.intercept('GET', '*REQUEST=GetMap*').as('new-selection')
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('new-selection')
 
         cy.get('#map')
             .click(380, 280)
