@@ -190,11 +190,15 @@ class qgisVectorLayer extends qgisMapLayer
      * getDatasourceConnection() is not useful, as we could need the profile
      * to give to jDao or other components that need a profile, not a connection
      *
+     * @param int  $timeout                default timeout for the connection
+     * @param bool $setSearchPathFromLayer If true, the layer schema is used to set the search_path.
+     *                                     Default to True to keep the same behavior as did the previous version of this method.
+     *
      * @throws jException
      *
      * @return null|string null if there is an issue or no connection parameters
      */
-    public function getDatasourceProfile()
+    public function getDatasourceProfile($timeout = 30, $setSearchPathFromLayer = true)
     {
         if ($this->dbProfile !== null) {
             return $this->dbProfile;
@@ -216,6 +220,7 @@ class qgisVectorLayer extends qgisMapLayer
                 $jdbParams = array(
                     'driver' => 'pgsql',
                     'service' => $dtParams->service,
+                    'timeout' => $timeout,
                 );
                 // Database may be used since dbname
                 // is not mandatory in service file
@@ -230,9 +235,10 @@ class qgisVectorLayer extends qgisMapLayer
                     'database' => $dtParams->dbname,
                     'user' => $dtParams->user,
                     'password' => $dtParams->password,
+                    'timeout' => $timeout,
                 );
             }
-            if (!empty($dtParams->schema)) {
+            if (!empty($dtParams->schema) && $setSearchPathFromLayer) {
                 $jdbParams['search_path'] = '"'.$dtParams->schema.'",public';
             }
         } elseif ($this->provider == 'ogr'
