@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.0 - 2021-12-15
+
 ### Added
 
 - User experience
