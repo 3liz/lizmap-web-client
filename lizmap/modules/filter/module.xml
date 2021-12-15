@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="filter" createdate="2019-03-12">
-        <version date="2021-11-24">3.5.0-rc.5</version>
+        <version date="2021-12-15">3.5.0</version>
         <label lang="en_US">filter</label>
         <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
