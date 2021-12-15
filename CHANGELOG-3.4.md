@@ -3,6 +3,10 @@
 ## Unreleased
 
 - Update URL for IGN basemap
+- Fix: Refresh atlas input list after update layer feature
+- Fix: Don't show search result if search query is empty
+- Fix: Use white icons on button.btn-primary class hover
+- Translate mini-dock-close button
 
 ## 3.4.7 - 2021-11-16
 
