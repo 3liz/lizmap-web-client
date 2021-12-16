@@ -137,7 +137,7 @@ describe('Filter layer data by polygon for groups', function () {
 
     it('connected as user_in_group_a', function () {
         // Log as admin
-        cy.visit('/admin.php/auth/login/?auth_url_return=%2Findex.php%2Fview%2Fmap%2F%3Frepository%3Dtestsrepository%26project%3Dfilter_layer_data_by_polygon_for_groups')
+        cy.visit('/admin.php/auth/login/?auth_url_return=%2Findex.php%2Fview%2Fmap%2F%3Frepository%3Dtestsrepository%26project%3Dfilter_layer_data_by_polygon_for_groups&lang=en_en')
 
         cy.get('#jforms_jcommunity_login_auth_login').type('user_in_group_a')
         cy.get('#jforms_jcommunity_login_auth_password').type('admin')
