@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix a regression during the loading of embedded projects
+
+
 ## 3.5.0 - 2021-12-15
 
 ### Added

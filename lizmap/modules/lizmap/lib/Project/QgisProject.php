@@ -115,6 +115,10 @@ class QgisProject
      */
     public function __construct($file, \LizmapServices $services, App\AppContextInterface $appContext, $data = false)
     {
+        $this->appContext = $appContext;
+        $this->services = $services;
+        $this->path = $file;
+
         if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
@@ -127,10 +131,6 @@ class QgisProject
                 }
             }
         }
-
-        $this->appContext = $appContext;
-        $this->services = $services;
-        $this->path = $file;
     }
 
     public function getCacheData()
