@@ -2,7 +2,14 @@
 
 ## Unreleased
 
-- Update URL for IGN basemap
+### Fixed
+
+- Update URLs for the French IGN basemap provider,
+  It's highly recommended updating before first February 2022.
+- Refresh atlas input list after update layer feature
+- Don't show search results if search query is empty
+- Use white icons on button.btn-primary class hover
+- Translate mini-dock-close button
 
 ## 3.4.7 - 2021-11-16
 
