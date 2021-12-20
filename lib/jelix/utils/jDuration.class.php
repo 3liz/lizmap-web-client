@@ -32,7 +32,7 @@ class jDuration {
      * as 3600 seconds. There is no general conversion between months and days, 
      * nor between days and hours (because of DST).
      *
-     * @param int,array $init representation of the duration as an absolute number of seconds, or an array.
+     * @param int|array $init representation of the duration as an absolute number of seconds, or an array.
      */
     function __construct($init = 0){
         $this->days = $this->months = $this->seconds = 0;

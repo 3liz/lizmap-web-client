@@ -8,7 +8,7 @@
 * @licence      MIT
 */
 
-namespace jelix\FakeServerConf;
+namespace Jelix\FakeServerConf;
 
 /**
  * simulate a server configured with apache + mod_php

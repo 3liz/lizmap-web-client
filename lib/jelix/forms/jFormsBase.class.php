@@ -472,7 +472,7 @@ abstract class jFormsBase {
     /**
      * return list of errors found during the check
      * @return array
-     * @see jFormsBase::check
+     * @see jFormsBase::check()
      */
     public function getErrors(){  return $this->container->errors;  }
 
@@ -582,7 +582,7 @@ abstract class jFormsBase {
     /**
      * @param string $name the control name you want to get
      * @return jFormsControl
-     * @since jelix 1.0
+     * @since 1.0
      */
     public function getControl($name) {
         if(isset($this->controls[$name]))
@@ -676,7 +676,7 @@ abstract class jFormsBase {
     /**
      * @param string $buildertype the type name of a form builder.
      *          if the name begins by 'legacy.', it load a legacy builder plugin (jelix <=1.4)
-     * @return \jelix\forms\Builder\BuilderBase|jFormsBuilderBase
+     * @return \Jelix\Forms\Builder\BuilderBase|jFormsBuilderBase
      * @throws jExceptionForms
      */
     public function getBuilder($buildertype){

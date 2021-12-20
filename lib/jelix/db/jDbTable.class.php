@@ -25,7 +25,7 @@ abstract class jDbTable {
     protected $schema;
   
     /**
-     * @var jDbColumn[]. null means "columns are not loaded"
+     * @var jDbColumn[] null means "columns are not loaded"
      */
     protected $columns = null;
     
