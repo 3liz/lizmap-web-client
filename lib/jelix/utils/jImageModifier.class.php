@@ -165,7 +165,7 @@ class jImageModifier {
      * compute path from the configuration or from
      * the given array. These paths will be used to read images and to save them
      * into a cache directory.
-     * @return array. keys are
+     * @return array keys are
      *          src_url, src_path, cache_path, cache_url
      */
     static public function computeUrlFilePath($config=null, $src = null) {

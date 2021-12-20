@@ -70,7 +70,7 @@ class jTpl {
      * assign a value by reference in a template variable
      * @param string $name the variable name
      * @param mixed  $value the value
-     * @since jelix 1.1
+     * @since 1.1
      */
     public function assignByRef ($name, & $value) {
         $this->_vars[$name] = &$value;
@@ -352,7 +352,7 @@ class jTpl {
      * which can be modified.
      * @param string $name  the name of the modifier in a template
      * @param string $functionName the corresponding PHP function
-     * @since jelix 1.1
+     * @since 1.1
      */
     public function registerModifier ($name, $functionName) {
         $this->userModifiers[$name] = $functionName;
@@ -365,7 +365,7 @@ class jTpl {
      * as first parameter.
      * @param string $name  the name of the modifier in a template
      * @param string $functionName the corresponding PHP function
-     * @since jelix 1.1
+     * @since 1.1
      */
     public function registerFunction ($name, $functionName) {
         $this->userFunctions[$name] = $functionName;

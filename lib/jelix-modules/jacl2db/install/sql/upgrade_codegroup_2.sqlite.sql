@@ -38,7 +38,7 @@ INSERT INTO %%PREFIX%%jacl2_user_group SELECT login, id_aclgrp FROM jacl2_user_g
 DROP TABLE jacl2_user_group_tmp;
 
 
-
+UPDATE %%PREFIX%%jacl2_rights SET code_grp='__anonymous' WHERE id_aclgrp = 0;
 CREATE TEMPORARY TABLE jacl2_rights_tmp(
   id_aclsbj varchar(100) NOT NULL,
   id_aclgrp varchar(50) NOT NULL,

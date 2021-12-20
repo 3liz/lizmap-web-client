@@ -363,18 +363,18 @@ abstract class jDbConnection {
 
     /**
     * do a query which return results
-    * @return jDbResultSet/boolean
+    * @return jDbResultSet|boolean
     */
     abstract protected function _doQuery ($queryString);
     /**
     * do a query which return nothing
-    * @return jDbResultSet/boolean
+    * @return jDbResultSet|boolean
     */
     abstract protected function _doExec ($queryString);
 
     /**
     * do a query which return a limited number of results
-    * @return jDbResultSet/boolean
+    * @return jDbResultSet|boolean
     */
     abstract protected function _doLimitQuery ($queryString, $offset, $number);
 

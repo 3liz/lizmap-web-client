@@ -219,7 +219,7 @@ class jMailer extends PHPMailer {
      * Find the name and address in the form "name<address@hop.tld>"
      * @param string $address
      * @param string $kind One of 'to', 'cc', 'bcc', or 'ReplyTo'
-     * @return array( $name, $address )
+     * @return array  contains $name, $address.
      */
     function getAddrName($address, $kind = false) {
         if (preg_match ('`^([^<]*)<([^>]*)>$`', $address, $tab )) {
