@@ -6,7 +6,7 @@
  * @link http://smarty.php.net/manual/en/language.function.mailto.php {mailto}
  *          (Smarty online manual)
  * @link http://jelix.org/
- * @author   Monte Ohrt <monte at ohrt dot com>
+ * @author   Monte Ohrt
  * @contributor Jason Sweat (added cc, bcc and subject functionality), Julien Issler
  * @copyright 2011 Julien Issler
  */

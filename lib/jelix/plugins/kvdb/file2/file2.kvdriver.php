@@ -35,11 +35,34 @@ class file2KVDriver extends jKVDriver {
         return $this->_connection->get($key);
     }
 
-    public function set($key, $value, $ttl) {
+    public function set($key, $value) {
         return $this->_connection->set(
             $key,
-            $value,
-            $ttl
+            $value
+        );
+    }
+
+    public function insert($key, $value)
+    {
+        $val = $this->_connection->get($key);
+        if ($val !== false) {
+            return false;
+        }
+        return $this->_connection->set(
+            $key,
+            $value
+        );
+    }
+
+    public function replace($key, $value)
+    {
+        $val = $this->_connection->get($key);
+        if ($val === false) {
+            return false;
+        }
+        return $this->_connection->set(
+            $key,
+            $value
         );
     }
 
@@ -50,6 +73,79 @@ class file2KVDriver extends jKVDriver {
     public function flush() {
         return $this->_connection->flush();
     }
+
+    public function append($key, $value)
+    {
+        $val = $this->_connection->get($key);
+        if ($val === false) {
+            return false;
+        }
+
+        $val .= $value;
+
+        if ($this->_connection->set(
+            $key,
+            $val
+        )) {
+            return $val;
+        }
+        return false;
+    }
+
+    public function prepend($key, $value)
+    {
+        $val = $this->_connection->get($key);
+        if ($val === false) {
+            return false;
+        }
+
+        $val = $value.$val;
+
+        if ($this->_connection->set(
+            $key,
+            $val
+        )) {
+            return $val;
+        }
+        return false;
+    }
+
+    public function increment($key, $incr = 1)
+    {
+        $val = $this->_connection->get($key);
+        if ($val === false || !is_numeric($val)) {
+            return false;
+        }
+
+        $val += $incr;
+
+        if ($this->_connection->set(
+            $key,
+            $val
+        )) {
+            return $val;
+        }
+        return false;
+    }
+
+    public function decrement($key, $decr = 1)
+    {
+        $val = $this->_connection->get($key);
+        if ($val === false || !is_numeric($val)) {
+            return false;
+        }
+
+        $val -= $decr;
+
+        if ($this->_connection->set(
+            $key,
+            $val
+        )) {
+            return $val;
+        }
+        return false;
+    }
+
 }
 
 class fileServer {
@@ -61,7 +157,7 @@ class fileServer {
 		$this->dir = $directory;
         // Create temp kvFile directory if necessary
 
-        if (! file_exists()) {
+        if (! file_exists($this->dir)) {
             jFile::createDir($this->dir);
         }
     }
@@ -75,7 +171,7 @@ class fileServer {
 	*
 	* @return boolean whether the action was successful or not
 	*/
-	public function set($key, $value, $ttl) {
+	public function set($key, $value, $ttl=0) {
 		$r = false;
 
 		if ($fl = @fopen($this->dir . '/.flock', 'w+')) {
@@ -118,7 +214,7 @@ class fileServer {
 	*
 	* @param string $key	the key (unique name) that identify the cached info
 	*
-	* @return mixed,false  false if the cached info does not exist or has expired
+	* @return mixed|false  false if the cached info does not exist or has expired
 	*               or the data if the info exists and is valid
 	*/
 	public function get($key) {

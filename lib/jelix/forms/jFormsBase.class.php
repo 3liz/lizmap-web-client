@@ -472,7 +472,7 @@ abstract class jFormsBase {
     /**
      * return list of errors found during the check
      * @return array
-     * @see jFormsBase::check
+     * @see jFormsBase::check()
      */
     public function getErrors(){  return $this->container->errors;  }
 
@@ -582,7 +582,7 @@ abstract class jFormsBase {
     /**
      * @param string $name the control name you want to get
      * @return jFormsControl
-     * @since jelix 1.0
+     * @since 1.0
      */
     public function getControl($name) {
         if(isset($this->controls[$name]))
@@ -634,68 +634,29 @@ abstract class jFormsBase {
      * @return array key=control id,  value=old value
      * @since 1.1
      */
-    public function getModifiedControls(){
+    public function getModifiedControls()
+    {
         if (count($this->container->originalData)) {
-
-            // we musn't use array_diff_assoc because it convert array values
-            // to "Array" before comparison, so these values are always equal for it.
-            // We shouldn't use array_udiff_assoc  because it crashes PHP, at least on
-            // some PHP version.
-            // so we have to compare by ourself.
-
             $result = array();
             $orig = & $this->container->originalData;
-            foreach($this->container->data as $k=>$v1) {
 
-                if (!array_key_exists($k, $orig)) {
+            foreach($this->controls as $ref => $ctrl) {
+
+                if (!array_key_exists($ref, $orig)) {
                     continue;
                 }
 
-                if($this->_diffValues($orig[$k], $v1))  {
-                    $result[$k] = $orig[$k];
-                    continue;
+                if ($ctrl->isModified()) {
+                    $result[$ref] = $orig[$ref];
                 }
             }
+
             return $result;
         }
         else
             return $this->container->data;
     }
 
-    /**
-     * @param mixed $v1
-     * @param mixed $v2
-     *
-     * @return bool true if the values are not equals
-     */
-    protected function _diffValues(&$v1, &$v2) {
-        if (is_array($v1) && is_array($v2)) {
-            $comp = array_merge(array_diff($v1, $v2),array_diff($v2, $v1));
-            return !empty($comp);
-        }
-
-        if ($v1 === $v2) {
-            return false;
-        }
-
-        if (($v1 === '' && $v2 === null) || ($v1 === null && $v2 === '')) {
-            return false;
-        }
-
-        if (is_numeric($v1) != is_numeric($v2)) {
-            return true;
-        }
-
-        if (empty($v1) && empty($v2)) {
-            return false;
-        }
-
-        if (is_array($v1) || is_array($v2)) {
-            return true;
-        }
-
-        return ($v1 != $v2);
-    }
 
     /**
      * @return jFormsControlReset the reset object
@@ -715,7 +676,7 @@ abstract class jFormsBase {
     /**
      * @param string $buildertype the type name of a form builder.
      *          if the name begins by 'legacy.', it load a legacy builder plugin (jelix <=1.4)
-     * @return \jelix\forms\Builder\BuilderBase|jFormsBuilderBase
+     * @return \Jelix\Forms\Builder\BuilderBase|jFormsBuilderBase
      * @throws jExceptionForms
      */
     public function getBuilder($buildertype){

@@ -82,7 +82,7 @@ class sqlsrvDbConnection extends jDbConnection {
 
     /**
      * initialize the connection to the database
-     * @see lib/jelix/db/jDbConnection#_connect()
+     * @see jDbConnection::_connect()
      */
     protected function _connect (){
 
@@ -109,7 +109,7 @@ class sqlsrvDbConnection extends jDbConnection {
 
     /**
      * 	close the connection to the database
-     * @see lib/jelix/db/jDbConnection#_disconnect()
+     * @see jDbConnection::_disconnect()
      */
     protected function _disconnect (){
         return sqlsrv_close ($this->_connection);
@@ -117,7 +117,7 @@ class sqlsrvDbConnection extends jDbConnection {
 
     /**
      * 	execute an SQL instruction
-     * @see lib/jelix/db/jDbConnection#_doQuery()
+     * @see jDbConnection::_doQuery()
      */
     protected function _doQuery ($query)
     {
@@ -134,7 +134,7 @@ class sqlsrvDbConnection extends jDbConnection {
     }
 
     /**
-     * @see lib/jelix/db/jDbConnection#_doExec()
+     * @see jDbConnection::_doExec()
      */
     protected function _doExec($query){
         if ($stmt = sqlsrv_query ($this->_connection, $query)) {
@@ -160,7 +160,7 @@ class sqlsrvDbConnection extends jDbConnection {
      * @param string $queryString
      * @param int $offset
      * @param int $number
-     * @see lib/jelix/db/jDbConnection#_doLimitQuery()
+     * @see jDbConnection::_doLimitQuery()
      */
     protected function _doLimitQuery ($queryString, $offset, $number){
 
@@ -219,7 +219,7 @@ class sqlsrvDbConnection extends jDbConnection {
 
     /**
      * @return integer the last inserted ID incremented in database
-     * @see lib/jelix/db/jDbConnection#lastInsertId()
+     * @see jDbConnection::lastInsertId()
      */
     public function lastInsertId($fromSequence=''){
         $queryString = 'SELECT @@IDENTITY AS id';

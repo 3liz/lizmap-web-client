@@ -54,13 +54,13 @@ class jAtom10Info extends jXMLFeedInfo {
     /**
      * version of the generator
      * @var string
-     * @see $generator
+     * @see jXMLFeedInfo::$generator
      */
     public $generatorVersion;
     /**
      * url of the generator
      * @var string
-     * @see $generator
+     * @see jXMLFeedInfo::$generator
      */
     public $generatorUrl;
 

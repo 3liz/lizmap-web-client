@@ -206,6 +206,55 @@ abstract class jFormsControl
         }
         return null;
     }
+
+    public function isModified()
+    {
+        $orig = & $this->container->originalData;
+        $value = $this->container->data[$this->ref];
+
+        if (!array_key_exists($this->ref, $orig)) {
+            // if the key does not exist in original data, we cannot compare
+            return false;
+        }
+
+        return $this->_diffValues($orig[$this->ref], $value);
+    }
+
+
+    /**
+     * @param mixed $v1
+     * @param mixed $v2
+     *
+     * @return bool true if the values are not equals
+     */
+    protected function _diffValues(&$v1, &$v2) {
+        if (is_array($v1) && is_array($v2)) {
+            $comp = array_merge(array_diff($v1, $v2),array_diff($v2, $v1));
+            return !empty($comp);
+        }
+
+        if ($v1 === $v2) {
+            return false;
+        }
+
+        if (($v1 === '' && $v2 === null) || ($v1 === null && $v2 === '')) {
+            return false;
+        }
+
+        if (is_numeric($v1) != is_numeric($v2)) {
+            return true;
+        }
+
+        if (empty($v1) && empty($v2)) {
+            return false;
+        }
+
+        if (is_array($v1) || is_array($v2)) {
+            return true;
+        }
+
+        return ($v1 != $v2);
+    }
 }
 
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlDatasource.class.php');
@@ -234,6 +283,7 @@ require(JELIX_LIB_PATH.'forms/controls/jFormsControlTextarea.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlTime.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlUpload.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlUpload2.class.php');
+require(JELIX_LIB_PATH.'forms/controls/jFormsControlImageUpload.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlDate.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlDatetime.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlWikiEditor.class.php');

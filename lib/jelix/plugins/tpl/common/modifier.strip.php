@@ -3,7 +3,7 @@
  * Plugin from smarty project and adapted for jtpl
  * @package    jelix
  * @subpackage jtpl_plugin
- * @author      Monte Ohrt <monte at ohrt dot com>
+ * @author      Monte Ohrt
  * @copyright  2001-2003 ispi of Lincoln, Inc.
  * @link http://smarty.php.net/
  * @link http://jelix.org/
