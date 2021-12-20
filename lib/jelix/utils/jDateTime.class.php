@@ -7,7 +7,7 @@
 * @contributor Loic Mathaud
 * @contributor Florian Hatat
 * @contributor Emmanuel Hesry, Brice G.
-* @contributor Hadrien Lanneau <hadrien@over-blog.com>
+* @contributor Hadrien Lanneau
 * @copyright   2005-2011 Laurent Jouanneau
 * @copyright   2007 Loic Mathaud
 * @copyright   2007-2008 Florian Hatat
@@ -98,7 +98,7 @@ class jDateTime {
      * Create a date from a Date string format
      * @link http://php.net/manual/fr/function.date.php
      * @param string $lf Date string format
-     * @param timestamp $str The timestamp to parse
+     * @param string $str The timestamp to parse
      * @return boolean false if the string $str has a bad format
      */
     private function _createDateFromFormat($lf, $str) {
@@ -118,7 +118,7 @@ class jDateTime {
      * Check if jDateTime is "null" (all values egals to 0)
      *
      * @return boolean
-     * @author Hadrien Lanneau (hadrien at over-blog dot com)
+     * @author Hadrien Lanneau
      **/
     public function isNull() {
         return ($this->year === 0 && $this->month === 0 && $this->day === 0 && $this->hour == 0 && $this->minute == 0 && $this->second == 0);
@@ -128,7 +128,7 @@ class jDateTime {
      * Convert the date to a string format
      * @param int $format one of the class constant xxx_FORMAT, or -1 if it should use the default format
      * @return string the string date
-     * @see jDateTime:$defaultFormat
+     * @see jDateTime::$defaultFormat
      */
     function toString($format=-1){
         if($format==-1)
@@ -210,7 +210,7 @@ class jDateTime {
      * @param string $str the string date
      * @param int $format one of the class constant xxx_FORMAT, or -1 if it should use the default format
      * @return boolean true if the format of $str has been parsed well
-     * @see jDateTime:$defaultFormat
+     * @see jDateTime::$defaultFormat
      */
     function setFromString($str,$format=-1){
         if($format==-1){
@@ -309,7 +309,7 @@ class jDateTime {
      * Add a duration to the date.
      * You can specify the duration in a jDuration object or give each value of
      * the duration.
-     * @param jDuration/int $year the duration value or a year with 4 digits
+     * @param jDuration|int $year the duration value or a year with 4 digits
      * @param int $month month with 2 digits
      * @param int $day day with 2 digits
      * @param int $hour hour with 2 digits
@@ -340,7 +340,7 @@ class jDateTime {
      * substract a <b>duration</b> to the date
      * You can specify the duration in a jDuration object or give each value of
      * the duration.
-     * @param jDuration/int $year the duration value or a year with 4 digits
+     * @param jDuration|int $year the duration value or a year with 4 digits
      * @param int $month month with 2 digits
      * @param int $day day with 2 digits
      * @param int $hour hour with 2 digits
@@ -418,7 +418,7 @@ class jDateTime {
     * Substract a date with another
     * @param jDateTime $date
     * @return jDateTime
-    * @author Hadrien Lanneau <hadrien@over-blog.com>
+    * @author Hadrien Lanneau
     * @since 1.2
     */
     public function substract($date = null) {

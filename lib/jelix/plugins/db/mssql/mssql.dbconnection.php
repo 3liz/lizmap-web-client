@@ -68,7 +68,7 @@ class mssqlDbConnection extends jDbConnection {
 
     /**
      * initialize the connection to the database
-     * @see lib/jelix/db/jDbConnection#_connect()
+     * @see jDbConnection::_connect()
      */
     protected function _connect (){
         $funcconnect = ($this->profile['persistent']? 'mssql_pconnect':'mssql_connect');
@@ -85,7 +85,7 @@ class mssqlDbConnection extends jDbConnection {
 
     /**
      * 	close the connection to the database
-     * @see lib/jelix/db/jDbConnection#_disconnect()
+     * @see jDbConnection::_disconnect()
      */
     protected function _disconnect (){
         return mssql_close ($this->_connection);
@@ -93,7 +93,7 @@ class mssqlDbConnection extends jDbConnection {
 
     /**
      * 	execute an SQL instruction
-     * @see lib/jelix/db/jDbConnection#_doQuery()
+     * @see jDbConnection::_doQuery()
      */
     protected function _doQuery ($query){
         if(!mssql_select_db ($this->profile['database'], $this->_connection)){
@@ -112,7 +112,7 @@ class mssqlDbConnection extends jDbConnection {
     }
 
     /**
-     * @see lib/jelix/db/jDbConnection#_doExec()
+     * @see jDbConnection::_doExec()
      */
     protected function _doExec($query){
         if(!mssql_select_db ($this->profile['database'], $this->_connection))
@@ -125,7 +125,7 @@ class mssqlDbConnection extends jDbConnection {
         }
     }
     /**
-     * @see lib/jelix/db/jDbConnection#_doLimitQuery()
+     * @see jDbConnection::_doLimitQuery()
      */
     protected function _doLimitQuery ($queryString, $offset, $number){
 
@@ -185,7 +185,7 @@ class mssqlDbConnection extends jDbConnection {
     /**
      * (non-PHPdoc)
      * 	return the last inserted ID incremented in database
-     * @see lib/jelix/db/jDbConnection#lastInsertId()
+     * @see jDbConnection::lastInsertId()
      */
     public function lastInsertId($fromSequence=''){
         $queryString = 'SELECT @@IDENTITY AS id';

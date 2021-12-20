@@ -304,7 +304,7 @@ class jFormsDaoDatasource extends jFormsDynamicDatasource {
 
     /**
      * @deprecated
-     * @see getCriteriaControls
+     * @see jFormsDaoDatasource::getCriteriaControls()
      */
     public function getDependentControls() {
         return $this->getCriteriaControls();

@@ -8,7 +8,7 @@
 * @licence      MIT
 */
 
-namespace jelix\FakeServerConf;
+namespace Jelix\FakeServerConf;
 
 /**
  * Simulate an Apache with CGI module or fastcgi module + PHP-FPM
