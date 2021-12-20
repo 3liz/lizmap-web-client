@@ -116,7 +116,7 @@ class wmtsCtrl extends jControllerCmdLine
 
     public function capabilities()
     {
-        $fakeServer = new jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
+        $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
 
         $verbose = $this->option('-v');
 
@@ -207,7 +207,7 @@ class wmtsCtrl extends jControllerCmdLine
 
     public function seeding()
     {
-        $fakeServer = new jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
+        $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
 
         $forced = $this->option('-f');
         $verbose = $this->option('-v');
@@ -462,7 +462,7 @@ class wmtsCtrl extends jControllerCmdLine
 
     public function cleaning()
     {
-        $fakeServer = new jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
+        $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
 
         $verbose = $this->option('-v');
 
