@@ -67,12 +67,12 @@ class Registration
         \jAuth::saveNewUser($user);
     }
 
-    public function resendRegistrationMail($user)
+    public function resendRegistrationMail($user, $byAdmin=false)
     {
         $key = sha1(password_hash($user->login.$user->password.microtime(), PASSWORD_DEFAULT));
         $user->status = Account::STATUS_NEW;
         $user->request_date = date('Y-m-d H:i:s');
-        if (preg_match('/^([AU]):/', $user->keyactivate , $m) && $m[1] == 'A') {
+        if ($byAdmin || (preg_match('/^([AU]):/', $user->keyactivate , $m) && $m[1] == 'A')) {
             $user->keyactivate = 'A:'.$key;
             $this->sendRegistrationMail($user,
                 'jcommunity~mail.registration.admin.body.html',
