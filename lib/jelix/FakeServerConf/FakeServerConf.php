@@ -8,7 +8,7 @@
 * @licence      MIT
 */
 
-namespace jelix\FakeServerConf;
+namespace Jelix\FakeServerConf;
 
 /**
  * base class for servers

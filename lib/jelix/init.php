@@ -16,7 +16,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.6.35-rc.3');
+define ('JELIX_VERSION', '1.6.35');
 
 /**
  * base of namespace path used in xml files of jelix
@@ -94,9 +94,22 @@ $GLOBALS['gLibClassPath']=array(
 /**
  * function used by php to try to load an unknown class
  */
-function jelix_autoload($class) {
-    if (strpos($class, 'jelix\\') === 0) {
-        $f = LIB_PATH.str_replace('\\', DIRECTORY_SEPARATOR, $class).'.php';
+function jelix_autoload($class)
+{
+    if (stripos($class, 'jelix') === 0) {
+        $class = str_replace(
+            array('Jelix', '\\'),
+            array('jelix', DIRECTORY_SEPARATOR),
+            $class);
+        if (strpos($class, '/Forms/') !== false) {
+            $f = LIB_PATH.str_replace( 'Forms', 'forms', $class).'.php';
+        }
+        else if (strpos($class, '/Core/') !== false) {
+            $f = LIB_PATH.str_replace( 'Core', 'core', $class).'.php';
+        }
+        else {
+            $f = LIB_PATH.$class.'.php';
+        }
     }
     else if(preg_match('/^j(Dao|Tpl|Event|Db|Controller|Forms|Auth|Config|Installer|KV).*/i', $class, $m)){
         $f=$GLOBALS['gLibPath'][$m[1]].$class.'.class.php';
