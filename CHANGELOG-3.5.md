@@ -2,8 +2,10 @@
 
 ## Unreleased
 
-- Fix a regression during the loading of embedded projects
+### Fixed
 
+- Fix a regression during the loading of embedded projects
+- Update Lizmap locales about missing languages in the package like Romanian and others
 
 ## 3.5.0 - 2021-12-15
 
@@ -23,7 +25,6 @@
   - New feature `Filter data with polygon` allowing to filter the layers data spatially by testing the intersection of the features against a chosen polygon layer. The filtering polygons are selected based on a field containing a list of user groups.
   - Enhanced the support of image upload into feature forms: an image editor allows you to crop or to rotate a selected image,
     and the image is resized if its width or height is higher than a length you can specify into the Lizmap configuration.
-
 
 ### Changed
 
