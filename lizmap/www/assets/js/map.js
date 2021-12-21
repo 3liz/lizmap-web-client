@@ -4281,8 +4281,8 @@ var lizMap = function() {
         var tf = tconfig['fields'].trim();
         var tooltipFields = tf.split(/[\s,]+/);
         var hiddenFields = [];
-        if ( 'attributeLayers' in lizMap.config 
-            && lname in lizMap.config.attributeLayers 
+        if ( 'attributeLayers' in lizMap.config
+            && lname in lizMap.config.attributeLayers
             && 'hiddenFields' in lizMap.config.attributeLayers[lname]) {
             var hf = lizMap.config.attributeLayers[lname]['hiddenFields'].trim();
             hiddenFields = hf.split(/[\s,]+/);
@@ -4851,10 +4851,16 @@ var lizMap = function() {
       if( !selectionLayer )
         selectionLayer = aName;
 
-      var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
-
       // Get WFS url and options
-      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid, null, restrictToMapExtent );
+      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null, restrictToMapExtent );
+
+      // If there is a selection, use the selectiontoken,
+      // not a list of features ids to avoid too big urls
+      var config_layer = lizMap.config.layers[selectionLayer];
+      if ('request_params' in config_layer && 'selectiontoken' in config_layer['request_params']) {
+        var selection_token = config_layer['request_params']['selectiontoken'];
+        getFeatureUrlData['options']['SELECTIONTOKEN'] = selection_token;
+      }
 
       // Force download
       getFeatureUrlData['options']['dl'] = 1;
@@ -6793,7 +6799,7 @@ lizMap.events.on({
        }
 
        var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
-       
+
        // IGN base layers
         if ('ignKey' in evt.config.options){
           var ignKey = evt.config.options.ignKey;

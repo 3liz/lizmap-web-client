@@ -464,7 +464,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
     {
 
         // Get remote data
-        $response = $this->request();
+        $response = $this->request(true);
 
         return (object) array(
             'code' => $response->code,

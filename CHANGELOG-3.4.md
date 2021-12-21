@@ -10,6 +10,9 @@
 - Don't show search results if search query is empty
 - Use white icons on button.btn-primary class hover
 - Translate mini-dock-close button
+- Selection: improve the export tool to allow bigger selections 
+  - use the selection token instead of a list of feature identifiers
+  - internally use POST instead of GET requests to query data from QGIS Server
 
 ## 3.4.7 - 2021-11-16
 
