@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.4.8 - 2021-12-23
+
 ### Fixed
 
 - Update URLs for the French IGN basemap provider,
