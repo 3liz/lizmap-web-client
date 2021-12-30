@@ -2820,3 +2820,12 @@ lizmap-reverse-geom svg{
 #print-launch.spinner::after{
   right: 5px;
 }
+/* lizmap-feature-toolbar */
+lizmap-feature-toolbar button.btn:hover{
+  background-color: #04c;
+  background-image: linear-gradient(to bottom,#08c,#04c);
+}
+
+lizmap-feature-toolbar button:hover > [class^="icon-"]{
+  background-image: url(images/glyphicons-halflings-white.png);
+}

@@ -616,6 +616,9 @@ class WMSRequest extends OGCRequest
             // Hidden input containing layer id and feature id
             $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>'.PHP_EOL;
 
+            // Feature toolbar
+            $featureToolbar = '<lizmap-feature-toolbar value="'.$layerId.'.'.$id.'"></lizmap-feature-toolbar>'.PHP_EOL;
+
             $popupFeatureContent = $this->getViewTpl('view~popupDefaultContent', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
                 'attributes' => $feature->Attribute,
@@ -690,7 +693,7 @@ class WMSRequest extends OGCRequest
 
             $content[] = $this->getViewTpl('view~popup', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
-                'popupContent' => $hiddenFeatureId.$hiddenGeometry.$finalContent,
+                'popupContent' => $hiddenFeatureId.$hiddenGeometry.$featureToolbar.$finalContent,
             ));
         } // loop features
 

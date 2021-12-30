@@ -2064,6 +2064,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             }
                         });
 
+                        lizMap.mainLizmap.edition.fetchEditableFeatures(edition_layers_ids);
+
                         // 2/ Add promises to get the editable features for each editable layer
                         for (const i in edition_layers_ids) {
                             var id = edition_layers_ids[i];

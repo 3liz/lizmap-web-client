@@ -1123,7 +1123,7 @@ var lizAttributeTable = function() {
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
                     // Format features for datatable
-                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures']);
+                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures'], lConfig['id']);
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
@@ -1184,6 +1184,7 @@ var lizAttributeTable = function() {
 
                                 // Check editable features
                                 if (canEdit || canDelete) {
+                                    lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
                                     // Get editable features
                                     $.post(lizUrls.edition.replace('getFeature', 'editableFeatures'), {
                                         repository: lizUrls.params.repository,
@@ -1349,6 +1350,9 @@ var lizAttributeTable = function() {
                 columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
                 firstDisplayedColIndex+=1;
 
+                columns.push({ "data": "featureToolbar", "width": "25px", "searchable": false, "sortable": false});
+                firstDisplayedColIndex += 1;
+
                 // Select tool
                 columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
                 firstDisplayedColIndex+=1;
@@ -1492,7 +1496,7 @@ var lizAttributeTable = function() {
             }
 
 
-            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures){
+            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures, layerId){
                 var dataSet = [];
                 var foundFeatures = {};
                 atFeatures.forEach(function(feat) {
@@ -1508,6 +1512,8 @@ var lizAttributeTable = function() {
 
                     if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
                         line.lizSelected = 'a';
+
+                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}"></lizmap-feature-toolbar>`;
 
                     // Build table lines
                     var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
