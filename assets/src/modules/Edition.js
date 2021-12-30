@@ -67,4 +67,41 @@ export default class Edition {
             mainEventDispatcher.dispatch('edition.lastSegmentLength');
         }
     }
+
+    /**
+     * Fetch editable features for given array of layer IDs
+     * @param {array} layerIds
+     */
+    fetchEditableFeatures(layerIds){
+        if (Array.isArray(layerIds)){
+            const fetchers = [];
+            for (const layerId of layerIds) {
+                fetchers.push(fetch(lizUrls.edition.replace('getFeature', 'editableFeatures'),{
+                    "method": "POST",
+                    "body": new URLSearchParams({
+                        repository: lizUrls.params.repository,
+                        project: lizUrls.params.project,
+                        layerId: layerId
+                    })
+                }).then(response => {
+                    return response.json();
+                }));
+
+                Promise.all(fetchers).then(responses => {
+                    const editableFeatures = [];
+                    for (const response of responses) {
+                        if (response?.['success'] && response?.['status'] === 'restricted') {
+                            for (const feature of response.features) {
+                                editableFeatures.push(feature);
+                            }
+                        }
+                    }
+                    mainEventDispatcher.dispatch({
+                        type: 'edition.editableFeatures',
+                        properties: editableFeatures
+                    });
+                });
+            }
+        }
+    }
 }

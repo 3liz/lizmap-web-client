@@ -12,6 +12,7 @@ import { transform as transformOL, get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 
 import proj4 from 'proj4';
+import ProxyEvents from './ProxyEvents.js';
 
 export default class Lizmap {
 
@@ -47,6 +48,7 @@ export default class Lizmap {
                 this.snapping = new Snapping();
                 this.draw = new Draw();
                 this.layers = new Layers();
+                this.proxyEvents = new ProxyEvents();
             }
         });
     }
