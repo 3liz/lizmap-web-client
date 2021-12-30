@@ -14,8 +14,8 @@ export default class FeatureToolbar extends HTMLElement {
         const mainTemplate = () => html`
         <div class="feature-toolbar">
             <button class="btn btn-mini ${this.isSelected ? 'btn-warning' : ''}" @click=${() => this.select()} data-original-title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
-            <button class="btn btn-mini" @click=${() => this.zoom()} data-original-title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
-            <button class="btn btn-mini" @click=${() => this.center()} data-original-title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
+            <button class="btn btn-mini ${this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} data-original-title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
+            <button class="btn btn-mini ${this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} data-original-title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
             <button class="btn btn-mini" @click=${() => this.edit()} ?disabled="${!this._isEditable}" data-original-title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
             <button class="btn btn-mini" @click=${() => this.delete()} data-original-title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
             <button class="btn btn-mini" data-original-title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
@@ -60,6 +60,11 @@ export default class FeatureToolbar extends HTMLElement {
 
     get isSelected() {
         return lizMap.config.layers[this.featureType]['selectedFeatures'].includes(this.fid);
+    }
+
+    get hasGeometry(){
+        const geometryType = lizMap.getLayerConfigById(this.layerId)[1].geometryType;
+        return (geometryType != 'none' && geometryType != 'unknown');
     }
 
     updateIsEditable(editableFeatures) {
