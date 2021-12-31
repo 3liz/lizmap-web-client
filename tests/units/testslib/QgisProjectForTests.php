@@ -51,6 +51,7 @@ class QgisProjectForTests extends QgisProject
 
     public function readRelationsForTests($xml)
     {
+        $this->xml = $xml;
         return $this->readRelations($xml);
     }
 

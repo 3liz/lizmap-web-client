@@ -205,25 +205,51 @@ class QgisProjectTest extends TestCase
             ),
             'pivot' => array(),
         );
+
+        $expectedFields = array(
+            array (
+                'id' => 'SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO',
+                'layerName' => 'Quartiers',
+                'typeName' => 'Quartiers',
+                'propertyName' => 'QUARTMNO,LIBQUART',
+                'filterExpression' => '',
+                'referencedField' => 'QUARTMNO',
+                'referencingField' => 'QUARTMNO',
+                'previewField' => 'LIBQUART',
+            ),
+            array (
+                'id' => 'jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id',
+                'layerName' => 'tramstop',
+                'typeName' => 'tramstop',
+                'propertyName' => 'osm_id,unique_name',
+                'filterExpression' => '',
+                'referencedField' => 'osm_id',
+                'referencingField' => 'stop_id',
+                'previewField' => 'unique_name',
+            ),
+        );
+
         $file = __DIR__.'/Ressources/relations.qgs';
         $xml = simplexml_load_file($file);
         $testQgis = new qgisProjectForTests();
-        $relations = $testQgis->readRelationsForTests($xml);
+        list($relations, $relationsFields) = $testQgis->readRelationsForTests($xml);
         $this->assertEquals($expectedRelations, $relations);
+        $this->assertEquals($expectedFields, $relationsFields);
     }
 
     public function testCacheConstruct()
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-            'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', 'customProjectVariables', );
+            'relations', 'themes', 'useLayerIDs', 'layers', 'data',
+            'qgisProjectVersion', 'customProjectVariables', 'relationsFields');
         $data = array();
-        $emptyData = array();
+
         foreach ($cachedProperties as $prop) {
             $data[$prop] = 'some stuff about'.$prop;
         }
         $services = new lizmapServices(array(), (object) array(), false, '', '');
         $testQgis = new Project\QgisProject(null, $services, new ContextForTests(), $data);
-        $this->assertEquals($data, $testQgis->getCacheData($emptyData));
+        $this->assertEquals($data, $testQgis->getCacheData());
     }
 
     public function testSetLayerOpacity()

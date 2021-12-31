@@ -1386,64 +1386,24 @@ class QgisForm implements QgisFormControlsInterface
      */
     private function fillControlFromRelationReference($fieldName, $formControl)
     {
-        $wfsData = null;
-        $mime = '';
-
         // Build WFS request parameters
         //   Get layername via id
         $project = $this->layer->getProject();
         $relationId = $formControl->relationReferenceData['relation'];
 
-        // FIXME do not use anymore XML in this method, migrate XML code to QgisProject or other low level classes
+        $relation = $project->getRelationField($relationId);
+        if (!$relation || $relation['propertyName'] == '') {
+            $this->disableControl($formControl);
 
-        $_relationXml = $project->getXmlRelation($relationId);
-        if (count($_relationXml) == 0) {
-            return $this->disableControl($formControl);
+            return;
         }
-        $relationXml = $_relationXml[0];
-
-        $referencedLayerId = $relationXml->attributes()->referencedLayer;
-
-        $_referencedLayerXml = $project->getXmlLayer($referencedLayerId);
-        if (count($_referencedLayerXml) == 0) {
-            return $this->disableControl($formControl);
-        }
-        $referencedLayerXml = $_referencedLayerXml[0];
-
-        $_layerName = $referencedLayerXml->xpath('layername');
-        if (count($_layerName) == 0) {
-            return $this->disableControl($formControl);
-        }
-        $layerName = (string) $_layerName[0];
-
-        $_previewExpression = $referencedLayerXml->xpath('previewExpression');
-        if (count($_previewExpression) == 0) {
-            return $this->disableControl($formControl);
-        }
-        $previewExpression = (string) $_previewExpression[0];
-
-        $referencedField = $relationXml->fieldRef->attributes()->referencedField;
-        $previewField = $previewExpression;
-        if (substr($previewField, 0, 8) == 'COALESCE') {
-            if (preg_match('/"([\S ]+)"/', $previewField, $matches) == 1) {
-                $previewField = $matches[1];
-            } else {
-                $previewField = $referencedField;
-            }
-        } elseif (substr($previewField, 0, 1) == '"' and substr($previewField, -1) == '"') {
-            $previewField = substr($previewField, 1, -1);
-        }
-
-        $filterExpression = '';
-        $typename = str_replace(' ', '_', $layerName);
-        $propertyname = $referencedField.','.$previewField;
 
         $params = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
             'REQUEST' => 'GetFeature',
-            'TYPENAME' => $typename,
-            'PROPERTYNAME' => $propertyname,
+            'TYPENAME' => $relation['typeName'],
+            'PROPERTYNAME' => $relation['propertyName'],
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
             'map' => $project->getPath(),
@@ -1451,12 +1411,12 @@ class QgisForm implements QgisFormControlsInterface
 
         // add EXP_FILTER. Only for QGIS >=2.0
         $expFilter = null;
-        if ($filterExpression) {
-            $expFilter = $filterExpression;
+        if ($relation['filterExpression']) {
+            $expFilter = $relation['filterExpression'];
         }
         // Filter by login
         if (!$this->loginFilteredOverride) {
-            $loginFilteredLayers = $this->filterDataByLogin($layerName);
+            $loginFilteredLayers = $this->filterDataByLogin($relation['layerName']);
             if (is_array($loginFilteredLayers)) {
                 if ($expFilter) {
                     $expFilter = ' ( '.$expFilter.' ) AND ( '.$loginFilteredLayers['where'].' ) ';
@@ -1472,7 +1432,7 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, \lizmap::getServices());
-        $this->PerformWfsRequest($wfsRequest, $formControl, $referencedField, $previewField);
+        $this->PerformWfsRequest($wfsRequest, $formControl, $relation['referencedField'], $relation['previewField']);
     }
 
     protected function disableControl($formControl, $message = 'Control not well configured')
