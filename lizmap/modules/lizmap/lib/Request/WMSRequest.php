@@ -128,7 +128,7 @@ class WMSRequest extends OGCRequest
             return $result;
         }
 
-        // Remove no interoparable elements
+        // Remove no interoperable elements
         $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
         $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
 
@@ -250,7 +250,7 @@ class WMSRequest extends OGCRequest
     }
 
     /**
-     * Check wether the height and width values are valids.
+     * Check wether the height and width values are valid.
      */
     protected function checkMaximumWidthHeight()
     {
@@ -319,7 +319,7 @@ class WMSRequest extends OGCRequest
             return $this->serviceException();
         }
 
-        // We split layers in two groups. First contains exernal WMS, second contains QGIS layers
+        // We split layers in two groups. First contains external WMS, second contains QGIS layers
         $queryLayers = explode(',', $queryLayers);
         $externalWMSConfigLayers = array();
         $qgisQueryLayers = array();
@@ -600,7 +600,7 @@ class WMSRequest extends OGCRequest
 
         foreach ($layer->Feature as $feature) {
             $id = (string) $feature['id'];
-            // Optionnally filter by feature id
+            // Optionally filter by feature id
             if ($filterFid
                 && isset($filterFid[$configLayer->name])
                 && $filterFid[$configLayer->name] != $id
@@ -616,9 +616,6 @@ class WMSRequest extends OGCRequest
             // Hidden input containing layer id and feature id
             $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>'.PHP_EOL;
 
-            // Feature toolbar
-            $featureToolbar = '<lizmap-feature-toolbar value="'.$layerId.'.'.$id.'"></lizmap-feature-toolbar>'.PHP_EOL;
-
             $popupFeatureContent = $this->getViewTpl('view~popupDefaultContent', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
                 'attributes' => $feature->Attribute,
@@ -631,7 +628,7 @@ class WMSRequest extends OGCRequest
 
                 // then replace all column data by appropriate content
                 foreach ($feature->Attribute as $attribute) {
-                    // Replace #col and $col by colomn name and value
+                    // Replace #col and $col by column name and value
                     $popupFeatureContent = $popupClass->getHtmlFeatureAttribute(
                         $attribute['name'],
                         $attribute['value'],
@@ -646,6 +643,7 @@ class WMSRequest extends OGCRequest
             // Use default template if needed or maptip value if defined
             // Get geometry data
             $hiddenGeometry = '';
+            $featureToolbarExtent = '';
             $maptipValue = null;
 
             foreach ($feature->Attribute as $attribute) {
@@ -672,10 +670,14 @@ class WMSRequest extends OGCRequest
                         $bbox = $feature->BoundingBox[0];
                         foreach ($props as $prop => $class) {
                             $hiddenGeometry .= '<input type="hidden" value="'.$bbox[$prop].'" class="lizmap-popup-layer-feature-'.$class.'"/>'.PHP_EOL;
+                            $featureToolbarExtent .= $class.'="'.$bbox[$prop].'"';
                         }
                     }
                 }
             }
+
+            // Feature toolbar
+            $featureToolbar = '<lizmap-feature-toolbar value="'.$layerId.'.'.$id.'" '.$featureToolbarExtent.'></lizmap-feature-toolbar>'.PHP_EOL;
 
             // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
             $finalContent = $autoContent;
