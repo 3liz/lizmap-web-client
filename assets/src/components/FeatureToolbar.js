@@ -37,12 +37,14 @@ export default class FeatureToolbar extends HTMLElement {
             }, 'selection.changed'
         );
 
-        // TODO: add handler to remove listener
+        this._editableFeaturesCallBack = (editableFeatures) => {
+            this.updateIsEditable(editableFeatures.properties);
+            render(mainTemplate(), this);
+        };
+
         mainEventDispatcher.addListener(
-            (editableFeatures) => {
-                this.updateIsEditable(editableFeatures.properties);
-                render(mainTemplate(), this);
-            }, 'edition.editableFeatures'
+            this._editableFeaturesCallBack,
+            'edition.editableFeatures'
         );
     }
 
@@ -51,6 +53,11 @@ export default class FeatureToolbar extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             }, 'selection.changed'
+        );
+
+        mainEventDispatcher.removeListener(
+            this._editableFeaturesCallBack,
+            'edition.editableFeatures'
         );
     }
 
