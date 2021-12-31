@@ -1,6 +1,9 @@
 import { mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
+import { transformExtent } from 'ol/proj';
+import { getCenter } from 'ol/extent';
+
 export default class FeatureToolbar extends HTMLElement {
     constructor() {
         super();
@@ -59,11 +62,13 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     get isSelected() {
-        return lizMap.config.layers[this.featureType]['selectedFeatures'].includes(this.fid);
+        const selectedFeatures = lizMap.config.layers[this.featureType]['selectedFeatures'];
+        return selectedFeatures && selectedFeatures.includes(this.fid);
     }
 
     get isFiltered() {
-        return lizMap.config.layers[this.featureType]['filteredFeatures'].includes(this.fid);
+        const filteredFeatures = lizMap.config.layers[this.featureType]['filteredFeatures'];
+        return filteredFeatures && filteredFeatures.includes(this.fid);
     }
 
     get hasFilter() {
@@ -104,11 +109,27 @@ export default class FeatureToolbar extends HTMLElement {
             lizMap.map.removePopup(lizMap.map.popups[0]);
         }
 
-        lizMap.zoomToFeature(this.featureType, this.fid, 'zoom');
+        if (this.getAttribute('crs')){
+            lizMap.mainLizmap.extent = transformExtent(
+                [this.getAttribute('bbox-minx'), this.getAttribute('bbox-miny'), this.getAttribute('bbox-maxx'), this.getAttribute('bbox-maxy')],
+                this.getAttribute('crs'),
+                lizMap.mainLizmap.projection
+                );
+        }else{
+            lizMap.zoomToFeature(this.featureType, this.fid, 'zoom');
+        }
     }
 
     center(){
-        lizMap.zoomToFeature(this.featureType, this.fid, 'center');
+        if (this.getAttribute('crs')) {
+            lizMap.mainLizmap.center = getCenter(transformExtent(
+                [this.getAttribute('bbox-minx'), this.getAttribute('bbox-miny'), this.getAttribute('bbox-maxx'), this.getAttribute('bbox-maxy')],
+                this.getAttribute('crs'),
+                lizMap.mainLizmap.projection
+            ));
+        } else {
+            lizMap.zoomToFeature(this.featureType, this.fid, 'center');
+        }
     }
 
     edit(){

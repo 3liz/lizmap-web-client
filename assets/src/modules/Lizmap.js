@@ -8,7 +8,7 @@ import Snapping from './Snapping.js';
 import Draw from './interaction/Draw.js';
 import Layers from './Layers.js';
 
-import { transform as transformOL, get as getProjection } from 'ol/proj';
+import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 
 import proj4 from 'proj4';
@@ -97,14 +97,14 @@ export default class Lizmap {
      * @param {Array} lonlat - lonlat to center to.
      */
     set center(lonlat) {
-        this._lizmap3.map.setCenter(lonlat);
+        this.map.getView().setCenter(lonlat);
     }
 
     /**
      * @param {Array} bounds - Left, bottom, right, top
      */
     set extent(bounds) {
-        this._lizmap3.map.zoomToExtent(bounds);
+        this.map.getView().fit(bounds);
     }
 
     getNameByTypeName(typeName) {
@@ -136,5 +136,19 @@ export default class Lizmap {
      */
     transform(coordinate, source, destination) {
         return transformOL(coordinate, source, destination);
+    }
+
+    /**
+     * Expose OpenLayers transformExtent method for external JS.
+     * Transforms an extent from source projection to destination projection.  This
+     * returns a new extent (and does not modify the original).
+     *
+     * @param {import("./extent.js").Extent} extent The extent to transform.
+     * @param {ProjectionLike} source Source projection-like.
+     * @param {ProjectionLike} destination Destination projection-like.
+     * @return {import("./extent.js").Extent} The transformed extent.
+     */
+    transformExtent(extent, source, destination){
+        return transformExtentOL(extent, source, destination);
     }
 }
