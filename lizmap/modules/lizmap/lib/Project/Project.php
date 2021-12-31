@@ -267,6 +267,11 @@ class Project
         return $this->qgis->getRelations();
     }
 
+    public function getRelationField($relationId)
+    {
+        return $this->qgis->getRelationField($relationId);
+    }
+
     public function getThemes()
     {
         return $this->qgis->getThemes();
