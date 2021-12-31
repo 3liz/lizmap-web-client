@@ -11,7 +11,7 @@ export default class FeatureToolbar extends HTMLElement {
 
     connectedCallback() {
 
-        this._isEditable = false;
+        this._isFeatureEditable = true;
 
         // TODO: handle remove link instead of delete
         const mainTemplate = () => html`
@@ -20,7 +20,7 @@ export default class FeatureToolbar extends HTMLElement {
             <button class="btn btn-mini feature-filter ${this.hasAttributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-warning' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
             <button class="btn btn-mini feature-zoom ${this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
             <button class="btn btn-mini feature-center ${this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
-            <button class="btn btn-mini feature-edit" @click=${() => this.edit()} ?disabled="${!this._isEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
+            <button class="btn btn-mini feature-edit ${this.isLayerEditable ? '' : 'hide'}" @click=${() => this.edit()} ?disabled="${!this._isFeatureEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
             <button class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
         </div>`;
 
@@ -38,7 +38,7 @@ export default class FeatureToolbar extends HTMLElement {
         );
 
         this._editableFeaturesCallBack = (editableFeatures) => {
-            this.updateIsEditable(editableFeatures.properties);
+            this.updateIsFeatureEditable(editableFeatures.properties);
             render(mainTemplate(), this);
         };
 
@@ -101,16 +101,21 @@ export default class FeatureToolbar extends HTMLElement {
         return lizMap.getLayerConfigById(this.layerId, lizMap.config.attributeLayers, 'layerId');
     }
 
+    get isLayerEditable(){
+        return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.modifyAttribute === "True"
+            || lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.modifyGeometry === "True";
+    }
+
     get isDeletable(){
         return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True";
     }
 
-    updateIsEditable(editableFeatures) {
-        this._isEditable = false;
+    updateIsFeatureEditable(editableFeatures) {
+        this._isFeatureEditable = false;
         for (const editableFeature of editableFeatures) {
             const [featureType, fid] = editableFeature.id.split('.');
             if(featureType === this.featureType && fid === this.fid){
-                this._isEditable = true;
+                this._isFeatureEditable = true;
                 break;
             }
         }

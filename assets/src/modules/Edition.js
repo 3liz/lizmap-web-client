@@ -94,12 +94,14 @@ export default class Edition {
                             for (const feature of response.features) {
                                 editableFeatures.push(feature);
                             }
+
+                            // Dispatch event only if there is a restriction
+                            mainEventDispatcher.dispatch({
+                                type: 'edition.editableFeatures',
+                                properties: editableFeatures
+                            });
                         }
                     }
-                    mainEventDispatcher.dispatch({
-                        type: 'edition.editableFeatures',
-                        properties: editableFeatures
-                    });
                 });
             }
         }
