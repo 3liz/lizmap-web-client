@@ -62,6 +62,11 @@ class QgisProject
     protected $relations = array();
 
     /**
+     * @var array list of fields properties for each relation
+     */
+    protected $relationsFields = array();
+
+    /**
      * @var array list of themes
      */
     protected $themes = array();
@@ -94,6 +99,7 @@ class QgisProject
         'canvasColor',
         'allProj4',
         'relations',
+        'relationsFields',
         'themes',
         'useLayerIDs',
         'layers',
@@ -1162,7 +1168,7 @@ class QgisProject
         $this->WMSInformation = $this->readWMSInformation($qgsXml);
         $this->canvasColor = $this->readCanvasColor($qgsXml);
         $this->allProj4 = $this->readAllProj4($qgsXml);
-        $this->relations = $this->readRelations($qgsXml);
+        list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
         $this->themes = $this->readThemes($qgsXml);
         $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
@@ -1343,36 +1349,47 @@ class QgisProject
     /**
      * @param \SimpleXMLElement $xml
      *
-     * @return null|array[]
+     * @return null|array[] list of two list: reference between relation, and fields of relations
      */
     protected function readRelations($xml)
     {
         $xmlRelations = $xml->xpath('//relations');
         $relations = array();
+        $relationsFields = array();
         $pivotGather = array();
         $pivot = array();
         if ($xmlRelations) {
+            /** @var \SimpleXMLElement $relation */
             foreach ($xmlRelations[0] as $relation) {
                 $relationObj = $relation->attributes();
-                $fieldRefObj = $relation->fieldRef->attributes();
-                if (!array_key_exists((string) $relationObj->referencedLayer, $relations)) {
-                    $relations[(string) $relationObj->referencedLayer] = array();
+
+                $relationField = $this->readRelationField($relation);
+                if ($relationField === null) {
+                    // no corresponding layer
+                    continue;
+                }
+                $relationsFields[] = $relationField;
+
+                $referencedLayerId = (string) $relationObj->referencedLayer;
+                $referencingLayerId = (string) $relationObj->referencingLayer;
+                if (!array_key_exists($referencedLayerId, $relations)) {
+                    $relations[$referencedLayerId] = array();
                 }
 
-                $relations[(string) $relationObj->referencedLayer][] = array(
-                    'referencingLayer' => (string) $relationObj->referencingLayer,
-                    'referencedField' => (string) $fieldRefObj->referencedField,
-                    'referencingField' => (string) $fieldRefObj->referencingField,
+                $relations[$referencedLayerId][] = array(
+                    'referencingLayer' => $referencingLayerId,
+                    'referencedField' => $relationField['referencedField'],
+                    'referencingField' => $relationField['referencingField'],
                 );
 
-                if (!array_key_exists((string) $relationObj->referencingLayer, $pivotGather)) {
-                    $pivotGather[(string) $relationObj->referencingLayer] = array();
+                if (!array_key_exists($referencingLayerId, $pivotGather)) {
+                    $pivotGather[$referencingLayerId] = array();
                 }
 
-                $pivotGather[(string) $relationObj->referencingLayer][(string) $relationObj->referencedLayer] = (string) $fieldRefObj->referencingField;
+                $pivotGather[$referencingLayerId][$referencedLayerId] = $relationField['referencingField'];
             }
 
-            // Keep only child with at least to parents
+            // Keep only child with at least two parents
             foreach ($pivotGather as $pi => $vo) {
                 if (count($vo) > 1) {
                     $pivot[$pi] = $vo;
@@ -1380,7 +1397,79 @@ class QgisProject
             }
             $relations['pivot'] = $pivot;
 
-            return $relations;
+            return array($relations, $relationsFields);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \SimpleXMLElement $relation
+     * @param mixed             $relationXml
+     */
+    protected function readRelationField($relationXml)
+    {
+        $referencedLayerId = $relationXml->attributes()->referencedLayer;
+
+        $_referencedLayerXml = $this->getXmlLayer($referencedLayerId);
+        if (count($_referencedLayerXml) == 0) {
+            return null;
+        }
+        $referencedLayerXml = $_referencedLayerXml[0];
+
+        $_layerName = $referencedLayerXml->xpath('layername');
+        if (count($_layerName) == 0) {
+            return null;
+        }
+        $layerName = (string) $_layerName[0];
+        $typeName = str_replace(' ', '_', $layerName);
+        $referencedField = (string) $relationXml->fieldRef->attributes()->referencedField;
+        $referencingField = (string) $relationXml->fieldRef->attributes()->referencingField;
+
+        $referenceField = array(
+            'id' => (string) $relationXml->attributes()->id,
+            'layerName' => $layerName,
+            'typeName' => $typeName,
+            'propertyName' => '',
+            'filterExpression' => '',
+            'referencedField' => $referencedField,
+            'referencingField' => $referencingField,
+            'previewField' => '',
+        );
+
+        $_previewExpression = $referencedLayerXml->xpath('previewExpression');
+        if (count($_previewExpression) == 0) {
+            return $referenceField;
+        }
+        $previewExpression = (string) $_previewExpression[0];
+
+        $previewField = $previewExpression;
+        if (substr($previewField, 0, 8) == 'COALESCE') {
+            if (preg_match('/"([\S ]+)"/', $previewField, $matches) == 1) {
+                $previewField = $matches[1];
+            } else {
+                $previewField = $referencedField;
+            }
+        } elseif (substr($previewField, 0, 1) == '"' and substr($previewField, -1) == '"') {
+            $previewField = substr($previewField, 1, -1);
+        }
+
+        $referenceField['propertyName'] = $referencedField.','.$previewField;
+        $referenceField['previewField'] = $previewField;
+
+        return $referenceField;
+    }
+
+    public function getRelationField($relationId)
+    {
+        $fields = array_filter($this->relationsFields, function ($rf) use ($relationId) {
+            return $rf['id'] == $relationId;
+        });
+        if (count($fields)) {
+            // get first key found in the filtered layers
+            $k = key($fields);
+
+            return $fields[$k];
         }
 
         return null;

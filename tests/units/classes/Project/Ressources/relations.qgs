@@ -1,10 +1,162 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
 <qgis version="3.10.5-A Coruña" projectname="Montpellier - Transports">
+
+  <projectlayers>
+    <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="1" simplifyMaxScale="1" type="vector" maxScale="-4.65661e-10" geometry="Polygon" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPolygon" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
+      <id>SousQuartiers20160121124316563</id>
+      <layername>SousQuartiers</layername>
+      <expressionfields>
+        <field subType="0" typeName="integer" precision="0" expression=" &quot;socio_population_2009&quot; / ( $area / 1000000 )" type="2" comment="" length="10" name="popdensity"/>
+        <field subType="0" typeName="double" precision="2" expression=" $area / 1000000" type="6" comment="" length="5" name="area"/>
+      </expressionfields>
+      <previewExpression>COALESCE( "QUARTMNO", '&lt;NULL>' )</previewExpression>
+    </maplayer>
+    <maplayer geometry="No geometry"
+              hasScaleBasedVisibilityFlag="0"
+              refreshOnNotifyEnabled="0"
+              styleCategories="AllStyleCategories"
+              maxScale="-4.65661e-10" minScale="1e+8"
+              wkbType="NoGeometry" autoRefreshEnabled="0"
+              refreshOnNotifyMessage="" type="vector" autoRefreshTime="0" readOnly="0">
+      <id>jointure_tram_stop20150328114216806</id>
+      <layername>tramway_pivot</layername>
+      <layerDependencies/>
+      <dataDependencies/>
+      <previewExpression>COALESCE("pk", '&lt;NULL>')</previewExpression>
+    </maplayer>
+    <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="1" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Polygon" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPolygon" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
+      <id>VilleMTP_MTP_Quartiers_2011_432620130116112610876</id>
+      <layername>Quartiers</layername>
+      <fieldConfiguration>
+        <field name="QUARTIER">
+          <editWidget type="Hidden">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="QUARTMNO">
+          <editWidget type="Hidden">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="LIBQUART">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field name="SQUARTMNO">
+          <editWidget type="Hidden">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="photo">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field name="url">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <previewExpression>COALESCE( "LIBQUART", '&lt;NULL>' )</previewExpression>
+    </maplayer>
+    <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="0" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Point" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPoint" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
+      <id>tramstop20150328114203878</id>
+      <layername>tramstop</layername>
+      <expressionfields>
+        <field subType="0" typeName="TEXT" precision="0" expression=" &quot;name&quot; || ' - ' || &quot;osm_id&quot;" type="10" comment="" length="0" name="unique_name"/>
+      </expressionfields>
+      <fieldConfiguration>
+        <field name="OGC_FID">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field name="osm_id">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field name="name">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field name="wkt">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field name="unique_name">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option value="0" type="QString" name="IsMultiline"/>
+                <Option value="0" type="QString" name="UseHtml"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <previewExpression>unique_name</previewExpression>
+    </maplayer>
+
+  </projectlayers>
+
+
   <relations>
-    <relation id="SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO" referencingLayer="SousQuartiers20160121124316563" referencedLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" strength="Association" name="Subdistricts by district">
+    <relation id="SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO"
+              referencingLayer="SousQuartiers20160121124316563"
+              referencedLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876"
+              strength="Association" name="Subdistricts by district">
       <fieldRef referencingField="QUARTMNO" referencedField="QUARTMNO"/>
     </relation>
-    <relation id="jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id" referencingLayer="jointure_tram_stop20150328114216806" referencedLayer="tramstop20150328114203878" strength="Association" name="Tram stop -> pivot tram stop/tram line">
+    <relation id="jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id"
+              referencingLayer="jointure_tram_stop20150328114216806"
+              referencedLayer="tramstop20150328114203878"
+              strength="Association" name="Tram stop -> pivot tram stop/tram line">
       <fieldRef referencingField="stop_id" referencedField="osm_id"/>
     </relation>
   </relations>
