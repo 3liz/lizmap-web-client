@@ -21,7 +21,7 @@ export default class FeatureToolbar extends HTMLElement {
             <button class="btn btn-mini feature-zoom ${this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
             <button class="btn btn-mini feature-center ${this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
             <button class="btn btn-mini feature-edit" @click=${() => this.edit()} ?disabled="${!this._isEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
-            <button class="btn btn-mini feature-delete" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
+            <button class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
         </div>`;
 
         render(mainTemplate(), this);
@@ -99,6 +99,10 @@ export default class FeatureToolbar extends HTMLElement {
 
     get hasAttributeTableConfig(){
         return lizMap.getLayerConfigById(this.layerId, lizMap.config.attributeLayers, 'layerId');
+    }
+
+    get isDeletable(){
+        return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True";
     }
 
     updateIsEditable(editableFeatures) {
