@@ -2829,3 +2829,8 @@ lizmap-feature-toolbar button.btn:hover{
 lizmap-feature-toolbar button:hover > [class^="icon-"]{
   background-image: url(images/glyphicons-halflings-white.png);
 }
+
+/* Don't display filter in attribute table */
+#attribute-table-container lizmap-feature-toolbar .feature-filter{
+  display: none;
+}

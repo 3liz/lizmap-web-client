@@ -13,12 +13,12 @@ export default class FeatureToolbar extends HTMLElement {
         // TODO: handle remove link instead of delete
         const mainTemplate = () => html`
         <div class="feature-toolbar">
-            <button class="btn btn-mini ${this.isSelected ? 'btn-warning' : ''}" @click=${() => this.select()} data-original-title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
-            <button class="btn btn-mini ${this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} data-original-title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
-            <button class="btn btn-mini ${this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} data-original-title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
-            <button class="btn btn-mini" @click=${() => this.edit()} ?disabled="${!this._isEditable}" data-original-title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
-            <button class="btn btn-mini" @click=${() => this.delete()} data-original-title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
-            <button class="btn btn-mini" data-original-title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
+            <button class="btn btn-mini feature-select ${this.isSelected ? 'btn-warning' : ''}" @click=${() => this.select()} data-original-title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
+            <button class="btn btn-mini feature-zoom ${this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} data-original-title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
+            <button class="btn btn-mini feature-center ${this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} data-original-title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
+            <button class="btn btn-mini feature-edit" @click=${() => this.edit()} ?disabled="${!this._isEditable}" data-original-title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
+            <button class="btn btn-mini feature-delete" @click=${() => this.delete()} data-original-title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
+            <button class="btn btn-mini feature-filter ${this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-warning' : ''}" @click=${() => this.filter()} data-original-title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
         </div>`;
 
         render(mainTemplate(), this);
@@ -60,6 +60,19 @@ export default class FeatureToolbar extends HTMLElement {
 
     get isSelected() {
         return lizMap.config.layers[this.featureType]['selectedFeatures'].includes(this.fid);
+    }
+
+    get isFiltered() {
+        return lizMap.config.layers[this.featureType]['filteredFeatures'].includes(this.fid);
+    }
+
+    get hasFilter() {
+        // lizLayerFilter is a global variable set only when there is a filter in the URL
+        if (typeof lizLayerFilter === 'undefined'
+            && (lizMap.lizmapLayerFilterActive === this.featureType || !lizMap.lizmapLayerFilterActive)){
+            return true;
+        }
+        return false;
     }
 
     get hasGeometry(){
@@ -104,5 +117,32 @@ export default class FeatureToolbar extends HTMLElement {
 
     delete(){
         lizMap.deleteEditionFeature(this.layerId, this.fid);
+    }
+
+    filter(){
+        const wasFiltered = this.isFiltered;
+
+        // First deselect all features
+        lizMap.events.triggerEvent('layerfeatureunselectall',
+            { 'featureType': this.featureType, 'updateDrawing': false }
+        );
+
+        if (!wasFiltered) {
+            // Then select this feature only
+            lizMap.events.triggerEvent('layerfeatureselected',
+                { 'featureType': this.featureType, 'fid': this.fid, 'updateDrawing': false }
+            );
+            // Then filter for the selected features
+            lizMap.events.triggerEvent('layerfeaturefilterselected',
+                { 'featureType': this.featureType }
+            );
+            lizMap.lizmapLayerFilterActive = this.featureType;
+        } else {
+            // Then remove filter for this selected feature
+            lizMap.events.triggerEvent('layerfeatureremovefilter',
+                { 'featureType': this.featureType }
+            );
+            lizMap.lizmapLayerFilterActive = null;
+        }
     }
 }
