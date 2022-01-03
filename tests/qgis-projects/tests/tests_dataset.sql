@@ -28,6 +28,41 @@ ALTER SCHEMA tests_projects OWNER TO lizmap;
 SET default_tablespace = '';
 
 --
+-- Name: children_layer; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.children_layer (
+    id integer NOT NULL,
+    parent_id integer NOT NULL,
+    comment text
+);
+
+
+ALTER TABLE tests_projects.children_layer OWNER TO lizmap;
+
+--
+-- Name: children_layer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.children_layer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.children_layer_id_seq OWNER TO lizmap;
+
+--
+-- Name: children_layer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.children_layer_id_seq OWNED BY tests_projects.children_layer.id;
+
+
+--
 -- Name: data_integers; Type: TABLE; Schema: tests_projects; Owner: lizmap
 --
 
@@ -985,6 +1020,40 @@ ALTER SEQUENCE tests_projects.layer_with_no_filter_gid_seq OWNED BY tests_projec
 
 
 --
+-- Name: parent_layer; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.parent_layer (
+    id integer NOT NULL,
+    geom public.geometry(Point,4326)
+);
+
+
+ALTER TABLE tests_projects.parent_layer OWNER TO lizmap;
+
+--
+-- Name: parent_layer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.parent_layer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.parent_layer_id_seq OWNER TO lizmap;
+
+--
+-- Name: parent_layer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.parent_layer_id_seq OWNED BY tests_projects.parent_layer.id;
+
+
+--
 -- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1315,6 +1384,13 @@ ALTER SEQUENCE tests_projects."townhalls_EPSG2154_id_seq" OWNED BY tests_project
 
 
 --
+-- Name: children_layer id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.children_layer ALTER COLUMN id SET DEFAULT nextval('tests_projects.children_layer_id_seq'::regclass);
+
+
+--
 -- Name: data_integers id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1504,6 +1580,13 @@ ALTER TABLE ONLY tests_projects.layer_with_no_filter ALTER COLUMN gid SET DEFAUL
 
 
 --
+-- Name: parent_layer id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.parent_layer ALTER COLUMN id SET DEFAULT nextval('tests_projects.parent_layer_id_seq'::regclass);
+
+
+--
 -- Name: reverse_geom id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1550,6 +1633,15 @@ ALTER TABLE ONLY tests_projects.time_manager ALTER COLUMN gid SET DEFAULT nextva
 --
 
 ALTER TABLE ONLY tests_projects.townhalls_pg ALTER COLUMN id SET DEFAULT nextval('tests_projects."townhalls_EPSG2154_id_seq"'::regclass);
+
+
+--
+-- Data for Name: children_layer; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.children_layer (id, parent_id, comment) FROM stdin;
+1	1	\N
+\.
 
 
 --
@@ -1801,6 +1893,16 @@ COPY tests_projects.layer_with_no_filter (gid, geom) FROM stdin;
 
 
 --
+-- Data for Name: parent_layer; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.parent_layer (id, geom) FROM stdin;
+1	0101000020E61000001BFF6BE6D6FB0E4045A544E297CE4540
+2	0101000020E6100000157D87843BA810400C46B93295CF4540
+\.
+
+
+--
 -- Data for Name: quartiers; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1961,6 +2063,13 @@ COPY tests_projects.townhalls_pg (id, geom, name) FROM stdin;
 23	01010000206A0800005A14FFF6E07F27410CCDC3B640FA5741	\N
 26	01010000206A0800000D5D7691554F27418CE75ADCE4F85741	Mairie de Grabels
 \.
+
+
+--
+-- Name: children_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.children_layer_id_seq', 1, true);
 
 
 --
@@ -2153,6 +2262,13 @@ SELECT pg_catalog.setval('tests_projects.layer_with_no_filter_gid_seq', 1, true)
 
 
 --
+-- Name: parent_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.parent_layer_id_seq', 2, true);
+
+
+--
 -- Name: revert_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2213,6 +2329,14 @@ SELECT pg_catalog.setval('tests_projects.time_manager_gid_seq', 3, true);
 --
 
 SELECT pg_catalog.setval('tests_projects."townhalls_EPSG2154_id_seq"', 27, true);
+
+
+--
+-- Name: children_layer children_layer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.children_layer
+    ADD CONSTRAINT children_layer_pkey PRIMARY KEY (id);
 
 
 --
@@ -2448,6 +2572,14 @@ ALTER TABLE ONLY tests_projects.layer_with_no_filter
 
 
 --
+-- Name: parent_layer parent_layer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.parent_layer
+    ADD CONSTRAINT parent_layer_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: quartiers quartiers_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2528,6 +2660,13 @@ ALTER TABLE ONLY tests_projects.townhalls_pg
 
 
 --
+-- Name: fki_parent_fkey; Type: INDEX; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE INDEX fki_parent_fkey ON tests_projects.children_layer USING btree (parent_id);
+
+
+--
 -- Name: sidx_quartiers_geom; Type: INDEX; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2553,6 +2692,14 @@ CREATE INDEX sidx_townhalls_pg_geom ON tests_projects.townhalls_pg USING gist (g
 --
 
 CREATE INDEX sousquartiers_geom_geom_idx ON tests_projects.sousquartiers USING gist (geom);
+
+
+--
+-- Name: children_layer parent_fkey; Type: FK CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.children_layer
+    ADD CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tests_projects.parent_layer(id) NOT VALID;
 
 
 --
