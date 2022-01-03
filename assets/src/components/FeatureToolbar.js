@@ -16,8 +16,8 @@ export default class FeatureToolbar extends HTMLElement {
         // TODO: handle remove link instead of delete
         const mainTemplate = () => html`
         <div class="feature-toolbar">
-            <button class="btn btn-mini feature-select ${this.hasAttributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-warning' : ''}" @click=${() => this.select()} title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
-            <button class="btn btn-mini feature-filter ${this.hasAttributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-warning' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
+            <button class="btn btn-mini feature-select ${this.hasAttributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}" @click=${() => this.select()} title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
+            <button class="btn btn-mini feature-filter ${this.hasAttributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
             <button class="btn btn-mini feature-zoom ${this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
             <button class="btn btn-mini feature-center ${this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
             <button class="btn btn-mini feature-edit ${this.isLayerEditable ? '' : 'hide'}" @click=${() => this.edit()} ?disabled="${!this._isFeatureEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
