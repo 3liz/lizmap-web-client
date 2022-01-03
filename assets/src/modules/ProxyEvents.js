@@ -14,6 +14,18 @@ export default class ProxyEvents {
                     type: 'selection.changed',
                     properties : e
                 });
+            },
+            layerSelectionChanged: (e) => {
+                mainEventDispatcher.dispatch({
+                    type:'selection.changed',
+                    properties: e
+                });
+            },
+            layerFilteredFeaturesChanged: (e) => {
+                mainEventDispatcher.dispatch({
+                    type: 'filteredFeatures.changed',
+                    properties: e
+                });
             }
         });
     }

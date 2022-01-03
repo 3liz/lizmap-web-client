@@ -34,7 +34,7 @@ export default class FeatureToolbar extends HTMLElement {
         mainEventDispatcher.addListener(
             () => {
                 render(mainTemplate(), this);
-            }, 'selection.changed'
+            }, ['selection.changed', 'filteredFeatures.changed']
         );
 
         this._editableFeaturesCallBack = (editableFeatures) => {
