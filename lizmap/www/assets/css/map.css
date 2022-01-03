@@ -2822,13 +2822,14 @@ lizmap-reverse-geom svg{
 }
 /* lizmap-feature-toolbar */
 lizmap-feature-toolbar button.btn:hover,
-.attribute-layer-action-bar button.btn:hover{
+.attribute-layer-action-bar button.btn:not(.dropdown-toggle):hover{
   background-color: #04c;
   background-image: linear-gradient(to bottom,#08c,#04c);
+  color: white;
 }
 
 lizmap-feature-toolbar button:hover > [class^="icon-"],
-.attribute-layer-action-bar button:hover > [class^="icon-"]{
+.attribute-layer-action-bar button:not(.dropdown-toggle):hover > [class^="icon-"]{
   background-image: url(images/glyphicons-halflings-white.png);
 }
 
