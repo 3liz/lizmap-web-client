@@ -546,36 +546,21 @@ var lizAttributeTable = function() {
                         // Refresh parent table size
                         refreshDatatableSize('#attribute-layer-main-'+ cleanName);
                         return false;
-                    })
-                    .hover(
-                        function(){ $(this).addClass('btn-primary'); },
-                        function(){ $(this).removeClass('btn-primary'); }
-                    );
-
+                    });
                 }
 
                 // Bind click on detail button
                 if( canPopup ){
                     $('#attribute-layer-'+ cleanName + ' button.btn-detail-attributeTable')
                     .click(function(){
-                        var aName = attributeLayersDic[ $(this).val() ];
-                        if( $(this).hasClass('active') ){
-                            $(this).removeClass('active btn-warning');
-                            $('#attribute-layer-main-' + cleanName ).removeClass('reduced');
-                            $('#attribute-table-panel-' + cleanName ).removeClass('visible');
-                        }
-                        else{
-                            $(this).addClass('active btn-warning');
-                            $('#attribute-layer-main-' + cleanName ).addClass('reduced');
-                            $('#attribute-table-panel-' + cleanName ).addClass('visible');
-                        }
+                        // Toggle
+                        $('#attribute-layer-main-' + cleanName).toggleClass('reduced', !$(this).hasClass('btn-primary'));
+                        $('#attribute-table-panel-' + cleanName).toggleClass('visible', !$(this).hasClass('btn-primary'));
+                        $(this).toggleClass('btn-primary');
+
                         refreshDatatableSize('#attribute-layer-main-'+ cleanName);
                         return false;
-                    })
-                    .hover(
-                        function(){ $(this).addClass('btn-primary'); },
-                        function(){ $(this).removeClass('btn-primary'); }
-                    );
+                    });
                 }
 
                 // Bind click on "unselect all" button
@@ -1607,7 +1592,7 @@ var lizAttributeTable = function() {
                                 $('#attribute-layer-main-' + parentLayerCleanName ).removeClass('reduced');
                                 $('#attribute-table-panel-' + parentLayerCleanName ).removeClass('visible').html('');
                                 // Deactivate Detail button
-                                $('#attribute-layer-'+ parentLayerCleanName + ' button.btn-detail-attributeTable').removeClass('active btn-warning');
+                                $('#attribute-layer-'+ parentLayerCleanName + ' button.btn-detail-attributeTable').removeClass('btn-primary');
 
                             });
                         });
