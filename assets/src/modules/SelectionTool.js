@@ -140,12 +140,6 @@ export default class SelectionTool {
         );
 
         mainLizmap.lizmap3.events.on({
-            'layerSelectionChanged': () => {
-                mainEventDispatcher.dispatch('selectionTool.selectionChanged');
-            },
-            'layerFilteredFeaturesChanged': () => {
-                mainEventDispatcher.dispatch('selectionTool.filteredFeaturesChanged');
-            },
             minidockclosed: (event) => {
                 if (event.id === 'selectiontool'){
                     mainLizmap.digitizing.toolSelected = 'deactivate';
