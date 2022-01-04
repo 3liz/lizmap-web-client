@@ -13,6 +13,11 @@ export default class FeatureToolbar extends HTMLElement {
 
         this._isFeatureEditable = true;
 
+        // Edition can be restricted by polygon
+        if (this.hasEditionRestricted){
+            this._isFeatureEditable = !this.hasEditionRestricted;
+        }
+
         // TODO: finish unlink button
         const mainTemplate = () => html`
         <div class="feature-toolbar">
@@ -117,6 +122,10 @@ export default class FeatureToolbar extends HTMLElement {
 
     get isDeletable(){
         return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True";
+    }
+
+    get hasEditionRestricted(){
+        return this.getAttribute('edition-restricted') === 'true';
     }
 
     updateIsFeatureEditable(editableFeatures) {

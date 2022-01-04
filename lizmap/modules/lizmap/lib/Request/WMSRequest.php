@@ -677,7 +677,19 @@ class WMSRequest extends OGCRequest
             }
 
             // Feature toolbar
-            $featureToolbar = '<lizmap-feature-toolbar value="'.$layerId.'.'.$id.'" '.$featureToolbarExtent.'></lizmap-feature-toolbar>'.PHP_EOL;
+            // edition can be restricted on current feature
+            $editableFeatures = $this->project->getLayer($layerId)->editableFeatures();
+            $editionRestricted = '';
+            if(array_key_exists('status', $editableFeatures) && $editableFeatures['status'] === 'restricted'){
+                $editionRestricted = 'edition-restricted="true"';
+                foreach ($editableFeatures['features'] as $feature) {
+                    if($feature->properties->id == $id){
+                        $editionRestricted = 'edition-restricted="false"';
+                        break;
+                    }
+                }
+            }
+            $featureToolbar = '<lizmap-feature-toolbar '.$editionRestricted.' value="'.$layerId.'.'.$id.'" '.$featureToolbarExtent.'></lizmap-feature-toolbar>'.PHP_EOL;
 
             // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
             $finalContent = $autoContent;
