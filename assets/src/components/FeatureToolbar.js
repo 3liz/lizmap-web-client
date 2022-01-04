@@ -13,15 +13,16 @@ export default class FeatureToolbar extends HTMLElement {
 
         this._isFeatureEditable = true;
 
-        // TODO: handle remove link instead of delete
+        // TODO: finish unlink button
         const mainTemplate = () => html`
         <div class="feature-toolbar">
-            <button class="btn btn-mini feature-select ${this.hasAttributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}" @click=${() => this.select()} title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
-            <button class="btn btn-mini feature-filter ${this.hasAttributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
+            <button class="btn btn-mini feature-select ${this.attributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}" @click=${() => this.select()} title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
+            <button class="btn btn-mini feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
             <button class="btn btn-mini feature-zoom ${this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
             <button class="btn btn-mini feature-center ${this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
             <button class="btn btn-mini feature-edit ${this.isLayerEditable ? '' : 'hide'}" @click=${() => this.edit()} ?disabled="${!this._isFeatureEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
             <button class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
+            <!-- <button class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.unlink()} title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button> -->
         </div>`;
 
         render(mainTemplate(), this);
@@ -97,13 +98,21 @@ export default class FeatureToolbar extends HTMLElement {
         return (geometryType != 'none' && geometryType != 'unknown');
     }
 
-    get hasAttributeTableConfig(){
-        return lizMap.getLayerConfigById(this.layerId, lizMap.config.attributeLayers, 'layerId');
+    get attributeTableConfig(){
+        return lizMap.getLayerConfigById(this.layerId, lizMap.config.attributeLayers, 'layerId')[1];
     }
 
     get isLayerEditable(){
         return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.modifyAttribute === "True"
             || lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.modifyGeometry === "True";
+    }
+
+    get isLayerPivot(){
+        return this.hasAttributeTableConfig?.['pivot'] === 'True';
+    }
+
+    get isUnlinkable(){
+        return this.getAttribute('is-layer-child') === 'true' && this.isLayerEditable && !this.isLayerPivot;
     }
 
     get isDeletable(){
@@ -163,6 +172,10 @@ export default class FeatureToolbar extends HTMLElement {
 
     delete(){
         lizMap.deleteEditionFeature(this.layerId, this.fid);
+    }
+
+    unlink(){
+
     }
 
     filter(){

@@ -1494,7 +1494,7 @@ var lizAttributeTable = function() {
                     if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
                         line.lizSelected = 'a';
 
-                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}"></lizmap-feature-toolbar>`;
+                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" is-layer-child="${isChild}"></lizmap-feature-toolbar>`;
 
                     // Build table lines
                     var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
