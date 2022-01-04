@@ -55,6 +55,9 @@ if  [ -d $BACKUPDIR ]; then
     if [ -d $LIZMAP/my-packages ]; then
     cp -Rp $LIZMAP/my-packages				$BACKUPDIR/
     fi
+    if [ -d $LIZMAP/lizmap-modules ]; then
+    cp -Rp $LIZMAP/lizmap-modules        		$BACKUPDIR/
+    fi
 else
     echo "backup directory does not exists"
     exit 1
