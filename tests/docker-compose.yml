@@ -77,11 +77,13 @@ services:
       ROUTER_HOST: map
       QGSRV_SERVER_WORKERS: 4
       QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: 1
+    command: qgisserver -c /srv/etc/pyqgis.conf
     volumes:
       - ./qgis-projects:/srv/projects
       - ./qgis-server-plugins:/srv/qgis-server-plugins
       - ./wps-data:/srv/data
       - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
+      - ./docker-conf/pyqgis.conf:/srv/etc/pyqgis.conf
     ports:
       - ${LZMQGSRVPORT}:8080
 volumes:

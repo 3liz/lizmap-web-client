@@ -4,10 +4,18 @@ hideSensitiveServicesProperties=0
 ;Services
 ;list the different map services (servers, generic parameters, etc.)
 [services]
+;Wms map server
 wmsServerURL="http://map:8080/ows/"
-;List of URL available for the web client
+;WMS subdomain URLs list (optional)
+wmsPublicUrlList=
+;URL to the API exposed by the Lizmap plugin for Qgis Server
+lizmapPluginAPIURL="http://map:8080/lizmap/"
+
 onlyMaps=off
 defaultRepository=montpellier
+defaultProject=
+
+; cache configuration for tiles
 cacheStorageType=file
 ;cacheStorageType=sqlite => store cached images in one sqlite file per repo/project/layer
 ;cacheStorageType=file => store cached images in one folder per repo/project/layer. The root folder is /tmp/
@@ -15,29 +23,31 @@ cacheStorageType=file
 cacheRedisHost=redis
 cacheRedisPort=6379
 cacheRedisDb=0
-cacheExpiration=0
+cacheRedisKeyPrefix=
+
 ; default cache expiration : the default time to live of data, in seconds.
 ; 0 means no expiration, max : 2592000 seconds (30 days)
-debugMode=0
+cacheExpiration=0
+
 ; debug mode
 ; on = print debug messages in lizmap/var/log/messages.log
 ; off = no lizmap debug messages
-cacheRootDirectory="/tmp/"
+debugMode=0
+
 ; cache root directory where cache files will be stored
 ; must be writable
+cacheRootDirectory="/tmp/"
 
 ; path to find repositories
-; rootRepositories="path"
+rootRepositories="/srv/lzm/tests/qgis-projects"
 ; Does the server use relative path from root folder? 0/1
-; relativeWMSPath=0
+relativeWMSPath=on
 
 appName=Lizmap
 qgisServerVersion=3.0
 wmsMaxWidth=3000
 wmsMaxHeight=3000
 projectSwitcher=off
-relativeWMSPath=on
-rootRepositories="/srv/lzm/tests/qgis-projects"
 requestProxyEnabled=0
 requestProxyType=http
 requestProxyNotForDomain="localhost,127.0.0.1"
