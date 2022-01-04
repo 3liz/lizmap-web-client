@@ -69,6 +69,11 @@
       <label locale="admin~admin.form.admin_services.wmsMaxHeight.label"/>
     </input>
 
+    <input ref="lizmapPluginAPIURL" type="string">
+        <label locale="admin~admin.form.admin_services.lizmapPluginAPIURL.label"/>
+        <help locale="admin~admin.form.admin_services.lizmapPluginAPIURL.help"/>
+    </input>
+
     <!-- cache -->
 
     <menulist ref="cacheStorageType" required="true">
