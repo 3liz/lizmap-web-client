@@ -3,7 +3,7 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      http://3liz.com
  *
@@ -31,6 +31,7 @@ class lizmapServices
         'wmsPublicUrlList',
         'wmsMaxWidth',
         'wmsMaxHeight',
+        'lizmapPluginAPIURL',
         'cacheStorageType',
         'cacheExpiration',
         'defaultRepository',
@@ -71,6 +72,7 @@ class lizmapServices
         'wmsPublicUrlList',
         'wmsMaxWidth',
         'wmsMaxHeight',
+        'lizmapPluginAPIURL',
         'cacheStorageType',
         'cacheExpiration',
         'rootRepositories',
@@ -136,6 +138,10 @@ class lizmapServices
     public $wmsMaxWidth = 3000;
     // Wms max width
     public $wmsMaxHeight = 3000;
+
+    // URL to the API exposed by the Lizmap plugin for Qgis Server
+    public $lizmapPluginAPIURL = '';
+
     // map cache server
     public $cacheStorageType = '';
     // default repository

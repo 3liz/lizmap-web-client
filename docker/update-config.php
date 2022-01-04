@@ -34,11 +34,11 @@ $mainconfig->save();
 $lizmapConfig = new jIniFileModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
 
 $lizmapConfig->setValue('wmsServerURL', getenv('LIZMAP_WMSSERVERURL'), 'services');
+$lizmapConfig->setValue('lizmapPluginAPIURL', getenv('LIZMAP_LIZMAPPLUGINAPIURL'), 'services');
 $lizmapConfig->setValue('rootRepositories', getenv('LIZMAP_ROOT_REPOSITORIES'), 'services');
 $lizmapConfig->setValue('relativeWMSPath', true, 'services');
 
 foreach(array(
-        'cacheRedisPort'      => 'LIZMAP_CACHEREDISPORT',
         'cacheExpiration'     => 'LIZMAP_CACHEEXPIRATION',
         'debugMode'           => 'LIZMAP_DEBUGMODE',
         'cacheStorageType'    => 'LIZMAP_CACHESTORAGETYPE',

@@ -76,6 +76,13 @@ fieldset {
     padding: 0 10px;
 }
 
+.table-server-info th,
+.table-server-info td
+{
+    width: 50%;
+}
+
+
 @media (max-width: 480px) {
     .form-horizontal .controls {
         margin-left: 0px;
