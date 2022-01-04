@@ -7,18 +7,18 @@
 {foreach $mapitems as $mi}
 {if $mi->type == 'rep'}
 <h2 class="liz-repository-title">{$mi->title}</h2>
-<ul class="thumbnails liz-repository-project-list">
+<ul class="liz-repository-project-list">
   {foreach $mi->childItems as $p}
   {assign $idm = $idm + 1}
-  <a name="link-projet-{$idm}"></a>
-  <li class="span3 liz-repository-project-item">
+  <li class="liz-repository-project-item">
+    <a name="link-projet-{$idm}"></a>
     <div class="thumbnail">
       <div class="liz-project">
         <img width="250" height="250" src="{$p->img}" alt="project image" class="liz-project-img">
         <p class="liz-project-desc" style="display:none;">
-          <b>{$p->title}</b>
+          <b class="title">{$p->title}</b>
           <br/>
-          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: {$p->abstract|strip_tags|truncate:100}
+          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: <span class="abstract">{$p->abstract|strip_tags|truncate:100}</span>
           <br/>
           <br/><b>{@default.project.keywordList.label@}</b>&nbsp;: <span class="keywordList">{$p->keywordList}</span>
           <br/>
@@ -27,7 +27,7 @@
         </p>
       </div>
       <h5 class="liz-project-title">{$p->title}</h5>
-      <p style="text-align:center;">
+      <p>
         <a class="btn liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">{@default.project.open.map@}</a>
         <a class="btn liz-project-show-desc" href="#link-projet-{$idm}" onclick="$('#liz-project-modal-{$idm}').modal('show'); return false;">{@default.project.open.map.metadata@}</a>
       </p>

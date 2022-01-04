@@ -293,6 +293,10 @@ ldapdao.installparam=noconfigfile
 multiauth.installparam="noconfigfile;localconfig"
 
 ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
+
+saml.installparam="localconfig"
+
+
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
@@ -308,3 +312,14 @@ verifyNickname=off
 useJAuthDbAdminRights=on
 ;disableJPref = on
 
+;------- some parameters for the "saml" module
+[saml:sp]
+; list of dao properties that can be used for mapping
+daoPropertiesForMapping="login,email,firstname,lastname,phonenumber"
+
+[pgsqlSchemaTimeout]
+; list of timeout for each schema to be sure we have a different connection
+; for each lizmap modules, to not share the same search_path. See QgisVectorLayer.
+cadastre=31
+adresse=32
+openads=33

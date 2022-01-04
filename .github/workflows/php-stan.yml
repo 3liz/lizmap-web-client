@@ -1,6 +1,7 @@
 name: "PHPStan"
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -32,7 +33,7 @@ jobs:
           tools: phpstan
 
       - name: Cache dependencies
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: ${{ steps.get-composer-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -40,6 +41,9 @@ jobs:
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: PHPStan version
+        run: phpstan -V
 
       - name: Run PHPStan
         run: phpstan analyse -c ../phpstan.neon

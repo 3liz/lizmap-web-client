@@ -162,7 +162,7 @@ class qgisExpressionUtils
             }
 
             // Request evaluate expression
-            $json = self::request($params);
+            $json = self::request($params, $project);
             if (!$json) {
                 return null;
             }
@@ -188,13 +188,13 @@ class qgisExpressionUtils
      * Request QGIS Server to provide features with a form scope used for drilling down select.
      *
      * @param qgisVectorLayer $layer        A QGIS vector layer
-     * @param string          $expresion    The expressions' list to evaluate
-     * @param array()         $form_feature The feature in the form
-     * @param array()         $fields       List of requested fields
-     * @param bool            $edition      It's for editon
+     * @param string          $expression   The expressions' list to evaluate
+     * @param array           $form_feature The feature in the form
+     * @param array           $fields       List of requested fields
+     * @param bool            $edition      It's for edition
      * @param mixed           $expression
      *
-     * @return array() the features filtered with a form scope
+     * @return array the features filtered with a form scope
      */
     public static function getFeatureWithFormScope($layer, $expression, $form_feature, $fields, $edition = false)
     {
@@ -213,7 +213,7 @@ class qgisExpressionUtils
             );
 
             // Request getFeatureWithFormsScope
-            $json = self::request($params);
+            $json = self::request($params, $project);
             if (!$json || !property_exists($json, 'features')) {
                 return array();
             }
@@ -238,7 +238,7 @@ class qgisExpressionUtils
         if ($attributeEditorForm === null || $form === null) {
             return array();
         }
-        // Get criterias and expressions to evaluate
+        // Get criteria and expressions to evaluate
         // and prepare visibilities
         $criteriaFrom = array();
         $expressions = array();
@@ -282,12 +282,11 @@ class qgisExpressionUtils
             }
         }
 
-        $privateData = $form->getContainer()->privateData;
-        $repository = $privateData['liz_repository'];
-        $project = $privateData['liz_project'];
+        $repository = $form->getData('liz_repository');
+        $project = $form->getData('liz_project');
         $lproj = lizmap::getProject($repository.'~'.$project);
 
-        $layer = $lproj->getLayer($privateData['liz_layerId']);
+        $layer = $lproj->getLayer($form->getData('liz_layerId'));
 
         // Update expressions with filter by user
         $updatedExp = array();
@@ -341,9 +340,29 @@ class qgisExpressionUtils
         return $visibilities;
     }
 
-    protected static function request($params)
+    protected static function request($params, $project)
     {
-        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        // Add user identification parameters
+        $merged_params = array_merge($params, array(
+            'Lizmap_User' => '',
+            'Lizmap_User_Groups' => '',
+        ));
+
+        // Check authentication
+        $appContext = $project->getAppContext();
+        if ($appContext->UserIsConnected()) {
+            // Provide user and groups to lizmap plugin access control
+            $user = $appContext->getUserSession();
+            $userGroups = $appContext->aclUserGroupsId();
+            $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $project->getRepository()->getKey());
+
+            $merged_params = array_merge($params, array(
+                'Lizmap_User' => $user->login,
+                'Lizmap_User_Groups' => implode(', ', $userGroups),
+                'Lizmap_Override_Filter' => $loginFilteredOverride,
+            ));
+        }
+        $url = \Lizmap\Request\Proxy::constructUrl($merged_params, lizmap::getServices());
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
 
         // Check data from request

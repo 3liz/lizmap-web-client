@@ -24,10 +24,5 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-// Adds for Cypress Image Snapshot
-import { addMatchImageSnapshotCommand } from 'cypress-image-snapshot/command';
-
-addMatchImageSnapshotCommand();
-
 //Adds for cypress-file-upload
 import 'cypress-file-upload';

@@ -7,7 +7,7 @@ import { Draw as olDraw, Modify as olModify } from 'ol/interaction';
 
 export default class Draw {
 
-    constructor(){}
+    constructor() { }
 
     /**
      * Initialize Draw based on new OL
@@ -18,7 +18,8 @@ export default class Draw {
      * @memberof Draw
      */
     init(geomType = "Point", maxFeatures = -1, modify = true, style) {
-        if (this._drawSource){
+        // Remove old draw if any
+        if (this._drawSource) {
             this.clear();
         }
 
@@ -26,10 +27,16 @@ export default class Draw {
 
         this._drawSource = new VectorSource();
 
-        // Dispatch event when a feature is added
-        this._drawSource.on('addfeature', () => {
+        this._dispatchAddFeature = () => {
             mainEventDispatcher.dispatch('draw.addFeature');
-        });
+        };
+
+        this._dispatchModifyEnd = () => {
+            mainEventDispatcher.dispatch('draw.modifyEnd');
+        };
+
+        // Dispatch event when a feature is added
+        this._drawSource.on('addfeature', this._dispatchAddFeature);
 
         this._drawLayer = new VectorLayer({
             source: this._drawSource,
@@ -68,12 +75,18 @@ export default class Draw {
 
         if (modify) {
             this._modifyInteraction = new olModify({ source: this._drawSource });
+            this._modifyInteraction.on('modifyend', this._dispatchModifyEnd);
             mainLizmap.map.addInteraction(this._modifyInteraction);
         }
     }
 
-    clear(){
+    clear() {
         this._drawSource.clear(true);
+        this._drawSource.un('addfeature', this._dispatchAddFeature);
+        mainLizmap.map.removeLayer(this._drawLayer);
+        mainLizmap.map.removeInteraction(this._drawInteraction);
+        this._modifyInteraction.un('modifyend', this._dispatchModifyEnd);
+        mainLizmap.map.removeInteraction(this._modifyInteraction);
     }
 
     set visible(visible) {
@@ -81,7 +94,7 @@ export default class Draw {
         mainLizmap.newOlMap = visible;
     }
 
-    get features(){
+    get features() {
         return this._drawSource.getFeatures();
     }
 }

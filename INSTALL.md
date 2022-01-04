@@ -40,7 +40,7 @@ to set parameters specific to your installation. You can modify `lizmapConfig.in
 to set the url of qgis map server and other things, and `profiles.ini.php` to store
 data in a database other than an sqlite database.
 
-```
+```bash
 cd lizmap/var/config
 cp lizmapConfig.ini.php.dist lizmapConfig.ini.php
 cp localconfig.ini.php.dist localconfig.ini.php
@@ -49,19 +49,19 @@ cp profiles.ini.php.dist profiles.ini.php
 
 then exit the directory:
 
-```
+```bash
 cd ../../..
 ```
 
 Set rights for Apache, so php scripts could write some temporary files or do changes.
 
-```
+```bash
 lizmap/install/set_rights.sh www-data www-data
 ```
 
 Then you can launch the installer
 
-```
+```bash
 php lizmap/install/installer.php
 ```
 
@@ -80,7 +80,7 @@ In your browser, launch: http://127.0.0.1/mylizmap/lizmap/www.
 
 In case you get a ``500 - internal server error``, run again:
 
-```
+```bash
 cd /var/www/mylizmap/
 lizmap/install/set_rights.sh www-data www-data
 ```
@@ -108,7 +108,7 @@ It works for Apache and NGINX
 
 You can enable the Jelix debug toolbar to get some information:
 In `lizmap/var/config/localconfig.ini.php`, add:
-```
+```ini
 [jResponseHtml]
 plugins = debugbar
 

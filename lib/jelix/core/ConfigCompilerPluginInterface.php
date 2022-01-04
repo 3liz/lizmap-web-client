@@ -8,7 +8,7 @@
 * @licence      GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
-namespace jelix\core;
+namespace Jelix\Core;
 
 /**
  * interface for plugins of jConfigCompiler

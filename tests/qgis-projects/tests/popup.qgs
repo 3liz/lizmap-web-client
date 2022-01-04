@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2021-06-25T11:03:33" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.8-Hannover">
+<qgis projectname="" saveDateTime="2021-09-08T11:44:15" saveUser="nboisteault" saveUserFull="nboisteault" version="3.16.10-Hannover">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -35,10 +35,10 @@
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>meters</units>
     <extent>
-      <xmin>882360.63458178087603301</xmin>
-      <ymin>6246177.82400333415716887</ymin>
-      <xmax>897785.64402636897284538</xmax>
-      <ymax>6256985.77416706550866365</ymax>
+      <xmin>766758.81140686816070229</xmin>
+      <ymin>6276619.79231926426291466</ymin>
+      <xmax>776041.76563963375519961</xmax>
+      <ymax>6282366.38303478434681892</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -118,10 +118,10 @@
   <projectlayers>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Polygon" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="1" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" type="vector" wkbType="Polygon">
       <extent>
-        <xmin>882727.89671141398139298</xmin>
-        <ymin>6246435.1561500895768404</ymin>
-        <xmax>897418.38189673598390073</xmax>
-        <ymax>6256728.44202031008899212</ymax>
+        <xmin>766979.83412669599056244</xmin>
+        <ymin>6276756.61590772960335016</ymin>
+        <xmax>775820.74291980604175478</xmax>
+        <ymax>6282229.55944631993770599</ymax>
       </extent>
       <id>dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b</id>
       <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."dnd_popup" (geom)</datasource>
@@ -553,10 +553,10 @@ def my_form_open(dialog, layer, feature):
     <WMSContactPosition type="QString"></WMSContactPosition>
     <WMSDefaultMapUnitsPerMm type="double">1</WMSDefaultMapUnitsPerMm>
     <WMSExtent type="QStringList">
-      <value>880546.47561552794650197</value>
-      <value>6246177.82400333415716887</value>
-      <value>899599.80299262190237641</value>
-      <value>6256985.77416706550866365</value>
+      <value>766148.08082499448210001</value>
+      <value>6276619.79231926426291466</value>
+      <value>776652.49622150743380189</value>
+      <value>6282366.38303478434681892</value>
     </WMSExtent>
     <WMSFees type="QString">conditions unknown</WMSFees>
     <WMSImageQuality type="int">90</WMSImageQuality>
@@ -632,7 +632,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="899599.80299262190237641" xmin="880546.47561552794650197" ymax="6256985.77416706550866365" ymin="6246177.82400333415716887">
+    <DefaultViewExtent xmax="776652.49622150743380189" xmin="766148.08082499448210001" ymax="6282366.38303478434681892" ymin="6276619.79231926426291466">
       <spatialrefsys>
         <wkt>PROJCS["RGF93 / Lambert-93",GEOGCS["RGF93",DATUM["Reseau_Geodesique_Francais_1993",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6171"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4171"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],AUTHORITY["EPSG","2154"]]</wkt>
         <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>

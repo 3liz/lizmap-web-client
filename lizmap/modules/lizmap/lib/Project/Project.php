@@ -30,18 +30,6 @@ class Project
     protected $cfg;
 
     /**
-     * @var array services properties
-     */
-    protected $properties = array(
-        'repository',
-        'id',
-        'title',
-        'abstract',
-        'proj',
-        'bbox',
-    );
-
-    /**
      * @var App\AppContextInterface The jelixInfos instance
      */
     protected $appContext;
@@ -63,120 +51,26 @@ class Project
     protected $key = '';
 
     /**
-     * @var array Lizmap repository configuration data
-     */
-    protected $data = array();
-
-    /**
-     * Version of QGIS which wrote the project.
-     *
-     * @var null|int
-     */
-    protected $QgisProjectVersion;
-
-    /**
-     * @var array contains WMS info
-     */
-    protected $WMSInformation;
-
-    /**
-     * @var string
-     */
-    protected $canvasColor = '';
-
-    /**
-     * @var array authid => proj4
-     */
-    protected $allProj4 = array();
-
-    /**
-     * @var array for each referenced layer, there is an item
-     *            with referencingLayer, referencedField, referencingField keys.
-     *            There is also a 'pivot' key
-     */
-    protected $relations = array();
-
-    /**
-     * @var array list of themes
-     */
-    protected $themes = array();
-
-    /**
      * @var array list of layer orders: layer name => order
      */
     protected $layersOrder = array();
 
     /**
-     * @var array
+     * @var object
      */
     protected $printCapabilities = array();
 
     /**
-     * @var array
+     * @var null|object[] layer names => layers
      */
-    protected $locateByLayer = array();
-
-    /**
-     * @var array
-     */
-    protected $formFilterLayers = array();
-
-    /**
-     * @var object
-     */
-    protected $editionLayers = array();
-
-    /**
-     * @var array
-     */
-    protected $attributeLayers = array();
-
-    /**
-     * @var bool
-     */
-    protected $useLayerIDs = false;
-
-    /**
-     * @var array
-     */
-    protected $layers = array();
-
-    /**
-     * @var null
-     */
-    protected $xml;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * @var mixed
-     */
-    protected $cfgContent;
+    protected $editionLayersForCurrentUser;
 
     /**
      * @var array List of cached properties
      */
-    protected $cachedProperties = array(
-        'WMSInformation',
-        'canvasColor',
-        'allProj4',
-        'relations',
-        'themes',
+    protected static $cachedProperties = array(
         'layersOrder',
         'printCapabilities',
-        'locateByLayer',
-        'formFilterLayers',
-        'editionLayers',
-        'attributeLayers',
-        'useLayerIDs',
-        'layers',
-        'data',
-        'cfgContent',
-        'options',
-        'QgisProjectVersion',
     );
 
     /**
@@ -185,16 +79,6 @@ class Project
     private $spatialiteExt;
 
     protected $path;
-
-    /**
-     * version of the format of data stored in the cache.
-     *
-     * This number should be increased each time you change the structure of the
-     * properties of QgisProject (ex: adding some new data properties into the $layers).
-     * So you'll be sure that the cache will be updated when Lizmap code source
-     * is updated on a server
-     */
-    const CACHE_FORMAT_VERSION = 1;
 
     /**
      * @var ProjectCache
@@ -235,7 +119,13 @@ class Project
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg');
+                $fileContent = file_get_contents($file.'.cfg');
+                $cfgContent = json_decode($fileContent);
+                if ($cfgContent === null) {
+                    throw new UnknownLizmapProjectException('The file '.$file.'.cfg cannot be decoded.');
+                }
+
+                $this->cfg = new ProjectConfig($cfgContent);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -245,24 +135,30 @@ class Project
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
-            $this->readProject($key, $rep);
+            $this->readProject();
 
             // set project data in cache
-            foreach ($this->cachedProperties as $prop) {
+            $dataProj = array();
+            foreach (self::$cachedProperties as $prop) {
                 if (isset($this->{$prop}) && !empty($this->{$prop})) {
-                    $data[$prop] = $this->{$prop};
+                    $dataProj[$prop] = $this->{$prop};
                 }
             }
-            $data = array_merge($data, $this->qgis->getCacheData($data), $this->cfg->getCacheData($data));
+
+            $data = array(
+                'project' => $dataProj,
+                'qgis' => $this->qgis->getCacheData(),
+                'cfg' => $this->cfg->getCacheData(),
+            );
             $this->cacheHandler->storeProjectData($data);
         } else {
-            foreach ($this->cachedProperties as $prop) {
-                if (array_key_exists($prop, $data)) {
-                    $this->{$prop} = $data[$prop];
+            foreach (self::$cachedProperties as $prop) {
+                if (array_key_exists($prop, $data['project'])) {
+                    $this->{$prop} = $data['project'][$prop];
                 }
             }
             $rewriteCache = false;
-            foreach ($this->layers as $index => $layer) {
+            foreach ($data['qgis']['layers'] as $index => $layer) {
                 if (array_key_exists('embedded', $layer)
                     && $layer['embedded'] == '1'
                     && $layer['qgsmtime'] < filemtime($layer['file'])
@@ -273,8 +169,7 @@ class Project
                     $newLayer['file'] = $layer['file'];
                     $newLayer['embedded'] = 1;
                     $newLayer['projectPath'] = $layer['projectPath'];
-                    $this->layers[$index] = $newLayer;
-                    $data['layers'][$index] = $newLayer;
+                    $data['qgis']['layers'][$index] = $newLayer;
                     $rewriteCache = true;
                 }
             }
@@ -283,13 +178,13 @@ class Project
             }
 
             try {
-                $this->cfg = new ProjectConfig($file.'.cfg', $data);
+                $this->cfg = new ProjectConfig($data['cfg']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
 
             try {
-                $this->qgis = new QgisProject($file, $services, $appContext, $data);
+                $this->qgis = new QgisProject($file, $services, $appContext, $data['qgis']);
             } catch (UnknownLizmapProjectException $e) {
                 throw $e;
             }
@@ -313,71 +208,19 @@ class Project
 
     /**
      * Read the qgis files.
-     *
-     * @param string $key
      */
-    protected function readProject($key, Repository $rep)
+    protected function readProject()
     {
         $qgsXml = $this->qgis;
-        $configOptions = $this->cfg->getProperty('options');
-
-        $this->options = $configOptions;
-        // Complete data
-        $this->data['repository'] = $rep->getKey();
-        $this->data['id'] = $key;
-        if (!array_key_exists('title', $this->data)) {
-            $this->data['title'] = ucfirst($key);
-        }
-        if (!array_key_exists('abstract', $this->data)) {
-            $this->data['abstract'] = '';
-        }
-        $this->data['proj'] = $configOptions->projection->ref;
-        $this->data['bbox'] = implode(', ', $configOptions->bbox);
-
-        // Update WMSInformation
-        // $this->WMSInformation = array($this->qgis->getWMSInformation(), 'ProjectCrs' => $this->data['proj']);
-        $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
-        $this->WMSInformation = array_merge($this->qgis->getWMSInformation(), $this->WMSInformation);
-
-        // get WMS getCapabilities full URL
-        $this->data['wmsGetCapabilitiesUrl'] = $this->appContext->getFullUrl(
-            'lizmap~service:index',
-            array(
-                'repository' => $rep->getKey(),
-                'project' => $key,
-                'SERVICE' => 'WMS',
-                'VERSION' => '1.3.0',
-                'REQUEST' => 'GetCapabilities',
-            )
-        );
-
-        // get WMTS getCapabilities full URL
-        $this->data['wmtsGetCapabilitiesUrl'] = $this->appContext->getFullUrl(
-            'lizmap~service:index',
-            array(
-                'repository' => $rep->getKey(),
-                'project' => $key,
-                'SERVICE' => 'WMTS',
-                'VERSION' => '1.0.0',
-                'REQUEST' => 'GetCapabilities',
-            )
-        );
 
         $this->qgis->setPropertiesAfterRead($this->cfg);
 
-        $props = array(
-            'printCapabilities',
-            'locateByLayers',
-            // 'formFilterLayers',
-            'editionLayers',
-            'layersOrder',
-            'attributeLayers',
-        );
-        foreach ($props as $prop) {
-            $method = 'read'.ucfirst($prop);
-            $this->{$prop} = $this->{$method}($qgsXml, $this->cfg);
-            $this->cfg->setProperty($prop, $this->{$prop});
-        }
+        $this->printCapabilities = $this->readPrintCapabilities($qgsXml);
+        $this->readLocateByLayer($qgsXml, $this->cfg);
+        $this->readEditionLayers($qgsXml);
+        $this->layersOrder = $this->readLayersOrder($qgsXml);
+        $this->readAttributeLayers($qgsXml, $this->cfg);
+
         $this->qgis->readEditionForms($this->getEditionLayers(), $this);
     }
 
@@ -424,9 +267,19 @@ class Project
         return $this->qgis->getRelations();
     }
 
+    public function getRelationField($relationId)
+    {
+        return $this->qgis->getRelationField($relationId);
+    }
+
     public function getThemes()
     {
         return $this->qgis->getThemes();
+    }
+
+    public function getCustomProjectVariables()
+    {
+        return $this->qgis->getCustomProjectVariables();
     }
 
     public function getLayerDefinition($layerId)
@@ -452,6 +305,14 @@ class Project
     public function findLayersByKeyword($key)
     {
         return $this->qgis->findLayersByKeyword($key, $this);
+    }
+
+    /**
+     * @return App\AppContextInterface
+     */
+    public function getAppContext()
+    {
+        return $this->appContext;
     }
 
     public function getKey()
@@ -482,7 +343,12 @@ class Project
      */
     public function getTitle()
     {
-        return $this->getData('title');
+        $title = $this->qgis->getTitle();
+        if ($title == null) {
+            $title = ucfirst($this->key);
+        }
+
+        return $title;
     }
 
     /**
@@ -492,7 +358,9 @@ class Project
      */
     public function getAbstract()
     {
-        return $this->getData('abstract');
+        $abstract = $this->qgis->getAbstract();
+
+        return $abstract ?: '';
     }
 
     /**
@@ -512,7 +380,7 @@ class Project
      */
     public function getProj()
     {
-        return $this->getData('proj');
+        return $this->cfg->getOption('projection')->ref;
     }
 
     /**
@@ -522,7 +390,7 @@ class Project
      */
     public function getBbox()
     {
-        return $this->getData('bbox');
+        return implode(', ', $this->cfg->getOption('bbox'));
     }
 
     /**
@@ -532,7 +400,7 @@ class Project
      */
     public function getWMSMaxWidth()
     {
-        return $this->getData('wmsMaxWidth');
+        return $this->qgis->getWMSMaxWidth();
     }
 
     /**
@@ -542,7 +410,7 @@ class Project
      */
     public function getWMSMaxHeight()
     {
-        return $this->getData('wmsMaxHeight');
+        return $this->qgis->getWMSMaxHeight();
     }
 
     /**
@@ -552,7 +420,16 @@ class Project
      */
     public function getWMSGetCapabilitiesUrl()
     {
-        return $this->getData('wmsGetCapabilitiesUrl');
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+                'SERVICE' => 'WMS',
+                'VERSION' => '1.3.0',
+                'REQUEST' => 'GetCapabilities',
+            )
+        );
     }
 
     /**
@@ -562,7 +439,16 @@ class Project
      */
     public function getWMTSGetCapabilitiesUrl()
     {
-        return $this->getData('wmtsGetCapabilitiesUrl');
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+                'SERVICE' => 'WMTS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetCapabilities',
+            )
+        );
     }
 
     public function getFileTime()
@@ -575,19 +461,60 @@ class Project
         return $this->cacheHandler->getCfgFileTime();
     }
 
+    /**
+     * unknown purpose.
+     *
+     * @deprecated
+     *
+     * @return array|string[]
+     */
     public function getProperties()
     {
-        return $this->properties;
+        return array(
+            'repository',
+            'id',
+            'title',
+            'abstract',
+            'proj',
+            'bbox',
+        );
     }
 
+    /**
+     * @return object
+     *
+     * @deprecated use getOption() or getBooleanOption() instead
+     */
     public function getOptions()
     {
-        return $this->cfg->getProperty('options');
+        return $this->cfg->getOptions();
+    }
+
+    /**
+     * @param string $name the option name
+     *
+     * @return null|mixed
+     */
+    public function getOption($name)
+    {
+        return $this->cfg->getOption($name);
+    }
+
+    /**
+     * Retrieve the given option as a boolean value.
+     *
+     * @param string $name the option name
+     *
+     * @return null|bool true if the option value is 'True', null if it does not exist
+     */
+    public function getBooleanOption($name)
+    {
+        return $this->cfg->getBooleanOption($name);
     }
 
     public function getLayers()
     {
-        return $this->cfg->getProperty('layers');
+        return $this->cfg->getLayers();
     }
 
     /**
@@ -621,8 +548,30 @@ class Project
      */
     public function getData($key)
     {
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
+        switch ($key) {
+            case 'id':
+                return $this->key;
+
+            case 'repository':
+                return $this->repository->getKey();
+
+            case 'title':
+                return $this->getTitle();
+
+            case 'abstract':
+                return $this->getAbstract();
+
+            case 'proj':
+                return $this->getProj();
+
+            case 'bbox':
+                return $this->getBbox();
+
+            case 'wmsGetCapabilitiesUrl':
+                return $this->getWMSGetCapabilitiesUrl();
+
+            case 'wmtsGetCapabilitiesUrl':
+                return $this->getWMTSGetCapabilitiesUrl();
         }
 
         return $this->qgis->getData($key);
@@ -655,16 +604,15 @@ class Project
 
     public function getWMSInformation()
     {
-        if (isset($this->WMSInformation) && count($this->WMSInformation) > 1) {
-            return $this->WMSInformation;
-        }
+        $WMSInformation = $this->qgis->getWMSInformation();
+        $WMSInformation['ProjectCrs'] = $this->cfg->getOption('projection')->ref;
 
-        return $this->qgis->getWMSInformation();
+        return $WMSInformation;
     }
 
     public function hasLocateByLayer()
     {
-        $locate = $this->cfg->getProperty('locateByLayer');
+        $locate = $this->cfg->getLocateByLayer();
         if ($locate && count((array) $locate)) {
             return true;
         }
@@ -674,7 +622,7 @@ class Project
 
     public function hasFormFilterLayers()
     {
-        $form = $this->cfg->getProperty('formFilterLayers');
+        $form = $this->cfg->getFormFilterLayers();
         if ($form && count((array) $form)) {
             return true;
         }
@@ -684,12 +632,12 @@ class Project
 
     public function getFormFilterLayersConfig()
     {
-        return $this->cfg->getProperty('formFilterLayers');
+        return $this->cfg->getFormFilterLayers();
     }
 
     public function hasTimemanagerLayers()
     {
-        $timeManager = $this->cfg->getProperty('timemanagerLayers');
+        $timeManager = $this->cfg->getTimemanagerLayers();
         if ($timeManager && count((array) $timeManager)) {
             return true;
         }
@@ -699,9 +647,10 @@ class Project
 
     public function hasAtlasEnabled()
     {
-        $options = $this->getOptions();
-        $atlas = $this->cfg->getProperty('atlas');
-        if ((property_exists($options, 'atlasEnabled') && $options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+        $atlasEnabled = $this->cfg->getBooleanOption('atlasEnabled');
+        $atlas = $this->cfg->getAtlas();
+
+        if ($atlasEnabled // Legacy LWC < 3.4 (only one layer)
             || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas->layers) > 0)) { // Multiple atlas
             return true;
         }
@@ -721,7 +670,7 @@ class Project
 
     public function hasTooltipLayers()
     {
-        $tooltip = $this->cfg->getProperty('tooltipLayers');
+        $tooltip = $this->cfg->getTooltipLayers();
         if ($tooltip && count((array) $tooltip)) {
             return true;
         }
@@ -731,23 +680,32 @@ class Project
 
     public function hasAttributeLayers($onlyDisplayedLayers = false)
     {
-        $attributeLayers = $this->cfg->getProperty('attributeLayers');
+        $attributeLayers = $this->cfg->getAttributeLayers();
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
-            foreach ($attributeLayers as $key => $obj) {
-                if ($onlyDisplayedLayers
-                    && (!property_exists($obj, 'hideLayer')
-                    || strtolower($obj->hideLayer) != 'true')
-                ) {
-                    $hasDisplayedLayer = true;
+            if ($onlyDisplayedLayers) {
+                foreach ($attributeLayers as $key => $obj) {
+                    if (!property_exists($obj, 'hideLayer')
+                        || strtolower($obj->hideLayer) != 'true'
+                    ) {
+                        $hasDisplayedLayer = true;
+                    }
                 }
             }
+
             if (count((array) $attributeLayers) && $hasDisplayedLayer) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function hasAttributeLayersForLayer($layerName)
+    {
+        $attributeLayers = $this->cfg->getAttributeLayers();
+
+        return property_exists($attributeLayers, $layerName);
     }
 
     public function hasFtsSearches()
@@ -811,73 +769,213 @@ class Project
         );
     }
 
+    /**
+     * same as hasEditionLayersForCurrentUser.
+     *
+     * @return bool
+     *
+     * @deprecated will returns all edition layers, regarding ACL
+     */
     public function hasEditionLayers()
     {
-        $editionLayers = $this->cfg->getProperty('editionLayers');
-        if ($editionLayers) {
-            if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
-                return false;
+        return $this->hasEditionLayersForCurrentUser();
+    }
+
+    public function hasEditionLayersForCurrentUser()
+    {
+        if ($this->editionLayersForCurrentUser === null) {
+            $this->readEditionLayersForCurrentUser();
+        }
+
+        if (count($this->editionLayersForCurrentUser) != 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function readEditionLayersForCurrentUser()
+    {
+        if (!$this->cfg->hasEditionLayers()) {
+            $this->editionLayersForCurrentUser = array();
+
+            return;
+        }
+
+        if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
+            $this->editionLayersForCurrentUser = array();
+
+            return;
+        }
+
+        $editionLayers = $this->cfg->getEditionLayers();
+        $this->editionLayersForCurrentUser = array();
+        $isAdmin = $this->appContext->aclCheck('lizmap.admin.repositories.delete');
+        $userGroups = $this->appContext->aclUserGroupsId();
+
+        foreach ($editionLayers as $key => $eLayer) {
+            if ($this->_checkEditionLayerAcl($eLayer, $isAdmin, $userGroups)) {
+                $this->editionLayersForCurrentUser[$key] = $eLayer;
             }
-            $count = 0;
-            foreach ($editionLayers as $key => $eLayer) {
-                // Check if user groups intersects groups allowed by project editor
-                // If user is admin, no need to check for given groups
-                if (property_exists($eLayer, 'acl') && $eLayer->acl) {
-                    // Check if configured groups white list and authenticated user groups list intersects
-                    $editionGroups = $eLayer->acl;
-                    $editionGroups = array_map('trim', explode(',', $editionGroups));
-                    if (is_array($editionGroups) && count($editionGroups) > 0) {
-                        $userGroups = $this->appContext->aclUserGroupsId();
-                        if (array_intersect($editionGroups, $userGroups) || $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
-                            // User group(s) correspond to the groups given for this edition layer
-                            // or user is admin
-                            ++$count;
-                            $this->cfg->unsetProperty('editionLayers', $key, 'acl');
-                        } else {
-                            // No match found, we deactivate the edition layer
-                            $this->cfg->unsetProperty('editionLayers', $key);
-                        }
-                    }
-                } else {
-                    ++$count;
-                }
-            }
-            if ($count != 0) {
+        }
+    }
+
+    /**
+     * Indicate if the edition layer can be edit by the current user.
+     *
+     * @param object $eLayer edition layer object
+     */
+    public function checkEditionLayerAcl($eLayer)
+    {
+        $isAdmin = $this->appContext->aclCheck('lizmap.admin.repositories.delete');
+        $userGroups = $this->appContext->aclUserGroupsId();
+
+        return $this->_checkEditionLayerAcl($eLayer, $isAdmin, $userGroups);
+    }
+
+    /**
+     * @param object   $eLayer     the edition layer
+     * @param bool     $isAdmin
+     * @param string[] $userGroups
+     *
+     * @return bool
+     */
+    protected function _checkEditionLayerAcl($eLayer, $isAdmin, $userGroups)
+    {
+        // Check if user groups intersects groups allowed by project editor
+        // If user is admin, no need to check for given groups
+        if (property_exists($eLayer, 'acl') && $eLayer->acl) {
+            // Check if configured groups white list and authenticated user
+            // groups list intersects
+            $editionGroups = preg_split('/\\s*,\\s*/', $eLayer->acl);
+            if ($isAdmin || ($editionGroups
+                             && array_intersect($editionGroups, $userGroups))) {
+                // User group(s) correspond to the groups given for this edition layer
+                // or user is admin: we take the layer.
+                unset($eLayer->acl);
+
                 return true;
             }
 
             return false;
         }
 
-        return false;
-    }
-
-    public function getEditionLayers()
-    {
-        return $this->cfg->getProperty('editionLayers');
-    }
-
-    public function findEditionLayerByName($name)
-    {
-        if (!$this->hasEditionLayers()) {
-            return null;
-        }
-
-        return $this->cfg->getEditionLayerByName($name);
+        return true;
     }
 
     /**
-     * @param $layerId
+     * @param $layerName
      *
-     * @return null|array
+     * @return null|object the layer or null if does not exist
      */
-    public function findEditionLayerByLayerId($layerId)
+    public function getEditionLayerForCurrentUser($layerName)
     {
-        if (!$this->hasEditionLayers()) {
+        if ($this->editionLayersForCurrentUser !== null) {
+            // we already read all edition layers, just pick the corresponding one
+            if (isset($this->editionLayersForCurrentUser[$layerName])) {
+                return $this->editionLayersForCurrentUser[$layerName];
+            }
+
             return null;
         }
 
-        return $this->cfg->getEditionLayerByLayerId($layerId);
+        // we didn't yet retrieve all edition layer. Just pick and check the
+        // given edition layer. We do not call readEditionLayersForCurrentUser
+        // because we may need only the given layer during the php request process
+        // and we don't want to spend time on all others layers
+
+        $layer = $this->cfg->getEditionLayerByName($layerName);
+        if (!$layer) {
+            return null;
+        }
+
+        if (!$this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
+            return null;
+        }
+
+        if ($this->checkEditionLayerAcl($layer)) {
+            return $layer;
+        }
+
+        return null;
+    }
+
+    public function getEditionLayersForCurrentUser()
+    {
+        if ($this->editionLayersForCurrentUser === null) {
+            $this->readEditionLayersForCurrentUser();
+        }
+
+        return $this->editionLayersForCurrentUser;
+    }
+
+    /**
+     * @return object
+     */
+    public function getEditionLayers()
+    {
+        return $this->cfg->getEditionLayers();
+    }
+
+    /**
+     * Return the given edition layer, whether the user has the right to edit
+     * or not.
+     *
+     * @param $layerName
+     */
+    public function getEditionLayerByName($layerName)
+    {
+        $eLayers = $this->getEditionLayers();
+        if (!property_exists($eLayers, $layerName)) {
+            return null;
+        }
+
+        return $eLayers->{$layerName};
+    }
+
+    /**
+     * Return the given edition layer if it exists and if the
+     * current user can edit it.
+     *
+     * Similar to getEditionLayerForCurrentUser except that
+     * findEditionLayerByName loads alls edition layers if not already done.
+     * Use it in a layers loop instead of getEditionLayerForCurrentUser.
+     *
+     * @param $name
+     *
+     * @return null|object
+     */
+    public function findEditionLayerByName($name)
+    {
+        if (!$this->hasEditionLayersForCurrentUser()) {
+            return null;
+        }
+
+        return $this->getEditionLayerForCurrentUser($name);
+    }
+
+    /**
+     * Return the given edition layer if it exists and if the
+     * current user can edit it.
+     *
+     * notice: it checks all edition layers.
+     *
+     * @param $layerId
+     *
+     * @return null|object
+     */
+    public function findEditionLayerByLayerId($layerId)
+    {
+        if (!$this->hasEditionLayersForCurrentUser()) {
+            return null;
+        }
+
+        $layer = $this->cfg->getEditionLayerByLayerId($layerId);
+        if ($layer && $this->checkEditionLayerAcl($layer)) {
+            return $layer;
+        }
+
+        return null;
     }
 
     /**
@@ -885,7 +983,7 @@ class Project
      */
     public function hasLoginFilteredLayers()
     {
-        $login = (array) $this->cfg->getProperty('loginFilteredLayers');
+        $login = (array) $this->cfg->getLoginFilteredLayers();
         if ($login && count((array) $login)) {
             return true;
         }
@@ -906,7 +1004,7 @@ class Project
             $ln = $layerByTypeName->name;
         }
 
-        $login = $this->cfg->getProperty('loginFilteredLayers');
+        $login = $this->cfg->getLoginFilteredLayers();
         if (!$login || !property_exists($login, $ln)) {
             return null;
         }
@@ -1013,6 +1111,83 @@ class Project
         return $loginFilters[$layerName];
     }
 
+    /** Checks if the project has a configuration and layers for the filter by polygon.
+     *
+     * @return bool
+     */
+    public function hasPolygonFilteredLayers()
+    {
+        $filter_config = (array) $this->cfg->getPolygonFilterConfig();
+        if (!$filter_config) {
+            return false;
+        }
+
+        if (!array_key_exists('config', $filter_config)) {
+            return false;
+        }
+
+        if (array_key_exists('layers', $filter_config) && count($filter_config['layers']) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the configuration for the polygon filter of the given layer
+     * from the Lizmap JSON config file.
+     *
+     * If the polygon filter is configured for editing only
+     * and we are not in an editing context we return null
+     * to tell there is no filter in this context.
+     *
+     * @param string $layerName        : the layer name
+     * @param bool   $editing_context: we are in editing context
+     *
+     * @return null|array the configuration for the polygon filter the given layer
+     */
+    public function getLayerPolygonFilterConfig($layerName, $editing_context = false)
+    {
+        if (!$this->hasPolygonFilteredLayers()) {
+            return null;
+        }
+
+        // Get layer ID
+        $layer = $this->cfg->findLayerByAnyName($layerName);
+        if (!$layer) {
+            return null;
+        }
+
+        // Get the global filter by polygon config in cfg
+        $polygon_filter_config = $this->cfg->getPolygonFilterConfig();
+
+        // Find the given layer among the layers object of the config
+        // layers is an array of objects with keys: layer, primary_key & filter_mode
+        $filtered_layers = (array) $polygon_filter_config->layers;
+
+        $layer_config = null;
+        foreach ($filtered_layers as $filtered_layer) {
+            if ($filtered_layer->layer == $layer->id) {
+                $layer_config = $filtered_layer;
+
+                break;
+            }
+        }
+        if (!$layer_config) {
+            return null;
+        }
+        $layer_config = (array) $layer_config;
+
+        // If the polygon filter is configured for editing only
+        // and we are not in an editing context
+        // No need to return the filter config
+        if (!$editing_context && $layer_config['filter_mode'] == 'editing_only') {
+            return null;
+        }
+
+        return $layer_config;
+    }
+
     private function optionToBoolean($configString)
     {
         $ret = false;
@@ -1033,7 +1208,7 @@ class Project
      */
     public function getDatavizLayersConfig()
     {
-        $datavizLayers = $this->cfg->getProperty('datavizLayers');
+        $datavizLayers = $this->cfg->getDatavizLayers();
         if (!$datavizLayers) {
             return false;
         }
@@ -1137,16 +1312,17 @@ class Project
             'location' => 'dock',
             'theme' => 'dark',
         );
-        $options = $this->getOptions();
-        if ($options && property_exists($options, 'datavizLocation')
-            && in_array($options->datavizLocation, array('dock', 'bottomdock', 'right-dock'))
+        $optionDatavizLocation = $this->cfg->getOption('datavizLocation');
+        if (in_array(
+            $optionDatavizLocation,
+            array('dock', 'bottomdock', 'right-dock')
+        )
         ) {
-            $config['dataviz']['location'] = $options->datavizLocation;
+            $config['dataviz']['location'] = $optionDatavizLocation;
         }
-        if (property_exists($options, 'theme')
-            and in_array($options->theme, array('dark', 'light'))
-        ) {
-            $config['dataviz']['theme'] = $options->theme;
+        $theme = $this->cfg->getOption('theme');
+        if (in_array($theme, array('dark', 'light'))) {
+            $config['dataviz']['theme'] = $theme;
         }
 
         return $config;
@@ -1157,7 +1333,6 @@ class Project
      */
     public function needsGoogle()
     {
-        $configOptions = $this->getOptions();
         $googleProps = array(
             'googleStreets',
             'googleSatellite',
@@ -1166,12 +1341,14 @@ class Project
         );
 
         foreach ($googleProps as $google) {
-            if (property_exists($configOptions, $google) && $this->optionToBoolean($configOptions->{$google})) {
+            if ($this->cfg->getBooleanOption($google)) {
                 return true;
             }
         }
 
-        return property_exists($configOptions, 'externalSearch') && $configOptions->externalSearch == 'google';
+        $externalSearch = $this->cfg->getOption('externalSearch');
+
+        return $externalSearch == 'google';
     }
 
     /**
@@ -1179,53 +1356,35 @@ class Project
      */
     public function getGoogleKey()
     {
-        $configOptions = $this->getOptions();
-        $gKey = '';
-        if (property_exists($configOptions, 'googleKey')) {
-            $gKey = $configOptions->googleKey;
+        $gKey = $this->cfg->getOption('googleKey');
+        if ($gKey === null) {
+            $gKey = '';
         }
 
         return $gKey;
     }
 
-    protected function readPrintCapabilities(QgisProject $qgsLoad, ProjectConfig $cfg)
+    protected function readPrintCapabilities(QgisProject $qgsLoad)
     {
         $printTemplates = array();
-        $options = $this->getOptions();
-        if ($options && property_exists($options, 'print') && $options->print == 'True') {
+        if ($this->cfg->getBooleanOption('print')) {
             $printTemplates = $qgsLoad->getPrintTemplates();
         }
 
         return $printTemplates;
     }
 
-    protected function readLocateByLayers(QgisProject $xml, ProjectConfig $cfg)
+    protected function readLocateByLayer(QgisProject $xml, ProjectConfig $cfg)
     {
-        $locateByLayer = $cfg->getProperty('locateByLayer');
+        $locateByLayer = $cfg->getLocateByLayer();
         if ($locateByLayer) {
-            // The method takes a reference
-            $xml->readLocateByLayers($locateByLayer);
-            // so we can modify it here
-            $this->cfg->setProperty('locateByLayer', $locateByLayer);
+            $xml->readLocateByLayer($locateByLayer);
         }
-
-        return $locateByLayer;
     }
 
-    protected function readFormFilterLayers(QgisProject $xml, ProjectConfig $cfg)
+    protected function readEditionLayers(QgisProject $xml)
     {
-        $formFilterLayers = $cfg->getProperty('formFilterLayer');
-
-        if (!$formFilterLayers) {
-            $formFilterLayers = array();
-        }
-
-        return $formFilterLayers;
-    }
-
-    protected function readEditionLayers(QgisProject $xml, ProjectConfig $cfg)
-    {
-        $editionLayers = $this->getEditionLayers();
+        $editionLayers = $this->cfg->getEditionLayers();
 
         if ($editionLayers) {
             // Check ability to load spatialite extension
@@ -1237,51 +1396,40 @@ class Project
             if (!$spatialiteExt) {
                 $this->appContext->logMessage('Spatialite is not available', 'error');
                 $xml->readEditionLayers($editionLayers);
-                // so we can ste the data here
-                $this->cfg->setProperty('EditionLayers', $editionLayers);
             }
-        } else {
-            $editionLayers = array();
         }
-
-        return $editionLayers;
     }
 
     protected function readAttributeLayers(QgisProject $xml, ProjectConfig $cfg)
     {
-        $attributeLayers = $cfg->getProperty('attributeLayers');
+        $attributeLayers = $cfg->getAttributeLayers();
 
         if ($attributeLayers) {
-            // method takes a reference
             $xml->readAttributeLayers($attributeLayers);
-            // so we can modify data here
-            $this->cfg->setProperty('attributeLayers', $attributeLayers);
-        } else {
-            $attributeLayers = array();
         }
-
-        return $attributeLayers;
     }
 
     /**
      * @param \SimpleXMLElement $xml
-     * @param $cfg
      *
      * @return int[]
      */
-    protected function readLayersOrder(QgisProject $xml, ProjectConfig $cfg)
+    protected function readLayersOrder(QgisProject $xml)
     {
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }
 
+    /**
+     * @param string $layerId
+     *
+     * @return null|string
+     */
     public function getLayerNameByIdFromConfig($layerId)
     {
-        return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->layers);
+        return $this->qgis->getLayerNameByIdFromConfig($layerId, $this->cfg->getLayers());
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $name
      */
     public function findLayerByAnyName($name)
@@ -1290,8 +1438,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $name
      */
     public function findLayerByName($name)
@@ -1300,8 +1446,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $shortName
      */
     public function findLayerByShortName($shortName)
@@ -1310,8 +1454,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $title
      */
     public function findLayerByTitle($title)
@@ -1320,8 +1462,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $layerId
      */
     public function findLayerByLayerId($layerId)
@@ -1330,8 +1470,6 @@ class Project
     }
 
     /**
-     * @deprecated
-     *
      * @param mixed $typeName
      */
     public function findLayerByTypeName($typeName)
@@ -1360,48 +1498,17 @@ class Project
         // set printTemplates in config
         $configJson->printTemplates = $this->printCapabilities;
 
-        // Update locate by layer with vecctorjoins
-        $configJson->locateByLayer = $this->locateByLayer;
-
-        // Update filter form layers with vecctorjoins
-        $configJson->formFilterLayers = $this->formFilterLayers;
-
-        // Update attributeLayers with attributetableconfig
-        $configJson->attributeLayers = $this->attributeLayers;
-
         // Remove FTP remote directory
         if (property_exists($configJson->options, 'remoteDir')) {
             unset($configJson->options->remoteDir);
         }
 
         // Remove editionLayers from config if no right to access this tool
-        if (property_exists($configJson, 'editionLayers')) {
-            if ($this->appContext->aclCheck('lizmap.tools.edition.use', $this->repository->getKey())) {
-                $configJson->editionLayers = clone $this->editionLayers;
-                // Check right to edit this layer (if property "acl" is in config)
-                foreach ($configJson->editionLayers as $key => $eLayer) {
-                    // Check if user groups intersects groups allowed by project editor
-                    // If user is admin, no need to check for given groups
-                    if (property_exists($eLayer, 'acl') and $eLayer->acl) {
-                        // Check if configured groups white list and authenticated user groups list intersects
-                        $editionGroups = $eLayer->acl;
-                        $editionGroups = array_map('trim', explode(',', $editionGroups));
-                        if (is_array($editionGroups) and count($editionGroups) > 0) {
-                            $userGroups = $this->appContext->aclUserGroupsId();
-                            if (array_intersect($editionGroups, $userGroups) or $this->appContext->aclCheck('lizmap.admin.repositories.delete')) {
-                                // User group(s) correspond to the groups given for this edition layer
-                                // or the user is admin
-                                unset($configJson->editionLayers->{$key}->acl);
-                            } else {
-                                // No match found, we deactivate the edition layer
-                                unset($configJson->editionLayers->{$key});
-                            }
-                        }
-                    }
-                }
-            } else {
-                unset($configJson->editionLayers);
-            }
+        if ($this->hasEditionLayersForCurrentUser()) {
+            // give only layer that the user has the right to edit
+            $configJson->editionLayers = $this->editionLayersForCurrentUser;
+        } else {
+            unset($configJson->editionLayers);
         }
 
         // Add export layer right
@@ -1411,16 +1518,12 @@ class Project
 
         // Add WMS max width ad height
         $services = $this->services;
-        if (array_key_exists('wmsMaxWidth', $this->data)) {
-            $configJson->options->wmsMaxWidth = $this->data['wmsMaxWidth'];
-        } else {
-            $configJson->options->wmsMaxWidth = $services->wmsMaxWidth;
-        }
-        if (array_key_exists('wmsMaxHeight', $this->data)) {
-            $configJson->options->wmsMaxHeight = $this->data['wmsMaxHeight'];
-        } else {
-            $configJson->options->wmsMaxHeight = $services->wmsMaxHeight;
-        }
+
+        $wmsMaxWidth = $this->qgis->getWMSMaxWidth();
+        $configJson->options->wmsMaxWidth = $wmsMaxWidth ?: $services->wmsMaxWidth;
+
+        $wmsMaxHeight = $this->qgis->getWMSMaxHeight();
+        $configJson->options->wmsMaxHeight = $wmsMaxHeight ?: $services->wmsMaxHeight;
 
         // Add QGS Server version
         $configJson->options->qgisServerVersion = $services->qgisServerVersion;
@@ -1436,7 +1539,7 @@ class Project
         if ($themes) {
             $configJson->themes = $themes;
         }
-        if ($this->useLayerIDs) {
+        if ($this->qgis->isUsingLayerIDs()) {
             $configJson->options->useLayerIDs = 'True';
         }
 
@@ -1471,7 +1574,14 @@ class Project
             );
         }
         // Events to get additional searches
-        $searchServices = $this->appContext->eventNotify('searchServiceItem', array('repository' => $this->repository->getKey(), 'project' => $this->getKey()))->getResponse();
+        $searchServices = $this->appContext->eventNotify(
+            'searchServiceItem',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->getKey(),
+            )
+        )->getResponse();
+
         foreach ($searchServices as $searchService) {
             if (is_array($searchService)) {
                 if (array_key_exists('type', $searchService) && array_key_exists('url', $searchService)) {
@@ -1623,7 +1733,11 @@ class Project
     }
 
     /**
+     * access to configuration raw content.
+     *
      * @return object
+     *
+     * @deprecated Don't access directly to configuration, use Project methods
      */
     public function getFullCfg()
     {
@@ -1631,7 +1745,7 @@ class Project
     }
 
     /**
-     * @throws jExceptionSelector
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
@@ -1695,7 +1809,7 @@ class Project
             2
         );
 
-        if ($this->hasEditionLayers()) {
+        if ($this->hasEditionLayersForCurrentUser()) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'edition',
@@ -1711,19 +1825,17 @@ class Project
     }
 
     /**
-     * @throws jException
-     * @throws jExceptionSelector
+     * @throws \jException
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
         $dockable = array();
-        $configOptions = $this->getOptions();
         $bp = $this->appContext->appConfig()->urlengine['basePath'];
 
         if ($this->hasAttributeLayers()) {
-            $tpl = new \jTpl();
             // Add layer-export attribute to lizmap-selection-tool component if allowed
             $layerExport = $this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ? 'layer-export' : '';
             $dock = new \lizmapMapDockItem(
@@ -1748,10 +1860,9 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'geolocation')
-            && $configOptions->geolocation == 'True') {
+        if ($this->cfg->getBooleanOption('geolocation')) {
             $tpl = new \jTpl();
-            $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
+            $tpl->assign('hasEditionLayers', $this->hasEditionLayersForCurrentUser());
             $dockable[] = new \lizmapMapDockItem(
                 'geolocation',
                 $this->appContext->getLocale('view~map.geolocate.navbar.title'),
@@ -1760,8 +1871,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'print')
-            && $configOptions->print == 'True') {
+        if ($this->cfg->getBooleanOption('print')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'print',
@@ -1771,8 +1881,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'measure')
-            && $configOptions->measure == 'True') {
+        if ($this->cfg->getBooleanOption('measure')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'measure',
@@ -1846,8 +1955,7 @@ class Project
             );
         }
 
-        if (property_exists($configOptions, 'draw')
-            && $configOptions->draw == 'True') {
+        if ($this->cfg->getBooleanOption('draw')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'draw',
@@ -1861,7 +1969,7 @@ class Project
     }
 
     /**
-     * @throws jExceptionSelector
+     * @throws \jExceptionSelector
      *
      * @return \lizmapMapDockItem[]
      */
@@ -1893,15 +2001,14 @@ class Project
      */
     public function checkAcl()
     {
-        $options = $this->getOptions();
-
         // Check right on repository
         if (!$this->appContext->aclCheck('lizmap.repositories.view', $this->repository->getKey())) {
             return false;
         }
 
         // Check acl option is configured in project config
-        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
+        $aclGroups = $this->cfg->getOption('acl');
+        if ($aclGroups === null || !is_array($aclGroups) || empty($aclGroups)) {
             return true;
         }
 
@@ -1911,7 +2018,6 @@ class Project
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $options->acl;
         $userGroups = $this->appContext->aclUserGroupsId();
         if (array_intersect($aclGroups, $userGroups)) {
             return true;
@@ -1937,15 +2043,13 @@ class Project
             return false;
         }
 
-        $options = $this->getOptions();
-
         // Check acl option is configured in project config
-        if (!property_exists($options, 'acl') || !is_array($options->acl) || empty($options->acl)) {
+        $aclGroups = $this->cfg->getOption('acl');
+        if ($aclGroups === null || !is_array($aclGroups) || empty($aclGroups)) {
             return true;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
-        $aclGroups = $options->acl;
         $userGroups = $this->appContext->aclGroupsIdByUser($login);
         if (array_intersect($aclGroups, $userGroups)) {
             return true;

@@ -51,6 +51,9 @@ abstract class OGCRequest
      */
     protected $tplExceptions;
 
+    /**
+     * @var App\AppContextInterface
+     */
     protected $appContext;
 
     /**
@@ -61,14 +64,14 @@ abstract class OGCRequest
      * @param \lizmapServices         $services
      * @param string                  $requestXml the params array
      */
-    public function __construct($project, $params, $services, App\AppContextInterface $appContext, $requestXml = null)
+    public function __construct($project, $params, $services, $requestXml = null)
     {
         //print_r( $project != null );
         $this->project = $project;
         $this->repository = $project->getRepository();
 
         $this->services = $services;
-        $this->appContext = $appContext;
+        $this->appContext = $this->project->getAppContext();
 
         $params['map'] = $project->getRelativeQgisPath();
         $this->params = Proxy::normalizeParams($params);
@@ -99,10 +102,12 @@ abstract class OGCRequest
     }
 
     /**
-     * Provide the parameters with the lizmap extra parameters for filtering request
-     * Lizmap_User, Lizmap_User_Groups and Lizmap_Override_Filter has been added to the OGC request parameters.
+     * Provide the parameters with the lizmap extra parameters for filtering the request.
      *
-     * @return array the OGC request aprameters with lizmap extra parameters for filtering request
+     * Lizmap_User, Lizmap_User_Groups, Lizmap_Override_Filter
+     * have been added to the OGC request parameters.
+     *
+     * @return array the OGC request parameters with Lizmap extra parameters for filtering request
      */
     public function parameters()
     {

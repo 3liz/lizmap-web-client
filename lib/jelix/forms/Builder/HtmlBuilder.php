@@ -4,16 +4,16 @@
 * @subpackage  forms
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin, Claudio Bernardes
-* @copyright   2006-2018 Laurent Jouanneau
+* @copyright   2006-2021 Laurent Jouanneau
 * @copyright   2008-2016 Julien Issler, 2008 Dominique Papin, 2012 Claudio Bernardes
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
 
-namespace jelix\forms\Builder;
+namespace Jelix\Forms\Builder;
 
-use \jelix\forms\HtmlWidget\ParentWidgetInterface;
-use \jelix\forms\HtmlWidget\WidgetBase;
+use \Jelix\Forms\HtmlWidget\ParentWidgetInterface;
+use \Jelix\Forms\HtmlWidget\WidgetBase;
 
 /**
  * Main HTML form builder
@@ -98,6 +98,8 @@ class HtmlBuilder extends BuilderBase {
      *      <li>"errDecorator"=>"name of your javascript object for error listener"</li>
      *      <li>"method" => "post" or "get". default is "post"</li>
      *      <li>"plugins" => list of class names for widget. keys are controls refs</li>
+     *      <li>"attributes" => list of html attributes to put on the form element</li>
+     *      <li>"widgetsAttributes" => list of attributes for each widget. keys are controls refs</li>
      *      </ul>
      */
     public function setOptions($options) {
@@ -300,15 +302,23 @@ class HtmlBuilder extends BuilderBase {
 
         // now we have its name, let's create the widget instance
         $className = $pluginName . 'FormWidget';
+        /** @var WidgetBase $plugin */
         $plugin = \jApp::loadPlugin($pluginName, 'formwidget', '.formwidget.php', $className, array($ctrl, $this, $parentWidget));
         if (!$plugin)
             throw new \Exception('Widget '.$pluginName.' not found');
         $this->widgets[$ctrl->ref] = $plugin;
 
+        $defaultAttributes = array();
         if (isset($this->htmlWidgetsAttributes[$ctrl->getWidgetType()])) {
-            $plugin->setDefaultAttributes($this->htmlWidgetsAttributes[$ctrl->getWidgetType()]);
+            $defaultAttributes = $this->htmlWidgetsAttributes[$ctrl->getWidgetType()];
         }
 
+        if (isset($this->options['widgetsAttributes'][$ctrl->ref]) &&
+            is_array($this->options['widgetsAttributes'][$ctrl->ref])
+        ) {
+            $defaultAttributes = array_merge($defaultAttributes, $this->options['widgetsAttributes'][$ctrl->ref]);
+        }
+        $plugin->setDefaultAttributes($defaultAttributes);
         return $plugin;
     }
 

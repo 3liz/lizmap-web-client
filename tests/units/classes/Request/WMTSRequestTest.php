@@ -11,7 +11,10 @@ class WMTSRequestTest extends TestCase
         $repo = new \Lizmap\Project\Repository('test', array(), '', null, $appContext);
         $project->setRepo($repo);
         $project->setKey('test');
-        $wmtsMock = $this->getMockBuilder(WMTSRequestForTests::class)->setMethods(['serviceException'])->setConstructorArgs(array($project, array(), null, $appContext))->getMock();
+        $wmtsMock = $this->getMockBuilder(WMTSRequestForTests::class)
+                         ->setMethods(['serviceException'])
+                         ->setConstructorArgs(array($project, array(), null))
+                         ->getMock();
         LizmapTilerForTests::$tileCapFail = true;
         $wmtsMock->expects($this->exactly(2))->method('serviceException');
         $wmtsMock->getcapabilitiesForTests();

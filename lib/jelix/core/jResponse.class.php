@@ -221,7 +221,7 @@ abstract class jResponse {
      * @param mixed $dateLastModified Can be a jDateTime object, a DateTime object or a string understandable by strtotime
      * @param boolean $cleanCacheHeaderTrue for clean/delete other cache headers. Default : true. 
      *
-     * @see _normalizeDate
+     * @see jResponse::_normalizeDate()
      */
     public function setExpires($date, $cleanCacheHeader = true) {
         

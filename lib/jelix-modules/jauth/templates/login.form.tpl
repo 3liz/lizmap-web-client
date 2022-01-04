@@ -4,7 +4,7 @@
 {/if}
 
 {if ! $isLogged}
-
+    {hook 'JauthLoginFormExtraBefore'}
 <form action="{formurl 'jauth~login:in'}" method="post" id="loginForm">
       <fieldset>
       <table>
@@ -30,7 +30,9 @@
        <input type="submit" value="{@jauth~auth.buttons.login@}"/>
        </fieldset>
    </form>
+    {hook 'JauthLoginFormExtraAfter'}
 {else}
     <p>{$user->login} | <a href="{jurl 'jauth~login:out'}" >{@jauth~auth.buttons.logout@}</a></p>
+    {hook 'JauthLoginFormExtraAuthenticated'}
 {/if}
 </div>

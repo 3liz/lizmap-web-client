@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jacl2db@modules.jelix.org" name="jacl2db" createdate="2008-04-06">
-        <version stability="stable" date="2017-12-19">1.6.16</version>
+        <version stability="stable" date="2021-01-13">1.6.35</version>
         <label lang="en_US">jAcl2Db</label>
         <description lang="en_US">ressources for the jacl2 db plugin</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
-        <copyright>2008-2018 Laurent Jouanneau and other contributors</copyright>
+        <copyright>2008-2021 Laurent Jouanneau and other contributors</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org" />
         <homepageURL>http://jelix.org</homepageURL>
     </info>

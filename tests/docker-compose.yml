@@ -9,6 +9,7 @@ services:
       POSTGRES_USER: lizmap
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - "../:/srv/lzm/"
     ports:
       - ${LZMPGPORT}:5432
     networks:
@@ -29,7 +30,7 @@ services:
     volumes:
       - "./docker-conf/openldap/ldif:/customldif"
   lizmap:
-    build: 
+    build:
         context: ./docker-conf/phpfpm
         args:
           lizmap_user_id: ${LIZMAP_USER_ID}
@@ -75,6 +76,7 @@ services:
       QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
       ROUTER_HOST: map
       QGSRV_SERVER_WORKERS: 4
+      QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: 1
     volumes:
       - ./qgis-projects:/srv/projects
       - ./qgis-server-plugins:/srv/qgis-server-plugins

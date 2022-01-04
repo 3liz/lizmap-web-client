@@ -274,6 +274,23 @@ class Proxy
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        // For POST, remove parameters from the URL
+        // and add them to the body of the request
+        // Also change the content type
+        if ($options['method'] === 'post') {
+            if (empty($options['body'])) {
+                $explode_url = explode('?', $url);
+                if (count($explode_url) == 2) {
+                    // Override previous url by removing the parameters after ?
+                    $url = $explode_url[0];
+
+                    // Set the body to use POST instead of GET
+                    $options['body'] = $explode_url[1];
+                    $options['headers']['Content-type'] = 'application/x-www-form-urlencoded';
+                }
+            }
+        }
         curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
         curl_setopt($ch, CURLOPT_URL, $url);
 
@@ -300,7 +317,9 @@ class Proxy
         }
         if ($options['method'] === 'post') {
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
+            if (!empty($options['body'])) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
+            }
         }
         $data = curl_exec($ch);
         $info = curl_getinfo($ch);
@@ -511,6 +530,19 @@ class Proxy
         $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
     }
 
+    /**
+     * Create a profile to cache things related to a project.
+     *
+     * The profile will store content into files, redis or sqlite,
+     * depending on the lizmap configuration
+     *
+     * @param string $repository
+     * @param string $project
+     * @param string $layers
+     * @param string $crs
+     *
+     * @return string the profile name of the cache
+     */
     public static function createVirtualProfile($repository, $project, $layers, $crs)
     {
 
@@ -646,6 +678,54 @@ class Proxy
         return false;
     }
 
+    /**
+     * @param string $repository
+     * @param string $project
+     *
+     * @return bool the project cache has been clear or not
+     */
+    public static function clearProjectCache($repository, $project)
+    {
+        // Storage type
+        $ser = self::getServices();
+        $appContext = self::getAppContext();
+        $cacheStorageType = $ser->cacheStorageType;
+        $clearCacheOk = false;
+
+        // Cache root directory
+        if ($cacheStorageType != 'redis') {
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if (!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)) {
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
+
+            // Directory where cached files are stored for the project
+            $cacheProjectDir = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
+            $results = array();
+            if (file_exists($cacheProjectDir)) {
+                $clearCacheOk = \jFile::removeDir($cacheProjectDir);
+            } else {
+                return true;
+            }
+        } else {
+            // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
+            $cacheName = 'lizmapCache_'.$repository.'_'.$project;
+            self::declareRedisProfile($ser, $cacheName, $repository, $project);
+            $appContext->flushCache($cacheName);
+            $clearCacheOk = true;
+        }
+        $appContext->eventNotify('lizmapProxyClearProjectCache', array('repository' => $repository, 'project' => $project));
+
+        return $clearCacheOk;
+    }
+
+    /**
+     * @param string $repository
+     * @param string $project
+     * @param string $layer
+     *
+     * @return bool the layer cache has been clear or not
+     */
     public static function clearLayerCache($repository, $project, $layer)
     {
         // Storage type
@@ -675,6 +755,9 @@ class Proxy
                     }
                 }
                 closedir($handle);
+                if (count($results) === 0) {
+                    return true;
+                }
                 foreach ($results as $rem) {
                     if (is_dir($rem)) {
                         \jFile::removeDir($rem);
@@ -682,6 +765,8 @@ class Proxy
                         unlink($rem);
                     }
                 }
+            } else {
+                return true;
             }
         } else {
             // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
@@ -690,6 +775,8 @@ class Proxy
             $appContext->flushCache($cacheName);
         }
         $appContext->eventNotify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
+
+        return true;
     }
 }
 

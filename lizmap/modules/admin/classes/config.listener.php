@@ -46,13 +46,30 @@ class configListener extends jEventListener
                 'lizmap'
             );
 
+            // Add the bloc
+            $event->add($bloc);
+
+            // Server bloc
+
+            // Create the "lizmap" parent menu item
+            $bloc = new masterAdminMenuItem('server', jLocale::get('admin~admin.menu.server.label'), '', 60);
+
+            // Information taken from QGIS Server with the help of Lizmap plugin
+            $bloc->childItems[] = new masterAdminMenuItem(
+                'lizmap_server_information',
+                jLocale::get('admin~admin.menu.server.information.label'),
+                jUrl::get('admin~server_information:index'),
+                110,
+                'server'
+            );
+
             // Child for lizmap logs
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_logs',
                 jLocale::get('admin~admin.menu.lizmap.logs.label'),
                 jUrl::get('admin~logs:index'),
                 125,
-                'lizmap'
+                'server'
             );
 
             // Add the bloc

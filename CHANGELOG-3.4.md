@@ -1,31 +1,71 @@
 # Changelog Lizmap 3.4
 
-## Version 3.4.5
+## Unreleased
 
-Not released yet
+## 3.4.8 - 2021-12-23
+
+### Fixed
+
+- Update URLs for the French IGN basemap provider,
+  It's highly recommended updating before first February 2022.
+- Refresh atlas input list after update layer feature
+- Don't show search results if search query is empty
+- Use white icons on button.btn-primary class hover
+- Translate mini-dock-close button
+- Selection: improve the export tool to allow bigger selections 
+  - use the selection token instead of a list of feature identifiers
+  - internally use POST instead of GET requests to query data from QGIS Server
+
+## 3.4.7 - 2021-11-16
+
+### Fixed
+
+- Expressions: Lizmap user and groups was not forwarded to the QGIS Server backend.
+  It's now possible to use `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression
+  in an editing form.
+- External WMS layers - respect the image format of the source WMS layer.
+  The format specified in the Lizmap configuration is not used.
+- WMS GetPrint Request: do not encode URI labels
+- View Popup class: manually canonize path to authorize symlink
+
+### Added
+
+- New **save** button to let users decide if they want their drawings to be saved.
+  If drawings are not saved, they will be removed when the webpage is refreshed.
+
+## 3.4.6 - 2021-09-21
+
+- Fix: issue during the installation of the ldapdao module. Upgrade it to 2.2.1
+- Fix: export button allowed in filter data with form when format is ODS
+- Fix: integer key column sorted as text in attribute table tool
+- Fix: Editing
+  - In case of more than one editable layers, when there is a filter by login (or by polygon) activated,
+  some of the popup items could miss the pencil button to open the editing form. Corrected by requesting
+  the editable features for all the editable layers of the displayed popup items, and not only the first.
+
+## 3.4.5 - 2021-09-14
 
 - Fix: multiple selection edition w/ text field. Values can be integer but also string
-- Translation: add Romamian for dataTables (contribution from @ygorigor)
+- UI: when dock is closed, show edition is pending with green background on dock button
+- Fix: use IGN PLANIGNV2 with free and paid keys
+- UI: replace dock close button text by icon. This makes it more clear the dock is closed but tool can remain active
+- Translation: add Romanian for dataTables (contribution from @ygorigor)
 - Create utils method to parse XML and get error parsing message
 - Fix: Object of class LibXMLError could not be converted to string
 - Fix: Log errors about loading QGIS Project and provides errors messages
 - Fix: lizmapTiler log errors when loading WMS GetCapabilities
 
-## Version 3.4.4
+## 3.4.4 - 2021-06-17
 
-Release on 2021-06-17
-
-- Fix: form's labels partially hidden when too long. A line break and an hyphen are now used when needed
-- Fix: In QGIS 3.16, the host in datasource can be wrote between single quotes
+- Fix: form's labels partially hidden when too long. A line break and a hyphen are now used when needed
+- Fix: In QGIS 3.16, the host in datasource can be written between single quotes
 - Display spinner and disable button while waiting for print.
 - Fix: fields are correctly hidden when 'Do not expose via WFS' is set in QGIS >=3.16
 - Fix: QGIS >= 3.16 datasource compatibility
 - Fix: Pre-generated cache is not used since Lizmap 3.4.1
 - Fix: links into mails for registration or password recovery
 
-## Version 3.4.3
-
-Release on 2021-03-26
+## 3.4.3 - 2021-03-26
 
 - Fix form not displayed when editing an existing feature
 - Some fixes in the js to getprint
@@ -34,9 +74,7 @@ Release on 2021-03-26
 - Update to Webpack 5
 - Update Jelix to fix an issue in the installer
 
-## Version 3.4.2
-
-Release on 2021-02-25
+## 3.4.2 - 2021-03-04
 
 - Fix lizmap/install/set_rights.sh: some directories were missing
 - Make MultiGeometry KML importable/exportable and focus on features extent after load
@@ -51,12 +89,10 @@ Release on 2021-02-25
 - Hide label in legend for layers with single symbol rendering
 - Fix WMTS Request - use specific $wmsRequest parameters array
 
-## Version 3.4.1
-
-Release on 2021-01-14
+## 3.4.1 - 2021-01-14
 
 - Fix drill-down (cascading) forms in Lizmap based on QGIS expression
-- Fix draw: import KML does not draw anythings if xml headers
+- Fix draw: import KML does not draw anything if xml headers
 - Fix regression in 3.4.0 about Primary Keys enclosing for UPDATE RETURNING
 - Fix the landing page shouldn't show project when not available for groups ACL
   Users in admins groups with rights to remove repositories no longer have
@@ -75,13 +111,11 @@ Release on 2021-01-14
 - new config parameter to disable the behavior change of the login page,
   introduced in lizmap 3.3.12, which redirect to the main page when the user
   is already authenticated. You can disable it by setting `noRedirectionOnAuthenticatedLoginPage=on`
-  into the jcommunity section of the configuration (localconfig.ini.php).
+  into the jcommunity section of the configuration (`localconfig.ini.php`).
 - Fix attribute edition sets to null unedited fields
 - Search - Use a transaction to avoid PostgreSQL connection issue
 
-## Version 3.4.0
-
-Released on 2020-12-18
+## 3.4.0 - 2020-12-18
 
 ### QGIS Plugin Desktop and Server
 

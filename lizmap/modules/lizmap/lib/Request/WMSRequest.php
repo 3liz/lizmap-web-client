@@ -447,7 +447,7 @@ class WMSRequest extends OGCRequest
     {
 
         // Get remote data
-        $response = $this->request();
+        $response = $this->request(true);
 
         return (object) array(
             'code' => $response->code,
@@ -642,7 +642,6 @@ class WMSRequest extends OGCRequest
 
             // Use default template if needed or maptip value if defined
             // Get geometry data
-            $hasGeometry = false;
             $hiddenGeometry = '';
             $maptipValue = null;
 
@@ -665,7 +664,7 @@ class WMSRequest extends OGCRequest
                         'maxx' => 'bbox-maxx',
                         'maxy' => 'bbox-maxy',
                     );
-                    if ($hasGeometry && $feature->BoundingBox) {
+                    if ($feature->BoundingBox) {
                         $hiddenGeometry .= '<input type="hidden" value="'.$attribute['value'].'" class="lizmap-popup-layer-feature-geometry"/>'.PHP_EOL;
                         $bbox = $feature->BoundingBox[0];
                         foreach ($props as $prop => $class) {
@@ -1087,9 +1086,11 @@ class WMSRequest extends OGCRequest
             list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
         }
 
-        // Get data from the map server
+        // Get data from the map server: use POST to avoid too long URLS
+        $options = array('method' => 'post');
         list($data, $mime, $code) = Proxy::getRemoteData(
-            Proxy::constructUrl($params, $this->services)
+            Proxy::constructUrl($params, $this->services),
+            $options
         );
 
         \lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP', 'WMS', array(

@@ -124,7 +124,7 @@ abstract class jDaoFactoryBase  {
     /**
      * @since 1.3.2
      * @return array informations on tables
-     * @see $_tables
+     * @see jDaoFactoryBase::$_tables
      */
     public function getTables() {
         return $this->_tables;

@@ -62,6 +62,11 @@ class QgisProject
     protected $relations = array();
 
     /**
+     * @var array list of fields properties for each relation
+     */
+    protected $relationsFields = array();
+
+    /**
      * @var array list of themes
      */
     protected $themes = array();
@@ -77,6 +82,11 @@ class QgisProject
     protected $layers = array();
 
     /**
+     * @var array list of custom project variables defined by user in project
+     */
+    protected $customProjectVariables = array();
+
+    /**
      * @var \LizmapServices
      */
     protected $services;
@@ -84,8 +94,19 @@ class QgisProject
     /**
      * @var array List of cached properties
      */
-    protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+    protected static $cachedProperties = array(
+        'WMSInformation',
+        'canvasColor',
+        'allProj4',
+        'relations',
+        'relationsFields',
+        'themes',
+        'useLayerIDs',
+        'layers',
+        'data',
+        'qgisProjectVersion',
+        'customProjectVariables',
+    );
 
     /**
      * @var App\AppContextInterface
@@ -100,27 +121,28 @@ class QgisProject
      */
     public function __construct($file, \LizmapServices $services, App\AppContextInterface $appContext, $data = false)
     {
+        $this->appContext = $appContext;
+        $this->services = $services;
+        $this->path = $file;
+
         if ($data === false) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             $this->readXmlProject($file);
         } else {
-            foreach ($this->cachedProperties as $prop) {
+            foreach (self::$cachedProperties as $prop) {
                 if (array_key_exists($prop, $data)) {
                     $this->{$prop} = $data[$prop];
                 }
             }
         }
-
-        $this->appContext = $appContext;
-        $this->services = $services;
-        $this->path = $file;
     }
 
-    public function getCacheData($data)
+    public function getCacheData()
     {
-        foreach ($this->cachedProperties as $prop) {
+        $data = array();
+        foreach (self::$cachedProperties as $prop) {
             if (!isset($this->{$prop}) || isset($data[$prop])) {
                 continue;
             }
@@ -235,6 +257,19 @@ class QgisProject
         return $this->themes;
     }
 
+    public function getCustomProjectVariables()
+    {
+        return $this->customProjectVariables;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUsingLayerIDs()
+    {
+        return $this->useLayerIDs;
+    }
+
     public function setPropertiesAfterRead(ProjectConfig $cfg)
     {
         $this->setShortNames($cfg);
@@ -252,7 +287,6 @@ class QgisProject
     protected function setShortNames(ProjectConfig $cfg)
     {
         $shortNames = $this->xpathQuery('//maplayer/shortname');
-        $layers = $cfg->getProperty('layers');
         if ($shortNames) {
             foreach ($shortNames as $sname) {
                 $sname = (string) $sname;
@@ -262,12 +296,12 @@ class QgisProject
                 }
                 $xmlLayer = $xmlLayer[0];
                 $name = (string) $xmlLayer->layername;
-                if ($layers && property_exists($layers, $name)) {
-                    $layers->{$name}->shortname = $sname;
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
+                    $layerCfg->shortname = $sname;
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -278,17 +312,16 @@ class QgisProject
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
         $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
-        $layers = $cfg->getProperty('layers');
         if ($layerWithOpacities && count($layerWithOpacities)) {
             foreach ($layerWithOpacities as $layerWithOpacity) {
                 $name = (string) $layerWithOpacity->layername;
-                if ($layers && property_exists($layers, $name)) {
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
                     $opacity = (float) $layerWithOpacity->layerOpacity;
-                    $layers->{$name}->opacity = $opacity;
+                    $layerCfg->opacity = $opacity;
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -299,7 +332,6 @@ class QgisProject
     protected function setLayerGroupData(ProjectConfig $cfg)
     {
         $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        $layers = $cfg->getProperty('layers');
         if ($groupsWithShortName) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
@@ -307,8 +339,9 @@ class QgisProject
                 if ($shortNameProperty && count($shortNameProperty) > 0) {
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
-                    if ($layers && property_exists($layers, $name)) {
-                        $layers->{$name}->shortname = $sname;
+                    $layerCfg = $cfg->getLayer($name);
+                    if ($layerCfg) {
+                        $layerCfg->shortname = $sname;
                     }
                 }
             }
@@ -317,12 +350,12 @@ class QgisProject
         if ($groupsMutuallyExclusive) {
             foreach ($groupsMutuallyExclusive as $group) {
                 $name = (string) $group['name'];
-                if ($layers && property_exists($layers, $name)) {
-                    $layers->{$name}->mutuallyExclusive = 'True';
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
+                    $layerCfg->mutuallyExclusive = 'True';
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -336,12 +369,11 @@ class QgisProject
         if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount)) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
-                $cfgLayers = $cfg->getProperty('layers');
-                if ($cfgLayers && property_exists($cfgLayers, $name)) {
-                    $cfgLayers->{$name}->showFeatureCount = 'True';
+                $layerCfg = $cfg->getLayer($name);
+                if ($layerCfg) {
+                    $layerCfg->showFeatureCount = 'True';
                 }
             }
-            $cfg->setProperty('layers', $cfgLayers);
         }
     }
 
@@ -357,53 +389,50 @@ class QgisProject
         if ($pluginLayers && count($pluginLayers)) {
             foreach ($pluginLayers as $layer) {
                 $name = (string) $layer->layername;
-                $layers = $cfg->getProperty('layers');
-                if ($layers && property_exists($layers, $name)) {
-                    $cfg->unsetProperty('layers', $name);
-                }
+                $cfg->removeLayer($name);
             }
         }
         //unset cache for editionLayers
-        $eLayers = $cfg->getProperty('editionLayers');
-        $layers = $cfg->getProperty('layers');
+        $eLayers = $cfg->getEditionLayers();
         if ($eLayers) {
             foreach ($eLayers as $key => $obj) {
-                if (property_exists($layers, $key)) {
-                    $layers->{$key}->cached = 'False';
-                    $layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($layers->{$key}, 'cacheExpiration')) {
-                        unset($layers->{$key}->cacheExpiration);
+                $layerCfg = $cfg->getLayer($key);
+                if ($layerCfg) {
+                    $layerCfg->cached = 'False';
+                    $layerCfg->clientCacheExpiration = 0;
+                    if (property_exists($layerCfg, 'cacheExpiration')) {
+                        unset($layerCfg->cacheExpiration);
                     }
-                    $cfg->setProperty('layers', $layers);
                 }
             }
         }
         //unset cache for loginFilteredLayers
-        $loginFiltered = $cfg->getProperty('loginFilteredLayers');
-        $layers = $cfg->getProperty('layers');
+        $loginFiltered = $cfg->getLoginFilteredLayers();
+
         if ($loginFiltered) {
             foreach ($loginFiltered as $key => $obj) {
-                if (property_exists($layers, $key)) {
-                    $layers->{$key}->cached = 'False';
-                    $layers->{$key}->clientCacheExpiration = 0;
-                    if (property_exists($layers->{$key}, 'cacheExpiration')) {
-                        unset($layers->{$key}->cacheExpiration);
+                $layerCfg = $cfg->getLayer($key);
+                if ($layerCfg) {
+                    $layerCfg->cached = 'False';
+                    $layerCfg->clientCacheExpiration = 0;
+                    if (property_exists($layerCfg, 'cacheExpiration')) {
+                        unset($layerCfg->cacheExpiration);
                     }
                 }
             }
         }
         //unset displayInLegend for geometryType none or unknown
+        $layers = $cfg->getLayers();
         if ($layers) {
-            foreach ($layers as $key => $obj) {
-                if (property_exists($layers->{$key}, 'geometryType')
-                    && ($layers->{$key}->geometryType == 'none'
-                        || $layers->{$key}->geometryType == 'unknown')
+            foreach ($layers as $key => $layerCfg) {
+                if (property_exists($layerCfg, 'geometryType')
+                    && ($layerCfg->geometryType == 'none'
+                        || $layerCfg->geometryType == 'unknown')
                 ) {
-                    $layers->{$key}->displayInLegend = 'False';
+                    $layerCfg->displayInLegend = 'False';
                 }
             }
         }
-        $cfg->setProperty('layers', $layers);
     }
 
     /**
@@ -594,7 +623,7 @@ class QgisProject
 
     /**
      * @param string $layerId
-     * @param mixed  $layers
+     * @param object $layers
      *
      * @return null|string
      */
@@ -859,7 +888,10 @@ class QgisProject
         return $printTemplates;
     }
 
-    public function readLocateByLayers(&$locateByLayer)
+    /**
+     * @param object $locateByLayer
+     */
+    public function readLocateByLayer($locateByLayer)
     {
         // collect layerIds
         $locateLayerIds = array();
@@ -909,6 +941,9 @@ class QgisProject
         }
     }
 
+    /**
+     * @param object $editionLayers
+     */
     public function readEditionLayers($editionLayers)
     {
         foreach ($editionLayers as $key => $obj) {
@@ -937,7 +972,7 @@ class QgisProject
     }
 
     /**
-     * @param $editionLayers
+     * @param object  $editionLayers
      * @param Project $proj
      */
     public function readEditionForms($editionLayers, $proj)
@@ -953,6 +988,9 @@ class QgisProject
         }
     }
 
+    /**
+     * @param object $attributeLayers
+     */
     public function readAttributeLayers($attributeLayers)
     {
         // Get field order & visibility
@@ -979,7 +1017,6 @@ class QgisProject
                 json_encode($attributetableconfigXml[0])
             );
             $obj->attributetableconfig = json_decode($attributetableconfig);
-            $attributeLayers->{$key} = $obj;
         }
     }
 
@@ -1131,8 +1168,9 @@ class QgisProject
         $this->WMSInformation = $this->readWMSInformation($qgsXml);
         $this->canvasColor = $this->readCanvasColor($qgsXml);
         $this->allProj4 = $this->readAllProj4($qgsXml);
-        $this->relations = $this->readRelations($qgsXml);
+        list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
         $this->themes = $this->readThemes($qgsXml);
+        $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
         $this->layers = $this->readLayers($qgsXml);
     }
@@ -1288,36 +1326,70 @@ class QgisProject
     /**
      * @param \SimpleXMLElement $xml
      *
-     * @return null|array[]
+     * @return null|array[] array of custom variable name => variable value
+     */
+    protected function readCustomProjectVariables($xml)
+    {
+        $xmlCustomProjectVariables = $xml->xpath('//properties/Variables');
+        $customProjectVariables = array();
+
+        if ($xmlCustomProjectVariables && count($xmlCustomProjectVariables) === 1) {
+            $variableIndex = 0;
+            foreach ($xmlCustomProjectVariables[0]->variableNames->value as $variableName) {
+                $customProjectVariables[(string) $variableName] = (string) $xmlCustomProjectVariables[0]->variableValues->value[$variableIndex];
+                ++$variableIndex;
+            }
+
+            return $customProjectVariables;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     *
+     * @return null|array[] list of two list: reference between relation, and fields of relations
      */
     protected function readRelations($xml)
     {
         $xmlRelations = $xml->xpath('//relations');
         $relations = array();
+        $relationsFields = array();
         $pivotGather = array();
         $pivot = array();
         if ($xmlRelations) {
+            /** @var \SimpleXMLElement $relation */
             foreach ($xmlRelations[0] as $relation) {
                 $relationObj = $relation->attributes();
-                $fieldRefObj = $relation->fieldRef->attributes();
-                if (!array_key_exists((string) $relationObj->referencedLayer, $relations)) {
-                    $relations[(string) $relationObj->referencedLayer] = array();
+
+                $relationField = $this->readRelationField($relation);
+                if ($relationField === null) {
+                    // no corresponding layer
+                    continue;
+                }
+                $relationsFields[] = $relationField;
+
+                $referencedLayerId = (string) $relationObj->referencedLayer;
+                $referencingLayerId = (string) $relationObj->referencingLayer;
+                if (!array_key_exists($referencedLayerId, $relations)) {
+                    $relations[$referencedLayerId] = array();
                 }
 
-                $relations[(string) $relationObj->referencedLayer][] = array(
-                    'referencingLayer' => (string) $relationObj->referencingLayer,
-                    'referencedField' => (string) $fieldRefObj->referencedField,
-                    'referencingField' => (string) $fieldRefObj->referencingField,
+                $relations[$referencedLayerId][] = array(
+                    'referencingLayer' => $referencingLayerId,
+                    'referencedField' => $relationField['referencedField'],
+                    'referencingField' => $relationField['referencingField'],
                 );
 
-                if (!array_key_exists((string) $relationObj->referencingLayer, $pivotGather)) {
-                    $pivotGather[(string) $relationObj->referencingLayer] = array();
+                if (!array_key_exists($referencingLayerId, $pivotGather)) {
+                    $pivotGather[$referencingLayerId] = array();
                 }
 
-                $pivotGather[(string) $relationObj->referencingLayer][(string) $relationObj->referencedLayer] = (string) $fieldRefObj->referencingField;
+                $pivotGather[$referencingLayerId][$referencedLayerId] = $relationField['referencingField'];
             }
 
-            // Keep only child with at least to parents
+            // Keep only child with at least two parents
             foreach ($pivotGather as $pi => $vo) {
                 if (count($vo) > 1) {
                     $pivot[$pi] = $vo;
@@ -1325,7 +1397,79 @@ class QgisProject
             }
             $relations['pivot'] = $pivot;
 
-            return $relations;
+            return array($relations, $relationsFields);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \SimpleXMLElement $relation
+     * @param mixed             $relationXml
+     */
+    protected function readRelationField($relationXml)
+    {
+        $referencedLayerId = $relationXml->attributes()->referencedLayer;
+
+        $_referencedLayerXml = $this->getXmlLayer($referencedLayerId);
+        if (count($_referencedLayerXml) == 0) {
+            return null;
+        }
+        $referencedLayerXml = $_referencedLayerXml[0];
+
+        $_layerName = $referencedLayerXml->xpath('layername');
+        if (count($_layerName) == 0) {
+            return null;
+        }
+        $layerName = (string) $_layerName[0];
+        $typeName = str_replace(' ', '_', $layerName);
+        $referencedField = (string) $relationXml->fieldRef->attributes()->referencedField;
+        $referencingField = (string) $relationXml->fieldRef->attributes()->referencingField;
+
+        $referenceField = array(
+            'id' => (string) $relationXml->attributes()->id,
+            'layerName' => $layerName,
+            'typeName' => $typeName,
+            'propertyName' => '',
+            'filterExpression' => '',
+            'referencedField' => $referencedField,
+            'referencingField' => $referencingField,
+            'previewField' => '',
+        );
+
+        $_previewExpression = $referencedLayerXml->xpath('previewExpression');
+        if (count($_previewExpression) == 0) {
+            return $referenceField;
+        }
+        $previewExpression = (string) $_previewExpression[0];
+
+        $previewField = $previewExpression;
+        if (substr($previewField, 0, 8) == 'COALESCE') {
+            if (preg_match('/"([\S ]+)"/', $previewField, $matches) == 1) {
+                $previewField = $matches[1];
+            } else {
+                $previewField = $referencedField;
+            }
+        } elseif (substr($previewField, 0, 1) == '"' and substr($previewField, -1) == '"') {
+            $previewField = substr($previewField, 1, -1);
+        }
+
+        $referenceField['propertyName'] = $referencedField.','.$previewField;
+        $referenceField['previewField'] = $previewField;
+
+        return $referenceField;
+    }
+
+    public function getRelationField($relationId)
+    {
+        $fields = array_filter($this->relationsFields, function ($rf) use ($relationId) {
+            return $rf['id'] == $relationId;
+        });
+        if (count($fields)) {
+            // get first key found in the filtered layers
+            $k = key($fields);
+
+            return $fields[$k];
         }
 
         return null;
@@ -1516,6 +1660,115 @@ class QgisProject
         return $layers;
     }
 
+    protected function readUploadOptions($fieldEditType, &$fieldEditOptions)
+    {
+        $mimeTypes = array();
+        $acceptAttr = '';
+        $captureAttr = '';
+        $imageUpload = false;
+        $defaultRoot = '';
+
+        if ($fieldEditType === 'Photo') {
+            $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+            $acceptAttr = implode(', ', $mimeTypes);
+            $captureAttr = 'environment';
+            $imageUpload = true;
+        } elseif ($fieldEditType === 'ExternalResource') {
+            $accepts = array();
+            $FileWidgetFilter = $fieldEditOptions['FileWidgetFilter'] ?? '';
+            if ($FileWidgetFilter) {
+                //QFileDialog::getOpenFileName filter
+                $FileWidgetFilter = explode(';;', $FileWidgetFilter);
+                $re = '/\*(\.\w{3,6})/';
+                $hasNoImageItem = false;
+                foreach ($FileWidgetFilter as $FileFilter) {
+                    $matches = array();
+                    if (preg_match_all($re, $FileFilter, $matches)) {
+                        foreach ($matches[1] as $m) {
+                            $type = \jFile::getMimeTypeFromFilename('f'.$m);
+                            if ($type != 'application/octet-stream') {
+                                $mimeTypes[] = $type;
+                            }
+                            if (strpos($type, 'image/') === 0) {
+                                $imageUpload = true;
+                            } else {
+                                $hasNoImageItem = true;
+                            }
+                            $accepts[] = $m;
+                        }
+                    }
+                }
+                if ($hasNoImageItem) {
+                    $imageUpload = false;
+                }
+
+                if (count($accepts) > 0) {
+                    $mimeTypes = array_unique($mimeTypes);
+                    $accepts = array_unique($accepts);
+                    $acceptAttr = implode(', ', $accepts);
+                }
+            }
+            $isDocumentViewer = $fieldEditOptions['DocumentViewer'] ?? '';
+            if ($isDocumentViewer) {
+                if (count($accepts)) {
+                    $mimeTypes = array();
+                    $typeTab = array(
+                        '.gif' => 'image/gif',
+                        '.png' => 'image/png',
+                        '.jpg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                        '.jpeg' => array('image/jpg', 'image/jpeg', 'image/pjpeg'),
+                        '.bm' => array('image/bmp', 'image/x-windows-bmp'),
+                        '.bmp' => array('image/bmp', 'image/x-windows-bmp'),
+                        '.pbm' => 'image/x-portable-bitmap',
+                        '.pgm' => array('image/x-portable-graymap', 'image/x-portable-greymap'),
+                        '.ppm' => 'image/x-portable-pixmap',
+                        '.xbm' => array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'),
+                        '.xpm' => array('image/xpm', 'image/x-xpixmap'),
+                        '.svg' => 'image/svg+xml',
+                    );
+                    $filteredAccepts = array();
+                    foreach ($accepts as $a) {
+                        if (array_key_exists($a, $typeTab)) {
+                            if ((in_array($a, array('.jpg', '.jpeg')) && in_array('image/jpg', $mimeTypes))
+                                || (in_array($a, array('.bm', '.bmp')) && in_array('image/bmp', $mimeTypes))) {
+                                continue;
+                            }
+                            if (is_array($typeTab[$a])) {
+                                $mimeTypes = array_merge($mimeTypes, $typeTab[$a]);
+                            } else {
+                                $mimeTypes[] = $typeTab[$a];
+                            }
+                            $filteredAccepts[] = $a;
+                        }
+                    }
+                    $mimeTypes = array_unique($mimeTypes);
+                    $accepts = array_unique($filteredAccepts);
+                    $acceptAttr = implode(', ', $accepts);
+                } else {
+                    $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+                    $acceptAttr = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                }
+                $captureAttr = 'environment';
+                $imageUpload = true;
+            }
+            $defaultRoot = $fieldEditOptions['DefaultRoot'] ?? '';
+
+            if ($defaultRoot
+                && (preg_match('#^../media(/)?#', $defaultRoot)
+                    || preg_match('#^media(/)?#', $defaultRoot))) {
+                $defaultRoot = $defaultRoot.'/';
+            } else {
+                $defaultRoot = '';
+            }
+        }
+
+        $fieldEditOptions['UploadMimeTypes'] = $mimeTypes;
+        $fieldEditOptions['DefaultRoot'] = $defaultRoot;
+        $fieldEditOptions['UploadAccept'] = $acceptAttr;
+        $fieldEditOptions['UploadCapture'] = $captureAttr;
+        $fieldEditOptions['UploadImage'] = $imageUpload;
+    }
+
     const MAP_VALUES_AS_VALUES = 0;
     const MAP_VALUES_AS_KEYS = 1;
     const MAP_ONLY_VALUES = 2;
@@ -1575,6 +1828,9 @@ class QgisProject
 
             $this->convertTypeOptions($fieldEditOptions);
             $markup = $this->getMarkup($fieldEditType, $fieldEditOptions);
+            if ($markup == 'upload') {
+                $this->readUploadOptions($fieldEditType, $fieldEditOptions);
+            }
             $control = new Form\QgisFormControlProperties($fieldName, $fieldEditType, $markup, $fieldEditOptions);
             $edittypes[$fieldName] = $control;
         }
@@ -1701,6 +1957,9 @@ class QgisProject
 
             $markup = $this->getMarkup($fieldEditType, $attributes);
             $this->convertTypeOptions($attributes);
+            if ($markup == 'upload') {
+                $this->readUploadOptions($fieldEditType, $fieldEditOptions);
+            }
             $control = new Form\QgisFormControlProperties($fieldName, $fieldEditType, $markup, $attributes);
             $editTab[$fieldName] = $control;
         }

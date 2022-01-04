@@ -21,7 +21,7 @@
  * @return string
  */
 function jtpl_modifier_common_number_format($number, $decimals=0, $dec_point=false, $thousands_sep=false){
-    if ($dec_point == false) {
+    if ($dec_point === false || $dec_point === null) {
         $dec_point = jLocale::get('jelix~format.decimal_point');
     }
     if ($thousands_sep === false) {

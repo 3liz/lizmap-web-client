@@ -58,6 +58,9 @@ function resetApp() {
     if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
         rm -f $APPDIR/var/config/liveconfig.ini.php
     fi
+    if [ -f $APPDIR/var/config/localframework.ini.php ]; then
+        rm -f $APPDIR/var/config/localframework.ini.php
+    fi
     rm -rf $APPDIR/var/log/*
     rm -rf $APPDIR/var/db/*
     rm -rf $APPDIR/var/mails/*
@@ -196,6 +199,10 @@ function launchUnitTests() {
     su $APP_USER -c "cd $ROOTDIR/tests/units/ && vendor/bin/phpunit"
 }
 
+function launchPhpStan() {
+    su $APP_USER -c "cd $ROOTDIR/ && tests/units/vendor/bin/phpstan analyze"
+}
+
 
 case $COMMAND in
     clean_tmp)
@@ -216,6 +223,8 @@ case $COMMAND in
         composerUpdate;;
     unittests)
         launchUnitTests;;
+    phpstan)
+        launchPhpStan;;
     *)
         echo "app-ctl.sh: wrong command"
         exit 2

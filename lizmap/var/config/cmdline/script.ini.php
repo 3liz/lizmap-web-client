@@ -13,5 +13,4 @@ jauthdb_admin.access=1
 jacl2db_admin.access=1
 jcommunity.access=2
 lizmap.access=2
-jcommunity.access=2
 

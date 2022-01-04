@@ -36,6 +36,11 @@ class QgisProjectForTests extends QgisProject
         return $this->readThemes($xml);
     }
 
+    public function readCustomProjectVariablesForTests($xml)
+    {
+        return $this->readCustomProjectVariables($xml);
+    }
+
     public function readLayersForTests($xml)
     {
         // readLayers() needs $this->qgisProjectVersion to be set
@@ -46,6 +51,7 @@ class QgisProjectForTests extends QgisProject
 
     public function readRelationsForTests($xml)
     {
+        $this->xml = $xml;
         return $this->readRelations($xml);
     }
 
@@ -71,12 +77,12 @@ class QgisProjectForTests extends QgisProject
 
     public function readEditionLayersForTest($eLayer)
     {
-        return $this->readEditionLayers($eLayer);
+        $this->readEditionLayers($eLayer);
     }
 
     public function readAttributeLayersForTest($aLayer)
     {
-        return $this->readAttributeLayers($aLayer);
+        $this->readAttributeLayers($aLayer);
     }
 
     public function getEditTypeForTest($layerXml)

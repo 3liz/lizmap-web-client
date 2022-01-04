@@ -158,6 +158,19 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedThemes, $themes);
     }
 
+    public function testReadCustomProjectVariables()
+    {
+        $expectedCustomProjectVariables = array(
+            'lizmap_user' => 'lizmap',
+            'lizmap_user_groups' => 'lizmap-group',
+        );
+        $file = __DIR__.'/Ressources/customProjectVariables.qgs';
+        $xml = simplexml_load_file($file);
+        $testQgis = new qgisProjectForTests();
+        $customProjectVariables = $testQgis->readCustomProjectVariablesForTests($xml);
+        $this->assertEquals($expectedCustomProjectVariables, $customProjectVariables);
+    }
+
     public function testReadLayers()
     {
         // Test if WFS 'label' field is not exposed in 3.10 and 3.16
@@ -192,25 +205,51 @@ class QgisProjectTest extends TestCase
             ),
             'pivot' => array(),
         );
+
+        $expectedFields = array(
+            array (
+                'id' => 'SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO',
+                'layerName' => 'Quartiers',
+                'typeName' => 'Quartiers',
+                'propertyName' => 'QUARTMNO,LIBQUART',
+                'filterExpression' => '',
+                'referencedField' => 'QUARTMNO',
+                'referencingField' => 'QUARTMNO',
+                'previewField' => 'LIBQUART',
+            ),
+            array (
+                'id' => 'jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id',
+                'layerName' => 'tramstop',
+                'typeName' => 'tramstop',
+                'propertyName' => 'osm_id,unique_name',
+                'filterExpression' => '',
+                'referencedField' => 'osm_id',
+                'referencingField' => 'stop_id',
+                'previewField' => 'unique_name',
+            ),
+        );
+
         $file = __DIR__.'/Ressources/relations.qgs';
         $xml = simplexml_load_file($file);
         $testQgis = new qgisProjectForTests();
-        $relations = $testQgis->readRelationsForTests($xml);
+        list($relations, $relationsFields) = $testQgis->readRelationsForTests($xml);
         $this->assertEquals($expectedRelations, $relations);
+        $this->assertEquals($expectedFields, $relationsFields);
     }
 
     public function testCacheConstruct()
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-            'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+            'relations', 'themes', 'useLayerIDs', 'layers', 'data',
+            'qgisProjectVersion', 'customProjectVariables', 'relationsFields');
         $data = array();
-        $emptyData = array();
+
         foreach ($cachedProperties as $prop) {
             $data[$prop] = 'some stuff about'.$prop;
         }
         $services = new lizmapServices(array(), (object) array(), false, '', '');
         $testQgis = new Project\QgisProject(null, $services, new ContextForTests(), $data);
-        $this->assertEquals($data, $testQgis->getCacheData($emptyData));
+        $this->assertEquals($data, $testQgis->getCacheData());
     }
 
     public function testSetLayerOpacity()
@@ -219,11 +258,11 @@ class QgisProjectTest extends TestCase
         $json = json_decode(file_get_contents($file));
         $expectedLayer = clone $json->layers;
         $expectedLayer->montpellier_events->opacity = (float) 0.85;
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object) array('layers' => $json->layers)));
+        $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
         $testProj->setLayerOpacityForTest($cfg);
-        $this->assertEquals($expectedLayer, $cfg->getProperty('layers'));
+        $this->assertEquals($expectedLayer, $cfg->getLayers());
     }
 
     public function getLayerData()
@@ -369,9 +408,9 @@ class QgisProjectTest extends TestCase
         );
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file($file));
-        $cfg = new Project\ProjectConfig(null, array('cfgContent' => (object) array('layers' => (object) $layers)));
+        $cfg = new Project\ProjectConfig((object) array('layers' => (object) $layers));
         $testProj->setShortNamesForTest($cfg);
-        $layer = $cfg->getProperty('layers');
+        $layer = $cfg->getLayers();
         if ($sname) {
             $this->assertEquals($sname, $layer->{$lname}->shortname);
         } else {
@@ -379,7 +418,8 @@ class QgisProjectTest extends TestCase
         }
     }
 
-    public function testGetEditType() {
+    public function testGetEditType()
+    {
         $xmlStr = '
         <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="0" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Point" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPoint" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
           <edittypes>
@@ -431,7 +471,8 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), 'Hidden');
     }
 
-    public function testGetFieldConfiguration() {
+    public function testGetFieldConfiguration()
+    {
         $testProj = new qgisProjectForTests();
 
         $xmlStr = '
@@ -498,12 +539,18 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), 'TextEdit');
         $this->assertFalse($prop->isMultiline());
         $this->assertFalse($prop->useHtml());
+        $this->assertEquals('input', $prop->getMarkup());
+        $this->assertEquals('', $prop->getUploadCapture());
+        $this->assertEquals('', $prop->getUploadAccept());
+        $this->assertEquals(array(), $prop->getMimeTypes());
+        $this->assertFalse($prop->isImageUpload());
+
         $this->assertTrue(array_key_exists('wkt', $props));
 
         $prop = $props['wkt'];
         $this->assertEquals($prop->getFieldEditType(), 'Hidden');
 
-        # TextEdit widget editable
+        // TextEdit widget editable
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -548,7 +595,7 @@ class QgisProjectTest extends TestCase
         $this->assertFalse($prop->useHtml());
         $this->assertTrue($prop->isEditable());
 
-        # DateTime widget
+        // DateTime widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -583,7 +630,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'field_iso_format'));
         $this->assertFalse($options->field_iso_format);
 
-        # Classification widget
+        // Classification widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -607,7 +654,7 @@ class QgisProjectTest extends TestCase
         $prop = $props['type'];
         $this->assertEquals($prop->getFieldEditType(), 'Classification');
 
-        # DateTime widget
+        // DateTime widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -642,7 +689,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'FileWidgetFilter'));
         $this->assertEquals($options->FileWidgetFilter, 'Images (*.gif *.jpeg *.jpg *.png)');
 
-        # UniqueValues widget
+        // UniqueValues widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -668,7 +715,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), 'UniqueValues');
         $this->assertTrue($prop->isEditable());
 
-        # CheckBox widget
+        // CheckBox widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -700,7 +747,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'UncheckedState'));
         $this->assertEquals($options->UncheckedState, '0');
 
-        # ValueRelation widget
+        // ValueRelation widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -731,7 +778,6 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('tram_id', $props));
         $prop = $props['tram_id'];
         $this->assertEquals($prop->getFieldEditType(), 'ValueRelation');
-
 
         $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'Layer'));
@@ -788,7 +834,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'FilterExpression'));
         $this->assertEquals($options->FilterExpression, 'intersects(@current_geometry , $geometry)');
 
-        # Range widget
+        // Range widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -833,7 +879,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(property_exists($options, 'Style'));
         $this->assertEquals($options->Style, 'SpinBox');
 
-        # ValueMap widget
+        // ValueMap widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -924,7 +970,7 @@ class QgisProjectTest extends TestCase
         );
         $this->assertEquals($expectedOptions, $options->map);
 
-        # no edit widget type
+        // no edit widget type
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -948,7 +994,8 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), '');
     }
 
-    public function testGetValuesFromOptions() {
+    public function testGetValuesFromOptions()
+    {
         $testProj = new qgisProjectForTests();
 
         $xmlStr = '
@@ -977,8 +1024,8 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($options));
         $this->assertCount(2, $options);
         $expectedOptions = array(
-            'IsMultiline' =>'false',
-            'UseHtml' =>'false',
+            'IsMultiline' => 'false',
+            'UseHtml' => 'false',
         );
         $this->assertEquals($expectedOptions, $options);
 
@@ -993,7 +1040,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($options));
         $this->assertCount(1, $options);
         $expectedOptions = array(
-            'Zone A' =>'A'
+            'Zone A' => 'A',
         );
         $this->assertEquals($expectedOptions, $options);
 
@@ -1020,15 +1067,16 @@ class QgisProjectTest extends TestCase
                 'A' => 'Zone A',
                 'B' => 'Zone B',
                 '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => 'No Zone',
-            )
+            ),
         );
         $this->assertEquals($expectedOptions, $options);
     }
 
-    public function testGetMarkup() {
+    public function testGetMarkup()
+    {
         $testProj = new qgisProjectForTests();
 
-        # no widget
+        // no widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1047,7 +1095,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('label', $props));
         $this->assertEquals($props['label']->getMarkup(), '');
 
-        # TextEdit widget
+        // TextEdit widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1108,7 +1156,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('label', $props));
         $this->assertEquals($props['label']->getMarkup(), 'textarea');
 
-        # Range widget
+        // Range widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1134,7 +1182,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('integer_field', $props));
         $this->assertEquals($props['integer_field']->getMarkup(), 'input');
 
-        # DateTime widget
+        // DateTime widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1159,7 +1207,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('date', $props));
         $this->assertEquals($props['date']->getMarkup(), 'date');
 
-        # CheckBox widget
+        // CheckBox widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1181,7 +1229,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('checked', $props));
         $this->assertEquals($props['checked']->getMarkup(), 'checkbox');
 
-        # ValueRelation widget
+        // ValueRelation widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1290,7 +1338,7 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(array_key_exists('tram_id', $props));
         $this->assertEquals($props['tram_id']->getMarkup(), 'checkboxes');
 
-        # ValueMap widget
+        // ValueMap widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1350,5 +1398,246 @@ class QgisProjectTest extends TestCase
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('code_for_drill_down_exp', $props));
         $this->assertEquals($props['code_for_drill_down_exp']->getMarkup(), 'menulist');
+    }
+
+
+    public function testUploadField()
+    {
+        $testProj = new qgisProjectForTests();
+
+        # no widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="generic_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value=""></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            
+            <field configurationFlags="None" name="textorimage_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Text files (*.txt)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="text_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Text files (*.txt)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="image_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images (*.png *.jpg *.jpeg)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="text_file_mandatory">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="*.txt"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="image_file_mandatory">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Images jpeg (*.jpg *.jpeg)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="photo_file">
+              <editWidget type="Photo">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="0"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+            <field configurationFlags="None" name="documentviewer_file">
+              <editWidget type="ExternalResource">
+                <config>
+                  <Option type="Map">
+                    <Option name="DocumentViewer" type="int" value="1"></Option>
+                    <Option name="DocumentViewerHeight" type="int" value="1000"></Option>
+                    <Option name="DocumentViewerWidth" type="int" value="1000"></Option>
+                    <Option name="FileWidget" type="bool" value="true"></Option>
+                    <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                    <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Images jpeg (*.jpg)"></Option>
+                    <Option name="PropertyCollection" type="Map">
+                      <Option name="name" type="QString" value=""></Option>
+                      <Option name="properties"></Option>
+                      <Option name="type" type="QString" value="collection"></Option>
+                    </Option>
+                    <Option name="RelativeStorage" type="int" value="0"></Option>
+                    <Option name="StorageMode" type="int" value="0"></Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('generic_file', $props));
+        $genericFile = $props['generic_file'];
+        $this->assertEquals('upload', $genericFile->getMarkup());
+        $this->assertEquals('', $genericFile->getUploadCapture());
+        $this->assertEquals('', $genericFile->getUploadAccept());
+        $this->assertEquals(array(), $genericFile->getMimeTypes());
+        $this->assertFalse($genericFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('text_file', $props));
+        $textFile = $props['text_file'];
+        $this->assertEquals('upload', $textFile->getMarkup());
+        $this->assertEquals('', $textFile->getUploadCapture());
+        $this->assertEquals('.txt', $textFile->getUploadAccept());
+        $this->assertEquals(array('text/plain'), $textFile->getMimeTypes());
+        $this->assertFalse($textFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('image_file', $props));
+        $imageFile = $props['image_file'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('', $imageFile->getUploadCapture());
+        $this->assertEquals('.png, .jpg, .jpeg', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/png', 'image/jpeg'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('text_file_mandatory', $props));
+        $textFile = $props['text_file_mandatory'];
+        $this->assertEquals('upload', $textFile->getMarkup());
+        $this->assertEquals('', $textFile->getUploadCapture());
+        $this->assertEquals('.txt', $textFile->getUploadAccept());
+        $this->assertEquals(array('text/plain'), $textFile->getMimeTypes());
+        $this->assertFalse($textFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('image_file_mandatory', $props));
+        $imageFile = $props['image_file_mandatory'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('', $imageFile->getUploadCapture());
+        $this->assertEquals('.png, .jpg, .jpeg', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/png', 'image/jpeg'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('photo_file', $props));
+        $imageFile = $props['photo_file'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('environment', $imageFile->getUploadCapture());
+        $this->assertEquals('image/jpg, image/jpeg, image/pjpeg, image/png, image/gif', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('documentviewer_file', $props));
+        $imageFile = $props['documentviewer_file'];
+        $this->assertEquals('upload', $imageFile->getMarkup());
+        $this->assertEquals('environment', $imageFile->getUploadCapture());
+        $this->assertEquals('.png, .jpg', $imageFile->getUploadAccept());
+        $this->assertEquals(array('image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg'), $imageFile->getMimeTypes());
+        $this->assertTrue($imageFile->isImageUpload());
+
     }
 }
