@@ -680,11 +680,12 @@ class WMSRequest extends OGCRequest
             // edition can be restricted on current feature
             $editableFeatures = $this->project->getLayer($layerId)->editableFeatures();
             $editionRestricted = '';
-            if(array_key_exists('status', $editableFeatures) && $editableFeatures['status'] === 'restricted'){
+            if (array_key_exists('status', $editableFeatures) && $editableFeatures['status'] === 'restricted') {
                 $editionRestricted = 'edition-restricted="true"';
                 foreach ($editableFeatures['features'] as $feature) {
-                    if($feature->properties->id == $id){
+                    if ($feature->properties->id == $id) {
                         $editionRestricted = 'edition-restricted="false"';
+
                         break;
                     }
                 }

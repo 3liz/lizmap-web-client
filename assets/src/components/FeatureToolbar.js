@@ -104,7 +104,7 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     get attributeTableConfig(){
-        return lizMap.getLayerConfigById(this.layerId, lizMap.config.attributeLayers, 'layerId')[1];
+        return lizMap.getLayerConfigById(this.layerId, lizMap.config.attributeLayers, 'layerId')?.[1];
     }
 
     get isLayerEditable(){

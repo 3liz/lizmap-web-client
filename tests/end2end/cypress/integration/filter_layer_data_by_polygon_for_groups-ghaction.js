@@ -198,10 +198,10 @@ describe('Filter layer data by polygon for groups', function () {
 
         cy.get('.lizmapPopupTitle').should('have.text', 'townhalls_pg')
 
-        cy.get('.popup-layer-feature-edit').should('have.length', 0)
+        cy.get('.lizmapPopupDiv .feature-edit').should('be.disabled')
 
         cy.get('#map').click(525, 270)//558,345
-        cy.get('.popup-layer-feature-edit').should('have.length', 1)
+        cy.get('.lizmapPopupDiv .feature-edit').should('not.be.disabled')
 
         // 3/ attribute table
 
