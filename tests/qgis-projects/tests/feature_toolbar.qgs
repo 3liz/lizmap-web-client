@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2022-01-03T15:31:09" saveUser="nboisteault" saveUserFull="" version="3.22.1-Białowieża">
+<qgis projectname="" saveDateTime="2022-01-04T14:48:07" saveUser="nboisteault" saveUserFull="" version="3.22.1-Białowieża">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -49,10 +49,10 @@
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>degrees</units>
     <extent>
-      <xmin>1.80533807908374033</xmin>
-      <ymin>42.25214630277120165</ymin>
-      <xmax>6.39339839466363369</xmax>
-      <ymax>44.9573923398024462</ymax>
+      <xmin>1.57893832534412404</xmin>
+      <ymin>43.5531354070467529</ymin>
+      <xmax>6.16699864092401828</xmax>
+      <ymax>43.67488484807705618</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -802,10 +802,10 @@ def my_form_open(dialog, layer, feature):
     </WMSCrsList>
     <WMSDefaultMapUnitsPerMm type="double">1</WMSDefaultMapUnitsPerMm>
     <WMSExtent type="QStringList">
-      <value>-26.65478557322805031</value>
-      <value>25.61401012756188322</value>
-      <value>34.40072253949619352</value>
-      <value>61.61401012756192586</value>
+      <value>1.57893832534412404</value>
+      <value>42.26138710904628226</value>
+      <value>6.16699864092401828</value>
+      <value>44.96663314607752682</value>
     </WMSExtent>
     <WMSFeatureInfoUseAttributeFormSettings type="bool">false</WMSFeatureInfoUseAttributeFormSettings>
     <WMSFees type="QString">conditions unknown</WMSFees>
@@ -880,7 +880,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="6.39339839466363369" xmin="1.80533807908374033" ymax="44.9573923398024462" ymin="42.25214630277120165">
+    <DefaultViewExtent xmax="6.16699864092401828" xmin="1.57893832534412404" ymax="44.96663314607752682" ymin="42.26138710904628226">
       <spatialrefsys>
         <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
         <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
