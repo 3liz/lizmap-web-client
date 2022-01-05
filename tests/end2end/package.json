@@ -12,5 +12,8 @@
     "cy:test": "cypress run --headed"
   },
   "author": "3Liz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "pixelmatch": "^5.2.1"
+  }
 }
