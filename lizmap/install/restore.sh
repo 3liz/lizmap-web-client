@@ -50,6 +50,12 @@ if  [ -d $BACKUPDIR ]; then
     if [ -d $BACKUPDIR/lizmap-modules ]; then
         cp -Rp $BACKUPDIR/lizmap-modules       $LIZMAP/
     fi
+    if [ -f $BACKUPDIR/mapBuilder.ini.php ]; then
+        cp -p $BACKUPDIR/mapBuilder.ini.php        $LIZMAP/var/config/
+    fi
+    if [ -f $BACKUPDIR/altiProfil.ini.php ]; then
+        cp -p $BACKUPDIR/altiProfil.ini.php        $LIZMAP/var/config/
+    fi
 else
     echo "backup directory does not exists"
     exit 1
