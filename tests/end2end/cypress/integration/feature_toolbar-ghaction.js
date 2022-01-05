@@ -12,6 +12,9 @@ const arrayBufferToBase64 = (buffer) => {
 describe('Feature Toolbar', function () {
 
     it('should display working tools', function () {
+        const PNG = require('pngjs').PNG;
+        const pixelmatch = require('pixelmatch');
+        
         cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
 
         cy.wait(500)
@@ -44,7 +47,11 @@ describe('Feature Toolbar', function () {
 
             cy.fixture('images/feature_toolbar/selection.png').then((image) => {
                 // image encoded as base64
-                expect(image, 'expect point to be displayed in yellow').to.equal(responseBodyAsBase64)
+                const img1 = PNG.sync.read(Buffer.from(responseBodyAsBase64, 'base64'));
+                const img2 = PNG.sync.read(Buffer.from(image, 'base64'));
+                const { width, height } = img1;
+
+                expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect point to be displayed in yellow').to.equal(0)
             })
         })
 
@@ -55,7 +62,7 @@ describe('Feature Toolbar', function () {
         cy.get('#attribute-layer-table-parent_layer tbody tr:first').should('have.class', 'selected')
         cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-select').should('have.class', 'btn-primary')
 
-        // // 2/ Filter
+        // 2/ Filter
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-filter').click()
 
         cy.wait('@getMap')
@@ -66,7 +73,11 @@ describe('Feature Toolbar', function () {
 
             cy.fixture('images/feature_toolbar/filter.png').then((image) => {
                 // image encoded as base64
-                expect(image, 'expect only one filtered point').to.equal(responseBodyAsBase64)
+                const img1 = PNG.sync.read(Buffer.from(responseBodyAsBase64, 'base64'));
+                const img2 = PNG.sync.read(Buffer.from(image, 'base64'));
+                const { width, height } = img1;
+
+                expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect only one filtered point').to.equal(0)
             })
         })
 
