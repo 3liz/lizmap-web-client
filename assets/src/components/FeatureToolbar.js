@@ -11,6 +11,10 @@ export default class FeatureToolbar extends HTMLElement {
 
     connectedCallback() {
 
+        this._fid = this.getAttribute('value').split('.').pop();
+        this._layerId = this.getAttribute('value').replace('.' + this.fid, '');
+        this._featureType = lizMap.getLayerConfigById(this.layerId)[0];
+
         this._isFeatureEditable = true;
 
         // Edition can be restricted by polygon
@@ -68,15 +72,15 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     get fid() {
-        return this.getAttribute('value').split('.').pop();
+        return this._fid;
     }
 
     get layerId() {
-        return this.getAttribute('value').replace('.' + this.fid, '');
+        return this._layerId;
     }
 
     get featureType() {
-        return lizMap.getLayerConfigById(this.layerId)[0];
+        return this._featureType;
     }
 
     get isSelected() {
