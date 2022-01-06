@@ -1,0 +1,30 @@
+{
+    "parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111": [
+        {
+            "name": "buffer_500",
+            "title": "Buffer 500m around this object",
+            "confirm": "Do you really want to show the buffer ?",
+            "icon": "icon-leaf",
+            "options": {
+                "buffer_size": 500,
+                "other_param": "yes"
+            },
+            "style": {
+                "graphicName": "circle",
+                "pointRadius": 6,
+                "fill": true,
+                "fillColor": "lightblue",
+                "fillOpacity": 0.3,
+                "stroke": true,
+                "strokeWidth": 4,
+                "strokeColor": "blue",
+                "strokeOpacity": 0.8
+            },
+            "callbacks": [
+                {"method": "zoom"},
+                {"method": "select", "layerId": "parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111"},
+                {"method": "redraw", "layerId": "parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111"}
+            ]
+        }
+    ]
+}
