@@ -63,7 +63,7 @@
     <div>
         <h2>{@admin~admin.configuration.services.section.qgis.label@}</h2>
         <table class="table services-table">
-            {formcontrols array('qgisServerVersion', 'wmsServerURL', 'wmsPublicUrlList', 'relativeWMSPath', 'wmsMaxWidth', 'wmsMaxHeight')}
+            {formcontrols array('qgisServerVersion', 'wmsServerURL', 'wmsPublicUrlList', 'relativeWMSPath', 'wmsMaxWidth', 'wmsMaxHeight', 'lizmapPluginAPIURL')}
                 <tr>
                     <th>{ctrl_label}</th><td>{ctrl_control}</td>
                 </tr>

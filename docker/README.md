@@ -7,6 +7,7 @@ The container deploys one Lizmap instance and may run php-fpm on the command lin
 ## Configuration variables
 
 - `LIZMAP_WMSSERVERURL`: URL of the OWS (WMS/WFS/WCS) service used
+- `LIZMAP_LIZMAPPLUGINAPIURL`: URL of the lizmap plugin API
 - `LIZMAP_DEBUGMODE`: Error level INFO/DEBUG/ERROR/WARNING
 - `LIZMAP_CACHESTORAGETYPE`: Always Use 'redis'
 - `LIZMAP_CACHEREDISHOST`: Redis host

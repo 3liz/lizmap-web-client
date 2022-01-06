@@ -1,9 +1,9 @@
 <?php
 /**
- * Methods provinding information about Lizmap application.
+ * Methods providing information about Lizmap application.
  *
  * @author    3liz
- * @copyright 2016 3liz
+ * @copyright 2016-2022 3liz
  *
  * @see      http://3liz.com
  *
@@ -14,7 +14,7 @@ class appCtrl extends jController
     /**
      * Returns Lizmap Web Client version.
      *
-     * @return Json containing application information
+     * @return jResponseJson containing application information
      */
     public function metadata()
     {
