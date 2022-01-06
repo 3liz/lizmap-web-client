@@ -510,7 +510,7 @@ abstract class jInstallerBase {
             $relativePath = \Jelix\FileUtilities\Path::shortestPath(jApp::wwwPath(), jApp::appPath());
 
             $epCode = file_get_contents($newEpPath);
-            $epCode = preg_replace('#(require\s*\(\s*[\'"])(.*)(application\.init\.php[\'"])#m', '\\1'.$relativePath.'/\\3', $epCode);
+            $epCode = preg_replace('#(require\s*\(?\s*[\'"])(.*)(application\.init\.php[\'"])#m', '\\1'.$relativePath.'/\\3', $epCode);
             file_put_contents($newEpPath, $epCode);
 
         }
