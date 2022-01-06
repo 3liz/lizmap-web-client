@@ -5,7 +5,7 @@
 wmsServerURL="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi"
 ;WMS subdomain URLs list (optional)
 wmsPublicUrlList=
-;URL to the API exposed by the Lizmap plugin for Qgis Server
+;URL to the API exposed by the Lizmap plugin for QGIS Server
 lizmapPluginAPIURL=
 
 onlyMaps=0
