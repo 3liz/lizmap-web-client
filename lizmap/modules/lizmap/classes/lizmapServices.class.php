@@ -139,7 +139,7 @@ class lizmapServices
     // Wms max width
     public $wmsMaxHeight = 3000;
 
-    // URL to the API exposed by the Lizmap plugin for Qgis Server
+    // URL to the API exposed by the Lizmap plugin for QGIS Server
     public $lizmapPluginAPIURL = '';
 
     // map cache server
