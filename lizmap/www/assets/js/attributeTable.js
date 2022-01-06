@@ -1246,13 +1246,6 @@ var lizAttributeTable = function() {
                             // Bind event when users click anywhere on the table line to highlight
                             bindTableLineClick(aName, aTable);
 
-                            // Bind event on zoom buttons
-                            if(  config.layers[aName]['geometryType'] != 'none'
-                                    && config.layers[aName]['geometryType'] != 'unknown'
-                            ) {
-                                bindTableZoomButton(aName, aTable);
-                            }
-
                             // Bind event on edit button
                             if( canEdit ) {
                                 bindTableEditButton(aName, aTable);
@@ -1343,14 +1336,6 @@ var lizAttributeTable = function() {
                 if( canEdit && isChild && !isPivot){
                     columns.push( {"data": "unlink", "width": "25px", "searchable": false, "sortable": false} );
                     firstDisplayedColIndex+=1;
-                }
-
-                if( geometryType != 'none'
-                    && geometryType != 'unknown'
-                ){
-                    columns.push( {"data": "zoom", "width": "25px", "searchable": false, "sortable": false} );
-                    columns.push( {"data": "center", "width": "25px", "searchable": false, "sortable": false} );
-                    firstDisplayedColIndex+=2;
                 }
 
                 // Add column for each field
@@ -1518,16 +1503,6 @@ var lizAttributeTable = function() {
                         line['unlink'] = unlinkCol;
                     }
 
-                    if( geometryType != 'none'
-                        && geometryType != 'unknown'
-                    ){
-                        var zoomCol = '<button class="btn btn-mini attribute-layer-feature-focus zoom" value="'+fid+'" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i></button>';
-                        line['zoom'] = zoomCol;
-
-                        var centerCol = '<button class="btn btn-mini attribute-layer-feature-focus center" value="'+fid+'" title="' + lizDict['attributeLayers.btn.center.title'] + '"><i class="icon-screenshot"></i></button>';
-                        line['center'] = centerCol;
-                    }
-
                     for (var idx in feat.properties){
                         if( ($.inArray(idx, hiddenFields) > -1) )
                             continue;
@@ -1589,23 +1564,6 @@ var lizAttributeTable = function() {
                         });
                     }
                 });
-            }
-
-            function bindTableZoomButton(aName, aTable){
-                // Zoom or center to selected feature on zoom button click
-                $(aTable +' tr td button.attribute-layer-feature-focus').click(function() {
-                    // Read feature
-                    var featId = $(this).val();
-                    var zoomAction = 'zoom';
-                    if( $(this).hasClass('center') )
-                        zoomAction = 'center';
-                    lizMap.zoomToFeature( aName, featId, zoomAction );
-                    return false;
-                })
-                .hover(
-                    function(){ $(this).addClass('btn-primary'); },
-                    function(){ $(this).removeClass('btn-primary'); }
-                );
             }
 
             function bindTableEditButton(aName, aTable){
@@ -1785,17 +1743,13 @@ var lizAttributeTable = function() {
                             }
 
                             // Remove button before reuse it
-                            // Zoom
-                            $(childTable +' tr td button.attribute-layer-feature-focus').remove();
                             // Unlink
                             $(childTable +' tr td button.attribute-layer-feature-unlink').remove();
                             // Hide columns
                             var dt = $(childTable).DataTable();
                             for ( c = 2; c < 7; c++ ) {
                                 var dataSrc = dt.column(c).dataSrc();
-                                if ( dataSrc == 'unlink' ||
-                                     dataSrc == 'zoom' ||
-                                     dataSrc == 'center' )
+                                if ( dataSrc == 'unlink')
                                      dt.column(c).visible(false);
                                 if ( dataSrc == 'edit' && canCreate ) {
                                     var createHeader = $(dt.column(c).header());
