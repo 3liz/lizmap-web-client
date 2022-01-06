@@ -3,7 +3,7 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      http://3liz.com
  *
@@ -25,10 +25,7 @@ class Server
     public function __construct()
     {
         $lizmap_data = $this->getLizmapMetadata();
-        $qgis_server_data = $this->getQgisServerMetadata();
-        if (!empty($qgis_server_data)) {
-            $lizmap_data['qgis_server_info'] = $qgis_server_data['qgis_server'];
-        }
+        $lizmap_data['qgis_server_info'] = $this->getQgisServerMetadata();
 
         $this->metadata = $lizmap_data;
     }
@@ -97,7 +94,8 @@ class Server
      * Get QGIS Server status and metadata.
      * We use the new entrypoint /lizmap/server.json.
      *
-     * @return array QGIS Server and plugins metadata
+     * @return array QGIS Server and plugins metadata. In case of error, it contains
+     *               a 'error' key.
      */
     private function getQgisServerMetadata()
     {
@@ -107,19 +105,32 @@ class Server
         // Only show QGIS related data for admins
         $isAdmin = \jAcl2::check('lizmap.admin.access');
         if (!$isAdmin) {
-            return array();
+            return array('error' => 'NO_ACCESS');
         }
 
         // Get the data from the QGIS Server Lizmap plugin
-        $data = array();
-        $lizmap_url = $services->wmsServerURL.'/lizmap/server.json';
+        if ($services->lizmapPluginAPIURL == '') {
+            return array('error' => 'NO_API_URL');
+        }
+
+        if (strpos($services->lizmapPluginAPIURL, 'fcgi') === false) {
+            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/').'/server.json';
+        } else {
+            // for fcgi, just append the full url
+            $lizmap_url = $services->lizmapPluginAPIURL.'/lizmap/server.json';
+        }
+
         list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($lizmap_url);
         if ($code == 200 && $mime == 'application/json' && strpos((string) $resp, 'metadata') !== false) {
             // Convert the JSON to an associative array
             $qgis_server_data = json_decode($resp, true);
             if (!empty($qgis_server_data) && array_key_exists('qgis_server', $qgis_server_data)) {
-                $data = $qgis_server_data;
+                $data = $qgis_server_data['qgis_server'];
+            } else {
+                $data = array('error' => 'BAD_DATA');
             }
+        } else {
+            $data = array('error' => 'HTTP_ERROR', 'error_http_code' => $code, 'error_message' => $resp);
         }
 
         return $data;
