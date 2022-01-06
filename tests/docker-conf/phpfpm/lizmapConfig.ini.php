@@ -8,7 +8,7 @@ hideSensitiveServicesProperties=0
 wmsServerURL="http://map:8080/ows/"
 ;WMS subdomain URLs list (optional)
 wmsPublicUrlList=
-;URL to the API exposed by the Lizmap plugin for Qgis Server
+;URL to the API exposed by the Lizmap plugin for QGIS Server
 lizmapPluginAPIURL="http://map:8080/lizmap/"
 
 onlyMaps=off
