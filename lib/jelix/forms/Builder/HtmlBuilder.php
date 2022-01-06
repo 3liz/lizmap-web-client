@@ -131,11 +131,17 @@ class HtmlBuilder extends BuilderBase {
         foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl){
             if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
             if(!$this->_form->isActivated($ctrlref)) continue;
-            if($ctrl->type == 'group') {
+            if ($ctrl->type == 'group') {
                 echo '<tr><td colspan="2">';
                 $this->outputControl($ctrl);
                 echo '</td></tr>';
-            }else{
+            } else if ($ctrl->type == 'checkbox') {
+                echo '<tr><th scope="row">';
+                echo '</th><td>';
+                $this->outputControl($ctrl);
+                $this->outputControlLabel($ctrl);
+                echo "</td></tr>\n";
+            } else {
                 echo '<tr><th scope="row">';
                 $this->outputControlLabel($ctrl);
                 echo '</th><td>';

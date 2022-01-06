@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jelix@modules.jelix.org" name="jelix" createdate="2006-01-01">
-       <version stability="stable" date="2021-12-20 12:54">1.6.35</version>
+       <version stability="stable" date="2022-01-06 16:02">1.6.36-pre</version>
         <label lang="en_US">Jelix Main Module</label>
         <description lang="en_US">Main module of jelix which contains some ressources needed by jelix classes</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
@@ -10,7 +10,7 @@
         <homepageURL>http://jelix.org</homepageURL>
     </info>
     <dependencies>
-       <jelix minversion="1.6.35" maxversion="1.6.*"/>
+       <jelix minversion="1.6.36-pre" maxversion="1.6.*"/>
     </dependencies>
     <autoload>
         <namespacePathMap name="PhpRedis" dir="../../../php5redis/lib" suffix=".php" />
