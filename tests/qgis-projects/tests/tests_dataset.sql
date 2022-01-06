@@ -25,6 +25,125 @@ CREATE SCHEMA tests_projects;
 
 ALTER SCHEMA tests_projects OWNER TO lizmap;
 
+--
+-- Name: lizmap_get_data(json); Type: FUNCTION; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE FUNCTION tests_projects.lizmap_get_data(parameters json) RETURNS json
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+    feature_id integer;
+    layer_name text;
+    layer_table text;
+    layer_schema text;
+    action_name text;
+    sqltext text;
+    datasource text;
+    ajson json;
+BEGIN
+
+    action_name:= parameters->>'action_name';
+    feature_id:= (parameters->>'feature_id')::integer;
+    layer_name:= parameters->>'layer_name';
+    layer_schema:= parameters->>'layer_schema';
+    layer_table:= parameters->>'layer_table';
+
+    -- Action buffer_500
+    -- Written here as an example
+    -- Performs a buffer on the geometry
+    IF action_name = 'buffer_500' THEN
+        datasource:= format('
+            SELECT
+            %1$s AS id,
+            ''The buffer '' || %4$s || ''m has been displayed in the map'' AS message,
+            ST_Buffer(geom, %4$s) AS geom
+            FROM "%2$s"."%3$s"
+            WHERE id = %1$s
+        ',
+        feature_id,
+        layer_schema,
+        layer_table,
+        parameters->>'buffer_size'
+        );
+    ELSE
+    -- Default : return geometry
+        datasource:= format('
+            SELECT
+            %1$s AS id,
+            ''The geometry of the object have been displayed in the map'' AS message
+            geom
+            FROM "%2$s"."%3$s"
+            WHERE id = %1$s
+        ',
+        feature_id,
+        layer_schema,
+        layer_table
+        );
+
+    END IF;
+
+    SELECT query_to_geojson(datasource)
+    INTO ajson
+    ;
+    RETURN ajson;
+END;
+$_$;
+
+
+ALTER FUNCTION tests_projects.lizmap_get_data(parameters json) OWNER TO lizmap;
+
+--
+-- Name: FUNCTION lizmap_get_data(parameters json); Type: COMMENT; Schema: tests_projects; Owner: lizmap
+--
+
+COMMENT ON FUNCTION tests_projects.lizmap_get_data(parameters json) IS 'Generate a valid GeoJSON from an action described by a name, PostgreSQL schema and table name of the source data, a QGIS layer name, a feature id and additional options.';
+
+
+--
+-- Name: query_to_geojson(text); Type: FUNCTION; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE FUNCTION tests_projects.query_to_geojson(datasource text) RETURNS json
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $$
+DECLARE
+    sqltext text;
+    ajson json;
+BEGIN
+    sqltext:= format('
+        SELECT jsonb_build_object(
+            ''type'',  ''FeatureCollection'',
+            ''features'', jsonb_agg(features.feature)
+        )::json
+        FROM (
+          SELECT jsonb_build_object(
+            ''type'',       ''Feature'',
+            ''id'',         id,
+            ''geometry'',   ST_AsGeoJSON(ST_Transform(geom, 4326))::jsonb,
+            ''properties'', to_jsonb(inputs) - ''geom''
+          ) AS feature
+          FROM (
+              SELECT * FROM (%s) foo
+          ) AS inputs
+        ) AS features
+    ', datasource);
+    RAISE NOTICE 'SQL = %s', sqltext;
+    EXECUTE sqltext INTO ajson;
+    RETURN ajson;
+END;
+$$;
+
+
+ALTER FUNCTION tests_projects.query_to_geojson(datasource text) OWNER TO lizmap;
+
+--
+-- Name: FUNCTION query_to_geojson(datasource text); Type: COMMENT; Schema: tests_projects; Owner: lizmap
+--
+
+COMMENT ON FUNCTION tests_projects.query_to_geojson(datasource text) IS 'Generate a valid GEOJSON from a given SQL text query.';
+
+
 SET default_tablespace = '';
 
 --
@@ -33,7 +152,7 @@ SET default_tablespace = '';
 
 CREATE TABLE tests_projects.children_layer (
     id integer NOT NULL,
-    parent_id integer NOT NULL,
+    parent_id integer,
     comment text
 );
 
@@ -1025,7 +1144,7 @@ ALTER SEQUENCE tests_projects.layer_with_no_filter_gid_seq OWNED BY tests_projec
 
 CREATE TABLE tests_projects.parent_layer (
     id integer NOT NULL,
-    geom public.geometry(Point,4326)
+    geom public.geometry(Point,2154)
 );
 
 
@@ -1897,8 +2016,8 @@ COPY tests_projects.layer_with_no_filter (gid, geom) FROM stdin;
 --
 
 COPY tests_projects.parent_layer (id, geom) FROM stdin;
-1	0101000020E61000001BFF6BE6D6FB0E4045A544E297CE4540
-2	0101000020E6100000157D87843BA810400C46B93295CF4540
+1	01010000206A080000E9DB1DB8AD8E274172033A2F24F45741
+2	01010000206A080000DF431F18D8E027417C598F864DF45741
 \.
 
 
@@ -2692,14 +2811,6 @@ CREATE INDEX sidx_townhalls_pg_geom ON tests_projects.townhalls_pg USING gist (g
 --
 
 CREATE INDEX sousquartiers_geom_geom_idx ON tests_projects.sousquartiers USING gist (geom);
-
-
---
--- Name: children_layer parent_fkey; Type: FK CONSTRAINT; Schema: tests_projects; Owner: lizmap
---
-
-ALTER TABLE ONLY tests_projects.children_layer
-    ADD CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tests_projects.parent_layer(id) NOT VALID;
 
 
 --

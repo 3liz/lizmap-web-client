@@ -11,20 +11,23 @@ const arrayBufferToBase64 = (buffer) => {
 
 describe('Feature Toolbar', function () {
 
+    beforeEach(function () {
+        // Runs before each tests in the block
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
+
+        cy.wait(300)
+
+        // Click one feature on the map
+        cy.get('#map').click(625, 362)
+    })
+
     it('should display working tools', function () {
         const PNG = require('pngjs').PNG;
         const pixelmatch = require('pixelmatch');
-        
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
-
-        cy.wait(500)
 
         // Open parent_layer in attribute table
         cy.get('#button-attributeLayers').click()
         cy.get('button[value="parent_layer"].btn-open-attribute-layer').click({ force: true })
-
-        // Click one feature on the map
-        cy.get('#map').click(625, 362)
 
         cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
@@ -37,7 +40,7 @@ describe('Feature Toolbar', function () {
             }).as('getMap')
 
         // 1/ Selection
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-select').click()
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').click()
 
         cy.wait('@getMap')
 
@@ -56,14 +59,14 @@ describe('Feature Toolbar', function () {
         })
 
         // Test feature is selected on popup
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-select').should('have.class', 'btn-primary')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
 
         // Test feature is selected on attribute table
         cy.get('#attribute-layer-table-parent_layer tbody tr:first').should('have.class', 'selected')
-        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-select').should('have.class', 'btn-primary')
+        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
 
         // 2/ Filter
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-filter').click()
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').click()
 
         cy.wait('@getMap')
 
@@ -82,16 +85,16 @@ describe('Feature Toolbar', function () {
         })
 
         // Test feature is filtered on popup
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-filter').should('have.class', 'btn-primary')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').should('have.class', 'btn-primary')
 
         // Test feature is filtered on attribute table
         cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').should('have.class', 'btn-primary')
 
         // Disable filter
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-filter').click()
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').click()
 
         // Test feature is not filtered on popup
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-filter').should('not.have.class', 'btn-primary')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').should('not.have.class', 'btn-primary')
 
         // Test feature is not filtered on attribute table
         cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').should('not.have.class', 'btn-primary')
@@ -113,7 +116,7 @@ describe('Feature Toolbar', function () {
 
         // 4/ Link back children feature
         // Select parent feature
-        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_c927e913_2bf7_4e59_934f_2aeff0a2dacd.1"] .feature-select').click({ force: true })
+        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').click({ force: true })
 
         // Select children feature
         cy.get('#nav-tab-attribute-summary').click()
@@ -126,6 +129,21 @@ describe('Feature Toolbar', function () {
 
         // Confirmation message should be displayed
         cy.get('#message .jelix-msg-item-success').should('have.text', 'Selected features have been correctly linked.')
+    })
 
+    it('should display working custom action', function () {
+        cy.get('.popupButtonBar .popup-action').click()
+
+        // Test feature is selected on popup
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
+
+        cy.on('window:confirm', () => true);
+
+        // Confirmation message should be displayed
+        cy.get('#message #lizmap-action-message p').should('have.text', 'The buffer 500m has been displayed in the map')
+
+        // End action
+        cy.get('.popupButtonBar .popup-action').click()
+        cy.get('#message').should('be.empty')
     })
 })
