@@ -20,6 +20,7 @@ PATCH_VERSION=$(firstword $(subst -, ,$(word 3,$(subst ., ,$(LIZMAP_VERSION)))))
 SHORT_VERSION=$(MAJOR_VERSION).$(MINOR_VERSION)
 STABLE_VERSION=$(MAJOR_VERSION).$(MINOR_VERSION).$(PATCH_VERSION)
 SHORT_VERSION_NAME=$(MAJOR_VERSION)_$(MINOR_VERSION)
+DATE_VERSION=$(shell date +%Y-%m-%d)
 
 LATEST_RELEASE=$(shell git branch -a | grep -Po "(release_\\d+_\\d+)" | sort | tail -n1 | cut -d'_' -f 2,3)
 
@@ -87,6 +88,7 @@ debug:
 	@echo "STABLE_VERSION="$(STABLE_VERSION)
 	@echo "SHORT_VERSION="$(SHORT_VERSION)
 	@echo "SHORT_VERSION_NAME="$(SHORT_VERSION_NAME)
+	@echo "DATE_VERSION="$(DATE_VERSION)
 	@echo "DOCKER_MANIFEST_VERSION="$(DOCKER_MANIFEST_VERSION)
 ifdef DOCKER_MANIFEST_VERSION_SHORT
 	@echo "DOCKER_MANIFEST_VERSION_SHORT="$(DOCKER_MANIFEST_VERSION_SHORT)
@@ -127,6 +129,8 @@ clean:
 $(DIST): lizmap/www/assets/js/lizmap.js lizmap/vendor
 	mkdir -p $(DIST)
 	cp -aR $(FILES) $(DIST)/
+	sed -i "s/\(<version date=\"\)\([^\"]*\)\(\"\)/\1$(DATE_VERSION)\3/" $(DIST)/lizmap/project.xml
+	sed -i "s/\(<version.*pre\)</\1\.$(COMMIT_NUMBER)</" $(DIST)/lizmap/project.xml
 	mkdir -p $(DIST)/temp/lizmap/
 	cp -a temp/.htaccess $(DIST)/temp/
 	cp -a temp/lizmap/.empty $(DIST)/temp/lizmap/
