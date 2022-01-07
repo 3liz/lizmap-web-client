@@ -25,7 +25,8 @@ class appCtrl extends jController
             jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
         }
 
-        // Get server metadata from LWC and QGIS Server Lizmap plugin        $server = new \Lizmap\Server\Server();
+        // Get server metadata from LWC and QGIS Server Lizmap plugin
+        $server = new \Lizmap\Server\Server();
         $data = $server->getMetadata();
         $rep->data = $data;
 
