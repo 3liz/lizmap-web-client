@@ -5,7 +5,7 @@
         <label lang="en_US">proj4php</label>
         <description lang="en_US"/>
         <license URL="https://www.gnu.org/licenses/lgpl.html">GNU LESSER GENERAL PUBLIC LICENSE Version 3</license>
-        <copyright>2011-2020 3liz</copyright>
+        <copyright>2011-2022 3liz</copyright>
         <creator name="3liz" email="info@3liz.com"/>
         <homepageURL>http://3liz.com</homepageURL>
     </info>
