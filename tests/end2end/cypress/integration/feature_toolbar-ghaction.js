@@ -109,7 +109,7 @@ describe('Feature Toolbar', function () {
         cy.get('#attribute-layer-table-parent_layer-children_layer tbody tr').should('have.length', 1)
 
         // Click unlink button
-        cy.get('#attribute-layer-table-parent_layer-children_layer tbody tr .attribute-layer-feature-unlink').click({ force: true })
+        cy.get('#attribute-layer-table-parent_layer-children_layer tbody tr .feature-unlink').click({ force: true })
 
         // Confirmation message should be displayed
         cy.get('#message .jelix-msg-item-success').should('have.text', 'The child feature has correctly been unlinked.')
