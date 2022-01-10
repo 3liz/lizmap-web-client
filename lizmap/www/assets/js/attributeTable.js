@@ -1063,8 +1063,21 @@ var lizAttributeTable = function() {
 
                 // Detect if table is parent or child
                 var isChild = true;
-                if( aTable.replace( cleanName, '') == '#attribute-layer-table-' )
+                let parentLayerID = '';
+                if (['#attribute-layer-table-', '#edition-table-'].includes(aTable.replace(cleanName, ''))){
                     isChild = false;
+                }else{
+                    let parentLayerName = '';
+                    if (aTable.startsWith('#attribute-layer-table-')){
+                        parentLayerName =  aTable.replace('#attribute-layer-table-', '').split('-')[0];
+                    } else if (aTable.startsWith('#edition-table-')) {
+                        parentLayerName = aTable.replace('#edition-table-', '').split('-')[0];
+                    }
+
+                    if(parentLayerName){
+                        parentLayerID = config.layers[parentLayerName]['id'];
+                    }
+                }
 
                 // Pivot table ?
                 var isPivot = false;
@@ -1104,7 +1117,7 @@ var lizAttributeTable = function() {
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
                     // Format features for datatable
-                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures'], lConfig['id']);
+                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures'], lConfig['id'], parentLayerID);
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
@@ -1251,16 +1264,6 @@ var lizAttributeTable = function() {
                                 bindTableEditButton(aName, aTable);
                             }
 
-                            // Bind event on delete button
-                            if( canDelete ) {
-                                bindTableDeleteButton(aName, aTable);
-                            }
-
-                            // Bind event on unlink button
-                            if( canEdit && isChild && !isPivot ) {
-                                bindTableUnlinkButton(aName, aTable);
-                            }
-
                             // Refresh size
                             var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
 
@@ -1326,15 +1329,6 @@ var lizAttributeTable = function() {
 
                 if( canEdit ){
                     columns.push( {"data": "edit", "width": "25px", "searchable": false, "sortable": false} );
-                    firstDisplayedColIndex+=1;
-                }
-                if( canDelete ){
-                    columns.push( {"data": "delete", "width": "25px", "searchable": false, "sortable": false} );
-                    firstDisplayedColIndex+=1;
-                }
-
-                if( canEdit && isChild && !isPivot){
-                    columns.push( {"data": "unlink", "width": "25px", "searchable": false, "sortable": false} );
                     firstDisplayedColIndex+=1;
                 }
 
@@ -1455,7 +1449,7 @@ var lizAttributeTable = function() {
             }
 
 
-            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures, layerId){
+            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures, layerId, parentLayerID){
                 var dataSet = [];
                 var foundFeatures = {};
                 atFeatures.forEach(function(feat) {
@@ -1472,7 +1466,7 @@ var lizAttributeTable = function() {
                     if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
                         line.lizSelected = 'a';
 
-                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" is-layer-child="${isChild}"></lizmap-feature-toolbar>`;
+                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"`: ''}></lizmap-feature-toolbar>`;
 
                     // Build table lines
 
@@ -1480,27 +1474,6 @@ var lizAttributeTable = function() {
                     if( canEdit ) {
                         var editCol = '<button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button>';
                         line['edit'] = editCol;
-                    }
-
-                    // Delete button
-                    if( canDelete ) {
-                        var delIcon = 'icon-trash';
-                        var delTitle = lizDict['attributeLayers.btn.delete.title'];
-                        if( isChild && isPivot ){
-                            delIcon = 'icon-minus';
-                            delTitle = lizDict['attributeLayers.btn.remove.link.title'];
-                        }
-                        var deleteCol = '<button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + delTitle + '"><i class="'+delIcon+'"></i></button>';
-                        line['delete'] = deleteCol;
-                    }
-
-                    // Unlink button
-                    if( canEdit && isChild && !isPivot ) {
-
-                        var unlinkIcon = 'icon-minus';
-                        var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
-                        var unlinkCol = '<button class="btn btn-mini attribute-layer-feature-unlink" value="'+fid+'" title="' + unlinkTitle + '"><i class="'+unlinkIcon+'"></i></button>';
-                        line['unlink'] = unlinkCol;
                     }
 
                     for (var idx in feat.properties){
@@ -1580,96 +1553,6 @@ var lizAttributeTable = function() {
                 );
             }
 
-            function bindTableDeleteButton(aName, aTable){
-                $(aTable +' tr td button.attribute-layer-feature-delete').click(function() {
-                    var featId = $(this).val();
-                    // trigger deletion
-                    var lid = config.layers[aName]['id'];
-                    deleteEditionFeature( lid, featId );
-                    return false;
-                })
-                .hover(
-                    function(){ $(this).addClass('btn-primary'); },
-                    function(){ $(this).removeClass('btn-primary'); }
-                );
-            }
-
-            function bindTableUnlinkButton(aName, aTable){
-                $(aTable +' tr td button.attribute-layer-feature-unlink').click(function() {
-                    // Get child feature id clicked
-                    var featId = $(this).val();
-                    // Get child layer id
-                    var cId = config.layers[aName]['id'];
-                    // Get parent layer name and id
-                    var pName = $(aTable).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
-                    var pId = config.layers[pName]['id'];
-
-                    // Get foreign key column
-                    var cFkey = null;
-                    if( !( pId in config.relations ) )
-                        return false;
-                    for( var rp in config.relations[pId] ){
-                        var rpItem = config.relations[pId][rp];
-                        if( rpItem.referencingLayer == cId ){
-                            cFkey = rpItem.referencingField
-                        }else{
-                            continue;
-                        }
-                    }
-                    if( !cFkey )
-                        return false;
-
-                    // Get features for the child layer
-                    var features = config.layers[aName]['features'];
-                    if ( !features || Object.keys(features).length <= 0 )
-                        return false;
-
-                    // Get primary key value for clicked child item
-                    var cc = lizMap.getLayerConfigById(
-                        cId,
-                        config.attributeLayers,
-                        'layerId'
-                    );
-
-                    if( !cc )
-                        return false;
-                    var primaryKey = cc[1]['primaryKey'];
-                    var afeat = features[featId];
-                    if( typeof afeat === "undefined" )
-                        return false;
-                    var cPkeyVal = afeat.properties[primaryKey];
-                    // Check if pkey is integer
-                    var intRegex = /^[0-9]+$/;
-                    if( !( intRegex.test(cPkeyVal) ) )
-                        cPkeyVal = " '" + cPkeyVal + "' ";
-                    var eService = OpenLayers.Util.urlAppend(lizUrls.edition
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
-
-                    $.post(eService.replace('getFeature','unlinkChild'),{
-                      lid: cId,
-                      pkey: primaryKey,
-                      pkeyval: cPkeyVal,
-                      fkey: cFkey
-                    }, function(data){
-                        // Show response message
-                        $('#lizmap-edition-message').remove();
-                        lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
-
-                        // Send signal saying edition has been done on table
-                        lizMap.events.triggerEvent("lizmapeditionfeaturemodified",
-                            { 'layerId': cId}
-                        );
-
-                    });
-                    return false;
-                })
-                .hover(
-                    function(){ $(this).addClass('btn-primary'); },
-                    function(){ $(this).removeClass('btn-primary'); }
-                );
-            }
-
             function bindEditTableEditButton(aName, aTable){
                 $(aTable +' tr td button.attribute-layer-feature-edit').click(function() {
                     var featId = $(this).val();
@@ -1732,25 +1615,16 @@ var lizAttributeTable = function() {
                             $(childTable +' tr').unbind('click');
                             $(childTable +' tr td button').unbind('click');
 
-                            // Bind event on delete button
-                            if( canDelete ) {
-                                bindTableDeleteButton(chName, childTable);
-                            }
-
                             // Bind event on edit button
                             if( canEdit ) {
                                 bindEditTableEditButton(chName, childTable);
                             }
 
                             // Remove button before reuse it
-                            // Unlink
-                            $(childTable +' tr td button.attribute-layer-feature-unlink').remove();
                             // Hide columns
                             var dt = $(childTable).DataTable();
                             for ( c = 2; c < 7; c++ ) {
                                 var dataSrc = dt.column(c).dataSrc();
-                                if ( dataSrc == 'unlink')
-                                     dt.column(c).visible(false);
                                 if ( dataSrc == 'edit' && canCreate ) {
                                     var createHeader = $(dt.column(c).header());
                                     if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
@@ -2771,9 +2645,26 @@ var lizAttributeTable = function() {
                     var getLayer = lizMap.getLayerConfigById( e.layerId );
                     if( getLayer ){
                         var featureType = getLayer[0];
-                        if( !(featureType in config.attributeLayers) )
+                        if( !(featureType in config.attributeLayers) ){
                             return false;
+                        }
                         refreshTablesAfterEdition( featureType );
+
+                        // Check if the map and tables must be refreshed after this deletion
+                        const cascadeToChildren = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
+                        // Get filter status for the layer concerned by the edition
+                        let hasFilter = false;
+                        if (
+                            ('filteredFeatures' in config.layers[featureType] && config.layers[featureType]['filteredFeatures'].length > 0)
+                            || ('request_params' in config.layers[featureType] && config.layers[featureType]['request_params']['filter'])
+                            || ('request_params' in config.layers[featureType] && config.layers[featureType]['request_params']['exp_filter'])
+                        ){
+                            hasFilter = true;
+                        }
+                        if (hasFilter && lizMap.lizmapLayerFilterActive && cascadeToChildren) {
+                            const parentFeatureType = lizMap.lizmapLayerFilterActive;
+                            updateMapLayerDrawing(parentFeatureType, cascadeToChildren);
+                        }
                     } // todo : only remove line corresponding to deleted feature ?
                 },
 

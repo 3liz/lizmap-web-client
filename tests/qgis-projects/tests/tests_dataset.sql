@@ -1503,6 +1503,109 @@ ALTER SEQUENCE tests_projects."townhalls_EPSG2154_id_seq" OWNED BY tests_project
 
 
 --
+-- Name: tramway_lines; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.tramway_lines (
+    id_line integer NOT NULL,
+    geom public.geometry(LineString,2154)
+);
+
+
+ALTER TABLE tests_projects.tramway_lines OWNER TO lizmap;
+
+--
+-- Name: tramway_lines_id_tram_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.tramway_lines_id_tram_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.tramway_lines_id_tram_seq OWNER TO lizmap;
+
+--
+-- Name: tramway_lines_id_tram_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.tramway_lines_id_tram_seq OWNED BY tests_projects.tramway_lines.id_line;
+
+
+--
+-- Name: tramway_pivot; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.tramway_pivot (
+    id_pivot integer NOT NULL,
+    id_line integer NOT NULL,
+    id_stop integer NOT NULL
+);
+
+
+ALTER TABLE tests_projects.tramway_pivot OWNER TO lizmap;
+
+--
+-- Name: tramway_pivot_id_pivot_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.tramway_pivot_id_pivot_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.tramway_pivot_id_pivot_seq OWNER TO lizmap;
+
+--
+-- Name: tramway_pivot_id_pivot_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.tramway_pivot_id_pivot_seq OWNED BY tests_projects.tramway_pivot.id_pivot;
+
+
+--
+-- Name: tramway_stops; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.tramway_stops (
+    id_stop integer NOT NULL,
+    geom public.geometry(Point,2154)
+);
+
+
+ALTER TABLE tests_projects.tramway_stops OWNER TO lizmap;
+
+--
+-- Name: tramway_stops_id_stop_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.tramway_stops_id_stop_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.tramway_stops_id_stop_seq OWNER TO lizmap;
+
+--
+-- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.tramway_stops_id_stop_seq OWNED BY tests_projects.tramway_stops.id_stop;
+
+
+--
 -- Name: children_layer id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1752,6 +1855,27 @@ ALTER TABLE ONLY tests_projects.time_manager ALTER COLUMN gid SET DEFAULT nextva
 --
 
 ALTER TABLE ONLY tests_projects.townhalls_pg ALTER COLUMN id SET DEFAULT nextval('tests_projects."townhalls_EPSG2154_id_seq"'::regclass);
+
+
+--
+-- Name: tramway_lines id_line; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_lines ALTER COLUMN id_line SET DEFAULT nextval('tests_projects.tramway_lines_id_tram_seq'::regclass);
+
+
+--
+-- Name: tramway_pivot id_pivot; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_pivot ALTER COLUMN id_pivot SET DEFAULT nextval('tests_projects.tramway_pivot_id_pivot_seq'::regclass);
+
+
+--
+-- Name: tramway_stops id_stop; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT nextval('tests_projects.tramway_stops_id_stop_seq'::regclass);
 
 
 --
@@ -2185,6 +2309,43 @@ COPY tests_projects.townhalls_pg (id, geom, name) FROM stdin;
 
 
 --
+-- Data for Name: tramway_lines; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.tramway_lines (id_line, geom) FROM stdin;
+1	01020000206A08000002000000F722C8E2F0772741BF798FAEAAFB5741976BC742154E2741085C8F5AE2F45741
+2	01020000206A08000002000000A5B2716D583727413CBFE4A30CF85741BEC01D387A882741C4688F7ECAF75741
+\.
+
+
+--
+-- Data for Name: tramway_pivot; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.tramway_pivot (id_pivot, id_line, id_stop) FROM stdin;
+1	1	1
+2	1	2
+3	1	3
+4	2	2
+5	2	4
+6	2	5
+\.
+
+
+--
+-- Data for Name: tramway_stops; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.tramway_stops (id_stop, geom) FROM stdin;
+1	01010000206A0800001BC9724DE876274184CEE49B89FB5741
+3	01010000206A08000074C51CD81D4F2741A6B1E4E3F2F45741
+4	01010000206A08000070B9714DE5382741D9143A2D1DF85741
+5	01010000206A080000D01373EDF5872741C4688F7ECAF75741
+2	01010000206A08000029101D782B60274100143A91EBF75741
+\.
+
+
+--
 -- Name: children_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2230,7 +2391,7 @@ SELECT pg_catalog.setval('tests_projects.end2end_form_edition_geom_id_seq', 1, f
 -- Name: end2end_form_edition_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
-SELECT pg_catalog.setval('tests_projects.end2end_form_edition_id_seq', 1, true);
+SELECT pg_catalog.setval('tests_projects.end2end_form_edition_id_seq', 4, true);
 
 
 --
@@ -2448,6 +2609,27 @@ SELECT pg_catalog.setval('tests_projects.time_manager_gid_seq', 3, true);
 --
 
 SELECT pg_catalog.setval('tests_projects."townhalls_EPSG2154_id_seq"', 27, true);
+
+
+--
+-- Name: tramway_lines_id_tram_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.tramway_lines_id_tram_seq', 2, true);
+
+
+--
+-- Name: tramway_pivot_id_pivot_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.tramway_pivot_id_pivot_seq', 6, true);
+
+
+--
+-- Name: tramway_stops_id_stop_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.tramway_stops_id_stop_seq', 5, true);
 
 
 --
@@ -2779,10 +2961,48 @@ ALTER TABLE ONLY tests_projects.townhalls_pg
 
 
 --
+-- Name: tramway_lines tramway_lines_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_lines
+    ADD CONSTRAINT tramway_lines_pkey PRIMARY KEY (id_line);
+
+
+--
+-- Name: tramway_pivot tramway_pivot_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_pivot
+    ADD CONSTRAINT tramway_pivot_pkey PRIMARY KEY (id_pivot);
+
+
+--
+-- Name: tramway_stops tramway_stops_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_stops
+    ADD CONSTRAINT tramway_stops_pkey PRIMARY KEY (id_stop);
+
+
+--
+-- Name: fki_line_fkey; Type: INDEX; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE INDEX fki_line_fkey ON tests_projects.tramway_pivot USING btree (id_line);
+
+
+--
 -- Name: fki_parent_fkey; Type: INDEX; Schema: tests_projects; Owner: lizmap
 --
 
 CREATE INDEX fki_parent_fkey ON tests_projects.children_layer USING btree (parent_id);
+
+
+--
+-- Name: fki_stop_fkey; Type: INDEX; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE INDEX fki_stop_fkey ON tests_projects.tramway_pivot USING btree (id_stop);
 
 
 --
@@ -2811,6 +3031,22 @@ CREATE INDEX sidx_townhalls_pg_geom ON tests_projects.townhalls_pg USING gist (g
 --
 
 CREATE INDEX sousquartiers_geom_geom_idx ON tests_projects.sousquartiers USING gist (geom);
+
+
+--
+-- Name: tramway_pivot line_fkey; Type: FK CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_pivot
+    ADD CONSTRAINT line_fkey FOREIGN KEY (id_line) REFERENCES tests_projects.tramway_lines(id_line) NOT VALID;
+
+
+--
+-- Name: tramway_pivot stop_fkey; Type: FK CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.tramway_pivot
+    ADD CONSTRAINT stop_fkey FOREIGN KEY (id_stop) REFERENCES tests_projects.tramway_stops(id_stop) NOT VALID;
 
 
 --
