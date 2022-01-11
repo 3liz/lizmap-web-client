@@ -2,9 +2,16 @@
 
 ## Unreleased
 
+### Added
+
+- A new panel in the administration interface can display QGIS Server information such version and plugins.
+  - This information can be retrieved as well in the QGIS Desktop plugin if the administrator login is provided
+
 ### Fixed
 
 - Fix a regression during the loading of embedded projects
+- Fix a regression during the init of relation references into forms
+- Fix the backup script about third-party modules such as MapBuilder and AltiProfil
 - Update Lizmap locales about missing languages in the package like Romanian and others
 
 ## 3.5.0 - 2021-12-15
