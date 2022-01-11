@@ -1620,32 +1620,26 @@ var lizAttributeTable = function() {
                                 bindEditTableEditButton(chName, childTable);
                             }
 
-                            // Remove button before reuse it
-                            // Hide columns
-                            var dt = $(childTable).DataTable();
-                            for ( c = 2; c < 7; c++ ) {
-                                var dataSrc = dt.column(c).dataSrc();
-                                if ( dataSrc == 'edit' && canCreate ) {
-                                    var createHeader = $(dt.column(c).header());
-                                    if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
-                                        createHeader
-                                            .append('<button class="btn btn-mini attribute-layer-feature-create" value="-1" title="'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'"><i class="icon-plus"></i></button>')
-                                            .css('padding', '10px 5px');
-                                        createHeader
-                                            .children('button.attribute-layer-feature-create')
-                                            .click(function(){
-                                var tabPane = $(this).parents('div.tab-pane.attribute-layer-child-content');
-                                var parentFeatId = tabPane.find('input.attribute-table-hidden-parent-feature-id').val();
-                                var parentLayerName = tabPane.find('input.attribute-table-hidden-parent-layer').val();
-                                var layerName = tabPane.find('input.attribute-table-hidden-layer').val();
-                                lizMap.getLayerFeature(parentLayerName, parentFeatId, function(parentFeat) {
-                                    var parentLayerId = config.layers[lizMap.getLayerNameByCleanName(parentLayerName)]['id'];
-                                    var lid = config.layers[lizMap.getLayerNameByCleanName(layerName)]['id'];
-                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat});
-                                });
-                                return false;
-                                            });
-                                    }
+                            // Button to create feature linked to parent
+                            if ( canCreate ) {
+                                const createHeader = $($(childTable).DataTable().column(1).header());
+                                if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
+                                    createHeader
+                                    .append(`<button class="btn btn-mini attribute-layer-feature-create" value="-1" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                                                <i class="icon-plus"></i>
+                                            </button>`)
+                                    .on('click', 'button.attribute-layer-feature-create',function () {
+                                        var tabPane = $(this).parents('div.tab-pane.attribute-layer-child-content');
+                                        var parentFeatId = tabPane.find('input.attribute-table-hidden-parent-feature-id').val();
+                                        var parentLayerName = tabPane.find('input.attribute-table-hidden-parent-layer').val();
+                                        var layerName = tabPane.find('input.attribute-table-hidden-layer').val();
+                                        lizMap.getLayerFeature(parentLayerName, parentFeatId, function (parentFeat) {
+                                            var parentLayerId = config.layers[lizMap.getLayerNameByCleanName(parentLayerName)]['id'];
+                                            var lid = config.layers[lizMap.getLayerNameByCleanName(layerName)]['id'];
+                                            lizMap.launchEdition(lid, null, { layerId: parentLayerId, feature: parentFeat });
+                                        });
+                                        return false;
+                                    });
                                 }
                             }
 
