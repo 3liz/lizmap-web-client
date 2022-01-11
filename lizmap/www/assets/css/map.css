@@ -744,6 +744,10 @@ SubDock
   color:red;
 }
 
+.attribute-layer-feature-create{
+  margin-left: -10px;
+}
+
 table.attribute-table-table tr td{
   cursor:pointer;
 }
