@@ -17,7 +17,7 @@ describe('Form edition all field type', function() {
         cy.get('#button-attributeLayers').click()
         cy.get('button[value="form_edition_all_fields_types"].btn-open-attribute-layer').click({ force: true })
 
-        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.feature-edit').click({ force: true })
 
         cy.get("#jforms_view_edition_integer_array_0").should('be.checked')
         cy.get("#jforms_view_edition_integer_array_1").should('be.checked')
@@ -33,7 +33,7 @@ describe('Form edition all field type', function() {
         cy.get('#button-attributeLayers').click()
         cy.get('button[value="form_edition_all_fields_types"].btn-open-attribute-layer').click({ force: true })
 
-        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.feature-edit').click({ force: true })
 
         cy.get("#jforms_view_edition_text_0").should('be.checked')
         cy.get("#jforms_view_edition_text_1").should('be.checked')
@@ -110,7 +110,7 @@ describe('Form edition all field type', function() {
         cy.get('#button-attributeLayers').click()
         cy.get('button[value="form_edition_all_fields_types"].btn-open-attribute-layer').click({ force: true })
 
-        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.attribute-layer-feature-edit').click({ force: true })
+        cy.get('#attribute-layer-table-form_edition_all_fields_types tr:last button.feature-edit').click({ force: true })
 
         cy.get("#jforms_view_edition_boolean_notnull_for_checkbox").should('not.be.checked')
     })

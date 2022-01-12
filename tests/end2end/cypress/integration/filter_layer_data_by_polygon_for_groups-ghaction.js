@@ -127,10 +127,10 @@ describe('Filter layer data by polygon for groups', function () {
         // The user cannot edit the data, even for the layer townhalls_pg
 
         // Every buttons are disabled
-        cy.get('#attribute-layer-table-townhalls_pg button:disabled.attribute-layer-feature-edit').should('have.length', 16)
+        cy.get('#attribute-layer-table-townhalls_pg button:disabled.feature-edit').should('have.length', 16)
 
         // Edition is impossible even when removing disabled on button
-        cy.get('.attribute-layer-feature-edit:first').invoke("removeAttr", "disabled").click({ force: true })
+        cy.get('.feature-edit:first').invoke("removeAttr", "disabled").click({ force: true })
         // => a message is displayed
         cy.get('ul.jelix-msg > li').should('have.class', 'jelix-msg-item-FeatureNotEditable')
     })
@@ -224,8 +224,8 @@ describe('Filter layer data by polygon for groups', function () {
         cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
 
         // The user can only edit 5 features for the layer townhalls_pg (16 - 5 = 11 are disabled)
-        cy.get('#attribute-layer-table-townhalls_pg button:disabled.attribute-layer-feature-edit').should('have.length', 11)
-        cy.get('#attribute-layer-table-townhalls_pg button:not(:disabled).attribute-layer-feature-edit').should('have.length', 5)
+        cy.get('#attribute-layer-table-townhalls_pg button:disabled.feature-edit').should('have.length', 11)
+        cy.get('#attribute-layer-table-townhalls_pg button:not(:disabled).feature-edit').should('have.length', 5)
 
         // Close attribute table
         cy.get('.btn-bottomdock-clear').click({force: true})
