@@ -146,6 +146,16 @@ export default class FeatureToolbar extends HTMLElement {
         return this.getAttribute('edition-restricted') === 'true';
     }
 
+    /**
+     * Return true if childLayer has a relation with parentLayer
+     *
+     * @readonly
+     * @memberof FeatureToolbar
+     */
+    get hasRelation(){
+        return lizMap.config?.relations?.[this.parentLayerId]?.some((relation) => relation.referencingLayer === this.layerId);
+    }
+
     updateIsFeatureEditable(editableFeatures) {
         this._isFeatureEditable = false;
         for (const editableFeature of editableFeatures) {
@@ -194,7 +204,15 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     edit(){
-        lizMap.launchEdition(this.layerId, this.fid);
+        const parentFeatureId = this.getAttribute('parent-feature-id');
+        if (parentFeatureId && this.hasRelation){
+            const parentLayerName = lizMap.getLayerConfigById(this.parentLayerId)?.[0];
+            lizMap.getLayerFeature(parentLayerName, parentFeatureId, (feat) => {
+                lizMap.launchEdition(this.layerId, this.fid, { layerId: this.parentLayerId, feature: feat });
+            });
+        }else{
+            lizMap.launchEdition(this.layerId, this.fid);
+        }
     }
 
     delete(){
