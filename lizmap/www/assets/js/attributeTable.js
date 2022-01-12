@@ -27,11 +27,6 @@ var lizAttributeTable = function() {
             if (!('attributeLayers' in config))
                 return -1;
 
-            // Lizmap URL
-            var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                    ,OpenLayers.Util.getParameterString(lizUrls.params)
-            );
-
             // Verifying WFS layers
             var featureTypes = lizMap.getVectorLayerFeatureTypes();
             if (featureTypes.length == 0 )
@@ -1112,12 +1107,12 @@ var lizAttributeTable = function() {
                 if( cFeatures && cFeatures.length > 0 ){
 
                     // Create columns for datatable
-                    var cdc = createDatatableColumns(aName, atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes);
+                    var cdc = createDatatableColumns(aName, atFeatures, lConfig['geometryType'], isChild, isPivot, hiddenFields, cAliases, cTypes);
                     var columns = cdc.columns;
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
                     // Format features for datatable
-                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures'], lConfig['id'], parentLayerID);
+                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures'], lConfig['id'], parentLayerID);
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
@@ -1173,35 +1168,10 @@ var lizAttributeTable = function() {
                         $( aTable ).dataTable( {
                              data: dataSet
                             ,columns: columns
-                            , drawCallback(settings){
-                                const api = new $.fn.dataTable.Api(settings);
-
+                            , drawCallback: () => {
                                 // Check editable features
                                 if (canEdit || canDelete) {
                                     lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
-                                    // Get editable features
-                                    $.post(lizUrls.edition.replace('getFeature', 'editableFeatures'), {
-                                        repository: lizUrls.params.repository,
-                                        project: lizUrls.params.project,
-                                        layerId: lConfig.id
-                                    }, function (data) {
-                                        if ('success' in data &&
-                                            data['success'] &&
-                                            'status' in data &&
-                                            data['status'] == 'restricted') {
-                                            let editableFeaturesId = [];
-
-                                            for (const feature of data.features) {
-                                                editableFeaturesId.push('#' + feature.id.split('.')[1]);
-                                            }
-                                            // Disable edition and delete actions buttons when user has not those rights
-                                            api.table().cells(':not(' + editableFeaturesId.join(',') + ')', [2, 3])
-                                                .nodes()
-                                                .to$()
-                                                .children('button')
-                                                .prop('disabled', true);
-                                        }
-                                    });
                                 }
                             }
                             ,initComplete: function(settings, json) {
@@ -1259,11 +1229,6 @@ var lizAttributeTable = function() {
                             // Bind event when users click anywhere on the table line to highlight
                             bindTableLineClick(aName, aTable);
 
-                            // Bind event on edit button
-                            if( canEdit ) {
-                                bindTableEditButton(aName, aTable);
-                            }
-
                             // Refresh size
                             var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
 
@@ -1316,7 +1281,7 @@ var lizAttributeTable = function() {
                 return tdata;
             }
 
-            function createDatatableColumns(aName, atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes){
+            function createDatatableColumns(aName, atFeatures, geometryType, isChild, isPivot, hiddenFields, cAliases, cTypes){
                 var columns = [];
                 var firstDisplayedColIndex = 0;
 
@@ -1326,11 +1291,6 @@ var lizAttributeTable = function() {
 
                 columns.push({ "data": "featureToolbar", "width": "25px", "searchable": false, "sortable": false});
                 firstDisplayedColIndex += 1;
-
-                if( canEdit ){
-                    columns.push( {"data": "edit", "width": "25px", "searchable": false, "sortable": false} );
-                    firstDisplayedColIndex+=1;
-                }
 
                 // Add column for each field
                 for (var idx in atFeatures[0].properties){
@@ -1449,7 +1409,7 @@ var lizAttributeTable = function() {
             }
 
 
-            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures, layerId, parentLayerID){
+            function formatDatatableFeatures(atFeatures, geometryType, isChild, isPivot, hiddenFields, selectedFeatures, layerId, parentLayerID){
                 var dataSet = [];
                 var foundFeatures = {};
                 atFeatures.forEach(function(feat) {
@@ -1469,13 +1429,6 @@ var lizAttributeTable = function() {
                     line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"`: ''}></lizmap-feature-toolbar>`;
 
                     // Build table lines
-
-                    // Edit button
-                    if( canEdit ) {
-                        var editCol = '<button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button>';
-                        line['edit'] = editCol;
-                    }
-
                     for (var idx in feat.properties){
                         if( ($.inArray(idx, hiddenFields) > -1) )
                             continue;
@@ -1539,50 +1492,6 @@ var lizAttributeTable = function() {
                 });
             }
 
-            function bindTableEditButton(aName, aTable){
-                $(aTable +' tr td button.attribute-layer-feature-edit').click(function() {
-                    var featId = $(this).val();
-                    // trigger edition
-                    var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid, featId, null);
-                    return false;
-                })
-                .hover(
-                    function(){ $(this).addClass('btn-primary'); },
-                    function(){ $(this).removeClass('btn-primary'); }
-                );
-            }
-
-            function bindEditTableEditButton(aName, aTable){
-                $(aTable +' tr td button.attribute-layer-feature-edit').click(function() {
-                    var featId = $(this).val();
-                    // trigger edition
-                    var lid = config.layers[aName]['id'];
-                    // get info from the form
-                    var formFeatureId = $('#edition-form-container form input[name="liz_featureId"]').val();
-                    var formLayerId = $('#edition-form-container form input[name="liz_layerId"]').val();
-                    // get parent layer config
-                    var getParentLayerConfig = lizMap.getLayerConfigById( formLayerId );
-                    var parentLayerName = getParentLayerConfig[0];
-                    if ( aName in config.attributeLayers ) {
-                        // get featureType layer config
-                        var layerConfig = config.attributeLayers[aName];
-                        //get relation
-                        var relation = getRelationInfo(formLayerId,layerConfig.layerId);
-                        if( relation != null ) {
-                            lizMap.getLayerFeature(parentLayerName, formFeatureId, function(feat) {
-                                lizMap.launchEdition( lid, featId, {layerId:formLayerId,feature:feat});
-                            });
-                        }
-                    }
-                    return false;
-                })
-                .hover(
-                    function(){ $(this).addClass('btn-primary'); },
-                    function(){ $(this).removeClass('btn-primary'); }
-                );
-            }
-
             function getEditionChildData( childLayerName, filter, childTable ){
                 // Get features
                 getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
@@ -1591,15 +1500,12 @@ var lizAttributeTable = function() {
                         // Check edition capabilities
                         var canCreate = false;
                         var canEdit = false;
-                        var canDelete = false;
                         if( 'editionLayers' in config && chName in config.editionLayers ) {
                             var al = config.editionLayers[chName];
                             if( al.capabilities.createFeature == "True" )
                                 canCreate = true;
                             if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
                                 canEdit = true;
-                            if( al.capabilities.deleteFeature == "True" )
-                                canDelete = true;
                         }
 
                         // Bind events when drawing table
@@ -1744,7 +1650,6 @@ var lizAttributeTable = function() {
                         }
                     );
                 }
-
             }
 
             function emptyLayerSelection( featureType, arefresh ) {
@@ -1761,7 +1666,6 @@ var lizAttributeTable = function() {
                         'updateDrawing': arefresh
                     }
                 );
-
             }
 
             function refreshLayerFilter( featureType, featId ) {
@@ -1784,8 +1688,6 @@ var lizAttributeTable = function() {
                         'updateDrawing': true
                     }
                 );
-
-
             }
 
             function emptyLayerFilter( featureType ) {
@@ -1859,7 +1761,6 @@ var lizAttributeTable = function() {
             $('#switcher .treeTable tr#group-' + cleanName).css('background-color', trFilteredBgcolor );
             $('#switcher .treeTable tr#layer-' + cleanName).css('background-color', trFilteredBgcolor );
             $('#layerActionUnfilter' ).toggle( ( lizMap.lizmapLayerFilterActive !== null ) ).css( 'background-color', 'rgba(255, 171, 0, 0.4)');
-
         }
 
         function applyLayerFilter( typeName, aFilter, typeNamePile, typeNameFilter, typeNameDone, cascade ){
