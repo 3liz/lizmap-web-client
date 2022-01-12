@@ -1602,26 +1602,19 @@ var lizAttributeTable = function() {
                                 canDelete = true;
                         }
 
-                        // Unbind previous events on page
-                        $( childTable ).on( 'page.dt', function() {
-                            // unbind previous events
-                            $(childTable +' tr').unbind('click');
-                            $(childTable +' tr td button').unbind('click');
-                        });
-
                         // Bind events when drawing table
-                        $( childTable ).on( 'draw.dt', function() {
+                        $( childTable ).one( 'draw.dt', function() {
 
-                            $(childTable +' tr').unbind('click');
-                            $(childTable +' tr td button').unbind('click');
-
-                            // Bind event on edit button
                             if( canEdit ) {
-                                bindEditTableEditButton(chName, childTable);
+                                // Add property on lizmap-feature-toolbar to edit children feature linked to a parent feature
+                                const parentFeatId = $(childTable).parents('div.tab-pane.attribute-layer-child-content')
+                                    .find('input.attribute-table-hidden-parent-feature-id').val();
+                                $(childTable).DataTable().cells().nodes()
+                                    .to$().children('lizmap-feature-toolbar').attr('parent-feature-id', parentFeatId);
                             }
 
-                            // Button to create feature linked to parent
                             if ( canCreate ) {
+                                // Button to create feature linked to parent
                                 const createHeader = $($(childTable).DataTable().column(1).header());
                                 if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
                                     createHeader
