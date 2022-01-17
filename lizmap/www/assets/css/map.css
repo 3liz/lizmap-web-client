@@ -744,6 +744,10 @@ SubDock
   color:red;
 }
 
+.attribute-layer-feature-create{
+  margin-left: -10px;
+}
+
 table.attribute-table-table tr td{
   cursor:pointer;
 }
@@ -2819,4 +2823,21 @@ lizmap-reverse-geom svg{
 
 #print-launch.spinner::after{
   right: 5px;
+}
+/* lizmap-feature-toolbar */
+lizmap-feature-toolbar button.btn:hover,
+.attribute-layer-action-bar button.btn:not(.dropdown-toggle):hover{
+  background-color: #04c;
+  background-image: linear-gradient(to bottom,#08c,#04c);
+  color: white;
+}
+
+lizmap-feature-toolbar button:hover > [class^="icon-"],
+.attribute-layer-action-bar button:not(.dropdown-toggle):hover > [class^="icon-"]{
+  background-image: url(images/glyphicons-halflings-white.png);
+}
+
+/* Don't display filter in attribute table */
+#attribute-table-container lizmap-feature-toolbar .feature-filter{
+  display: none;
 }

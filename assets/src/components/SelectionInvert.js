@@ -34,7 +34,7 @@ export default class SelectionInvert extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged']
+            ['selectionTool.allFeatureTypeSelected', 'selection.changed']
         );
     }
 
