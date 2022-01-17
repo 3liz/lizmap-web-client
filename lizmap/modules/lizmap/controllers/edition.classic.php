@@ -35,7 +35,7 @@ class editionCtrl extends jController
     /** @var SimpleXMLElement Layer data as simpleXml object */
     private $layerXml = '';
 
-    /** @var qgisMapLayer|qgisVectorLayer Layer data */
+    /** @var qgisVectorLayer Layer data */
     private $layer = '';
 
     /** @var string[] Primary key for getWfsFeature */
@@ -1158,7 +1158,11 @@ class editionCtrl extends jController
     }
 
     /**
-     * Link features between 2 tables via pivot table.
+     * Link features between 2 tables :
+     * - Either [1->n] relation, ie a parent layer and a child layer. In this case, passed $features2 layer id = $pivot.
+     *   In this case, we set the parent id in the child table foreign key column
+     * - Or [n<->m] relation ie 2 tables with a pivot table between them
+     *   In this case we add a new line in the pivot table referencing both parent layers.
      *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
@@ -1171,37 +1175,6 @@ class editionCtrl extends jController
      */
     public function linkFeatures()
     {
-        $features1 = $this->param('features1');
-        $features2 = $this->param('features2');
-        $pivotId = $this->param('pivot');
-        if (!$features1 or !$features2 or !$pivotId) {
-            jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
-
-            return $this->serviceAnswer();
-        }
-
-        // Cut layers id and features ids
-        $exp1 = explode(':', $features1);
-        $exp2 = explode(':', $features2);
-        if (count($exp1) != 3 or count($exp2) != 3) {
-            jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
-
-            return $this->serviceAnswer();
-        }
-
-        $ids1 = explode(',', $exp1[2]);
-        $ids2 = explode(',', $exp2[2]);
-        if (count($ids1) > 1 and count($ids2) > 1) {
-            jMessage::add(jLocale::get('view~edition.link.error.multiple.ids'), 'error');
-
-            return $this->serviceAnswer();
-        }
-        if (count($ids1) == 0 or count($ids2) == 0 or empty($exp1[2]) or empty($exp2[2])) {
-            jMessage::add(jLocale::get('view~edition.link.error.missing.id'), 'error');
-
-            return $this->serviceAnswer();
-        }
-
         $project = $this->param('project');
         $repository = $this->param('repository');
 
@@ -1212,6 +1185,7 @@ class editionCtrl extends jController
 
             return $this->serviceAnswer();
         }
+
         // Get the project data
         $lproj = null;
 
@@ -1231,6 +1205,41 @@ class editionCtrl extends jController
         $this->project = $lproj;
         $this->repository = $lrep;
 
+        // Check the mandatory parameters features1 & features2
+        $features1 = $this->param('features1');
+        $features2 = $this->param('features2');
+        $pivotId = $this->param('pivot');
+        if (!$features1 or !$features2 or !$pivotId) {
+            jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
+
+            return $this->serviceAnswer();
+        }
+
+        // Cut layers id and features ids
+        $exp1 = explode(':', $features1);
+        $exp2 = explode(':', $features2);
+        if (count($exp1) != 3 or count($exp2) != 3) {
+            jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
+
+            return $this->serviceAnswer();
+        }
+
+        // Get the list of features ids given for each layer
+        $ids1 = explode(',', $exp1[2]);
+        $ids2 = explode(',', $exp2[2]);
+        if (count($ids1) > 1 and count($ids2) > 1) {
+            jMessage::add(jLocale::get('view~edition.link.error.multiple.ids'), 'error');
+
+            return $this->serviceAnswer();
+        }
+
+        // Not enough id given
+        if (count($ids1) == 0 or count($ids2) == 0 or empty($exp1[2]) or empty($exp2[2])) {
+            jMessage::add(jLocale::get('view~edition.link.error.missing.id'), 'error');
+
+            return $this->serviceAnswer();
+        }
+
         // Get layer names
         $layer1 = $lproj->getLayer($exp1[0]);
         $layer2 = $lproj->getLayer($exp2[0]);
@@ -1242,7 +1251,7 @@ class editionCtrl extends jController
         $layerName1 = $layer1->getName();
         $layerName2 = $layer2->getName();
 
-        // verifying layers in attribute config
+        // Verifying the layers are present in the attribute table configuration
         $pConfig = $lproj->getFullCfg();
         if (!$lproj->hasAttributeLayers()
             or !property_exists($pConfig->attributeLayers, $layerName1)
@@ -1253,17 +1262,23 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
-        // Get pivot layer information
+        // Get the child layer (which can be a third pivot table) qgisVectorLayer instance
+        /** @var qgisVectorLayer $layer The QGIS vector layer instance */
         $layer = $lproj->getLayer($pivotId);
         $layerNamePivot = $layer->getName();
         $this->layerId = $pivotId;
         $this->layerName = $layerNamePivot;
         $this->layer = $layer;
 
-        // Get editLayer capabilities
+        // Get the editing capabilities for the child layer (which can be a third pivot table)
         $eLayer = $layer->getEditionCapabilities();
-        if ($layerNamePivot == $layerName2) {
+
+        // Check if we are in a 1-n relation or in a n-m relation with a pivot layer
+        // If the name of the 2nd layer is the same that the pivot layer, we are in a 1-n relation
+        $isPivot = false;
+        if ($layerNamePivot != $layerName2) {
             // pivot layer (n:m)
+            $isPivot = true;
             if ($eLayer->capabilities->createFeature != 'True') {
                 jMessage::add(jLocale::get('view~edition.link.error.no.create.feature', array($layerNamePivot)), 'LayerNotEditable');
 
@@ -1271,11 +1286,23 @@ class editionCtrl extends jController
             }
         } else {
             // child layer (1:n)
+            $isPivot = false;
             if ($eLayer->capabilities->modifyAttribute != 'True') {
                 jMessage::add(jLocale::get('view~edition.link.error.no.modify.attributes', array($layerNamePivot)), 'LayerNotEditable');
 
                 return $this->serviceAnswer();
             }
+        }
+
+        // For the 1-n relation, do not allow multiple ids for the parent layer
+        // to avoid wrong data editing (a child feature cannot have 2 parent ids)
+        // It could be ok if we have a n-m relation with a pivot table, by definition
+        // but it could lead to many unwanted links if we do not prevent it also
+        // Forbid it for both cases.
+        if (count($ids1) > 1 && count($ids2) > 1) {
+            jMessage::add(jLocale::get('view~edition.link.error.multiple.ids'), 'error');
+
+            return $this->serviceAnswer();
         }
 
         // Get fields data from the edition database
@@ -1291,17 +1318,22 @@ class editionCtrl extends jController
         $key1 = $exp1[1];
         $key2 = $exp2[1];
 
-        // Check if we need to insert a new row in a pivot table (n:m)
-        // or if we need to update a foreign key in a child table ( 1:n)
-        if ($layerNamePivot == $layerName2) {
-            if (count($ids2) > 1) {
+        // Check if we need to insert a new row in a pivot table (n-m relation)
+        // or if we need to update a foreign key in a child table (1-n relation)
+        if (!$isPivot) {
+            // Check if there is only one parent item selected
+            if (count($ids1) > 1) {
                 jMessage::add(jLocale::get('view~edition.link.error.multiple.ids'), 'error');
 
                 return $this->serviceAnswer();
             }
-            // 1:n relation
+            // Update the child features to add the parent id
             try {
-                $results = $layer->linkChildren($key2, $ids2[0], $key1, $ids1);
+                $foreign_key_column = $key2;
+                $parent_id_value = $ids1[0];
+                $child_pkey_column = $key1;
+                $child_ids = $ids2;
+                $layer->linkChildren($foreign_key_column, $parent_id_value, $child_pkey_column, $child_ids);
                 jMessage::add(jLocale::get('view~edition.link.success'), 'success');
             } catch (Exception $e) {
                 jLog::log('An error has been raised when create linked data:', 'error');
@@ -1309,9 +1341,10 @@ class editionCtrl extends jController
                 jMessage::add(jLocale::get('view~edition.link.error.sql'), 'error');
             }
         } else {
-            // pivot table ( n:m relation )
+            // 2 layers and 1 pivot table -> n:m relation
+            // Insert lines in the pivot table referencing the 2 parent layers id
             try {
-                $results = $layer->insertRelations($key2, $ids2, $key1, $ids1);
+                $layer->insertRelations($key2, $ids2, $key1, $ids1);
                 jMessage::add(jLocale::get('view~edition.link.success'), 'success');
             } catch (Exception $e) {
                 jLog::log('An error has been raised when create linked data:', 'error');
