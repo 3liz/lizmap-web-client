@@ -2859,54 +2859,18 @@ var lizMap = function() {
       // load proj and build features from popup
       var projLoaded = [];
       for ( var i=0, len=geometries.length; i<len; i++ ) {
-          loadProjDefinition(geometries[i].crs, function( aProj ) {
-              projLoaded.push( aProj );
-              if ( projLoaded.length == geometries.length ) {
-                  var features = [];
-                  for ( var j=0, len=geometries.length; j<len; j++ ) {
-                      var geomInfo = geometries[j];
-                      var geometry = OpenLayers.Geometry.fromWKT( geomInfo.geom );
-                      geometry.transform(geomInfo.crs, map.getProjection());
-                      features.push( new OpenLayers.Feature.Vector( geometry ) );
-
-                      var fidInput = $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+geomInfo.fid+'"]');
-                      if ( !fidInput )
-                        continue;
-
-                      var bounds = OpenLayers.Bounds.fromArray(geomInfo.bbox);
-                      bounds.transform(geomInfo.crs, map.getProjection());
-                      var eHtml = '';
-                      eHtml+= '<button class="btn btn-mini popup-layer-feature-bbox-zoom" value="';
-                      eHtml+= bounds.toString();
-                      eHtml+= '" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i>&nbsp;</button>';
-                      var popupButtonBar = fidInput.next('span.popupButtonBar');
-                      if ( popupButtonBar.length != 0 ) {
-                          if ( popupButtonBar.find('button.popup-layer-feature-bbox-zoom').length == 0 )
-                              popupButtonBar.append(eHtml);
-                      } else {
-                          eHtml = '<span class="popupButtonBar">' + eHtml + '</span></br>';
-                          fidInput.after(eHtml);
-                      }
-                      fidInput.find('button.btn').tooltip( {
-                          placement: 'bottom'
-                      } );
-                  }
-                 layer.addFeatures( features );
-
-                  // Zoom
-                  $('div.lizmapPopupContent button.popup-layer-feature-bbox-zoom')
-                  .unbind('click')
-                  .click(function(){
-                      var bbox = OpenLayers.Bounds.fromString($(this).val());
-                      map.zoomToExtent(bbox);
-                      return false;
-                  })
-                  .hover(
-                      function(){ $(this).addClass('btn-primary'); },
-                      function(){ $(this).removeClass('btn-primary'); }
-                  );
-              }
-          } );
+        loadProjDefinition(geometries[i].crs, function( aProj ) {
+          projLoaded.push( aProj );
+          if ( projLoaded.length == geometries.length ) {
+            var features = [];
+            for (const geomInfo of geometries) {
+                var geometry = OpenLayers.Geometry.fromWKT( geomInfo.geom );
+                geometry.transform(geomInfo.crs, map.getProjection());
+                features.push( new OpenLayers.Feature.Vector( geometry ) );
+            }
+            layer.addFeatures( features );
+          }
+        });
       }
   }
 

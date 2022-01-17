@@ -63,7 +63,7 @@ describe('Form edition', function () {
 
         // Use { force: true } because pointer is not on bottom-dock
         cy.get('button[value="end2end_form_edition"].btn-open-attribute-layer').click({ force: true })
-        cy.get('button.attribute-layer-feature-edit:first').click({ force: true })
+        cy.get('button.feature-edit:first').click({ force: true })
 
         // Assert form is displayed
         cy.get('#edition').should('have.class', 'active')
