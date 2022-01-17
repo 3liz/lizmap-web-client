@@ -1111,7 +1111,22 @@ class qgisVectorLayer extends qgisMapLayer
         );
     }
 
-    public function linkChildren($fkey, $fval, $pkey, $pvals)
+    /**
+     * Link features between 2 tables: one parent layer and one child layer.
+     *
+     * It runs a SQL query concerning the child layer table:
+     * UPDATE child_table
+     * SET foreign_key_column = parent_id_value
+     * WHERE child_pkey_column = child_id;
+     *
+     * @param string $foreign_key_column name of the foreign key column in the child layer we need in the update SET
+     * @param int    $parent_id_value    id value of the parent layer feature (only one ID allowed) used in the SET
+     * @param string $child_pkey_column  name of the primary key column in the child layer, used in the WHERE clause
+     * @param array  $child_ids          Primary key values of the child features to be linked. More than one allowed
+     *
+     * @return array Results of the SQL UPDATE queries
+     */
+    public function linkChildren($foreign_key_column, $parent_id_value, $child_pkey_column, $child_ids)
     {
         // Get database connection object
         $dtParams = $this->getDatasourceParameters();
@@ -1119,14 +1134,14 @@ class qgisVectorLayer extends qgisMapLayer
         $dbFieldsInfo = $this->getDbFieldsInfo();
 
         $results = array();
-        $one = $dbFieldsInfo->getSQLRefEquality($fkey, (int) $fval);
-        foreach ($pvals as $pval) {
-            $two = $dbFieldsInfo->getSQLRefEquality($pkey, (int) $pval);
+        $foreign_key_setter = $dbFieldsInfo->getSQLRefEquality($foreign_key_column, (int) $parent_id_value);
+        foreach ($child_ids as $child_id) {
+            $child_filter_based_on_pk = $dbFieldsInfo->getSQLRefEquality($child_pkey_column, (int) $child_id);
 
             // Build SQL
             $sql = ' UPDATE '.$dtParams->table;
-            $sql .= ' SET '.$one;
-            $sql .= ' WHERE '.$two;
+            $sql .= ' SET '.$foreign_key_setter;
+            $sql .= ' WHERE '.$child_filter_based_on_pk;
             $sql .= ';';
 
             try {
@@ -1141,7 +1156,27 @@ class qgisVectorLayer extends qgisMapLayer
         return $results;
     }
 
-    public function insertRelations($fkey, $fvals, $pkey, $pvals)
+    /**
+     * Link features between 2 tables by creating the needed lines
+     * in a third pivot table, for a many-to-many relation (n-m).
+     *
+     * It runs one ore many SQL queries concerning the pivot layer table to insert the needed line(s):
+     * INSERT INTO pivot_table ("foreign_key_column_a" , "foreign_key_column_b")
+     * SELECT parent_a_id_value, parent_b_id_value
+     * WHERE NOT EXISTS (
+     *     SELECT "foreign_key_column_a" , "foreign_key_column_b"
+     *     FROM pivot_table
+     *     WHERE "foreign_key_column_a" = parent_a_id_value AND "foreign_key_column_b" = parent_b_id_value
+     * );
+     *
+     * @param string $foreign_key_column_a name of the foreign key column referencing the parent A in the pivot table
+     * @param array  $parent_a_ids         values of the ids of the selected features of the parent table A
+     * @param string $foreign_key_column_b name of the foreign key column referencing the parent B in the pivot table
+     * @param array  $parent_b_ids         values of the ids of the selected features of the parent table B
+     *
+     * @return array Results of the SQL INSERT queries
+     */
+    public function insertRelations($foreign_key_column_a, $parent_a_ids, $foreign_key_column_b, $parent_b_ids)
     {
         // Get database connection object
         $dtParams = $this->getDatasourceParameters();
@@ -1149,23 +1184,23 @@ class qgisVectorLayer extends qgisMapLayer
         $dbFieldsInfo = $this->getDbFieldsInfo();
 
         $results = array();
-        foreach ($fvals as $fval) {
-            $one = $dbFieldsInfo->getQuotedValue($fkey, (int) $fval);
-            foreach ($pvals as $pval) {
-                $two = $dbFieldsInfo->getQuotedValue($pkey, (int) $pval);
+        foreach ($parent_a_ids as $parent_a_id) {
+            $quoted_parent_a_id = $dbFieldsInfo->getQuotedValue($foreign_key_column_a, (int) $parent_a_id);
+            foreach ($parent_b_ids as $parent_b_id) {
+                $quoted_parent_b_id = $dbFieldsInfo->getQuotedValue($foreign_key_column_b, (int) $parent_b_id);
 
                 // Build SQL
                 $sql = ' INSERT INTO '.$dtParams->table.' (';
-                $sql .= ' '.$cnx->encloseName($fkey).' , ';
-                $sql .= ' '.$cnx->encloseName($pkey).' )';
-                $sql .= ' SELECT '.$one.', '.$two;
+                $sql .= ' '.$cnx->encloseName($foreign_key_column_a).' , ';
+                $sql .= ' '.$cnx->encloseName($foreign_key_column_b).' )';
+                $sql .= ' SELECT '.$quoted_parent_a_id.', '.$quoted_parent_b_id;
                 $sql .= ' WHERE NOT EXISTS';
                 $sql .= ' ( SELECT ';
-                $sql .= ' '.$cnx->encloseName($fkey).' , ';
-                $sql .= ' '.$cnx->encloseName($pkey).' ';
+                $sql .= ' '.$cnx->encloseName($foreign_key_column_a).' , ';
+                $sql .= ' '.$cnx->encloseName($foreign_key_column_b).' ';
                 $sql .= ' FROM '.$dtParams->table;
-                $sql .= ' WHERE '.$cnx->encloseName($fkey).' = '.$one;
-                $sql .= ' AND '.$cnx->encloseName($pkey).' = '.$two.')';
+                $sql .= ' WHERE '.$cnx->encloseName($foreign_key_column_a).' = '.$quoted_parent_a_id;
+                $sql .= ' AND '.$cnx->encloseName($foreign_key_column_b).' = '.$quoted_parent_b_id.')';
                 $sql .= ';';
 
                 try {
