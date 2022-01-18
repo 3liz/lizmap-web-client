@@ -1311,9 +1311,11 @@ class QgisProject
                 }
 
                 // Copy expanded group nodes
-                foreach ($theme->{'expanded-group-nodes'}->{'expanded-group-node'} as $expandedGroupNode) {
-                    $expandedGroupNodeObj = $expandedGroupNode->attributes();
-                    $themes[(string) $themeObj->name]['expandedGroupNode'][] = (string) $expandedGroupNodeObj->id;
+                if (isset($theme->{'expanded-group-nodes'}->{'expanded-group-node'})) {
+                    foreach ($theme->{'expanded-group-nodes'}->{'expanded-group-node'} as $expandedGroupNode) {
+                        $expandedGroupNodeObj = $expandedGroupNode->attributes();
+                        $themes[(string)$themeObj->name]['expandedGroupNode'][] = (string)$expandedGroupNodeObj->id;
+                    }
                 }
             }
 
