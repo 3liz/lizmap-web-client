@@ -404,7 +404,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         if ( $('#edition-point-coord-geolocation').is(':checked') )
             $('#edition-point-coord-geolocation').click();
         $('#edition-point-coord-add').hide();
-        $('#edition-point-coord-form').hide();
         $('#edition-segment-length').parents('.control-group').addClass('hidden');
         $('#edition-segment-angle').parents('.control-group').addClass('hidden');
 
@@ -431,7 +430,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-point-coord-add').hide();
         else
             $('#edition-point-coord-add').show();
-        $('#edition-point-coord-form').show();
+
+        $('#handle-point-coord').show();
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
             {
@@ -758,10 +758,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         }
                     }
 
-                    // Display form tab and hide digitization tab for point geometry
+                    // Display form tab and hide tool to handle coords for point geometry
+                    // TODO : allow use of coords tool when editing point
                     if (geometryType === 'point') {
                         $('.edition-tabs a[href="#tabform"]').tab('show');
-                        $('.edition-tabs a[href="#tabdigitization"]').hide();
+                        $('#handle-point-coord').hide();
                     }
 
                     // Inform user he can now modify
