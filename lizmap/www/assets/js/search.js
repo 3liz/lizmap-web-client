@@ -183,11 +183,7 @@ var lizSearch = function() {
                 }
                 break;
             case 'ign':
-                service = 'https://wxs.ign.fr/choisirgeoportail/geoportail/ols?';
-
-                if('ignKey' in lizMap.config.options){
-                    service = 'https://wxs.ign.fr/'+lizMap.config.options.ignKey+'/geoportail/ols?';
-                }
+                service = 'https://wxs.ign.fr/essentiels/geoportail/ols?';
             break;
             case 'google':
                 if ( google && 'maps' in google && 'Geocoder' in google.maps ){
