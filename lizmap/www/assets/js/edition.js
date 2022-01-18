@@ -1237,10 +1237,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-form-container').hide();
 
         // Get edition type
-        editionType = 'modifyFeature';
-        if (!featureId) {
-            editionType = 'createFeature';
-        }
+        editionType = featureId ? 'modifyFeature' : 'createFeature';
 
         // Deactivate previous form
         var originalForm = $('#edition-form-container form');
@@ -1358,10 +1355,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             // Get edition type from form data
             var formFeatureId = form.find('input[name="liz_featureId"]').val();
-            if ( formFeatureId != '' )
-                editionType = 'modifyFeature';
-            else
-                editionType = 'createFeature';
+            editionType = formFeatureId ? 'modifyFeature' : 'createFeature';
 
             // Keep a copy of original geometry data
             if( editionLayer['spatial'] && editionType == 'modifyFeature' ){
@@ -1450,8 +1444,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
 
                 var geometryType = editionLayer.geometryType;
-                // Creation
-                if( editionType == 'createFeature' ){
+                let feat = getFeatureFromGeometryColumn();
+                // Creation for new feature or existing one without geometry
+                if( editionType == 'createFeature' || !feat){
                     // Activate drawFeature control only if relevant
                     if( editionLayer['config'].capabilities.createFeature == "True"
                     && geometryType in editCtrls ){
@@ -1472,7 +1467,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             }
                         }
                         // Need to get geometry from form and add feature to the openlayer layer
-                        var feat = getFeatureFromGeometryColumn();
                         if( feat ){
                             editionLayer['ol'].addFeatures([feat]);
                             editCtrls.modify.activate();
@@ -1493,7 +1487,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     if ( editionLayer['config'].capabilities.modifyGeometry == "True"
                     && geometryType in editCtrls ){
                         // Need to get geometry from form and add feature to the openlayer layer
-                        var feat = updateFeatureFromGeometryColumn();
+                        feat = updateFeatureFromGeometryColumn();
                         if( feat ){
                             editCtrls.modify.activate();
                             $('#edition-geomtool-nodetool').click();
