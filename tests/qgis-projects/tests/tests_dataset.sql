@@ -853,6 +853,40 @@ ALTER SEQUENCE tests_projects.form_edition_polygon_4326_id_seq OWNED BY tests_pr
 
 
 --
+-- Name: form_edition_snap; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.form_edition_snap (
+    id integer NOT NULL,
+    geom public.geometry(Point,4326)
+);
+
+
+ALTER TABLE tests_projects.form_edition_snap OWNER TO lizmap;
+
+--
+-- Name: form_edition_snap_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.form_edition_snap_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.form_edition_snap_id_seq OWNER TO lizmap;
+
+--
+-- Name: form_edition_snap_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.form_edition_snap_id_seq OWNED BY tests_projects.form_edition_snap.id;
+
+
+--
 -- Name: form_edition_upload; Type: TABLE; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1746,6 +1780,13 @@ ALTER TABLE ONLY tests_projects.form_edition_polygon_4326 ALTER COLUMN id SET DE
 
 
 --
+-- Name: form_edition_snap id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_snap_id_seq'::regclass);
+
+
+--
 -- Name: form_edition_upload id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2056,6 +2097,16 @@ COPY tests_projects.form_edition_polygon_3857 (id, label, geom) FROM stdin;
 --
 
 COPY tests_projects.form_edition_polygon_4326 (id, label, geom) FROM stdin;
+\.
+
+
+--
+-- Data for Name: form_edition_snap; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.form_edition_snap (id, geom) FROM stdin;
+1	0101000020E61000006977A7BFB7E80E40177AB26FEFCE4540
+2	0101000020E6100000C70EE32C16530F4000895515D3CE4540
 \.
 
 
@@ -2486,6 +2537,13 @@ SELECT pg_catalog.setval('tests_projects.form_edition_polygon_4326_id_seq', 1, f
 
 
 --
+-- Name: form_edition_snap_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_snap_id_seq', 2, true);
+
+
+--
 -- Name: form_edition_upload_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2793,6 +2851,14 @@ ALTER TABLE ONLY tests_projects.form_edition_polygon_4326
 
 
 --
+-- Name: form_edition_snap form_edition_snap_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap
+    ADD CONSTRAINT form_edition_snap_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: form_edition_upload form_edition_upload_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -3003,6 +3069,10 @@ CREATE INDEX fki_parent_fkey ON tests_projects.children_layer USING btree (paren
 --
 
 CREATE INDEX fki_stop_fkey ON tests_projects.tramway_pivot USING btree (id_stop);
+-- Name: sidx_form_edition_snap_geom; Type: INDEX; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE INDEX sidx_form_edition_snap_geom ON tests_projects.form_edition_snap USING gist (geom);
 
 
 --
