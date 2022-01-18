@@ -50,7 +50,7 @@ describe('Form edition', function () {
         
         // Allow geom creation when not existing
         cy.get('button[value="end2end_form_edition_geom"].btn-open-attribute-layer').click({ force: true })
-        cy.get('button.feature-edit:first').click({ force: true })
+        cy.get('button.attribute-layer-feature-edit:first').click({ force: true })
         cy.get('.edition-tabs a[href="#tabdigitization"]').should('be.visible')
 
         // Draw point
@@ -60,7 +60,7 @@ describe('Form edition', function () {
         cy.get('#jforms_view_edition__submit_submit').click()
 
         // Delete feature
-        cy.get('button.feature-delete:first').click({ force: true })
+        cy.get('button.attribute-layer-feature-delete:first').click({ force: true })
     })
 
 
