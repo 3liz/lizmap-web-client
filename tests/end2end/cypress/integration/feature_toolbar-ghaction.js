@@ -154,8 +154,6 @@ describe('Feature Toolbar', function () {
         // Start child edition
         cy.get('#edition-children-container lizmap-feature-toolbar[value="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0.1"] .feature-edit').click()
 
-        cy.get('#lizmap-edition-message').should('be.visible')
-
         // Parent_id is disabled in form when edition is started from parent form
         cy.get('#jforms_view_edition_parent_id').should('be.disabled')
     })
