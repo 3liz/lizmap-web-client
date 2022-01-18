@@ -99,12 +99,12 @@ describe('Feature Toolbar', function () {
         // Test feature is not filtered on attribute table
         cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').should('not.have.class', 'btn-primary')
 
-        // 3/ Unlink children feature
+        // 3/ Unlink children feature from parent with id 2
         cy.get('#bottom-dock-window-buttons .btn-bottomdock-size').click()
 
         cy.get('#attribute-layer-table-parent_layer-children_layer tbody tr').should('have.length', 0)
 
-        cy.get('#attribute-layer-table-parent_layer tbody tr:first').click({force: true})
+        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"]').click({force: true})
 
         cy.get('#attribute-layer-table-parent_layer-children_layer tbody tr').should('have.length', 1)
 
@@ -114,11 +114,11 @@ describe('Feature Toolbar', function () {
         // Confirmation message should be displayed
         cy.get('#message .jelix-msg-item-success').should('have.text', 'The child feature has correctly been unlinked.')
 
-        // 4/ Link back children feature
-        // Select parent feature
-        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').click({ force: true })
+        // 4/ Link children feature to parent with id 2
+        // Select parent feature with id 2
+        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"] .feature-select').click({ force: true })
 
-        // Select children feature
+        // Select children feature with id 1
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="children_layer"].btn-open-attribute-layer').click({ force: true })
         cy.get('#attribute-layer-table-children_layer lizmap-feature-toolbar[value="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0.1"] .feature-select').click({ force: true })
