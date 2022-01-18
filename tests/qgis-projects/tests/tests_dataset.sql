@@ -1924,7 +1924,7 @@ ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT n
 --
 
 COPY tests_projects.children_layer (id, parent_id, comment) FROM stdin;
-1	1	\N
+1	2	\N
 \.
 
 
@@ -3069,6 +3069,9 @@ CREATE INDEX fki_parent_fkey ON tests_projects.children_layer USING btree (paren
 --
 
 CREATE INDEX fki_stop_fkey ON tests_projects.tramway_pivot USING btree (id_stop);
+
+
+--
 -- Name: sidx_form_edition_snap_geom; Type: INDEX; Schema: tests_projects; Owner: lizmap
 --
 
