@@ -1176,12 +1176,42 @@ var lizAttributeTable = function() {
                             }
                             ,initComplete: function(settings, json) {
                                 const api = new $.fn.dataTable.Api(settings);
+
+                                // Display values instead of keys when eligible
+                                // Keys are put in the title attribute to display them on hover
+                                api.table().columns().every(function () {
+                                    const columnName = this.header().textContent;
+
+                                    if (columnName === "label_from_text") {
+                                        // Get distinct keys in column
+                                        const distinctKeys = this.data().unique().toArray().map(key => "'" + key + "'");
+
+                                        // Query related layer to get values for displayed keys
+                                        const filter = `"label_en" IN (${distinctKeys.join(',')})`;
+
+                                        lizMap.mainLizmap.wfs.getFeature({
+                                            TYPENAME: 'data_trad_en_fr',
+                                            PROPERTYNAME: 'label_en,label_fr',
+                                            EXP_FILTER: filter
+                                        }).then(data => {
+                                            const keyValues = {};
+                                            data.features.forEach(feature => keyValues[feature.properties.label_en] = feature.properties.label_fr);
+
+                                            this.nodes().each((node) => {
+                                                node.title = node.textContent;
+                                                if (keyValues.hasOwnProperty(node.textContent)){
+                                                    node.textContent = keyValues[node.textContent]
+                                                }
+                                            });
+                                        });
+                                    }
+                                });
+
+                                // Trigger event telling attribute table is ready
                                 const tableId = api.table().node().id;
                                 const featureType = tableId.split('attribute-layer-table-')[1];
 
-                                // Trigger event telling attribute table is ready
-                                lizMap.events.triggerEvent("attributeLayerContentReady",
-                                    {
+                                lizMap.events.triggerEvent("attributeLayerContentReady", {
                                         'featureType': featureType
                                     }
                                 );

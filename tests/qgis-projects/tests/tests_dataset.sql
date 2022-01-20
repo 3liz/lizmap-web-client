@@ -147,6 +147,41 @@ COMMENT ON FUNCTION tests_projects.query_to_geojson(datasource text) IS 'Generat
 SET default_tablespace = '';
 
 --
+-- Name: attribute_table; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.attribute_table (
+    id integer NOT NULL,
+    label_from_int integer,
+    label_from_text text
+);
+
+
+ALTER TABLE tests_projects.attribute_table OWNER TO lizmap;
+
+--
+-- Name: attribute_table_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.attribute_table_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.attribute_table_id_seq OWNER TO lizmap;
+
+--
+-- Name: attribute_table_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.attribute_table_id_seq OWNED BY tests_projects.attribute_table.id;
+
+
+--
 -- Name: children_layer; Type: TABLE; Schema: tests_projects; Owner: lizmap
 --
 
@@ -213,6 +248,41 @@ ALTER TABLE tests_projects.data_integers_id_seq OWNER TO lizmap;
 --
 
 ALTER SEQUENCE tests_projects.data_integers_id_seq OWNED BY tests_projects.data_integers.id;
+
+
+--
+-- Name: data_trad_en_fr; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects.data_trad_en_fr (
+    id integer NOT NULL,
+    label_en text,
+    label_fr text
+);
+
+
+ALTER TABLE tests_projects.data_trad_en_fr OWNER TO lizmap;
+
+--
+-- Name: data_trad_en_fr_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE SEQUENCE tests_projects.data_trad_en_fr_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE tests_projects.data_trad_en_fr_id_seq OWNER TO lizmap;
+
+--
+-- Name: data_trad_en_fr_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER SEQUENCE tests_projects.data_trad_en_fr_id_seq OWNED BY tests_projects.data_trad_en_fr.id;
 
 
 --
@@ -1640,6 +1710,13 @@ ALTER SEQUENCE tests_projects.tramway_stops_id_stop_seq OWNED BY tests_projects.
 
 
 --
+-- Name: attribute_table id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.attribute_table ALTER COLUMN id SET DEFAULT nextval('tests_projects.attribute_table_id_seq'::regclass);
+
+
+--
 -- Name: children_layer id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1651,6 +1728,13 @@ ALTER TABLE ONLY tests_projects.children_layer ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY tests_projects.data_integers ALTER COLUMN id SET DEFAULT nextval('tests_projects.data_integers_id_seq'::regclass);
+
+
+--
+-- Name: data_trad_en_fr id; Type: DEFAULT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.data_trad_en_fr ALTER COLUMN id SET DEFAULT nextval('tests_projects.data_trad_en_fr_id_seq'::regclass);
 
 
 --
@@ -1920,6 +2004,15 @@ ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT n
 
 
 --
+-- Data for Name: attribute_table; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.attribute_table (id, label_from_int, label_from_text) FROM stdin;
+1	1	first
+\.
+
+
+--
 -- Data for Name: children_layer; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
 --
 
@@ -1943,6 +2036,17 @@ COPY tests_projects.data_integers (id, label) FROM stdin;
 8	eighth
 9	ninth
 10	tenth
+\.
+
+
+--
+-- Data for Name: data_trad_en_fr; Type: TABLE DATA; Schema: tests_projects; Owner: lizmap
+--
+
+COPY tests_projects.data_trad_en_fr (id, label_en, label_fr) FROM stdin;
+1	first	premier
+2	second	deuxième
+3	third	troisième
 \.
 
 
@@ -2397,6 +2501,13 @@ COPY tests_projects.tramway_stops (id_stop, geom) FROM stdin;
 
 
 --
+-- Name: attribute_table_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.attribute_table_id_seq', 1, true);
+
+
+--
 -- Name: children_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2408,6 +2519,13 @@ SELECT pg_catalog.setval('tests_projects.children_layer_id_seq', 1, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.data_integers_id_seq', 10, true);
+
+
+--
+-- Name: data_trad_en_fr_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: lizmap
+--
+
+SELECT pg_catalog.setval('tests_projects.data_trad_en_fr_id_seq', 3, true);
 
 
 --
@@ -2691,6 +2809,14 @@ SELECT pg_catalog.setval('tests_projects.tramway_stops_id_stop_seq', 5, true);
 
 
 --
+-- Name: attribute_table attribute_table_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.attribute_table
+    ADD CONSTRAINT attribute_table_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: children_layer children_layer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
 --
 
@@ -2704,6 +2830,14 @@ ALTER TABLE ONLY tests_projects.children_layer
 
 ALTER TABLE ONLY tests_projects.data_integers
     ADD CONSTRAINT data_integers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: data_trad_en_fr data_trad_en_fr_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: lizmap
+--
+
+ALTER TABLE ONLY tests_projects.data_trad_en_fr
+    ADD CONSTRAINT data_trad_en_fr_pkey PRIMARY KEY (id);
 
 
 --
