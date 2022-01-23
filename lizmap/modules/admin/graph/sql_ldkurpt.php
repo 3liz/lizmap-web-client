@@ -5,7 +5,7 @@ include 'i.php';
 // Performing SQL query
 $query = 'SELECT data
 	FROM public.v_log_detail_log_key_user_repository_project_total_legenda';
-$result = pg_query($query) or die('Query failed: '.pg_last_error());
+$result = pg_query($query) or exit('Query failed: '.pg_last_error());
 
 // Printing results in HTML
 while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
