@@ -3,6 +3,12 @@
   <div>
     <h2>{@admin~admin.logs.counter.title@}</h2>
     
+    <div class="form-actions">
+      <a class="btn" href="/graph/estatis.php" target="_blank">{@admin~admin.logs.view.graphic@}</a>
+      <iframe style="width: 100%; height: 50vh; border: 0;" src="/graph/estatis.php">
+      </iframe>
+    </div>
+
     <table class="table table-bordered table-striped">
       <thead>
         <tr>
