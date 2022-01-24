@@ -31,7 +31,7 @@
 
     <p>
         <b>{@admin.server.information.qgis.error.fetching.information@}</b><br/>
-        {if in_array($data['qgis_server_info']['error'], array('NO_ACCESS', 'NO_API_URL', 'BAD_DATA'))}
+        {if in_array($data['qgis_server_info']['error'], array('NO_ACCESS', 'BAD_DATA'))}
             {assign $errorcode=$data['qgis_server_info']['error']}
             <i>{@admin.server.information.qgis.error.fetching.information.detail.$errorcode@}</i>
         {elseif $data['qgis_server_info']['error'] == 'HTTP_ERROR'}
