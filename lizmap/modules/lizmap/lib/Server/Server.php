@@ -109,15 +109,12 @@ class Server
         }
 
         // Get the data from the QGIS Server Lizmap plugin
-        if ($services->lizmapPluginAPIURL == '') {
-            return array('error' => 'NO_API_URL');
-        }
-
-        if (strpos($services->lizmapPluginAPIURL, 'fcgi') === false) {
-            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/').'/server.json';
+        if (empty($services->lizmapPluginAPIURL)) {
+            // When the Lizmap API URL is not set, we use the WMS server URL only
+            $lizmap_url = rtrim($services->wmsServerURL, '/').'/lizmap/server.json';
         } else {
-            // for fcgi, just append the full url
-            $lizmap_url = $services->lizmapPluginAPIURL.'/lizmap/server.json';
+            // When the Lizmap API URL is set
+            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/').'/server.json';
         }
 
         list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($lizmap_url);
