@@ -1847,23 +1847,29 @@ class QgisProject
             $optionName = (string) $option->attributes()->name;
             $optionType = (string) $option->attributes()->type;
 
+            // Define values extraction type
+            $valuesExtraction = self::MAP_VALUES_AS_VALUES;
+            if ($optionName === 'map') {
+                // If the option is named 'map' the value attributes are keys
+                $valuesExtraction = self::MAP_VALUES_AS_KEYS;
+            } elseif ($optionType === 'StringList') {
+                // If the type is 'StringList' only values are extracted
+                $valuesExtraction = self::MAP_ONLY_VALUES;
+            }
+
             if ($optionType === 'List') {
                 $values = array();
                 foreach ($option->Option as $l) {
                     if ((string) $l->attributes()->type === 'Map') {
-                        $values = array_merge($values, $this->getValuesFromOptions($l, self::MAP_VALUES_AS_KEYS));
+                        $values = array_merge($values, $this->getValuesFromOptions($l, $valuesExtraction));
                     } else {
                         $values[] = (string) $l->attributes()->value;
                     }
                 }
                 $fieldEditOptions[$optionName] = $values;
-            // Option with list of values as Map
-            } elseif ($optionType === 'Map') {
-                $fieldEditOptions[$optionName] = $this->getValuesFromOptions($option);
-
-            // Option with string list of values
-            } elseif ($optionType === 'StringList') {
-                $fieldEditOptions[$optionName] = $this->getValuesFromOptions($option, self::MAP_ONLY_VALUES);
+            // Option with list of values as Map or string list of values
+            } elseif ($optionType === 'Map' || $optionType === 'StringList') {
+                $fieldEditOptions[$optionName] = $this->getValuesFromOptions($option, $valuesExtraction);
             // Simple option
             } else {
                 $fieldEditOptions[$optionName] = (string) $option->attributes()->value;
