@@ -970,6 +970,45 @@ class QgisProjectTest extends TestCase
         );
         $this->assertEquals($expectedOptions, $options->map);
 
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field name="code_for_drill_down_exp">
+              <editWidget type="ValueMap">
+                <config>
+                  <Option type="Map">
+                    <Option type="Map" name="map">
+                      <Option value="A" type="QString" name="Zone A"/>
+                      <Option value="B" type="QString" name="Zone B"/>
+                      <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
+                    </Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('code_for_drill_down_exp', $props));
+        $prop = $props['code_for_drill_down_exp'];
+
+        $this->assertEquals($prop->getFieldEditType(), 'ValueMap');
+
+        $options = (object) $prop->getEditAttributes();
+        $this->assertTrue(property_exists($options, 'map'));
+        $this->assertCount(3, $options->map);
+        $expectedOptions = array(
+            'A' => 'Zone A',
+            'B' => 'Zone B',
+            '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => 'No Zone',
+        );
+        $this->assertEquals($expectedOptions, $options->map);
+
         // no edit widget type
         $xmlStr = '
         <maplayer>
@@ -1430,7 +1469,7 @@ class QgisProjectTest extends TestCase
                 </config>
               </editWidget>
             </field>
-            
+
             <field configurationFlags="None" name="textorimage_file">
               <editWidget type="ExternalResource">
                 <config>
