@@ -1787,12 +1787,15 @@ class QgisProject
         $values = array();
 
         foreach ($optionList->Option as $v) {
+            // converting values based on type
+            $value = $this->convertValueOptions((string) $v->attributes()->value, (string) $v->attributes()->type);
+
             if ($valuesExtraction == self::MAP_ONLY_VALUES) {
-                $values[] = (string) $v->attributes()->value;
+                $values[] = $value;
             } elseif ($valuesExtraction == self::MAP_VALUES_AS_VALUES) {
-                $values[(string) $v->attributes()->name] = (string) $v->attributes()->value;
+                $values[(string) $v->attributes()->name] = $value;
             } else { // self::MAP_VALUES_AS_KEYS
-                $values[(string) $v->attributes()->value] = (string) $v->attributes()->name;
+                $values[$value] = (string) $v->attributes()->name;
             }
         }
 
@@ -1867,7 +1870,7 @@ class QgisProject
                         // numerical values, and this is not what we want.
                         $values += $optionValues;
                     } else {
-                        $values[] = (string) $l->attributes()->value;
+                        $values[] = $this->convertValueOptions((string) $l->attributes()->value, (string) $l->attributes()->type);
                     }
                 }
                 $fieldEditOptions[$optionName] = $values;
@@ -1876,7 +1879,7 @@ class QgisProject
                 $fieldEditOptions[$optionName] = $this->getValuesFromOptions($option, $valuesExtraction);
             // Simple option
             } else {
-                $fieldEditOptions[$optionName] = (string) $option->attributes()->value;
+                $fieldEditOptions[$optionName] = $this->convertValueOptions((string) $option->attributes()->value, (string) $option->attributes()->type);
             }
         }
 
@@ -2021,6 +2024,34 @@ class QgisProject
                 }
             }
         }
+    }
+
+    /**
+     * @param string $value the option value attribute content
+     * @param string $type  the option type attribute content
+     *
+     * @return string
+     */
+    protected function convertValueOptions($value, $type)
+    {
+        switch ($type) {
+            case 'double':
+            case 'float':
+                return (float) $value;
+
+            case 'int':
+            case 'LongLong':
+            case 'ULongLong':
+                return (int) $value;
+
+                break;
+
+            case 'bool':
+                return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+
+        }
+
+        return $value;
     }
 
     /**
