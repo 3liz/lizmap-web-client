@@ -75,6 +75,26 @@ interface AppContextInterface
     public function aclGroupsIdByUser($login);
 
     /**
+     * Retrieve the list of public group the given user is member of
+     * in the acl system.
+     *
+     * @param string $login The user's login
+     *
+     * @return array list of public group id
+     */
+    public function aclUserPublicGroupsId($login = null);
+
+    /**
+     * Get the private group for the current user or for the given login
+     * in the acl system.
+     *
+     * @param string $login The user's login
+     *
+     * @return string the id of the private group
+     */
+    public function aclUserPrivateGroup($login = null);
+
+    /**
      * Retrieve the list of groups properties, the current user is member of,
      * in the acl system.
      *

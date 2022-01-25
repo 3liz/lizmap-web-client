@@ -353,7 +353,7 @@ class qgisExpressionUtils
         if ($appContext->UserIsConnected()) {
             // Provide user and groups to lizmap plugin access control
             $user = $appContext->getUserSession();
-            $userGroups = $appContext->aclUserGroupsId();
+            $userGroups = $appContext->aclUserPublicGroupsId();
             $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $project->getRepository()->getKey());
 
             $merged_params = array_merge($params, array(
