@@ -26,6 +26,10 @@ class myHtmlResponse extends jResponseHtml
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
 
+        // Use Lizmap version to refresh some assets cache
+        $xmlLoad = simplexml_load_file(jApp::appPath('project.xml'));
+        $version = (string) $xmlLoad->info->version;
+
         // CSS
         $css = jApp::config()->jquery['jqueryui.css'];
         foreach ($css as $file) {
@@ -33,9 +37,9 @@ class myHtmlResponse extends jResponseHtml
         }
         $this->addCSSLink($bp.'assets/css/bootstrap.min.css');
         $this->addCSSLink($bp.'assets/css/bootstrap-responsive.min.css');
-        $this->addCSSLink($bp.'assets/css/main.css');
-        $this->addCSSLink($bp.'assets/css/view.css');
-        $this->addCSSLink($bp.'assets/css/media.css');
+        $this->addCSSLink($bp.'assets/css/main.css?v='.$version);
+        $this->addCSSLink($bp.'assets/css/view.css?v='.$version);
+        $this->addCSSLink($bp.'assets/css/media.css?v='.$version);
 
         // META
         $this->addMetaDescription('');

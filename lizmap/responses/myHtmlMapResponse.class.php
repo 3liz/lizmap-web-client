@@ -23,6 +23,10 @@ class myHtmlMapResponse extends jResponseHtml
 
         $this->title = '';
 
+        // Use Lizmap version to refresh some assets cache
+        $xmlLoad = simplexml_load_file(jApp::appPath('project.xml'));
+        $version = (string) $xmlLoad->info->version;
+
         // CSS
         $css = jApp::config()->jquery['jqueryui.css'];
         foreach ($css as $file) {
@@ -35,9 +39,9 @@ class myHtmlMapResponse extends jResponseHtml
         $this->addCSSLink($bp.'assets/js/TreeTable/stylesheets/jquery.treeTable.css');
         $this->addCSSLink($bp.'assets/js/OpenLayers-2.13/theme/default/style.css');
         $this->addCSSLink($bp.'assets/css/ol.css');
-        $this->addCSSLink($bp.'assets/css/main.css');
-        $this->addCSSLink($bp.'assets/css/map.css');
-        $this->addCSSLink($bp.'assets/css/media.css');
+        $this->addCSSLink($bp.'assets/css/main.css?v='.$version);
+        $this->addCSSLink($bp.'assets/css/map.css?v='.$version);
+        $this->addCSSLink($bp.'assets/css/media.css?v='.$version);
 
 //    $this->addCSSLink($bp.'assets/css/bootstrap-responsive.css');
 
@@ -69,7 +73,7 @@ class myHtmlMapResponse extends jResponseHtml
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
 
         // JS
-        $this->addJSLink($bp.'assets/js/OpenLayers-2.13/OpenLayers.js');
+        $this->addJSLink($bp.'assets/js/OpenLayers-2.13/OpenLayers.js?v='.$version);
         $this->addJSLink($bp.'assets/js/Proj4js/proj4js.min.js');
         $this->addJSLink(jApp::config()->jquery['jquery']);
         $this->addJSLink($bp.'assets/js/jquery/jquery-migrate-3.3.1.min.js');
@@ -80,10 +84,10 @@ class myHtmlMapResponse extends jResponseHtml
         $this->addJSLink($bp.'assets/js/jquery.combobox.js');
         $this->addJSLink($bp.'assets/js/bootstrap.min.js');
         $this->addJSLink($bp.'assets/js/TreeTable/javascripts/jquery.treeTable.js');
-        $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js');
+        $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js?v='.$version);
         $this->addJSLink($bp.'assets/js/dataTables.bootstrap.min.js');
-        $this->addJSLink($bp.'assets/js/map.js');
-        $this->addJSLink($bp.'assets/js/lizmap.js');
+        $this->addJSLink($bp.'assets/js/map.js?v='.$version);
+        $this->addJSLink($bp.'assets/js/lizmap.js?v='.$version);
 
         $generalJSConfig = '
       Proj4js.libPath = "'.$bp.'assets/js/Proj4js/";
