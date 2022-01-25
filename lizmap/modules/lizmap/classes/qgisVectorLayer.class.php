@@ -1406,7 +1406,7 @@ class qgisVectorLayer extends qgisMapLayer
             'Lizmap_Edition_Context' => $editing_context,
         );
         if ($is_connected) {
-            $userGroups = $appContext->aclUserGroupsId();
+            $userGroups = $appContext->aclUserPublicGroupsId();
             $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $repository->getKey());
             $user_and_groups['Lizmap_User'] = $user->login;
             $user_and_groups['Lizmap_User_Groups'] = implode(', ', $userGroups);
