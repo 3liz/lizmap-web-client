@@ -9,10 +9,19 @@
 
 ### Fixed
 
-- Fix a regression during the loading of embedded projects
-- Fix a regression during the init of relation references into forms
+- Fix server URL when using FCGI for the Lizmap entrypoint
+- Fix the value relation widget with multiple text values on feature modification
 - Fix a regression in the ValueMap widget config parsing
+- Fix the link of selected features between a parent and a child in the attribute table
+- Fix a warning into QgisProject with expanded-group-node
+- Update IGN URL searching address, the old one will no longer be usable as of February 1, 2022
+- Fix Snapping missing when editing existing feature
+- Fix geom can be created on existing feature without geometry
+- Fix some account management issues with some other authentication modules
 - Fix the backup script about third-party modules such as MapBuilder and AltiProfil
+- Fix a regression during the init of relation references into forms
+- Fix a regression during the loading of embedded projects
+- Fix the landing page using modern CSS - Remove JS resizing project thumbnails and use CSS Grid
 - Update Lizmap locales about missing languages in the package like Romanian and others
 
 ## 3.5.0 - 2021-12-15
@@ -60,7 +69,7 @@
   the editable features for all the editable layers of the displayed popup items, and not only the first.
   - When using a text field with a `value relation` widget, configured with `allow multiple` on, Lizmap could not
   always set the values for the generated checkboxes when modifying an existing feature. We fix this bug
-  by removing the additionnal double-quotes that QGIS sometimes adds in the array of values 
+  by removing the additionnal double-quotes that QGIS sometimes adds in the array of values
   (ex: `{"one_value", "second_value"}`)
   - Lizmap user and groups was not forwarded to the QGIS Server backend. It's now possible to use
    `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form.
