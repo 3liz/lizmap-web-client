@@ -19,7 +19,7 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties></customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b" legend_exp="" legend_split_behavior="0" name="dnd_popup" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;dnd_popup&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b" legend_exp="" legend_split_behavior="0" name="dnd_popup" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;dnd_popup&quot; (geom)">
       <customproperties></customproperties>
     </layer-tree-layer>
     <custom-order enabled="0">
@@ -124,7 +124,7 @@
         <ymax>6282229.55944631993770599</ymax>
       </extent>
       <id>dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."dnd_popup" (geom)</datasource>
+      <datasource>service='lizmapdb' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."dnd_popup" (geom)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
