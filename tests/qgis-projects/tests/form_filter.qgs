@@ -20,7 +20,7 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer name="form_filter" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_filter&quot; (geom) sql=" expanded="1" checked="Qt::Checked" id="form_filter_8bfd580f_2848_4bd4_80cf_facb270a9af5">
+    <layer-tree-layer name="form_filter" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_filter&quot; (geom) sql=" expanded="1" checked="Qt::Checked" id="form_filter_8bfd580f_2848_4bd4_80cf_facb270a9af5">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
@@ -77,7 +77,7 @@
         <ymax>-418</ymax>
       </extent>
       <id>form_filter_8bfd580f_2848_4bd4_80cf_facb270a9af5</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_filter" (geom) sql=</datasource>
+      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_filter" (geom) sql=</datasource>
       <keywordList>
         <value></value>
       </keywordList>

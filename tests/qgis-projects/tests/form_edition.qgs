@@ -26,7 +26,7 @@
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382" legend_exp="" legend_split_behavior="0" name="end2end_form_edition_geom" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;end2end_form_edition_geom&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382" legend_exp="" legend_split_behavior="0" name="end2end_form_edition_geom" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;end2end_form_edition_geom&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
@@ -272,7 +272,7 @@
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="1" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">
       <id>end2end_form_edition_geom_a08c6b07_3376_4193_9dd6_dff1d6755382</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."end2end_form_edition_geom" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."end2end_form_edition_geom" (geom)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
