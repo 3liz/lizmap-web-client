@@ -78,6 +78,14 @@ class JelixContext implements AppContextInterface
         return \jAcl2DbUserGroup::getGroupList($login);
     }
 
+    /**
+     * Retrieve the list of group the given user is member of
+     * in the acl system.
+     *
+     * @param string $login The user's login
+     *
+     * @return array list of group id
+     */
     public function aclGroupsIdByUser($login)
     {
         return \jAcl2DbUserGroup::getGroupsIdByUser($login);
