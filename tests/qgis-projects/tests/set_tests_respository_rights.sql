@@ -10,4 +10,6 @@ VALUES
 ('lizmap.repositories.view', 'admins', 'testsrepository', 0),
 ('lizmap.tools.displayGetCapabilitiesLinks', 'admins', 'testsrepository', 0),
 ('lizmap.tools.edition.use', 'admins', 'testsrepository', 0),
-('lizmap.tools.layer.export', 'admins', 'testsrepository', 0);
+('lizmap.tools.layer.export', 'admins', 'testsrepository', 0)
+ON CONFLICT DO NOTHING
+;
