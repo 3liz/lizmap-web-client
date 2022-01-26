@@ -38,17 +38,17 @@ class lizmap
     /**
      * @var lizmapServices The lizmapServices instance for the singleton
      */
-    protected static $lizmapServicesInstance = null;
+    protected static $lizmapServicesInstance;
 
     /**
      * @var lizmapLogConfig The lizmapLogConfig instance for the singleton
      */
-    protected static $lizmapLogConfigInstance = null;
+    protected static $lizmapLogConfigInstance;
 
     /**
      * @var lizmapJelixContext The jelixContext instance for the singleton
      */
-    protected static $appContext = null;
+    protected static $appContext;
 
     /**
      * this is a static class, so private constructor.
