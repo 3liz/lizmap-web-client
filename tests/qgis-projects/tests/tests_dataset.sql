@@ -23,7 +23,7 @@ SET row_security = off;
 CREATE SCHEMA tests_projects;
 
 
-ALTER SCHEMA tests_projects OWNER TO lizmap;
+
 
 --
 -- Name: lizmap_get_data(json); Type: FUNCTION; Schema: tests_projects; Owner: lizmap
@@ -91,7 +91,7 @@ END;
 $_$;
 
 
-ALTER FUNCTION tests_projects.lizmap_get_data(parameters json) OWNER TO lizmap;
+
 
 --
 -- Name: FUNCTION lizmap_get_data(parameters json); Type: COMMENT; Schema: tests_projects; Owner: lizmap
@@ -135,7 +135,7 @@ END;
 $$;
 
 
-ALTER FUNCTION tests_projects.query_to_geojson(datasource text) OWNER TO lizmap;
+
 
 --
 -- Name: FUNCTION query_to_geojson(datasource text); Type: COMMENT; Schema: tests_projects; Owner: lizmap
@@ -157,7 +157,7 @@ CREATE TABLE tests_projects.children_layer (
 );
 
 
-ALTER TABLE tests_projects.children_layer OWNER TO lizmap;
+
 
 --
 -- Name: children_layer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -172,7 +172,7 @@ CREATE SEQUENCE tests_projects.children_layer_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.children_layer_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: children_layer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -191,7 +191,7 @@ CREATE TABLE tests_projects.data_integers (
 );
 
 
-ALTER TABLE tests_projects.data_integers OWNER TO lizmap;
+
 
 --
 -- Name: data_integers_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -206,7 +206,7 @@ CREATE SEQUENCE tests_projects.data_integers_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.data_integers_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: data_integers_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -226,7 +226,7 @@ CREATE TABLE tests_projects.data_uids (
 );
 
 
-ALTER TABLE tests_projects.data_uids OWNER TO lizmap;
+
 
 --
 -- Name: data_uids_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -241,7 +241,7 @@ CREATE SEQUENCE tests_projects.data_uids_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.data_uids_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: data_uids_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -261,7 +261,7 @@ CREATE TABLE tests_projects.dnd_form (
 );
 
 
-ALTER TABLE tests_projects.dnd_form OWNER TO lizmap;
+
 
 --
 -- Name: dnd_form_geom; Type: TABLE; Schema: tests_projects; Owner: lizmap
@@ -275,7 +275,7 @@ CREATE TABLE tests_projects.dnd_form_geom (
 );
 
 
-ALTER TABLE tests_projects.dnd_form_geom OWNER TO lizmap;
+
 
 --
 -- Name: dnd_form_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -290,7 +290,7 @@ CREATE SEQUENCE tests_projects.dnd_form_geom_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.dnd_form_geom_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: dnd_form_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -312,7 +312,7 @@ CREATE SEQUENCE tests_projects.dnd_form_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.dnd_form_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: dnd_form_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -333,7 +333,7 @@ CREATE TABLE tests_projects.dnd_popup (
 );
 
 
-ALTER TABLE tests_projects.dnd_popup OWNER TO lizmap;
+
 
 --
 -- Name: dnd_popup_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -348,7 +348,7 @@ CREATE SEQUENCE tests_projects.dnd_popup_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.dnd_popup_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: dnd_popup_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -367,7 +367,7 @@ CREATE TABLE tests_projects.end2end_form_edition (
 );
 
 
-ALTER TABLE tests_projects.end2end_form_edition OWNER TO lizmap;
+
 
 --
 -- Name: end2end_form_edition_geom; Type: TABLE; Schema: tests_projects; Owner: lizmap
@@ -380,7 +380,7 @@ CREATE TABLE tests_projects.end2end_form_edition_geom (
 );
 
 
-ALTER TABLE tests_projects.end2end_form_edition_geom OWNER TO lizmap;
+
 
 --
 -- Name: end2end_form_edition_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -395,7 +395,7 @@ CREATE SEQUENCE tests_projects.end2end_form_edition_geom_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.end2end_form_edition_geom_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: end2end_form_edition_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -417,7 +417,7 @@ CREATE SEQUENCE tests_projects.end2end_form_edition_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.end2end_form_edition_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: end2end_form_edition_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -438,7 +438,7 @@ CREATE TABLE tests_projects.filter_layer_by_user (
 );
 
 
-ALTER TABLE tests_projects.filter_layer_by_user OWNER TO lizmap;
+
 
 --
 -- Name: filter_layer_by_user_edition_only; Type: TABLE; Schema: tests_projects; Owner: lizmap
@@ -452,7 +452,7 @@ CREATE TABLE tests_projects.filter_layer_by_user_edition_only (
 );
 
 
-ALTER TABLE tests_projects.filter_layer_by_user_edition_only OWNER TO lizmap;
+
 
 --
 -- Name: filter_layer_by_user_edition_only_gid_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -466,7 +466,7 @@ CREATE SEQUENCE tests_projects.filter_layer_by_user_edition_only_gid_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.filter_layer_by_user_edition_only_gid_seq OWNER TO lizmap;
+
 
 --
 -- Name: filter_layer_by_user_edition_only_gid_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -487,7 +487,7 @@ CREATE SEQUENCE tests_projects.filter_layer_by_user_gid_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.filter_layer_by_user_gid_seq OWNER TO lizmap;
+
 
 --
 -- Name: filter_layer_by_user_gid_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -510,7 +510,7 @@ CREATE TABLE tests_projects.form_advanced_point (
 );
 
 
-ALTER TABLE tests_projects.form_advanced_point OWNER TO lizmap;
+
 
 --
 -- Name: form_advanced_point_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -525,7 +525,7 @@ CREATE SEQUENCE tests_projects.form_advanced_point_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_advanced_point_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_advanced_point_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -549,7 +549,7 @@ CREATE TABLE tests_projects.form_edition_all_fields_types (
 );
 
 
-ALTER TABLE tests_projects.form_edition_all_fields_types OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_all_fields_types_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -564,7 +564,7 @@ CREATE SEQUENCE tests_projects.form_edition_all_fields_types_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_all_fields_types_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_all_fields_types_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -584,7 +584,7 @@ CREATE TABLE tests_projects.form_edition_line_2154 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_line_2154 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_line_2154_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -599,7 +599,7 @@ CREATE SEQUENCE tests_projects.form_edition_line_2154_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_line_2154_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_line_2154_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -619,7 +619,7 @@ CREATE TABLE tests_projects.form_edition_line_3857 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_line_3857 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_line_3857_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -634,7 +634,7 @@ CREATE SEQUENCE tests_projects.form_edition_line_3857_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_line_3857_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_line_3857_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -654,7 +654,7 @@ CREATE TABLE tests_projects.form_edition_line_4326 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_line_4326 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_line_4326_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -669,7 +669,7 @@ CREATE SEQUENCE tests_projects.form_edition_line_4326_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_line_4326_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_line_4326_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -689,7 +689,7 @@ CREATE TABLE tests_projects.form_edition_point_2154 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_point_2154 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_point_2154_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -704,7 +704,7 @@ CREATE SEQUENCE tests_projects.form_edition_point_2154_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_point_2154_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_point_2154_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -724,7 +724,7 @@ CREATE TABLE tests_projects.form_edition_point_3857 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_point_3857 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_point_3857_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -739,7 +739,7 @@ CREATE SEQUENCE tests_projects.form_edition_point_3857_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_point_3857_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_point_3857_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -759,7 +759,7 @@ CREATE TABLE tests_projects.form_edition_point_4326 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_point_4326 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_point_4326_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -774,7 +774,7 @@ CREATE SEQUENCE tests_projects.form_edition_point_4326_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_point_4326_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_point_4326_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -794,7 +794,7 @@ CREATE TABLE tests_projects.form_edition_polygon_2154 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_polygon_2154 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_polygon_2154_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -809,7 +809,7 @@ CREATE SEQUENCE tests_projects.form_edition_polygon_2154_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_polygon_2154_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_polygon_2154_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -829,7 +829,7 @@ CREATE TABLE tests_projects.form_edition_polygon_3857 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_polygon_3857 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_polygon_3857_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -844,7 +844,7 @@ CREATE SEQUENCE tests_projects.form_edition_polygon_3857_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_polygon_3857_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_polygon_3857_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -864,7 +864,7 @@ CREATE TABLE tests_projects.form_edition_polygon_4326 (
 );
 
 
-ALTER TABLE tests_projects.form_edition_polygon_4326 OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_polygon_4326_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -879,7 +879,7 @@ CREATE SEQUENCE tests_projects.form_edition_polygon_4326_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_polygon_4326_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_polygon_4326_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -898,7 +898,7 @@ CREATE TABLE tests_projects.form_edition_snap (
 );
 
 
-ALTER TABLE tests_projects.form_edition_snap OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_snap_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -913,7 +913,7 @@ CREATE SEQUENCE tests_projects.form_edition_snap_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_snap_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_snap_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -936,7 +936,7 @@ CREATE TABLE tests_projects.form_edition_upload (
 );
 
 
-ALTER TABLE tests_projects.form_edition_upload OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_upload_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -951,7 +951,7 @@ CREATE SEQUENCE tests_projects.form_edition_upload_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_upload_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_upload_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -971,7 +971,7 @@ CREATE TABLE tests_projects.form_edition_vr_dd_list (
 );
 
 
-ALTER TABLE tests_projects.form_edition_vr_dd_list OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_vr_dd_list_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -986,7 +986,7 @@ CREATE SEQUENCE tests_projects.form_edition_vr_dd_list_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_vr_dd_list_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_vr_dd_list_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1008,7 +1008,7 @@ CREATE TABLE tests_projects.form_edition_vr_list (
 );
 
 
-ALTER TABLE tests_projects.form_edition_vr_list OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_vr_list_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1023,7 +1023,7 @@ CREATE SEQUENCE tests_projects.form_edition_vr_list_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_vr_list_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_vr_list_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1047,7 +1047,7 @@ CREATE TABLE tests_projects.form_edition_vr_point (
 );
 
 
-ALTER TABLE tests_projects.form_edition_vr_point OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_vr_point_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1062,7 +1062,7 @@ CREATE SEQUENCE tests_projects.form_edition_vr_point_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_edition_vr_point_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_edition_vr_point_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1082,7 +1082,7 @@ CREATE TABLE tests_projects.form_filter (
 );
 
 
-ALTER TABLE tests_projects.form_filter OWNER TO lizmap;
+
 
 --
 -- Name: form_filter_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1097,7 +1097,7 @@ CREATE SEQUENCE tests_projects.form_filter_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.form_filter_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: form_filter_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1117,7 +1117,7 @@ CREATE TABLE tests_projects.layer_legend_categorized (
 );
 
 
-ALTER TABLE tests_projects.layer_legend_categorized OWNER TO lizmap;
+
 
 --
 -- Name: layer_legend_categorized_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1132,7 +1132,7 @@ CREATE SEQUENCE tests_projects.layer_legend_categorized_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.layer_legend_categorized_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: layer_legend_categorized_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1151,7 +1151,7 @@ CREATE TABLE tests_projects.layer_legend_single_symbol (
 );
 
 
-ALTER TABLE tests_projects.layer_legend_single_symbol OWNER TO lizmap;
+
 
 --
 -- Name: layer_legend_single_symbol_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1166,7 +1166,7 @@ CREATE SEQUENCE tests_projects.layer_legend_single_symbol_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.layer_legend_single_symbol_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: layer_legend_single_symbol_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1185,7 +1185,7 @@ CREATE TABLE tests_projects.layer_with_no_filter (
 );
 
 
-ALTER TABLE tests_projects.layer_with_no_filter OWNER TO lizmap;
+
 
 --
 -- Name: layer_with_no_filter_gid_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1199,7 +1199,7 @@ CREATE SEQUENCE tests_projects.layer_with_no_filter_gid_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.layer_with_no_filter_gid_seq OWNER TO lizmap;
+
 
 --
 -- Name: layer_with_no_filter_gid_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1218,7 +1218,7 @@ CREATE TABLE tests_projects.parent_layer (
 );
 
 
-ALTER TABLE tests_projects.parent_layer OWNER TO lizmap;
+
 
 --
 -- Name: parent_layer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1233,7 +1233,7 @@ CREATE SEQUENCE tests_projects.parent_layer_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.parent_layer_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: parent_layer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1256,7 +1256,7 @@ CREATE TABLE tests_projects.quartiers (
 );
 
 
-ALTER TABLE tests_projects.quartiers OWNER TO lizmap;
+
 
 --
 -- Name: reverse_geom; Type: TABLE; Schema: tests_projects; Owner: lizmap
@@ -1268,7 +1268,7 @@ CREATE TABLE tests_projects.reverse_geom (
 );
 
 
-ALTER TABLE tests_projects.reverse_geom OWNER TO lizmap;
+
 
 --
 -- Name: revert_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1283,7 +1283,7 @@ CREATE SEQUENCE tests_projects.revert_geom_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.revert_geom_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: revert_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1303,7 +1303,7 @@ CREATE TABLE tests_projects.selection (
 );
 
 
-ALTER TABLE tests_projects.selection OWNER TO lizmap;
+
 
 --
 -- Name: selection_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1318,7 +1318,7 @@ CREATE SEQUENCE tests_projects.selection_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.selection_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: selection_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1337,7 +1337,7 @@ CREATE TABLE tests_projects.selection_polygon (
 );
 
 
-ALTER TABLE tests_projects.selection_polygon OWNER TO lizmap;
+
 
 --
 -- Name: selection_polygon_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1352,7 +1352,7 @@ CREATE SEQUENCE tests_projects.selection_polygon_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.selection_polygon_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: selection_polygon_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1372,7 +1372,7 @@ CREATE TABLE tests_projects.shop_bakery_pg (
 );
 
 
-ALTER TABLE tests_projects.shop_bakery_pg OWNER TO lizmap;
+
 
 --
 -- Name: shop_bakery_id_0_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1386,7 +1386,7 @@ CREATE SEQUENCE tests_projects.shop_bakery_id_0_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.shop_bakery_id_0_seq OWNER TO lizmap;
+
 
 --
 -- Name: shop_bakery_id_0_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1409,7 +1409,7 @@ CREATE TABLE tests_projects.sousquartiers (
 );
 
 
-ALTER TABLE tests_projects.sousquartiers OWNER TO lizmap;
+
 
 --
 -- Name: sousquartiers_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1424,7 +1424,7 @@ CREATE SEQUENCE tests_projects.sousquartiers_id_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.sousquartiers_id_seq OWNER TO lizmap;
+
 
 --
 -- Name: sousquartiers_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1447,7 +1447,7 @@ CREATE TABLE tests_projects.table_for_form (
 );
 
 
-ALTER TABLE tests_projects.table_for_form OWNER TO lizmap;
+
 
 --
 -- Name: table_for_form_gid_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1461,7 +1461,7 @@ CREATE SEQUENCE tests_projects.table_for_form_gid_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.table_for_form_gid_seq OWNER TO lizmap;
+
 
 --
 -- Name: table_for_form_gid_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1481,7 +1481,7 @@ CREATE TABLE tests_projects.table_for_relationnal_value (
 );
 
 
-ALTER TABLE tests_projects.table_for_relationnal_value OWNER TO lizmap;
+
 
 --
 -- Name: table_for_relationnal_value_gid_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1495,7 +1495,7 @@ CREATE SEQUENCE tests_projects.table_for_relationnal_value_gid_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.table_for_relationnal_value_gid_seq OWNER TO lizmap;
+
 
 --
 -- Name: table_for_relationnal_value_gid_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1515,7 +1515,7 @@ CREATE TABLE tests_projects.time_manager (
 );
 
 
-ALTER TABLE tests_projects.time_manager OWNER TO lizmap;
+
 
 --
 -- Name: time_manager_gid_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1529,7 +1529,7 @@ CREATE SEQUENCE tests_projects.time_manager_gid_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.time_manager_gid_seq OWNER TO lizmap;
+
 
 --
 -- Name: time_manager_gid_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1549,7 +1549,7 @@ CREATE TABLE tests_projects.townhalls_pg (
 );
 
 
-ALTER TABLE tests_projects.townhalls_pg OWNER TO lizmap;
+
 
 --
 -- Name: townhalls_EPSG2154_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1563,7 +1563,7 @@ CREATE SEQUENCE tests_projects."townhalls_EPSG2154_id_seq"
     CACHE 1;
 
 
-ALTER TABLE tests_projects."townhalls_EPSG2154_id_seq" OWNER TO lizmap;
+
 
 --
 -- Name: townhalls_EPSG2154_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1582,7 +1582,7 @@ CREATE TABLE tests_projects.tramway_lines (
 );
 
 
-ALTER TABLE tests_projects.tramway_lines OWNER TO lizmap;
+
 
 --
 -- Name: tramway_lines_id_tram_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1597,7 +1597,7 @@ CREATE SEQUENCE tests_projects.tramway_lines_id_tram_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.tramway_lines_id_tram_seq OWNER TO lizmap;
+
 
 --
 -- Name: tramway_lines_id_tram_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1617,7 +1617,7 @@ CREATE TABLE tests_projects.tramway_pivot (
 );
 
 
-ALTER TABLE tests_projects.tramway_pivot OWNER TO lizmap;
+
 
 --
 -- Name: tramway_pivot_id_pivot_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1632,7 +1632,7 @@ CREATE SEQUENCE tests_projects.tramway_pivot_id_pivot_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.tramway_pivot_id_pivot_seq OWNER TO lizmap;
+
 
 --
 -- Name: tramway_pivot_id_pivot_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
@@ -1651,7 +1651,7 @@ CREATE TABLE tests_projects.tramway_stops (
 );
 
 
-ALTER TABLE tests_projects.tramway_stops OWNER TO lizmap;
+
 
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE; Schema: tests_projects; Owner: lizmap
@@ -1666,7 +1666,7 @@ CREATE SEQUENCE tests_projects.tramway_stops_id_stop_seq
     CACHE 1;
 
 
-ALTER TABLE tests_projects.tramway_stops_id_stop_seq OWNER TO lizmap;
+
 
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: lizmap
