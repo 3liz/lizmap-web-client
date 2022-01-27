@@ -2,6 +2,8 @@
 
 **Project : test_cache**
 
+Not possible to make this test on lizmap.com because we need the CLI
+
 ## Procedure
 
 This test is to check the cache.
