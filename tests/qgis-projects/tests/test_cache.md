@@ -1,3 +1,11 @@
+# Test CLI cache
+
+**Project : test_cache**
+
+Not possible to make this test on lizmap.com because we need the CLI
+
+## Procedure
+
 This test is to check the cache.
 - [ ] Config the tile cache as file cache
 - [ ] Create a subset of the cache with the lizmap command line:

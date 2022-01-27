@@ -1,10 +1,14 @@
-### Test value relation widget
+# Test value relation widget
+
+**Project : Lizmap form edition with value relation fields**
 
 Lizmap plugin installed for QGIS Server is needed
 
-#### Check the default form
+## Procedure
 
-* [ ] Click on add a `point` in the *Edition* panel (do not  click on the map yet)
+### Check the default form
+
+* [ ] Click on add a `point` in the *Edition* panel (do not click on the map yet)
 * [ ] Check that the *No expression* available values has **5** options :
   * [ ] **Zone A1**
   * [ ] **Zone A2**
@@ -20,7 +24,7 @@ Lizmap plugin installed for QGIS Server is needed
 * [ ] Check that the *Geom expression* available values has **1** option
   * [ ] an empty value
 
-#### Check the drill-down fields
+### Check the drill-down fields
 
 * [ ] Click on add a `point` in the *Edition* panel (do not  click on the map yet)
 * [ ] Select **Zone A** for *Parent field*
@@ -37,7 +41,7 @@ Lizmap plugin installed for QGIS Server is needed
 * [ ] Check that the *Child field* available values has **1** option :
   * [ ] an empty value
 
-#### Check the field available values filtered by geometry
+### Check the field available values filtered by geometry
 
 * [ ] Click on add a `point` in the *Edition* panel
 * [ ] Click on the map to draw the point within **Zone A1**

@@ -1,5 +1,7 @@
 # Tests login filtering
 
+**Project : filter_layer_by_user**
+
 ## Requirements
 
 For the folder `tests`, do not have any `Show even if admin for feature filtered by login` !
