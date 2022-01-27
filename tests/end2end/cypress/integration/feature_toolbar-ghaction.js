@@ -146,15 +146,222 @@ describe('Feature Toolbar', function () {
         cy.get('.popupButtonBar .popup-action').click()
         cy.get('#message').should('be.empty')
     })
-    
+
     it('should start child edition linked to a parent feature', function () {
         // Start parent edition
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-edit').click()
-        
+
         // Start child edition
         cy.get('#edition-children-container lizmap-feature-toolbar[value="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0.1"] .feature-edit').click()
 
         // Parent_id is disabled in form when edition is started from parent form
         cy.get('#jforms_view_edition_parent_id').should('be.disabled')
     })
+})
+
+
+
+describe('Export data', function () {
+
+    beforeEach(function () {
+        // Runs before each tests in the block
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
+
+        cy.wait(300)
+    })
+
+    it('should export the features of a spatial layer depending on the selection or filter', function () {
+        // Open parent_layer in attribute table
+        cy.get('#button-attributeLayers').click()
+        cy.get('button[value="parent_layer"].btn-open-attribute-layer').click({ force: true })
+
+        // Intercept only the GetFeature requests for the parent layer
+        cy.intercept(
+            'index.php/lizmap/service/?repository=testsrepository&project=feature_toolbar',
+            { method: 'POST', middleware: true },
+            (req) => {
+                // no cache
+                req.on('before:response', (res) => {
+                    res.headers['cache-control'] = 'no-store'
+                })
+
+                if (req.body.includes('REQUEST=GetFeature')
+                && req.body.includes('TYPENAME=parent_layer')
+                && req.body.includes('dl=1')
+                ) {
+                    // send the modified request and skip any other
+                    // matching request handlers
+                    req.alias = 'GetExport'
+                }
+            }
+        )
+
+        // Click on the export button
+        cy.get('#attribute-layer-main-parent_layer .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+
+        cy.wait('@GetExport')
+        .then(({response}) => {
+            cy.fixture('export/export_parent_layer.geojson').then((fixtureGeoJSON) => {
+                expect(response.statusCode).to.eq(200)
+                expect(response.body).to.deep.eq(JSON.parse(fixtureGeoJSON))
+            })
+        })
+
+        // Select the second feature
+        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"] .feature-select').click({ force: true })
+        cy.wait(300)
+
+        // Click on the export button
+        cy.get('#attribute-layer-main-parent_layer .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+
+        cy.wait('@GetExport')
+        .then(({response}) => {
+            cy.fixture('export/export_parent_layer_feature_2.geojson').then((fixtureGeoJSON) => {
+                expect(response.statusCode).to.eq(200)
+                expect(response.body).to.deep.eq(JSON.parse(fixtureGeoJSON))
+            })
+        })
+
+        // Filter the selected feature and export
+        cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').click({ force: true })
+        cy.wait(300)
+
+        // Export
+        cy.get('#attribute-layer-main-parent_layer .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+
+        cy.wait('@GetExport')
+        .then(({response}) => {
+            cy.fixture('export/export_parent_layer_feature_2.geojson').then((fixtureGeoJSON) => {
+                expect(response.statusCode).to.eq(200)
+                expect(response.body).to.deep.eq(JSON.parse(fixtureGeoJSON))
+            })
+        })
+
+    })
+
+
+    it('should export the features of a non spatial layer depending on the selection or filter', function () {
+        // Open data_uids in attribute table
+        cy.get('#button-attributeLayers').click()
+        cy.get('button[value="data_uids"].btn-open-attribute-layer').click({ force: true })
+
+        cy.wait(300)
+
+        // Intercept only the GetFeature requests for the test layer
+        cy.intercept(
+            'index.php/lizmap/service/?repository=testsrepository&project=feature_toolbar',
+            { method: 'POST', middleware: true },
+            (req) => {
+                // no cache
+                req.on('before:response', (res) => {
+                    res.headers['cache-control'] = 'no-store'
+                })
+
+                if (req.body.includes('REQUEST=GetFeature')
+                && req.body.includes('TYPENAME=data_uids')
+                && req.body.includes('dl=1')
+                ) {
+                    req.alias = 'GetExport'
+                }
+            }
+        )
+
+        // Click on the export button
+        cy.get('#attribute-layer-main-data_uids  .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+
+        cy.wait('@GetExport')
+        .then(({response}) => {
+            cy.fixture('export/export_data_uids.geojson').then((fixtureGeoJSON) => {
+                expect(response.statusCode).to.eq(200)
+                expect(response.body).to.deep.eq(JSON.parse(fixtureGeoJSON))
+            })
+        })
+
+        // Select the second feature
+        cy.get('#attribute-layer-main-data_uids lizmap-feature-toolbar[value="data_uids_481aebcb_1b4e_495a_9664_ca64ee1becc4.2"] .feature-select').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids lizmap-feature-toolbar[value="data_uids_481aebcb_1b4e_495a_9664_ca64ee1becc4.4"] .feature-select').click({ force: true })
+        cy.wait(300)
+
+        // Click on the export button
+        cy.get('#attribute-layer-main-data_uids  .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+
+        cy.wait('@GetExport')
+        .then(({response}) => {
+            cy.fixture('export/export_data_uids_features_2_and_4.geojson').then((fixtureGeoJSON) => {
+                expect(response.statusCode).to.eq(200)
+                expect(response.body).to.deep.eq(JSON.parse(fixtureGeoJSON))
+            })
+        })
+
+        // Filter the selected feature and export
+        cy.get('#attribute-layer-main-data_uids .btn-filter-attributeTable').click({ force: true })
+        cy.wait(300)
+
+        // Export
+        cy.get('#attribute-layer-main-data_uids  .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.wait('@GetExport')
+        .then(({response}) => {
+            cy.fixture('export/export_data_uids_features_2_and_4.geojson').then((fixtureGeoJSON) => {
+                expect(response.statusCode).to.eq(200)
+                expect(response.body).to.deep.eq(JSON.parse(fixtureGeoJSON))
+            })
+        })
+
+    })
+
+    // Note 31/01/2022
+    // REMOVE WHEN THE QGIS SERVER BUG HAS BEEN FIXED
+    // Related PR for QGIS Master https://github.com/qgis/QGIS/pull/47051
+    // It should be fixed for 3.24.1 and 3.22.5
+    it('should not export the selected features and display a message for a layer with parenthesis', function () {
+        // Open parent_layer in attribute table
+        cy.get('#button-attributeLayers').click()
+        cy.get('button[value="tramway_stop__with_parenthesis__and_spaces"].btn-open-attribute-layer').click({ force: true })
+
+        // Select the second feature
+        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces lizmap-feature-toolbar[value="tramway_stops_fd557309_c85f_4bdb_83e1_93e4fb027c07.2"] .feature-select').click({ force: true })
+        cy.wait(300)
+
+        // Intercept only the GetFeature requests for the test layer
+        cy.intercept(
+            'index.php/lizmap/service/?repository=testsrepository&project=feature_toolbar',
+            { method: 'POST', middleware: true },
+            (req) => {
+                // no cache
+                req.on('before:response', (res) => {
+                    res.headers['cache-control'] = 'no-store'
+                })
+
+                if (req.body.includes('REQUEST=GetFeature')
+                && req.body.includes('TYPENAME=tramway_stop_(with_parenthesis)_and_spaces')
+                && req.body.includes('dl=1')
+                ) {
+                    req.alias = 'GetExport'
+                }
+            }
+        )
+
+        // Click on the export button
+        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+
+        cy.wait('@GetExport')
+        .then(() => {
+            cy.get('#message > div').should('have.class', 'alert')
+        })
+        cy.get('#message > div.alert > a.close').click()
+
+        // Unselect
+        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces lizmap-feature-toolbar[value="tramway_stops_fd557309_c85f_4bdb_83e1_93e4fb027c07.2"] .feature-select').click({ force: true })
+
+    })
+
+
+
 })
