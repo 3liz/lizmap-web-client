@@ -1,0 +1,7 @@
+{"type": "FeatureCollection",
+ "bbox": [ 3.89068614, 43.60807056, 4.02093568, 43.61070378],
+ "features": [
+  {"geometry":{"coordinates":[3.890686,43.609216],"type":"Point"},"id":"parent_layer.1","properties":{"id":1},"type":"Feature"}
+ ,{"geometry":{"coordinates":[4.020936,43.609558],"type":"Point"},"id":"parent_layer.2","properties":{"id":2},"type":"Feature"}
+ ]
+}

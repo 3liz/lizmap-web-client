@@ -291,7 +291,7 @@ class serviceCtrl extends jController
         $this->services = lizmap::getServices();
         $this->params = $params;
 
-        // Get the optionnal filter token
+        // Get the optional filter token
         if (isset($params['filtertoken'], $params['request'])
             && in_array(strtolower($params['request']), array('getmap', 'getfeature', 'getprint', 'getfeatureinfo'))
         ) {
@@ -335,12 +335,24 @@ class serviceCtrl extends jController
                             && property_exists($data, 'ids')
                             && count($data->ids) > 0
                         ) {
-                            $selections[] = $data->typename.':'.implode(',', $data->ids);
-                            $data_ids = array();
-                            foreach ($data->ids as $id) {
-                                $data_ids[] = $data->typename.'.'.$id;
+                            $layerName = $data->typename;
+                            // For WMS, use the layer name in the SELECTION parameter
+                            $selections[] = $layerName.':'.implode(',', $data->ids);
+
+                            // For WFS we use feature ids in the FEATUREID parameter
+                            if ($request == 'getfeature') {
+                                // For WFS, the typename is not the layer name
+                                // We need to get the layer from the project
+                                $layer = $this->project->findLayerByAnyName($layerName);
+                                $layerId = $layer->id;
+                                $qgisLayer = $this->project->getLayer($layerId);
+                                $typename = $qgisLayer->getWfsTypeName();
+                                $data_ids = array();
+                                foreach ($data->ids as $id) {
+                                    $data_ids[] = $typename.'.'.$id;
+                                }
+                                $feature_ids[] = implode(',', $data_ids);
                             }
-                            $feature_ids[] = implode(',', $data_ids);
                         }
                     }
                 }
