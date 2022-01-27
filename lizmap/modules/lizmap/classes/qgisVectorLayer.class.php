@@ -75,6 +75,25 @@ class qgisVectorLayer extends qgisMapLayer
         $this->wfsFields = $propLayer['wfsFields'];
     }
 
+    /**
+     * Get the WFS typename for this layer.
+     *
+     * We need to get either the shortname or the layer name
+     * and replace all spaces by underscore
+     *
+     * @return string The WFS typename of the layer
+     */
+    public function getWfsTypeName()
+    {
+        // If we have a short name, we should use it
+        $typename = $this->getShortName();
+        if (!$typename) {
+            $typename = $this->getName();
+        }
+
+        return str_replace(' ', '_', $typename);
+    }
+
     public function getFields()
     {
         return $this->fields;
@@ -626,7 +645,7 @@ class qgisVectorLayer extends qgisMapLayer
             $returnKeys[] = $cnx->encloseName($key);
         }
         $returnKeysString = implode(', ', $returnKeys);
-        // For spatialite, we will run a complentary query to retrieve the pkeys
+        // For spatialite, we will run a complementary query to retrieve the pkeys
         if ($this->provider == 'postgres') {
             $sql .= '  RETURNING '.$returnKeysString;
         }
@@ -885,13 +904,10 @@ class qgisVectorLayer extends qgisMapLayer
         // Filter
         $expByUser = $loginFilter['filter'];
 
-        // Typename
-        $typename = $this->getShortName();
-        if (!$typename) {
-            $typename = $this->getName();
-        }
-        $typename = str_replace(' ', '_', $typename);
+        // Get layer WFS typename
+        $typename = $this->getWfsTypeName();
 
+        // Get the needed fields to retrieve
         $dbFieldsInfo = $this->getDbFieldsInfo();
         $pKeys = $dbFieldsInfo->primaryKeys;
         $properties = array_merge($pKeys, array($loginFilter['filterAttribute']));
