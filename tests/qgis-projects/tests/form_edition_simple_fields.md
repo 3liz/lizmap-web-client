@@ -1,5 +1,9 @@
 # Creating/editing geometries/attributes
 
+**Project : Lizmap form edition with simple fields**
+
+## Procedure
+
 For each layer, do
 * Create, fill and save a feature
 * Click and display the popup

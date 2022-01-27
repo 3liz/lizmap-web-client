@@ -13,7 +13,7 @@ fi
 make env
 
 if [ "$CMD" == "reset" ]; then
-    # Purge docker conainers/volumes
+    # Purge docker containers/volumes
     make reset
     exit 0
 elif [ "$CMD" == "build" ]; then
@@ -21,4 +21,3 @@ elif [ "$CMD" == "build" ]; then
 fi
 
 docker-compose $CMD "$@"  
-

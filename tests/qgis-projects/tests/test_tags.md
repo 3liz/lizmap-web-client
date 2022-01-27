@@ -1,3 +1,9 @@
+# Test tags
+
+**Project : None, on the landing page**
+
+## Procedure
+
 For this test you need the two empty projects (test_tags_nature_flower, test_tags_nature_tree).
 This is to test the feature to filter by tags.
 

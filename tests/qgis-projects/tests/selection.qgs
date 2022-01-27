@@ -19,7 +19,7 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties></customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="selection_polygon_ee567f79_456d_40cc_8074_45b88d5e16eb" legend_exp="" legend_split_behavior="0" name="selection_polygon" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;selection_polygon&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="selection_polygon_ee567f79_456d_40cc_8074_45b88d5e16eb" legend_exp="" legend_split_behavior="0" name="selection_polygon" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;selection_polygon&quot; (geom)">
       <customproperties></customproperties>
     </layer-tree-layer>
     <layer-tree-layer checked="Qt::Checked" expanded="1" id="selection_dc3e9dd3_a4de_494c_9998_da8760b7049b" legend_exp="" legend_split_behavior="0" name="selection" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;selection&quot; (geom)">
@@ -487,7 +487,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>1077255.2844308300409466</ymax>
       </extent>
       <id>selection_polygon_ee567f79_456d_40cc_8074_45b88d5e16eb</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."selection_polygon" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."selection_polygon" (geom)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
