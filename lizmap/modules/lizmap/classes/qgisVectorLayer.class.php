@@ -75,6 +75,25 @@ class qgisVectorLayer extends qgisMapLayer
         $this->wfsFields = $propLayer['wfsFields'];
     }
 
+    /**
+     * Get the WFS typename for this layer.
+     *
+     * We need to get either the shortname or the layer name
+     * and replace all spaces by underscore
+     *
+     * @return string The WFS typename of the layer
+     */
+    public function getWfsTypeName()
+    {
+        // If we have a short name, we should use it
+        $typename = $this->getShortName();
+        if (!$typename) {
+            $typename = $this->getName();
+        }
+
+        return str_replace(' ', '_', $typename);
+    }
+
     public function getFields()
     {
         return $this->fields;
@@ -1045,12 +1064,8 @@ class qgisVectorLayer extends qgisMapLayer
         // (Some QGIS Server versions could return no data
         // if the fields used in filter were not added in propertyname parameter)
 
-        // Get layer typename
-        $typename = $this->getShortName();
-        if (!$typename) {
-            $typename = $this->getName();
-        }
-        $typename = str_replace(' ', '_', $typename);
+        // Get layer WFS typename
+        $typename = $this->getWfsTypeName();
 
         // Get the needed fields to retrieve
         $dbFieldsInfo = $this->getDbFieldsInfo();

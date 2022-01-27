@@ -4223,8 +4223,8 @@ var lizMap = function() {
         var tf = tconfig['fields'].trim();
         var tooltipFields = tf.split(/[\s,]+/);
         var hiddenFields = [];
-        if ( 'attributeLayers' in lizMap.config 
-            && lname in lizMap.config.attributeLayers 
+        if ( 'attributeLayers' in lizMap.config
+            && lname in lizMap.config.attributeLayers
             && 'hiddenFields' in lizMap.config.attributeLayers[lname]) {
             var hf = lizMap.config.attributeLayers[lname]['hiddenFields'].trim();
             hiddenFields = hf.split(/[\s,]+/);
@@ -4760,6 +4760,27 @@ var lizMap = function() {
                   setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
               }
           }
+
+          // Note 31/01/2022
+          // REMOVE WHEN THE QGIS SERVER BUG HAS BEEN FIXED
+          // Related PR for QGIS Master https://github.com/qgis/QGIS/pull/47051
+          // It should be fixed for 3.24.1 and 3.22.5
+          if (this.status == 400) {
+            // Check for parenthesis inside the layer name
+            // There is a bug to be fixed in QGIS Server WFS request for this context
+            var typeName = parameters['TYPENAME'];
+            const parenthesis_regex = /[\(\)]/g;
+            const has_parenthesis = typeName.match(parenthesis_regex);
+            if (has_parenthesis) {
+              var error_message = 'The selected features cannot be exported due to a known bug in QGIS Server.';
+              error_message += '<br/>Please ask the map editor to remove the parenthesis in the layer name.';
+            } else {
+              var error_message = lizDict['layer.export.unknown.export.error'];
+            };
+
+            mAddMessage(error_message, 'error', true);
+            return false;
+          }
           // Execute callback if any
           if (typeof callback === 'function'){
             callback();
@@ -4790,18 +4811,47 @@ var lizMap = function() {
       var cleanName = lizMap.cleanName( aName );
       var selectionLayer = getLayerNameByCleanName( cleanName );
 
-      if( !selectionLayer )
+      if (!selectionLayer) {
         selectionLayer = aName;
+      }
 
-      // Get WFS url and options
-      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null, restrictToMapExtent );
+      // Get the layer Lizmap configuration
+      var config_layer = lizMap.config.layers[selectionLayer];
+
+      // Check if the layer is spatial
+      const is_spatial = (
+        config_layer['geometryType'] && config_layer['geometryType'] != 'none' && config_layer != 'unknown'
+      ) ? true : false;
+
+      // Check if there is a selection token
+      const has_selection_token = (
+        'request_params' in config_layer && 'selectiontoken' in config_layer['request_params']
+        && config_layer['request_params']['selectiontoken'] != null
+        && config_layer['request_params']['selectiontoken'] != ''
+      ) ? true : false;
+
+      // Check for parenthesis inside the layer name
+      // There is a bug to be fixed in QGIS Server WFS request for this context
+      const parenthesis_regex = /[\(\)]/g;
+      const has_parenthesis = selectionLayer.match(parenthesis_regex);
 
       // If there is a selection, use the selectiontoken,
-      // not a list of features ids to avoid too big urls
-      var config_layer = lizMap.config.layers[selectionLayer];
-      if ('request_params' in config_layer && 'selectiontoken' in config_layer['request_params']) {
+      // not a list of features ids to avoid to have too big urls
+      // There is some cases when we do not want to use the selection token
+      // * Layers with no selection token
+      // * Layers with parenthesis inside the layer name (Bug to be fixed in QGIS Server WFS request)
+      // * Layers with no geometry, because there is no request_params (as it is only for Openlayers layers)
+      if (is_spatial && has_selection_token && !has_parenthesis) {
+        // Get the WFS URL with no filter
+        var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null, restrictToMapExtent );
+        // Add the SELECTIONTOKEN parameter
         var selection_token = config_layer['request_params']['selectiontoken'];
         getFeatureUrlData['options']['SELECTIONTOKEN'] = selection_token;
+      } else {
+        // Get the WFS feature ids
+        var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
+        // Restrict the WFS URL for these IDS
+        var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid, null, restrictToMapExtent );
       }
 
       // Force download
@@ -6738,7 +6788,7 @@ lizMap.events.on({
        }
 
        var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
-       
+
        // IGN base layers
         if ('ignKey' in evt.config.options){
           var ignKey = evt.config.options.ignKey;
