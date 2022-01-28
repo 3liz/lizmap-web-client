@@ -19,13 +19,13 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties></customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5" legend_exp="" legend_split_behavior="0" name="form_advanced_point" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_advanced_point&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5" legend_exp="" legend_split_behavior="0" name="form_advanced_point" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_advanced_point&quot; (geom)">
       <customproperties></customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="sousquartiers_e1ffdafd_f1e3_4e62_a6ac_fcd717175021" legend_exp="" legend_split_behavior="0" name="sousquartiers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="sousquartiers_e1ffdafd_f1e3_4e62_a6ac_fcd717175021" legend_exp="" legend_split_behavior="0" name="sousquartiers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)">
       <customproperties></customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7" legend_exp="" legend_split_behavior="0" name="quartiers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' user='lizmap' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7" legend_exp="" legend_split_behavior="0" name="quartiers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)">
       <customproperties></customproperties>
     </layer-tree-layer>
     <custom-order enabled="0">
@@ -144,7 +144,7 @@
         <ymax>6282171.28296383004635572</ymax>
       </extent>
       <id>form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_advanced_point" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_advanced_point" (geom)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -367,7 +367,7 @@
                 <Option name="Layer" type="QString" value="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7"></Option>
                 <Option name="LayerName" type="QString" value="quartiers"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' user='lizmap' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -388,7 +388,7 @@
                 <Option name="Layer" type="QString" value="sousquartiers_e1ffdafd_f1e3_4e62_a6ac_fcd717175021"></Option>
                 <Option name="LayerName" type="QString" value="sousquartiers"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' user='lizmap' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -504,7 +504,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.65337122449290064</ymax>
       </extent>
       <id>quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -898,7 +898,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>6284189.52060000039637089</ymax>
       </extent>
       <id>sousquartiers_e1ffdafd_f1e3_4e62_a6ac_fcd717175021</id>
-      <datasource>service='lizmapdb' user='lizmap' password='lizmap1234!' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."sousquartiers" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."sousquartiers" (geom)</datasource>
       <keywordList>
         <value></value>
       </keywordList>

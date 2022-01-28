@@ -1,7 +1,13 @@
-### Test project ACL (access control list) in landing page (http://your-lizmap-domain.tld/)
+# Test project ACL 
 
-- [ ] The 'Project_acl' project is not visible in landing page for `anonymous`
-- [ ] The 'Project_acl' project is not visible in landing page for a user not in `admins` group
-- [ ] The 'Project_acl' project is not visible in landing page for a user in `admins` group
+Access control list in landing page (http://your-lizmap-domain.tld/
 
-- [ ] The 'Project_acl' project is visible in landing page for a user in `testgroup` group
+**Project : None, on the landing page**
+
+## Procedure
+
+- [ ] The `Project_acl` project is not visible in landing page for `anonymous`
+- [ ] The `Project_acl` project is not visible in landing page for a user not in `admins` group
+- [ ] The `Project_acl` project is not visible in landing page for a user in `admins` group
+
+- [ ] The `Project_acl` project is visible in landing page for a user in `testgroup` group

@@ -1,3 +1,9 @@
+# Test relational values
+
+**Project : form_type_relational_value**
+
+## Procedure
+
 The field `type` for the `table_for_form` layer is a relational value field. The multiples' selection was allowed.
 
 Click on the only point and start the update field

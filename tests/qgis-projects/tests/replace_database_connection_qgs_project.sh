@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ "$#" -ne 6 ]; then
+if [ "$#" -ne 2 ]; then
     echo "Bad numbers of arguments"
-    echo "This script is to replace the database connection in a set of QGIS projects."
-    echo "replace_database_connection_qgs_project.sh QGS_DIRECTORY HOST DB_NAME USER PASSWORD PORT"
+    echo "This script is to replace the service database connection in a set of QGIS projects."
+    echo "replace_database_connection_qgs_project.sh QGS_DIRECTORY NEW_SERVICE"
     echo "Be careful, original files will be updated"
     exit 1
 fi
@@ -17,9 +17,8 @@ echo "#### Update files ####"
 for file in "$DIR"*.qgs
 do
     echo "$file updated"
-    sed -i "s/source=\"service='lizmapdb'/source=\"dbname='$3' host='$2' port=$6 user='$4'/g" $file;
-    sed -i "s/<datasource>service='lizmapdb'/<datasource>dbname='$3' host='$2' port=$6 user='$4' password='$5'/g" $file;
+    sed -i "s/source=\"service='lizmapdb'/source=\"service='$2'/g" $file;
+    sed -i "s/<datasource>service='lizmapdb'/<datasource>service='$2'/g" $file;
 done
 
 echo "#### End ####"
-
