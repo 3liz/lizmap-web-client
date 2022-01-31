@@ -177,6 +177,7 @@ class mediaCtrl extends jController
         $mime = jFile::getMimeType($abspath);
         if ($mime == 'text/plain' || $mime == ''
             || $mime == 'application/octet-stream'
+            || in_array(strtolower($path_parts['extension']), array('svg', 'svgz'))
             || ($mime == 'text/html'
                 && !in_array($path_parts['extension'], array('html', 'htm')))
         ) {
