@@ -2668,45 +2668,9 @@ ALTER TABLE ONLY tests_projects.townhalls_pg
 
 --
 
-ALTER TABLE ONLY tests_projects.tramway_lines
-    ADD CONSTRAINT tramway_lines_pkey PRIMARY KEY (id_line);
-
-
---
-
---
-
-ALTER TABLE ONLY tests_projects.tramway_pivot
-    ADD CONSTRAINT tramway_pivot_pkey PRIMARY KEY (id_pivot);
-
-
---
-
---
-
-ALTER TABLE ONLY tests_projects.tramway_stops
-    ADD CONSTRAINT tramway_stops_pkey PRIMARY KEY (id_stop);
-
-
---
-
---
-
-CREATE INDEX fki_line_fkey ON tests_projects.tramway_pivot USING btree (id_line);
-
-
---
-
---
-
 CREATE INDEX fki_parent_fkey ON tests_projects.children_layer USING btree (parent_id);
 
 
---
-
---
-
-CREATE INDEX fki_stop_fkey ON tests_projects.tramway_pivot USING btree (id_stop);
 
 --
 
