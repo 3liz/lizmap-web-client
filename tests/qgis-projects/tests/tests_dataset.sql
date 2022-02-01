@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 13.5 (Ubuntu 13.5-1.pgdg18.04+1)
+-- Dumped by pg_dump version 13.5 (Ubuntu 13.5-2.pgdg20.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -839,7 +839,8 @@ CREATE TABLE tests_projects.form_edition_upload (
     text_file text,
     image_file text,
     text_file_mandatory text NOT NULL,
-    image_file_mandatory text NOT NULL
+    image_file_mandatory text NOT NULL,
+    image_file_specific_root_folder text
 );
 
 
@@ -2431,7 +2432,7 @@ SELECT pg_catalog.setval('tests_projects.form_edition_snap_id_seq', 2, true);
 -- Name: form_edition_upload_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.form_edition_upload_id_seq', 1, false);
+SELECT pg_catalog.setval('tests_projects.form_edition_upload_id_seq', 1, true);
 
 
 --
