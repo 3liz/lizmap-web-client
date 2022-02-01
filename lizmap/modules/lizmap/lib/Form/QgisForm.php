@@ -349,8 +349,8 @@ class QgisForm implements QgisFormControlsInterface
             foreach ($form->getUploads() as $upload) {
                 list($path, $fullPath) = $this->getStoragePathForControl($upload->ref);
                 $filename = $form->getData($upload->ref);
-                if ($fullPath && $filename && file_exists($fullPath.'/'.$filename)) {
-                    $files[] = $fullPath.'/'.$filename;
+                if ($fullPath && $filename && file_exists($fullPath.$filename)) {
+                    $files[] = $fullPath.$filename;
                 }
             }
         }

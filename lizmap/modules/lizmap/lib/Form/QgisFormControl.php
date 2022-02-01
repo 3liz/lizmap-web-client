@@ -710,7 +710,10 @@ class QgisFormControl
         $targetFullPath = $repPath.$targetPath;
         // Else use given root, but only if it is a child or brother of the repository path
         if (!empty($this->DefaultRoot)) {
-            $fullPath = \Jelix\FileUtilities\Path::normalizePath($repPath.$this->DefaultRoot);
+            $fullPath = \Jelix\FileUtilities\Path::normalizePath(
+                $repPath.$this->DefaultRoot,
+                \Jelix\FileUtilities\Path::NORM_ADD_TRAILING_SLASH
+            );
             $parentPath = realpath($repPath.'../');
             if (strpos($fullPath, $repPath) === 0
                 || strpos($fullPath, $parentPath) === 0
