@@ -1758,7 +1758,8 @@ class QgisProject
             if ($defaultRoot
                 && (preg_match('#^../media(/)?#', $defaultRoot)
                     || preg_match('#^media(/)?#', $defaultRoot))) {
-                $defaultRoot = $defaultRoot.'/';
+                // Remove the last slashes and add only one
+                $defaultRoot = rtrim($defaultRoot, '/').'/';
             } else {
                 $defaultRoot = '';
             }
