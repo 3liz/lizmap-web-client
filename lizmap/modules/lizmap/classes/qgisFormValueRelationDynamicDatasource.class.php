@@ -69,11 +69,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
                     }
                 }
             } else {
-                $typename = $layer->getShortName();
-                if ($typename === null || $typename === '') {
-                    $typename = str_replace(' ', '_', $layer->getName());
-                }
-
+                $typename = $layer->getWfsTypeName();
                 $params = array(
                     'SERVICE' => 'WFS',
                     'VERSION' => '1.0.0',
@@ -149,11 +145,7 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
             $filter .= "'".addslashes($key)."'";
         }
 
-        $typename = $layer->getShortName();
-        if ($typename === null || $typename === '') {
-            $typename = str_replace(' ', '_', $layer->getName());
-        }
-
+        $typename = $layer->getWfsTypeName();
         $params = array(
             'map' => $lproj->getRelativeQgisPath(),
             'SERVICE' => 'WFS',
