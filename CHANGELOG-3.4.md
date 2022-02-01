@@ -2,14 +2,21 @@
 
 ## Unreleased
 
+### Fixed
+
 - Fix the value relation widget with multiple text values on feature modification
 - Fix the link of selected features between a parent and a child in the attribute table
 - Fix a warning into QgisProject with expanded-group-node
 - Update IGN URL searching address, the old one will no longer be usable as of February 1, 2022
-- Fix Snapping missing when editing existing feature
+- Fix snapping missing when editing existing feature
 - Fix geom can be created on existing feature without geometry
 - Fix some account management issues with some other authentication modules
 - Fix the backup script about third-party modules such as MapBuilder and AltiProfil
+- Fix the mime type for SVG files. It should be `image/svg+xml`
+- Fix the layer export when :
+  - a selection or a filter is active
+  - the layer is not spatial
+  - the layer has parenthesis inside its name
 
 ## 3.4.8 - 2021-12-23
 
