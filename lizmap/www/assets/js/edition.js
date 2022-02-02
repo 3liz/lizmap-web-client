@@ -1447,9 +1447,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 var geometryType = editionLayer.geometryType;
                 let feat = getFeatureFromGeometryColumn();
                 // Creation for new feature or existing one without geometry
-                if( editionType == 'createFeature' || !feat){
+                if( editionType == 'createFeature' || !feat ){
                     // Activate drawFeature control only if relevant
-                    if( editionLayer['config'].capabilities.createFeature == "True"
+                    if( (editionLayer['config'].capabilities.createFeature == "True"
+                      || (!feat && editionLayer['config'].capabilities.modifyGeometry == "True"))
                     && geometryType in editCtrls ){
                         $('#edition-geomtool-container button i').removeClass('line');
                         $('#edition-geomtool-container').hide();
