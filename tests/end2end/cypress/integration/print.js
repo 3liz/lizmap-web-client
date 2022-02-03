@@ -37,6 +37,9 @@ describe('Print', function () {
     const downloadsFolder = Cypress.config("downloadsFolder")
 
     it('should print title labels (PNG)', function () {
+        const PNG = require('pngjs').PNG;
+        const pixelmatch = require('pixelmatch');
+
         cy.get('#print-format').select('png')
         cy.intercept('POST', '*test_print*').as('GetPrint')
 
@@ -46,7 +49,12 @@ describe('Print', function () {
         cy.wait('@GetPrint').then(() => {
             cy.fixture('images/print/print_default_labels.png', 'base64').then((fixturePNG) => {
                 cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'base64').then((downloadedPNG) => {
-                    expect(fixturePNG, 'expect print default values in the title labels').to.equal(downloadedPNG)
+                    // image encoded as base64
+                    const img1 = PNG.sync.read(Buffer.from(downloadedPNG, 'base64'));
+                    const img2 = PNG.sync.read(Buffer.from(fixturePNG, 'base64'));
+                    const { width, height } = img1;
+
+                    expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print default values in the title labels').to.equal(0)
                 })
             })
         })
@@ -63,7 +71,12 @@ describe('Print', function () {
         cy.wait('@GetPrint').then(() => {
             cy.fixture('images/print/print_changed_labels.png', 'base64').then((fixturePNG) => {
                 cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'base64').then((downloadedPNG) => {
-                    expect(fixturePNG, 'expect print default values in the title labels').to.equal(downloadedPNG)
+                    // image encoded as base64
+                    const img1 = PNG.sync.read(Buffer.from(downloadedPNG, 'base64'));
+                    const img2 = PNG.sync.read(Buffer.from(fixturePNG, 'base64'));
+                    const { width, height } = img1;
+
+                    expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print changed values in the title labels').to.equal(0)
                 })
             })
         })
