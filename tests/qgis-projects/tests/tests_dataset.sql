@@ -495,7 +495,8 @@ CREATE TABLE tests_projects.form_edition_all_fields_types (
     boolean_notnull_for_checkbox boolean NOT NULL,
     integer_array integer[],
     text text,
-    uids text
+    uids text,
+    value_map_integer integer
 );
 
 
@@ -1900,7 +1901,7 @@ COPY tests_projects.form_advanced_point (id, geom, has_photo, website, quartier,
 -- Data for Name: form_edition_all_fields_types; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text, uids) FROM stdin;
+COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text, uids, value_map_integer) FROM stdin;
 \.
 
 
