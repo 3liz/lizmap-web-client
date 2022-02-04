@@ -1009,6 +1009,47 @@ class QgisProjectTest extends TestCase
         );
         $this->assertEquals($expectedOptions, $options->map);
 
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="value_map_integer">
+              <editWidget type="ValueMap">
+                <config>
+                  <Option type="Map">
+                    <Option name="map" type="List">
+                      <Option type="Map">
+                        <Option name="one" type="QString" value="1"></Option>
+                      </Option>
+                      <Option type="Map">
+                        <Option name="two" type="QString" value="2"></Option>
+                      </Option>
+                    </Option>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('value_map_integer', $props));
+        $prop = $props['value_map_integer'];
+
+        $this->assertEquals($prop->getFieldEditType(), 'ValueMap');
+
+        $options = (object) $prop->getEditAttributes();
+        $this->assertTrue(property_exists($options, 'map'));
+        $this->assertCount(2, $options->map);
+        $expectedOptions = array(
+            '1' => 'one',
+            '2' => 'two',
+        );
+        $this->assertEquals($expectedOptions, $options->map);
+
         // no edit widget type
         $xmlStr = '
         <maplayer>
