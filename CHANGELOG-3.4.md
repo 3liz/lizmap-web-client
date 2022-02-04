@@ -4,6 +4,14 @@
 
 ### Fixed
 
+## 3.4.9 - 2022-02-04
+
+### Added
+
+- Add new Ukrainian language
+
+### Fixed
+
 - Fix the value relation widget with multiple text values on feature modification
 - Fix the link of selected features between a parent and a child in the attribute table
 - Fix a warning into QgisProject with expanded-group-node
@@ -17,6 +25,7 @@
   - a selection or a filter is active
   - the layer is not spatial
   - the layer has parenthesis inside its name
+- Update translations
 
 ## 3.4.8 - 2021-12-23
 
