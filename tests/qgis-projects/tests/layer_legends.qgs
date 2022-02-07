@@ -593,7 +593,7 @@ def my_form_open(dialog, layer, feature):
       <value>6278869.063235471</value>
     </WMSExtent>
     <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
-    <WMSServiceTitle type="QString">layer_legends</WMSServiceTitle>
+    <WMSServiceTitle type="QString"></WMSServiceTitle>
   </properties>
   <visibility-presets/>
   <transformContext>
