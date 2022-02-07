@@ -27,27 +27,19 @@ body:
         4. See error
     validations:
       required: true
-  - type: input
+  - type: textarea
     id: lizmap-version
     attributes:
-      label: Lizmap version
-      placeholder: 3.4.4
-    validations:
-      required: true
-  - type: input
-    id: qgis-desktop-version
-    attributes:
-      label: QGIS desktop version
-      placeholder: 3.16.8
+      label: Versions
+      description: |
+        In QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard". Finally paste here. There isn't any personal data provided.
     validations:
       required: true
   - type: input
     id: qgis-server-version
     attributes:
-      label: QGIS server version
+      label: QGIS server version, only if the section above doesn't mention the QGIS Server version
       placeholder: 3.16.8
-    validations:
-      required: true
   - type: input
     id: os
     attributes:
