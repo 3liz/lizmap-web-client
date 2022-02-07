@@ -399,7 +399,7 @@
       <value>6554059.277071804</value>
     </WMSExtent>
     <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
-    <WMSServiceTitle type="QString">test_print</WMSServiceTitle>
+    <WMSServiceTitle type="QString"></WMSServiceTitle>
   </properties>
   <dataDefinedServerProperties>
     <Option type="Map">
