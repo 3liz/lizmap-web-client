@@ -514,7 +514,9 @@ class QgisFormControl
                     ) {
                         unset($valueMap[self::QGIS_NULL_VALUE]);
                     }
-                    $data = array_merge($data, $valueMap);
+                    // we don't use array_merge, because this function reindexes keys if they are
+                    // numerical values, and this is not what we want.
+                    $data += $valueMap;
                 }
 
                 break;
