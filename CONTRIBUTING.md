@@ -142,11 +142,7 @@ Tests is highly recommended for any new commits. Tests can be provided with :
 You can test your changes, or you can launch unit tests, by running some 
 Docker containers. Go into tests/ and read the README.md file. 
 A docker-compose.yml file is provided, launching a full stack of softwares to 
-run Lizmap (nginx, php-fpm, qgis, postgresql...). 
-
-You can also use a Vagrant machine (although it is deprecated). It allows to 
-create a virtual machine with all softwares needed by Lizmap (PostgreSQL, QGIS Server...).
-See vagrant/README.md for details and to learn how to launch this VM.
+run Lizmap (nginx, php-fpm, qgis, postgresql...).
 
 You can test with Android browsers in your Ubuntu Desktop thanks to [Anbox](https://docs.anbox.io/userguide/install.html#install-anbox).
 For example, you can [download a x86 version of Firefox Mobile](https://ftp.mozilla.org/pub/mobile/) then [install it](https://docs.anbox.io/userguide/install_apps.html#install-applications).

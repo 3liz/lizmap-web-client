@@ -1,9 +1,0 @@
----
-#- include: qgis_server_deps.yml
-- include: qgis_server.yml
-  tags: qgis
-- include: qgis_frontal.yml
-  tags: qgis
-- include: qgis_plugins.yml
-  tags: qgis,plugins
-

@@ -1,5 +1,0 @@
----
-- name: Install Redis server
-  package: name={{ item }} state=present
-  with_items:
-    - redis-server
