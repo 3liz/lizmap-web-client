@@ -1023,6 +1023,9 @@ class QgisProjectTest extends TestCase
                       <Option type="Map">
                         <Option name="two" type="QString" value="2"></Option>
                       </Option>
+                      <Option type="Map">
+                        <Option name="three" type="QString" value="3"></Option>
+                      </Option>
                     </Option>
                   </Option>
                 </config>
@@ -1043,10 +1046,11 @@ class QgisProjectTest extends TestCase
 
         $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'map'));
-        $this->assertCount(2, $options->map);
+        $this->assertCount(3, $options->map);
         $expectedOptions = array(
             '1' => 'one',
             '2' => 'two',
+            '3' => 'three',
         );
         $this->assertEquals($expectedOptions, $options->map);
 
