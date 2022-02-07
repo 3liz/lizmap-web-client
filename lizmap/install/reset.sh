@@ -15,7 +15,6 @@ usage()
     echo "Options:"
     echo "   --demo         configure the demo during the 'install' action "
     echo "   --keep-config  do not erase configuration files (localconfig, profiles, lizmapConfig...)"
-    echo "                  Use it for Vagrant machine when you develop Lizmap"
     echo " "
 }
 
