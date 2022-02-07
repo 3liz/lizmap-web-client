@@ -1,6 +1,6 @@
 # Test Drag&Drop form
 
-**Project : Drag'N Drop edition form**
+**Project : dnd_form**
 
 ## Procedure
 

@@ -1,6 +1,6 @@
 # Test KML
 
-**Project : Import KML**
+**Project : import_kml**
 
 ## Procedure
 

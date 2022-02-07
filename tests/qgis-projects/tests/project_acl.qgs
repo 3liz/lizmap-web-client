@@ -107,7 +107,7 @@
       <value>1.0</value>
     </WMSExtent>
     <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
-    <WMSServiceTitle type="QString">project_acl</WMSServiceTitle>
+    <WMSServiceTitle type="QString"></WMSServiceTitle>
   </properties>
   <visibility-presets/>
   <transformContext/>

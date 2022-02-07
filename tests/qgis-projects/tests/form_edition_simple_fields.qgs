@@ -3003,7 +3003,7 @@ def my_form_open(dialog, layer, feature):
     <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
     <WMSServiceAbstract type="QString"></WMSServiceAbstract>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
-    <WMSServiceTitle type="QString">Lizmap form edition with simple fields</WMSServiceTitle>
+    <WMSServiceTitle type="QString"></WMSServiceTitle>
     <WMSTileBuffer type="int">0</WMSTileBuffer>
     <WMSUrl type="QString"></WMSUrl>
     <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
