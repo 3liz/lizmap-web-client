@@ -130,4 +130,19 @@ describe('Form edition all field type', function() {
 
         cy.get("#jforms_view_edition_boolean_notnull_for_checkbox").should('not.be.checked')
     })
+
+
+    it('value map with integers, dropdown menu', function () {
+
+        cy.get('#jforms_view_edition_value_map_integer').select('')
+        cy.get('#jforms_view_edition_value_map_integer').should('have.value', '')
+        // * value 1
+        cy.get('#jforms_view_edition_value_map_integer').select('one')
+        cy.get('#jforms_view_edition_value_map_integer').should('have.value', '1')
+        // * a value 2
+        cy.get('#jforms_view_edition_value_map_integer').select('three')
+        cy.get('#jforms_view_edition_value_map_integer').should('have.value', '3')
+    })
+
+
 })
