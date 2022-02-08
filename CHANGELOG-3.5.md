@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.1 - 2022-02-08
+
 ### Added
 
 - Add new Ukrainian and Romanian languages
