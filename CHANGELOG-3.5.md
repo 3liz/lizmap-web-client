@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.1 - 2022-02-08
+
 ### Added
 
 - A new panel in the administration interface can display QGIS Server information such version and plugins.
