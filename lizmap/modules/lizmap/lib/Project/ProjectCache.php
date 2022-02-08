@@ -52,7 +52,7 @@ class ProjectCache
      * So you'll be sure that the cache will be updated when Lizmap code source
      * is updated on a server
      */
-    const CACHE_FORMAT_VERSION = 8;
+    const CACHE_FORMAT_VERSION = 9;
 
     /**
      * Initialize the cache of a Qgis project.

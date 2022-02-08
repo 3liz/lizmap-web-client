@@ -1790,7 +1790,7 @@ class QgisProject
                 $values[] = (string) $v->attributes()->value;
             } elseif ($valuesExtraction == self::MAP_VALUES_AS_VALUES) {
                 $values[(string) $v->attributes()->name] = (string) $v->attributes()->value;
-            } else {
+            } else { // self::MAP_VALUES_AS_KEYS
                 $values[(string) $v->attributes()->value] = (string) $v->attributes()->name;
             }
         }
@@ -1861,7 +1861,10 @@ class QgisProject
                 $values = array();
                 foreach ($option->Option as $l) {
                     if ((string) $l->attributes()->type === 'Map') {
-                        $values = array_merge($values, $this->getValuesFromOptions($l, $valuesExtraction));
+                        $optionValues = $this->getValuesFromOptions($l, $valuesExtraction);
+                        // we don't use array_merge, because this function reindexes keys if they are
+                        // numerical values, and this is not what we want.
+                        $values += $optionValues;
                     } else {
                         $values[] = (string) $l->attributes()->value;
                     }

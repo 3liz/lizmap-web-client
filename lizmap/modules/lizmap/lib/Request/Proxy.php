@@ -23,9 +23,9 @@ class Proxy
      */
     protected static $_profiles = array();
 
-    protected static $services = null;
+    protected static $services;
 
-    protected static $appContext = null;
+    protected static $appContext;
 
     /**
      * Sets the services property that contains lizmap Services.
