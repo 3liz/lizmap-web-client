@@ -4,6 +4,7 @@
 
 ### Added
 
+- Add new Ukrainian and Romanian languages
 - A new panel in the administration interface can display QGIS Server information such version and plugins.
   - This information can be retrieved as well in the QGIS Desktop plugin if the administrator login is provided
 
@@ -20,13 +21,15 @@
 - Fix the backup script about third-party modules such as MapBuilder and AltiProfil
 - Fix a regression during the init of relation references into forms
 - Fix a regression during the loading of embedded projects
+- Fix editing when a geom can be created on an existing feature without a geometry on update only
+- Fix wrong file storage path for images with the `media` folder
 - Fix the landing page using modern CSS - Remove JS resizing project thumbnails and use CSS Grid
 - Fix the mime type for SVG files. It should be `image/svg+xml`
 - Fix the layer export when :
   - a selection or a filter is active
   - the layer is not spatial
   - the layer has parenthesis inside its name
-- Update Lizmap locales about missing languages in the package like Romanian and others
+- Update Lizmap locales
 
 ## 3.5.0 - 2021-12-15
 
