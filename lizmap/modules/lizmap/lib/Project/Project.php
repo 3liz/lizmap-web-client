@@ -1479,7 +1479,7 @@ class Project
     }
 
     /**
-     * @return false|string the JSON object corresponding to the configuration
+     * @return object the JSON object corresponding to the configuration
      */
     public function getUpdatedConfig()
     {
@@ -1730,7 +1730,7 @@ class Project
             unset($configJson->layers->{$key});
         }
 
-        return json_encode($configJson);
+        return $configJson;
     }
 
     /**
