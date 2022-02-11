@@ -651,7 +651,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseText JSON configuration file for the specified project
+     * @return jResponseJson JSON configuration file for the specified project
      */
     public function getProjectConfig()
     {
@@ -661,8 +661,8 @@ class serviceCtrl extends jController
             return $this->serviceException();
         }
 
-        $rep = $this->getResponse('text');
-        $rep->content = $this->project->getUpdatedConfig();
+        $rep = $this->getResponse('json');
+        $rep->data = $this->project->getUpdatedConfig();
 
         return $rep;
     }
