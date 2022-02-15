@@ -143,6 +143,15 @@ abstract class OGCRequest
     public function process()
     {
         $req = $this->param('request');
+        $req_version = $this->param('version');
+
+        // VERSION parameter is mandatory except for GetCapabilities request
+        if (strtolower($req) !== 'getcapabilities' && !$req_version) {
+            \jMessage::add('Please add the value of the VERSION parameter', 'OperationNotSupported');
+
+            return $this->serviceException(501);
+        }
+
         if ($req) {
             $reqMeth = 'process_'.$req;
             if (method_exists($this, $reqMeth)) {
