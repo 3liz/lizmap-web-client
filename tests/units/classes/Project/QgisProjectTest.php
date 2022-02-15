@@ -1097,6 +1097,20 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedOptions, $options);
 
         $xmlStr = '
+          <Option type="Map">
+            <Option value="0" type="int" name="IsMultiline"/>
+            <Option value="0" type="int" name="UseHtml"/>
+          </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $options = $testProj->getFieldConfigurationOptionsForTest($xml);
+        $expectedOptions = array(
+            'IsMultiline' => 0,
+            'UseHtml' => 0,
+        );
+        $this->assertEquals($expectedOptions, $options);
+
+        $xmlStr = '
               <Option type="Map">
                 <Option value="false" type="bool" name="IsMultiline"/>
                 <Option value="false" type="bool" name="UseHtml"/>
@@ -1108,8 +1122,8 @@ class QgisProjectTest extends TestCase
         $this->assertTrue(is_array($options));
         $this->assertCount(2, $options);
         $expectedOptions = array(
-            'IsMultiline' => 'false',
-            'UseHtml' => 'false',
+            'IsMultiline' => false,
+            'UseHtml' => false,
         );
         $this->assertEquals($expectedOptions, $options);
 
@@ -1125,6 +1139,29 @@ class QgisProjectTest extends TestCase
         $this->assertCount(1, $options);
         $expectedOptions = array(
             'Zone A' => 'A',
+        );
+        $this->assertEquals($expectedOptions, $options);
+
+        $xmlStr = '
+          <Option type="Map">
+            <Option name="AllowNull" type="bool" value="true"></Option>
+            <Option name="Max" type="int" value="2147483647"></Option>
+            <Option name="Min" type="int" value="-2147483648"></Option>
+            <Option name="Precision" type="int" value="0"></Option>
+            <Option name="Step" type="int" value="1"></Option>
+            <Option name="Style" type="QString" value="SpinBox"></Option>
+          </Option>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $options = $testProj->getValuesFromOptionsForTest($xml);
+        $this->assertTrue(is_array($options));
+        $expectedOptions = array(
+            'AllowNull' => true,
+            'Max' => 2147483647,
+            'Min' => -2147483648,
+            'Precision' => 0,
+            'Step' => 1,
+            'Style' => 'SpinBox',
         );
         $this->assertEquals($expectedOptions, $options);
 
