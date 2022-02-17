@@ -40,6 +40,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                 // build feature's form
                 $geom = null;
                 $values = array();
+                // check criteria controls
                 $criteriaControls = $this->getCriteriaControls();
                 if ($criteriaControls !== null && is_array($criteriaControls)) {
                     foreach ($criteriaControls as $ref) {
@@ -105,12 +106,12 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                         }
                     }
                 }
+            }
 
-                // Add default empty value for required fields
-                // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-                if ($this->emptyValue) {
-                    $result[''] = '';
-                }
+            // Add default empty value for required fields
+            // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+            if ($this->emptyValue) {
+                $result[''] = '';
             }
 
             // orderByValue
