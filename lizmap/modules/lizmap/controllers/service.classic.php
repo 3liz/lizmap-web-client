@@ -666,6 +666,43 @@ class serviceCtrl extends jController
     }
 
     /**
+     * Send the key/value JSON configuration file for a specified project.
+     *
+     * @urlparam string $repository Lizmap Repository
+     * @urlparam string $project Name of the project
+     *
+     * @return jResponseJson key/value JSON configuration file for the specified project
+     */
+    public function getKeyValueConfig()
+    {
+
+        // Get parameters
+        if (!$this->getServiceParameters()) {
+            return $this->serviceException();
+        }
+
+        $rep = $this->getResponse('json');
+        $keyValueConfig = (object) array('attribute_table' => array(
+            'label_from_int_value_map' => array('type' => 'value_map', 'data' => array('1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four'),
+            ),
+            'label_from_text_value_map' => array('type' => 'value_map', 'data' => array('un' => 'one', 'deux' => 'two', 'trois' => 'three', 'quatre' => 'four'),
+            ),
+            'label_from_int_relation_reference' => array('type' => 'relation_reference', 'source_layer' => 'data_integers', 'code_field' => 'id', 'label_field' => 'label', 'exp_filter' => '',
+            ),
+            'label_from_text_relation_reference' => array('type' => 'relation_reference', 'source_layer' => 'data_trad_en_fr', 'code_field' => 'label_en', 'label_field' => 'label_fr', 'exp_filter' => '',
+            ),
+            'label_from_int_value_relation' => array('type' => 'value_relation', 'source_layer' => 'data_integers', 'code_field' => 'id', 'label_field' => 'label', 'exp_filter' => '',
+            ),
+            'label_from_text_value_relation' => array('type' => 'value_relation', 'source_layer' => 'data_trad_en_fr', 'code_field' => 'label_en', 'label_field' => 'label_fr', 'exp_filter' => '',
+            ),
+        ),
+        );
+        $rep->data = $keyValueConfig;
+
+        return $rep;
+    }
+
+    /**
      * GetFeature.
      *
      * @urlparam string $repository Lizmap Repository

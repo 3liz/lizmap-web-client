@@ -16,6 +16,11 @@ var lizMap = function() {
    */
   var config = null;
   /**
+ * PRIVATE Property: keyValueConfig
+ * {object} Config to replace keys by values
+ */
+  var keyValueConfig = null;
+  /**
    * PRIVATE Property: capabilities
    * {object} The wms capabilities
    */
@@ -5939,6 +5944,11 @@ var lizMap = function() {
         return response.json()
       });
 
+      // Get key/value config
+      const keyValueConfigRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.keyValueConfig, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+        return response.json()
+      });
+
       // Get WMS, WMTS, WFS capabilities
       const WMSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' }))).then(function (response) {
         return response.text()
@@ -5951,15 +5961,16 @@ var lizMap = function() {
       });
 
       // Request config and capabilities in parallel
-      Promise.all([configRequest, WMSRequest, WMTSRequest, WFSRequest]).then(responses => {
+      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest]).then(responses => {
         // config is defined globally
         config = responses[0];
+        keyValueConfig = responses[1];
 
         const domparser = new DOMParser();
 
-        const wmsCapaData = responses[1];
-        const wmtsCapaData = responses[2];
-        const wfsCapaData = responses[3];
+        const wmsCapaData = responses[2];
+        const wmtsCapaData = responses[3];
+        const wfsCapaData = responses[4];
 
         config.options.hasOverview = false;
 
@@ -6035,6 +6046,7 @@ var lizMap = function() {
         getLayerTree(firstLayer, tree);
         analyseNode(tree);
         self.config = config;
+        self.keyValueConfig = keyValueConfig;
         self.tree = tree;
         self.events.triggerEvent("treecreated", self);
 
