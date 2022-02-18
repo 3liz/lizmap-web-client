@@ -189,6 +189,7 @@ class lizMapCtrl extends jController
         $lizUrls = array(
             'params' => array('repository' => $repository, 'project' => $project),
             'config' => jUrl::get('lizmap~service:getProjectConfig'),
+            'keyValueConfig' => jUrl::getFull('lizmap~service:getKeyValueConfig'),
             'wms' => jUrl::get('lizmap~service:index'),
             'media' => jUrl::get('view~media:getMedia'),
             'nominatim' => jUrl::get('lizmap~osm:nominatim'),

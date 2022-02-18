@@ -183,15 +183,76 @@ var lizAttributeTable = function() {
 
                         // Add Div if not already there
                         var lname = attributeLayersDic[cleanName];
-                        if( !$('#nav-tab-attribute-layer-' + cleanName ).length )
+                        if( !$('#nav-tab-attribute-layer-' + cleanName ).length ){
                             addLayerDiv(lname);
+                        }
                         var aTable = '#attribute-layer-table-'+cleanName;
 
                         // Get data and fill attribute table
-                        var dFilter = null;
-                        getAttributeFeatureData( lname, dFilter, null, 'extent',
-                            function(someName, someNameFilter, someNameFeatures, someNameAliases){
-                                buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
+                        const wfsParams = {
+                            TYPENAME: lname,
+                            GEOMETRYNAME: 'extent'
+                        };
+
+                        // Calculate bbox from map extent if needed
+                        if(config.options?.limitDataToBbox == 'True'){
+                            wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
+                            wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                        }
+
+                        const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
+
+                        // TODO : cache aliases and types
+                        const describeFeatureTypeRequest = lizMap.mainLizmap.wfs.describeFeatureType({
+                            TYPENAME: lname
+                        });
+
+                        const fetchRequests = [getFeatureRequest, describeFeatureTypeRequest];
+
+                        const allColumnsKeyValues = {};
+
+                        // Indexes 0 and 1 are use for getFeature and describeFeature requests
+                        let responseOrder = 2;
+                        for (const fieldName in lizMap.keyValueConfig?.[lname]){
+                            const fieldConf = lizMap.keyValueConfig[lname][fieldName];
+                            if (fieldConf.type == 'value_map'){
+                                allColumnsKeyValues[fieldName] = fieldConf.data;
+                            }else{
+                                // Use an integer as a placeholder for coming fetched key/values
+                                allColumnsKeyValues[fieldName] = responseOrder;
+                                responseOrder++;
+
+                                fetchRequests.push(lizMap.mainLizmap.wfs.getFeature({
+                                    TYPENAME: fieldConf.source_layer,
+                                    PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
+                                    EXP_FILTER: fieldConf.exp_filter
+                                }));
+                            }
+                        }
+                        
+
+                        document.body.style.cursor = 'progress';
+                        Promise.all(fetchRequests).then(responses => {
+
+                            // Get every key/value from relation layers
+                            for (let index = 2; index < responses.length; index++) {
+                                // Get column name using order placeholder defined before
+                                const columnName = Object.keys(allColumnsKeyValues).find(key => allColumnsKeyValues[key] === index);
+                                const keyField = lizMap.keyValueConfig[lname][columnName].code_field;
+                                const valueField = lizMap.keyValueConfig[lname][columnName].label_field;
+
+                                const keyValue = {};
+
+                                responses[index].features.forEach(feature => keyValue[feature.properties[keyField]] = feature.properties[valueField]);
+
+                                allColumnsKeyValues[columnName] = keyValue;
+                                
+                            }
+                            buildLayerAttributeDatatable(lname, aTable, responses[0].features, responses[1].aliases, allColumnsKeyValues);
+
+                            document.body.style.cursor = 'default';
+                        }).catch(() => {
+                            document.body.style.cursor = 'default';
                         });
 
                         $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
@@ -911,7 +972,7 @@ var lizAttributeTable = function() {
                             }
 
                             if( canCreateChild ){
-                                // Button to create a new child : Usefull for both 1:n and n:m relation
+                                // Button to create a new child : Useful for both 1:n and n:m relation
                                 childCreateButtonItems.push( '<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-createFeature-attributeTable">' + childLayerConfig.title +'</a></li>' );
                                 layerLinkButtonItems.push( '<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
                             }
@@ -1023,7 +1084,7 @@ var lizAttributeTable = function() {
                 };
             })();
 
-            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, aCallback ) {
+            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, allColumnsKeyValues, aCallback ) {
 
                 cFeatures = typeof cFeatures !== 'undefined' ?  cFeatures : null;
                 if( !cFeatures ){
@@ -1039,7 +1100,7 @@ var lizAttributeTable = function() {
                 if( !cAliases ){
                     cAliases = config.layers[aName]['alias'];
                 }
-                for( key in cAliases){
+                for( const key in cAliases){
                     if(cAliases[key]==""){
                         cAliases[key]=key;
                     }
@@ -1105,9 +1166,8 @@ var lizAttributeTable = function() {
                 }
 
                 if( cFeatures && cFeatures.length > 0 ){
-
                     // Create columns for datatable
-                    var cdc = createDatatableColumns(aName, atFeatures, lConfig['geometryType'], isChild, isPivot, hiddenFields, cAliases, cTypes);
+                    var cdc = createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues);
                     var columns = cdc.columns;
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
@@ -1265,7 +1325,7 @@ var lizAttributeTable = function() {
             function valueMapInAttributeTable( aName, data, type, full, meta ){
                 // Translate field ( language translation OR code->label translation )
                 var colMeta = meta.settings.aoColumns[meta.col];
-                var colName = colMeta.mData
+                var colName = colMeta.data
                 var translation_dict = null;
                 var tdata = data;
                 if (data || data === 0) {
@@ -1281,9 +1341,9 @@ var lizAttributeTable = function() {
                 return tdata;
             }
 
-            function createDatatableColumns(aName, atFeatures, geometryType, isChild, isPivot, hiddenFields, cAliases, cTypes){
-                var columns = [];
-                var firstDisplayedColIndex = 0;
+            function createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues){
+                const columns = [];
+                let firstDisplayedColIndex = 0;
 
                 // Column with selected status
                 columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
@@ -1293,65 +1353,78 @@ var lizAttributeTable = function() {
                 firstDisplayedColIndex += 1;
 
                 // Add column for each field
-                for (var idx in atFeatures[0].properties){
+                for (var columnName in atFeatures[0].properties){
                     // Do not add hidden fields
-                    if( ($.inArray(idx, hiddenFields) > -1) )
+                    if (hiddenFields.includes(columnName)){
                         continue;
-                    var colConf = { "mData": idx, "title": cAliases[idx] };
+                    }
+
+                    const colConf = {
+                        "data": columnName,
+                        "title": cAliases[columnName]
+                    };
+
+                    if (allColumnsKeyValues.hasOwnProperty(columnName)){
+                        const columnKeyValues = allColumnsKeyValues[columnName];
+                        colConf['render'] = function (data, type, row, meta) {
+                            // Return value related to key if any. Else return original data
+                            return columnKeyValues[data] ? columnKeyValues[data] : data ;
+                        }
+                    }
 
                     // Check if we need to replace url or media by link
                     // Add function for any string cell
                     // First check if the col is number
-                    if (idx in cTypes){
-                        switch (cTypes[idx]) {
-                            case 'integer':
-                            case 'int':
-                            case 'unsignedInt':
-                            case 'long':
-                            case 'unsignedLong':
-                                colConf['mRender'] = function(data, type, full, meta ){
-                                    // Translate field ( language translation OR code->label translation )
-                                    return valueMapInAttributeTable( aName, data, type, full, meta );
-                                };
+                    // if (columnName in cTypes){
+                    //     switch (cTypes[columnName]) {
+                    //         case 'integer':
+                    //         case 'int':
+                    //         case 'unsignedInt':
+                    //         case 'long':
+                    //         case 'unsignedLong':
+                    //             colConf['render'] = function(data, type, full, meta ){
+                    //                 // Translate field ( language translation OR code->label translation )
+                    //                 return valueMapInAttributeTable( aName, data, type, full, meta );
+                    //             };
 
-                                colConf['className'] = 'text-right';
-                                break;
-                            case 'decimal':
-                            case 'double':
-                                colConf['mRender'] = function( data, type, full, meta ){
-                                    return parseFloat(data);
-                                }
-                                colConf['className'] = 'text-right';
-                                break;
-                            case 'date':
-                                colConf['className'] = 'text-center';
-                                break;
-                            default:
-                                colConf['mRender'] = function( data, type, full, meta ){
-                                    // Translate field ( language translation OR code->label translation )
-                                    var tdata = valueMapInAttributeTable( aName, data, type, full, meta );
+                    //             colConf['className'] = 'text-right';
+                    //             break;
+                    //         case 'decimal':
+                    //         case 'double':
+                    //             colConf['render'] = function( data, type, full, meta ){
+                    //                 return parseFloat(data);
+                    //             }
+                    //             colConf['className'] = 'text-right';
+                    //             break;
+                    //         case 'date':
+                    //             colConf['className'] = 'text-center';
+                    //             break;
+                    //         default:
+                    //             colConf['render'] = function( data, type, full, meta ){
+                    //                 // Translate field ( language translation OR code->label translation )
+                    //                 var tdata = valueMapInAttributeTable( aName, data, type, full, meta );
 
-                                    // Replace media and URL with links
-                                    if( !tdata || !( typeof tdata === 'string') )
-                                        return tdata;
-                                    if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
-                                        var rdata = tdata;
-                                        var colMeta = meta.settings.aoColumns[meta.col];
-                                        if( tdata.substr(0,7) == '/media/' )
-                                            rdata = tdata.slice(1);
-                                        return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
-                                    }
-                                    else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
-                                        var rdata = tdata;
-                                        if(tdata.substr(0,3) == 'www')
-                                            rdata = 'http://' + tdata;
-                                        return '<a href="' + rdata + '" target="_blank">' + tdata + '</a>';
-                                    }
-                                    else
-                                        return tdata;
-                                }
-                        }
-                    }
+                    //                 // Replace media and URL with links
+                    //                 if( !tdata || !( typeof tdata === 'string') )
+                    //                     return tdata;
+                    //                 if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
+                    //                     var rdata = tdata;
+                    //                     var colMeta = meta.settings.aoColumns[meta.col];
+                    //                     if( tdata.substr(0,7) == '/media/' )
+                    //                         rdata = tdata.slice(1);
+                    //                     return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
+                    //                 }
+                    //                 else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
+                    //                     var rdata = tdata;
+                    //                     if(tdata.substr(0,3) == 'www')
+                    //                         rdata = 'http://' + tdata;
+                    //                     return '<a href="' + rdata + '" target="_blank">' + tdata + '</a>';
+                    //                 }
+                    //                 else
+                    //                     return tdata;
+                    //             }
+                    //     }
+                    // }
                     columns.push( colConf );
                 }
 
@@ -1385,7 +1458,7 @@ var lizAttributeTable = function() {
                         // Rearrange columns
                         for (var i=0; i < newcolumns.length; i++) {
                             // move item
-                            if ('mData' in newcolumns[i] && newcolumns[i].mData === fieldname) {
+                            if ('data' in newcolumns[i] && newcolumns[i].data === fieldname) {
                                 // adds it back to the good position if not declared hidden
                                 if( colhidden == "1" ){
                                     // Remove the item
@@ -1495,7 +1568,7 @@ var lizAttributeTable = function() {
             function getEditionChildData( childLayerName, filter, childTable ){
                 // Get features
                 getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
-                    buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, function() {
+                    buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, null, function() {
 
                         // Check edition capabilities
                         var canCreate = false;
