@@ -458,7 +458,7 @@ class Proxy
 
         // Provide user and groups to lizmap plugin access control
         $user = $appContext->getUserSession();
-        $userGroups = $appContext->aclUserGroupsId();
+        $userGroups = $appContext->aclUserPublicGroupsId();
 
         return array(
             'X-Lizmap-User' => $user->login,

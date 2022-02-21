@@ -121,9 +121,9 @@ abstract class OGCRequest
             ));
         }
 
-        // Provide user and groups to lizmap plugin access control
+        // Provide user and groups to lizmap plugin access control without private group
         $user = $appContext->getUserSession();
-        $userGroups = $appContext->aclUserGroupsId();
+        $userGroups = $appContext->aclUserPublicGroupsId();
         $loginFilteredOverride = $appContext->aclCheck('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
         return array_merge($this->params, array(
