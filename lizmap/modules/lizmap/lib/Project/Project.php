@@ -1071,7 +1071,7 @@ class Project
                 ) {
                     $filter = "\"{$attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
-                    $userGroups = $this->appContext->aclUserGroupsId();
+                    $userGroups = $this->appContext->aclUserPublicGroupsId();
                     $flatGroups = implode("' , '", $userGroups);
                     $filter = "\"{$attribute}\" IN ( '".$flatGroups."' , 'all' )";
                 }

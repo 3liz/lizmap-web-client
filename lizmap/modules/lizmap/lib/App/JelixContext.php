@@ -78,6 +78,56 @@ class JelixContext implements AppContextInterface
         return \jAcl2DbUserGroup::getGroupList($login);
     }
 
+    /**
+     * Retrieve the list of public group the given user is member of
+     * in the acl system.
+     *
+     * @param string $login The user's login
+     *
+     * @return array list of public group id
+     */
+    public function aclUserPublicGroupsId($login = null)
+    {
+        // Get user groups
+        $userGroups = array();
+        if ($login === '' || $login === null) {
+            $userGroups = $this->aclUserGroupsId();
+        } else {
+            $userGroups = $this->aclGroupsIdByUser($login);
+        }
+
+        // Filter user groups to extract private group
+        $userPublicGroups = array();
+        foreach ($userGroups as $uGroup) {
+            if (substr($uGroup, 0, 7) !== '__priv_') {
+                $userPublicGroups[] = $uGroup;
+            }
+        }
+
+        return $userPublicGroups;
+    }
+
+    /**
+     * Get the private group for the current user or for the given login
+     * in the acl system.
+     *
+     * @param string $login The user's login
+     *
+     * @return string the id of the private group
+     */
+    public function aclUserPrivateGroup($login = null)
+    {
+        return \jAcl2DbUserGroup::getPrivateGroup($login);
+    }
+
+    /**
+     * Retrieve the list of group the given user is member of
+     * in the acl system.
+     *
+     * @param string $login The user's login
+     *
+     * @return array list of group id
+     */
     public function aclGroupsIdByUser($login)
     {
         return \jAcl2DbUserGroup::getGroupsIdByUser($login);

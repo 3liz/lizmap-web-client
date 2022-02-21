@@ -50,7 +50,37 @@ class ContextForTests implements AppContextInterface
     public function aclGroupsIdByUser($login)
     {
     }
-    
+
+    public function aclUserPublicGroupsId($login = null)
+    {
+        $userGroups = $this->aclUserGroupsId();
+        $privateIndex = null;
+        foreach ($userGroups as $idx => $uGroup) {
+            if (substr($uGroup, 0, 7) == '__priv_') {
+                $privateIndex = $idx;
+
+                break;
+            }
+        }
+        if ($privateIndex !== null) {
+            return array_splice($userGroups, $privateIndex, 1);
+        }
+
+        return $userGroups;
+    }
+
+    public function aclUserPrivateGroup($login = null)
+    {
+        $userGroups = $this->aclUserGroupsId();
+        foreach($userGroups as $uGroup) {
+            if (substr($uGroup, 0, 7) == '__priv_') {
+                return $uGroup;
+            }
+        }
+
+        return null;
+    }
+
     public function aclUserGroupsInfo()
     {
     }
@@ -127,7 +157,7 @@ class ContextForTests implements AppContextInterface
         }
         unset($this->cache[$profile]);
     }
-    
+
     public function logMessage($message, $cat = 'default')
     {
     }
