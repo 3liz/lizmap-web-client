@@ -56,8 +56,9 @@ describe('Advanced form', function () {
 
     it('should change selected quartier and sousquartier based on drawn point', function () {
 
-        cy.get('#jforms_view_edition_quartier option').should('have.length', 1)
-        cy.get('#jforms_view_edition_quartier option').should('have.text', 'HOPITAUX-FACULTES')
+        cy.get('#jforms_view_edition_quartier option').should('have.length', 2)
+        cy.get('#jforms_view_edition_quartier option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_quartier option').last().should('have.text', 'HOPITAUX-FACULTES')
 
         // Cancel and open form
         cy.on('window:confirm', () => true);
@@ -67,9 +68,11 @@ describe('Advanced form', function () {
 
         // Assert quartier value is good for another drawn point
         cy.get('#map').click(600, 350)
-        cy.get('#jforms_view_edition_quartier option').should('have.text', 'MONTPELLIER CENTRE')
+        cy.get('#jforms_view_edition_quartier option').should('have.length', 2)
+        cy.get('#jforms_view_edition_quartier option').last().should('have.text', 'MONTPELLIER CENTRE')
+        cy.get('#jforms_view_edition_quartier').select('MC')
 
-        // Assert 11 options are proposed for sousquartier 
+        // Assert 11 options are proposed for sousquartier
         cy.get('#jforms_view_edition_sousquartier option').should('have.length', 11)
 
         // nboisteault : I tried to drag and drop the point but did not achieve to have this behavior
