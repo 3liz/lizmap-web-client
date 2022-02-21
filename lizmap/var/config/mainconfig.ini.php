@@ -323,3 +323,12 @@ daoPropertiesForMapping="login,email,firstname,lastname,phonenumber"
 cadastre=31
 adresse=32
 openads=33
+
+
+[lizmap]
+; this the revision number to add to url of assets. If empty, no revision will be added.
+; If "autoconfig", the revision number will be generated automatically each time
+; the configuration will be compiled. Else a value can be given directly into the
+; configuration, but it is the responsibility to the developer or the administrator
+; to indicate a new one each time the application is deployed for example.
+assetsRevision = autoconfig
