@@ -1105,9 +1105,9 @@ class QgisForm implements QgisFormControlsInterface
                     $data[$user->login] = $user->login;
                     $value = $user->login;
                 } else {
-                    $userGroups = $this->appContext->aclUserGroupsId();
+                    $userGroups = $this->appContext->aclUserPublicGroupsId();
                     foreach ($userGroups as $uGroup) {
-                        if ($uGroup != 'users' and substr($uGroup, 0, 7) != '__priv_') {
+                        if ($uGroup != 'users') {
                             $data[$uGroup] = $uGroup;
                         }
                     }
@@ -1544,7 +1544,7 @@ class QgisForm implements QgisFormControlsInterface
                 if ($type == 'login') {
                     $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
                 } else {
-                    $userGroups = $this->appContext->aclUserGroupsId();
+                    $userGroups = $this->appContext->aclUserPublicGroupsId();
                     // Set XML Filter if getFeature request
                     $flatGroups = implode("' , '", $userGroups);
                     $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
