@@ -353,7 +353,13 @@ class qgisExpressionUtils
         if (jAuth::isConnected()) {
             // Provide user and groups to lizmap plugin access control
             $user = jAuth::getUserSession();
-            $userGroups = jAcl2DbUserGroup::getGroups();
+            $userGroups = array();
+            $uGroups = jAcl2DbUserGroup::getGroups();
+            foreach ($uGroups as $uGroup) {
+                if (substr($uGroup, 0, 7) != '__priv_') {
+                    $userGroups[$uGroup] = $uGroup;
+                }
+            }
             $loginFilteredOverride = jAcl2::check('lizmap.tools.loginFilteredLayers.override', $project->getRepository()->getKey());
 
             $merged_params = array_merge($params, array(

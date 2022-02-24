@@ -1160,8 +1160,8 @@ class qgisForm implements qgisFormControlsInterface
                     $data[$user->login] = $user->login;
                     $value = $user->login;
                 } else {
-                    $userGroups = jAcl2DbUserGroup::getGroups();
-                    foreach ($userGroups as $uGroup) {
+                    $uGroups = jAcl2DbUserGroup::getGroups();
+                    foreach ($uGroups as $uGroup) {
                         if ($uGroup != 'users' and substr($uGroup, 0, 7) != '__priv_') {
                             $data[$uGroup] = $uGroup;
                         }
@@ -1641,7 +1641,13 @@ class qgisForm implements qgisFormControlsInterface
                     if ($type == 'login') {
                         $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
                     } else {
-                        $userGroups = jAcl2DbUserGroup::getGroups();
+                        $userGroups = array();
+                        $uGroups = jAcl2DbUserGroup::getGroups();
+                        foreach ($uGroups as $uGroup) {
+                            if (substr($uGroup, 0, 7) != '__priv_') {
+                                $userGroups[$uGroup] = $uGroup;
+                            }
+                        }
                         // Set XML Filter if getFeature request
                         $flatGroups = implode("' , '", $userGroups);
                         $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";

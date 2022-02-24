@@ -1009,7 +1009,13 @@ class lizmapProject extends qgisProject
                 ) {
                     $filter = "\"{$attribute}\" IN ( '".$login."' , 'all' )";
                 } else {
-                    $userGroups = jAcl2DbUserGroup::getGroups();
+                    $userGroups = array();
+                    $uGroups = jAcl2DbUserGroup::getGroups();
+                    foreach ($uGroups as $uGroup) {
+                        if (substr($uGroup, 0, 7) != '__priv_') {
+                            $userGroups[$uGroup] = $uGroup;
+                        }
+                    }
                     $flatGroups = implode("' , '", $userGroups);
                     $filter = "\"{$attribute}\" IN ( '".$flatGroups."' , 'all' )";
                 }
@@ -1954,7 +1960,13 @@ class lizmapProject extends qgisProject
         // Check layers group visibility
         $userGroups = array('');
         if (jAuth::isConnected()) {
-            $userGroups = jAcl2DbUserGroup::getGroups();
+            $userGroups = array();
+            $uGroups = jAcl2DbUserGroup::getGroups();
+            foreach ($uGroups as $uGroup) {
+                if (substr($uGroup, 0, 7) != '__priv_') {
+                    $userGroups[$uGroup] = $uGroup;
+                }
+            }
         }
         $layersToRemove = array();
         foreach ($configJson->layers as $obj) {
