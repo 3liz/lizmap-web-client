@@ -306,7 +306,13 @@ class lizmapProxy
 
         // Provide user and groups to lizmap plugin access control
         $user = jAuth::getUserSession();
-        $userGroups = jAcl2DbUserGroup::getGroups();
+        $userGroups = array();
+        $uGroups = jAcl2DbUserGroup::getGroups();
+        foreach ($uGroups as $uGroup) {
+            if (substr($uGroup, 0, 7) != '__priv_') {
+                $userGroups[$uGroup] = $uGroup;
+            }
+        }
 
         return array(
             'X-Lizmap-User' => $user->login,

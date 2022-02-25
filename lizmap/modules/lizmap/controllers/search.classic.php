@@ -85,7 +85,13 @@ class searchCtrl extends jController
             $isConnected = jAuth::isConnected();
             if ($isConnected) {
                 // Ok if any group matches
-                $userGroups = jAcl2DbUserGroup::getGroups();
+                $userGroups = array();
+                $uGroups = jAcl2DbUserGroup::getGroups();
+                foreach ($uGroups as $uGroup) {
+                    if (substr($uGroup, 0, 7) != '__priv_') {
+                        $userGroups[$uGroup] = $uGroup;
+                    }
+                }
                 foreach ($userGroups as $g) {
                     $sql .= " OR content LIKE '%@@".$g."'";
                 }
