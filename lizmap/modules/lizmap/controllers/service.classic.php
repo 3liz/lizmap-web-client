@@ -192,7 +192,7 @@ class serviceCtrl extends jController
             if ($code == 'AuthorizationRequired') {
 
                 // 401 : AuthorizationRequired
-                $rep->setHttpStatus(401, $code);
+                $rep->setHttpStatus(401, \Lizmap\Request\Proxy::getHttpStatusMsg(401));
 
                 // Add WWW-Authenticate header only for external clients
                 // To avoid web browser to ask for login/password when session expires
@@ -215,14 +215,12 @@ class serviceCtrl extends jController
                 if ($addwww) {
                     $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
                 }
-            } elseif ($code == 'ProjectNotDefined') {
-                $rep->setHttpStatus(404, 'Not Found');
-            } elseif ($code == 'RepositoryNotDefined') {
-                $rep->setHttpStatus(404, 'Not Found');
-            } elseif ($code == 'OperationNotSupported') {
-                $rep->setHttpStatus(501, 'Not Implemented');
-            } elseif ($code == 'ServiceNotSupported') {
-                $rep->setHttpStatus(501, 'Not Implemented');
+            } elseif ($code == 'ProjectNotDefined'
+                      || $code == 'RepositoryNotDefined') {
+                $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
+            } elseif ($code === 'OperationNotSupported'
+                      || $code === 'ServiceNotSupported') {
+                $rep->setHttpStatus(501, \Lizmap\Request\Proxy::getHttpStatusMsg(501));
             }
         }
 
@@ -386,7 +384,7 @@ class serviceCtrl extends jController
         $result = $ogcRequest->process();
 
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -411,7 +409,7 @@ class serviceCtrl extends jController
 
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -436,7 +434,7 @@ class serviceCtrl extends jController
 
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -464,7 +462,7 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -509,7 +507,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -542,7 +540,7 @@ class serviceCtrl extends jController
         jEvent::notify('LizLogItem', $eventParams);
 
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -566,7 +564,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = true;
@@ -600,7 +598,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -636,7 +634,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -685,7 +683,7 @@ class serviceCtrl extends jController
         $rep->mimeType = $result->mime;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_server_wfs';
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
 
         if ($result->code >= 400) {
             $rep->content = $result->data;
@@ -750,7 +748,7 @@ class serviceCtrl extends jController
 
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -780,7 +778,7 @@ class serviceCtrl extends jController
         $rep = $this->getResponse('text');
         $content = $this->project->getProj4($this->iParam('authid'));
         if (!$content) {
-            $rep->setHttpStatus(404, 'Not Found');
+            $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
         }
         $content = (string) $content[0];
         $rep->content = $content;
@@ -803,7 +801,7 @@ class serviceCtrl extends jController
         $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_server_wmts_tile_'.$this->repository->getKey().'_'.$this->project->getKey();
-        $rep->setHttpStatus($result->code, '');
+        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
 
         if (!preg_match('/^image/', $result->mime)) {
             return $rep;
