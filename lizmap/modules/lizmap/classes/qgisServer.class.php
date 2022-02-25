@@ -30,6 +30,13 @@ class qgisServer
 
     public function getPlugins($project)
     {
+        $key = 'qgis/server/plugins';
+        $key = jCache::normalizeKey($key);
+        $plugins = jCache::get($key);
+        if ($plugins !== false && $plugins !== null) {
+            return $plugins;
+        }
+
         $plugins = array();
 
         // Check Lizmap plugin
@@ -62,6 +69,8 @@ class qgisServer
             $metadata = $json->metadata;
             $plugins[$metadata->name] = array('version' => $metadata->version);
         }
+
+        jCache::set($key, $plugins, 3600);
 
         return $plugins;
     }
