@@ -135,13 +135,7 @@ describe('Filter layer data by polygon for groups', function () {
         cy.get('ul.jelix-msg > li').should('have.class', 'jelix-msg-item-FeatureNotEditable')
     })
 
-    it('connected as user_in_group_a',
-        {
-            retries: {
-                runMode: 2,
-                openMode: 1,
-            },
-        },function () {
+    it('connected as user_in_group_a', function () {
         // Log as admin
         cy.visit('/admin.php/auth/login/?auth_url_return=%2Findex.php%2Fview%2Fmap%2F%3Frepository%3Dtestsrepository%26project%3Dfilter_layer_data_by_polygon_for_groups&lang=en_en')
 
