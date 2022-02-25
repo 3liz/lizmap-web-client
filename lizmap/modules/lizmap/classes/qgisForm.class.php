@@ -1301,9 +1301,13 @@ class qgisForm implements qgisFormControlsInterface
             $formControl->ctrl->setAttribute('class', 'combobox');
         }
 
-        // Add empty value if the add null value is checked
-        // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-        $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref, $formControl->valueRelationData['allowNull']);
+        // Add empty value if the add null value is checked or form is required
+        // Jelix does not do it for required, but we think it is better this way to avoid unwanted set values
+        $emptyValue = (
+            ($formControl->ctrl->required && !$formControl->valueRelationData['allowMulti'])
+            || $formControl->valueRelationData['allowNull']
+        );
+        $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref, $emptyValue);
 
         // criteriaFrom based on current_value in filterExpression
         if (array_key_exists('filterExpression', $formControl->valueRelationData)

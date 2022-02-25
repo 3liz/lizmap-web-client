@@ -416,7 +416,7 @@
         <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
         <constraint constraints="0" exp_strength="0" field="has_photo" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="4" exp_strength="1" field="website" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="1" exp_strength="0" field="quartier" notnull_strength="1" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="quartier" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="sousquartier" notnull_strength="0" unique_strength="0"></constraint>
       </constraints>
       <constraintExpressions>
