@@ -86,6 +86,7 @@ class Proxy
     {
         $service = null;
         $request = null;
+        $version = null;
 
         // Check request XML
         if ($requestXml && substr(trim($requestXml), 0, 1) == '<') {
@@ -108,6 +109,9 @@ class Proxy
                     // OGC service has to be upper case for QGIS Server
                     $service = strtoupper($xml['service']);
                 }
+                if (property_exists($xml->attributes(), 'version')) {
+                    $version = $xml['version'];
+                }
             }
         }
 
@@ -126,6 +130,10 @@ class Proxy
         $params['service'] = $service;
         if ($request !== null) {
             $params['request'] = $request;
+        }
+        // force version from XML in parameters
+        if ($version !== null) {
+            $params['version'] = $version;
         }
         if (in_array($service, array('WMS', 'WMTS', 'WFS'))) {
             $service = '\Lizmap\Request\\'.$service.'Request';
