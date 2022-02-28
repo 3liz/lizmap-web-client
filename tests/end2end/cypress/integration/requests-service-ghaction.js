@@ -32,4 +32,59 @@ describe('Request service', function () {
                 expect(resp.body).to.contain('WFS_Capabilities')
             })
     })
+
+    it('Project parameter is mandatory', function () {
+        cy.request({
+            url: '/index.php/lizmap/service/?repository=testsrepository&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(404)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
+        })
+    })
+
+    it('Repository parameter is mandatory', function () {
+        cy.request({
+            url: '/index.php/lizmap/service/?project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(404)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
+        })
+    })
+
+    it('Service unknown or unsupported', function () {
+        cy.request({
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=OWS&VERSION=1.3.0&REQUEST=GetCapabilities',
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(501)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
+        })
+    })
+
+    it('Request unsupported', function () {
+        cy.request({
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetUnsupported',
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(501)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
+        })
+    })
+
+    it('Request undefined', function () {
+        cy.request({
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0',
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(501)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
+        })
+    })
 })
