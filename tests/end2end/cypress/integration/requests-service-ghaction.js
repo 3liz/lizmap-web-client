@@ -105,4 +105,34 @@ describe('Request service', function () {
             expect(resp.body).to.contain('ServiceException')
         })
     })
+
+    it('Version parameter is mandatory except for GetCapabilities request', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(501)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
+        })
+
+        cy.request({
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'REQUEST': 'GetCapabilities',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+            expect(resp.body).to.contain('WFS_Capabilities')
+        })
+    })
 })
