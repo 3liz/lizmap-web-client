@@ -12,6 +12,7 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.body).to.contain('WMS_Capabilities')
             })
     })
 
