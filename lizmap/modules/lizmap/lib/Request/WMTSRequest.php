@@ -74,7 +74,7 @@ class WMTSRequest extends OGCRequest
 
         return (object) array(
             'code' => 200,
-            'mime' => 'text/xml',
+            'mime' => 'text/xml; charset=utf-8',
             'data' => $tpl->fetch('lizmap~wmts_capabilities'),
             'cached' => false,
         );
