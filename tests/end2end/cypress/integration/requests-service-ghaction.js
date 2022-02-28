@@ -33,6 +33,24 @@ describe('Request service', function () {
             })
     })
 
+    it('WFS GetFeature', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+        })
+    })
+
     it('Project parameter is mandatory', function () {
         cy.request({
             url: '/index.php/lizmap/service/?repository=testsrepository&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
