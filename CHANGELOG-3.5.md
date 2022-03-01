@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fix: HTTP Status Messages for lizmap service responses
+- Check version attribute in WxS request in XML to return error
+- Fix: GetProj4 request to get proj4 CRS defintion from QGIS project
+- Speed up GetProjectConfig request by using cache for QGIS Server plugins data
+- Fix typo in English sentences
+- Do not send private user group to QGIS Server for access control
+- Fix regression in form - empty value is added to required menu list field
+- Check Version parameters in WxS request to return error
+- Fix the GetProjectConfig mime-type as application/json
+
+### Added
+
+- new method in AppContext to get user plugic groups id
+- Convert QGis XML Option value based on type attribute
+- Add a revision parameter on assets url for cache 
+
+### Tests
+
+- e2e: Update Cypress to 9.5.0
+
 ## 3.5.1 - 2022-02-08
 
 ### Added
