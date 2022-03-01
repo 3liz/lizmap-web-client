@@ -27,6 +27,19 @@ class Proxy
 
     protected static $appContext;
 
+    protected static $httpMessageCode = array(
+        200 => 'OK',
+        206 => 'Partial Content',
+        304 => 'Not modified',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+    );
+
     /**
      * Sets the services property that contains lizmap Services.
      *
@@ -142,6 +155,22 @@ class Proxy
         }
 
         return null;
+    }
+
+    /**
+     * Returns the HTTP Status Message.
+     *
+     * @param int $code the HTTP Status Code
+     *
+     * @return string $msg the HTTP Status Message
+     */
+    public static function getHttpStatusMsg($code)
+    {
+        if (isset(self::$httpMessageCode[$code])) {
+            return self::$httpMessageCode[$code];
+        }
+
+        return '';
     }
 
     /**
