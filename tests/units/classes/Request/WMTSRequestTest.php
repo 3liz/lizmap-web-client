@@ -25,7 +25,7 @@ class WMTSRequestTest extends TestCase
         LizmapTilerForTests::$tileCaps = (object)array('tileMatrixSetList' => 'not null', 'layerTileInfoList' => 'not null');
         $result = $wmtsMock->getcapabilitiesForTests();
         $this->assertEquals(200, $result->code);
-        $this->assertEquals('text/xml', $result->mime);
+        $this->assertEquals('text/xml; charset=utf-8', $result->mime);
         $this->assertFalse($result->cached);
     }
 }
