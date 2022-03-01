@@ -776,7 +776,6 @@ class serviceCtrl extends jController
         if (!$content) {
             $rep->setHttpStatus(404, 'Not Found');
         }
-        $content = (string) $content[0];
         $rep->content = $content;
         $rep->setExpires('+300 seconds');
 
