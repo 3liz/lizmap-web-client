@@ -24,7 +24,7 @@ jobs:
 #        access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
 #        tweet_body: "New version of @LizmapForQgis ${{ env.RELEASE_VERSION }} 🦎 for #QGIS https://github.com/3liz/lizmap-web-client/releases/tag/${{ env.RELEASE_VERSION }}"
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         ref: versions
         fetch-depth: 0
