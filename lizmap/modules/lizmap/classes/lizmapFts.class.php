@@ -11,9 +11,7 @@ class lizmapFts
 {
     protected $sql;
 
-    protected $project;
-
-    protected function setSql()
+    protected function generateSql($project)
     {
 
         // Build search query.
@@ -61,7 +59,8 @@ class lizmapFts
         $isConnected = jAuth::isConnected();
         if ($isConnected) {
             // Ok if any group matches
-            $userGroups = jAcl2DbUserGroup::getGroups();
+            $appContext = $project->getAppContext();
+            $userGroups = $appContext->aclUserPublicGroupsId();
             foreach ($userGroups as $g) {
                 $sql .= " OR item_filter = '".$g."'";
             }
@@ -78,9 +77,9 @@ class lizmapFts
         $this->sql = $sql;
     }
 
-    protected function getSql()
+    protected function getSql($project)
     {
-        $this->setSql();
+        $this->generateSql($project);
 
         return $this->sql;
     }
@@ -131,7 +130,7 @@ class lizmapFts
      */
     public function getData($project, $term, $limit = 40)
     {
-        $sql = $this->getSql();
+        $sql = $this->getSql($project);
         $data = array();
 
         try {
