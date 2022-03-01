@@ -4,6 +4,14 @@
 
 ### Fixed
 
+- Check version attribute in WxS request in XML to return error
+- Fix: GetProj4 request to get proj4 CRS defintion from QGIS project
+- Speed up GetProjectConfig request by using cache for QGIS Server plugins data
+- Do not send private user group to QGIS Server for access control
+- Fix regression in form - empty value is added to required menu list field
+- Check Version parameters in WxS request to return error
+- Fix the GetProjectConfig mime-type as application/json
+
 ## 3.4.9 - 2022-02-04
 
 ### Added
