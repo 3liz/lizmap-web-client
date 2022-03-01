@@ -182,7 +182,7 @@ class qgisProject
 
     public function getProj4($authId)
     {
-        if (!array_key_exists($authId, $this->data)) {
+        if (!array_key_exists($authId, $this->allProj4)) {
             return null;
         }
 
