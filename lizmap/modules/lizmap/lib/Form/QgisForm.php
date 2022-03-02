@@ -1242,13 +1242,17 @@ class QgisForm implements QgisFormControlsInterface
             $formControl->ctrl->setAttribute('class', 'combobox');
         }
 
-        // Add empty value if the add null value is checked or form is required
-        // Jelix does not do it for required, but we think it is better this way to avoid unwanted set values
-        $emptyValue = (
-            ($formControl->ctrl->required && !$formControl->valueRelationData['allowMulti'])
-            || $formControl->valueRelationData['allowNull']
-        );
-        $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref, $emptyValue);
+        // In lib/jelix/plugins/formwidget/menulist_html/menulist_html.formwidget.php
+        // An empty value is added with these rules
+        // if ($this->ctrl->emptyItemLabel !== null || !$this->ctrl->required)
+        // In lizmap, we add an empty value except for required allowMulti
+        // Lizmap does not take into account the QGIS configuration $formControl->valueRelationData['allowNull']
+        // because of the way empty value is added by Jelix
+        $formControl->ctrl->emptyItemLabel = '';
+        if ($formControl->valueRelationData['allowMulti'] && $formControl->ctrl->required) {
+            $formControl->ctrl->emptyItemLabel = null;
+        }
+        $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref);
 
         // criteriaFrom based on current_value in filterExpression
         if (array_key_exists('filterExpression', $formControl->valueRelationData)
