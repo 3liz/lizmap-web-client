@@ -10,4 +10,5 @@
 
 ### Tests
 
+- e2e: Add Lizmap Service requests tests
 - e2e: Update Cypress to 9.5.0
