@@ -16,12 +16,13 @@
 
 ### Added
 
-- new method in AppContext to get user plugic groups id
+- new method in AppContext to get user public groups id
 - Convert QGis XML Option value based on type attribute
 - Add a revision parameter on assets url for cache 
 
 ### Tests
 
+- e2e: Add Lizmap Service requests tests
 - e2e: Update Cypress to 9.5.0
 
 ## 3.5.1 - 2022-02-08
