@@ -780,7 +780,6 @@ class serviceCtrl extends jController
         if (!$content) {
             $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
         }
-        $content = (string) $content[0];
         $rep->content = $content;
         $rep->setExpires('+300 seconds');
 
