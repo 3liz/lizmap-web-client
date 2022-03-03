@@ -11,7 +11,10 @@ on:
   workflow_dispatch:
 jobs:
   cypress:
-    if: github.event.label.name == 'run cypress' || github.event_name == 'schedule'
+    # The first condition is triggered when we set the new label
+    # The second one when we update the PR with new commits without changing labels
+    # The third one when it's a cron job
+    if: github.event.label.name == 'run cypress' || contains(github.event.pull_request.labels.*.name, 'run cypress') || github.event_name == 'schedule'
     name: "Cypress"
     runs-on: ubuntu-latest
     steps:
