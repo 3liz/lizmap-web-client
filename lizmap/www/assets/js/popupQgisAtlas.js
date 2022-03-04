@@ -39,7 +39,12 @@ lizMap.events.on({
                             // Add button and div to set custom labels
                             let customLabels = '';
 
+                            const protectedLabelsId = ["lizmap_user", "lizmap_user_groups"];
                             for(const label of t.labels){
+                                if (protectedLabelsId.includes(label.id)){
+                                    // These values mustn't be shown in the UI and will be overridden by LWC PHP and AtlasPrint anyway
+                                    continue;
+                                }
                                 if (label.htmlState){
                                     customLabels += `<textarea class="atlasprint-custom-labels" cols="15" data-print-id="${label.id}" name="${label.id}" placeholder="${label.text}">${label.text}</textarea>`;
                                 }else{
