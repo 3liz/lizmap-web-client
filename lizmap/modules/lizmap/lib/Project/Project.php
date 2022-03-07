@@ -66,11 +66,17 @@ class Project
     protected $editionLayersForCurrentUser;
 
     /**
+     * @var null|object[] List of layers with labeled fields configuration: layer ids => fields
+     */
+    protected $layersLabeledFieldsConfig;
+
+    /**
      * @var array List of cached properties
      */
     protected static $cachedProperties = array(
         'layersOrder',
         'printCapabilities',
+        'layersLabeledFieldsConfig',
     );
 
     /**
@@ -222,6 +228,51 @@ class Project
         $this->readAttributeLayers($qgsXml, $this->cfg);
 
         $this->qgis->readEditionForms($this->getEditionLayers(), $this);
+
+        // Get the fields configurations for attribute tables, form filter & dataviz
+        $this->layersLabeledFieldsConfig = $this->qgis->readLayersLabeledFieldsConfig(
+            $this->getLayersWithLabels(),
+            $this
+        );
+    }
+
+    /**
+     * List of the layers configured in the tools
+     * Attribute table, form filter & dataviz.
+     *
+     * We use this list to find all the fields for which
+     * we need to replace the code by their corresponding labels
+     *
+     * @return array Array of layer ids
+     */
+    protected function getLayersWithLabels()
+    {
+        $layersWithLabeledFields = array();
+        // Attribute layers
+        foreach ($this->cfg->getAttributeLayers() as $key => $config) {
+            if ($config->hideLayer == 'True') {
+                continue;
+            }
+            $layersWithLabeledFields[] = $config->layerId;
+        }
+        // Dataviz layers
+        foreach ($this->cfg->getDatavizLayers() as $o => $c) {
+            $layerId = $c->layerId;
+            if (array_key_exists($layerId, $layersWithLabeledFields)) {
+                continue;
+            }
+            $layersWithLabeledFields[] = $config->layerId;
+        }
+        // Form filter layers
+        foreach ($this->cfg->getFormFilterLayers() as $o => $c) {
+            $layerId = $c->layerId;
+            if (array_key_exists($layerId, $layersWithLabeledFields)) {
+                continue;
+            }
+            $layersWithLabeledFields[] = $config->layerId;
+        }
+
+        return $layersWithLabeledFields;
     }
 
     public function getQgisPath()
@@ -1475,6 +1526,17 @@ class Project
     public function findLayerByTypeName($typeName)
     {
         return $this->cfg->findLayerByTypeName($typeName);
+    }
+
+    /**
+     * Get the configuration for the layers used in the UI
+     * for which some fields values must be replaced by the corresponding labels.
+     *
+     * @return array The layers and fields configuration
+     */
+    public function getLayersLabeledFieldsConfig()
+    {
+        return $this->layersLabeledFieldsConfig;
     }
 
     /**
