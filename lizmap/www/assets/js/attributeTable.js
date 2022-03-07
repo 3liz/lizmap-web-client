@@ -215,7 +215,7 @@ var lizAttributeTable = function() {
                         let responseOrder = 2;
                         for (const fieldName in lizMap.keyValueConfig?.[lname]){
                             const fieldConf = lizMap.keyValueConfig[lname][fieldName];
-                            if (fieldConf.type == 'value_map'){
+                            if (fieldConf.type == 'ValueMap'){
                                 allColumnsKeyValues[fieldName] = fieldConf.data;
                             }else{
                                 // Use an integer as a placeholder for coming fetched key/values
@@ -225,11 +225,12 @@ var lizAttributeTable = function() {
                                 fetchRequests.push(lizMap.mainLizmap.wfs.getFeature({
                                     TYPENAME: fieldConf.source_layer,
                                     PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
-                                    EXP_FILTER: fieldConf.exp_filter
+                                    // we must not use null for exp_filter but '' if no filter is active
+                                    EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
                                 }));
                             }
                         }
-                        
+
 
                         document.body.style.cursor = 'progress';
                         Promise.all(fetchRequests).then(responses => {
@@ -246,7 +247,7 @@ var lizAttributeTable = function() {
                                 responses[index].features.forEach(feature => keyValue[feature.properties[keyField]] = feature.properties[valueField]);
 
                                 allColumnsKeyValues[columnName] = keyValue;
-                                
+
                             }
                             buildLayerAttributeDatatable(lname, aTable, responses[0].features, responses[1].aliases, allColumnsKeyValues);
 
@@ -2518,7 +2519,7 @@ var lizAttributeTable = function() {
                 h -= $(container + ' div.dataTables_paginate').height() ? $(container + ' div.dataTables_paginate').height() : 0;
                 h -= $(container + ' div.dataTables_filter').height() ? $(container + ' div.dataTables_filter').height() : 0;
                 h -= 20;
-                
+
                 dtable.parent('div.dataTables_scrollBody').height(h);
 
                 // Width : adapt columns size

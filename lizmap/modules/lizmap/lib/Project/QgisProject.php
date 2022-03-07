@@ -989,6 +989,72 @@ class QgisProject
     }
 
     /**
+     * Read the layer QGIS form configuration for the layers
+     * used in attribute tables, form filter & dataviz,
+     * and get the configuration for the fields for which to display
+     * labels instead of codes.
+     *
+     * This concerns fields with ValueMap, ValueRelation & RelationReference config
+     *
+     * @param array   $layerIds List of layer identifiers
+     * @param Project $proj
+     */
+    public function readLayersLabeledFieldsConfig($layerIds, $proj)
+    {
+        // Get QGIS form fields configurations for each layer
+        $layersLabeledFieldsConfig = array();
+        foreach ($layerIds as $layerId) {
+            $layerXml = $this->getXmlLayer2($this->xml, $layerId);
+            if (count($layerXml) == 0) {
+                continue;
+            }
+            $layerXmlZero = $layerXml[0];
+            $formControls = $this->readFormControls($layerXmlZero, $layerId, $proj);
+            $getLayer = $this->getLayer($layerId, $proj);
+            $layerName = $getLayer->getName();
+            $fields_config = array();
+            foreach ($formControls as $fieldName => $control) {
+                $editType = $control->getFieldEditType();
+                if (!in_array($editType, array('ValueMap', 'ValueRelation', 'RelationReference'))) {
+                    continue;
+                }
+                $fields_config[$fieldName] = array(
+                    'type' => $editType,
+                );
+                if ($editType == 'ValueMap') {
+                    $valueMap = $control->getValueMap();
+                    if ($valueMap) {
+                        $fields_config[$fieldName]['data'] = $valueMap;
+                    }
+                } elseif ($editType == 'ValueRelation') {
+                    $valueRelationData = $control->getValueRelationData();
+                    $fields_config[$fieldName]['source_layer_id'] = $valueRelationData['layer'];
+                    $fields_config[$fieldName]['source_layer'] = $valueRelationData['layerName'];
+                    $fields_config[$fieldName]['code_field'] = $valueRelationData['key'];
+                    $fields_config[$fieldName]['label_field'] = $valueRelationData['value'];
+                    $fields_config[$fieldName]['exp_filter'] = $valueRelationData['filterExpression'];
+                } else {
+                    // RelationReference
+                    // We need to get the relation properties
+                    $relationReferenceData = $control->getRelationReference();
+                    $relation = $relationReferenceData['relation'];
+                    $referencedLayerId = $relationReferenceData['referencedLayerId'];
+                    $fields_config[$fieldName]['relation'] = $relation;
+                    $fields_config[$fieldName]['source_layer_id'] = $referencedLayerId;
+                    $fields_config[$fieldName]['source_layer'] = $relationReferenceData['referencedLayerName'];
+                    $fields_config[$fieldName]['code_field'] = $this->relations[$referencedLayerId][0]['referencedField'];
+                    $fields_config[$fieldName]['label_field'] = 'label';
+                    $fields_config[$fieldName]['exp_filter'] = $relationReferenceData['filterExpression'];
+                }
+            }
+
+            $layersLabeledFieldsConfig[$layerName] = $fields_config;
+        }
+
+        return $layersLabeledFieldsConfig;
+    }
+
+    /**
      * @param object $attributeLayers
      */
     public function readAttributeLayers($attributeLayers)
@@ -1382,6 +1448,7 @@ class QgisProject
                     'referencingLayer' => $referencingLayerId,
                     'referencedField' => $relationField['referencedField'],
                     'referencingField' => $relationField['referencingField'],
+                    'previewField' => $relationField['previewField'],
                 );
 
                 if (!array_key_exists($referencingLayerId, $pivotGather)) {
