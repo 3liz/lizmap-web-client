@@ -8,13 +8,11 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 {
     //protected $formid;
     protected $ref;
-    protected $emptyValue = false;
 
-    public function __construct($ref, $emptyValue)
+    public function __construct($ref)
     {
         //$this->formid = $formid;
         $this->ref = $ref;
-        $this->emptyValue = $emptyValue;
     }
 
     public function getData($form)
@@ -106,12 +104,6 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                         }
                     }
                 }
-            }
-
-            // Add default empty value for required fields
-            // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-            if ($this->emptyValue) {
-                $result[''] = '';
             }
 
             // orderByValue
