@@ -11,6 +11,13 @@
  */
 class defaultCtrl extends jController
 {
+
+    public function logout()
+    {
+        sagta::clearTokenCache();
+        return self::index();
+    }
+
     /**
      * Displays a list of project for a given repository.
      *
@@ -20,6 +27,9 @@ class defaultCtrl extends jController
      */
     public function index()
     {
+
+        sagta::checkLogin();
+
         if ($this->param('theme')) {
             jApp::config()->theme = $this->param('theme');
         }
@@ -92,6 +102,8 @@ class defaultCtrl extends jController
         $rep->body->assign('isConnected', jAuth::isConnected());
         $rep->body->assign('user', jAuth::getUserSession());
         $rep->body->assign('allowUserAccountRequests', $services->allowUserAccountRequests);
+        $rep->body->assign('sagtaBaseUrl', getEnv('SAGTA_URL'));
+        $rep->body->assign('sagtaClientId', getEnv('CLIENT_ID'));
 
         // Add Google Analytics ID
         if ($services->googleAnalyticsID != '' && preg_match('/^UA-\\d+-\\d+$/', $services->googleAnalyticsID) == 1) {

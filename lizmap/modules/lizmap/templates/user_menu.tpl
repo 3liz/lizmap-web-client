@@ -33,6 +33,12 @@
             <span class="text hidden-phone">{@view~default.header.connect@}</span>
         </a>
     </li>
+    <li class="login">
+        <a href="{$sagtaBaseUrl}/o/authorize/?response_type=code&approval_prompt=auto&state=random_state_string&client_id={$sagtaClientId}">
+            <span class="icon"></span>
+            <span class="text hidden-phone">If you are a SAGTA member, log in here</span>
+        </a>
+    </li>
     {if isset($allowUserAccountRequests) and $allowUserAccountRequests == '1'}
         <li class="registered">
             <a href="{jurl 'jcommunity~registration:index'}">

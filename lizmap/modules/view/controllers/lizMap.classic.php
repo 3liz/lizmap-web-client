@@ -37,6 +37,9 @@ class lizMapCtrl extends jController
      */
     public function index()
     {
+
+        sagta::checkLogin();
+
         if ($this->param('theme')) {
             jApp::config()->theme = $this->param('theme');
         }
