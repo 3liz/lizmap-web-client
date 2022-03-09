@@ -31,17 +31,17 @@
 
     <p>
         <b>{@admin.server.information.qgis.error.fetching.information@}</b><br/>
-        {if in_array($data['qgis_server_info']['error'], array('NO_ACCESS', 'BAD_DATA'))}
-            {assign $errorcode=$data['qgis_server_info']['error']}
-            <i>{@admin.server.information.qgis.error.fetching.information.detail.$errorcode@}</i>
-        {elseif $data['qgis_server_info']['error'] == 'HTTP_ERROR'}
-            {if $data['qgis_server_info']['error_http_code'] != '404'}
-                <i>{@admin.server.information.qgis.error.fetching.information.detail.HTTP_ERROR@} {$data['qgis_server_info']['error_http_code']}</i><br>
-            {else}
-            <i>{@admin.server.information.qgis.error.fetching.information.detail@}</i>
-            {/if}
+        {if $data['qgis_server_info']['error'] == 'NO_ACCESS'}
+            <i>{@admin.server.information.qgis.error.fetching.information.detail.NO_ACCESS@}</i><br>
         {else}
-            <i>{@admin.server.information.qgis.error.fetching.information.detail@}</i>
+            <i>{@admin.server.information.qgis.error.fetching.information.detail@}</i><br>
+            {if $data['qgis_server_info']['error_http_code'] == '200'}
+                {* QGIS Server might return a 200, it's confusing for users. Ticket #2755 *}
+                {assign $errorcode='Unknown'}
+            {else}
+                {assign $errorcode=$data['qgis_server_info']['error_http_code']}
+            {/if}
+            <i>{@admin.server.information.qgis.error.fetching.information.detail.HTTP_ERROR@} {$errorcode}</i><br>
         {/if}
     </p>
 
