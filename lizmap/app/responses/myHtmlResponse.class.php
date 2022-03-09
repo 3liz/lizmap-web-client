@@ -26,17 +26,6 @@ class myHtmlResponse extends AbstractLizmapHtmlResponse
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
 
-        // CSS
-        $css = jApp::config()->jquery['jqueryui.css'];
-        foreach ($css as $file) {
-            $this->addCSSLink($file);
-        }
-        $this->addCSSLink($bp.'assets/css/bootstrap.min.css');
-        $this->addCSSLink($bp.'assets/css/bootstrap-responsive.min.css');
-        $this->addCSSLink($bp.'assets/css/main.css');
-        $this->addCSSLink($bp.'assets/css/view.css?v=3.5.1');
-        $this->addCSSLink($bp.'assets/css/media.css');
-
         // META
         $this->addMetaDescription('');
         $this->addMetaKeywords('');
@@ -67,13 +56,9 @@ class myHtmlResponse extends AbstractLizmapHtmlResponse
         $this->addHeadContent('<meta name="Distribution" content="global" />');
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
 
-        $this->addJSLink(jApp::config()->jquery['jquery']);
-        $this->addJSLink($bp.'assets/js/jquery/jquery-migrate-3.3.1.min.js');
-        $js = jApp::config()->jquery['jqueryui.js'];
-        foreach ($js as $file) {
-            $this->addJSLink($file);
-        }
-        $this->addJSLink($bp.'assets/js/bootstrap.min.js');
+        $this->addAssets('jquery_ui');
+        $this->addAssets('bootstrap');
+        $this->addAssets('normal');
     }
 
     protected function doAfterActions()

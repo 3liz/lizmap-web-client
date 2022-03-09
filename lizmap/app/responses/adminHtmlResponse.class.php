@@ -24,19 +24,6 @@ class adminHtmlResponse extends AbstractLizmapHtmlResponse
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
 
-        $this->addJSLink(jApp::config()->jquery['jquery']);
-        $this->addJSLink($bp.'assets/js/jquery/jquery-migrate-3.3.1.min.js');
-        $js = jApp::config()->jquery['jqueryui.js'];
-        foreach ($js as $file) {
-            $this->addJSLink($file);
-        }
-        $css = jApp::config()->jquery['jqueryui.css'];
-        foreach ($css as $file) {
-            $this->addCSSLink($file);
-        }
-
-        $this->addJSLink($bp.'assets/js/bootstrap.min.js');
-
         // Favicon
         $this->addHeadContent('<link rel="shortcut icon" href="'.$bp.'assets/favicon/favicon.ico">');
         $this->addHeadContent('<link rel="apple-touch-icon" sizes="57x57" href="'.$bp.'assets/favicon/apple-icon-57x57.png">');
@@ -58,6 +45,9 @@ class adminHtmlResponse extends AbstractLizmapHtmlResponse
         $this->addHeadContent('<meta name="theme-color" content="#ffffff">');
 
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
+
+        $this->addAssets('jquery_ui');
+        $this->addAssets('bootstrap');
 
         // Override default theme with color set in admin panel
         if ($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/').'theme.css')) {

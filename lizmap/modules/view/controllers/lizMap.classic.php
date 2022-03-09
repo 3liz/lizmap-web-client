@@ -33,7 +33,7 @@ class lizMapCtrl extends jController
      * @param string $repository name of the repository
      * @param string $project    name of the project
      *
-     * @return jResponse with map and content for the chose Qgis project
+     * @return jResponseRedirect|jResponseHtml with map and content for the chose Qgis project
      */
     public function index()
     {
@@ -144,40 +144,21 @@ class lizMapCtrl extends jController
             }
         }
 
-        $confUrlEngine = &jApp::config()->urlengine;
-        $bp = $confUrlEngine['basePath'];
+
+        $bp = jApp::urlBasePath();
 
         // Add the jForms js
         if ($lproj->hasEditionLayersForCurrentUser()) {
-            $lang = jLocale::getCurrentLang();
-            $www = $confUrlEngine['jelixWWWPath'];
 
+            $www = jApp::wwwPath();
+            $rep->addAssets('jforms_html');
             $rep->addJSLink($www.'jquery/include/jquery.include.js');
-            $rep->addJSLink($www.'js/jforms_jquery.js');
+            $rep->addAssets('jforms_imageupload');
+            $rep->addAssets('jforms_datepicker_default');
+            $rep->addAssets('jforms_datetimepicker_default');
+            $rep->addAssets('jforms_htmleditor_ckdefault');
 
-            // for imageupload
-            $rep->addJSLink($www.'js/cropper.min.js');
-            $rep->addJSLink($www.'js/jforms/choice.js');
-            $rep->addJSLink($www.'js/jforms/imageSelector.js');
-            $rep->addCSSLink($www.'js/cropper.min.css');
-
-            // Add datepickers jForms js
-            $confDate = &jApp::config()->datepickers;
-            $rep->addJSLink($confDate['default']);
-            if (isset($confDate['default.js'])) {
-                $js = $confDate['default.js'];
-                foreach ($js as $file) {
-                    $file = str_replace('$lang', $lang, $file);
-                    if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
-                        continue;
-                    }
-                    $rep->addJSLink($file);
-                }
-            }
-
-            // Add other jForms js
-            $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor.js');
-            $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor_lizmap.js');
+            // Add other js
             $rep->addJSLink($bp.'assets/js/fileUpload/jquery.fileupload.js');
             $rep->addJSLink($bp.'assets/js/bootstrapErrorDecoratorHtml.js');
         }
@@ -297,10 +278,7 @@ class lizMapCtrl extends jController
             }
         }
 
-        $themePath = jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/';
-        $rep->addCssLink($themePath.'css/main.css');
-        $rep->addCssLink($themePath.'css/map.css');
-        $rep->addCssLink($themePath.'css/media.css');
+        $rep->addAssets('normaltheme');
 
         // Add dockable css
         foreach (array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable']) as $d) {
