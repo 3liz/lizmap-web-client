@@ -16,6 +16,7 @@
     </dependencies>
     <autoload>
         <class name="lizmap" file="classes/lizmap.class.php"/>
+        <class name="sagta" file="classes/sagta.class.php"/>
         <class name="lizmapLogItem" file="classes/lizmapLogItem.class.php"/>
         <class name="lizmapLogConfig" file="classes/lizmapLogConfig.class.php"/>
         <class name="qgisServer" file="classes/qgisServer.class.php"/>
