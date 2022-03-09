@@ -23,23 +23,6 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
 
         $this->title = '';
 
-        // CSS
-        $css = jApp::config()->jquery['jqueryui.css'];
-        foreach ($css as $file) {
-            $this->addCSSLink($file);
-        }
-        $this->addCSSLink($bp.'assets/css/bootstrap.min.css');
-        $this->addCSSLink($bp.'assets/css/bootstrap-responsive.min.css');
-        $this->addCSSLink($bp.'assets/css/jquery.dataTables.min.css');
-        $this->addCSSLink($bp.'assets/css/dataTables.bootstrap.min.css');
-        $this->addCSSLink($bp.'assets/js/TreeTable/stylesheets/jquery.treeTable.css');
-        $this->addCSSLink($bp.'assets/js/OpenLayers-2.13/theme/default/style.css');
-        $this->addCSSLink($bp.'assets/css/ol.css');
-        $this->addCSSLink($bp.'assets/css/main.css');
-        $this->addCSSLink($bp.'assets/css/map.css');
-        $this->addCSSLink($bp.'assets/css/media.css');
-
-//    $this->addCSSLink($bp.'assets/css/bootstrap-responsive.css');
 
         // META
         $this->addMetaDescription('');
@@ -68,22 +51,10 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
         $this->addHeadContent('<meta name="Revisit-After" content="10 days" />');
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
 
-        // JS
-        $this->addJSLink($bp.'assets/js/OpenLayers-2.13/OpenLayers.js');
-        $this->addJSLink($bp.'assets/js/Proj4js/proj4js.min.js');
-        $this->addJSLink(jApp::config()->jquery['jquery']);
-        $this->addJSLink($bp.'assets/js/jquery/jquery-migrate-3.3.1.min.js');
-        $js = jApp::config()->jquery['jqueryui.js'];
-        foreach ($js as $file) {
-            $this->addJSLink($file);
-        }
-        $this->addJSLink($bp.'assets/js/jquery.combobox.js');
-        $this->addJSLink($bp.'assets/js/bootstrap.min.js');
-        $this->addJSLink($bp.'assets/js/TreeTable/javascripts/jquery.treeTable.js');
-        $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js');
-        $this->addJSLink($bp.'assets/js/dataTables.bootstrap.min.js');
-        $this->addJSLink($bp.'assets/js/map.js');
-        $this->addJSLink($bp.'assets/js/lizmap.js');
+        $this->addAssets('jquery_ui');
+        $this->addAssets('bootstrap');
+        $this->addAssets('datatables');
+        $this->addAssets('map');
 
         $generalJSConfig = 'Proj4js.libPath = "'.$bp.'assets/js/Proj4js/";';
         $this->addJSCode($generalJSConfig);

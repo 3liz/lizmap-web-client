@@ -131,8 +131,7 @@ class defaultCtrl extends jController
         // JS code
         // Click on thumbnails
         // and hack to normalize the height of the project thumbnails to avoid line breaks with long project titles
-        $bp = jApp::config()->urlengine['basePath'];
-        $rep->addJSLink($bp.'assets/js/view.js?v=3.5.1');
+        $rep->addAssets('view');
 
         // Override default theme with color set in admin panel
         if ($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/').'theme.css')) {
