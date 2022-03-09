@@ -4964,7 +4964,7 @@ var lizMap = function() {
       delete featureDataPool[poolId];
       callbacksData.callbacks.forEach(function(callback) {
           if (callback) {
-              callback(callbacksData.layerName, callbacksData.filter, features, callbacksData.alias);
+            callback(callbacksData.layerName, callbacksData.filter, features, callbacksData.alias, callbacksData.types);
           }
       });
   }
@@ -5012,30 +5012,15 @@ var lizMap = function() {
           callbacks: [ aCallBack ],
           layerName: aName,
           filter: aFilter,
-          alias: aConfig['alias']
+          alias: aConfig['alias'],
+          types: aConfig['types']
       };
 
       $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
 
-          if( !('featureCrs' in aConfig) )
-              aConfig['featureCrs'] = null;
-          if( aConfig.crs == 'EPSG:4326' )
-              aConfig['featureCrs'] = 'EPSG:4326';
+          aConfig['featureCrs'] = 'EPSG:4326';
 
-          // verifying the feature CRS
-          if( !aConfig.featureCrs && data.features.length != 0) {
-              // load projection to be sure to have the definition
-              lizMap.loadProjDefinition( aConfig.crs, function() {
-                  // in QGIS server > 2.14 GeoJSON is in EPSG:4326
-                  if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
-                      aConfig['featureCrs'] = 'EPSG:4326';
-                  else if ( !aConfig.featureCrs )
-                      aConfig['featureCrs'] = aConfig.crs;
-
-              });
-          }
-
-          if ('alias' in aConfig && aConfig['alias']) {
+          if (aConfig?.['alias'] && aConfig?.['types']) {
               callFeatureDataCallBacks(poolId, data.features);
               $('body').css('cursor', 'auto');
           } else {
@@ -5051,8 +5036,7 @@ var lizMap = function() {
               }, function(describe) {
 
                   aConfig['alias'] = describe.aliases;
-                  if ('types' in describe)
-                      aConfig['types'] = describe.types;
+                  aConfig['types'] = describe.types;
 
                   callFeatureDataCallBacks(poolId, data.features);
 
@@ -5064,11 +5048,6 @@ var lizMap = function() {
       },'json');
 
       return true;
-  }
-
-  function translateWfsFieldValues(aName, fieldName, fieldValue, translation_dict){
-    translation_dict = typeof translation_dict !== 'undefined' ?  translation_dict : null;
-    return fieldValue;
   }
 
   function zoomToOlFeature( feature, proj, zoomAction ){

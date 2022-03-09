@@ -281,7 +281,6 @@ var lizAttributeTable = function() {
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
-                // TODO : cache aliases and types
                 const describeFeatureTypeRequest = lizMap.mainLizmap.wfs.describeFeatureType({
                     TYPENAME: layerName
                 });
@@ -328,7 +327,7 @@ var lizAttributeTable = function() {
                         allColumnsKeyValues[columnName] = keyValue;
 
                     }
-                    buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, responses[1].aliases, allColumnsKeyValues, callBack);
+                    buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, responses[1].aliases, responses[1].types, allColumnsKeyValues, callBack);
 
                     document.body.style.cursor = 'default';
                 }).catch(() => {
@@ -1080,7 +1079,7 @@ var lizAttributeTable = function() {
                 };
             })();
 
-            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, allColumnsKeyValues, aCallback ) {
+            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, cTypes, allColumnsKeyValues, aCallback ) {
 
                 cFeatures = typeof cFeatures !== 'undefined' ?  cFeatures : null;
                 if( !cFeatures ){
@@ -1101,9 +1100,6 @@ var lizAttributeTable = function() {
                         cAliases[key]=key;
                     }
                 }
-                var cTypes = {};
-                if( 'types' in config.layers[aName] )
-                    cTypes = config.layers[aName]['types'];
 
                 var atFeatures = cFeatures;
                 var dataLength = atFeatures.length;
@@ -1318,25 +1314,6 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function valueMapInAttributeTable( aName, data, type, full, meta ){
-                // Translate field ( language translation OR code->label translation )
-                var colMeta = meta.settings.aoColumns[meta.col];
-                var colName = colMeta.data
-                var translation_dict = null;
-                var tdata = data;
-                if (data || data === 0) {
-                    tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
-                }
-                // lizMap.translateWfsFieldValues() change `data` type integer to string
-                // so we return original `data` if its value has not changed or is null
-                // it avoids wrong sorting in attribute table column
-                if (tdata == data || tdata === null) {
-                    tdata = data;
-                }
-
-                return tdata;
-            }
-
             function createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues){
                 const columns = [];
                 let firstDisplayedColIndex = 0;
@@ -1360,67 +1337,62 @@ var lizAttributeTable = function() {
                         "title": cAliases[columnName]
                     };
 
+                    // Replace keys by values if defined
                     if (allColumnsKeyValues?.hasOwnProperty(columnName)){
                         const columnKeyValues = allColumnsKeyValues[columnName];
                         colConf['render'] = function (data, type, row, meta) {
                             // Return value related to key if any. Else return original data
                             return columnKeyValues[data] ? columnKeyValues[data] : data ;
                         }
+                    } else if (['decimal', 'double'].includes(cTypes?.[columnName])) {
+                        // Handle decimal
+                        colConf['render'] = function (data, type, row, meta) {
+                            return parseFloat(data);
+                        }
+                    } else {
+                        // Check if we need to replace url or media by link
+                        colConf['render'] = function (data, type, row, meta) {
+                            // Replace media and URL with links
+                            if (!data || !(typeof data === 'string'))
+                                return data;
+                            if (data.substring(0, 6) == 'media/' || data.substring(0, 7) == '/media/' || data.substring(0, 9) == '../media/') {
+                                var rdata = data;
+                                var colMeta = meta.settings.aoColumns[meta.col];
+                                if (data.substring(0, 7) == '/media/')
+                                    rdata = data.slice(1);
+                                return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
+                            }
+                            else if (data.substring(0, 4) == 'http' || data.substring(0, 3) == 'www') {
+                                var rdata = data;
+                                if (data.substring(0, 3) == 'www')
+                                    rdata = 'http://' + data;
+                                return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
+                            }
+                            else
+                                return data;
+                        }
                     }
 
-                    // Check if we need to replace url or media by link
-                    // Add function for any string cell
-                    // First check if the col is number
-                    // if (columnName in cTypes){
-                    //     switch (cTypes[columnName]) {
-                    //         case 'integer':
-                    //         case 'int':
-                    //         case 'unsignedInt':
-                    //         case 'long':
-                    //         case 'unsignedLong':
-                    //             colConf['render'] = function(data, type, full, meta ){
-                    //                 // Translate field ( language translation OR code->label translation )
-                    //                 return valueMapInAttributeTable( aName, data, type, full, meta );
-                    //             };
+                    // Handle text alignment
+                    // Note: when keys are replaced by values, alignment is
+                    // made based on keys type and not values type as in QGIS
+                    switch (cTypes?.[columnName]) {
+                        case 'integer':
+                        case 'int':
+                        case 'unsignedInt':
+                        case 'long':
+                        case 'unsignedLong':
+                        case 'decimal':
+                        case 'double':
+                            colConf['className'] = 'text-right';
+                            break;
+                        case 'date':
+                            colConf['className'] = 'text-center';
+                            break;
+                        default:
+                            break;
+                    }
 
-                    //             colConf['className'] = 'text-right';
-                    //             break;
-                    //         case 'decimal':
-                    //         case 'double':
-                    //             colConf['render'] = function( data, type, full, meta ){
-                    //                 return parseFloat(data);
-                    //             }
-                    //             colConf['className'] = 'text-right';
-                    //             break;
-                    //         case 'date':
-                    //             colConf['className'] = 'text-center';
-                    //             break;
-                    //         default:
-                    //             colConf['render'] = function( data, type, full, meta ){
-                    //                 // Translate field ( language translation OR code->label translation )
-                    //                 var tdata = valueMapInAttributeTable( aName, data, type, full, meta );
-
-                    //                 // Replace media and URL with links
-                    //                 if( !tdata || !( typeof tdata === 'string') )
-                    //                     return tdata;
-                    //                 if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
-                    //                     var rdata = tdata;
-                    //                     var colMeta = meta.settings.aoColumns[meta.col];
-                    //                     if( tdata.substr(0,7) == '/media/' )
-                    //                         rdata = tdata.slice(1);
-                    //                     return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
-                    //                 }
-                    //                 else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
-                    //                     var rdata = tdata;
-                    //                     if(tdata.substr(0,3) == 'www')
-                    //                         rdata = 'http://' + tdata;
-                    //                     return '<a href="' + rdata + '" target="_blank">' + tdata + '</a>';
-                    //                 }
-                    //                 else
-                    //                     return tdata;
-                    //             }
-                    //     }
-                    // }
                     columns.push( colConf );
                 }
 
@@ -1837,7 +1809,7 @@ var lizAttributeTable = function() {
             // Get features to refresh attribute table AND build children filters
             var geometryName = 'extent';
             lizMap.getFeatureData(typeName, aFilter, null, geometryName, false, null, null,
-                function(aName, aNameFilter, aNameFeatures, aNameAliases ){
+                function (aName, aNameFilter, aNameFeatures, aNameAliases, aNameTypes ){
 
                 // **0** Prepare some variable. e.g. reset features stored in the layer config
                 var layerConfig = config.layers[typeName];
@@ -2095,8 +2067,9 @@ var lizAttributeTable = function() {
 
                 // Refresh attributeTable
                 var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
-                if( $( opTable ).length )
-                    buildLayerAttributeDatatable( typeName, opTable, cFeatures, aNameAliases );
+                if( $( opTable ).length ){
+                    buildLayerAttributeDatatable(typeName, opTable, cFeatures, aNameAliases, aNameTypes );
+                }
 
                 // And send event so that getFeatureInfo and getPrint use the updated layer filters
                 lizMap.events.triggerEvent("layerFilterParamChanged",
