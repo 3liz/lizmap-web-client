@@ -1342,7 +1342,21 @@ var lizAttributeTable = function() {
                         const columnKeyValues = allColumnsKeyValues[columnName];
                         colConf['render'] = function (data, type, row, meta) {
                             // Return value related to key if any. Else return original data
-                            return columnKeyValues[data] ? columnKeyValues[data] : data ;
+                            // For multiple values displayed as {"value a", "value b"} we must first split the value
+                            if (data && data.toString().substring(0, 1) == '{' && data.toString().slice(-1) == '}') {
+                                var displayLabels = [];
+                                var stringData = data.toString();
+                                stringData = stringData.substring(1, stringData.length - 1);
+                                let splitValues = stringData.split(',');
+                                for (var s in splitValues) {
+                                    let splitValue = splitValues[s].replace(/"/g, '');
+                                    displayLabels.push(columnKeyValues[splitValue] ? columnKeyValues[splitValue] : splitValue);
+                                }
+                                let displayText = displayLabels.length > 0 ? displayLabels.join(', ') : null;
+                                return displayText;
+                            } else {
+                                return columnKeyValues[data] ? columnKeyValues[data] : data ;
+                            }
                         }
                     } else if (['decimal', 'double'].includes(cTypes?.[columnName])) {
                         // Handle decimal

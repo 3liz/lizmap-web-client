@@ -1043,7 +1043,7 @@ class QgisProject
                     $fields_config[$fieldName]['source_layer_id'] = $referencedLayerId;
                     $fields_config[$fieldName]['source_layer'] = $relationReferenceData['referencedLayerName'];
                     $fields_config[$fieldName]['code_field'] = $this->relations[$referencedLayerId][0]['referencedField'];
-                    $fields_config[$fieldName]['label_field'] = 'label';
+                    $fields_config[$fieldName]['label_field'] = $this->relations[$referencedLayerId][0]['previewField'];
                     $fields_config[$fieldName]['exp_filter'] = $relationReferenceData['filterExpression'];
                 }
             }
