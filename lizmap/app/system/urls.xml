@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+=============================================================================
+WARNING: DON'T CHANGE ANYTHING IN THIS FILE. IF YOU WANT TO ADD/ MODIFY SOME
+OPTIONS, SET THEM INTO var/config/localurls.xml
+=============================================================================
+ATTENTION: NE CHANGEZ RIEN DANS CE FICHIER
+SI VOUS VOULEZ MODIFIER/AJOUTER DES OPTIONS DANS CE FICHIER, METTEZ LES
+DANS LE FICHIER var/config/localurls.xml
+=============================================================================
+-->
 <urls xmlns="http://jelix.org/ns/urls/1.0">
     <entrypoint name="index" default="true">
         <url pathinfo="/" module="view" action="default:index"/>

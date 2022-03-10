@@ -2,8 +2,15 @@
 ;for security reasons , don't remove or modify the first line
 ;this file doesn't list all possible properties. See lib/jelix/core/defaultconfig.ini.php for that
 
-; WARNING: IF YOU WANT TO MODIFY SOME OPTIONS, SET THEM INTO localconfig.ini.php.
-; Don't change them here.
+; =============================================================================
+; WARNING: DON'T CHANGE ANYTHING IN THIS FILE. IF YOU WANT TO ADD/ MODIFY SOME
+; OPTIONS, SET THEM INTO var/config/localconfig.ini.php.
+; =============================================================================
+; ATTENTION: NE CHANGEZ RIEN DANS CE FICHIER
+; SI VOUS VOULEZ MODIFIER/AJOUTER DES OPTIONS DANS CE FICHIER, METTEZ LES
+; DANS LE FICHIER var/config/localconfig.ini.php.
+; =============================================================================
+
 
 locale=en_US
 charset=UTF-8

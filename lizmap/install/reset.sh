@@ -117,8 +117,10 @@ if [ "$ACTION" = "install" ]; then
     fi
 
     if [ "$WITH_DEMO" = "Y" ]; then
-        if [ ! -d $SCRIPTDIR/../../extra-modules/lizmapdemo ]; then
-            if [ ! -d $SCRIPTDIR/lizmapdemo ]; then
+        if [ -d $SCRIPTDIR/../../extra-modules/lizmapdemo ]; then
+            cp -a $SCRIPTDIR/../../extra-modules/lizmapdemo $SCRIPTDIR/../lizmap-modules/
+        else
+            if [ ! -d $SCRIPTDIR/../lizmap-modules/lizmapdemo ]; then
               HAS_UNZIP=$(command -v unzip)
               if [ "$HAS_UNZIP" = "" ]; then
                 echo "Error: cannot install the lizmapdemo module: unzip is not installed"
@@ -150,16 +152,15 @@ if [ "$ACTION" = "install" ]; then
                 fi
               fi
               unzip lizmapdemo.zip
+              mv lizmapdemo ../lizmap-modules/
             fi
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path "app:install/lizmapdemo" modules
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.access 2 modules
-        else
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path "app:../extra-modules/lizmapdemo" modules
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.access 2 modules
         fi
+        php $SCRIPTDIR/../dev.php app:ini-change $LIZMAP/var/config/localconfig.ini.php lizmapdemo.enabled on modules
     else
-        php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path "" modules
-        php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.access 0 modules
+        if [ -d $SCRIPTDIR/../../extra-modules/lizmapdemo ]; then
+          rm -rf $SCRIPTDIR/../../extra-modules/lizmapdemo
+        fi
+        php $SCRIPTDIR/../dev.php app:ini-change $LIZMAP/var/config/localconfig.ini.php lizmapdemo.enabled off modules
     fi
     (cd $LIZMAP/install && php installer.php)
 fi
