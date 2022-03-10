@@ -705,15 +705,33 @@ class serviceCtrl extends jController
      */
     public function getProjectConfig()
     {
-
-        // Get parameters
+        // Get and Check parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
 
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
+
+        // Etag header and cache control
+        $etag = 'getprojectconfig';
+        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
+        $appContext = $this->project->getAppContext();
+        if ($appContext->UserIsConnected()) {
+            $etag .= '-'.implode('~', $appContext->aclUserPublicGroupsId());
+        } else {
+            $etag .= '-__anonymous';
+        }
+        $cacheHandler = $this->project->getCacheHandler();
+        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
+        $etag = sha1($etag);
+        if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            return $rep;
+        }
+
+        // Set body
         $rep->data = $this->project->getUpdatedConfig();
+        $this->setEtagCacheHeaders($rep, $etag);
 
         return $rep;
     }
