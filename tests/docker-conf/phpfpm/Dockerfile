@@ -1,6 +1,6 @@
 FROM debian:buster-slim
 
-ARG composer_version=2.0.7
+ARG composer_version=2.2.7
 ARG lizmap_user_id
 ARG lizmap_group_id
 
@@ -28,7 +28,7 @@ RUN apt-get -y install \
     php${PHP_VERSION}-sqlite3 \
     php${PHP_VERSION}-xml \
     php${PHP_VERSION}-zip \
-    php-redis \
+    php${PHP_VERSION}-redis \
     ldap-utils \
     libsqlite3-mod-spatialite \
     ; apt-get clean
