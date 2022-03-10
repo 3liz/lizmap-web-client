@@ -1,33 +1,21 @@
-name: 🐞 Bug Report
-description: Report errors and problems. The more precise is your bug report, the more quickly it will be fixed.
-title: "[Bug]: "
-labels: [bug]
+name: ❓ Support/Questions
+description: Questions about using or installing Lizmap. 3Liz's paid support => https://www.3liz.com/services.html#3liz-support-offer
+title: "[Question]: "
+labels: [question]
 body:
 
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-        Tip: small projects and screenshots/gifs help a lot debugging ;)
-        QGIS project must be valid. Project => Properties => QGIS Server => Test Configuration => Launch
+        Before asking your question, please check that the response is not in the documentation: https://docs.3liz.com/
+        
+        Questions about using or installing Lizmap. 3Liz's paid support => https://www.3liz.com/services.html#3liz-support-offer
 
   - type: textarea
     id: what
     attributes:
-      label: What is the bug?
+      label: What is the question?
       placeholder: When clicking on button...
-    validations:
-      required: true
-
-  - type: textarea
-    id: steps
-    attributes:
-      label: Steps to reproduce the issue
-      placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. Scroll down to '...'
-        4. See error
     validations:
       required: true
 
