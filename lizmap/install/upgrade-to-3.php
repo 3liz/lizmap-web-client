@@ -3,7 +3,7 @@
 require (__DIR__.'/../application.init.php');
 
 try {
-    $installerIni = new jIniFileModifier(__DIR__.'/../var/config/installer.ini.php');
+    $installerIni = new \Jelix\IniFile\IniModifier(__DIR__.'/../var/config/installer.ini.php');
 }
 catch(Exception $e) {
     echo "Error: var/config/installer.ini.php is not found";
@@ -11,14 +11,12 @@ catch(Exception $e) {
 }
 
 try {
-    $profiles = new jIniFileModifier(__DIR__.'/../var/config/profiles.ini.php');
+    $profiles = new \Jelix\IniFile\IniModifier(__DIR__.'/../var/config/profiles.ini.php');
 }
 catch(Exception $e) {
     echo "Error: var/config/profiles.ini.php is not found";
     exit (1);
 }
-
-
 
 if (null === $installerIni->getValue('admin.contexts', '__modules_data')) {
     $installerIni->setValue('admin.contexts', 'acl2', '__modules_data');
