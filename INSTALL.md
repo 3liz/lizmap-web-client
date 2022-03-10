@@ -10,16 +10,13 @@ QGIS Server, webbrowsers etc.
 First you should install :
 
 - The web server Apache or Nginx
-- The PHP-FPM package (`php5-fpm` or `php7.0` on debian/ubuntu) or `libapache2-mod-php` (apache only).
-  You can install PHP 5.6 or PHP 7.0/7.1/7.2. You can use generic package names, which will install latest
-  version available (`php5`, `php7.0` `php7.2` etc.)
+- The PHP-FPM package (`php7.4-fpm`, `php8.0-fpm` or `php8.1-fpm` on debian/ubuntu)
 - The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml`:
-  - Debian 9 Stretch and Ubuntu 18.04: `apt install curl php-sqlite3 php-gd php-xml php-curl`
 - [QGIS](http://qgis.org/en/site/forusers/download.html)
 and [its documentation about QGIS Server](https://docs.qgis.org/3.16/en/docs/user_manual/working_with_ogc/server/index.html).
   We recommend **strongly** to use the same version on the server **and** on the desktop. QGIS Server will read
   your QGS file and obviously can't read a file made with a newer version of QGIS Desktop.
-- (optional) PostgreSQL with PostGIS and its php extension (`php-pgsql` or equivalents)
+- Optional but highly recommended: PostgreSQL with PostGIS and its php extension (`php-pgsql` or equivalents)
 
 ## Get the source
 
