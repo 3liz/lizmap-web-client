@@ -898,12 +898,29 @@ class serviceCtrl extends jController
         // Return response
         /** @var jResponseText $rep */
         $rep = $this->getResponse('text');
-        $content = $this->project->getProj4($this->iParam('authid'));
+
+        // Projection authority id (ESPG:* or USER:*)
+        $authid = $this->iParam('authid');
+
+        // Etag header and cache control
+        $etag = 'getproj4';
+        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
+        $etag .= '-'.$authid;
+        $cacheHandler = $this->project->getCacheHandler();
+        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
+        $etag = sha1($etag);
+        if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            return $rep;
+        }
+
+        // Get content
+        $content = $this->project->getProj4($authid);
         if (!$content) {
             $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
         }
         $rep->content = $content;
         $rep->setExpires('+300 seconds');
+        $this->setEtagCacheHeaders($rep, $etag);
 
         return $rep;
     }
