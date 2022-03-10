@@ -4,7 +4,7 @@ use Lizmap\Form\QgisFormControl;
 use Lizmap\Project;
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__.'/../../../../lib/jelix/forms/jFormsBase.class.php';
+require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFormsBase.class.php';
 
 class dummyForm
 {
