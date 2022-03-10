@@ -73,8 +73,8 @@ DIST=$(STAGE)/$(PACKAGE_NAME)
 
 FILES=lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRADE.md
 
-FORBIDDEN_CONFIG_FILES := installer.ini.php liveconfig.ini.php localframework.ini.php lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
-EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions
+FORBIDDEN_CONFIG_FILES := installer.ini.php installer.bak.ini.php liveconfig.ini.php localframework.ini.php localurls.xml lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
+EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions var/lizmap-theme-config/ var/themes/default
 
 .PHONY: debug build tests clean check-release check-registry check-factory stage package deploy_download deploy_download_stable saas_package saas_release
 .PHONY: local_saas_package docker-build docker-build-ci docker-tag docker-deliver docker-clean docker-clean-all docker-release docker-hub docker-run
