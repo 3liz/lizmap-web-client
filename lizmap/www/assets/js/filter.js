@@ -156,7 +156,7 @@ var lizLayerFilterTool = function () {
                 }
             }
 
-            // Get the HTML form elemnt for a specific field
+            // Get the HTML form element for a specific field
             function getFormFieldInput(field_item) {
                 var field_config = filterConfig[field_item.order];
 
@@ -369,6 +369,9 @@ var lizLayerFilterTool = function () {
             // possible format: checkboxes or select
             function uniqueValuesFormInput(field_item) {
 
+                // Get data
+                const fetchRequests = [];
+
                 // Get unique values data (and counters)
                 var sdata = {
                     request: 'getUniqueValues',
@@ -376,11 +379,46 @@ var lizLayerFilterTool = function () {
                     fieldname: field_item.field,
                     filter: ''
                 };
-                $.get(filterConfigData.url, sdata, function (result) {
+
+                fetchRequests.push(
+                        fetch(filterConfigData.url + '&' + new URLSearchParams(sdata)).then( response => {
+                        return response.json();
+                    })
+                );
+
+                // Get keys/values if defined
+                let keyValues = {};
+
+                const layerName = lizMap.getLayerConfigById(field_item.layerId)[0];
+                const fieldConf = lizMap.keyValueConfig[layerName]?.[field_item.field];
+
+                if (fieldConf) {
+                    if (fieldConf.type == 'ValueMap') {
+                        keyValues = fieldConf.data;
+                    }else{
+                        fetchRequests.push(
+                            lizMap.mainLizmap.wfs.getFeature({
+                                TYPENAME: fieldConf.source_layer,
+                                PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
+                                // we must not use null for exp_filter but '' if no filter is active
+                                EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
+                            })
+                        );
+                    }
+                }
+
+                Promise.all(fetchRequests).then(responses => {
+                    const [result, rawKeyValues] = responses;
+
                     if (!checkResult(result)) {
                         return false;
                     }
 
+                    if(rawKeyValues){
+                        rawKeyValues.features.forEach(feature => keyValues[feature.properties[fieldConf.code_field]] = feature.properties[fieldConf.label_field]);
+                    }
+
+                    // Build UI
                     var html = '';
                     html += getFormFieldHeader(field_item);
 
@@ -393,10 +431,11 @@ var lizLayerFilterTool = function () {
 
                     $("#filter-field-order" + String(field_item.order)).append(html);
 
-                    if (!('items' in filterConfig[field_item.order]))
+                    if (!('items' in filterConfig[field_item.order])){
                         filterConfig[field_item.order]['items'] = {};
-                    for (var a in result) {
-                        var feat = result[a];
+                    }
+
+                    for (const feat of result) {
                         filterConfig[field_item.order]['items'][feat['v']] = feat['c'];
                     }
 
@@ -410,9 +449,9 @@ var lizLayerFilterTool = function () {
                         return a.localeCompare(b);
                     });
 
-                    for (var z in fkeys) {
-                        var f_val = fkeys[z];
-                        var label = f_val;
+                    for (const f_val of fkeys) {
+                        // Replace key by value if defined
+                        var label = keyValues.hasOwnProperty(f_val) ? keyValues[f_val] : f_val;
 
                         if (field_item.format == 'select') {
                             dhtml += '<option value="' + lizMap.cleanName(f_val) + '">';
@@ -441,7 +480,7 @@ var lizLayerFilterTool = function () {
                     }
 
                     addFieldEvents(field_item);
-                }, 'json');
+                });
             }
 
             // Generate filter string for a field
