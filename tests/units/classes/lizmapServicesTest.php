@@ -332,8 +332,8 @@ class lizmapServicesTest extends TestCase
             $testLizmapServices->{$key} = $val;
         }
 
-        $ini = new jIniFileModifier($iniPath);
-        $liveIni = new jIniFileModifier($liveIniPath);
+        $ini = new \Jelix\IniFile\IniModifier($iniPath);
+        $liveIni = new \Jelix\IniFile\IniModifier($liveIniPath);
         $testLizmapServices->saveIntoIni($ini, $liveIni);
         if (isset($expectedIniValues)) {
             $this->assertEquals($expectedIniValues, $ini->getValues($section_name));

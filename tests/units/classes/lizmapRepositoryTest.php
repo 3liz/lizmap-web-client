@@ -139,7 +139,7 @@ class lizmapRepositoryTest extends TestCase
         $section = 'repository:test';
 
         file_put_contents($iniFile, '');
-        $ini = new jIniFileModifier($iniFile);
+        $ini = new \Jelix\IniFile\IniModifier($iniFile);
         $services = new lizmapServices($data, (object) array(), true, '', null);
         $repo = $services->getLizmapRepository('test');
         if ($changedProp && $changedValue) {

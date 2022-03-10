@@ -9,6 +9,9 @@
  *
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Jelix\FileUtilities\File;
+
 class mediaCtrl extends jController
 {
     /**
@@ -174,7 +177,7 @@ class mediaCtrl extends jController
         }
 
         // Get the mime type
-        $mime = jFile::getMimeType($abspath);
+        $mime = File::getMimeType($abspath);
         if ($mime == 'text/plain' || $mime == ''
             || $mime == 'application/octet-stream'
             || in_array(strtolower($path_parts['extension']), array('svg', 'svgz'))
@@ -265,7 +268,7 @@ class mediaCtrl extends jController
         }
 
         // Get the mime type
-        $mime = jFile::getMimeType($rep->fileName);
+        $mime = File::getMimeType($rep->fileName);
         if ($mime == 'text/plain' || $mime == '') {
             $mime = jFile::getMimeTypeFromFilename($rep->fileName);
         }
@@ -426,7 +429,7 @@ class mediaCtrl extends jController
         $imgPath = jApp::varPath('lizmap-theme-config/').$theme->{$key};
 
         if (is_file($imgPath)) {
-            $mime = jFile::getMimeType($imgPath);
+            $mime = File::getMimeType($imgPath);
             if ($mime == 'text/plain' || $mime == '') {
                 $mime = jFile::getMimeTypeFromFilename($imgPath);
             }
