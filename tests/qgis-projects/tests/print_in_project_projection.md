@@ -8,7 +8,7 @@ This allows to avoid scale issues in printed PDF or PNG.
 For LWC >= 3.4.4 and < 3.5.0, this behaviour is deactivated by default, but can
 be manually activated within the browser javascript console
 
-**Project : test_print**
+**Project : print_in_project_projection**
 
 ## Procedure
 

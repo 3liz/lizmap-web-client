@@ -1,6 +1,6 @@
 # Creating/editing geometries/attributes
 
-**Project : Lizmap form edition with simple fields**
+**Project : form_edition_simple_field**
 
 ## Procedure
 
