@@ -33,7 +33,7 @@ class lizMapCtrl extends jController
      * @param string $repository name of the repository
      * @param string $project    name of the project
      *
-     * @return jResponseRedirect|jResponseHtml with map and content for the chose Qgis project
+     * @return jResponseHtml|jResponseRedirect with map and content for the chose Qgis project
      */
     public function index()
     {
@@ -144,12 +144,10 @@ class lizMapCtrl extends jController
             }
         }
 
-
         $bp = jApp::urlBasePath();
 
         // Add the jForms js
         if ($lproj->hasEditionLayersForCurrentUser()) {
-
             $www = jApp::wwwPath();
             $rep->addAssets('jforms_html');
             $rep->addJSLink($www.'jquery/include/jquery.include.js');
