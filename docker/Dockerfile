@@ -9,33 +9,33 @@ MAINTAINER David Marteau <david.marteau@3liz.com>
 LABEL Description="Lizmap web client" Vendor="3liz.org" Version="21.05.0"
 
 RUN apk update && apk upgrade
-RUN apk --no-cache add git fcgi php7 php7-fpm \
-    php7-tokenizer \
-    php7-opcache \
-    php7-session \
-    php7-iconv \
-    php7-intl \
-    php7-mbstring \
-    php7-openssl \
-    php7-fileinfo \
-    php7-curl \
-    php7-json \
-    php7-redis \
-    php7-pgsql \
-    php7-sqlite3 \
-    php7-gd \
-    php7-dom \
-    php7-xml \
-    php7-xmlrpc \
-    php7-xmlreader \
-    php7-xmlwriter \
-    php7-simplexml \
-    php7-phar \
-    php7-gettext \
-    php7-ctype \
-    php7-zip \
-    php7-ldap \
-    composer 
+RUN apk --no-cache add git fcgi php8 \
+    php8-ctype \
+    php8-curl \
+    php8-dom \
+    php8-exif \
+    php8-fileinfo \
+    php8-fpm \
+    php8-gd \
+    php8-gettext \
+    php8-iconv \
+    php8-intl \
+    php8-ldap \
+    php8-mbstring \
+    php8-opcache \
+    php8-openssl \
+    php8-pgsql \
+    php8-phar \
+    php8-pecl-redis \
+    php8-session \
+    php8-simplexml \
+    php8-sqlite3 \
+    php8-tokenizer \
+    php8-xml \
+    php8-xmlreader \
+    php8-xmlwriter \
+    php8-zip \
+    composer
 
 COPY --from=build /lizmap_web_client /www
 ## Rename original config files so that they wont be overriden at startup
@@ -55,13 +55,13 @@ COPY php-fpm-healthcheck /usr/local/bin/
 
 RUN chmod 755 /bin/lizmap-entrypoint.sh /bin/update-config.php /usr/local/bin/php-fpm-healthcheck
 
-ENV PHP_INI_DIR /etc/php7
+ENV PHP_INI_DIR /etc/php8
 
 HEALTHCHECK --interval=60s --timeout=30s CMD php-fpm-healthcheck || exit 1
 
 WORKDIR /www
 ENTRYPOINT ["/bin/lizmap-entrypoint.sh"]
-CMD ["/usr/sbin/php-fpm7", "-F", "-O"]
+CMD ["/usr/sbin/php-fpm8", "-F", "-O"]
 
 
 
