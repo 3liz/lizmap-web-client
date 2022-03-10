@@ -1,6 +1,6 @@
 # Test value relation widget
 
-**Project : Lizmap form edition with value relation fields**
+**Project : form_edition_value_relation_field**
 
 Lizmap plugin installed for QGIS Server is needed
 
