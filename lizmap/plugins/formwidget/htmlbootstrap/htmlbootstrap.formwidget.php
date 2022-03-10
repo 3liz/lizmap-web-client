@@ -55,14 +55,6 @@ class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
         if ($builder->getOption('modal')) {
             echo '</div>';
         }
-        $js = "jQuery(document).ready(function() { var c, c2;\n".$this->js.$this->finalJs.'});';
-        $container = $builder->getForm()->getContainer();
-        $container->privateData['__jforms_js'] = $js;
-        $formId = $container->formId;
-        $formName = $builder->getForm()->getSelector();
-        echo '<script type="text/javascript" src="'.\jUrl::get(
-            'jelix~jforms:js',
-            array('__form' => $formName, '__fid' => $formId)
-        ).'"></script>';
+        parent::outputFooter($builder);
     }
 }
