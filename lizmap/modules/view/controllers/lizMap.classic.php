@@ -148,7 +148,7 @@ class lizMapCtrl extends jController
 
         // Add the jForms js
         if ($lproj->hasEditionLayersForCurrentUser()) {
-            $www = jApp::wwwPath();
+            $www = jApp::urlJelixWWWPath();
             $rep->addAssets('jforms_html');
             $rep->addJSLink($www.'jquery/include/jquery.include.js');
             $rep->addAssets('jforms_imageupload');
@@ -276,7 +276,7 @@ class lizMapCtrl extends jController
             }
         }
 
-        $rep->addAssets('normaltheme');
+        $rep->addAssets('maptheme');
 
         // Add dockable css
         foreach (array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable']) as $d) {
