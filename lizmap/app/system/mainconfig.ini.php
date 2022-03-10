@@ -304,16 +304,15 @@ map.css[]=assets/css/main.css
 map.css[]=assets/css/map.css
 map.css[]=assets/css/media.css
 
+maptheme.css[]="$theme/css/main.css"
+maptheme.css[]="$theme/css/map.css"
+maptheme.css[]="$theme/css/media.css"
+
+
 normal.css[]=assets/css/main.css
 normal.css[]=assets/css/view.css
 normal.css[]=assets/css/media.css
 
-normaltheme.require=normal
-normaltheme.css[]="$theme/css/main.css"
-normaltheme.css[]="$theme/css/view.css"
-normaltheme.css[]="$theme/css/media.css"
-
-view.require=normal
 view.js[]=assets/js/view.js
 
 embed.css[]=assets/css/embed.css
