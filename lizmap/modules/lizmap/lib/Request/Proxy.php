@@ -541,7 +541,7 @@ class Proxy
 
         // Create database and populate with table if needed
         if (!file_exists($cacheDatabase)) {
-            copy($appContext->appVarPath().'cacheTemplate.db', $cacheDatabase);
+            copy(__DIR__.'/cacheTemplate.db', $cacheDatabase);
         }
 
         // Virtual jdb profile corresponding to the layer database
