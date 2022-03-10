@@ -454,23 +454,11 @@ var lizLayerFilterTool = function () {
                         var label = keyValues.hasOwnProperty(f_val) ? keyValues[f_val] : f_val;
 
                         if (field_item.format == 'select') {
-                            dhtml += '<option value="' + lizMap.cleanName(f_val) + '">';
+                            dhtml += `<option value="${lizMap.cleanName(f_val)}">&nbsp;${label}</option>`;
                         } else {
                             var inputId = 'liz-filter-field-' + lizMap.cleanName(field_item.title) + '-' + lizMap.cleanName(f_val);
-                            dhtml += '<span style="font-weight:normal;">';
-
-                            dhtml += '<button id="' + inputId + '" class="btn checkbox liz-filter-field-value" value="' + lizMap.cleanName(f_val) + '"></button>';
-
+                            dhtml += `<label class="checkbox"><input id="${inputId}" class="liz-filter-field-value" type="checkbox" value="${lizMap.cleanName(f_val)}">&nbsp;${label}</label>`;
                         }
-                        dhtml += '&nbsp;' + label;
-
-                        // close item
-                        if (field_item.format == 'select') {
-                            dhtml += '</option>';
-                        } else {
-                            dhtml += '</span></br>';
-                        }
-
                     }
                     var id = 'liz-filter-box-' + lizMap.cleanName(field_item.title);
                     if (field_item.format == 'select') {
@@ -549,7 +537,7 @@ var lizLayerFilterTool = function () {
                     for (var f_val in filterConfig[field_item.order]['items']) {
                         // Get checked status
                         var inputId = '#liz-filter-field-' + lizMap.cleanName(field_item.title) + '-' + lizMap.cleanName(f_val);
-                        var achecked = $(inputId).hasClass('checked');
+                        var achecked = $(inputId).is(':checked');
                         if (!achecked) {
                             allchecked = false;
                         } else {
@@ -791,7 +779,7 @@ var lizLayerFilterTool = function () {
                 }
                 else if (field_item['type'] == 'uniquevalues') {
                     if (field_item.format == 'checkboxes') {
-                        $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' button.liz-filter-field-value.checked').removeClass('checked');
+                        $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' input.liz-filter-field-value').prop("checked", false);;
                     }
                     else if (field_item.format == 'select') {
                         var selectField = $('#liz-filter-field-' + lizMap.cleanName(field_item.title));
@@ -866,7 +854,7 @@ var lizLayerFilterTool = function () {
             };
 
             // Add an event on the inputs of a given field
-            // For example, do something when a checkox is clicked
+            // For example, do something when a checkbox is clicked
             // This triggers the calculation of the filter for the field
             function addFieldEvents(field_item) {
                 var container = 'liz-filter-box-' + lizMap.cleanName(field_item.title);
@@ -874,16 +862,11 @@ var lizLayerFilterTool = function () {
 
                 if (field_item.type == 'uniquevalues') {
                     if (field_item.format == 'checkboxes') {
-                        $('#' + container + ' button.liz-filter-field-value').click(function () {
+                        $('#' + container + ' input.liz-filter-field-value').click(function () {
                             var self = $(this);
                             // Do nothing if disabled
                             if (self.hasClass('disabled'))
                                 return false;
-                            // Add checked class if unchecked
-                            if (!self.hasClass('checked'))
-                                self.addClass('checked');
-                            else
-                                self.removeClass('checked');
 
                             // Filter the data
                             setFormFieldFilter(field_item);
