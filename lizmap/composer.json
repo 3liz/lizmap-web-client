@@ -20,6 +20,9 @@
   "config": {
     "preferred-install": {
       "*": "dist"
+    },
+    "allow-plugins": {
+      "jelix/composer-module-setup": true
     }
   },
   "extra": {
