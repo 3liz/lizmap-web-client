@@ -4,6 +4,20 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('application/json')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(undefined)
+
+                const etag = resp.headers['etag']
+                cy.request({
+                    url: '/index.php/lizmap/service/getProjectConfig?repository=testsrepository&project=selection',
+                    headers: {
+                        'If-None-Match': etag,
+                    },
+                    failOnStatusCode: false,
+                }).then((resp) => {
+                    expect(resp.status).to.eq(304)
+                    expect(resp.body).to.have.length(0)
+                })
             })
     })
 
