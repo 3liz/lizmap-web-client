@@ -84,7 +84,7 @@ class editionCtrl extends jController
         // Get title layer
         if ($this->layer) {
             $_title = $this->layer->getTitle();
-            if ($_title and $_title != '') {
+            if ($_title && $_title != '') {
                 $title = $_title;
             }
         }
@@ -236,7 +236,7 @@ class editionCtrl extends jController
         // Get features primary key field values corresponding to featureId(s)
         if (!empty($featureId) || $featureId === 0 || $featureId === '0') {
             $typename = $this->layer->getShortName();
-            if (!$typename or $typename == '') {
+            if (!$typename || $typename == '') {
                 $typename = str_replace(' ', '_', $this->layer->getName());
             }
             if (is_array($featureId)) {
@@ -271,7 +271,7 @@ class editionCtrl extends jController
             $wfsresponse = $wfsrequest->process();
             if (property_exists($wfsresponse, 'data')) {
                 $data = $wfsresponse->data;
-                if (property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data)) {
+                if (property_exists($wfsresponse, 'file') && $wfsresponse->file && is_file($data)) {
                     $data = jFile::read($data);
                 }
                 $this->featureData = json_decode($data);
@@ -433,13 +433,15 @@ class editionCtrl extends jController
 
         // Check if data has been fetched via WFS for the feature
         $this->getWfsFeature();
-        if ($this->featureId and !$this->featureData) {
+        if (($this->featureId || $this->featureId === 0 || $this->featureId === '0') && !$this->featureData) {
             jMessage::add(jLocale::get('view~edition.message.error.feature.get'), 'featureNotFoundViaWfs');
 
             return $this->serviceAnswer();
         }
 
-        if (!$this->loginFilteredOverride and $this->featureId and $this->featureData) {
+        if (!$this->loginFilteredOverride
+            && ($this->featureId || $this->featureId === 0 || $this->featureId === '0')
+            && $this->featureData) {
             // Get filter by login
             $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
             if ($expByUser !== '') {
@@ -585,7 +587,7 @@ class editionCtrl extends jController
 
         // Get title layer
         $title = $this->layer->getTitle();
-        if (!$title or $title == '') {
+        if (!$title || $title == '') {
             $title = 'No title';
         }
 
@@ -701,7 +703,7 @@ class editionCtrl extends jController
 
         // Check the form data and redirect if needed
         $feature = null;
-        if ($this->featureId) {
+        if ($this->featureId || $this->featureId === 0 || $this->featureId === '0') {
             $feature = $this->featureData->features[0];
         }
         $check = $qgisForm->check($feature);
@@ -735,7 +737,7 @@ class editionCtrl extends jController
         }
 
         // Some errors where encoutered
-        if (!$check or !$pkvals) {
+        if (!$check || !$pkvals) {
             // Redirect to the display action
             $token = uniqid('lizform_');
             $rep->params['error'] = $token;
@@ -890,7 +892,7 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
-        if (!$this->featureId) {
+        if (!$this->featureId && $this->featureId !== 0 && $this->featureId !== '0') {
             jMessage::add(jLocale::get('view~edition.message.error.parameter.featureId'), 'error');
 
             return $this->serviceAnswer();
@@ -1062,7 +1064,7 @@ class editionCtrl extends jController
         // Save data into database
         // And get returned primary key values
         $feature = null;
-        if ($this->featureId) {
+        if ($this->featureId || $this->featureId === 0 || $this->featureId === '0') {
             $feature = $this->featureData->features[0];
         }
         $pkvals = $qgisForm->saveToDb($feature);
@@ -1070,7 +1072,7 @@ class editionCtrl extends jController
         jForms::destroy('view~edition', '____new__feature___');
 
         // Some errors where encoutered
-        if (!$check or !$pkvals) {
+        if (!$check || !$pkvals) {
             $rep->data['success'] = false;
             $rep->data['message'] = 'Error during the save of the feature';
 
@@ -1209,7 +1211,7 @@ class editionCtrl extends jController
         $features1 = $this->param('features1');
         $features2 = $this->param('features2');
         $pivotId = $this->param('pivot');
-        if (!$features1 or !$features2 or !$pivotId) {
+        if (!$features1 || !$features2 || !$pivotId) {
             jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
 
             return $this->serviceAnswer();
@@ -1218,7 +1220,7 @@ class editionCtrl extends jController
         // Cut layers id and features ids
         $exp1 = explode(':', $features1);
         $exp2 = explode(':', $features2);
-        if (count($exp1) != 3 or count($exp2) != 3) {
+        if (count($exp1) != 3 || count($exp2) != 3) {
             jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
 
             return $this->serviceAnswer();
@@ -1234,7 +1236,7 @@ class editionCtrl extends jController
         }
 
         // Not enough id given
-        if (count($ids1) == 0 or count($ids2) == 0 or empty($exp1[2]) or empty($exp2[2])) {
+        if (count($ids1) == 0 || count($ids2) == 0 || empty($exp1[2]) || empty($exp2[2])) {
             jMessage::add(jLocale::get('view~edition.link.error.missing.id'), 'error');
 
             return $this->serviceAnswer();
@@ -1243,7 +1245,7 @@ class editionCtrl extends jController
         // Get layer names
         $layer1 = $lproj->getLayer($exp1[0]);
         $layer2 = $lproj->getLayer($exp2[0]);
-        if (!$layer1 or !$layer2) {
+        if (!$layer1 || !$layer2) {
             jMessage::add(jLocale::get('view~edition.link.error.wrong.layer'), 'error');
 
             return $this->serviceAnswer();
@@ -1254,8 +1256,8 @@ class editionCtrl extends jController
         // Verifying the layers are present in the attribute table configuration
         $pConfig = $lproj->getFullCfg();
         if (!$lproj->hasAttributeLayers()
-            or !property_exists($pConfig->attributeLayers, $layerName1)
-            or !property_exists($pConfig->attributeLayers, $layerName2)
+            || !property_exists($pConfig->attributeLayers, $layerName1)
+            || !property_exists($pConfig->attributeLayers, $layerName2)
         ) {
             jMessage::add(jLocale::get('view~edition.link.error.not.attribute.layer'), 'error');
 
@@ -1310,7 +1312,7 @@ class editionCtrl extends jController
         $dataFields = $dbFieldsInfo->dataFields;
 
         // Check fields
-        if (!array_key_exists($exp1[1], $dataFields) or !array_key_exists($exp2[1], $dataFields)) {
+        if (!array_key_exists($exp1[1], $dataFields) || !array_key_exists($exp2[1], $dataFields)) {
             jMessage::add(jLocale::get('view~edition.link.error.no.given.fields'), 'error');
 
             return $this->serviceAnswer();
@@ -1377,7 +1379,7 @@ class editionCtrl extends jController
         $project = $this->param('project');
         $repository = $this->param('repository');
 
-        if (!$lid or !$fkey or !$pkey or !$pkeyval or !$project or !$repository) {
+        if (!$lid || !$fkey || !$pkey || !$pkeyval || !$project || !$repository) {
             jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
 
             return $this->serviceAnswer();
@@ -1428,7 +1430,7 @@ class editionCtrl extends jController
         $dataFields = $dbFieldsInfo->dataFields;
 
         // Check fields
-        if (!array_key_exists($fkey, $dataFields) or !array_key_exists($pkey, $dataFields)) {
+        if (!array_key_exists($fkey, $dataFields) || !array_key_exists($pkey, $dataFields)) {
             jMessage::add(jLocale::get('view~edition.link.error.no.given.fields'), 'error');
 
             return $this->serviceAnswer();
