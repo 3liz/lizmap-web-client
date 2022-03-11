@@ -27,15 +27,15 @@ class lizmapconfigConfigCompilerPlugin implements \jelix\core\ConfigCompilerPlug
 
     public function atStart($config)
     {
-        if (isset($config->lizmap['assetsRevision'])) {
-            $revision = $config->lizmap['assetsRevision'];
+        if (isset($config->urlengine['assetsRevision'])) {
+            $revision = $config->urlengine['assetsRevision'];
             if ($revision == 'autoconfig') {
                 $revision = date('ymdHis');
             }
         } else {
             $revision = date('ymdHis');
-            jApp::config()->urlengine['assetsRevision'] = $revision;
         }
+        $config->urlengine['assetsRevision'] = $revision;
 
         if ($revision != '') {
             $config->urlengine['assetsRevQueryUrl'] = '_r='.$revision;
