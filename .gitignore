@@ -48,8 +48,8 @@ lizmap/lizmap-modules/*
 lizmap/my-packages/*
 !lizmap/my-packages/composer.json.dist
 !lizmap/my-packages/README.md
-.php_cs
-.php_cs.cache
+.php-cs-fixer.cache
+.php-cs-fixer.php
 .phpstan.cache
 
 .drafts

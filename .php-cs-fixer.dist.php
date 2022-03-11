@@ -15,14 +15,14 @@ $finder = PhpCsFixer\Finder::create()
           //->exclude(__DIR__.'/lizmap/modules/proj4php/classes/')
         ;
 
-return PhpCsFixer\Config::create()
-          ->setCacheFile(__DIR__.'/.php_cs.cache')
+$config = new PhpCsFixer\Config();
+return $config
+          ->setCacheFile(__DIR__.'/.php-cs-fixer.cache')
           ->setRules([
               '@PSR2' => true,
               '@Symfony' => true,
               '@PhpCsFixer' => true,
               'array_syntax' => array('syntax'=>'long'),
-              'method_argument_space'=> ['on_multiline' => 'ensure_fully_multiline'],
               'new_with_braces'=> true,
               'no_whitespace_in_blank_line'=> true,
               'no_whitespace_before_comma_in_array'=> true,
@@ -35,7 +35,10 @@ return PhpCsFixer\Config::create()
               'no_empty_statement'=> true,
               'no_empty_comment'=> true,
               'object_operator_without_whitespace' => true,
-              'ordered_class_elements' => false,
+              'ordered_class_elements'=> array(
+                  'order' => [],
+                  'sort_algorithm' => 'none'
+              ),
               'phpdoc_var_without_name' => true,
               'phpdoc_types' => true,
               'phpdoc_trim_consecutive_blank_line_separation' => true,
@@ -47,6 +50,7 @@ return PhpCsFixer\Config::create()
               'short_scalar_cast' => true,
               'simplified_null_return' => false,
               'simple_to_complex_string_variable' => false,
+              'single_line_comment_spacing' => false,
               'standardize_not_equals' => true,
               'standardize_increment' => true,
               'whitespace_after_comma_in_array' => true,
