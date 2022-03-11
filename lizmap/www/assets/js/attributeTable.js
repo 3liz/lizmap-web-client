@@ -264,8 +264,11 @@ var lizAttributeTable = function() {
             $('body').css('cursor', 'auto');
 
             function getDataAndFillAttributeTable(layerName, filter, tableSelector, callBack){
+
+                const typeName = lizMap.config.layers[layerName].typename;
+
                 const wfsParams = {
-                    TYPENAME: layerName,
+                    TYPENAME: typeName,
                     GEOMETRYNAME: 'extent'
                 };
 
@@ -282,7 +285,7 @@ var lizAttributeTable = function() {
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
                 const describeFeatureTypeRequest = lizMap.mainLizmap.wfs.describeFeatureType({
-                    TYPENAME: layerName
+                    TYPENAME: typeName
                 });
 
                 const fetchRequests = [getFeatureRequest, describeFeatureTypeRequest];
