@@ -211,6 +211,7 @@ class WFSRequest extends OGCRequest
                         $jsonData['types'] = (object) $types;
                     }
                 }
+
                 /** @var qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $jsonData['aliases'] = (object) $layer->getAliasFields();
@@ -258,6 +259,7 @@ class WFSRequest extends OGCRequest
 
             return $this->serviceException();
         }
+
         /** @var qgisVectorLayer $qgisLayer The QGIS vector layer instance */
         $qgisLayer = $this->project->getLayer($lizmapLayer->id);
         $this->qgisLayer = $qgisLayer;

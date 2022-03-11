@@ -1007,6 +1007,7 @@ class QgisForm implements QgisFormControlsInterface
         if ($targetFullPath == '') {
             return 'NULL';
         }
+
         /** @var \jFormsControlUpload2 $uploadCtrl */
         $uploadCtrl = $form->getControl($ref);
         $filename = $form->getData($ref);

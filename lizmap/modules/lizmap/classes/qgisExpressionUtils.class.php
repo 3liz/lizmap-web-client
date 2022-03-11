@@ -136,10 +136,10 @@ class qgisExpressionUtils
     /**
      * Request QGIS Server and the lizmap plugin to evaluate QGIS expressions.
      *
-     * @param qgisVectorLayer $layer        A QGIS vector layer
+     * @param qgisVectorLayer $layer A QGIS vector layer
      * @param array()         $expresions   The expressions' list to evaluate
      * @param array()         $form_feature A feature to add to the evaluation context
-     * @param mixed           $expressions
+     * @param mixed $expressions
      *
      * @return array() the results of expressions' evalutaion
      */

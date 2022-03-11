@@ -20,10 +20,12 @@ class Project
      * @var Repository
      */
     protected $repository;
+
     /**
      * @var QgisProject QGIS project XML
      */
     protected $qgis;
+
     /**
      * @var ProjectConfig CFG project JSON
      */
@@ -43,6 +45,7 @@ class Project
      * @var string .qgs file path
      */
     protected $file;
+
     /**
      * Lizmap project key.
      *

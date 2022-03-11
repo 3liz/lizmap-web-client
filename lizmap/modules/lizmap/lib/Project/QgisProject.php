@@ -1772,9 +1772,9 @@ class QgisProject
         $fieldEditOptions['UploadImage'] = $imageUpload;
     }
 
-    const MAP_VALUES_AS_VALUES = 0;
-    const MAP_VALUES_AS_KEYS = 1;
-    const MAP_ONLY_VALUES = 2;
+    public const MAP_VALUES_AS_VALUES = 0;
+    public const MAP_VALUES_AS_KEYS = 1;
+    public const MAP_ONLY_VALUES = 2;
 
     /**
      * @param \SimpleXMLElement $optionList
