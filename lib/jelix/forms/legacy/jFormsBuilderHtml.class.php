@@ -713,7 +713,7 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
             $this->_outputAttr($attr);
             if((is_array($value) && in_array((string) $v,$value,true)) || ($value === (string) $v))
                 echo ' checked="checked"';
-            echo $this->_endt,'<label for="',$id,$i,'">',htmlspecialchars($label),"</label></span>\n";
+            echo $this->_endt,'<label for="',$id,$i,'">',htmlspecialchars($label),"</label></span> <br/>\n";
             $i++;
         }
     }
