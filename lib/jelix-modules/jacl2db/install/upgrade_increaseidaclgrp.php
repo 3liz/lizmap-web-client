@@ -20,7 +20,7 @@ class jacl2dbModuleUpgrader_increaseidaclgrp extends jInstallerModule {
         $db = $this->dbConnection();
 
         if ($db->dbms == 'pgsql' || $db->dbms == 'mysql') {
-            $this->execSQLScript('upgrade_increaseidaclgrp');
+            $this->execSQLScript('sql/upgrade_increaseidaclgrp');
         }
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jelix@modules.jelix.org" name="jelix" createdate="2006-01-01">
-       <version stability="stable" date="2022-03-14 16:22">1.6.36</version>
+       <version stability="stable" date="2022-03-15 10:37">1.6.36</version>
         <label lang="en_US">Jelix Main Module</label>
         <description lang="en_US">Main module of jelix which contains some ressources needed by jelix classes</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
