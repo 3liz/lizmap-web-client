@@ -1345,8 +1345,12 @@ var lizAttributeTable = function() {
                         const columnKeyValues = allColumnsKeyValues[columnName];
                         colConf['render'] = function (data, type, row, meta) {
                             // Return value related to key if any. Else return original data
+                            // Handle multiple values defined as an array
+                            if (Array.isArray(data)){
+                                return data.map(key => columnKeyValues[key] ? columnKeyValues[key] : key).join(', ');
+                            }
                             // For multiple values displayed as {"value a", "value b"} we must first split the value
-                            if (data && data.toString().substring(0, 1) == '{' && data.toString().slice(-1) == '}') {
+                            else if (data && data.toString().substring(0, 1) == '{' && data.toString().slice(-1) == '}') {
                                 var displayLabels = [];
                                 var stringData = data.toString();
                                 stringData = stringData.substring(1, stringData.length - 1);
