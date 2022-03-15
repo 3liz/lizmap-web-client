@@ -1,6 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_group (
-    id_aclgrp varchar(50),
+    id_aclgrp varchar(60),
     name varchar(150) NOT NULL,
     grouptype int(5) NOT NULL DEFAULT '0',
     ownerlogin varchar(50),
@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_subject (
 
 CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_user_group (
   login varchar(50) NOT NULL,
-  id_aclgrp varchar(50) NOT NULL,
+  id_aclgrp varchar(60) NOT NULL,
   PRIMARY KEY (login, id_aclgrp)
 ) ;
 
 CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_rights (
   id_aclsbj varchar(100) NOT NULL,
-  id_aclgrp varchar(50) NOT NULL,
+  id_aclgrp varchar(60) NOT NULL,
   id_aclres varchar(100) NOT NULL DEFAULT '-',
   canceled integer NOT NULL default 0,
   PRIMARY KEY (id_aclsbj,id_aclgrp,id_aclres)

@@ -225,7 +225,9 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
 
         if (count($choices) > 1) {
             echo '<li id="' . $idItem . 'new_item">',
-                '<label><input ' . $attrRadio . ' id="' . $idChoice . '_jf_action_new" value="new"/> '.
+                '<label><input ' . $attrRadio . ' id="' . $idChoice . '_jf_action_new" value="new"' .
+                ($action == 'new' ? 'checked' : '') .
+                '/> '.
                 jLocale::get("jelix~jforms.upload.picture.choice.new").
                 '</label> ';
             $this->_outputInputFile($attr, $idItem, $choices['keep']);
@@ -257,6 +259,9 @@ class imageupload_htmlFormWidget extends upload2_htmlFormWidget {
                 jLocale::get("jelix~jforms.upload.choice.del").
                 '</label>';
             echo "</li>\n";
+        }
+        if (count($choices) > 1) {
+            echo "</ul>\n";
         }
     }
 }

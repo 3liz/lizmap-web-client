@@ -145,8 +145,6 @@ class choice_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
         }
 
         $attr['name'] = $ctrl->ref;
-        $id = $this->builder->getName().'_'.$ctrl->ref.'_'; // FIXME should be used?
-        $attr['type']='radio';
 
         if (!isset($ctrl->items[$value])) {
             if (!$ctrl->isItemActivated($value) || $ctrl->emptyValueLabel === null)

@@ -13,6 +13,10 @@
  */
 class errorCtrl extends jController {
 
+    public $pluginParams = array(
+        '*' => array('auth.required' => false)
+    );
+
     /**
     * 404 error page
     */

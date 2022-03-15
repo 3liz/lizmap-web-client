@@ -5,7 +5,7 @@
     </datasources>
     <record>
       <property name="login" fieldname="login" datatype="string"  maxlength="50" required="yes"/>
-      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string"  maxlength="50" required="yes"/>
+      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string"  maxlength="60" required="yes"/>
     </record>
 
     <factory>
