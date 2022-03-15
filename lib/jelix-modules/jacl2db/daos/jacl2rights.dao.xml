@@ -5,7 +5,7 @@
     </datasources>
     <record>
       <property name="id_aclsbj" fieldname="id_aclsbj" datatype="string" maxlength="100" required="yes"/>
-      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string" maxlength="50" required="yes"/>
+      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string" maxlength="60" required="yes"/>
       <property name="id_aclres" fieldname="id_aclres" datatype="string" maxlength="100" required="yes"/>
         <!-- if canceled != 0, it means that the right is forbidden, even if it is set on an other group -->
       <property name="canceled" fieldname="canceled" datatype="tinyint" required="yes" default="0"/>
