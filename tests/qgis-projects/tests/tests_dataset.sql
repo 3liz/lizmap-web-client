@@ -151,7 +151,10 @@ CREATE TABLE tests_projects.attribute_table (
     label_from_int_value_map integer,
     label_from_text_value_map text,
     label_from_int_relation_reference integer,
-    label_from_text_relation_reference text
+    label_from_text_relation_reference text,
+    label_from_array_int_multiple_value_relation integer[],
+    label_from_array_text_multiple_value_relation text[],
+    label_from_text_multiple_value_relation text
 );
 
 
@@ -1868,10 +1871,11 @@ ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT n
 -- Data for Name: attribute_table; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.attribute_table (id, label_from_int_value_relation, label_from_text_value_relation, label_from_int_value_map, label_from_text_value_map, label_from_int_relation_reference, label_from_text_relation_reference) FROM stdin;
-1	1	first	1	un	1	first
-2	2	second	2	deux	2	second
-3	3	third	3	trois	3	third
+COPY tests_projects.attribute_table (id, label_from_int_value_relation, label_from_text_value_relation, label_from_int_value_map, label_from_text_value_map, label_from_int_relation_reference, label_from_text_relation_reference, label_from_array_int_multiple_value_relation, label_from_array_text_multiple_value_relation, label_from_text_multiple_value_relation) FROM stdin;
+1	1	first	1	un	1	first	{1}	{first}	{"first"}
+2	2	second	2	deux	2	second	{2}	{second}	{"second"}
+3	3	third	3	trois	3	third	{3}	{third}	{"third"}
+4	4	fourth	4	quatre	4	fourth	{1,2,3,4}	{first,second,third,fourth}	{"first","second","third","fourth"}
 \.
 
 
@@ -1910,6 +1914,7 @@ COPY tests_projects.data_trad_en_fr (id, label_en, label_fr) FROM stdin;
 1	first	premier
 2	second	deuxième
 3	third	troisième
+4	fourth	quatrième
 \.
 
 
@@ -2380,7 +2385,7 @@ COPY tests_projects.tramway_stops (id_stop, geom) FROM stdin;
 -- Name: attribute_table_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.attribute_table_id_seq', 3, true);
+SELECT pg_catalog.setval('tests_projects.attribute_table_id_seq', 4, true);
 
 
 --
@@ -2401,7 +2406,7 @@ SELECT pg_catalog.setval('tests_projects.data_integers_id_seq', 10, true);
 -- Name: data_trad_en_fr_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.data_trad_en_fr_id_seq', 3, true);
+SELECT pg_catalog.setval('tests_projects.data_trad_en_fr_id_seq', 4, true);
 
 
 --

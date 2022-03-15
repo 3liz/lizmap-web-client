@@ -1,4 +1,4 @@
-<qgis projectname="key_value_mapping" saveDateTime="2022-01-24T16:37:29" saveUser="nboisteault" saveUserFull="" version="3.22.1-Białowieża">
+<qgis projectname="key_value_mapping" saveDateTime="2022-03-15T13:58:09" saveUser="nboisteault" saveUserFull="" version="3.22.4-Białowieża">
   <homePath path=""></homePath>
   <title>key_value_mapping</title>
   <autotransaction active="0"></autotransaction>
@@ -393,6 +393,69 @@
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="None" name="label_from_array_int_multiple_value_relation">
+          <editWidget type="ValueRelation">
+            <config>
+              <Option type="Map">
+                <Option name="AllowMulti" type="bool" value="true"></Option>
+                <Option name="AllowNull" type="bool" value="false"></Option>
+                <Option name="Description" type="QString" value=""></Option>
+                <Option name="FilterExpression" type="QString" value=""></Option>
+                <Option name="Key" type="QString" value="id"></Option>
+                <Option name="Layer" type="QString" value="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00"></Option>
+                <Option name="LayerName" type="QString" value="data_integers"></Option>
+                <Option name="LayerProviderName" type="QString" value="postgres"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
+                <Option name="NofColumns" type="int" value="1"></Option>
+                <Option name="OrderByValue" type="bool" value="false"></Option>
+                <Option name="UseCompleter" type="bool" value="false"></Option>
+                <Option name="Value" type="QString" value="label"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="label_from_array_text_multiple_value_relation">
+          <editWidget type="ValueRelation">
+            <config>
+              <Option type="Map">
+                <Option name="AllowMulti" type="bool" value="true"></Option>
+                <Option name="AllowNull" type="bool" value="false"></Option>
+                <Option name="Description" type="QString" value=""></Option>
+                <Option name="FilterExpression" type="QString" value=""></Option>
+                <Option name="Key" type="QString" value="label_en"></Option>
+                <Option name="Layer" type="QString" value="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169"></Option>
+                <Option name="LayerName" type="QString" value="data_trad_en_fr"></Option>
+                <Option name="LayerProviderName" type="QString" value="postgres"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="NofColumns" type="int" value="1"></Option>
+                <Option name="OrderByValue" type="bool" value="false"></Option>
+                <Option name="UseCompleter" type="bool" value="false"></Option>
+                <Option name="Value" type="QString" value="label_fr"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="label_from_text_multiple_value_relation">
+          <editWidget type="ValueRelation">
+            <config>
+              <Option type="Map">
+                <Option name="AllowMulti" type="bool" value="true"></Option>
+                <Option name="AllowNull" type="bool" value="false"></Option>
+                <Option name="Description" type="QString" value=""></Option>
+                <Option name="FilterExpression" type="QString" value=""></Option>
+                <Option name="Key" type="QString" value="label_en"></Option>
+                <Option name="Layer" type="QString" value="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169"></Option>
+                <Option name="LayerName" type="QString" value="data_trad_en_fr"></Option>
+                <Option name="LayerProviderName" type="QString" value="postgres"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="NofColumns" type="int" value="1"></Option>
+                <Option name="OrderByValue" type="bool" value="false"></Option>
+                <Option name="UseCompleter" type="bool" value="false"></Option>
+                <Option name="Value" type="QString" value="label_fr"></Option>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
         <alias field="id" index="0" name=""></alias>
@@ -402,6 +465,9 @@
         <alias field="label_from_text_value_map" index="4" name="label from text (value map)"></alias>
         <alias field="label_from_int_relation_reference" index="5" name="label from int (relation reference)"></alias>
         <alias field="label_from_text_relation_reference" index="6" name="label from text (relation reference)"></alias>
+        <alias field="label_from_array_int_multiple_value_relation" index="7" name=""></alias>
+        <alias field="label_from_array_text_multiple_value_relation" index="8" name=""></alias>
+        <alias field="label_from_text_multiple_value_relation" index="9" name=""></alias>
       </aliases>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
@@ -411,6 +477,9 @@
         <default applyOnUpdate="0" expression="" field="label_from_text_value_map"></default>
         <default applyOnUpdate="0" expression="" field="label_from_int_relation_reference"></default>
         <default applyOnUpdate="0" expression="" field="label_from_text_relation_reference"></default>
+        <default applyOnUpdate="0" expression="" field="label_from_array_int_multiple_value_relation"></default>
+        <default applyOnUpdate="0" expression="" field="label_from_array_text_multiple_value_relation"></default>
+        <default applyOnUpdate="0" expression="" field="label_from_text_multiple_value_relation"></default>
       </defaults>
       <constraints>
         <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
@@ -420,6 +489,9 @@
         <constraint constraints="0" exp_strength="0" field="label_from_text_value_map" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_from_int_relation_reference" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="label_from_text_relation_reference" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_from_array_int_multiple_value_relation" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_from_array_text_multiple_value_relation" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="label_from_text_multiple_value_relation" notnull_strength="0" unique_strength="0"></constraint>
       </constraints>
       <constraintExpressions>
         <constraint desc="" exp="" field="id"></constraint>
@@ -429,12 +501,15 @@
         <constraint desc="" exp="" field="label_from_text_value_map"></constraint>
         <constraint desc="" exp="" field="label_from_int_relation_reference"></constraint>
         <constraint desc="" exp="" field="label_from_text_relation_reference"></constraint>
+        <constraint desc="" exp="" field="label_from_array_int_multiple_value_relation"></constraint>
+        <constraint desc="" exp="" field="label_from_array_text_multiple_value_relation"></constraint>
+        <constraint desc="" exp="" field="label_from_text_multiple_value_relation"></constraint>
       </constraintExpressions>
       <expressionfields></expressionfields>
       <attributeactions>
         <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"></defaultAction>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;label_from_text_relation_reference&quot;" sortOrder="0">
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;id&quot;" sortOrder="0">
         <columns>
           <column hidden="0" name="id" type="field" width="-1"></column>
           <column hidden="0" name="label_from_int_value_relation" type="field" width="-1"></column>
@@ -442,7 +517,10 @@
           <column hidden="0" name="label_from_int_value_map" type="field" width="270"></column>
           <column hidden="0" name="label_from_text_value_map" type="field" width="362"></column>
           <column hidden="0" name="label_from_int_relation_reference" type="field" width="288"></column>
-          <column hidden="0" name="label_from_text_relation_reference" type="field" width="347"></column>
+          <column hidden="0" name="label_from_text_relation_reference" type="field" width="50"></column>
+          <column hidden="0" name="label_from_text_multiple_value_relation" type="field" width="246"></column>
+          <column hidden="0" name="label_from_array_int_multiple_value_relation" type="field" width="-1"></column>
+          <column hidden="0" name="label_from_array_text_multiple_value_relation" type="field" width="-1"></column>
           <column hidden="1" type="actions" width="-1"></column>
         </columns>
       </attributetableconfig>
@@ -476,11 +554,15 @@ def my_form_open(dialog, layer, feature):
       <editable>
         <field editable="1" name="id"></field>
         <field editable="1" name="label"></field>
+        <field editable="1" name="label_from_array_int_multiple_value_relation"></field>
+        <field editable="1" name="label_from_array_text_multiple_value_relation"></field>
         <field editable="1" name="label_from_int"></field>
+        <field editable="1" name="label_from_int_multiple_value_relation"></field>
         <field editable="1" name="label_from_int_relation_reference"></field>
         <field editable="1" name="label_from_int_value_map"></field>
         <field editable="1" name="label_from_int_value_relation"></field>
         <field editable="1" name="label_from_text"></field>
+        <field editable="1" name="label_from_text_multiple_value_relation"></field>
         <field editable="1" name="label_from_text_relation_reference"></field>
         <field editable="1" name="label_from_text_value_map"></field>
         <field editable="1" name="label_from_text_value_relation"></field>
@@ -490,11 +572,15 @@ def my_form_open(dialog, layer, feature):
       <labelOnTop>
         <field labelOnTop="0" name="id"></field>
         <field labelOnTop="0" name="label"></field>
+        <field labelOnTop="0" name="label_from_array_int_multiple_value_relation"></field>
+        <field labelOnTop="0" name="label_from_array_text_multiple_value_relation"></field>
         <field labelOnTop="0" name="label_from_int"></field>
+        <field labelOnTop="0" name="label_from_int_multiple_value_relation"></field>
         <field labelOnTop="0" name="label_from_int_relation_reference"></field>
         <field labelOnTop="0" name="label_from_int_value_map"></field>
         <field labelOnTop="0" name="label_from_int_value_relation"></field>
         <field labelOnTop="0" name="label_from_text"></field>
+        <field labelOnTop="0" name="label_from_text_multiple_value_relation"></field>
         <field labelOnTop="0" name="label_from_text_relation_reference"></field>
         <field labelOnTop="0" name="label_from_text_value_map"></field>
         <field labelOnTop="0" name="label_from_text_value_relation"></field>
@@ -504,11 +590,15 @@ def my_form_open(dialog, layer, feature):
       <reuseLastValue>
         <field name="id" reuseLastValue="0"></field>
         <field name="label" reuseLastValue="0"></field>
+        <field name="label_from_array_int_multiple_value_relation" reuseLastValue="0"></field>
+        <field name="label_from_array_text_multiple_value_relation" reuseLastValue="0"></field>
         <field name="label_from_int" reuseLastValue="0"></field>
+        <field name="label_from_int_multiple_value_relation" reuseLastValue="0"></field>
         <field name="label_from_int_relation_reference" reuseLastValue="0"></field>
         <field name="label_from_int_value_map" reuseLastValue="0"></field>
         <field name="label_from_int_value_relation" reuseLastValue="0"></field>
         <field name="label_from_text" reuseLastValue="0"></field>
+        <field name="label_from_text_multiple_value_relation" reuseLastValue="0"></field>
         <field name="label_from_text_relation_reference" reuseLastValue="0"></field>
         <field name="label_from_text_value_map" reuseLastValue="0"></field>
         <field name="label_from_text_value_relation" reuseLastValue="0"></field>
@@ -1005,7 +1095,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="775653.03490023140329868" xmin="766192.67223210853990167" ymax="6282008.15267004910856485" ymin="6276327.0836011404171586">
+    <DefaultViewExtent xmax="776407.4381796638481319" xmin="765438.26895267609506845" ymax="6282008.15267004910856485" ymin="6276327.0836011404171586">
       <spatialrefsys>
         <wkt>PROJCRS["RGF93 / Lambert-93",BASEGEOGCRS["RGF93",DATUM["Reseau Geodesique Francais 1993",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["France"],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
         <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
