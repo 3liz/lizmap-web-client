@@ -4,7 +4,7 @@
         <primarytable name="grp" realname="jacl2_group" primarykey="id_aclgrp" />
     </datasources>
     <record>
-      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string" maxlength="50"/>
+      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string" maxlength="60"/>
       <property name="name" fieldname="name" datatype="string" required="yes"  maxlength="150"/>
 
       <!-- 0=normal 1=default 2=private . See jAcl2DbUserGroup::GROUPTYPE_* -->

@@ -229,7 +229,9 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
 
         if (count($choices) > 1) {
             echo '<li id="' . $idItem . 'new_item">',
-                '<label><input ' . $attrRadio . 'new' . $attrRadioSuffix . '  id="' . $idChoice . '_jf_action_new" value="new"/> '.
+                '<label><input ' . $attrRadio . 'new' . $attrRadioSuffix . '  id="' . $idChoice . '_jf_action_new" value="new" ' .
+                ($action == 'new' ? 'checked' : '') .
+                '/> '.
                 jLocale::get("jelix~jforms.upload.choice.new").
                 '</label> ';
             echo '<input';
@@ -259,6 +261,7 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
 
         if (count($choices) > 1) {
             $this->parentWidget->addJs("c2.activate('" . $action . "');\n");
+            echo "</ul>\n";
         }
     }
 
