@@ -1039,6 +1039,9 @@ class QgisProject
                     $relationReferenceData = $control->getRelationReference();
                     $relation = $relationReferenceData['relation'];
                     $referencedLayerId = $relationReferenceData['referencedLayerId'];
+                    if (!array_key_exists($referencedLayerId, $this->relations)) {
+                        continue;
+                    }
                     $fields_config[$fieldName]['relation'] = $relation;
                     $fields_config[$fieldName]['source_layer_id'] = $referencedLayerId;
                     $fields_config[$fieldName]['source_layer'] = $relationReferenceData['referencedLayerName'];
