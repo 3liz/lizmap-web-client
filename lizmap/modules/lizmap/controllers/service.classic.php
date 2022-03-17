@@ -666,6 +666,27 @@ class serviceCtrl extends jController
     }
 
     /**
+     * Send the key/value JSON configuration file for a specified project.
+     *
+     * @urlparam string $repository Lizmap Repository
+     * @urlparam string $project Name of the project
+     *
+     * @return jResponseJson key/value JSON configuration file for the specified project
+     */
+    public function getKeyValueConfig()
+    {
+
+        // Get parameters
+        if (!$this->getServiceParameters()) {
+            return $this->serviceException();
+        }
+        $rep = $this->getResponse('json');
+        $rep->data = $this->project->getLayersLabeledFieldsConfig();
+
+        return $rep;
+    }
+
+    /**
      * GetFeature.
      *
      * @urlparam string $repository Lizmap Repository

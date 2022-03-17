@@ -7,6 +7,7 @@ import Digitizing from './Digitizing.js';
 import Snapping from './Snapping.js';
 import Draw from './interaction/Draw.js';
 import Layers from './Layers.js';
+import WFS from './WFS.js';
 
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
@@ -49,6 +50,7 @@ export default class Lizmap {
                 this.draw = new Draw();
                 this.layers = new Layers();
                 this.proxyEvents = new ProxyEvents();
+                this.wfs = new WFS();
             }
         });
     }

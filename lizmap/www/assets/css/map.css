@@ -2841,3 +2841,9 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
 #attribute-table-container lizmap-feature-toolbar .feature-filter{
   display: none;
 }
+
+/* Form filter */
+.liz-filter-field-value{
+  line-height: 25px;
+  transform: scale(1.6);
+}
