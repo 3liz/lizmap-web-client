@@ -85,9 +85,7 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
         $this->addJSLink($bp.'assets/js/map.js');
         $this->addJSLink($bp.'assets/js/lizmap.js');
 
-        $generalJSConfig = '
-      Proj4js.libPath = "'.$bp.'assets/js/Proj4js/";
-      ';
+        $generalJSConfig = 'Proj4js.libPath = "'.$bp.'assets/js/Proj4js/";';
         $this->addJSCode($generalJSConfig);
     }
 

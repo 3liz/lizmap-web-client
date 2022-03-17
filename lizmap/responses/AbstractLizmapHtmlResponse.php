@@ -52,7 +52,7 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function addJSLink($src, $params = array(), $forIE = false)
     {
@@ -65,7 +65,7 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function addJSLinkModule($module, $src, $params = array(), $forIE = false)
     {
@@ -76,7 +76,7 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function addCSSLink($src, $params = array(), $forIE = false)
     {
@@ -89,7 +89,7 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function addCSSLinkModule($module, $src, $params = array(), $forIE = false)
     {
@@ -100,7 +100,7 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function addCSSThemeLinkModule($module, $src, $params = array(), $forIE = false)
     {

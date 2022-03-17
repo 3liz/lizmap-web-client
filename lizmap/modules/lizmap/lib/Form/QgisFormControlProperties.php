@@ -180,6 +180,7 @@ class QgisFormControlProperties
             'allowNull' => $this->getEditAttribute('AllowNull'),
             'orderByValue' => $this->getEditAttribute('OrderByValue'),
             'layer' => $this->getEditAttribute('Layer'),
+            'layerName' => $this->getEditAttribute('LayerName'),
             'key' => $this->getEditAttribute('Key'),
             'value' => $this->getEditAttribute('Value'),
             'allowMulti' => $this->getEditAttribute('AllowMulti'),
@@ -197,7 +198,10 @@ class QgisFormControlProperties
             'relation' => $this->getEditAttribute('Relation'),
             'mapIdentification' => $this->getEditAttribute('MapIdentification'),
             'filters' => $this->getEditAttribute('filters'),
+            'filterExpression' => $this->getEditAttribute('FilterExpression'),
             'chainFilters' => $this->getEditAttribute('chainFilters'),
+            'referencedLayerName' => $this->getEditAttribute('ReferencedLayerName'),
+            'referencedLayerId' => $this->getEditAttribute('ReferencedLayerId'),
         );
     }
 

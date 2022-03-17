@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 13.5 (Ubuntu 13.5-2.pgdg20.04+1)
+-- Dumped by pg_dump version 13.6 (Ubuntu 13.6-1.pgdg18.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -141,6 +141,44 @@ COMMENT ON FUNCTION tests_projects.query_to_geojson(datasource text) IS 'Generat
 SET default_tablespace = '';
 
 --
+-- Name: attribute_table; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.attribute_table (
+    id integer NOT NULL,
+    label_from_int_value_relation integer,
+    label_from_text_value_relation text,
+    label_from_int_value_map integer,
+    label_from_text_value_map text,
+    label_from_int_relation_reference integer,
+    label_from_text_relation_reference text,
+    label_from_array_int_multiple_value_relation integer[],
+    label_from_array_text_multiple_value_relation text[],
+    label_from_text_multiple_value_relation text
+);
+
+
+--
+-- Name: attribute_table_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.attribute_table_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: attribute_table_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.attribute_table_id_seq OWNED BY tests_projects.attribute_table.id;
+
+
+--
 -- Name: children_layer; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -199,6 +237,37 @@ CREATE SEQUENCE tests_projects.data_integers_id_seq
 --
 
 ALTER SEQUENCE tests_projects.data_integers_id_seq OWNED BY tests_projects.data_integers.id;
+
+
+--
+-- Name: data_trad_en_fr; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.data_trad_en_fr (
+    id integer NOT NULL,
+    label_en text,
+    label_fr text
+);
+
+
+--
+-- Name: data_trad_en_fr_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.data_trad_en_fr_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: data_trad_en_fr_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.data_trad_en_fr_id_seq OWNED BY tests_projects.data_trad_en_fr.id;
 
 
 --
@@ -1498,6 +1567,13 @@ ALTER SEQUENCE tests_projects.tramway_stops_id_stop_seq OWNED BY tests_projects.
 
 
 --
+-- Name: attribute_table id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.attribute_table ALTER COLUMN id SET DEFAULT nextval('tests_projects.attribute_table_id_seq'::regclass);
+
+
+--
 -- Name: children_layer id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -1509,6 +1585,13 @@ ALTER TABLE ONLY tests_projects.children_layer ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY tests_projects.data_integers ALTER COLUMN id SET DEFAULT nextval('tests_projects.data_integers_id_seq'::regclass);
+
+
+--
+-- Name: data_trad_en_fr id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.data_trad_en_fr ALTER COLUMN id SET DEFAULT nextval('tests_projects.data_trad_en_fr_id_seq'::regclass);
 
 
 --
@@ -1785,6 +1868,18 @@ ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT n
 
 
 --
+-- Data for Name: attribute_table; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.attribute_table (id, label_from_int_value_relation, label_from_text_value_relation, label_from_int_value_map, label_from_text_value_map, label_from_int_relation_reference, label_from_text_relation_reference, label_from_array_int_multiple_value_relation, label_from_array_text_multiple_value_relation, label_from_text_multiple_value_relation) FROM stdin;
+1	1	first	1	un	1	first	{1}	{first}	{"first"}
+2	2	second	2	deux	2	second	{2}	{second}	{"second"}
+3	3	third	3	trois	3	third	{3}	{third}	{"third"}
+4	4	fourth	4	quatre	4	fourth	{1,2,3,4}	{first,second,third,fourth}	{"first","second","third","fourth"}
+\.
+
+
+--
 -- Data for Name: children_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -1808,6 +1903,18 @@ COPY tests_projects.data_integers (id, label) FROM stdin;
 8	eighth
 9	ninth
 10	tenth
+\.
+
+
+--
+-- Data for Name: data_trad_en_fr; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.data_trad_en_fr (id, label_en, label_fr) FROM stdin;
+1	first	premier
+2	second	deuxième
+3	third	troisième
+4	fourth	quatrième
 \.
 
 
@@ -1992,7 +2099,7 @@ COPY tests_projects.form_edition_snap (id, geom) FROM stdin;
 -- Data for Name: form_edition_upload; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file, text_file_mandatory, image_file_mandatory) FROM stdin;
+COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file, text_file_mandatory, image_file_mandatory, image_file_specific_root_folder) FROM stdin;
 \.
 
 
@@ -2275,6 +2382,13 @@ COPY tests_projects.tramway_stops (id_stop, geom) FROM stdin;
 
 
 --
+-- Name: attribute_table_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.attribute_table_id_seq', 4, true);
+
+
+--
 -- Name: children_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -2286,6 +2400,13 @@ SELECT pg_catalog.setval('tests_projects.children_layer_id_seq', 1, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.data_integers_id_seq', 10, true);
+
+
+--
+-- Name: data_trad_en_fr_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.data_trad_en_fr_id_seq', 4, true);
 
 
 --
@@ -2576,6 +2697,14 @@ SELECT pg_catalog.setval('tests_projects.tramway_stops_id_stop_seq', 5, true);
 
 
 --
+-- Name: attribute_table attribute_table_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.attribute_table
+    ADD CONSTRAINT attribute_table_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: children_layer children_layer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
@@ -2589,6 +2718,14 @@ ALTER TABLE ONLY tests_projects.children_layer
 
 ALTER TABLE ONLY tests_projects.data_integers
     ADD CONSTRAINT data_integers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: data_trad_en_fr data_trad_en_fr_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.data_trad_en_fr
+    ADD CONSTRAINT data_trad_en_fr_pkey PRIMARY KEY (id);
 
 
 --

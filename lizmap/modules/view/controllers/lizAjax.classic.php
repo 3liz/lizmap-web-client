@@ -161,6 +161,7 @@ class lizAjaxCtrl extends jController
         $lizUrls = array(
             'params' => array('repository' => $repository, 'project' => $project),
             'config' => jUrl::getFull('lizmap~service:getProjectConfig'),
+            'keyValueConfig' => jUrl::getFull('lizmap~service:getKeyValueConfig'),
             'wms' => jUrl::getFull('lizmap~service:index'),
             'media' => jUrl::getFull('view~media:getMedia'),
             'nominatim' => jUrl::getFull('lizmap~osm:nominatim'),
