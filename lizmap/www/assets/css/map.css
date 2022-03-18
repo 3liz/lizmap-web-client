@@ -2344,6 +2344,9 @@ lizmap-mouse-position > div.coords-unit > select{
   }
 }
 
+.ui-dialog {
+  z-index: 1500 !important;
+}
 
 /*dialog wait*/
 .liz-dialog-wait {

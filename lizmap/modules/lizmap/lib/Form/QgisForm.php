@@ -279,8 +279,8 @@ class QgisForm implements QgisFormControlsInterface
                 'imgMaxWidth' => 260,
                 'imgMaxHeight' => 320,
                 // size of the dialog box where we can modify the image
-                'dialogWidth' => 640,
-                'dialogHeight' => 480,
+                'dialogWidth' => 'auto',
+                'dialogHeight' => 'auto',
                 // maximum size of the uploaded image. If its size is larger this maximum
                 // size, the image will be resized.
                 'newImgMaxWidth' => $maxWidthHeight,
