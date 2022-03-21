@@ -8,9 +8,6 @@
 ;chmodDir=0775
 
 [modules]
-lizmapdemo.path = "app:../extra-modules/lizmapdemo"
-lizmapdemo.access = 2
-
 ;; to use ldap for authentication
 ;; 1. set ldapdao.access=2
 ;; 2. set driver=ldapdao below
