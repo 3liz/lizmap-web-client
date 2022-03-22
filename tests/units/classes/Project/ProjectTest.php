@@ -270,8 +270,8 @@ class ProjectTest extends TestCase
         $aclData2 = array(
             'userIsConnected' => false,
         );
-        $filter1 = '"group" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
-        $filter2 = '"group" = \'all\'';
+        $filter1 = '"Group" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
+        $filter2 = '"Group" = \'all\'';
 
         return array(
             array($aclData1, $filter1),
