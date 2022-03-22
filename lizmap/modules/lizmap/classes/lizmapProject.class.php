@@ -995,7 +995,7 @@ class lizmapProject extends qgisProject
             }
 
             // attribute to filter
-            $attribute = strtolower($loginFilteredConfig->filterAttribute);
+            $attribute = $loginFilteredConfig->filterAttribute;
 
             // default no user connected
             $filter = "\"{$attribute}\" = 'all'";
