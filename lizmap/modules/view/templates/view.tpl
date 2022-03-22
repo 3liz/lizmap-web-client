@@ -14,7 +14,7 @@
     <a name="link-projet-{$idm}"></a>
     <div class="thumbnail">
       <div class="liz-project">
-        <img width="250" height="250" src="{$p->img}" alt="project image" class="liz-project-img">
+        <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="liz-project-img">
         <p class="liz-project-desc" style="display:none;">
           <b class="title">{$p->title}</b>
           <br/>
