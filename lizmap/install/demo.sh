@@ -21,10 +21,8 @@ LIZMAP=$SCRIPTDIR/..
 
 if [ "$ACTION" = "install" ]; then
 
-    if [ -d $SCRIPTDIR/../../extra-modules/lizmapdemo ]; then
-        cp -a $SCRIPTDIR/../../extra-modules/lizmapdemo $SCRIPTDIR/../lizmap-modules/
-    else
-        if [ ! -d $LIZMAP/lizmap-modules/lizmapdemo ]; then
+    if [ ! -d $SCRIPTDIR/../../extra-modules/lizmapdemo ]; then
+        if [ ! -d $SCRIPTDIR/../lizmap-modules/lizmapdemo ]; then
           HAS_UNZIP=$(command -v unzip)
           if [ "$HAS_UNZIP" = "" ]; then
             echo "Error: cannot install the lizmapdemo module: unzip is not installed"
@@ -56,16 +54,23 @@ if [ "$ACTION" = "install" ]; then
             fi
           fi
           unzip lizmapdemo.zip
-          mv lizmapdemo ../lizmap-modules/
+          mv lizmapdemo $SCRIPTDIR/../lizmap-modules/
         fi
+        if [ -d $LIZMAP/vendor ]; then
+            php $LIZMAP/dev.php app:ini-change $LIZMAP/var/config/localconfig.ini.php lizmapdemo.enabled on modules
+        fi
+    else
+      if [ -d $LIZMAP/vendor ]; then
+        php $LIZMAP/dev.php app:ini-change $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path "app:../extra-modules/lizmapdemo" modules
+        php $LIZMAP/dev.php app:ini-change $LIZMAP/var/config/localconfig.ini.php lizmapdemo.enabled on modules
+      fi
     fi
-    if [ -d $LIZMAP/vendor ]; then
-      php $LIZMAP/dev.php app:ini-change $LIZMAP/var/config/localconfig.ini.php lizmapdemo.enabled on modules
-    fi
+
 else
     rm -rf $LIZMAP/lizmap-modules/lizmapdemo
     if [ -d $LIZMAP/vendor ]; then
       php $LIZMAP/dev.php app:ini-change $LIZMAP/var/config/localconfig.ini.php lizmapdemo.enabled off modules
+      php $LIZMAP/dev.php app:ini-change --del $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path dummy modules
     fi
 fi
 
