@@ -4,13 +4,20 @@
 
 ### Fixed
 
+- Fix when an attribute name is starting with a capital name
+- Fix editing feature having an ID equal to 0
+- Do not show custom labels when printing from a popup about `lizmap_user` and `lizmap_user_groups`
 - Check version attribute in WxS request in XML to return error
-- Fix: GetProj4 request to get proj4 CRS defintion from QGIS project
+- Fix the GetProj4 request to get proj4 CRS definition from QGIS project
 - Speed up GetProjectConfig request by using cache for QGIS Server plugins data
 - Do not send private user group to QGIS Server for access control
 - Fix regression in form - empty value is added to required menu list field
 - Check Version parameters in WxS request to return error
 - Fix the GetProjectConfig mime-type as application/json
+
+### Backend
+
+- Upgrade jelix to 1.6.36
 
 ## 3.4.9 - 2022-02-04
 
