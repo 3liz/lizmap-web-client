@@ -1245,14 +1245,21 @@ class QgisForm implements QgisFormControlsInterface
         // In lib/jelix/plugins/formwidget/menulist_html/menulist_html.formwidget.php
         // An empty value is added with these rules
         // if ($this->ctrl->emptyItemLabel !== null || !$this->ctrl->required)
-        // In lizmap, we add an empty value except for required allowMulti
-        // Lizmap does not take into account the QGIS configuration $formControl->valueRelationData['allowNull']
-        // because of the way empty value is added by Jelix
+        // In lizmap, we add an empty value except for every ValueRelation without allowMulti
         $formControl->ctrl->emptyItemLabel = '';
-        if ($formControl->valueRelationData['allowMulti'] && $formControl->ctrl->required) {
-            $formControl->ctrl->emptyItemLabel = null;
-        }
+
+        // Create Datasource
         $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref);
+
+        // In lib/jelix/plugins/formwidget/checkboxes_html/checkboxes_html.formwidget.php
+        // control emptyItemLabel or required is not tacking into account
+        // Lizmap force empty value in datasource only for ValueRelation not required
+        // with allowMulti and allowNull
+        if ($formControl->valueRelationData['allowMulti']
+            && $formControl->valueRelationData['allowNull']
+            && !$formControl->ctrl->required) {
+            $dataSource->setForceEmptyValue(true);
+        }
 
         // criteriaFrom based on current_value in filterExpression
         if (array_key_exists('filterExpression', $formControl->valueRelationData)
