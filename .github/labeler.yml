@@ -1,0 +1,11 @@
+"administration pages":
+  - any: ['lizmap/modules/admin/**/*']
+
+"dataviz":
+  - any: ['lizmap/modules/dataviz/**/*']
+
+"docker":
+  - any: ['docker/**/*']
+
+"run cypress":
+  - any: ['tests/end2end/**/*']
