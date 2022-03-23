@@ -22,25 +22,26 @@ The PostgreSQL dump (schema + data) `tests_dataset.sql` contains all data to run
 *Quick and dirty* process to use these projects on another DB :
 
 * service `qgis_test`
-* Lizmap repository `testsrepository`
+* Lizmap repository called in the UI `testsrepository`
 
 ```bash
+# Replace service name in QGIS projects
 ./replace_database_connection_qgs_project.sh /home/etienne/dev/lizmap/lizmap-master/tests/qgis-projects/tests/ qgis_test
-sudo -u postgres createuser lizmap --superuser
 
-# Clean existing schema
+# Transfert files with FTP
+
+# Clean existing schema in PG
 PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -n -d qgis_test -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
 psql service=SERVICE -n -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
 
-# User rights
-# Change in set_tests_repository_rights.sql the name of the schema, on the first line to match the Lizmap instance
-sed INSERT INTO lizmap\.
-sed -i "s#INSERT INTO lizmap\.#INSERT INTO lizmap_lizmap_3_5\.#g" "$OUTDIR"/"$I"_"$ITEM".sql;
+# Insert users needed for tests, maybe truncate ?
+# Change the LWC version
+sed -i "s#INSERT INTO lizmap\.#INSERT INTO lizmap_lizmap_3_5\.#g" set_tests_respository_rights.sql 
 
-# Make the request
+# Make the PG query
 PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -d DB_NAME -f set_tests_respository_rights.sql
-psql service=demo_lizmap_3_5_demo_13e84c2489dba23240ad537b877c4a79 -f set_tests_respository_rights.sql
+psql service=SERVICE -f set_tests_respository_rights.sql
 
 # Import data, check there isn't any ACL before
-psql service=demo_lizmap_3_5_demo_13e84c2489dba23240ad537b877c4a79 -f tests_dataset.sql
+psql service=SERVICE -f tests_dataset.sql
 ```
