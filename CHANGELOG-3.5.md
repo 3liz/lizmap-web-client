@@ -4,9 +4,14 @@
 
 ### Fixed
 
+- Improve the image dialog upload size on tiny screens
+- Review the error message about the HTTP code from QGIS Server
+- Fix editing feature having an ID equal to 0
+- Fix when an attribute name is starting with a capital name
+- Do not show custom labels when printing from a popup about `lizmap_user` and `lizmap_user_groups`
 - Fix: HTTP Status Messages for lizmap service responses
 - Check version attribute in WxS request in XML to return error
-- Fix: GetProj4 request to get proj4 CRS defintion from QGIS project
+- Fix: GetProj4 request to get proj4 CRS definition from QGIS project
 - Speed up GetProjectConfig request by using cache for QGIS Server plugins data
 - Fix typo in English sentences
 - Do not send private user group to QGIS Server for access control
@@ -16,9 +21,13 @@
 
 ### Added
 
-- new method in AppContext to get user public groups id
+- New method in `AppContext` to get user public groups ID
 - Convert QGis XML Option value based on type attribute
 - Add a revision parameter on assets url for cache 
+
+### Backend
+
+- Upgrade jelix to 1.6.36
 
 ### Tests
 
