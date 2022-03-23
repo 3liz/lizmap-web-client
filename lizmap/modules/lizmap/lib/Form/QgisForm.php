@@ -1252,7 +1252,7 @@ class QgisForm implements QgisFormControlsInterface
         $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref);
 
         // In lib/jelix/plugins/formwidget/checkboxes_html/checkboxes_html.formwidget.php
-        // control emptyItemLabel or required is not tacking into account
+        // control emptyItemLabel where required is not taken into account
         // Lizmap force empty value in datasource only for ValueRelation not required
         // with allowMulti and allowNull
         if ($formControl->valueRelationData['allowMulti']
