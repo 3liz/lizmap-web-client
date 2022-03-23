@@ -9,12 +9,15 @@ on:
     # Run every monday at 3:00
     - cron:  '0 3 * * 1'
   workflow_dispatch:
+    types: [on-demand-test]
+
 jobs:
   cypress:
     # The first condition is triggered when we set the new label
     # The second one when we update the PR with new commits without changing labels
     # The third one when it's a cron job
-    if: github.event.label.name == 'run cypress' || contains(github.event.pull_request.labels.*.name, 'run cypress') || github.event_name == 'schedule'
+    # The fourth one is for the manual button
+    if: github.event.label.name == 'run cypress' || contains(github.event.pull_request.labels.*.name, 'run cypress') || github.event_name == 'schedule' || github.event.action == 'on-demand-test'
     name: "Cypress"
     runs-on: ubuntu-latest
     steps:
