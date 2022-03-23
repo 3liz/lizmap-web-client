@@ -44,7 +44,7 @@ class checkboxes_htmlbootstrapFormWidget extends checkboxes_htmlFormWidget
             if ((is_array($value) && in_array((string) $v, $value, true)) || ($value === (string) $v)) {
                 echo ' checked="checked"';
             }
-            echo '/>',htmlspecialchars($label),"</label> <br/>\n";
+            echo '/>',htmlspecialchars($label),"</label>\n";
             ++$i;
         }
     }
