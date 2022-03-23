@@ -499,7 +499,7 @@ class qgisFormControl
         }
 
         // Rework for boolean
-        if ($this->fieldDataType == 'boolean'
+        if ($this->fieldDataType == 'boolean' && $prop->notNull
             && in_array($markup, array('menulist', 'checkboxes'))) {
             // Get data list, to use label
             $data = $this->ctrl->datasource->data;
