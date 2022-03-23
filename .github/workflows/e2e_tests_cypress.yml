@@ -9,7 +9,6 @@ on:
     # Run every monday at 3:00
     - cron:  '0 3 * * 1'
   workflow_dispatch:
-    types: [on-demand-test]
 
 jobs:
   cypress:
@@ -17,7 +16,11 @@ jobs:
     # The second one when we update the PR with new commits without changing labels
     # The third one when it's a cron job
     # The fourth one is for the manual button
-    if: github.event.label.name == 'run cypress' || contains(github.event.pull_request.labels.*.name, 'run cypress') || github.event_name == 'schedule' || github.event.action == 'on-demand-test'
+    if: |
+      github.event.label.name == 'run cypress' ||
+      contains(github.event.pull_request.labels.*.name, 'run cypress') ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch'
     name: "Cypress"
     runs-on: ubuntu-latest
     steps:
@@ -73,3 +76,12 @@ jobs:
             cat lizmap/var/log/errors.log;
             exit -1;
           fi
+#  debug:
+#    name: "Debug"
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Dump GitHub context
+#        env:
+#          GITHUB_CONTEXT: ${{ toJson(github) }}
+#        run: |
+#          echo "$GITHUB_CONTEXT"
