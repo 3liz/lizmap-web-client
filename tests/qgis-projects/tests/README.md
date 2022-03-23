@@ -34,9 +34,13 @@ psql service=SERVICE -n -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
 
 # User rights
 # Change in set_tests_repository_rights.sql the name of the schema, on the first line to match the Lizmap instance
+sed INSERT INTO lizmap\.
+sed -i "s#INSERT INTO lizmap\.#INSERT INTO lizmap_lizmap_3_5\.#g" "$OUTDIR"/"$I"_"$ITEM".sql;
+
+# Make the request
 PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -d DB_NAME -f set_tests_respository_rights.sql
-psql service=SERVICE -f set_tests_respository_rights.sql
+psql service=demo_lizmap_3_5_demo_13e84c2489dba23240ad537b877c4a79 -f set_tests_respository_rights.sql
 
 # Import data, check there isn't any ACL before
-psql service=SERVICE -f tests_dataset.sql
+psql service=demo_lizmap_3_5_demo_13e84c2489dba23240ad537b877c4a79 -f tests_dataset.sql
 ```
