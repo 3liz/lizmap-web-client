@@ -6,11 +6,27 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
 {
     //protected $formid;
     protected $ref;
+    protected $forceEmptyValue;
 
-    public function __construct($ref)
+    public function __construct($ref, $forceEmptyValue = false)
     {
         //$this->formid = $formid;
         $this->ref = $ref;
+        $this->forceEmptyValue = $forceEmptyValue;
+    }
+
+    public function getForceEmptyValue()
+    {
+        if ($this->forceEmptyValue) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function setForceEmptyValue($forceEmptyValue)
+    {
+        $this->forceEmptyValue = $forceEmptyValue;
     }
 
     public function getData($form)
@@ -103,6 +119,12 @@ class qgisFormValueRelationDynamicDatasource extends jFormsDynamicDatasource
                         }
                     }
                 }
+            }
+
+            // Add default empty value for required fields
+            // Checkboxes Widget needs it
+            if ($this->forceEmptyValue) {
+                $result[''] = '';
             }
 
             // orderByValue
