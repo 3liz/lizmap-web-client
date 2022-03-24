@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.2 - 2022-03-24
+
 ### Fixed
 
 - Improve the image dialog upload size on tiny screens
