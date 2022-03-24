@@ -1304,7 +1304,8 @@ class qgisForm implements qgisFormControlsInterface
         // In lib/jelix/plugins/formwidget/menulist_html/menulist_html.formwidget.php
         // An empty value is added with these rules
         // if ($this->ctrl->emptyItemLabel !== null || !$this->ctrl->required)
-        // In lizmap, we add an empty value except for every ValueRelation without allowMulti
+        // To add an empty value to ValueRelation displayed as menulist, we only
+        // have to set an emptyItemLabel !== null
         $formControl->ctrl->emptyItemLabel = '';
         if ($formControl->valueRelationData['allowMulti'] && $formControl->ctrl->required) {
             $formControl->ctrl->emptyItemLabel = null;
@@ -1312,9 +1313,10 @@ class qgisForm implements qgisFormControlsInterface
         $dataSource = new qgisFormValueRelationDynamicDatasource($formControl->ref);
 
         // In lib/jelix/plugins/formwidget/checkboxes_html/checkboxes_html.formwidget.php
-        // control emptyItemLabel where required is not taken into account
-        // Lizmap force empty value in datasource only for ValueRelation not required
-        // with allowMulti and allowNull
+        // no empty value is added by checking the value of the Jelix Control attributes
+        // emptyItemLabel and required
+        // To get an empty checkbox in the list of values like in QGIS, we have to force
+        // an empty value for ValueRelation not required with allowMulti and allowNull
         if ($formControl->valueRelationData['allowMulti']
             && $formControl->valueRelationData['allowNull']
             && !$formControl->ctrl->required) {
