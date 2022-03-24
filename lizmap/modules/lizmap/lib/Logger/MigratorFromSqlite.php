@@ -56,7 +56,7 @@ class MigratorFromSqlite
         }
     }
 
-    public function migrateLog($profileName = 'lizlog')
+    public function migrateLog($profileName = 'lizlog', $resetBefore = false)
     {
         $profile = \jProfiles::get('jdb', $profileName);
         if (!$profile) {
@@ -84,7 +84,14 @@ class MigratorFromSqlite
         $daoCounterNew = \jDao::create('lizmap~logCounter', $profileName);
         $daoDetailsNew = \jDao::get('lizmap~logDetail', $profileName);
 
-        if ($daoCounterNew->countAll() > 0 || $daoDetailsNew->countAll() > 0) {
+        if ($resetBefore) {
+            $db = \jDb::getConnection($profileName);
+            $table = $daoCounterNew->getTables()[$daoCounterNew->getPrimaryTable()]['realname'];
+            $db->exec('DELETE FROM ' . $db->prefixTable($table));
+            $table = $daoDetailsNew->getTables()[$daoDetailsNew->getPrimaryTable()]['realname'];
+            $db->exec('DELETE FROM ' . $db->prefixTable($table));
+        }
+        else if ($daoCounterNew->countAll() > 0 || $daoDetailsNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
