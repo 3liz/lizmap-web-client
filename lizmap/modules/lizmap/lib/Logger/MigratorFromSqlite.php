@@ -87,11 +87,10 @@ class MigratorFromSqlite
         if ($resetBefore) {
             $db = \jDb::getConnection($profileName);
             $table = $daoCounterNew->getTables()[$daoCounterNew->getPrimaryTable()]['realname'];
-            $db->exec('DELETE FROM ' . $db->prefixTable($table));
+            $db->exec('DELETE FROM '.$db->prefixTable($table));
             $table = $daoDetailsNew->getTables()[$daoDetailsNew->getPrimaryTable()]['realname'];
-            $db->exec('DELETE FROM ' . $db->prefixTable($table));
-        }
-        else if ($daoCounterNew->countAll() > 0 || $daoDetailsNew->countAll() > 0) {
+            $db->exec('DELETE FROM '.$db->prefixTable($table));
+        } elseif ($daoCounterNew->countAll() > 0 || $daoDetailsNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
