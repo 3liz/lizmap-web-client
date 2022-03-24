@@ -1,11 +1,23 @@
 "administration pages":
   - any: ['lizmap/modules/admin/**/*']
 
+"CI & packages":
+  - any: ['.github/**/*', '.gitlab-ci.yml', 'Makefile']
+
+"data editor":
+  - any: ['lizmap/modules/lizmap/lib/Form/**/*']
+
 "dataviz":
   - any: ['lizmap/modules/dataviz/**/*']
 
 "docker":
   - any: ['docker/**/*']
 
-"run cypress":
-  - any: ['tests/end2end/**/*']
+"javascript":
+  - any: ['assets/**/*']
+
+#"run cypress":
+#  - any: ['tests/end2end/**/*']
+
+"tests":
+  - any: ['tests/**/*']
