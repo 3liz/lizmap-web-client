@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.4.10 - 2022-03-24
+
 ### Fixed
 
 - Fix when an attribute name is starting with a capital name
