@@ -1,12 +1,15 @@
-name: 🌈 Labeler
+name: "🌈 Labeler"
 
 on:
   pull_request_target:
-    types:
-      - opened
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - master
+      - release_3_*
 
 jobs:
   triage:
+    name: "Triage"
     permissions:
       contents: read
       pull-requests: write
@@ -14,4 +17,4 @@ jobs:
     steps:
       - uses: actions/labeler@v4
         with:
-          repo-token: "${{ secrets.BOT_HUB_TOKEN }}"
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
