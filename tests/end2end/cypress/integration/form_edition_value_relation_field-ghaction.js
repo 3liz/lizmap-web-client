@@ -11,22 +11,25 @@ describe('Form edition all field type', function() {
         cy.log('No expression menulist 4 values + 1 empty value')
         cy.get('#jforms_view_edition_code_without_exp option').should('have.length', 5)
         cy.get('#jforms_view_edition_code_without_exp option').first().should('have.text', '')
-            .nextAll().each(($opt, index, $options) => {
-                cy.wrap($opt).should('not.have.text', '')
+            .nextAll().then(options => {
+                const actual = [...options].map(o => o.text)
+                expect(actual).to.deep.equal(['Zone A1', 'Zone A2', 'Zone B1', 'Zone B2'])
             })
 
         cy.log('Simple expression menulist 2 values + 1 empty value')
         cy.get('#jforms_view_edition_code_with_simple_exp option').should('have.length', 3)
         cy.get('#jforms_view_edition_code_with_simple_exp option').first().should('have.text', '')
-            .nextAll().each(($opt, index, $options) => {
-                cy.wrap($opt).should('not.have.text', '')
+            .nextAll().then(options => {
+                const actual = [...options].map(o => o.text)
+                expect(actual).to.deep.equal(['Zone A1', 'Zone B1'])
             })
 
         cy.log('Parent field menulist 3 values + 1 empty value')
         cy.get('#jforms_view_edition_code_for_drill_down_exp option').should('have.length', 4)
         cy.get('#jforms_view_edition_code_for_drill_down_exp option').first().should('have.text', '')
-            .nextAll().each(($opt, index, $options) => {
-                cy.wrap($opt).should('not.have.text', '')
+            .nextAll().then(options => {
+                const actual = [...options].map(o => o.text)
+                expect(actual).to.deep.equal(['Zone A', 'Zone B', 'No Zone'])
             })
 
         cy.log('Child field menulist 0 value + 1 empty value')
