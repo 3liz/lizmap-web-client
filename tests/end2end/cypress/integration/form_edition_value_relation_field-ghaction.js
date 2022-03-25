@@ -8,39 +8,34 @@ describe('Form edition all field type', function() {
     })
 
     it('Check initial states', function() {
-        context('No expression menulist 4 values + 1 empty value', function () {
-            cy.get('#jforms_view_edition_code_without_exp option').should('have.length', 5)
-            cy.get('#jforms_view_edition_code_without_exp option').first().should('have.text', '')
-                .nextAll().each(($opt, index, $options) => {
-                    cy.wrap($opt).should('not.have.text', '')
-                })
-        })
+        cy.log('No expression menulist 4 values + 1 empty value')
+        cy.get('#jforms_view_edition_code_without_exp option').should('have.length', 5)
+        cy.get('#jforms_view_edition_code_without_exp option').first().should('have.text', '')
+            .nextAll().each(($opt, index, $options) => {
+                cy.wrap($opt).should('not.have.text', '')
+            })
 
-        context('Simple expression menulist 2 values + 1 empty value', function () {
-            cy.get('#jforms_view_edition_code_with_simple_exp option').should('have.length', 3)
-            cy.get('#jforms_view_edition_code_with_simple_exp option').first().should('have.text', '')
-                .nextAll().each(($opt, index, $options) => {
-                    cy.wrap($opt).should('not.have.text', '')
-                })
-        })
+        cy.log('Simple expression menulist 2 values + 1 empty value')
+        cy.get('#jforms_view_edition_code_with_simple_exp option').should('have.length', 3)
+        cy.get('#jforms_view_edition_code_with_simple_exp option').first().should('have.text', '')
+            .nextAll().each(($opt, index, $options) => {
+                cy.wrap($opt).should('not.have.text', '')
+            })
 
-        context('Parent field menulist 3 values + 1 empty value', function () {
-            cy.get('#jforms_view_edition_code_for_drill_down_exp option').should('have.length', 4)
-            cy.get('#jforms_view_edition_code_for_drill_down_exp option').first().should('have.text', '')
-                .nextAll().each(($opt, index, $options) => {
-                    cy.wrap($opt).should('not.have.text', '')
-                })
-        })
+        cy.log('Parent field menulist 3 values + 1 empty value')
+        cy.get('#jforms_view_edition_code_for_drill_down_exp option').should('have.length', 4)
+        cy.get('#jforms_view_edition_code_for_drill_down_exp option').first().should('have.text', '')
+            .nextAll().each(($opt, index, $options) => {
+                cy.wrap($opt).should('not.have.text', '')
+            })
 
-        context('Child field menulist 0 value + 1 empty value', function () {
-            cy.get('#jforms_view_edition_code_with_drill_down_exp option').should('have.length', 1)
-            cy.get('#jforms_view_edition_code_with_drill_down_exp option').first().should('have.text', '')
-        })
+        cy.log('Child field menulist 0 value + 1 empty value')
+        cy.get('#jforms_view_edition_code_with_drill_down_exp option').should('have.length', 1)
+        cy.get('#jforms_view_edition_code_with_drill_down_exp option').first().should('have.text', '')
 
-        context('Geom expression menulist 0 value + 1 empty value', function () {
-            cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 1)
-            cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
-        })
+        cy.log('Geom expression menulist 0 value + 1 empty value')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 1)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
     })
 
     it('Child field menulist after parent select', function () {
