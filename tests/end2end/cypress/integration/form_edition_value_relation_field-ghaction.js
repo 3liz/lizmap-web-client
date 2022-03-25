@@ -82,6 +82,7 @@ describe('Form edition all field type', function() {
         cy.intercept('/index.php/jelix/jforms/getListData*').as('getListData')
 
         // Click on map as form needs a geometry
+        cy.log('Create a geometry over Zone A1')
         cy.get('#map').click(500, 300)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
@@ -89,6 +90,70 @@ describe('Form edition all field type', function() {
         cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
         cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
         cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone A1')
+
+        // Did not achieve to move the geometry so
+        // Cancel and open form
+        cy.on('window:confirm', () => true);
+        cy.get('#jforms_view_edition__submit_cancel').click()
+        cy.get('#edition-draw').click()
+        cy.wait(800)
+
+        // Click on map as form needs a geometry
+        cy.log('Create a geometry over Zone A2')
+        cy.get('#map').click(700, 300)
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone A2')
+
+        // Cancel and open form
+        cy.on('window:confirm', () => true);
+        cy.get('#jforms_view_edition__submit_cancel').click()
+        cy.get('#edition-draw').click()
+        cy.wait(800)
+
+        // Click on map as form needs a geometry
+        cy.log('Create a geometry over Zone B1')
+        cy.get('#map').click(500, 500)
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone B1')
+
+        // Cancel and open form
+        cy.on('window:confirm', () => true);
+        cy.get('#jforms_view_edition__submit_cancel').click()
+        cy.get('#edition-draw').click()
+        cy.wait(800)
+
+        // Click on map as form needs a geometry
+        cy.log('Create a geometry over Zone B2')
+        cy.get('#map').click(700, 500)
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone B2')
+
+        // Cancel and open form
+        cy.on('window:confirm', () => true);
+        cy.get('#jforms_view_edition__submit_cancel').click()
+        cy.get('#edition-draw').click()
+        cy.wait(800)
+
+        // Click on map as form needs a geometry
+        cy.log('Create a geometry outside zones')
+        cy.get('#map').click(700, 700)
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 1)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
     })
 
 })
