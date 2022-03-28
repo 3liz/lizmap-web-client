@@ -1672,11 +1672,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
 
 		-
-			message: "#^Instantiated class \\\\jDatatypefloat not found\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$aliasXml$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
@@ -2720,4 +2715,3 @@ parameters:
 			message: "#^Cannot access property \\$parentId on array\\.$#"
 			count: 9
 			path: lizmap/modules/view/zones/main_view.zone.php
-
