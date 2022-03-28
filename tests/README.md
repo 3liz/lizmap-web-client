@@ -1,10 +1,36 @@
 # Testing Lizmap
 
-## Docker build
+## Installation
 
 A docker configuration is provided to launch Lizmap into a container.
+
+### With Windows
+
+1. Install Docker
+https://docs.docker.com/desktop/windows/install/
+2. Install Git
+https://git-scm.com/download/win
+3. Launch Git Bash as administrator (right-click, run as administrator), then in the new window...
+```bash
+# Create a directory for Git repositories
+mkdir GIT
+# Git clone Lizmap Web Client in this directory
+cd GIT && git clone https://github.com/3liz/lizmap-web-client.git --config core.autocrlf=input
+# Go to tests repository
+cd lizmap-web-client/tests/
+# Download Lizmap plugin for QGIS Server (https://packages.3liz.org/pub/lizmap-qgis-plugin/master/lizmap-qgis-plugin.master.zip) and unzip the content in `qgis-server-plugins/` directory
+# Launch Lizmap Web Client with docker-compose
+docker-compose --env-file .env.windows up
+# You can now go to http://localhost:8130 and test!
+
+# Later, you can get the latest changes in Lizmap Web Client with:
+git pull
+```
+
+### With Linux
+
 You must install Docker on your machine first. Then you should execute
-the run-docker script.
+the `run-docker` script.
 
 To launch containers for the first time, with your current user:
 
@@ -21,7 +47,9 @@ Then:
 ./qgis-projects/tests/load_sql.sh # to populate postgreSQL database with testing data
 ```
 
-You must set `lizmap.local` into your `/etc/hosts`:
+Then, in your browser, go to `http://localhost:8130/`. (see below to change the port)
+
+Optionally, you can set `lizmap.local` into your `/etc/hosts`:
 
 ```bash
 127.0.0.1 lizmap.local
@@ -38,7 +66,9 @@ To stop containers:
 You may have to close connections to the postgresql database if you are using
 PgAdmin for example, before stopping containers.
 
-You can execute some commands into the php container or other containers, by using this command:
+## Available commands
+
+You can execute some commands into the PHP container or other containers, by using this command:
 
 ```bash
 ./lizmap-ctl <command>
@@ -60,7 +90,7 @@ Available commands :
 
 ## Accessing to Postgresql
 
-If you want to use pgadmin or any other postgresql client, access credentials from your
+If you want to use pgAdmin or any other postgresql client, access credentials from your
 computer are:
 
 - host: `localhost`
