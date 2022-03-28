@@ -279,7 +279,7 @@ class pgsqlDbTools extends jDbTools {
             $field->maxLength = $typeinfo[5];
             $field->minLength = $typeinfo[4];
 
-            if(preg_match('/^nextval\(.*\)$/', $line->adsrc) || $typeinfo[6]){
+            if ((is_string($line->adsrc) && preg_match('/^nextval\(.*\)$/', $line->adsrc)) || $typeinfo[6]) {
                 $field->autoIncrement=true;
                 $field->default = '';
             }

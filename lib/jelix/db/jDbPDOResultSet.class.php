@@ -24,7 +24,9 @@ class jDbPDOResultSet extends PDOStatement {
 
     protected $_fetchMode = 0;
 
-    public function fetch ($fetch_style = null, $cursor_orientation = PDO::FETCH_ORI_NEXT, $cursor_offset = 0) {
+    #[\ReturnTypeWillChange]
+    public function fetch($fetch_style = null, $cursor_orientation = PDO::FETCH_ORI_NEXT, $cursor_offset = 0)
+    {
         // we take a shortcut: unused parameters are ignored by parent::fetch
         // let the parent::setFetchMode override as needed, and PHP use its default
         if ($fetch_style) {
@@ -47,6 +49,7 @@ class jDbPDOResultSet extends PDOStatement {
      * @param array $ctor_arg
      * @return object[] list of object which contain all rows
      */
+    #[\ReturnTypeWillChange]
     public function fetchAll($fetch_style = null, ...$args)
     {
         // if the user requested to override the style set with setFetchMode, use it
