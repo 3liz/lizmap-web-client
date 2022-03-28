@@ -3,7 +3,7 @@
 * @package     jelix
 * @subpackage  installer
 * @author      Laurent Jouanneau
-* @copyright   2009-2021 Laurent Jouanneau
+* @copyright   2009-2022 Laurent Jouanneau
 * @link        http://jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -507,10 +507,11 @@ abstract class jInstallerBase {
             // change the path to application.init.php into the entrypoint
             // depending of the application, the path of www/ is not always at the same place, relatively to
             // application.init.php
-            $relativePath = \Jelix\FileUtilities\Path::shortestPath(jApp::wwwPath(), jApp::appPath());
+            $appInitFile = jApp::applicationInitFile();
+            $relativePath = \Jelix\FileUtilities\Path::shortestPath(jApp::wwwPath(), dirname($appInitFile).'/');
 
             $epCode = file_get_contents($newEpPath);
-            $epCode = preg_replace('#(require\s*\(?\s*[\'"])(.*)(application\.init\.php[\'"])#m', '\\1'.$relativePath.'/\\3', $epCode);
+            $epCode = preg_replace('#(require\s*\(?\s*[\'"])(.*)(application\.init\.php)([\'"])#m', '\\1'.$relativePath.'/'.basename($appInitFile).'\\4', $epCode);
             file_put_contents($newEpPath, $epCode);
 
         }

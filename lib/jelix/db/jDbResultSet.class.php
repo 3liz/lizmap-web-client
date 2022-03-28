@@ -170,28 +170,39 @@ abstract class jDbResultSet implements Iterator {
     protected $_currentRecord = false;
     protected $_recordIndex = 0;
 
-    public function current () {
+    #[\ReturnTypeWillChange]
+    public function current()
+    {
         return $this->_currentRecord;
     }
 
-    public function key () {
+    #[\ReturnTypeWillChange]
+    public function key()
+    {
         return $this->_recordIndex;
     }
 
-    public function next () {
-        $this->_currentRecord =  $this->fetch ();
-        if($this->_currentRecord)
-            $this->_recordIndex++;
+    #[\ReturnTypeWillChange]
+    public function next()
+    {
+        $this->_currentRecord = $this->fetch();
+        if ($this->_currentRecord) {
+            ++$this->_recordIndex;
+        }
     }
 
-    public function rewind () {
+    #[\ReturnTypeWillChange]
+    public function rewind()
+    {
         $this->_rewind();
         $this->_recordIndex = 0;
         $this->_currentRecord =  $this->fetch ();
     }
 
-    public function valid () {
-        return ($this->_currentRecord != false);
+    #[\ReturnTypeWillChange]
+    public function valid()
+    {
+        return $this->_currentRecord != false;
     }
 
 }

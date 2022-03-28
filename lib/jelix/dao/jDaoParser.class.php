@@ -312,13 +312,24 @@ class jDaoParser {
     }
 
     /**
-    * just a quick way to retrieve boolean values from a string.
-    *  will accept yes, true, 1 as "true" values
-    *  all other values will be considered as false.
-    * @return boolean true / false
-    */
+     * just a quick way to retrieve boolean values from a string.
+     *  will accept yes, true, 1 as "true" values
+     *  all other values will be considered as false.
+     *
+     * @param mixed $value
+     * @return bool true / false
+     */
     public function getBool ($value) {
-        return in_array (trim ($value), array ('true', '1', 'yes'));
+        if (is_string($value)) {
+            return in_array(trim($value), array('true', '1', 'yes'));
+        }
+        else if (is_bool($value)) {
+            return $value;
+        }
+        else if ($value === 1) {
+            return true;
+        }
+        return false;
     }
 
     /**

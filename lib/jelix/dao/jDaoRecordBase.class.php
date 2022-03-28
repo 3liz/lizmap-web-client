@@ -87,14 +87,14 @@ abstract class jDaoRecordBase {
                     break;
                 }
                 // test regexp
-                if ($infos['regExp'] !== null && preg_match ($infos['regExp'], $value) === 0){
+                if ($infos['regExp'] !== null && preg_match($infos['regExp'], (string)$value) === 0) {
                     $errors[$prop][] = self::ERROR_BAD_FORMAT;
                     break;
                 }
 
                 //  test maxlength et minlength
-                $len = iconv_strlen($value, jApp::config()->charset);
-                if($infos['maxlength'] !== null && $len > intval($infos['maxlength'])){
+                $len = iconv_strlen((string)$value, jApp::config()->charset);
+                if ($infos['maxlength'] !== null && $len > intval($infos['maxlength'])) {
                     $errors[$prop][] = self::ERROR_MAXLENGTH;
                 }
 
@@ -112,17 +112,20 @@ abstract class jDaoRecordBase {
                 }
                 break;
             case 'datetime':
-                if(!preg_match('/^(\d{4}-(((0[1,3-9]|1[0-2])-([012][0-9]|3[01]))|((02-([01][0-9]|2[0-9])))) (([01][0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9])?$/',$value))
+                if (!preg_match('/^(\d{4}-(((0[1,3-9]|1[0-2])-([012][0-9]|3[01]))|((02-([01][0-9]|2[0-9])))) (([01][0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9])?$/', (string)$value)) {
                     $errors[$prop][] = self::ERROR_BAD_FORMAT;
+                }
                 break;
             case 'time':
-                if(!preg_match('/^((([01][0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9])?$/',$value))
+                if (!preg_match('/^((([01][0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9])?$/', (string)$value)) {
                     $errors[$prop][] = self::ERROR_BAD_FORMAT;
+                }
                 break;
             case 'varchardate':
             case 'date':
-                if(!preg_match('/^(\d{4}-(((0[1,3-9]|1[0-2])-([012][0-9]|3[01]))|((02-([01][0-9]|2[0-9])))))?$/',$value))
+                if (!preg_match('/^(\d{4}-(((0[1,3-9]|1[0-2])-([012][0-9]|3[01]))|((02-([01][0-9]|2[0-9])))))?$/', (string)$value)) {
                     $errors[$prop][] = self::ERROR_BAD_FORMAT;
+                }
                 break;
             }
         }

@@ -142,7 +142,8 @@ class memcacheCacheDriver implements jICacheDriver {
                 return $val;
             else return false;
         }
-        return $this->_memcache->increment($key,$var);
+
+        return $this->_memcache->increment($key, (int)$var);
     }
 
     /**
@@ -158,13 +159,16 @@ class memcacheCacheDriver implements jICacheDriver {
         $val = $this->get($key);
         if(!is_numeric($val)) {
             return false;
-        }else if (is_float($val)) {
-            $val = ((int)$val) - $var;
-            if($this->_memcache->set($key, $val))
+        }
+        if (is_float($val)) {
+            $val = ((int) $val) - (int)$var;
+            if ($this->_memcache->set($key, $val)) {
                 return $val;
+            }
             else return false;
         }
-        return $this->_memcache->decrement($key,$var);
+
+        return $this->_memcache->decrement($key, (int)$var);
     }
 
     /**

@@ -167,6 +167,7 @@ class jDbPDOConnection extends PDO {
      * TODO check if this is still the case in PHP 8.1+
      * @return jDbPDOResultSet|PDOStatement
      */
+    #[\ReturnTypeWillChange]
     public function query($queryString, $fetchmode = PDO::FETCH_OBJ, ...$fetchModeArgs)
     {
 
@@ -379,7 +380,9 @@ class jDbPDOConnection extends PDO {
      * @param string $fromSequence the sequence name, if needed
      * @return string
      */
-    public function lastInsertId($fromSequence=null) {
+    #[\ReturnTypeWillChange]
+    public function lastInsertId($fromSequence = null)
+    {
         if ($this->dbms == 'mssql') {
             $res = $this->query('SELECT SCOPE_IDENTITY()');
             return (int) $res->fetchColumn();
