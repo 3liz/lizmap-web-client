@@ -217,12 +217,12 @@ class HtmlBuilder extends BuilderBase {
 
         $hiddens = '';
         foreach ($urlParams as $p_name => $p_value) {
-            $hiddens .= '<input type="hidden" name="'. $p_name .'" value="'. htmlspecialchars($p_value). '"'.$this->_endt. "\n";
+            $hiddens .= '<input type="hidden" name="'. $p_name .'" value="'. htmlspecialchars($p_value, ENT_COMPAT). '"'.$this->_endt. "\n";
         }
 
         foreach ($this->_form->getHiddens() as $ctrl) {
             if(!$this->_form->isActivated($ctrl->ref)) continue;
-            $hiddens .= '<input type="hidden" name="'. $ctrl->ref.'" id="'.$this->_name.'_'.$ctrl->ref.'" value="'. htmlspecialchars($this->_form->getData($ctrl->ref)). '"'.$this->_endt. "\n";
+            $hiddens .= '<input type="hidden" name="'. $ctrl->ref.'" id="'.$this->_name.'_'.$ctrl->ref.'" value="'. htmlspecialchars($this->_form->getData($ctrl->ref), ENT_COMPAT). '"'.$this->_endt. "\n";
         }
 
         if($this->_form->securityLevel){
@@ -360,12 +360,12 @@ class HtmlBuilder extends BuilderBase {
         }
         $widget = $this->getWidget($ctrl, $this->rootWidget);
         // additionnal &nbsp, else background icon is not shown in webkit
-        echo '<span class="jforms-help" id="'.$widget->getId().'-help">&nbsp;<span>'.htmlspecialchars($ctrl->help).'</span></span>';
+        echo '<span class="jforms-help" id="'.$widget->getId().'-help">&nbsp;<span>'.htmlspecialchars($ctrl->help, ENT_COMPAT).'</span></span>';
     }
 
     protected function _outputAttr(&$attributes) {
         foreach($attributes as $name=>$val) {
-            echo ' '.$name.'="'.htmlspecialchars($val).'"';
+            echo ' '.$name.'="'.htmlspecialchars($val, ENT_COMPAT).'"';
         }
     }
 

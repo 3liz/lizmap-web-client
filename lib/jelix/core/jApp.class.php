@@ -4,7 +4,7 @@
 * @subpackage core
 * @author     Laurent Jouanneau
 * @contributor  Olivier Demah
-* @copyright  2011-2013 Laurent Jouanneau, 2012 Olivier Demah
+* @copyright  2011-2022 Laurent Jouanneau, 2012 Olivier Demah
 * @link       http://jelix.org
 * @licence    http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -36,6 +36,8 @@ class jApp {
 
     protected static $configAutoloader = null;
 
+    protected static $applicationInitFile = '';
+
     /**
      * initialize the application paths
      *
@@ -65,6 +67,7 @@ class jApp {
         self::$_config = null;
         self::$configAutoloader = null;
         self::$_mainConfigFile = null;
+        self::$applicationInitFile = $appPath.'application.init.php';
     }
 
     /**
@@ -74,6 +77,7 @@ class jApp {
     public static function isInit() { return self::$_isInit; }
 
     public static function appPath($file='') { return self::$appPath.$file; }
+    public static function applicationInitFile() { return self::$applicationInitFile; }
     public static function varPath($file='') { return self::$varPath.$file; }
     public static function logPath($file='') { return self::$logPath.$file; }
     public static function configPath($file='') { return self::$configPath.$file; }
@@ -81,7 +85,19 @@ class jApp {
     public static function scriptsPath($file='') { return self::$scriptPath.$file; }
     public static function tempPath($file='') { return self::$tempBasePath.self::$env.$file; }
     public static function tempBasePath() { return self::$tempBasePath; }
-    
+
+    /**
+     * Sometimes, the application.init.php may not be into the appPath, this method allows to indicate
+     * the path to the application.init.php.
+     *
+     * @param string $path the full path to the application.init.php
+     * @return void
+     */
+    public static function setApplicationInitFile($path)
+    {
+        self::$applicationInitFile = $path;
+    }
+
     public static function setTempBasePath($path) {
         self::$tempBasePath = $path;
     }

@@ -64,7 +64,9 @@ class jFile {
                 throw new jException('jelix~errors.file.write.error', array ($file, $_tmp_file));
             }
         }
-
+        if ($data === null) {
+            $data = '';
+        }
         fwrite($fd, $data);
         fclose($fd);
 

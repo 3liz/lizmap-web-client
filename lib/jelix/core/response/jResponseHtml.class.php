@@ -226,8 +226,8 @@ class jResponseHtml extends jResponseBasicHtml {
         $this->outputDoctype();
         $this->outputHtmlHeader();
         echo '<body ';
-        foreach($this->bodyTagAttributes as $attr=>$value){
-            echo $attr,'="', htmlspecialchars($value),'" ';
+        foreach ($this->bodyTagAttributes as $attr => $value) {
+            echo $attr,'="', htmlspecialchars($value, ENT_COMPAT),'" ';
         }
         echo ">\n";
         echo implode("\n",$this->_bodyTop);
@@ -641,7 +641,7 @@ class jResponseHtml extends jResponseBasicHtml {
                 $more[] = 'type="'.$params[1].'"';
             if (!empty($params[2]))
                 $more[] = 'title = "'.htmlspecialchars($params[2]).'"';
-            echo '<link rel="',$params[0],'" href="',htmlspecialchars($href),'" ',implode($more, ' '),$this->_endTag;
+            echo '<link rel="',$params[0],'" href="',htmlspecialchars($href),'" ',implode(' ', $more),$this->_endTag;
         }
 
         // js code
