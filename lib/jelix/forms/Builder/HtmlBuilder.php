@@ -131,11 +131,17 @@ class HtmlBuilder extends BuilderBase {
         foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl){
             if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
             if(!$this->_form->isActivated($ctrlref)) continue;
-            if($ctrl->type == 'group') {
+            if ($ctrl->type == 'group') {
                 echo '<tr><td colspan="2">';
                 $this->outputControl($ctrl);
                 echo '</td></tr>';
-            }else{
+            } else if ($ctrl->type == 'checkbox') {
+                echo '<tr><th scope="row">';
+                echo '</th><td>';
+                $this->outputControl($ctrl);
+                $this->outputControlLabel($ctrl);
+                echo "</td></tr>\n";
+            } else {
                 echo '<tr><th scope="row">';
                 $this->outputControlLabel($ctrl);
                 echo '</th><td>';
@@ -211,12 +217,12 @@ class HtmlBuilder extends BuilderBase {
 
         $hiddens = '';
         foreach ($urlParams as $p_name => $p_value) {
-            $hiddens .= '<input type="hidden" name="'. $p_name .'" value="'. htmlspecialchars($p_value). '"'.$this->_endt. "\n";
+            $hiddens .= '<input type="hidden" name="'. $p_name .'" value="'. htmlspecialchars($p_value, ENT_COMPAT). '"'.$this->_endt. "\n";
         }
 
         foreach ($this->_form->getHiddens() as $ctrl) {
             if(!$this->_form->isActivated($ctrl->ref)) continue;
-            $hiddens .= '<input type="hidden" name="'. $ctrl->ref.'" id="'.$this->_name.'_'.$ctrl->ref.'" value="'. htmlspecialchars($this->_form->getData($ctrl->ref)). '"'.$this->_endt. "\n";
+            $hiddens .= '<input type="hidden" name="'. $ctrl->ref.'" id="'.$this->_name.'_'.$ctrl->ref.'" value="'. htmlspecialchars($this->_form->getData($ctrl->ref), ENT_COMPAT). '"'.$this->_endt. "\n";
         }
 
         if($this->_form->securityLevel){
@@ -354,12 +360,12 @@ class HtmlBuilder extends BuilderBase {
         }
         $widget = $this->getWidget($ctrl, $this->rootWidget);
         // additionnal &nbsp, else background icon is not shown in webkit
-        echo '<span class="jforms-help" id="'.$widget->getId().'-help">&nbsp;<span>'.htmlspecialchars($ctrl->help).'</span></span>';
+        echo '<span class="jforms-help" id="'.$widget->getId().'-help">&nbsp;<span>'.htmlspecialchars($ctrl->help, ENT_COMPAT).'</span></span>';
     }
 
     protected function _outputAttr(&$attributes) {
         foreach($attributes as $name=>$val) {
-            echo ' '.$name.'="'.htmlspecialchars($val).'"';
+            echo ' '.$name.'="'.htmlspecialchars($val, ENT_COMPAT).'"';
         }
     }
 

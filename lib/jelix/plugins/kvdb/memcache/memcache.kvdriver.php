@@ -242,7 +242,8 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl
                 return $val;
             return false;
         }
-        return $this->_connection->increment($key, $incvalue);
+
+        return $this->_connection->increment($key, (int)$incvalue);
     }
 
     /**
@@ -264,7 +265,8 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl
                 return $val;
             return false;
         }
-        return $this->_connection->decrement($key, $decvalue);
+
+        return $this->_connection->decrement($key, (int)$decvalue);
     }
 
     // ----------------------------------- jIKVttl

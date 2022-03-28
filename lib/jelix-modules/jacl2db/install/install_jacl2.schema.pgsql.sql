@@ -1,6 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_group (
-    id_aclgrp character varying(50) NOT NULL,
+    id_aclgrp character varying(60) NOT NULL,
     name character varying(150) NOT NULL DEFAULT '',
     grouptype smallint NOT NULL,
     ownerlogin character varying(50),
@@ -23,14 +23,14 @@ CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_subject (
 
 CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_user_group (
     "login" character varying(50) NOT NULL,
-    id_aclgrp character varying(50) NOT NULL,
+    id_aclgrp character varying(60) NOT NULL,
     CONSTRAINT %%PREFIX%%jacl2_user_group_login_pk PRIMARY KEY ("login", id_aclgrp),
     CONSTRAINT %%PREFIX%%jacl2_user_group_id_aclgrp_fkey FOREIGN KEY (id_aclgrp) REFERENCES %%PREFIX%%jacl2_group(id_aclgrp)
 );
 
 CREATE TABLE IF NOT EXISTS %%PREFIX%%jacl2_rights (
     id_aclsbj character varying(255) NOT NULL,
-    id_aclgrp character varying(50) NOT NULL,
+    id_aclgrp character varying(60) NOT NULL,
     id_aclres character varying(100) NOT NULL DEFAULT '-',
     canceled smallint NOT NULL default '0',
     CONSTRAINT %%PREFIX%%jacl2_rights_id_aclsbj_id_aclgrp_id_aclres_pk PRIMARY KEY (id_aclsbj, id_aclgrp, id_aclres),

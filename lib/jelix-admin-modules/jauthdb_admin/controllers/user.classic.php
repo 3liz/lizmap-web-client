@@ -99,7 +99,7 @@ class userCtrl extends jController {
         $form->deactivate('password');
         $form->deactivate('password_confirm');
         $tpl->assign('canUpdate', jAcl2::check('auth.user.modify'));
-        $tpl->assign('canChangePass', jAcl2::check('auth.user.change.password'));
+        $tpl->assign('canChangePass', jAcl2::check('auth.user.change.password') && jAuth::canChangePassword($login));
         $rep->body->assign('MAIN', $tpl->fetch('user_view'));
         return $rep;
     }

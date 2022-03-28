@@ -505,12 +505,23 @@ abstract class jFormsBase {
     /**
      *
      * @param string $name the name of the  control/data
-     * @return string the data value
+     * @return string|array the data value
      */
     public function getData($name) {
-        if(isset($this->container->data[$name]))
+        if(isset($this->container->data[$name])) {
             return $this->container->data[$name];
-        else return null;
+        }
+        return '';
+    }
+
+    /**
+     * @param string $name the name of the  control/data
+     *
+     * @return boolean true if there is a data with this name
+     */
+    public function hasData($name)
+    {
+        return array_key_exists($name, $this->container->data);
     }
 
     /**
@@ -836,8 +847,8 @@ abstract class jFormsBase {
         }
         $control->setForm($this);
 
-        if(!isset($this->container->data[$control->ref])){
-            if ( $control->datatype instanceof jDatatypeDateTime && $control->defaultValue == 'now') {
+        if (!array_key_exists($control->ref, $this->container->data)) {
+            if ($control->datatype instanceof jDatatypeDateTime && $control->defaultValue == 'now') {
                 $dt = new jDateTime();
                 $dt->now();
                 $this->container->data[$control->ref] = $dt->toString($control->datatype->getFormat());

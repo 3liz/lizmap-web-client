@@ -228,14 +228,27 @@ class jImageModifier {
         $quality = (!empty($params['quality']))?  $params['quality'] : 100;
 
         // Creating an image
-        switch ( $mimeType ) {
-            case 'image/gif'             : $image = imagecreatefromgif($srcFs); break;
-            case 'image/jpeg'            : $image = imagecreatefromjpeg($srcFs); break;
-            case 'image/png'             : $image = imagecreatefrompng($srcFs); break;
-            case 'image/vnd.wap.wbmp'    : $image = imagecreatefromwbmp($srcFs); break;
-            case 'image/image/x-xbitmap' : $image = imagecreatefromxbm($srcFs); break;
-            case 'image/x-xpixmap'       : $image = imagecreatefromxpm($srcFs); break;
-            default                      : return false;
+        switch ($mimeType) {
+            case 'image/gif':
+                $image = imagecreatefromgif($srcFs);
+                break;
+            case 'image/jpeg':
+                $image = imagecreatefromjpeg($srcFs);
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($srcFs);
+                break;
+            case 'image/vnd.wap.wbmp':
+                $image = imagecreatefromwbmp($srcFs);
+                break;
+            case 'image/image/x-xbitmap':
+                $image = imagecreatefromxbm($srcFs);
+                break;
+            case 'image/x-xpixmap':
+                $image = imagecreatefromxpm($srcFs);
+                break;
+            default:
+                return false;
         }
 
         if ($image === false) {
@@ -273,20 +286,20 @@ class jImageModifier {
             $resampleheight = imagesy($ancienimage);
             $resamplewidth = imagesx($ancienimage);
 
-            if(empty($params['width'])) {
-                $finalheight = $params['height'];
-                $finalwidth = $finalheight*imagesx($ancienimage)/imagesy($ancienimage);
-            } else if (empty($params['height'])) {
-                $finalwidth = $params['width'];
-                $finalheight = $finalwidth*imagesy($ancienimage)/imagesx($ancienimage);
+            if (empty($params['width'])) {
+                $finalheight = (int)$params['height'];
+                $finalwidth = floor($finalheight * imagesx($ancienimage) / imagesy($ancienimage));
+            } elseif (empty($params['height'])) {
+                $finalwidth = (int)$params['width'];
+                $finalheight = floor($finalwidth * imagesy($ancienimage) / imagesx($ancienimage));
             } else {
-                $finalwidth = $params['width'];
-                $finalheight = $params['height'];
-                if(!empty($params['omo']) && $params['omo'] == 'true') {
-                    if($params['width'] >= $params['height']) {
-                        $resampleheight = ( $resamplewidth*$params['height'] )/$params['width'];
+                $finalwidth = (int)$params['width'];
+                $finalheight = (int)$params['height'];
+                if (!empty($params['omo']) && $params['omo'] == 'true') {
+                    if ($params['width'] >= $params['height']) {
+                        $resampleheight = floor(($resamplewidth * $params['height']) / $params['width']);
                     } else {
-                        $resamplewidth = ( $resampleheight*$params['width'] )/$params['height'];
+                        $resamplewidth = floor(($resampleheight * $params['width']) / $params['height']);
                     }
                 }
             }
@@ -313,9 +326,9 @@ class jImageModifier {
 
             $image = imagecreatetruecolor($finalwidth, $finalheight);
             imagesavealpha($image, true);
-            $tp = imagecolorallocatealpha($image,0,0,0,127);
-            imagecopyresampled($image, $ancienimage, 0, 0, $posx, $posy, imagesx($image), imagesy($image), $resamplewidth, $resampleheight);
-            imagefill($image,0,0,$tp); // Because of a strange behavior (ticket #1486), we must fill the background AFTER imagecopyresampled
+            $tp = imagecolorallocatealpha($image, 0, 0, 0, 127);
+            imagecopyresampled($image, $ancienimage, 0, 0, (int)$posx, (int)$posy, imagesx($image), imagesy($image), $resamplewidth, $resampleheight);
+            imagefill($image, 0, 0, $tp); // Because of a strange behavior (ticket #1486), we must fill the background AFTER imagecopyresampled
         }
 
         // The shadow cast adds to the dimension of the image chooses
@@ -337,15 +350,21 @@ class jImageModifier {
         jFile::createDir(dirname($filename));
 
         // Register
-        switch ( $mimeType ) {
-            case 'image/gif'  : imagegif($image, $filename); break;
-            case 'image/jpeg' : imagejpeg($image, $filename, $quality); break;
-            default           : imagepng($image, $filename);
+        switch ($mimeType) {
+            case 'image/gif':
+                imagegif($image, $filename);
+                break;
+            case 'image/jpeg':
+                imagejpeg($image, $filename, $quality);
+                break;
+            default:
+                imagepng($image, $filename);
         }
         chmod($filename, jApp::config()->chmodFile);
 
         // Destruction
         @imagedestroy($image);
+        return true;
     }
 
 

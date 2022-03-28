@@ -62,7 +62,7 @@ class pgsqlDbTable extends jDbTable {
             $col = new jDbColumn($name, $type, $length, $hasDefault, $default, $notNull);
 
             $typeinfo = $tools->getTypeInfo($type);
-            if (preg_match('/^nextval\(([^\)]*)\)$/', $default, $m)) {
+            if (is_string($default) && preg_match('/^nextval\(([^\)]*)\)$/', $default, $m)) {
                 $col->autoIncrement = true;
                 $col->default = '';
                 if ($m[1]) {
@@ -78,8 +78,7 @@ class pgsqlDbTable extends jDbTable {
             else if ($typeinfo[6]) {
                 $col->autoIncrement = true;
                 $col->default = '';
-            }
-            else if (preg_match('/^NULL::/', $default) && $hasDefault) {
+            } elseif (is_string($default) && preg_match('/^NULL::/', $default) && $hasDefault) {
                 $col->default = null;
             }
 

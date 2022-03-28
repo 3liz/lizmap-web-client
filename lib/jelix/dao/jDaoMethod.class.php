@@ -114,7 +114,7 @@ class jDaoMethod {
             return;
         }
 
-        if(strlen($params['distinct'])){
+        if ($params['distinct'] != '') {
             if($this->type == 'select'){
                 $this->distinct=$this->_parser->getBool($params['distinct']);
             }elseif($this->type == 'count'){
@@ -137,7 +137,7 @@ class jDaoMethod {
             }
         }
 
-        if(strlen($params['groupby'])){
+        if ($params['groupby'] != '') {
             trigger_error("jdao: groupby attribute on method element is deprecated because its behavior is not predictable", E_USER_DEPRECATED);
             if($this->type == 'select' || $this->type == 'selectfirst'){
                 $this->_groupBy = preg_split("/[\s,]+/", $params['groupby']);
