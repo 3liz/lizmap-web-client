@@ -28,7 +28,7 @@ class jFormsControlCheckboxes extends jFormsControlDatasource {
                 return $this->container->errors[$this->ref] = jForms::ERRDATA_REQUIRED;
             }
         }else{
-            if(trim($value) == ''){
+            if(is_string($value) && trim($value) == ''){
                 if($this->required)
                     return $this->container->errors[$this->ref] = jForms::ERRDATA_REQUIRED;
             }else{

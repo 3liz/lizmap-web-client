@@ -17,7 +17,10 @@ class masterAdminDashboardWidget {
 
 function masterAdminDashboardWidgetSort($itemA, $itemB)
 {
-    return ($itemA->order - $itemB->order);
+    if ($itemA->order == $itemB->order) {
+        return 0;
+    }
+    return ($itemA->order < $itemB->order) ? -1 : 1;
 }
 
 class dashboardZone extends jZone {

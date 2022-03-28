@@ -44,7 +44,7 @@ class jFormsControlChoice extends jFormsControlGroups {
             return $this->container->errors[$this->ref] = jForms::ERRDATA_INVALID;
         }
 
-        if($val !== "" && $val !== null && isset($this->items[$val])) {
+        if ($val !== '' && isset($this->items[$val])) {
             $rv = null;
             foreach($this->items[$val] as $ctrl) {
                 if (!$ctrl->isActivated())

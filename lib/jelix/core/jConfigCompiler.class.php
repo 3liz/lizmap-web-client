@@ -237,7 +237,12 @@ class jConfigCompiler {
         }
 
         // sort plugins by priority
-        usort($plugins, function($a, $b){ return $a->getPriority() < $b->getPriority();});
+        usort($plugins, function($a, $b){
+            if ($a->getPriority() == $b->getPriority()) {
+                return 0;
+            }
+            return ($a->getPriority() < $b->getPriority()) ? -1 : 1;
+        });
 
         // run plugins
         foreach($plugins as $plugin) {

@@ -97,7 +97,10 @@ class jDatatypeString extends jDatatype {
     protected $facets = array('length','minLength','maxLength', 'pattern');
 
     public function check($value){
-        if($this->hasFacets){
+        if ($this->hasFacets) {
+            if ($value === null) {
+                $value = '';
+            }
             $len = iconv_strlen(
                 trim(preg_replace( '@\s+@', ' ', $value)),
                 jApp::config()->charset

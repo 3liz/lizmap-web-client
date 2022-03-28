@@ -42,7 +42,12 @@ class jFormsControlCaptcha extends jFormsControl {
         return $this->type;
     }
 
-    protected function getCaptcha() {
+    /**
+     * @return \Jelix\Forms\Captcha\CaptchaValidatorInterface
+     * @throws Exception
+     */
+    protected function getCaptcha()
+    {
         $className = '';
         if (isset(jApp::config()->forms['captcha.'.$this->validatorName.'.validator'])) {
             $className = jApp::config()->forms['captcha.'.$this->validatorName.'.validator'];
