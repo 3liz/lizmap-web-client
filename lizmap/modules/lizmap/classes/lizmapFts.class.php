@@ -7,6 +7,9 @@
  *
  * @license    All rights reserved
  */
+
+use Lizmap\Project\Project;
+
 class lizmapFts
 {
     protected $sql;
@@ -122,9 +125,9 @@ class lizmapFts
     /**
      * Method called by the autocomplete input field for taxon search.
      *
-     * @param $term Searched term
-     * @param mixed $project
-     * @param mixed $limit
+     * @param Project $project
+     * @param string  $term    Searched term
+     * @param int     $limit   default 40
      *
      * @return List of matching taxons
      */
@@ -137,7 +140,7 @@ class lizmapFts
             // Format words into {foo,bar}
             $result = $this->query(
                 $sql,
-                array(trim($term), $project, $limit)
+                array(trim($term), $project->getKey(), $limit)
             );
 
             // Limitations

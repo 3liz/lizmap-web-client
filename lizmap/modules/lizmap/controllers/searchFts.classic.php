@@ -21,6 +21,7 @@ class searchFtsCtrl extends jController
      */
     public function get()
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $content = array();
         $rep->data = $content;
@@ -30,12 +31,58 @@ class searchFtsCtrl extends jController
         if (!$pquery) {
             return $rep;
         }
+
+        $repository = $this->param('repository');
+        if (!$repository) {
+            // The parameter repository is mandatory !
+
+            return $rep;
+        }
+
         $project = $this->param('project');
+        if (!$project) {
+            // The parameter project is mandatory !
+
+            return $rep;
+        }
+
+        // Check repository
+        $lrep = lizmap::getRepository($repository);
+        if ($lrep == null) {
+            jLog::log('The repository '.strtoupper($repository).' does not exist !', 'errors');
+
+            return $rep;
+        }
+
+        // Get the project object
+        $lproj = null;
+
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if ($lproj == null) {
+                jLog::log('The lizmap project '.strtoupper($project).' does not exist !', 'errors');
+
+                return $rep;
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            jLog::logEx($e, 'error');
+            jLog::log('The lizmap project '.strtoupper($project).' does not exist !', 'errors');
+
+            return $rep;
+        }
+
+        // Redirect if no rights to access this repository
+        if (!$lproj->checkAcl()) {
+            //jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+
+            return $rep;
+        }
+
         $pquery = filter_var($pquery, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
         // Run query
         $fts = jClasses::getService('lizmap~lizmapFts');
-        $data = $fts->getData($project, $pquery);
+        $data = $fts->getData($lproj, $pquery);
 
         $rep->data = $data;
 
