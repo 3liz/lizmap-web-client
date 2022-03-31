@@ -751,11 +751,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
 
 		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$term Searched term\\)\\: Unexpected token \"\\$term\", expected type at offset 96$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
@@ -1286,16 +1281,6 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/search.classic.php
 
 		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/searchFts.classic.php
-
-		-
-			message: "#^Method searchFtsCtrl\\:\\:get\\(\\) should return jResponseJson but returns jResponse\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/searchFts.classic.php
-
-		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
 			count: 15
 			path: lizmap/modules/lizmap/controllers/service.classic.php
@@ -1579,11 +1564,6 @@ parameters:
 		-
 			message: "#^Access to an undefined property jICoordPlugin\\:\\:\\$config\\.$#"
 			count: 2
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Call to function is_array\\(\\) with string will always evaluate to false\\.$#"
-			count: 1
 			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
 
 		-
