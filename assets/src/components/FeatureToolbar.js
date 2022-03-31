@@ -35,21 +35,25 @@ export default class FeatureToolbar extends HTMLElement {
             <button class="btn btn-mini feature-select ${this.attributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}" @click=${() => this.select()} title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
             <button class="btn btn-mini feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
             <button class="btn btn-mini feature-zoom ${this.attributeTableConfig && this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
-            <button class="btn btn-mini feature-center ${this.attributeTableConfig &&  this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
+            <button class="btn btn-mini feature-center ${this.attributeTableConfig && this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
             <button class="btn btn-mini feature-edit ${this.isLayerEditable ? '' : 'hide'}" @click=${() => this.edit()} ?disabled="${!this._isFeatureEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
             <button class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
             <button class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isLayerPivot ? this.delete() : this.unlink()} title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
 
-            <div class="btn-group feature-export ${this.attributeTableConfig &&  this.hasGeometry ? '' : 'hide'}">
-                <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
-                    <i class="icon-download"></i>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu pull-right" role="menu">
-                    ${this._downloadFormats.map((format) => 
-                        html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
-                </ul>
-            </div>
+            ${this.isFeatureExportable
+                ? html`<div class="btn-group feature-export">
+                        <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                            <i class="icon-download"></i>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            ${this._downloadFormats.map((format) => 
+                                html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
+                        </ul>
+                    </div>`
+                : ''
+            }
+
         </div>`;
 
         render(this._mainTemplate(), this);
@@ -152,7 +156,6 @@ export default class FeatureToolbar extends HTMLElement {
      * Feature can be delete if delete capabilities has been set and layer is not pivot
      * If layer is a pivot, unlink button is displayed but a delete action is made instead
      * @readonly
-     * @memberof FeatureToolbar
      */
     get isDeletable(){
         return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True"
@@ -167,10 +170,22 @@ export default class FeatureToolbar extends HTMLElement {
      * Return true if childLayer has a relation with parentLayer
      *
      * @readonly
-     * @memberof FeatureToolbar
      */
     get hasRelation(){
         return lizMap.config?.relations?.[this.parentLayerId]?.some((relation) => relation.referencingLayer === this.layerId);
+    }
+
+    /**
+     * Return true if layer has geometry, WFS capability and popup_allow_download = true
+     *
+     * @readonly
+     */
+    get isFeatureExportable(){
+        return this.attributeTableConfig && 
+                this.hasGeometry && 
+                Object.entries(lizMap.config.layers).some(
+                    ([ ,value]) => value?.typename == this._featureType && value?.popup_allow_download
+                );
     }
 
     updateIsFeatureEditable(editableFeatures) {
