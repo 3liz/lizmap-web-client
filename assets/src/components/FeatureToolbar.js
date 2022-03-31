@@ -1,8 +1,12 @@
 import { mainEventDispatcher } from '../modules/Globals.js';
+import Utils from '../modules/Utils.js';
 import { html, render } from 'lit-html';
 
 import { transformExtent } from 'ol/proj';
 import { getCenter } from 'ol/extent';
+import GeoJSON from 'ol/format/GeoJSON';
+import GPX from 'ol/format/GPX';
+import KML from 'ol/format/KML';
 
 export default class FeatureToolbar extends HTMLElement {
     constructor() {
@@ -23,19 +27,36 @@ export default class FeatureToolbar extends HTMLElement {
             this._isFeatureEditable = !this.hasEditionRestricted;
         }
 
-        // Unlink button deletes the feature for pivot layer and unlinks otherwise
-        const mainTemplate = () => html`
+        this._downloadFormats = ['GeoJSON', 'GPX', 'KML'];
+
+        // Note: Unlink button deletes the feature for pivot layer and unlinks otherwise
+        this._mainTemplate = () => html`
         <div class="feature-toolbar">
             <button class="btn btn-mini feature-select ${this.attributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}" @click=${() => this.select()} title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
             <button class="btn btn-mini feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
             <button class="btn btn-mini feature-zoom ${this.attributeTableConfig && this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
-            <button class="btn btn-mini feature-center ${this.attributeTableConfig &&  this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
+            <button class="btn btn-mini feature-center ${this.attributeTableConfig && this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
             <button class="btn btn-mini feature-edit ${this.isLayerEditable ? '' : 'hide'}" @click=${() => this.edit()} ?disabled="${!this._isFeatureEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
             <button class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
             <button class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isLayerPivot ? this.delete() : this.unlink()} title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
+
+            ${this.isFeatureExportable
+                ? html`<div class="btn-group feature-export">
+                        <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                            <i class="icon-download"></i>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            ${this._downloadFormats.map((format) => 
+                                html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
+                        </ul>
+                    </div>`
+                : ''
+            }
+
         </div>`;
 
-        render(mainTemplate(), this);
+        render(this._mainTemplate(), this);
 
         // Add tooltip on buttons
         $('.btn', this).tooltip({
@@ -44,13 +65,13 @@ export default class FeatureToolbar extends HTMLElement {
 
         mainEventDispatcher.addListener(
             () => {
-                render(mainTemplate(), this);
+                render(this._mainTemplate(), this);
             }, ['selection.changed', 'filteredFeatures.changed']
         );
 
         this._editableFeaturesCallBack = (editableFeatures) => {
             this.updateIsFeatureEditable(editableFeatures.properties);
-            render(mainTemplate(), this);
+            render(this._mainTemplate(), this);
         };
 
         mainEventDispatcher.addListener(
@@ -62,7 +83,7 @@ export default class FeatureToolbar extends HTMLElement {
     disconnectedCallback() {
         mainEventDispatcher.removeListener(
             () => {
-                render(mainTemplate(), this);
+                render(this._mainTemplate(), this);
             }, 'selection.changed'
         );
 
@@ -135,7 +156,6 @@ export default class FeatureToolbar extends HTMLElement {
      * Feature can be delete if delete capabilities has been set and layer is not pivot
      * If layer is a pivot, unlink button is displayed but a delete action is made instead
      * @readonly
-     * @memberof FeatureToolbar
      */
     get isDeletable(){
         return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True"
@@ -150,10 +170,22 @@ export default class FeatureToolbar extends HTMLElement {
      * Return true if childLayer has a relation with parentLayer
      *
      * @readonly
-     * @memberof FeatureToolbar
      */
     get hasRelation(){
         return lizMap.config?.relations?.[this.parentLayerId]?.some((relation) => relation.referencingLayer === this.layerId);
+    }
+
+    /**
+     * Return true if layer has geometry, WFS capability and popup_allow_download = true
+     *
+     * @readonly
+     */
+    get isFeatureExportable(){
+        return this.attributeTableConfig && 
+                this.hasGeometry && 
+                Object.entries(lizMap.config.layers).some(
+                    ([ ,value]) => value?.typename == this._featureType && value?.popup_allow_download
+                );
     }
 
     updateIsFeatureEditable(editableFeatures) {
@@ -185,7 +217,7 @@ export default class FeatureToolbar extends HTMLElement {
                 [this.getAttribute('bbox-minx'), this.getAttribute('bbox-miny'), this.getAttribute('bbox-maxx'), this.getAttribute('bbox-maxy')],
                 this.getAttribute('crs'),
                 lizMap.mainLizmap.projection
-                );
+            );
         }else{
             lizMap.zoomToFeature(this.featureType, this.fid, 'zoom');
         }
@@ -272,7 +304,8 @@ export default class FeatureToolbar extends HTMLElement {
                 pkey: primaryKey,
                 pkeyval: cPkeyVal,
                 fkey: fKey
-        })}).then(response => {
+            })
+        }).then(response => {
             return response.text();
         }).then( data => {
             // Show response message
@@ -311,5 +344,26 @@ export default class FeatureToolbar extends HTMLElement {
             );
             lizMap.lizmapLayerFilterActive = null;
         }
+    }
+
+    export(format){
+        lizMap.mainLizmap.wfs.getFeature({
+            TYPENAME: this._featureType,
+            FEATUREID: this._featureType + '.' + this._fid
+        }).then(response => {
+            if(format == 'GeoJSON'){
+                Utils.downloadFileFromString(JSON.stringify(response), 'application/geo+json', this._featureType + '.json');
+            }else{
+                // Convert GeoJSON to GPX or KML
+                const features = (new GeoJSON()).readFeatures(response);
+                if(format == 'GPX'){
+                    const gpx = (new GPX()).writeFeatures(features);
+                    Utils.downloadFileFromString(gpx, 'application/gpx+xml', this._featureType + '.gpx');
+                }else{
+                    const kml = (new KML()).writeFeatures(features);
+                    Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', this._featureType + '.kml');
+                }
+            }
+        });
     }
 }

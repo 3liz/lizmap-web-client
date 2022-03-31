@@ -670,7 +670,7 @@ class WMSRequest extends OGCRequest
                         $bbox = $feature->BoundingBox[0];
                         foreach ($props as $prop => $class) {
                             $hiddenGeometry .= '<input type="hidden" value="'.$bbox[$prop].'" class="lizmap-popup-layer-feature-'.$class.'"/>'.PHP_EOL;
-                            $featureToolbarExtent .= $class.'="'.$bbox[$prop].'"';
+                            $featureToolbarExtent .= $class.'="'.$bbox[$prop].'" ';
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import Utils from '../modules/Utils.js';
 
 import Feature from 'ol/Feature';
 
@@ -489,29 +490,15 @@ export default class Digitizing {
 
             if (format === 'geojson') {
                 const geoJSON = (new GeoJSON()).writeFeatures(OL6Allfeatures);
-                this._downloadString(geoJSON, 'application/geo+json', 'export.geojson');
+                Utils.downloadFileFromString(geoJSON, 'application/geo+json', 'export.geojson');
             } else if (format === 'gpx') {
                 const gpx = (new GPX()).writeFeatures(OL6Allfeatures);
-                this._downloadString(gpx, 'application/gpx+xml', 'export.gpx');
+                Utils.downloadFileFromString(gpx, 'application/gpx+xml', 'export.gpx');
             } else if (format === 'kml') {
                 const kml = (new KML()).writeFeatures(OL6Allfeatures);
-                this._downloadString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
+                Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
             }
         }
-    }
-
-    _downloadString(text, fileType, fileName) {
-        var blob = new Blob([text], { type: fileType });
-
-        var a = document.createElement('a');
-        a.download = fileName;
-        a.href = URL.createObjectURL(blob);
-        a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
-        a.style.display = "none";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
     }
 
     import(file) {
