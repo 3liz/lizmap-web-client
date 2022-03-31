@@ -253,6 +253,7 @@ class mediaCtrl extends jController
         // get project illustration if exists
         if ($project) {
             $imageTypes = array('jpg', 'jpeg', 'png', 'gif');
+            $imageTypes = array_merge($imageTypes, array_map('strtoupper', $imageTypes));
             foreach ($imageTypes as $type) {
                 if (!file_exists($lrep->getPath().$project.'.qgs.'.$type)) {
                     continue;
