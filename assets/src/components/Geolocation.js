@@ -8,14 +8,6 @@ export default class Geolocation extends HTMLElement {
 
     connectedCallback() {
         // Display
-        // Render positionTemplate and accuracyTemplate apart because their values might change a lot
-        const positionTemplate = () => html`
-            <div>X : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() : ''}</div>
-            <div>Y : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[1].toString() : ''}</div>`;
-
-        const accuracyTemplate = () => html`
-            <div>${lizDict['geolocate.infos.accuracy']} : ${mainLizmap.geolocation.accuracy}</div>`;
-
         const mainTemplate = () => html`
         <div class="menu-content">
             <div class="button-bar">
@@ -28,8 +20,17 @@ export default class Geolocation extends HTMLElement {
                 </div>
             </div>
             <div class="geolocation-infos">
-                <div><small class="geolocation-coords">${positionTemplate()}</small></div>
-                <div><small class="geolocation-accuracy">${accuracyTemplate()}</small></div>
+                <div>
+                    <small class="geolocation-coords">
+                        <div>X : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() : ''}</div>
+                        <div>Y : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[1].toString() : ''}</div>
+                    </small>
+                </div>
+                <div>
+                    <small class="geolocation-accuracy">
+                        <div>${lizDict['geolocate.infos.accuracy']} : ${mainLizmap.geolocation.accuracy}</div>
+                    </small>
+                </div>
             </div>
         </div>`;
 
@@ -42,23 +43,10 @@ export default class Geolocation extends HTMLElement {
             [
                 'geolocation.isTracking',
                 'geolocation.firstGeolocation',
-                'geolocation.isBind'
+                'geolocation.isBind',
+                'geolocation.position',
+                'geolocation.accuracy'
             ]
-        );
-
-        // Handle apart listeners to events which occur often to avoid too much render()
-        mainEventDispatcher.addListener(
-            () => {
-                render(positionTemplate(), this.querySelector('.geolocation-coords'));
-            },
-            'geolocation.position'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(accuracyTemplate(), this.querySelector('.geolocation-accuracy'));
-            },
-            'geolocation.accuracy'
         );
     }
 
