@@ -184,7 +184,8 @@ var lizDataviz = function() {
                 }
 
                 // Build plot
-                var plot = buildPlot(target_id, json);
+                // Pass plot_id to inherit custom configurations in child charts
+                var plot = buildPlot(target_id, json, plot_id);
                 $('#'+target_id).prev('.dataviz-waiter:first').hide();
             }
         );
@@ -295,7 +296,7 @@ var lizDataviz = function() {
         return pid;
     }
 
-    function buildPlot(id, conf){
+    function buildPlot(id, conf, pid = null){
         // Build plot with plotly or lizmap
         if(conf.data.length && conf.data[0]['type'] == 'html'){
             buildHtmlPlot(id, conf.data, conf.layout);
@@ -332,7 +333,8 @@ var lizDataviz = function() {
 
             // Apply user defined layout
             // We need to get the plot Lizmap config from its container id
-            var pid = getPlotIdByContainerId(id);
+            pid = pid != null ? pid : getPlotIdByContainerId(id);
+
             // Do nothing if pid not found
             if (pid == null) {
                 return;
