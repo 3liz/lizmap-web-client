@@ -11,9 +11,6 @@ import KML from 'ol/format/KML';
 export default class FeatureToolbar extends HTMLElement {
     constructor() {
         super();
-    }
-
-    connectedCallback() {
 
         this._fid = this.getAttribute('value').split('.').pop();
         this._layerId = this.getAttribute('value').replace('.' + this.fid, '');
@@ -63,16 +60,18 @@ export default class FeatureToolbar extends HTMLElement {
             placement: 'top'
         });
 
+        this._editableFeaturesCallBack = (editableFeatures) => {
+            this.updateIsFeatureEditable(editableFeatures.properties);
+            render(this._mainTemplate(), this);
+        };
+    }
+
+    connectedCallback() {
         mainEventDispatcher.addListener(
             () => {
                 render(this._mainTemplate(), this);
             }, ['selection.changed', 'filteredFeatures.changed']
         );
-
-        this._editableFeaturesCallBack = (editableFeatures) => {
-            this.updateIsFeatureEditable(editableFeatures.properties);
-            render(this._mainTemplate(), this);
-        };
 
         mainEventDispatcher.addListener(
             this._editableFeaturesCallBack,
