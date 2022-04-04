@@ -2946,52 +2946,53 @@ var lizMap = function() {
               return true;
 
           lizMap.getLayerFeature(featureType, fid, function(feat) {
-              // Where there is all plots
-              var plotLayers = lizMap.config.datavizLayers.layers;
-              var lrelations = lizMap.config.relations[layerId];
-              var nbPlotByLayer = 1;
-              for(var x in lrelations){
-                  var rel = lrelations[x];
-                  // Id of the layer which is the child of layerId
-                  var getChildrenId = rel.referencingLayer;
-
-                  // Filter of the plot
-                  var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
-                  for ( var i in plotLayers) {
-                      if(plotLayers[i].layer_id==getChildrenId)
-                      {
-                          var plot_config=plotLayers[i];
-                          if('popup_display_child_plot' in plot_config
-                            && plot_config.popup_display_child_plot == "True"
-                          ){
-                            var plot_id = plotLayers[i].plot_id;
-                            // We must add the plot id in the global variable as it is needed by the dataviz.js file
-                            lizDataviz.data.plots[plot_id] = {'json': null, 'filter': null, 'show_plot': true, 'cache': null};
-                            popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
-                            // Be sure the id is unique ( popup can be displayed in atlas tool too)
-                            popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
-
-                            var phtml = lizDataviz.buildPlotContainerHtml(
-                                plot_config.title,
-                                plot_config.abstract,
-                                popupId,
-                                false
-                            );
-                            var html = '<div class="lizmapPopupChildren lizdataviz">';
-                            html+= '<h4>'+ plot_config.title+'</h4>';
-                            html+= phtml
-                            html+= '</div>';
-                            var haspc = $(mydiv).find('div.lizmapPopupChildren:first');
-                            if( haspc.length > 0 )
-                                $(haspc).before(html);
-                            else
-                                $(mydiv).append(html);
-                            lizDataviz.getPlot(plot_id, filter, popupId);
-                            nbPlotByLayer++;
-                          }
-                      }
-                  }
-              }
+                // Where there is all plots
+                var plotLayers = lizMap.config.datavizLayers.layers;
+                var lrelations = lizMap.config.relations[layerId];
+                var nbPlotByLayer = 1;
+                
+                for ( var i in plotLayers) {
+  
+                    for(var x in lrelations){
+                      var rel = lrelations[x];
+                      // Id of the layer which is the child of layerId
+                      var getChildrenId = rel.referencingLayer;
+    
+                      // Filter of the plot
+                      var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
+                    
+  
+                        if(plotLayers[i].layer_id==getChildrenId)
+                        {
+                            var plot_config=plotLayers[i];
+                            if('popup_display_child_plot' in plot_config
+                              && plot_config.popup_display_child_plot == "True"
+                            ){
+                              var plot_id=plotLayers[i].plot_id;
+                              popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
+                              // Be sure the id is unique ( popup can be displayed in atlas tool too)
+                              popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
+                              var phtml = lizDataviz.buildPlotContainerHtml(
+                                  plot_config.title,
+                                  plot_config.abstract,
+                                  popupId,
+                                  false
+                              );
+                              var html = '<div class="lizmapPopupChildren lizdataviz">';
+                              html+= '<h4>'+ plot_config.title+'</h4>';
+                              html+= phtml
+                              html+= '</div>';
+                              var haspc = $(mydiv).find('div.lizmapPopupChildren:last');
+                              if( haspc.length > 0 )
+                                  $(haspc).after(html);
+                              else
+                                  $(mydiv).append(html);
+                              lizDataviz.getPlot(plot_id, filter, popupId);
+                              nbPlotByLayer++;
+                            }
+                        }
+                    }
+                }
           });
         }
       });
