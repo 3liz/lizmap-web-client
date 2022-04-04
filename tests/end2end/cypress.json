@@ -4,7 +4,6 @@
     "viewportHeight": 800,
     "video": false,
     "retries": {
-        "runMode": 2,
-        "openMode": 1
+        "runMode": 2
     }
 }
