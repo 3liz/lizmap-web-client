@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Overview's map extent is the same as the main map's initial extent and is fixed by default (previous behavior before 3.5.0). Dynamic scale can be activated in Lizmap plugin. 
+
 ## 3.5.2 - 2022-03-24
 
 ### Fixed
