@@ -954,7 +954,7 @@ class QgisForm implements QgisFormControlsInterface
 
                 break;
 
-            case 'float':
+            case 'decimal':
                 if (is_numeric($value)) {
                     $value = (float) $value;
                     if (!$value && $value !== 0.0) {

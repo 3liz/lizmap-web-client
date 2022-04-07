@@ -48,7 +48,7 @@ class QgisFormControl
      */
     public $rendererCategories = '';
 
-    // Qgis data type (text, float, integer, etc.)
+    // Qgis data type (text, decimal, integer, etc.)
     public $fieldDataType = '';
 
     // Read-only
@@ -139,11 +139,11 @@ class QgisFormControl
 
     // Table to map arbitrary data types to expected ones
     const castDataType = array(
-        'float' => 'float',
-        'real' => 'float',
-        'double' => 'float',
-        'double decimal' => 'float',
-        'numeric' => 'float',
+        'float' => 'decimal',
+        'real' => 'decimal',
+        'double' => 'decimal',
+        'double decimal' => 'decimal',
+        'numeric' => 'decimal',
         'int' => 'integer',
         'integer' => 'integer',
         'int4' => 'integer',
@@ -402,14 +402,10 @@ class QgisFormControl
             // let's change datatype when control has the default one, \jDatatypeString
             // we don't want to change datatype that are specific to a control type, like in\jFormsControlHtmlEditor,
             //\jFormsControlDate etc..
-            $typeTab = array('Integer', 'float', 'Date', 'DateTime', 'Time', 'Boolean');
+            $typeTab = array('Integer', 'Decimal', 'Date', 'DateTime', 'Time', 'Boolean');
             foreach ($typeTab as $type) {
                 if ($this->fieldDataType === strtolower($type)) {
-                    if ($this->fieldDataType === 'float') {
-                        $class = '\jDatatype'.'Decimal';
-                    } else {
-                        $class = '\jDatatype'.$type;
-                    }
+                    $class = '\jDatatype'.$type;
                     $this->ctrl->datatype = new $class();
                 }
             }
@@ -538,7 +534,7 @@ class QgisFormControl
                 $min = $this->getEditAttribute('Min');
                 $max = $this->getEditAttribute('Max');
                 $step = $this->getEditAttribute('Step');
-                if ($this->fieldDataType != 'float') {
+                if ($this->fieldDataType != 'decimal') {
                     // XXX why ?
                     $min = (int) $min;
                     $max = (int) $max;
