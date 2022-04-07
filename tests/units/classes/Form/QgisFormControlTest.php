@@ -59,7 +59,7 @@ class QgisFormControlTest extends TestCase
             )
         );
         $control->ctrl->datatype = new \jDatatypeString();
-        $control->fieldDataType = 'float';
+        $control->fieldDataType = 'decimal';
         $control->isReadOnly = false;
         $control->required = true;
         $control->setControlMainPropertiesForTests($properties);
