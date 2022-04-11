@@ -113,7 +113,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         $version = $this->param('version');
         // force version if not defined
         if (!$version) {
-            $this->params['version'] = '1.3.0';
+            $this->params['version'] = '1.0.0';
         }
 
         $result = parent::process_getcapabilities();
