@@ -566,21 +566,6 @@ parameters:
 			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
 
 		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 2
-			path: lizmap/modules/dataviz/controllers/service.classic.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/dataviz/controllers/service.classic.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/dataviz/controllers/service.classic.php
-
-		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
 			count: 1
 			path: lizmap/modules/dynamicLayers/controllers/map.classic.php

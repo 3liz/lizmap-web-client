@@ -1,5 +1,7 @@
 <?php
 /**
+ * PHP Dataviz service to get plot config.
+ *
  * @author    3liz
  * @copyright 2017 3liz
  *
@@ -9,19 +11,32 @@
  */
 class serviceCtrl extends jController
 {
+    /**
+     * @var null|string the lizmap repository key
+     */
     private $repository;
+
+    /**
+     * @var null|string the qgis project key
+     */
     private $project;
+
+    /**
+     * @var datavizConfig
+     */
     private $config;
 
-    public function __construct($request)
-    {
-        parent::__construct($request);
-    }
-
+    /**
+     * Redirect to the appropriate action depending on the REQUEST parameter.
+     *
+     * @urlparam $REPOSITORY Name of the repository
+     * @urlparam $PROJECT Name of the project
+     * @urlparam $REQUEST Request type
+     *
+     * @return jResponseJson the request response
+     */
     public function index()
     {
-        $rep = $this->getResponse('json');
-
         // Check project
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -41,27 +56,45 @@ class serviceCtrl extends jController
         $this->config = $config;
 
         // Redirect to method corresponding on REQUEST param
-        $request = $this->param('request', 'getPlot');
-        if ($request == 'getPlot') {
-            return $this->getPlot();
+        $request = $this->param('request', 'getplot');
+        if (strtolower($request) == 'getplot') {
+            return $this->GetPlot();
         }
+
+        return $this->error(
+            array(
+                'title' => 'Not supported request',
+                'detail' => 'The request "'.$request.'" is not supported!',
+            ),
+        );
     }
 
-    public function error($errors)
+    /**
+     * Provide errors.
+     *
+     * @param mixed $errors
+     *
+     * @return jResponseJson the errors response
+     */
+    protected function error($errors)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array('errors' => $errors);
 
         return $rep;
     }
 
-    public function getPlot()
+    /**
+     * Get Plot config.
+     *
+     * @return jResponseJson the GetPlot response
+     */
+    protected function GetPlot()
     {
-        $rep = $this->getResponse('json');
-
         // Get params
-        $repository = $this->param('repository');
-        $project = $this->param('project');
+        $repository = $this->repository;
+        $project = $this->project;
         $plot_id = $this->intParam('plot_id');
         $exp_filter = trim($this->param('exp_filter'));
         $color = null;
@@ -74,8 +107,8 @@ class serviceCtrl extends jController
         if (array_key_exists($plot_id, $this->config['layers'])) {
             $plotConfig = $this->config['layers'][$plot_id];
         } else {
-            return array(
-                'errors' => array(
+            return $this->error(
+                array(
                     'title' => 'No corresponding plot',
                     'detail' => 'No plot could be created for this request',
                 ),
@@ -108,8 +141,8 @@ class serviceCtrl extends jController
             $dplot = null;
         }
         if (!$dplot) {
-            return array(
-                'errors' => array(
+            return $this->error(
+                array(
                     'title' => 'No corresponding plot',
                     'detail' => 'No plot could be created for this request',
                 ),
@@ -123,6 +156,8 @@ class serviceCtrl extends jController
             'layout' => $dplot->getLayout(),
         );
 
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
         $rep->data = $plot;
 
         return $rep;
