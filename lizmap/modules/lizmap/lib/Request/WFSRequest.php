@@ -130,7 +130,7 @@ class WFSRequest extends OGCRequest
             $typename = $this->param('typename', '');
             if (!$typename) {
                 $featureid = $this->param('featureid', '');
-                if (!$featureid) {
+                if ($featureid) {
                     $featureIds = explode(',', $featureid);
                     $typenames = array();
                     foreach ($featureIds as $fid) {
