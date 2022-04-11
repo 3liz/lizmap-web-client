@@ -709,7 +709,7 @@ class serviceCtrl extends jController
         }
 
         // Define file name
-        $typenames = implode('_', array_map('trim', explode(',', $this->params['typename'])));
+        $typenames = implode('_', array_map('trim', explode(',', $wfsRequest->requestedTypename())));
         $zipped_files = array('shp', 'mif', 'tab');
         $outputformat = 'gml2';
         if (isset($this->params['outputformat'])) {
