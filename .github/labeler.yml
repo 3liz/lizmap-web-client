@@ -19,5 +19,8 @@
 #"run cypress":
 #  - any: ['tests/end2end/**/*']
 
+"QGIS Server":
+  - any: ['lizmap/modules/lizmap/lib/Request/**/*']
+
 "tests":
   - any: ['tests/**/*']
