@@ -781,11 +781,24 @@ class WFSRequest extends OGCRequest
         }
 
         if (!empty($geosql)) {
+            // Define BBOX SQL
+            $bboxsql = 'ST_Envelope(lg.geosource::geometry)';
             // For new QGIS versions, export into EPSG:4326
             $lizservices = $this->services;
             if (version_compare($lizservices->qgisServerVersion, '2.18', '>=')) {
                 $geosql = 'ST_Transform('.$geosql.', 4326)';
+                $bboxsql = 'ST_Transform('.$bboxsql.', 4326)';
             }
+
+            // Transform BBOX into JSON
+            $sql .= '
+                        array_to_json(ARRAY[
+                            ST_XMin('.$bboxsql.'),
+                            ST_YMin('.$bboxsql.'),
+                            ST_XMax('.$bboxsql.'),
+                            ST_YMax('.$bboxsql.')
+                        ]) As bbox,
+            ';
 
             // Transform into GeoJSON
             $sql .= '
