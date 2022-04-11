@@ -30,6 +30,7 @@ describe('Request service', function () {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
                 expect(resp.body).to.contain('WMS_Capabilities')
+                expect(resp.body).to.contain('version="1.3.0"')
             })
     })
 
@@ -38,6 +39,7 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.body).to.contain('version="1.0.0"')
             })
     })
 
@@ -47,6 +49,18 @@ describe('Request service', function () {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
                 expect(resp.body).to.contain('WFS_Capabilities')
+                expect(resp.body).to.contain('version="1.0.0"')
+            })
+        })
+
+    it('WFS GetCapabilities 1.1.0', function () {
+
+        cy.request('/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities')
+            .then((resp) => {
+                expect(resp.status).to.eq(200)
+                expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.body).to.contain('WFS_Capabilities')
+                expect(resp.body).to.contain('version="1.1.0"')
             })
     })
 
@@ -171,6 +185,7 @@ describe('Request service', function () {
             expect(resp.status).to.eq(200)
             expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
             expect(resp.body).to.contain('WFS_Capabilities')
+            expect(resp.body).to.contain('version="1.0.0"')
         })
     })
 })
