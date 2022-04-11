@@ -124,6 +124,7 @@ describe('Request service', function () {
             expect(resp.body).to.have.property('features')
             expect(resp.body.features).to.have.length(2)
             expect(resp.body.features[0].id).to.equal('selection_polygon.1')
+            expect(resp.body.features[0]).to.have.property('bbox')
         })
     })
 
@@ -146,6 +147,7 @@ describe('Request service', function () {
             expect(resp.body).to.have.property('features')
             expect(resp.body.features).to.have.length(1)
             expect(resp.body.features[0].id).to.equal('selection_polygon.1')
+            expect(resp.body.features[0]).to.have.property('bbox')
         })
     })
 
