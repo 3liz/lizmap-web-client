@@ -17,6 +17,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
     protected $tplExceptions = 'lizmap~wfs_exception';
 
     /**
+     * @var null|string the requested typename
+     */
+    protected $wfs_typename;
+
+    /**
      * @var qgisMapLayer|qgisVectorLayer
      */
     protected $qgisLayer;
@@ -60,15 +65,15 @@ class lizmapWFSRequest extends lizmapOGCRequest
         }
 
         // filter data by login
-        $typenames = $this->param('typename');
-        if (is_string($typenames)) {
+        $typenames = $this->requestedTypename();
+        if (is_string($typenames) && $typenames !== '') {
             $typenames = explode(',', $typenames);
         }
 
         // get login filters
         $loginFilters = array();
 
-        if ($typenames) {
+        if (is_array($typenames)) {
             $loginFilters = $this->project->getLoginFilters($typenames);
         }
 
@@ -103,6 +108,36 @@ class lizmapWFSRequest extends lizmapOGCRequest
         }
 
         return $params;
+    }
+
+    /**
+     * Get the requested typename based on TYPENAME or FEATUREID parameter.
+     *
+     * @return string the requested typename
+     */
+    public function requestedTypename()
+    {
+        if (!is_string($this->wfs_typename)) {
+            $typename = $this->param('typename', '');
+            if (!$typename) {
+                $featureid = $this->param('featureid', '');
+                if ($featureid) {
+                    $featureIds = explode(',', $featureid);
+                    $typenames = array();
+                    foreach ($featureIds as $fid) {
+                        $exp_fid = explode('.', $fid);
+                        if (count($exp_fid) == 2) {
+                            $typenames[] = trim($exp_fid[0]);
+                        }
+                    }
+                    $typenames = array_unique($typenames);
+                    $typename = implode(',', $typenames);
+                }
+            }
+            $this->wfs_typename = $typename;
+        }
+
+        return $this->wfs_typename;
     }
 
     /**
@@ -180,7 +215,8 @@ class lizmapWFSRequest extends lizmapOGCRequest
         if ($code < 400 && $returnJson) {
             $jsonData = array();
 
-            $layer = $this->project->findLayerByAnyName($this->param('typename'));
+            $wfs_typename = $this->requestedTypename();
+            $layer = $this->project->findLayerByAnyName($wfs_typename);
             if ($layer != null) {
 
                 // Get data from XML
@@ -196,7 +232,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
                 }
                 if ($go && $xml->complexType) {
                     $typename = (string) $xml->complexType->attributes()->name;
-                    if ($typename == $this->param('typename', '').'Type') {
+                    if ($typename == $wfs_typename.'Type') {
                         $jsonData['name'] = $layer->name;
                         $types = array();
                         $elements = $xml->complexType->complexContent->extension->sequence->element;
@@ -232,9 +268,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
         }
 
         // Get type name
-        $typename = $this->param('typename');
+        $typename = $this->requestedTypename();
         if (!$typename) {
-            jMessage::add('TYPENAME is mandatory', 'RequestNotWellFormed');
+            jMessage::add('TYPENAME or FEATUREID is mandatory', 'RequestNotWellFormed');
 
             return $this->serviceException();
         }
@@ -312,7 +348,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         if ($mime == 'text/plain' && strtolower($this->param('outputformat')) == 'geojson') {
             $mime = 'text/json';
-            $layer = $this->project->findLayerByAnyName($this->param('typename'));
+            $layer = $this->project->findLayerByAnyName($this->requestedTypename());
             if ($layer != null) {
                 $layer = $this->project->getLayer($layer->id);
                 $aliases = $layer->getAliasFields();
