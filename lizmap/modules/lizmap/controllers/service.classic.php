@@ -383,6 +383,7 @@ class serviceCtrl extends jController
         $service = $ogcRequest->param('service');
         $result = $ogcRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -408,6 +409,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         // Return response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -433,6 +435,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         // Return response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -451,7 +454,7 @@ class serviceCtrl extends jController
      *
      * @param WFSRequest|WMSRequest|WMTSRequest $wmsRequest
      *
-     * @return jResponseBinary image rendered by the Map Server
+     * @return jResponseBinary|jResponseXml image rendered by the Map Server or Service Exception
      */
     protected function GetMap($wmsRequest)
     {
@@ -506,6 +509,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -539,6 +543,7 @@ class serviceCtrl extends jController
         );
         jEvent::notify('LizLogItem', $eventParams);
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -563,6 +568,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -597,6 +603,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -633,6 +640,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -649,7 +657,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseJson JSON configuration file for the specified project
+     * @return jResponseJson|jResponseXml JSON configuration file for the specified project or Service Exception
      */
     public function getProjectConfig()
     {
@@ -659,6 +667,7 @@ class serviceCtrl extends jController
             return $this->serviceException();
         }
 
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $this->project->getUpdatedConfig();
 
@@ -679,6 +688,7 @@ class serviceCtrl extends jController
     {
         $result = $wfsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
         $rep->doDownload = false;
@@ -747,6 +757,7 @@ class serviceCtrl extends jController
         $result = $wfsRequest->process();
 
         // Return response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -764,7 +775,7 @@ class serviceCtrl extends jController
      * @urlparam string $project Name of the project : mandatory
      * @urlparam string $authid SRS or CRS authid like USER:*
      *
-     * @return jResponseText
+     * @return jResponseText|jResponseXml
      */
     protected function GetProj4()
     {
@@ -775,6 +786,7 @@ class serviceCtrl extends jController
         }
 
         // Return response
+        /** @var jResponseText $rep */
         $rep = $this->getResponse('text');
         $content = $this->project->getProj4($this->iParam('authid'));
         if (!$content) {
@@ -795,6 +807,7 @@ class serviceCtrl extends jController
     {
         $result = $wmtsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
@@ -847,7 +860,7 @@ class serviceCtrl extends jController
     }
 
     /**
-     * @return jResponseJson
+     * @return jResponseJson|jResponseXml
      */
     protected function getSelectionToken()
     {
@@ -857,6 +870,7 @@ class serviceCtrl extends jController
         }
 
         // Prepare response
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params
@@ -902,6 +916,7 @@ class serviceCtrl extends jController
         }
 
         // Prepare response
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params
