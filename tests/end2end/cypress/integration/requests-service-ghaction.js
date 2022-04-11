@@ -64,6 +64,48 @@ describe('Request service', function () {
             })
     })
 
+    it('WFS DescribeFeatureType', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'DescribeFeatureType',
+                'TYPENAME': 'selection_polygon'
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('text/xml; charset=utf-8')
+            expect(resp.body).to.contain('schema')
+            expect(resp.body).to.contain('complexType')
+            expect(resp.body).to.contain('selection_polygonType')
+        })
+    })
+
+    it('WFS DescribeFeatureType JSON', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'DescribeFeatureType',
+                'TYPENAME': 'selection_polygon',
+                'OUTPUTFORMAT': 'JSON'
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('text/json; charset=utf-8')
+            expect(resp.body).to.have.property('name', 'selection_polygon')
+            expect(resp.body).to.have.property('aliases')
+            expect(resp.body).to.have.property('defaults')
+            expect(resp.body).to.have.property('types')
+            expect(resp.body.types).to.have.property('id', 'int')
+            expect(resp.body.types).to.have.property('geometry', 'gml:PolygonPropertyType')
+        })
+    })
+
     it('WFS GetFeature TYPENAME', function () {
         cy.request({
             method: 'POST',
@@ -80,6 +122,9 @@ describe('Request service', function () {
             expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
             expect(resp.body).to.have.property('type', 'FeatureCollection')
             expect(resp.body).to.have.property('bbox')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(2)
+            expect(resp.body.features[0].id).to.equal('selection_polygon.1')
         })
     })
 
@@ -99,6 +144,8 @@ describe('Request service', function () {
             expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
             expect(resp.body).to.have.property('type', 'FeatureCollection')
             expect(resp.body).to.have.property('bbox')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
             expect(resp.body.features[0].id).to.equal('selection_polygon.1')
         })
     })
@@ -186,6 +233,24 @@ describe('Request service', function () {
             expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
             expect(resp.body).to.contain('WFS_Capabilities')
             expect(resp.body).to.contain('version="1.0.0"')
+        })
+    })
+
+    it('TYPENAME or FEATUREID is mandatory for WFS GetFeature request', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(400)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
         })
     })
 })
