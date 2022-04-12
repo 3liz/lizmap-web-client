@@ -224,8 +224,8 @@ class configCtrl extends jController
             }
         }
 
-        // Check that cacheExpiration  is between 0 and 2592000 seconds
-        if ($form->getData('cacheExpiration') < 0 or $form->getData('cacheExpiration') > 2592000) {
+        // Check that cacheExpiration is between 0 and 2592000 seconds
+        if (intval($form->getData('cacheExpiration')) < 0 or intval($form->getData('cacheExpiration')) > 2592000) {
             $ok = false;
             $form->setErrorOn(
                 'cacheExpiration',
