@@ -23,6 +23,11 @@ jobs:
       github.event_name == 'workflow_dispatch'
     name: "Cypress"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        qgis-server-version: [3.16, 3.22]
+    env:
+      LZMQGSRVVERSION: ${{ matrix.qgis-server-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
