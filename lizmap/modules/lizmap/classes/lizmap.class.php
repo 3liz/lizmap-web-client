@@ -244,7 +244,7 @@ class lizmap
      *
      * @param string $key Key of the repository to get
      *
-     * @return lizmapRepository
+     * @return null|lizmapRepository
      */
     public static function getRepository($key)
     {
@@ -271,7 +271,7 @@ class lizmap
      * @param string $key  the repository name
      * @param array  $data list of properties for the repository
      *
-     * @return lizmapRepository
+     * @return null|lizmapRepository
      */
     public static function createRepository($key, $data)
     {
