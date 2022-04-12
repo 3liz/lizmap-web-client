@@ -1,5 +1,7 @@
 <?php
 /**
+ * PHP proxy to execute filter request.
+ *
  * @author    3liz
  * @copyright 2017 3liz
  *
@@ -9,18 +11,32 @@
  */
 class serviceCtrl extends jController
 {
+    /**
+     * @var null|string the lizmap repository key
+     */
     private $repository;
+
+    /**
+     * @var null|string the qgis project key
+     */
     private $project;
+
+    /**
+     * @var filterConfig
+     */
     private $config;
 
-    public function __construct($request)
-    {
-        parent::__construct($request);
-    }
-
+    /**
+     * Redirect to the appropriate action depending on the REQUEST parameter.
+     *
+     * @urlparam $REPOSITORY Name of the repository
+     * @urlparam $PROJECT Name of the project
+     * @urlparam $REQUEST Request type
+     *
+     * @return jResponseJson the request response
+     */
     public function index()
     {
-        $rep = $this->getResponse('json');
 
         // Check project
         $repository = $this->param('repository');
@@ -65,21 +81,38 @@ class serviceCtrl extends jController
                 break;
         }
 
-        $rep->data = array();
-
-        return $rep;
+        return $this->error(
+            array(
+                'title' => 'Not supported request',
+                'detail' => 'The request "'.$request.'" is not supported!',
+            ),
+        );
     }
 
+    /**
+     * Provide errors.
+     *
+     * @param mixed $errors
+     *
+     * @return jResponseJson the errors response
+     */
     public function error($errors)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array('errors' => $errors);
 
         return $rep;
     }
 
+    /**
+     * Get feature count.
+     *
+     * @return jResponseJson the feature count response
+     */
     public function getFeatureCount()
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params
@@ -96,8 +129,14 @@ class serviceCtrl extends jController
         return $rep;
     }
 
+    /**
+     * Get unique values.
+     *
+     * @return jResponseJson the unique values response
+     */
     public function getUniqueValues()
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params
@@ -115,8 +154,14 @@ class serviceCtrl extends jController
         return $rep;
     }
 
+    /**
+     * Get min and max values.
+     *
+     * @return jResponseJson the min and max values response
+     */
     public function getMinAndMaxValues()
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params
@@ -134,8 +179,14 @@ class serviceCtrl extends jController
         return $rep;
     }
 
+    /**
+     * Get extent.
+     *
+     * @return jResponseJson the extent response
+     */
     public function getExtent()
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params

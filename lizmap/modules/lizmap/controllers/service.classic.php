@@ -157,7 +157,7 @@ class serviceCtrl extends jController
      *
      * @param string $param request parameter
      *
-     * @return string request parameter value
+     * @return null|string request parameter value
      */
     protected function iParam($param)
     {
@@ -867,7 +867,7 @@ class serviceCtrl extends jController
 
         $data = jCache::get($token);
         $incache = true;
-        if (!$data or true) {
+        if (!$data) {
             $data = array();
             $data['token'] = $token;
             $data['typename'] = $typename;
@@ -916,7 +916,7 @@ class serviceCtrl extends jController
 
         $data = jCache::get($token);
         $incache = true;
-        if (!$data or true) {
+        if (!$data) {
             $data = array();
             $data['token'] = $token;
             $data['typename'] = $typename;

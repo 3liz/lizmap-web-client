@@ -90,9 +90,9 @@ class lizmapFts
     /**
      * Get data from database and return an array.
      *
-     * @param $sql Query to run
-     * @param $profile Name of the DB profile
-     * @param mixed $filterParams
+     * @param string      $sql          Query to run
+     * @param mixed       $filterParams
+     * @param null|string $profile      Name of the DB profile
      *
      * @return Result as an array
      */
