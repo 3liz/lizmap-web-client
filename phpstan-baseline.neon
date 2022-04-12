@@ -566,21 +566,6 @@ parameters:
 			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
 
 		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 2
-			path: lizmap/modules/dataviz/controllers/service.classic.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/dataviz/controllers/service.classic.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/dataviz/controllers/service.classic.php
-
-		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
 			count: 1
 			path: lizmap/modules/dynamicLayers/controllers/map.classic.php
@@ -747,11 +732,6 @@ parameters:
 
 		-
 			message: "#^PHPDoc tag @param has invalid value \\(\\$sql Query to run\\)\\: Unexpected token \"\\$sql\", expected type at offset 76$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$term Searched term\\)\\: Unexpected token \"\\$term\", expected type at offset 96$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
 
@@ -1286,51 +1266,6 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/search.classic.php
 
 		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/searchFts.classic.php
-
-		-
-			message: "#^Method searchFtsCtrl\\:\\:get\\(\\) should return jResponseJson but returns jResponse\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/searchFts.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
-			count: 15
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$deleteFileAfterSending\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$doDownload\\.$#"
-			count: 11
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$fileName\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
-			count: 11
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
-			count: 11
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
 			message: "#^Call to an undefined method qgisMapLayer\\:\\:getWfsTypeName\\(\\)\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/service.classic.php
@@ -1479,11 +1414,6 @@ parameters:
 		-
 			message: "#^Access to an undefined property jICoordPlugin\\:\\:\\$config\\.$#"
 			count: 2
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Call to function is_array\\(\\) with string will always evaluate to false\\.$#"
-			count: 1
 			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
 
 		-
