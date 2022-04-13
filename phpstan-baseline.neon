@@ -831,16 +831,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapTiler.class.php
 
 		-
-			message: "#^Property lizmapWkt\\:\\:\\$regExes has unknown class regExes as its type\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapWkt.class.php
-
-		-
-			message: "#^Static property lizmapWkt\\:\\:\\$regExes \\(array\\<regExes\\>\\) does not accept default value of type array\\<string, string\\>\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapWkt.class.php
-
-		-
 			message: "#^Method qgisExpressionUtils\\:\\:evaluateExpressions\\(\\) should return array but returns null\\.$#"
 			count: 2
 			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
