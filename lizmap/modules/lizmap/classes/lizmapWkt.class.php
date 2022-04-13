@@ -9,7 +9,7 @@
  */
 class lizmapWkt
 {
-    /** @var regExes[] */
+    /** @var array<string, string> */
     protected static $regExes = array(
         'typeStr' => '/^\s*(\w+)\s*(\w+)?\s*\(\s*(.*)\s*\)\s*$/',
         'spaces' => '/\s+/',
