@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method actionConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
-			count: 5
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
 			message: "#^Property actionConfig\\:\\:\\$lproj is never read, only written\\.$#"
 			count: 1
 			path: lizmap/modules/action/classes/actionConfig.class.php

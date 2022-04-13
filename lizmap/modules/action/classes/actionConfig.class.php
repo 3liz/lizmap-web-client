@@ -30,7 +30,7 @@ class actionConfig
                     'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
                 );
 
-                return false;
+                return;
             }
         } catch (UnknownLizmapProjectException $e) {
             $this->errors = array(
@@ -38,7 +38,7 @@ class actionConfig
                 'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
             );
 
-            return false;
+            return;
         }
 
         // Check acl
@@ -48,20 +48,20 @@ class actionConfig
                 'detail' => jLocale::get('view~default.repository.access.denied'),
             );
 
-            return false;
+            return;
         }
 
         // Test if action file is found
         $action_path = $lproj->getQgisPath().'.action';
         if (!file_exists($action_path)) {
-            return false;
+            return;
         }
 
         // Parse config
         $config = jFile::read($action_path);
         $this->config = json_decode($config);
         if ($this->config === null) {
-            return false;
+            return;
         }
 
         // Get config
