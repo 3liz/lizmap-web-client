@@ -631,11 +631,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmap.class.php
 
 		-
-			message: "#^Static property lizmap\\:\\:\\$lizmapLogConfigInstance \\(lizmapLogConfig\\) does not accept Lizmap\\\\Logger\\\\Config\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
 			message: "#^Static property lizmap\\:\\:\\$lizmapServicesInstance \\(lizmapServices\\) in isset\\(\\) is not nullable\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmap.class.php
