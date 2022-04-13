@@ -41,7 +41,7 @@ class lizmap
     protected static $lizmapServicesInstance;
 
     /**
-     * @var lizmapLogConfig The lizmapLogConfig instance for the singleton
+     * @var \Lizmap\Logger\Config The Lizmap Logger Config instance for the singleton
      */
     protected static $lizmapLogConfigInstance;
 
@@ -381,7 +381,7 @@ class lizmap
     /**
      * Get global configuration for logs.
      *
-     * @return lizmapLogConfig
+     * @return \Lizmap\Logger\Config
      */
     public static function getLogConfig()
     {
@@ -408,7 +408,7 @@ class lizmap
      *
      * @param string $key Key of the log item to get
      *
-     * @return lizmapLogItem
+     * @return \Lizmap\Logger\Item
      *
      * @deprecated
      */
