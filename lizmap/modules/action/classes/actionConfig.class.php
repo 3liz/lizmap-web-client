@@ -13,9 +13,6 @@ class actionConfig
 {
     private $status = false;
     private $errors = array();
-    private $repository;
-    private $project;
-    private $lproj;
     private $config;
 
     public function __construct($repository, $project)
@@ -65,9 +62,6 @@ class actionConfig
         }
 
         // Get config
-        $this->repository = $repository;
-        $this->project = $project;
-        $this->lproj = $lproj;
         $this->status = true;
     }
 

@@ -1,21 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property actionConfig\\:\\:\\$lproj is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
-			message: "#^Property actionConfig\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
-			message: "#^Property actionConfig\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
 			message: "#^Constructor of class actionDatasource has an unused parameter \\$layerId\\.$#"
 			count: 1
 			path: lizmap/modules/action/classes/actionDatasource.class.php
