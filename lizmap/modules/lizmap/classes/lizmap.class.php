@@ -46,7 +46,7 @@ class lizmap
     protected static $lizmapLogConfigInstance;
 
     /**
-     * @var lizmapJelixContext The jelixContext instance for the singleton
+     * @var \Lizmap\App\JelixContext The jelixContext instance for the singleton
      */
     protected static $appContext;
 
@@ -73,6 +73,9 @@ class lizmap
         return self::$lizmapServicesInstance;
     }
 
+    /**
+     * @return \Lizmap\App\JelixContext The lizmap application jelixContext
+     */
     public static function getAppContext()
     {
         if (!self::$appContext) {
