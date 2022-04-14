@@ -1,15 +1,15 @@
 <?php
 /**
- * Lizmap administration : Server information page.
+ * Lizmap administration : List of QGIS projects.
  *
  * @author    3liz
- * @copyright 2016 3liz
+ * @copyright 2022 3liz
  *
  * @see      http://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class server_informationCtrl extends jController
+class qgis_projectsCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
@@ -18,23 +18,26 @@ class server_informationCtrl extends jController
 
     /**
      * Get the information from QGIS Server and display them.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml */
         $rep = $this->getResponse('html');
+        $rep->title = 'Admin - Lizmap projects';
 
-        // Get the metadata
-        $server = new \Lizmap\Server\Server();
-        $data = $server->getMetadata();
+        // Get the project list from the zone
+        $project_list = jZone::get('project_list', array('repository' => ''));
 
         // Set the HTML content
         $tpl = new jTpl();
         $assign = array(
-            'data' => $data,
+            'project_list' => $project_list,
         );
         $tpl->assign($assign);
-        $rep->body->assign('MAIN', $tpl->fetch('server_information'));
-        $rep->body->assign('selectedMenuItem', 'lizmap_server_information');
+        $rep->body->assign('MAIN', $tpl->fetch('project_list'));
+        $rep->body->assign('selectedMenuItem', 'lizmap_project_list');
 
         return $rep;
     }

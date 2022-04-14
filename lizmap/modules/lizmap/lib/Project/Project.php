@@ -317,6 +317,22 @@ class Project
         return $this->qgis->getQgisProjectVersion();
     }
 
+    /**
+     * Get the version of the Lizmap plugin
+     * used by the project editor on QGIS Desktop.
+     *
+     * @return null|string Version of the lizmap plugin
+     */
+    public function getLizmapPluginVersion()
+    {
+        $pluginMetadata = $this->cfg->getPluginMetadata();
+        if (!is_null($pluginMetadata)) {
+            return $pluginMetadata->lizmap_plugin_version;
+        }
+
+        return null;
+    }
+
     public function getRelations()
     {
         return $this->qgis->getRelations();
@@ -570,6 +586,16 @@ class Project
     public function getLayers()
     {
         return $this->cfg->getLayers();
+    }
+
+    /**
+     * Get the number of layers.
+     *
+     * @return int
+     */
+    public function getLayerCount()
+    {
+        return count((array) $this->cfg->getLayers());
     }
 
     /**
