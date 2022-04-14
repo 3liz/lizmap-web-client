@@ -1672,11 +1672,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
 
 		-
-			message: "#^Comparison operation \"\\>\" between int\\<1, max\\> and 0 is always true\\.$#"
-			count: 11
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
 			message: "#^Comparison operation \"\\>\\=\" between SimpleXMLElement and 0 results in an error\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
@@ -1684,91 +1679,6 @@ parameters:
 		-
 			message: "#^If condition is always true\\.$#"
 			count: 3
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Method Lizmap\\\\Project\\\\QgisProject\\:\\:convertValueOptions\\(\\) should return string but returns bool\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Method Lizmap\\\\Project\\\\QgisProject\\:\\:convertValueOptions\\(\\) should return string but returns float\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Method Lizmap\\\\Project\\\\QgisProject\\:\\:convertValueOptions\\(\\) should return string but returns int\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Method Lizmap\\\\Project\\\\QgisProject\\:\\:getXmlLayer2\\(\\) should return array\\<SimpleXMLElement\\> but returns SimpleXMLElement\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Method Lizmap\\\\Project\\\\QgisProject\\:\\:getXmlLayer2\\(\\) should return array\\<SimpleXMLElement\\> but returns null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Method Lizmap\\\\Project\\\\QgisProject\\:\\:readCustomProjectVariables\\(\\) should return array\\<array\\>\\|null but returns array\\<string, string\\>\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$cfg\\)\\: Unexpected token \"\\$cfg\", expected type at offset 55$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$layerId\\)\\: Unexpected token \"\\$layerId\", expected type at offset 18$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$layers$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$qgsXml$#"
-			count: 5
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$relation$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Right side of && is always true\\.$#"
-			count: 6
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Right side of \\|\\| is always false\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Variable \\$layers in PHPDoc tag @var does not match assigned variable \\$layersFiltered\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Variable \\$printTemplates might not be defined\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Variable \\$ret in empty\\(\\) always exists and is not falsy\\.$#"
-			count: 1
 			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
 
 		-
