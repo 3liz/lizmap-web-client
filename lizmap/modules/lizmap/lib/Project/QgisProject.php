@@ -332,20 +332,51 @@ class QgisProject
     protected function setLayerGroupData(ProjectConfig $cfg)
     {
         $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName) {
+        if ($groupsWithShortName && count($groupsWithShortName)) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if ($shortNameProperty && count($shortNameProperty) > 0) {
+                if (!$shortNameProperty || count($shortNameProperty) == 0) {
+                    continue;
+                }
+
+                $shortNameProperty = $shortNameProperty[0];
+                $sname = (string) $shortNameProperty['value'];
+                if (!$sname) {
+                    continue;
+                }
+
+                $layerCfg = $cfg->getLayer($name);
+                if (!$layerCfg) {
+                    continue;
+                }
+                $layerCfg->shortname = $sname;
+            }
+        } else {
+            $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/Option[@type='Map']/Option[@name='wmsShortName']/parent::*/parent::*/parent::*");
+            if ($groupsWithShortName && count($groupsWithShortName)) {
+                foreach ($groupsWithShortName as $group) {
+                    $name = (string) $group['name'];
+                    $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
+                    if (!$shortNameProperty || count($shortNameProperty) == 0) {
+                        continue;
+                    }
+
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
-                    $layerCfg = $cfg->getLayer($name);
-                    if ($layerCfg) {
-                        $layerCfg->shortname = $sname;
+                    if (!$sname) {
+                        continue;
                     }
+
+                    $layerCfg = $cfg->getLayer($name);
+                    if (!$layerCfg) {
+                        continue;
+                    }
+                    $layerCfg->shortname = $sname;
                 }
             }
         }
+
         $groupsMutuallyExclusive = $this->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
         if ($groupsMutuallyExclusive) {
             foreach ($groupsMutuallyExclusive as $group) {
