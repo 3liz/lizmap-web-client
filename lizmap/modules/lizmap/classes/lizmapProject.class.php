@@ -359,13 +359,40 @@ class lizmapProject extends qgisProject
         }
 
         $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName && count($groupsWithShortName) > 0) {
+        if ($groupsWithShortName && count($groupsWithShortName)) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if ($shortNameProperty && count($shortNameProperty) > 0) {
+                if (!$shortNameProperty) {
+                    continue;
+                }
+
+                $shortNameProperty = $shortNameProperty[0];
+                $sname = (string) $shortNameProperty['value'];
+                if (!$sname) {
+                    continue;
+                }
+
+                if (property_exists($this->cfg->layers, $name)) {
+                    $this->cfg->layers->{$name}->shortname = $sname;
+                }
+            }
+        } else {
+            $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/Option[@type='Map']/Option[@name='wmsShortName']/parent::*/parent::*/parent::*");
+            if ($groupsWithShortName && count($groupsWithShortName)) {
+                foreach ($groupsWithShortName as $group) {
+                    $name = (string) $group['name'];
+                    $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
+                    if (!$shortNameProperty) {
+                        continue;
+                    }
+
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
+                    if (!$sname) {
+                        continue;
+                    }
+
                     if (property_exists($this->cfg->layers, $name)) {
                         $this->cfg->layers->{$name}->shortname = $sname;
                     }
