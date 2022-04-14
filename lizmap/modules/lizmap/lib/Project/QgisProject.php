@@ -397,6 +397,9 @@ class QgisProject
     protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
         $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
+        if (!$layersWithShowFeatureCount || count($layersWithShowFeatureCount) == 0) {
+            $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/Option[@type='Map']/Option[@name='showFeatureCount'][@value='1']/parent::*/parent::*/parent::*");
+        }
         if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount)) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
