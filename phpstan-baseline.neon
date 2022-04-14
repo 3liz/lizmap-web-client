@@ -751,26 +751,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapTiler.class.php
 
 		-
-			message: "#^Method qgisExpressionUtils\\:\\:evaluateExpressions\\(\\) should return array but returns null\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(array\\(\\)         \\$expresions   The expressions' list to evaluate\\)\\: Unexpected token \"\\(\", expected variable at offset 173$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(array\\(\\)         \\$form_feature A feature to add to the evaluation context\\)\\: Unexpected token \"\\(\", expected variable at offset 251$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$expresion$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
 			message: "#^Result of \\|\\| is always false\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
