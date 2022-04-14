@@ -281,8 +281,6 @@ class QgisProject
 
     /**
      * Set layers' shortname with XML data.
-     *
-     * @param ProjectConfig $qgsXml
      */
     protected function setShortNames(ProjectConfig $cfg)
     {
@@ -306,13 +304,11 @@ class QgisProject
 
     /**
      * Set layers' opacity with XML data.
-     *
-     * @param ProjectConfig $qgsXml
      */
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
         $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
-        if ($layerWithOpacities && count($layerWithOpacities)) {
+        if ($layerWithOpacities) {
             foreach ($layerWithOpacities as $layerWithOpacity) {
                 $name = (string) $layerWithOpacity->layername;
                 $layerCfg = $cfg->getLayer($name);
@@ -326,13 +322,11 @@ class QgisProject
 
     /**
      * Set layers' group infos.
-     *
-     * @param ProjectConfig $qgsXml
      */
     protected function setLayerGroupData(ProjectConfig $cfg)
     {
         $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName && count($groupsWithShortName)) {
+        if ($groupsWithShortName) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
@@ -354,7 +348,7 @@ class QgisProject
             }
         } else {
             $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/Option[@type='Map']/Option[@name='wmsShortName']/parent::*/parent::*/parent::*");
-            if ($groupsWithShortName && count($groupsWithShortName)) {
+            if ($groupsWithShortName) {
                 foreach ($groupsWithShortName as $group) {
                     $name = (string) $group['name'];
                     $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
@@ -391,16 +385,14 @@ class QgisProject
 
     /**
      * Set layers' last infos.
-     *
-     * @param ProjectConfig $qgsXml
      */
     protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
         $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
-        if (!$layersWithShowFeatureCount || count($layersWithShowFeatureCount) == 0) {
+        if (!$layersWithShowFeatureCount) {
             $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/Option[@type='Map']/Option[@name='showFeatureCount'][@value='1']/parent::*/parent::*/parent::*");
         }
-        if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount)) {
+        if ($layersWithShowFeatureCount) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
                 $layerCfg = $cfg->getLayer($name);
@@ -413,14 +405,12 @@ class QgisProject
 
     /**
      * Set/Unset some properties after reading the config file.
-     *
-     * @param ProjectConfig $qgsXml
      */
     protected function unsetPropAfterRead(ProjectConfig $cfg)
     {
         //remove plugin layer
         $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
-        if ($pluginLayers && count($pluginLayers)) {
+        if ($pluginLayers) {
             foreach ($pluginLayers as $layer) {
                 $name = (string) $layer->layername;
                 $cfg->removeLayer($name);
@@ -470,7 +460,7 @@ class QgisProject
     }
 
     /**
-     * @param $layerId
+     * @param string $layerId
      *
      * @return null|array|string
      */
@@ -490,15 +480,14 @@ class QgisProject
     }
 
     /**
-     * @param $layerId
-     * @param mixed   $layers
+     * @param string  $layerId
      * @param Project $proj
      *
      * @return null|\qgisMapLayer|\qgisVectorLayer
      */
     public function getLayer($layerId, $proj)
     {
-        /** @var array[] $layers */
+        /** @var array[] $layersFiltered */
         $layersFiltered = array_filter($this->layers, function ($layer) use ($layerId) {
             return $layer['id'] == $layerId;
         });
@@ -570,15 +559,17 @@ class QgisProject
      * Execute an xpath Query on the XML content and return the result.
      *
      * @param string $query The query to execute
+     *
+     * @return array
      */
     public function xpathQuery($query)
     {
         $ret = $this->xml->xpath($query);
-        if (!$ret || empty($ret)) {
-            $ret = null;
+        if ($ret && is_array($ret)) {
+            return $ret;
         }
 
-        return $ret;
+        return array();
     }
 
     /**
@@ -639,7 +630,7 @@ class QgisProject
      * @param \SimpleXMLElement $xml
      * @param string            $layerId
      *
-     * @return \SimpleXMLElement[]
+     * @return null|\SimpleXMLElement
      *
      * @deprecated
      */
@@ -673,21 +664,25 @@ class QgisProject
         return $name;
     }
 
+    /**
+     * @return array
+     */
     public function getPrintTemplates()
     {
         // get restricted composers
         $rComposers = array();
         $restrictedComposers = $this->xml->xpath('//properties/WMSRestrictedComposers/value');
-        if ($restrictedComposers && count($restrictedComposers) > 0) {
+        if ($restrictedComposers && is_array($restrictedComposers)) {
             foreach ($restrictedComposers as $restrictedComposer) {
                 $rComposers[] = (string) $restrictedComposer;
             }
         }
 
         $services = $this->services;
+        $printTemplates = array();
         // get composer qg project version < 3
         $composers = $this->xml->xpath('//Composer');
-        if ($composers && count($composers) > 0) {
+        if ($composers && is_array($composers)) {
             foreach ($composers as $composer) {
                 // test restriction
                 if (in_array((string) $composer['title'], $rComposers)) {
@@ -695,7 +690,7 @@ class QgisProject
                 }
                 // get composition element
                 $composition = $composer->xpath('Composition');
-                if (!$composition || count($composition) == 0) {
+                if (!$composition) {
                     continue;
                 }
                 $composition = $composition[0];
@@ -711,10 +706,10 @@ class QgisProject
 
                 // get composer maps
                 $cMaps = $composer->xpath('.//ComposerMap');
-                if ($cMaps && count($cMaps) > 0) {
+                if ($cMaps && is_array($cMaps)) {
                     foreach ($cMaps as $cMap) {
                         $cMapItem = $cMap->xpath('ComposerItem');
-                        if (count($cMapItem) == 0) {
+                        if (!$cMapItem) {
                             continue;
                         }
                         $cMapItem = $cMapItem[0];
@@ -731,14 +726,14 @@ class QgisProject
                         // >= 2.6
                         $cMapOverviews = $cMap->xpath('ComposerMapOverview');
                         foreach ($cMapOverviews as $cMapOverview) {
-                            if ($cMapOverview and (string) $cMapOverview->attributes()->frameMap != '-1') {
+                            if ($cMapOverview && (string) $cMapOverview->attributes()->frameMap != '-1') {
                                 $ptMap['overviewMap'] = 'map'.(string) $cMapOverview->attributes()->frameMap;
                             }
                         }
                         // Grid
                         $cMapGrids = $cMap->xpath('ComposerMapGrid');
                         foreach ($cMapGrids as $cMapGrid) {
-                            if ($cMapGrid and (string) $cMapGrid->attributes()->show != '0') {
+                            if ($cMapGrid && (string) $cMapGrid->attributes()->show != '0') {
                                 $ptMap['grid'] = 'True';
                             }
                         }
@@ -754,10 +749,10 @@ class QgisProject
 
                 // get composer labels
                 $cLabels = $composer->xpath('.//ComposerLabel');
-                if ($cLabels && count($cLabels) > 0) {
+                if ($cLabels && is_array($cLabels)) {
                     foreach ($cLabels as $cLabel) {
                         $cLabelItem = $cLabel->xpath('ComposerItem');
-                        if (!$cLabelItem || count($cLabelItem) == 0) {
+                        if (!$cLabelItem) {
                             continue;
                         }
                         $cLabelItem = $cLabelItem[0];
@@ -774,7 +769,7 @@ class QgisProject
 
                 // get composer attribute tables
                 $cTables = $composer->xpath('.//ComposerAttributeTableV2');
-                if ($cTables && count($cTables) > 0) {
+                if ($cTables && is_array($cTables)) {
                     foreach ($cTables as $cTable) {
                         $printTemplate['tables'][] = array(
                             'composerMap' => (int) $cTable['composerMap'],
@@ -785,7 +780,7 @@ class QgisProject
 
                 // Atlas
                 $Atlas = $composer->xpath('Atlas');
-                if (count($Atlas) == 1) {
+                if ($Atlas && is_array($Atlas) && count($Atlas) == 1) {
                     $Atlas = $Atlas[0];
                     $printTemplate['atlas'] = array(
                         'enabled' => (string) $Atlas['enabled'],
@@ -797,7 +792,7 @@ class QgisProject
         }
         // get layout qgs project version >= 3
         $layouts = $this->xml->xpath('//Layout');
-        if ($layouts && count($layouts) > 0
+        if ($layouts && is_array($layouts)
             && version_compare($services->qgisServerVersion, '3.0', '>=')) {
             foreach ($layouts as $layout) {
                 // test restriction
@@ -806,7 +801,7 @@ class QgisProject
                 }
                 // get page element
                 $page = $layout->xpath('PageCollection/LayoutItem[@type="65638"]');
-                if (!$page || count($page) == 0) {
+                if (!$page) {
                     continue;
                 }
                 $page = $page[0];
@@ -825,7 +820,7 @@ class QgisProject
                 $mapUuidId = array();
                 // get layout maps
                 $lMaps = $layout->xpath('LayoutItem[@type="65639"]');
-                if ($lMaps && count($lMaps) > 0) {
+                if ($lMaps && is_array($lMaps)) {
                     // Convert xml to json config
                     foreach ($lMaps as $lMap) {
                         $lMapSize = explode(',', $lMap['size']);
@@ -872,7 +867,7 @@ class QgisProject
 
                 // get layout labels
                 $lLabels = $layout->xpath('LayoutItem[@type="65641"]');
-                if ($lLabels && count($lLabels) > 0) {
+                if ($lLabels && is_array($lLabels)) {
                     foreach ($lLabels as $lLabel) {
                         if ((string) $lLabel['id'] == '') {
                             continue;
@@ -887,7 +882,7 @@ class QgisProject
 
                 // get layout attribute tables
                 $lTables = $layout->xpath('LayoutMultiFrame[@type="65649"]');
-                if ($lTables && count($lTables) > 0) {
+                if ($lTables && is_array($lTables)) {
                     foreach ($lTables as $lTable) {
                         $composerMap = -1;
                         if (isset($lTable['mapUuid'])) {
@@ -908,7 +903,7 @@ class QgisProject
 
                 // Atlas
                 $atlas = $layout->xpath('Atlas');
-                if (count($atlas) == 1) {
+                if ($atlas && is_array($atlas) && count($atlas) == 1) {
                     $atlas = $atlas[0];
                     $printTemplate['atlas'] = array(
                         'enabled' => (string) $atlas['enabled'],
@@ -941,14 +936,14 @@ class QgisProject
             $xmlLayerZero = $xmlLayer[0];
             // aliases
             $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
-            if ($alias && count($alias) != 0) {
+            if ($alias && is_array($alias)) {
                 $alias = $alias[0];
                 $v->fieldAlias = (string) $alias['name'];
                 $locateByLayer->{$k} = $v;
             }
             if (property_exists($v, 'filterFieldName')) {
                 $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
-                if ($alias && count($alias) != 0) {
+                if ($alias && is_array($alias)) {
                     $alias = $alias[0];
                     $v->filterFieldAlias = (string) $alias['name'];
                     $locateByLayer->{$k} = $v;
@@ -956,7 +951,7 @@ class QgisProject
             }
             // vectorjoins
             $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
-            if ($vectorjoins && count($vectorjoins) != 0) {
+            if ($vectorjoins && is_array($vectorjoins)) {
                 if (!property_exists($v, 'vectorjoins')) {
                     $v->vectorjoins = array();
                 }
@@ -1125,8 +1120,7 @@ class QgisProject
 
     /**
      * @param \SimpleXMLElement $xml
-     * @param $cfg
-     * @param mixed $layers
+     * @param mixed             $layers
      *
      * @return int[]
      */
@@ -1431,7 +1425,7 @@ class QgisProject
     /**
      * @param \SimpleXMLElement $xml
      *
-     * @return null|array[] array of custom variable name => variable value
+     * @return null|array<string, string> array of custom variable name => variable value
      */
     protected function readCustomProjectVariables($xml)
     {
@@ -1510,8 +1504,7 @@ class QgisProject
     }
 
     /**
-     * @param \SimpleXMLElement $relation
-     * @param mixed             $relationXml
+     * @param \SimpleXMLElement $relationXml
      */
     protected function readRelationField($relationXml)
     {
@@ -1590,7 +1583,7 @@ class QgisProject
     {
         $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
 
-        return $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true';
+        return is_array($WMSUseLayerIDs) && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true';
     }
 
     /**
@@ -1748,7 +1741,7 @@ class QgisProject
                         $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
                     }
 
-                    if ($excludeFields && count($excludeFields) > 0) {
+                    if ($excludeFields && is_array($excludeFields)) {
                         foreach ($excludeFields as $eField) {
                             $eField = (string) $eField;
                             if (!in_array($eField, $wfsFields)) {
@@ -1929,7 +1922,7 @@ class QgisProject
 
             // editable
             $editableFieldXml = $layerXml->xpath("editable/field[@name='${fieldName}']");
-            if ($editableFieldXml && count($editableFieldXml)) {
+            if ($editableFieldXml && is_array($editableFieldXml)) {
                 $editable = (int) $editableFieldXml[0]->attributes()->editable;
             } else {
                 $editable = 1;
@@ -2134,7 +2127,7 @@ class QgisProject
      * @param string $value the option value attribute content
      * @param string $type  the option type attribute content
      *
-     * @return string
+     * @return bool|float|int|string
      */
     protected function convertValueOptions($value, $type)
     {
@@ -2147,8 +2140,6 @@ class QgisProject
             case 'LongLong':
             case 'ULongLong':
                 return (int) $value;
-
-                break;
 
             case 'bool':
                 return filter_var($value, FILTER_VALIDATE_BOOLEAN);
@@ -2250,7 +2241,7 @@ class QgisProject
         $aliases = $layer->getAliasFields();
 
         $categoriesXml = $layerXml->xpath('renderer-v2/categories');
-        if ($categoriesXml && count($categoriesXml) != 0) {
+        if ($categoriesXml && is_array($categoriesXml)) {
             $categoriesXml = $categoriesXml[0];
             $categories = array();
             foreach ($categoriesXml as $category) {
@@ -2268,7 +2259,7 @@ class QgisProject
             if ($aliases && array_key_exists($fieldName, $aliases)) {
                 $alias = $aliases[$fieldName];
             }
-            if ($alias && is_array($alias) && count($alias)) {
+            if ($alias && is_array($alias)) {
                 $prop->setFieldAlias((string) $alias[0]->attributes()->name);
             } elseif (is_string($alias) || $alias && count($alias)) {
                 $prop->setFieldAlias($alias);
