@@ -1747,72 +1747,7 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
 
 		-
-			message: "#^Call to method getDatasourceConnection\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisMapLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getDatasourceConnection\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getDatasourceParameters\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisMapLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getDatasourceParameters\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getDbFieldList\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisMapLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getDbFieldList\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
 			message: "#^Call to method getDefaultValues\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getPolygonFilter\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisMapLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getPolygonFilter\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getProvider\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getSrid\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisMapLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getSrid\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getWfsFields\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisMapLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getWfsFields\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
 
@@ -1827,22 +1762,7 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
 
 		-
-			message: "#^PHPDoc tag @var for variable \\$qgisLayer contains unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
 			message: "#^Parameter \\$cnx of method Lizmap\\\\Request\\\\WFSRequest\\:\\:setGeojsonSql\\(\\) has invalid type Lizmap\\\\Request\\\\jDbConnection\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Property Lizmap\\\\Request\\\\WFSRequest\\:\\:\\$qgisLayer has unknown class Lizmap\\\\Request\\\\qgisMapLayer as its type\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Property Lizmap\\\\Request\\\\WFSRequest\\:\\:\\$qgisLayer has unknown class Lizmap\\\\Request\\\\qgisVectorLayer as its type\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
 
