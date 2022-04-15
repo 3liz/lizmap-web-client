@@ -508,7 +508,7 @@ class WFSRequest extends OGCRequest
     {
         $featureid = '';
         $sql = '';
-        $typename = $params['typename'];
+        $typename = $this->requestedTypename();
         $keys = explode(',', $this->datasource->key);
         if (array_key_exists('featureid', $params)) {
             $featureid = $params['featureid'];
@@ -669,7 +669,7 @@ class WFSRequest extends OGCRequest
             $sql .= ' OFFSET '.$startindex;
         }
 
-        $typename = $params['typename'];
+        $typename = $this->requestedTypename();
         $geometryname = '';
         if (array_key_exists('geometryname', $params)) {
             $geometryname = strtolower($params['geometryname']);
