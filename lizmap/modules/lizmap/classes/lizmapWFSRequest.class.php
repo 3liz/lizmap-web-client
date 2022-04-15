@@ -626,14 +626,21 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // Return response
         return (object) array(
             'code' => '200',
-            'mime' => 'text/json; charset=utf-8',
+            'mime' => 'application/vnd.geo+json; charset=utf-8',
             'file' => true, // we use this to inform controler postgres has been used
             'data' => $path,
             'cached' => false,
         );
     }
 
-    private function validateFilter($filter)
+    /**
+     * Parses and validate a filter for postgresql.
+     *
+     * @param string $filter The filter to parse
+     *
+     * @return false|string returns the validate filter if the expression does not contains dangerous chars
+     */
+    protected function validateFilter($filter)
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
