@@ -94,8 +94,8 @@ class WFSRequest extends OGCRequest
         $expFilters = array();
 
         // Get client exp_filter parameter
-        $clientExpFilter = $this->param('exp_filter');
-        if ($clientExpFilter != null && !empty($clientExpFilter)) {
+        $clientExpFilter = $this->param('exp_filter', '');
+        if (!empty($clientExpFilter)) {
             $expFilters[] = $clientExpFilter;
         }
 
@@ -110,8 +110,8 @@ class WFSRequest extends OGCRequest
         $params['exp_filter'] = implode(' AND ', $expFilters);
 
         // Update propertyname parameter
-        $propertyName = $this->param('propertyname');
-        if ($propertyName != null && !empty($propertyName)) {
+        $propertyName = $this->param('propertyname', '');
+        if (!empty($propertyName)) {
             $propertyName = trim($propertyName).",${attribute}";
             $params['propertyname'] = $propertyName;
         }
