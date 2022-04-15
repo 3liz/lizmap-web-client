@@ -300,7 +300,7 @@ class WFSRequest extends OGCRequest
 
         // Get provider
         $provider = $qgisLayer->getProvider();
-
+        $dtparams = null;
         if ($provider == 'postgres') {
             $dtparams = $qgisLayer->getDatasourceParameters();
             // Add key if not present ( WFS need to export id = typename.id for each feature)
@@ -330,6 +330,7 @@ class WFSRequest extends OGCRequest
         if ($provider == 'postgres'
             && empty($filter)
             && strtolower($output) == 'geojson'
+            && $dtparams !== null
             && $dtparams->table[0] != '('
         ) {
             return $this->getfeaturePostgres();
