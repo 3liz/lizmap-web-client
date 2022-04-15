@@ -1737,21 +1737,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Request/Proxy.php
 
 		-
-			message: "#^Call to method encloseName\\(\\) on an unknown class Lizmap\\\\Request\\\\jDbConnection\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method quote\\(\\) on an unknown class Lizmap\\\\Request\\\\jDbConnection\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Parameter \\$cnx of method Lizmap\\\\Request\\\\WFSRequest\\:\\:setGeojsonSql\\(\\) has invalid type Lizmap\\\\Request\\\\jDbConnection\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
 			message: "#^Access to property \\$Attribute on an unknown class Lizmap\\\\Request\\\\SimpleXmlElement\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Request/WMSRequest.php

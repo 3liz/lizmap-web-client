@@ -741,10 +741,10 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * @param string        $sql
-     * @param jDbConnection $cnx
-     * @param mixed         $typename
-     * @param mixed         $geometryname
+     * @param string         $sql
+     * @param \jDbConnection $cnx
+     * @param mixed          $typename
+     * @param mixed          $geometryname
      *
      * @return string
      */
