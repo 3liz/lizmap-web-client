@@ -426,39 +426,56 @@ class WFSRequest extends OGCRequest
         return $sql;
     }
 
+    /**
+     * Get the SQL clause to instersects bbox in the request parameters.
+     *
+     * @param array<string, string> $params the request parameters
+     *
+     * @return string the SQL clause to instersects bbox in the request parameters or empty string
+     */
     protected function getBboxSql($params)
     {
-        if (!empty($this->datasource->geocol)) {
-            $bbox = '';
-            if (array_key_exists('bbox', $params)) {
-                $bbox = $params['bbox'];
-            }
-            $bboxvalid = false;
-            if (!empty($bbox)) {
-                $bboxitem = explode(',', $bbox);
-                if (count($bboxitem) == 4) {
-                    $bboxvalid = true;
-                    foreach ($bboxitem as $coord) {
-                        if (!is_numeric(trim($coord))) {
-                            $bboxvalid = false;
-                        }
-                    }
-                }
-            }
-            if ($bboxvalid) {
-                $xmin = trim($bboxitem[0]);
-                $ymin = trim($bboxitem[1]);
-                $xmax = trim($bboxitem[2]);
-                $ymax = trim($bboxitem[3]);
-                $sql = ' AND ST_Intersects("';
-                $sql .= $this->datasource->geocol;
-                $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+        if (empty($this->datasource->geocol)) {
+            // No geometry column
+            return '';
+        }
 
-                return $sql;
+        if (!array_key_exists('bbox', $params)) {
+            // No BBOX parameter in the request
+            return '';
+        }
+
+        $bbox = $params['bbox'];
+        if (empty($bbox)) {
+            // BBOX parameter but it is empty
+            return '';
+        }
+
+        // Check the BBOX parameter
+        // It has to contain 4 numeric separated by comma
+        $bboxitem = explode(',', $bbox);
+        if (count($bboxitem) !== 4) {
+            // BBOX parameter does not contain 4 elements
+            return '';
+        }
+
+        // Check numeric elements
+        foreach ($bboxitem as $coord) {
+            if (!is_numeric(trim($coord))) {
+                return '';
             }
         }
 
-        return '';
+        // Build the SQL
+        $xmin = trim($bboxitem[0]);
+        $ymin = trim($bboxitem[1]);
+        $xmax = trim($bboxitem[2]);
+        $ymax = trim($bboxitem[3]);
+        $sql = ' AND ST_Intersects("';
+        $sql .= $this->datasource->geocol;
+        $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+
+        return $sql;
     }
 
     protected function parseExpFilter($cnx, $params)
