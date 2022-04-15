@@ -25,7 +25,7 @@ class WFSRequest extends OGCRequest
     protected $wfs_typename;
 
     /**
-     * @var qgisMapLayer|qgisVectorLayer
+     * @var \qgisVectorLayer
      */
     protected $qgisLayer;
 
@@ -294,7 +294,7 @@ class WFSRequest extends OGCRequest
 
             return $this->serviceException();
         }
-        /** @var qgisVectorLayer $qgisLayer The QGIS vector layer instance */
+        /** @var \qgisVectorLayer $qgisLayer The QGIS vector layer instance */
         $qgisLayer = $this->project->getLayer($lizmapLayer->id);
         $this->qgisLayer = $qgisLayer;
 
