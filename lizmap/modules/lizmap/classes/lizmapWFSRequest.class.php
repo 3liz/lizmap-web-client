@@ -503,7 +503,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         // FEATUREID
         $featureid = '';
-        $typename = $params['typename'];
+        $sql = '';
+        $typename = $this->requestedTypename();
+        $keys = explode(',', $this->datasource->key);
         if (array_key_exists('featureid', $params)) {
             $featureid = $params['featureid'];
         }
@@ -590,6 +592,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
         }
 
         //jLog::log($sql);
+        $geometryname = '';
+        if (array_key_exists('geometryname', $params)) {
+            $geometryname = strtolower($params['geometryname']);
+        }
+
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
         //jLog::log($sql);
