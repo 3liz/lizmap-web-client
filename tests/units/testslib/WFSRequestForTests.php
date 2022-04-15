@@ -32,6 +32,7 @@ class WFSRequestForTests extends WFSRequest {
 
     public function parseFeatureIdForTests($cnx, $params)
     {
+        $this->params = $params;
         return $this->parseFeatureId($cnx, $params);
     }
 
