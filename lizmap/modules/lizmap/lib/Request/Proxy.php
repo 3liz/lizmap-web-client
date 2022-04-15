@@ -151,7 +151,7 @@ class Proxy
         if (in_array($service, array('WMS', 'WMTS', 'WFS'))) {
             $service = '\Lizmap\Request\\'.$service.'Request';
 
-            return new $service($project, $params, self::getServices(), self::getAppContext(), $requestXml);
+            return new $service($project, $params, self::getServices(), $requestXml);
         }
 
         return null;
