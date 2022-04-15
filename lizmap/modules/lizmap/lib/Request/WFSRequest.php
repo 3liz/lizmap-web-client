@@ -247,7 +247,7 @@ class WFSRequest extends OGCRequest
                         $jsonData['types'] = (object) $types;
                     }
                 }
-                /** @var qgisVectorLayer $layer The QGIS vector layer instance */
+                /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $jsonData['aliases'] = (object) $layer->getAliasFields();
                 $jsonData['defaults'] = (object) $layer->getDefaultValues();
@@ -357,7 +357,7 @@ class WFSRequest extends OGCRequest
             $mime = 'text/json';
             $layer = $this->project->findLayerByAnyName($this->requestedTypename());
             if ($layer != null) {
-                /** @var qgisVectorLayer $layer The QGIS vector layer instance */
+                /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $aliases = $layer->getAliasFields();
                 $layer = json_decode($data);

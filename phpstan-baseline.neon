@@ -1742,23 +1742,8 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
 
 		-
-			message: "#^Call to method getAliasFields\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^Call to method getDefaultValues\\(\\) on an unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
 			message: "#^Call to method quote\\(\\) on an unknown class Lizmap\\\\Request\\\\jDbConnection\\.$#"
 			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
-
-		-
-			message: "#^PHPDoc tag @var for variable \\$layer contains unknown class Lizmap\\\\Request\\\\qgisVectorLayer\\.$#"
-			count: 2
 			path: lizmap/modules/lizmap/lib/Request/WFSRequest.php
 
 		-
