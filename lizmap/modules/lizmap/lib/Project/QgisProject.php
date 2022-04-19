@@ -418,45 +418,41 @@ class QgisProject
                 $cfg->removeLayer($name);
             }
         }
+
         //unset cache for editionLayers
         $eLayers = $cfg->getEditionLayers();
-        if ($eLayers) {
-            foreach ($eLayers as $key => $obj) {
-                $layerCfg = $cfg->getLayer($key);
-                if ($layerCfg) {
-                    $layerCfg->cached = 'False';
-                    $layerCfg->clientCacheExpiration = 0;
-                    if (property_exists($layerCfg, 'cacheExpiration')) {
-                        unset($layerCfg->cacheExpiration);
-                    }
+        foreach ($eLayers as $key => $obj) {
+            $layerCfg = $cfg->getLayer($key);
+            if ($layerCfg) {
+                $layerCfg->cached = 'False';
+                $layerCfg->clientCacheExpiration = 0;
+                if (property_exists($layerCfg, 'cacheExpiration')) {
+                    unset($layerCfg->cacheExpiration);
                 }
             }
         }
+
         //unset cache for loginFilteredLayers
         $loginFiltered = $cfg->getLoginFilteredLayers();
-
-        if ($loginFiltered) {
-            foreach ($loginFiltered as $key => $obj) {
-                $layerCfg = $cfg->getLayer($key);
-                if ($layerCfg) {
-                    $layerCfg->cached = 'False';
-                    $layerCfg->clientCacheExpiration = 0;
-                    if (property_exists($layerCfg, 'cacheExpiration')) {
-                        unset($layerCfg->cacheExpiration);
-                    }
+        foreach ($loginFiltered as $key => $obj) {
+            $layerCfg = $cfg->getLayer($key);
+            if ($layerCfg) {
+                $layerCfg->cached = 'False';
+                $layerCfg->clientCacheExpiration = 0;
+                if (property_exists($layerCfg, 'cacheExpiration')) {
+                    unset($layerCfg->cacheExpiration);
                 }
             }
         }
+
         //unset displayInLegend for geometryType none or unknown
         $layers = $cfg->getLayers();
-        if ($layers) {
-            foreach ($layers as $key => $layerCfg) {
-                if (property_exists($layerCfg, 'geometryType')
-                    && ($layerCfg->geometryType == 'none'
-                        || $layerCfg->geometryType == 'unknown')
-                ) {
-                    $layerCfg->displayInLegend = 'False';
-                }
+        foreach ($layers as $key => $layerCfg) {
+            if (property_exists($layerCfg, 'geometryType')
+                && ($layerCfg->geometryType == 'none'
+                    || $layerCfg->geometryType == 'unknown')
+            ) {
+                $layerCfg->displayInLegend = 'False';
             }
         }
     }
