@@ -87,7 +87,7 @@ class QgisProject
     protected $customProjectVariables = array();
 
     /**
-     * @var \LizmapServices
+     * @var \lizmapServices
      */
     protected $services;
 
@@ -116,10 +116,12 @@ class QgisProject
     /**
      * constructor.
      *
-     * @param string $file : the QGIS project path
-     * @param mixed  $data
+     * @param string                  $file       the QGIS project path
+     * @param \lizmapServices         $services
+     * @param App\AppContextInterface $appContext
+     * @param mixed                   $data
      */
-    public function __construct($file, \LizmapServices $services, App\AppContextInterface $appContext, $data = false)
+    public function __construct($file, $services, $appContext, $data = false)
     {
         $this->appContext = $appContext;
         $this->services = $services;
@@ -1583,7 +1585,7 @@ class QgisProject
     {
         $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
 
-        return ($WMSUseLayerIDs && $WMSUseLayerIDs[0] == 'true');
+        return $WMSUseLayerIDs && $WMSUseLayerIDs[0] == 'true';
     }
 
     /**

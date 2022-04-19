@@ -1662,11 +1662,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
 
 		-
-			message: "#^Class lizmapServices referenced with incorrect case\\: LizmapServices\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
 			message: "#^Comparison operation \"\\>\\=\" between SimpleXMLElement and 0 results in an error\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
