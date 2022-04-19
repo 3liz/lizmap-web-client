@@ -1667,11 +1667,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
 
 		-
-			message: "#^Comparison operation \"\\=\\=\" between \\(SimpleXMLElement\\|null\\) and 1 results in an error\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
 			message: "#^Comparison operation \"\\>\\=\" between SimpleXMLElement and 0 results in an error\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Project/QgisProject.php

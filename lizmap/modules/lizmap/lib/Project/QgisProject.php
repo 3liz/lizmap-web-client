@@ -1064,7 +1064,7 @@ class QgisProject
                 return $layersOrder;
             }
             $customOrderZero = $customOrder[0];
-            if ($customOrderZero->attributes()->enabled == 1) {
+            if (intval($customOrderZero->attributes()->enabled) == 1) {
                 $items = $customOrderZero->xpath('//item');
                 $lo = 0;
                 foreach ($items as $layerI) {
@@ -1084,7 +1084,7 @@ class QgisProject
                 return $layersOrder;
             }
             $customOrderZero = $customOrder[0];
-            if ($customOrderZero->attributes()->enabled == 1) {
+            if (intval($customOrderZero->attributes()->enabled) == 1) {
                 $items = $customOrderZero->xpath('//item');
                 $lo = 0;
                 foreach ($items as $layerI) {
