@@ -17,7 +17,7 @@ class qgisVectorLayer extends qgisMapLayer
     protected $fields = array();
 
     /**
-     * @var string[] list of aliases name for each fields
+     * @var array<string, string> list of aliases name for each fields
      */
     protected $aliases = array();
 
@@ -102,7 +102,7 @@ class qgisVectorLayer extends qgisMapLayer
     /**
      * list of aliases.
      *
-     * @return string[]
+     * @return array<string, string>
      */
     public function getAliasFields()
     {
