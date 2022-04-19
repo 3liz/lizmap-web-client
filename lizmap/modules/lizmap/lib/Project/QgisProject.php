@@ -2157,8 +2157,9 @@ class QgisProject
      */
     public function readFormControls($layerXml, $layerId, $proj)
     {
+        // Get null, \qgisMapLayer or \qgisVectorLayer
         $layer = $this->getLayer($layerId, $proj);
-        if ($layer->getType() !== 'vector') {
+        if (!$layer || $layer->getType() !== 'vector') {
             return array();
         }
 
@@ -2170,10 +2171,11 @@ class QgisProject
             return array();
         }
 
+        /** @var \qgisVectorLayer $layer */
         $aliases = $layer->getAliasFields();
 
         $categoriesXml = $layerXml->xpath('renderer-v2/categories');
-        if ($categoriesXml && is_array($categoriesXml)) {
+        if ($categoriesXml) {
             $categoriesXml = $categoriesXml[0];
             $categories = array();
             foreach ($categoriesXml as $category) {
@@ -2191,9 +2193,7 @@ class QgisProject
             if ($aliases && array_key_exists($fieldName, $aliases)) {
                 $alias = $aliases[$fieldName];
             }
-            if ($alias && is_array($alias)) {
-                $prop->setFieldAlias((string) $alias[0]->attributes()->name);
-            } elseif (is_string($alias) || $alias && count($alias)) {
+            if ($alias) {
                 $prop->setFieldAlias($alias);
             }
             $props[$fieldName]->setRendererCategories($categories);
