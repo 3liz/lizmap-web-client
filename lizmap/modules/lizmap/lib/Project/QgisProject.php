@@ -780,7 +780,7 @@ class QgisProject
 
                 // Atlas
                 $Atlas = $composer->xpath('Atlas');
-                if ($Atlas && is_array($Atlas) && count($Atlas) == 1) {
+                if ($Atlas) {
                     $Atlas = $Atlas[0];
                     $printTemplate['atlas'] = array(
                         'enabled' => (string) $Atlas['enabled'],
@@ -903,7 +903,7 @@ class QgisProject
 
                 // Atlas
                 $atlas = $layout->xpath('Atlas');
-                if ($atlas && is_array($atlas) && count($atlas) == 1) {
+                if ($atlas) {
                     $atlas = $atlas[0];
                     $printTemplate['atlas'] = array(
                         'enabled' => (string) $atlas['enabled'],
@@ -1432,7 +1432,7 @@ class QgisProject
         $xmlCustomProjectVariables = $xml->xpath('//properties/Variables');
         $customProjectVariables = array();
 
-        if ($xmlCustomProjectVariables && count($xmlCustomProjectVariables) === 1) {
+        if ($xmlCustomProjectVariables) {
             $variableIndex = 0;
             foreach ($xmlCustomProjectVariables[0]->variableNames->value as $variableName) {
                 $customProjectVariables[(string) $variableName] = (string) $xmlCustomProjectVariables[0]->variableValues->value[$variableIndex];
@@ -1583,7 +1583,7 @@ class QgisProject
     {
         $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
 
-        return is_array($WMSUseLayerIDs) && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true';
+        return ($WMSUseLayerIDs && $WMSUseLayerIDs[0] == 'true');
     }
 
     /**
@@ -2232,7 +2232,7 @@ class QgisProject
 
         if ($layerXml->edittypes && count($layerXml->edittypes->edittype)) {
             $props = $this->getEditType($layerXml);
-        } elseif ($layerXml->fieldConfiguration /*&& count($layerXml->fieldConfiguration->field)*/) {
+        } elseif ($layerXml->fieldConfiguration) {
             $props = $this->getFieldConfiguration($layerXml);
         } else {
             return array();
