@@ -359,13 +359,40 @@ class lizmapProject extends qgisProject
         }
 
         $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName && count($groupsWithShortName) > 0) {
+        if ($groupsWithShortName && count($groupsWithShortName)) {
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if ($shortNameProperty && count($shortNameProperty) > 0) {
+                if (!$shortNameProperty) {
+                    continue;
+                }
+
+                $shortNameProperty = $shortNameProperty[0];
+                $sname = (string) $shortNameProperty['value'];
+                if (!$sname) {
+                    continue;
+                }
+
+                if (property_exists($this->cfg->layers, $name)) {
+                    $this->cfg->layers->{$name}->shortname = $sname;
+                }
+            }
+        } else {
+            $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/Option[@type='Map']/Option[@name='wmsShortName']/parent::*/parent::*/parent::*");
+            if ($groupsWithShortName && count($groupsWithShortName)) {
+                foreach ($groupsWithShortName as $group) {
+                    $name = (string) $group['name'];
+                    $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
+                    if (!$shortNameProperty) {
+                        continue;
+                    }
+
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
+                    if (!$sname) {
+                        continue;
+                    }
+
                     if (property_exists($this->cfg->layers, $name)) {
                         $this->cfg->layers->{$name}->shortname = $sname;
                     }
@@ -383,7 +410,10 @@ class lizmapProject extends qgisProject
         }
 
         $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
-        if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount) > 0) {
+        if (!$layersWithShowFeatureCount) {
+            $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/Option[@type='Map']/Option[@name='showFeatureCount'][@value='1']/parent::*/parent::*/parent::*");
+        }
+        if ($layersWithShowFeatureCount && count($layersWithShowFeatureCount)) {
             foreach ($layersWithShowFeatureCount as $layer) {
                 $name = (string) $layer['name'];
                 if (property_exists($this->cfg->layers, $name)) {
