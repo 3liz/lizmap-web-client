@@ -131,6 +131,9 @@ class qgisProject
         $this->path = $file;
     }
 
+    /**
+     * Clear the project cache.
+     */
     public function clearCache()
     {
         $fileKey = jCache::normalizeKey($this->path);
@@ -144,6 +147,11 @@ class qgisProject
         }
     }
 
+    /**
+     * Get QGIS project path.
+     *
+     * @return string
+     */
     public function getPath()
     {
         return $this->path;
@@ -165,21 +173,43 @@ class qgisProject
         return $this->data[$key];
     }
 
+    /**
+     * Get version of QGIS which wrote the project.
+     *
+     * @return int
+     */
     public function getQgisProjectVersion()
     {
         return $this->qgisProjectVersion;
     }
 
+    /**
+     * Get WMS info.
+     *
+     * @return array
+     */
     public function getWMSInformation()
     {
         return $this->WMSInformation;
     }
 
+    /**
+     * Get QGIS project Canvas color.
+     *
+     * @return string
+     */
     public function getCanvasColor()
     {
         return $this->canvasColor;
     }
 
+    /**
+     * Get Proj4 definition from QGIS Project.
+     *
+     * @param mixed $authId
+     *
+     * @return null|string
+     */
     public function getProj4($authId)
     {
         if (!array_key_exists($authId, $this->allProj4)) {
@@ -189,25 +219,44 @@ class qgisProject
         return $this->allProj4[$authId];
     }
 
+    /**
+     * Get All Proj4 definition from QGIS Project.
+     *
+     * @return array
+     */
     public function getAllProj4()
     {
         return $this->allProj4;
     }
 
+    /**
+     * Get relations information.
+     *
+     * For each referenced layer, there is an item
+     * with referencingLayer, referencedField, referencingField keys.
+     * There is also a 'pivot' key.
+     *
+     * @return array
+     */
     public function getRelations()
     {
         return $this->relations;
     }
 
+    /**
+     * Get list of themes.
+     *
+     * @return array
+     */
     public function getThemes()
     {
         return $this->themes;
     }
 
     /**
-     * @param $layerId
+     * @param string $layerId
      *
-     * @return null|int|string
+     * @return null|array
      */
     public function getLayerDefinition($layerId)
     {
@@ -225,7 +274,7 @@ class qgisProject
     }
 
     /**
-     * @param $layerId
+     * @param string $layerId
      *
      * @return null|qgisMapLayer|qgisVectorLayer
      */
@@ -401,6 +450,8 @@ class qgisProject
      * Read the qgis files.
      *
      * @param mixed $qgs_path
+     *
+     * @throws Exception
      */
     protected function readXmlProject($qgs_path)
     {
@@ -489,6 +540,11 @@ class qgisProject
         $this->layers = $this->readLayers($qgs_xml);
     }
 
+    /**
+     * @param SimpleXMLElement $qgsLoad
+     *
+     * @return array
+     */
     protected function readWMSInformation($qgsLoad)
     {
 
@@ -669,7 +725,7 @@ class qgisProject
     {
         $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
 
-        return $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true';
+        return $WMSUseLayerIDs && $WMSUseLayerIDs[0] == 'true';
     }
 
     /**
@@ -819,13 +875,14 @@ class qgisProject
 
                     // Do not expose fields with HideFromWfs parameter
                     // Format in .qgs has changed in QGIS 3.16
+                    $excludeFields = null;
                     if ($this->qgisProjectVersion >= 31600) {
                         $excludeFields = $xmlLayer->xpath('.//field[contains(@configurationFlags,"HideFromWfs")]/@name');
                     } else {
                         $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
                     }
 
-                    if ($excludeFields && count($excludeFields) > 0) {
+                    if ($excludeFields) {
                         foreach ($excludeFields as $eField) {
                             $eField = (string) $eField;
                             if (!in_array($eField, $wfsFields)) {
