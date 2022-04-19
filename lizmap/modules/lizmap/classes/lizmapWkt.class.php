@@ -54,10 +54,16 @@ class lizmapWkt
         $coordinates = null;
         if ($geomType === 'point') {
             $coordinates = self::parsePoint($str);
+        } elseif ($geomType === 'multipoint') {
+            $coordinates = self::parseMultiPoint($str);
         } elseif ($geomType === 'linestring') {
             $coordinates = self::parseLineString($str);
+        } elseif ($geomType === 'multilinestring') {
+            $coordinates = self::parseMultiLineString($str);
         } elseif ($geomType === 'polygon') {
             $coordinates = self::parsePolygon($str);
+        } elseif ($geomType === 'multipolygon') {
+            $coordinates = self::parseMultiPolygon($str);
         }
 
         if ($coordinates === null) {
@@ -67,10 +73,16 @@ class lizmapWkt
         $geometry = array();
         if ($geomType === 'point') {
             $geometry['type'] = 'Point';
+        } elseif ($geomType === 'multipoint') {
+            $geometry['type'] = 'MultiPoint';
         } elseif ($geomType === 'linestring') {
             $geometry['type'] = 'LineString';
+        } elseif ($geomType === 'multilinestring') {
+            $geometry['type'] = 'MultiLineString';
         } elseif ($geomType === 'polygon') {
             $geometry['type'] = 'Polygon';
+        } elseif ($geomType === 'multipolygon') {
+            $geometry['type'] = 'MultiPolygon';
         }
         $geometry['coordinates'] = $coordinates;
 
@@ -94,6 +106,31 @@ class lizmapWkt
         }
 
         return array(floatval($coords[0]), floatval($coords[1]));
+    }
+
+    /**
+     * Return a Multi Point coordinates array.
+     *
+     * @param string $str A WKT fragment representing the Multi Point
+     *
+     * @return null|array The Multi Point coordinates, array of Points
+     *
+     * @protected
+     */
+    protected static function parseMultiPoint($str)
+    {
+        $components = array();
+        $points = explode(',', trim($str));
+        foreach ($points as $point) {
+            $point = preg_replace(self::$regExes['trimParens'], '$1', $point);
+            $component = self::parsePoint($point);
+            if ($component === null) {
+                return null;
+            }
+            $components[] = $component;
+        }
+
+        return $components;
     }
 
     /**
@@ -121,6 +158,31 @@ class lizmapWkt
     }
 
     /**
+     * Return a Multi LineString coordinates array.
+     *
+     * @param string $str A WKT fragment representing the Multi LineString
+     *
+     * @return null|array The Multi LineString coordinates, array of LineStrings
+     *
+     * @protected
+     */
+    protected static function parseMultiLineString($str)
+    {
+        $components = array();
+        $lines = preg_split(self::$regExes['parenComma'], trim($str));
+        foreach ($lines as $line) {
+            $line = preg_replace(self::$regExes['trimParens'], '$1', $line);
+            $component = self::parseLineString($line);
+            if ($component === null) {
+                return null;
+            }
+            $components[] = $component;
+        }
+
+        return $components;
+    }
+
+    /**
      * Return a Polygon coordinates array.
      *
      * @param string $str A WKT fragment representing the Polygon
@@ -140,6 +202,31 @@ class lizmapWkt
                 return null;
             }
             $components[] = $linearring;
+        }
+
+        return $components;
+    }
+
+    /**
+     * Return a Multi Polygon coordinates array.
+     *
+     * @param string $str A WKT fragment representing the Multi Polygon
+     *
+     * @return null|array The Multi Polygon coordinates, array of Polygones
+     *
+     * @protected
+     */
+    protected static function parseMultiPolygon($str)
+    {
+        $components = array();
+        $polygons = preg_split(self::$regExes['doubleParenComma'], trim($str));
+        foreach ($polygons as $polygon) {
+            $polygon = preg_replace(self::$regExes['trimParens'], '$1', $polygon);
+            $component = self::parsePolygon($polygon);
+            if ($component === null) {
+                return null;
+            }
+            $components[] = $component;
         }
 
         return $components;
