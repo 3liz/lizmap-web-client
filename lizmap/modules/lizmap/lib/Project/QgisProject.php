@@ -330,7 +330,7 @@ class QgisProject
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if (!$shortNameProperty || count($shortNameProperty) == 0) {
+                if (!$shortNameProperty) {
                     continue;
                 }
 
@@ -352,7 +352,7 @@ class QgisProject
                 foreach ($groupsWithShortName as $group) {
                     $name = (string) $group['name'];
                     $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
-                    if (!$shortNameProperty || count($shortNameProperty) == 0) {
+                    if (!$shortNameProperty) {
                         continue;
                     }
 
