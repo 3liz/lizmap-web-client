@@ -158,6 +158,9 @@ class qgisExpressionUtilsTest extends PHPUnit_Framework_TestCase {
 
         $exp = 'intersects(@current_geometry, $geometry) AND area(@current_geometry)>1000';
         $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
+
+        $exp = 'intersects(buffer(@current_geometry,50), $geometry )';
+        $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
     }
 
 }
