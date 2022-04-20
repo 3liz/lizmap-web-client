@@ -46,6 +46,7 @@
   </div>
   <div id="map-content">
     <div id="newOlMap" style="width:100%;height:100%;position: absolute;"></div>
+    <div id="baseLayersOlMap" style="width:100%;height:100%;position: absolute;"></div>
     <div id="map"></div>
 
     <div id="mini-dock">

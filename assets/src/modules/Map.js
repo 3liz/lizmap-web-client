@@ -25,7 +25,7 @@ export default class Map extends olMap {
             view: new View({
                 resolutions: mainLizmap.lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
-                center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
+                center: mainLizmap.center,
                 projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection,
                 enableRotation: false,
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
@@ -53,7 +53,7 @@ export default class Map extends olMap {
 
                 // Sync center
                 this.getView().animate({
-                    center: this._lizmap3Center,
+                    center: mainLizmap.center,
                     zoom: mainLizmap.lizmap3.map.getZoom(),
                     duration: 0
                 }, () => this.on('moveend', this._refreshOL2View));
@@ -97,22 +97,12 @@ export default class Map extends olMap {
     }
 
     /**
-     * Returns Lizmap 3 map center
-     * @readonly
-     * @memberof Map
-     * @return {[number, number]} lon, lat coords
-     */
-    get _lizmap3Center(){
-        return [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat];
-    }
-
-    /**
      * Synchronize new OL view with OL2 one
      * @memberof Map
      */
     syncNewOLwithOL2View(){
         this.getView().animate({
-            center: this._lizmap3Center,
+            center: mainLizmap.center,
             zoom: mainLizmap.lizmap3.map.getZoom(),
             duration: 0
         });

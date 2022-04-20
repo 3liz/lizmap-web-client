@@ -1,4 +1,5 @@
 import Map from './Map.js';
+import BaseLayersMap from './BaseLayersMap.js';
 import Edition from './Edition.js';
 import Geolocation from './Geolocation.js';
 import GeolocationSurvey from './GeolocationSurvey.js';
@@ -42,6 +43,7 @@ export default class Lizmap {
 
                 // Create Lizmap modules
                 this.map = new Map();
+                this.baseLayersMap = new BaseLayersMap();
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
@@ -95,6 +97,11 @@ export default class Lizmap {
 
     get hasOverview() {
         return this._lizmap3.config.layers.hasOwnProperty('Overview');
+    }
+
+    get center() {
+        const center = this._lizmap3.map.getCenter();
+        return [center.lon, center.lat];
     }
 
     /**

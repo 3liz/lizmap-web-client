@@ -1277,6 +1277,7 @@ var lizMap = function() {
 
     map = new OpenLayers.Map('map'
       ,{
+        zoomMethod: null,
         controls:[
           new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 100}})
         ]
