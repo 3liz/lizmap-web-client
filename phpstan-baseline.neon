@@ -881,31 +881,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/qgisLayerDbFieldsInfo.class.php
 
 		-
-			message: "#^Call to function array_key_exists\\(\\) with 'embedded' and int\\<min, \\-1\\>\\|int\\<1, max\\>\\|non\\-empty\\-string will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisProject.class.php
-
-		-
-			message: "#^Comparison operation \"\\>\" between int\\<1, max\\> and 0 is always true\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/classes/qgisProject.class.php
-
-		-
-			message: "#^Method qgisProject\\:\\:getLayerDefinition\\(\\) should return int\\|string\\|null but returns array\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisProject.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$layerId\\)\\: Unexpected token \"\\$layerId\", expected type at offset 18$#"
-			count: 2
-			path: lizmap/modules/lizmap/classes/qgisProject.class.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/classes/qgisProject.class.php
-
-		-
 			message: "#^Cannot access property \\$geomtype on bool\\|object\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
@@ -1645,31 +1620,6 @@ parameters:
 			message: "#^Variable \\$typeName in empty\\(\\) always exists and is not falsy\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getAliasFields\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Class lizmapServices referenced with incorrect case\\: LizmapServices\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Comparison operation \"\\=\\=\" between \\(SimpleXMLElement\\|null\\) and 1 results in an error\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^Comparison operation \"\\>\\=\" between SimpleXMLElement and 0 results in an error\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/lib/Project/QgisProject.php
 
 		-
 			message: "#^Call to method getKey\\(\\) on an unknown class Lizmap\\\\Request\\\\Lizmap\\\\Project\\\\Repository\\.$#"

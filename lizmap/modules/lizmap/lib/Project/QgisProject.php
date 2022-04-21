@@ -87,7 +87,7 @@ class QgisProject
     protected $customProjectVariables = array();
 
     /**
-     * @var \LizmapServices
+     * @var \lizmapServices
      */
     protected $services;
 
@@ -116,10 +116,12 @@ class QgisProject
     /**
      * constructor.
      *
-     * @param string $file : the QGIS project path
-     * @param mixed  $data
+     * @param string                  $file       the QGIS project path
+     * @param \lizmapServices         $services
+     * @param App\AppContextInterface $appContext
+     * @param mixed                   $data
      */
-    public function __construct($file, \LizmapServices $services, App\AppContextInterface $appContext, $data = false)
+    public function __construct($file, $services, $appContext, $data = false)
     {
         $this->appContext = $appContext;
         $this->services = $services;
@@ -330,7 +332,7 @@ class QgisProject
             foreach ($groupsWithShortName as $group) {
                 $name = (string) $group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if (!$shortNameProperty || count($shortNameProperty) == 0) {
+                if (!$shortNameProperty) {
                     continue;
                 }
 
@@ -352,7 +354,7 @@ class QgisProject
                 foreach ($groupsWithShortName as $group) {
                     $name = (string) $group['name'];
                     $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
-                    if (!$shortNameProperty || count($shortNameProperty) == 0) {
+                    if (!$shortNameProperty) {
                         continue;
                     }
 
@@ -416,45 +418,41 @@ class QgisProject
                 $cfg->removeLayer($name);
             }
         }
+
         //unset cache for editionLayers
         $eLayers = $cfg->getEditionLayers();
-        if ($eLayers) {
-            foreach ($eLayers as $key => $obj) {
-                $layerCfg = $cfg->getLayer($key);
-                if ($layerCfg) {
-                    $layerCfg->cached = 'False';
-                    $layerCfg->clientCacheExpiration = 0;
-                    if (property_exists($layerCfg, 'cacheExpiration')) {
-                        unset($layerCfg->cacheExpiration);
-                    }
+        foreach ($eLayers as $key => $obj) {
+            $layerCfg = $cfg->getLayer($key);
+            if ($layerCfg) {
+                $layerCfg->cached = 'False';
+                $layerCfg->clientCacheExpiration = 0;
+                if (property_exists($layerCfg, 'cacheExpiration')) {
+                    unset($layerCfg->cacheExpiration);
                 }
             }
         }
+
         //unset cache for loginFilteredLayers
         $loginFiltered = $cfg->getLoginFilteredLayers();
-
-        if ($loginFiltered) {
-            foreach ($loginFiltered as $key => $obj) {
-                $layerCfg = $cfg->getLayer($key);
-                if ($layerCfg) {
-                    $layerCfg->cached = 'False';
-                    $layerCfg->clientCacheExpiration = 0;
-                    if (property_exists($layerCfg, 'cacheExpiration')) {
-                        unset($layerCfg->cacheExpiration);
-                    }
+        foreach ($loginFiltered as $key => $obj) {
+            $layerCfg = $cfg->getLayer($key);
+            if ($layerCfg) {
+                $layerCfg->cached = 'False';
+                $layerCfg->clientCacheExpiration = 0;
+                if (property_exists($layerCfg, 'cacheExpiration')) {
+                    unset($layerCfg->cacheExpiration);
                 }
             }
         }
+
         //unset displayInLegend for geometryType none or unknown
         $layers = $cfg->getLayers();
-        if ($layers) {
-            foreach ($layers as $key => $layerCfg) {
-                if (property_exists($layerCfg, 'geometryType')
-                    && ($layerCfg->geometryType == 'none'
-                        || $layerCfg->geometryType == 'unknown')
-                ) {
-                    $layerCfg->displayInLegend = 'False';
-                }
+        foreach ($layers as $key => $layerCfg) {
+            if (property_exists($layerCfg, 'geometryType')
+                && ($layerCfg->geometryType == 'none'
+                    || $layerCfg->geometryType == 'unknown')
+            ) {
+                $layerCfg->displayInLegend = 'False';
             }
         }
     }
@@ -780,7 +778,7 @@ class QgisProject
 
                 // Atlas
                 $Atlas = $composer->xpath('Atlas');
-                if ($Atlas && is_array($Atlas) && count($Atlas) == 1) {
+                if ($Atlas) {
                     $Atlas = $Atlas[0];
                     $printTemplate['atlas'] = array(
                         'enabled' => (string) $Atlas['enabled'],
@@ -903,7 +901,7 @@ class QgisProject
 
                 // Atlas
                 $atlas = $layout->xpath('Atlas');
-                if ($atlas && is_array($atlas) && count($atlas) == 1) {
+                if ($atlas) {
                     $atlas = $atlas[0];
                     $printTemplate['atlas'] = array(
                         'enabled' => (string) $atlas['enabled'],
@@ -1064,7 +1062,7 @@ class QgisProject
                 return $layersOrder;
             }
             $customOrderZero = $customOrder[0];
-            if ($customOrderZero->attributes()->enabled == 1) {
+            if (intval($customOrderZero->attributes()->enabled) == 1) {
                 $items = $customOrderZero->xpath('//item');
                 $lo = 0;
                 foreach ($items as $layerI) {
@@ -1084,7 +1082,7 @@ class QgisProject
                 return $layersOrder;
             }
             $customOrderZero = $customOrder[0];
-            if ($customOrderZero->attributes()->enabled == 1) {
+            if (intval($customOrderZero->attributes()->enabled) == 1) {
                 $items = $customOrderZero->xpath('//item');
                 $lo = 0;
                 foreach ($items as $layerI) {
@@ -1117,7 +1115,7 @@ class QgisProject
             if ($updateDrawingOrder == 'false') {
                 $layers = $this->xml->xpath('//legendlayer');
                 foreach ($layers as $layer) {
-                    if ($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0) {
+                    if ($layer->attributes()->drawingOrder && intval($layer->attributes()->drawingOrder) >= 0) {
                         $layersOrder[(string) $layer->attributes()->name] = (int) $layer->attributes()->drawingOrder;
                     }
                 }
@@ -1363,7 +1361,7 @@ class QgisProject
         $xmlCustomProjectVariables = $xml->xpath('//properties/Variables');
         $customProjectVariables = array();
 
-        if ($xmlCustomProjectVariables && count($xmlCustomProjectVariables) === 1) {
+        if ($xmlCustomProjectVariables) {
             $variableIndex = 0;
             foreach ($xmlCustomProjectVariables[0]->variableNames->value as $variableName) {
                 $customProjectVariables[(string) $variableName] = (string) $xmlCustomProjectVariables[0]->variableValues->value[$variableIndex];
@@ -1513,7 +1511,7 @@ class QgisProject
     {
         $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
 
-        return is_array($WMSUseLayerIDs) && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true';
+        return $WMSUseLayerIDs && $WMSUseLayerIDs[0] == 'true';
     }
 
     /**
@@ -2155,23 +2153,25 @@ class QgisProject
      */
     public function readFormControls($layerXml, $layerId, $proj)
     {
+        // Get null, \qgisMapLayer or \qgisVectorLayer
         $layer = $this->getLayer($layerId, $proj);
-        if ($layer->getType() !== 'vector') {
+        if (!$layer || $layer->getType() !== 'vector') {
             return array();
         }
 
         if ($layerXml->edittypes && count($layerXml->edittypes->edittype)) {
             $props = $this->getEditType($layerXml);
-        } elseif ($layerXml->fieldConfiguration /*&& count($layerXml->fieldConfiguration->field)*/) {
+        } elseif ($layerXml->fieldConfiguration) {
             $props = $this->getFieldConfiguration($layerXml);
         } else {
             return array();
         }
 
+        /** @var \qgisVectorLayer $layer */
         $aliases = $layer->getAliasFields();
 
         $categoriesXml = $layerXml->xpath('renderer-v2/categories');
-        if ($categoriesXml && is_array($categoriesXml)) {
+        if ($categoriesXml) {
             $categoriesXml = $categoriesXml[0];
             $categories = array();
             foreach ($categoriesXml as $category) {
@@ -2189,9 +2189,7 @@ class QgisProject
             if ($aliases && array_key_exists($fieldName, $aliases)) {
                 $alias = $aliases[$fieldName];
             }
-            if ($alias && is_array($alias)) {
-                $prop->setFieldAlias((string) $alias[0]->attributes()->name);
-            } elseif (is_string($alias) || $alias && count($alias)) {
+            if ($alias) {
                 $prop->setFieldAlias($alias);
             }
             $props[$fieldName]->setRendererCategories($categories);

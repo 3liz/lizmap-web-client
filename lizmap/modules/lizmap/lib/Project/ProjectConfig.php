@@ -89,7 +89,7 @@ class ProjectConfig
     public function __construct($data)
     {
         foreach (self::$cachedProperties as $prop) {
-            if (isset($data->{$prop})) {
+            if (isset($data->{$prop}) && $data->{$prop}) {
                 $this->{$prop} = $data->{$prop};
             } else {
                 $this->{$prop} = new \stdClass();
