@@ -64,6 +64,32 @@ describe('Request service', function () {
             })
     })
 
+
+    it('WFS GetCapabilities XML', function () {
+        let body = '<?xml version="1.0" encoding="UTF-8"?>'
+        body += '<wfs:GetCapabilities'
+        body += '    service="WFS"'
+        body += '    version="1.0.0"'
+        body += '    xmlns:wfs="http://www.opengis.net/wfs"'
+        body += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+        body += '    xsi:schemaLocation="http://www.opengis.net/wfs/1.0.0 http://schemas.opengis.net/wfs/1.0.0/wfs.xsd">'
+        body += '</wfs:GetCapabilities>'
+        body += ''
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            headers: {
+                'Content-Type':'text/xml; charset=utf-8'
+            },
+            body: body,
+        }).then((resp) => {
+                expect(resp.status).to.eq(200)
+                expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.body).to.contain('WFS_Capabilities')
+                expect(resp.body).to.contain('version="1.0.0"')
+            })
+    })
+
     it('WFS DescribeFeatureType', function () {
         cy.request({
             method: 'POST',
@@ -119,12 +145,31 @@ describe('Request service', function () {
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200)
-            expect(resp.headers['content-type']).to.contain('text/json')
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
             expect(resp.body).to.have.property('type', 'FeatureCollection')
             expect(resp.body).to.have.property('features')
             expect(resp.body.features).to.have.length(2)
-            expect(resp.body.features[0].id).to.equal('selection_polygon.1')
-            expect(resp.body.features[0]).to.have.property('bbox')
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature.bbox).to.have.length(4)
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
         })
     })
 
@@ -146,8 +191,76 @@ describe('Request service', function () {
             expect(resp.body).to.have.property('type', 'FeatureCollection')
             expect(resp.body).to.have.property('features')
             expect(resp.body.features).to.have.length(1)
-            expect(resp.body.features[0].id).to.equal('selection_polygon.1')
-            expect(resp.body.features[0]).to.have.property('bbox')
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+    })
+
+    it('WFS GetFeature XML', function () {
+        let body = '<?xml version="1.0" encoding="UTF-8"?>'
+        body += '<wfs:GetFeature'
+        body += '    service="WFS"'
+        body += '    version="1.0.0"'
+        body += '    outputFormat="GeoJSON"'
+        body += '    xmlns:wfs="http://www.opengis.net/wfs"'
+        body += '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+        body += '    xsi:schemaLocation="http://www.opengis.net/wfs/1.0.0 http://schemas.opengis.net/wfs/1.0.0/wfs.xsd">'
+        body += '    <wfs:Query typeName="selection_polygon"/>'
+        body += '</wfs:GetFeature>'
+        body += ''
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            headers: {
+                'Content-Type':'text/xml; charset=utf-8'
+            },
+            body: body,
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(2)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature.bbox).to.have.length(4)
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
         })
     })
 
