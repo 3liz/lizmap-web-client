@@ -1,5 +1,4 @@
 {"type": "FeatureCollection",
- "bbox": [ 0, 0, 0, 0],
  "features": [
   {"geometry":null,"id":"data_uids.1","properties":{"id":1,"label":"first","uid":"00304c51-794c-46df-b17f-84dc797fb227"},"type":"Feature"}
  ,{"geometry":null,"id":"data_uids.2","properties":{"id":2,"label":"second","uid":"4f44046a-88e5-4ec4-bab4-b16d841433c8"},"type":"Feature"}
