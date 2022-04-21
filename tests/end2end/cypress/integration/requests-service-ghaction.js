@@ -122,7 +122,7 @@ describe('Request service', function () {
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200)
-            expect(resp.headers['content-type']).to.contain('text/json; charset=utf-8')
+            expect(resp.headers['content-type']).to.contain('application/json; charset=utf-8')
             expect(resp.body).to.have.property('name', 'selection_polygon')
             expect(resp.body).to.have.property('aliases')
             expect(resp.body).to.have.property('defaults')
