@@ -6,7 +6,13 @@ import ImageWMS from 'ol/source/ImageWMS';
 import {Image as ImageLayer} from 'ol/layer';
 
 import OSM from 'ol/source/OSM';
+import Stamen from 'ol/source/Stamen';
 import TileLayer from 'ol/layer/Tile';
+
+import WMTS from 'ol/source/WMTS';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
+import {get as getProjection} from 'ol/proj';
+import {getWidth} from 'ol/extent';
 
 import DragPan from "ol/interaction/DragPan";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
@@ -37,25 +43,101 @@ export default class Map extends olMap {
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
-            target: 'baseLayersOlMap',
-            layers: [
+            target: 'baseLayersOlMap'
+        });
+
+        if(mainLizmap.config.options?.['osmMapnik']){
+            this.addLayer(
                 new TileLayer({
-                  source: new OSM(),
-                }),
-                new ImageLayer({
-                    extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
-                    source: new ImageWMS({
-                      url: 'https://demo.lizmap.com/lizmap/index.php/lizmap/service/?repository=feat1&project=multi_atlas',
-                      projection: 'EPSG:2154',
-                      params: {
-                          'LAYERS': 'VilleMTP_MTP_Quartiers_2011'
-                        },
-                      ratio: 2, // This avoids to have many extra requests when panning on long distance
-                      serverType: 'qgis',
+                  source: new OSM()
+                })
+            );
+        }
+
+        if(mainLizmap.config.options?.['osmStamenToner']){
+            this.addLayer(
+                new TileLayer({
+                    source: new Stamen({
+                      layer: 'toner-lite',
                     }),
                   }),
-              ]
-        });
+            );
+        }
+
+        // IGN
+        if(Object.keys(lizMap.config.options).some( option => option.startsWith('ign'))){
+
+            const proj3857 = getProjection('EPSG:3857');
+            const maxResolution = getWidth(proj3857.getExtent()) / 256;
+
+            const ignConfigs = {
+                ignStreets : {
+                    layer : 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
+                    urlPart : 'cartes',
+                    format : 'image/png',
+                    numZoomLevels: 20
+                },
+                ignSatellite : {
+                    layer : 'ORTHOIMAGERY.ORTHOPHOTOS',
+                    urlPart : 'ortho',
+                    format : 'image/jpeg',
+                    numZoomLevels: 22
+                },
+                ignTerrain : {
+                    layer : 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
+                    urlPart : lizMap.config.options?.ignKey,
+                    format : 'image/jpeg',
+                    numZoomLevels: 18
+                },
+                ignCadastral : {
+                    layer : 'CADASTRALPARCELS.PARCELLAIRE_EXPRESS',
+                    urlPart : 'parcellaire',
+                    format : 'image/png',
+                    numZoomLevels: 20
+                }
+            };
+
+            for (const key in ignConfigs) {
+                if(lizMap.config.options?.[key]){
+
+                    const ignConfig = ignConfigs[key];
+
+                    const resolutions = [];
+                    const matrixIds = [];
+                    
+                    for (let i = 0; i < ignConfig.numZoomLevels; i++) {
+                      matrixIds[i] = i.toString();
+                      resolutions[i] = maxResolution / Math.pow(2, i);
+                    }
+                    
+                    const tileGrid = new WMTSTileGrid({
+                      origin: [-20037508, 20037508],
+                      resolutions: resolutions,
+                      matrixIds: matrixIds,
+                    });
+
+                    const ign_source = new WMTS({
+                        url: 'https://wxs.ign.fr/' + ignConfig.urlPart + '/geoportail/wmts',
+                        layer: ignConfig.layer,
+                        matrixSet: 'PM',
+                        format: ignConfig.format,
+                        projection: 'EPSG:3857',
+                        tileGrid: tileGrid,
+                        style: 'normal',
+                        attributions:
+                          '<a href="https://www.ign.fr/" target="_blank">' +
+                          '<img src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'' +
+                          'information géographique et forestière" alt="IGN"></a>',
+                      });
+                      
+                      const ign = new TileLayer({
+                        source: ign_source,
+                      });
+                      
+                      this.addLayer(ign);
+                }
+            }
+        }
 
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
