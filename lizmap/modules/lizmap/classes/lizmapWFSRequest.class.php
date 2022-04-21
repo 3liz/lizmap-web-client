@@ -247,7 +247,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
                 $jsonData['defaults'] = (object) $layer->getDefaultValues();
             }
             $data = json_encode((object) $jsonData);
-            $mime = 'text/json; charset=utf-8';
+            $mime = 'application/json; charset=utf-8';
         }
 
         return (object) array(
@@ -347,7 +347,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         $data = $response->data;
 
         if ($mime == 'text/plain' && strtolower($this->param('outputformat')) == 'geojson') {
-            $mime = 'text/json';
+            $mime = 'application/vnd.geo+json; charset=utf-8';
             $layer = $this->project->findLayerByAnyName($this->requestedTypename());
             if ($layer != null) {
                 $layer = $this->project->getLayer($layer->id);
