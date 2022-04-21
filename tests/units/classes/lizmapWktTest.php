@@ -177,4 +177,11 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(1, $geom['coordinates'][0]);
         $this->assertCount(5, $geom['coordinates'][0][0]);
     }
+
+    function testUnknown() {
+        $wkt = 'GEOMETRY (((30 10, 40 40, 20 40, 10 20, 30 10)))';
+        $geom = lizmapWkt::parse($wkt);
+
+        $this->assertNull($geom);
+    }
 }
