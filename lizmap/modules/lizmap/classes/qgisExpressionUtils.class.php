@@ -276,9 +276,9 @@ class qgisExpressionUtils
                 // from wkt to geom
                 $wkt = trim($form->getData($ref));
                 $geom = lizmapWkt::parse($wkt);
-                if ($geom === null) {
+                /*if ($geom === null) {
                     \jLog::log('Parsing WKT failed! '.$wkt, 'error');
-                }
+                }*/
             } else {
                 // properties
                 $values[$ref] = $form->getData($ref);
