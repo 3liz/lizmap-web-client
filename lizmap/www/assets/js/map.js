@@ -6352,638 +6352,638 @@ var lizMap = function() {
  * but after this file
  */
 lizMap.events.on({
-    'mapcreated':function(evt){
-      // Add empty baselayer to the map
-      if ( ('emptyBaselayer' in evt.config.options)
-         && evt.config.options.emptyBaselayer == 'True') {
-        // creating the empty base layer
-        layerConfig = {};
-        layerConfig.title = lizDict['baselayer.empty.title'];
-        layerConfig.name = 'emptyBaselayer';
-        evt.config.layers['emptyBaselayer'] = layerConfig;
+    // 'mapcreated':function(evt){
+    //   // Add empty baselayer to the map
+    //   if ( ('emptyBaselayer' in evt.config.options)
+    //      && evt.config.options.emptyBaselayer == 'True') {
+    //     // creating the empty base layer
+    //     layerConfig = {};
+    //     layerConfig.title = lizDict['baselayer.empty.title'];
+    //     layerConfig.name = 'emptyBaselayer';
+    //     evt.config.layers['emptyBaselayer'] = layerConfig;
 
-        evt.baselayers.push(new OpenLayers.Layer.Vector('emptyBaselayer',{
-          isBaseLayer: true
-         ,maxExtent: evt.map.maxExtent
-         ,maxScale: evt.map.maxScale
-         ,minScale: evt.map.minScale
-         ,numZoomLevels: evt.map.numZoomLevels
-         ,scales: evt.map.scales
-         ,projection: evt.map.projection
-         ,units: evt.map.projection.proj.units
-        }));
-        evt.map.allOverlays = false;
-      }
+    //     evt.baselayers.push(new OpenLayers.Layer.Vector('emptyBaselayer',{
+    //       isBaseLayer: true
+    //      ,maxExtent: evt.map.maxExtent
+    //      ,maxScale: evt.map.maxScale
+    //      ,minScale: evt.map.minScale
+    //      ,numZoomLevels: evt.map.numZoomLevels
+    //      ,scales: evt.map.scales
+    //      ,projection: evt.map.projection
+    //      ,units: evt.map.projection.proj.units
+    //     }));
+    //     evt.map.allOverlays = false;
+    //   }
 
-      // Add OpenStreetMap, Google Maps, Bing Maps, IGN Geoportail
-      // baselayers to the map
-      if (
-    (('osmMapnik' in evt.config.options)
-    && evt.config.options.osmMapnik == 'True') ||
-    (('osmStamenToner' in evt.config.options)
-     && evt.config.options.osmStamenToner == 'True') ||
-    (('osmCyclemap' in evt.config.options)
-     && evt.config.options.osmCyclemap == 'True'
-     && ('OCMKey' in evt.config.options)) ||
-    (('googleStreets' in evt.config.options)
-     && evt.config.options.googleStreets == 'True') ||
-    (('googleSatellite' in evt.config.options)
-     && evt.config.options.googleSatellite == 'True') ||
-    (('googleHybrid' in evt.config.options)
-     && evt.config.options.googleHybrid == 'True') ||
-    (('googleTerrain' in evt.config.options)
-     && evt.config.options.googleTerrain == 'True') ||
-    (('bingStreets' in evt.config.options)
-     && evt.config.options.bingStreets == 'True'
-     && ('bingKey' in evt.config.options)) ||
-    (('bingSatellite' in evt.config.options)
-     && evt.config.options.bingSatellite == 'True'
-     && ('bingKey' in evt.config.options)) ||
-    (('bingHybrid' in evt.config.options)
-     && evt.config.options.bingHybrid == 'True'
-     && ('bingKey' in evt.config.options)) ||
-    (('ignTerrain' in evt.config.options)
-     && evt.config.options.ignTerrain == 'True') ||
-    (('ignStreets' in evt.config.options)
-     && evt.config.options.ignStreets == 'True') ||
-    (('ignSatellite' in evt.config.options)
-     && evt.config.options.ignSatellite == 'True') ||
-    (('ignCadastral' in evt.config.options)
-     && evt.config.options.ignCadastral == 'True')
-    ) {
-      //adding baselayers
-      var maxExtent = null;
-      if ( OpenLayers.Projection.defaults['EPSG:900913'].maxExtent )
-        maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:900913'].maxExtent);
-      else if ( OpenLayers.Projection.defaults['EPSG:3857'].maxExtent )
-        maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
+    //   // Add OpenStreetMap, Google Maps, Bing Maps, IGN Geoportail
+    //   // baselayers to the map
+    //   if (
+    // (('osmMapnik' in evt.config.options)
+    // && evt.config.options.osmMapnik == 'True') ||
+    // (('osmStamenToner' in evt.config.options)
+    //  && evt.config.options.osmStamenToner == 'True') ||
+    // (('osmCyclemap' in evt.config.options)
+    //  && evt.config.options.osmCyclemap == 'True'
+    //  && ('OCMKey' in evt.config.options)) ||
+    // (('googleStreets' in evt.config.options)
+    //  && evt.config.options.googleStreets == 'True') ||
+    // (('googleSatellite' in evt.config.options)
+    //  && evt.config.options.googleSatellite == 'True') ||
+    // (('googleHybrid' in evt.config.options)
+    //  && evt.config.options.googleHybrid == 'True') ||
+    // (('googleTerrain' in evt.config.options)
+    //  && evt.config.options.googleTerrain == 'True') ||
+    // (('bingStreets' in evt.config.options)
+    //  && evt.config.options.bingStreets == 'True'
+    //  && ('bingKey' in evt.config.options)) ||
+    // (('bingSatellite' in evt.config.options)
+    //  && evt.config.options.bingSatellite == 'True'
+    //  && ('bingKey' in evt.config.options)) ||
+    // (('bingHybrid' in evt.config.options)
+    //  && evt.config.options.bingHybrid == 'True'
+    //  && ('bingKey' in evt.config.options)) ||
+    // (('ignTerrain' in evt.config.options)
+    //  && evt.config.options.ignTerrain == 'True') ||
+    // (('ignStreets' in evt.config.options)
+    //  && evt.config.options.ignStreets == 'True') ||
+    // (('ignSatellite' in evt.config.options)
+    //  && evt.config.options.ignSatellite == 'True') ||
+    // (('ignCadastral' in evt.config.options)
+    //  && evt.config.options.ignCadastral == 'True')
+    // ) {
+    //   //adding baselayers
+    //   var maxExtent = null;
+    //   if ( OpenLayers.Projection.defaults['EPSG:900913'].maxExtent )
+    //     maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:900913'].maxExtent);
+    //   else if ( OpenLayers.Projection.defaults['EPSG:3857'].maxExtent )
+    //     maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
 
-      var lOptions = {zoomOffset:0,maxResolution:156543.03390625};
-      if (('resolutions' in evt.config.options)
-          && evt.config.options.resolutions.length != 0 ){
-        var resolutions = evt.config.options.resolutions;
-        var maxRes = resolutions[0];
-        var numZoomLevels = resolutions.length;
-        var zoomOffset = 0;
-        var res = 156543.03390625;
-        while ( res > maxRes ) {
-          zoomOffset += 1;
-          res = 156543.03390625 / Math.pow(2, zoomOffset);
-        }
-        lOptions['zoomOffset'] = zoomOffset;
-        lOptions['maxResolution'] = maxRes;
-        lOptions['numZoomLevels'] = numZoomLevels;
-      }
+    //   var lOptions = {zoomOffset:0,maxResolution:156543.03390625};
+    //   if (('resolutions' in evt.config.options)
+    //       && evt.config.options.resolutions.length != 0 ){
+    //     var resolutions = evt.config.options.resolutions;
+    //     var maxRes = resolutions[0];
+    //     var numZoomLevels = resolutions.length;
+    //     var zoomOffset = 0;
+    //     var res = 156543.03390625;
+    //     while ( res > maxRes ) {
+    //       zoomOffset += 1;
+    //       res = 156543.03390625 / Math.pow(2, zoomOffset);
+    //     }
+    //     lOptions['zoomOffset'] = zoomOffset;
+    //     lOptions['maxResolution'] = maxRes;
+    //     lOptions['numZoomLevels'] = numZoomLevels;
+    //   }
 
-      if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
-        evt.map.allOverlays = false;
-        var options = {
-          zoomOffset: 0,
-          maxResolution:156543.03390625,
-          numZoomLevels:23
-        };
-        if (lOptions.zoomOffset != 0) {
-          options.zoomOffset = lOptions.zoomOffset;
-          options.maxResolution = lOptions.maxResolution;
-        }
-        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-          options.numZoomLevels = lOptions.numZoomLevels;
-        else
-          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var osm = new OpenLayers.Layer.OSM('osm',
-            [
-            "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
-            ]
-            ,options
-            );
-        osm.maxExtent = maxExtent;
-        var osmCfg = {
-             "name":"osm"
-            ,"title":"OpenStreetMap"
-            ,"type":"baselayer"
-        };
-        evt.config.layers['osm'] = osmCfg;
-        evt.baselayers.push(osm);
-      }
+    //   if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
+    //     evt.map.allOverlays = false;
+    //     var options = {
+    //       zoomOffset: 0,
+    //       maxResolution:156543.03390625,
+    //       numZoomLevels:23
+    //     };
+    //     if (lOptions.zoomOffset != 0) {
+    //       options.zoomOffset = lOptions.zoomOffset;
+    //       options.maxResolution = lOptions.maxResolution;
+    //     }
+    //     if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //       options.numZoomLevels = lOptions.numZoomLevels;
+    //     else
+    //       options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //     var osm = new OpenLayers.Layer.OSM('osm',
+    //         [
+    //         "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+    //         "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+    //         "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+    //         ]
+    //         ,options
+    //         );
+    //     osm.maxExtent = maxExtent;
+    //     var osmCfg = {
+    //          "name":"osm"
+    //         ,"title":"OpenStreetMap"
+    //         ,"type":"baselayer"
+    //     };
+    //     evt.config.layers['osm'] = osmCfg;
+    //     evt.baselayers.push(osm);
+    //   }
 
-      if (('osmStamenToner' in evt.config.options) && evt.config.options.osmStamenToner == 'True') {
-        evt.map.allOverlays = false;
-        var options = {
-          zoomOffset: 0,
-          maxResolution:156543.03390625,
-          numZoomLevels:23
-        };
-        if (lOptions.zoomOffset != 0) {
-          options.zoomOffset = lOptions.zoomOffset;
-          options.maxResolution = lOptions.maxResolution;
-        }
-        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-          options.numZoomLevels = lOptions.numZoomLevels;
-        else
-          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var stamenToner = new OpenLayers.Layer.OSM('osm-toner',
-            ["https://stamen-tiles-a.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
-            "https://stamen-tiles-b.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
-            "https://stamen-tiles-c.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
-            "https://stamen-tiles-d.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png"]
-            ,options
-            );
-        stamenToner.maxExtent = maxExtent;
-        var stamenTonerCfg = {
-          "name":"osm-toner"
-            ,"title":"OSM Stamen Toner"
-            ,"type":"baselayer"
-        };
-        evt.config.layers['osm-toner'] = stamenTonerCfg;
-        evt.baselayers.push(stamenToner);
-      }
+    //   if (('osmStamenToner' in evt.config.options) && evt.config.options.osmStamenToner == 'True') {
+    //     evt.map.allOverlays = false;
+    //     var options = {
+    //       zoomOffset: 0,
+    //       maxResolution:156543.03390625,
+    //       numZoomLevels:23
+    //     };
+    //     if (lOptions.zoomOffset != 0) {
+    //       options.zoomOffset = lOptions.zoomOffset;
+    //       options.maxResolution = lOptions.maxResolution;
+    //     }
+    //     if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //       options.numZoomLevels = lOptions.numZoomLevels;
+    //     else
+    //       options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //     var stamenToner = new OpenLayers.Layer.OSM('osm-toner',
+    //         ["https://stamen-tiles-a.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
+    //         "https://stamen-tiles-b.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
+    //         "https://stamen-tiles-c.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
+    //         "https://stamen-tiles-d.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png"]
+    //         ,options
+    //         );
+    //     stamenToner.maxExtent = maxExtent;
+    //     var stamenTonerCfg = {
+    //       "name":"osm-toner"
+    //         ,"title":"OSM Stamen Toner"
+    //         ,"type":"baselayer"
+    //     };
+    //     evt.config.layers['osm-toner'] = stamenTonerCfg;
+    //     evt.baselayers.push(stamenToner);
+    //   }
 
-      if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in evt.config.options)) {
-        evt.map.allOverlays = false;
-        var options = {
-          zoomOffset: 0,
-          maxResolution:156543.03390625,
-          numZoomLevels:23
-        };
-        if (lOptions.zoomOffset != 0) {
-          options.zoomOffset = lOptions.zoomOffset;
-          options.maxResolution = lOptions.maxResolution;
-        }
-        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-          options.numZoomLevels = lOptions.numZoomLevels;
-        else
-          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap','https://tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apiKey='+evt.config.options.OCMKey,options);
-        cyclemap.maxExtent = maxExtent;
-        var cyclemapCfg = {
-             "name":"osm-cycle"
-            ,"title":"OSM CycleMap"
-            ,"type":"baselayer"
-        };
-        evt.config.layers['osm-cycle'] = cyclemapCfg;
-        evt.baselayers.push(cyclemap);
-      }
-      try {
-        if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:21
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var gsat = new OpenLayers.Layer.Google(
-              "gsat",
-              {type: google.maps.MapTypeId.SATELLITE
-                , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-              );
-          gsat.maxExtent = maxExtent;
-          var gsatCfg = {
-               "name":"gsat"
-              ,"title":"Google Satellite"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['gsat'] = gsatCfg;
-          evt.baselayers.push(gsat);
-          evt.map.allOverlays = false;
-          evt.map.zoomDuration = 0;
-        }
-        if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:20
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ghyb = new OpenLayers.Layer.Google(
-              "ghyb",
-              {type: google.maps.MapTypeId.HYBRID
-                , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-              );
-          ghyb.maxExtent = maxExtent;
-          var ghybCfg = {
-               "name":"ghyb"
-              ,"title":"Google Hybrid"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['ghyb'] = ghybCfg;
-          evt.baselayers.push(ghyb);
-          evt.map.allOverlays = false;
-          evt.map.zoomDuration = 0;
-        }
-        if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:16
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var gphy = new OpenLayers.Layer.Google(
-              "gphy",
-              {type: google.maps.MapTypeId.TERRAIN
-              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-              );
-          gphy.maxExtent = maxExtent;
-          var gphyCfg = {
-               "name":"gphy"
-              ,"title":"Google Terrain"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['gphy'] = gphyCfg;
-          evt.baselayers.push(gphy);
-          evt.map.allOverlays = false;
-          evt.map.zoomDuration = 0;
-       }
-       if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:20
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-         var gmap = new OpenLayers.Layer.Google(
-             "gmap", // the default
-             {numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-             );
-         gmap.maxExtent = maxExtent;
-         var gmapCfg = {
-              "name":"gmap"
-             ,"title":"Google Streets"
-             ,"type":"baselayer"
-         };
-         evt.config.layers['gmap'] = gmapCfg;
-         evt.baselayers.push(gmap);
-         evt.map.allOverlays = false;
-         evt.map.zoomDuration = 0;
-       }
-       if (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options))  {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:23
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var bmap = new OpenLayers.Layer.Bing({
-             key: evt.config.options.bingKey,
-             type: "Road",
-             name: "Bing Road", // the default
-             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-          });
-          bmap.maxExtent = maxExtent;
-          var bmapCfg = {
-             "name":"bmap"
-            ,"title":"Bing Road"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['bmap'] = bmapCfg;
-          evt.baselayers.push(bmap);
-          evt.map.allOverlays = false;
-       }
-       if (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options))  {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:23
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var baerial = new OpenLayers.Layer.Bing({
-             key: evt.config.options.bingKey,
-             type: "Aerial",
-             name: "Bing Aerial", // the default
-             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-          });
-          baerial.maxExtent = maxExtent;
-          var baerialCfg = {
-             "name":"baerial"
-            ,"title":"Bing Aerial"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['baerial'] = baerialCfg;
-          evt.baselayers.push(baerial);
-          evt.map.allOverlays = false;
-       }
-       if (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options))  {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:23
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var bhybrid = new OpenLayers.Layer.Bing({
-             key: evt.config.options.bingKey,
-             type: "AerialWithLabels",
-             name: "Bing Hybrid", // the default
-             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-          });
-          bhybrid.maxExtent = maxExtent;
-          var bhybridCfg = {
-             "name":"bhybrid"
-            ,"title":"Bing Hybrid"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['bhybrid'] = bhybridCfg;
-          evt.baselayers.push(bhybrid);
-          evt.map.allOverlays = false;
-       }
+    //   if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in evt.config.options)) {
+    //     evt.map.allOverlays = false;
+    //     var options = {
+    //       zoomOffset: 0,
+    //       maxResolution:156543.03390625,
+    //       numZoomLevels:23
+    //     };
+    //     if (lOptions.zoomOffset != 0) {
+    //       options.zoomOffset = lOptions.zoomOffset;
+    //       options.maxResolution = lOptions.maxResolution;
+    //     }
+    //     if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //       options.numZoomLevels = lOptions.numZoomLevels;
+    //     else
+    //       options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //     var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap','https://tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apiKey='+evt.config.options.OCMKey,options);
+    //     cyclemap.maxExtent = maxExtent;
+    //     var cyclemapCfg = {
+    //          "name":"osm-cycle"
+    //         ,"title":"OSM CycleMap"
+    //         ,"type":"baselayer"
+    //     };
+    //     evt.config.layers['osm-cycle'] = cyclemapCfg;
+    //     evt.baselayers.push(cyclemap);
+    //   }
+    //   try {
+    //     if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution:156543.03390625,
+    //         numZoomLevels:21
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var gsat = new OpenLayers.Layer.Google(
+    //           "gsat",
+    //           {type: google.maps.MapTypeId.SATELLITE
+    //             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
+    //           );
+    //       gsat.maxExtent = maxExtent;
+    //       var gsatCfg = {
+    //            "name":"gsat"
+    //           ,"title":"Google Satellite"
+    //         ,"type":"baselayer"
+    //       };
+    //       evt.config.layers['gsat'] = gsatCfg;
+    //       evt.baselayers.push(gsat);
+    //       evt.map.allOverlays = false;
+    //       evt.map.zoomDuration = 0;
+    //     }
+    //     if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution:156543.03390625,
+    //         numZoomLevels:20
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var ghyb = new OpenLayers.Layer.Google(
+    //           "ghyb",
+    //           {type: google.maps.MapTypeId.HYBRID
+    //             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
+    //           );
+    //       ghyb.maxExtent = maxExtent;
+    //       var ghybCfg = {
+    //            "name":"ghyb"
+    //           ,"title":"Google Hybrid"
+    //         ,"type":"baselayer"
+    //       };
+    //       evt.config.layers['ghyb'] = ghybCfg;
+    //       evt.baselayers.push(ghyb);
+    //       evt.map.allOverlays = false;
+    //       evt.map.zoomDuration = 0;
+    //     }
+    //     if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution:156543.03390625,
+    //         numZoomLevels:16
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var gphy = new OpenLayers.Layer.Google(
+    //           "gphy",
+    //           {type: google.maps.MapTypeId.TERRAIN
+    //           , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
+    //           );
+    //       gphy.maxExtent = maxExtent;
+    //       var gphyCfg = {
+    //            "name":"gphy"
+    //           ,"title":"Google Terrain"
+    //         ,"type":"baselayer"
+    //       };
+    //       evt.config.layers['gphy'] = gphyCfg;
+    //       evt.baselayers.push(gphy);
+    //       evt.map.allOverlays = false;
+    //       evt.map.zoomDuration = 0;
+    //    }
+    //    if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution:156543.03390625,
+    //         numZoomLevels:20
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //      var gmap = new OpenLayers.Layer.Google(
+    //          "gmap", // the default
+    //          {numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
+    //          );
+    //      gmap.maxExtent = maxExtent;
+    //      var gmapCfg = {
+    //           "name":"gmap"
+    //          ,"title":"Google Streets"
+    //          ,"type":"baselayer"
+    //      };
+    //      evt.config.layers['gmap'] = gmapCfg;
+    //      evt.baselayers.push(gmap);
+    //      evt.map.allOverlays = false;
+    //      evt.map.zoomDuration = 0;
+    //    }
+    //    if (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options))  {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution:156543.03390625,
+    //         numZoomLevels:23
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var bmap = new OpenLayers.Layer.Bing({
+    //          key: evt.config.options.bingKey,
+    //          type: "Road",
+    //          name: "Bing Road", // the default
+    //          numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+    //       });
+    //       bmap.maxExtent = maxExtent;
+    //       var bmapCfg = {
+    //          "name":"bmap"
+    //         ,"title":"Bing Road"
+    //         ,"type":"baselayer"
+    //       };
+    //       evt.config.layers['bmap'] = bmapCfg;
+    //       evt.baselayers.push(bmap);
+    //       evt.map.allOverlays = false;
+    //    }
+    //    if (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options))  {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution:156543.03390625,
+    //         numZoomLevels:23
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var baerial = new OpenLayers.Layer.Bing({
+    //          key: evt.config.options.bingKey,
+    //          type: "Aerial",
+    //          name: "Bing Aerial", // the default
+    //          numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+    //       });
+    //       baerial.maxExtent = maxExtent;
+    //       var baerialCfg = {
+    //          "name":"baerial"
+    //         ,"title":"Bing Aerial"
+    //         ,"type":"baselayer"
+    //       };
+    //       evt.config.layers['baerial'] = baerialCfg;
+    //       evt.baselayers.push(baerial);
+    //       evt.map.allOverlays = false;
+    //    }
+    //    if (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options))  {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution:156543.03390625,
+    //         numZoomLevels:23
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var bhybrid = new OpenLayers.Layer.Bing({
+    //          key: evt.config.options.bingKey,
+    //          type: "AerialWithLabels",
+    //          name: "Bing Hybrid", // the default
+    //          numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+    //       });
+    //       bhybrid.maxExtent = maxExtent;
+    //       var bhybridCfg = {
+    //          "name":"bhybrid"
+    //         ,"title":"Bing Hybrid"
+    //         ,"type":"baselayer"
+    //       };
+    //       evt.config.layers['bhybrid'] = bhybridCfg;
+    //       evt.baselayers.push(bhybrid);
+    //       evt.map.allOverlays = false;
+    //    }
 
-       var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
+    //    var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
 
-       // IGN base layers
-        if ('ignKey' in evt.config.options){
-          var ignKey = evt.config.options.ignKey;
+    //    // IGN base layers
+    //     if ('ignKey' in evt.config.options){
+    //       var ignKey = evt.config.options.ignKey;
 
-          if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') {
-            var options = {
-              zoomOffset: 0,
-              maxResolution: 156543.03390625,
-              numZoomLevels: 18
-            };
-            if (lOptions.zoomOffset != 0) {
-              options.zoomOffset = lOptions.zoomOffset;
-              options.maxResolution = lOptions.maxResolution;
-            }
-            if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-              options.numZoomLevels = lOptions.numZoomLevels;
-            else
-              options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-            var ignmap = new OpenLayers.Layer.WMTS({
-              name: "ignmap",
-              url: "https://wxs.ign.fr/" + ignKey + "/geoportail/wmts",
-              layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
-              matrixSet: "PM",
-              style: "normal",
-              projection: new OpenLayers.Projection("EPSG:3857"),
-              attribution: ignAttribution
-              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-              , zoomOffset: options.zoomOffset
+    //       if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') {
+    //         var options = {
+    //           zoomOffset: 0,
+    //           maxResolution: 156543.03390625,
+    //           numZoomLevels: 18
+    //         };
+    //         if (lOptions.zoomOffset != 0) {
+    //           options.zoomOffset = lOptions.zoomOffset;
+    //           options.maxResolution = lOptions.maxResolution;
+    //         }
+    //         if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+    //           options.numZoomLevels = lOptions.numZoomLevels;
+    //         else
+    //           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //         var ignmap = new OpenLayers.Layer.WMTS({
+    //           name: "ignmap",
+    //           url: "https://wxs.ign.fr/" + ignKey + "/geoportail/wmts",
+    //           layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
+    //           matrixSet: "PM",
+    //           style: "normal",
+    //           projection: new OpenLayers.Projection("EPSG:3857"),
+    //           attribution: ignAttribution
+    //           , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+    //           , zoomOffset: options.zoomOffset
 
-            });
-            ignmap.maxExtent = maxExtent;
-            var ignmapCfg = {
-              "name": "ignmap"
-              , "title": "IGN Scan"
-              , "type": "baselayer"
-            };
-            evt.config.layers['ignmap'] = ignmapCfg;
-            evt.baselayers.push(ignmap);
-            evt.map.allOverlays = false;
-          }
-        }
-        if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution: 156543.03390625,
-            numZoomLevels: 18
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ignplan = new OpenLayers.Layer.WMTS({
-            name: "ignplan",
-            url: "https://wxs.ign.fr/cartes/geoportail/wmts",
-            layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
-            matrixSet: "PM",
-            style: "normal",
-            format: "image/png",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-            , zoomOffset: options.zoomOffset
+    //         });
+    //         ignmap.maxExtent = maxExtent;
+    //         var ignmapCfg = {
+    //           "name": "ignmap"
+    //           , "title": "IGN Scan"
+    //           , "type": "baselayer"
+    //         };
+    //         evt.config.layers['ignmap'] = ignmapCfg;
+    //         evt.baselayers.push(ignmap);
+    //         evt.map.allOverlays = false;
+    //       }
+    //     }
+    //     if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution: 156543.03390625,
+    //         numZoomLevels: 18
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var ignplan = new OpenLayers.Layer.WMTS({
+    //         name: "ignplan",
+    //         url: "https://wxs.ign.fr/cartes/geoportail/wmts",
+    //         layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
+    //         matrixSet: "PM",
+    //         style: "normal",
+    //         format: "image/png",
+    //         projection: new OpenLayers.Projection("EPSG:3857"),
+    //         attribution: ignAttribution
+    //         , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+    //         , zoomOffset: options.zoomOffset
 
-          });
-          ignplan.maxExtent = maxExtent;
-          var ignplanCfg = {
-            "name": "ignplan"
-            , "title": "IGN Plan"
-            , "type": "baselayer"
-          };
-          evt.config.layers['ignplan'] = ignplanCfg;
-          evt.baselayers.push(ignplan);
-          evt.map.allOverlays = false;
-        }
-        if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution: 156543.03390625,
-            numZoomLevels: 22
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ignphoto = new OpenLayers.Layer.WMTS({
-            name: "ignphoto",
-            url: "https://wxs.ign.fr/ortho/geoportail/wmts",
-            layer: "ORTHOIMAGERY.ORTHOPHOTOS",
-            matrixSet: "PM",
-            style: "normal",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-            , zoomOffset: options.zoomOffset
+    //       });
+    //       ignplan.maxExtent = maxExtent;
+    //       var ignplanCfg = {
+    //         "name": "ignplan"
+    //         , "title": "IGN Plan"
+    //         , "type": "baselayer"
+    //       };
+    //       evt.config.layers['ignplan'] = ignplanCfg;
+    //       evt.baselayers.push(ignplan);
+    //       evt.map.allOverlays = false;
+    //     }
+    //     if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True') {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution: 156543.03390625,
+    //         numZoomLevels: 22
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var ignphoto = new OpenLayers.Layer.WMTS({
+    //         name: "ignphoto",
+    //         url: "https://wxs.ign.fr/ortho/geoportail/wmts",
+    //         layer: "ORTHOIMAGERY.ORTHOPHOTOS",
+    //         matrixSet: "PM",
+    //         style: "normal",
+    //         projection: new OpenLayers.Projection("EPSG:3857"),
+    //         attribution: ignAttribution
+    //         , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+    //         , zoomOffset: options.zoomOffset
 
-          });
-          ignphoto.maxExtent = maxExtent;
-          var ignphotoCfg = {
-            "name": "ignphoto"
-            , "title": "IGN Photos"
-            , "type": "baselayer"
-          };
-          evt.config.layers['ignphoto'] = ignphotoCfg;
-          evt.baselayers.push(ignphoto);
-          evt.map.allOverlays = false;
-        }
-        if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution: 156543.03390625,
-            numZoomLevels: 20
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var igncadastral = new OpenLayers.Layer.WMTS({
-            name: "igncadastral",
-            url: "https://wxs.ign.fr/parcellaire/geoportail/wmts",
-            layer: "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
-            matrixSet: "PM",
-            style: "normal",
-            format: "image/png",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-            , zoomOffset: options.zoomOffset
+    //       });
+    //       ignphoto.maxExtent = maxExtent;
+    //       var ignphotoCfg = {
+    //         "name": "ignphoto"
+    //         , "title": "IGN Photos"
+    //         , "type": "baselayer"
+    //       };
+    //       evt.config.layers['ignphoto'] = ignphotoCfg;
+    //       evt.baselayers.push(ignphoto);
+    //       evt.map.allOverlays = false;
+    //     }
+    //     if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True') {
+    //       var options = {
+    //         zoomOffset: 0,
+    //         maxResolution: 156543.03390625,
+    //         numZoomLevels: 20
+    //       };
+    //       if (lOptions.zoomOffset != 0) {
+    //         options.zoomOffset = lOptions.zoomOffset;
+    //         options.maxResolution = lOptions.maxResolution;
+    //       }
+    //       if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
+    //         options.numZoomLevels = lOptions.numZoomLevels;
+    //       else
+    //         options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+    //       var igncadastral = new OpenLayers.Layer.WMTS({
+    //         name: "igncadastral",
+    //         url: "https://wxs.ign.fr/parcellaire/geoportail/wmts",
+    //         layer: "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
+    //         matrixSet: "PM",
+    //         style: "normal",
+    //         format: "image/png",
+    //         projection: new OpenLayers.Projection("EPSG:3857"),
+    //         attribution: ignAttribution
+    //         , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
+    //         , zoomOffset: options.zoomOffset
 
-          });
-          igncadastral.maxExtent = maxExtent;
-          var igncadastralCfg = {
-            "name": "igncadastral"
-            , "title": "IGN Cadastre"
-            , "type": "baselayer"
-          };
-          evt.config.layers['igncadastral'] = igncadastralCfg;
-          evt.baselayers.push(igncadastral);
-          evt.map.allOverlays = false;
-        }
-      } catch(e) {
-       }
-     }
+    //       });
+    //       igncadastral.maxExtent = maxExtent;
+    //       var igncadastralCfg = {
+    //         "name": "igncadastral"
+    //         , "title": "IGN Cadastre"
+    //         , "type": "baselayer"
+    //       };
+    //       evt.config.layers['igncadastral'] = igncadastralCfg;
+    //       evt.baselayers.push(igncadastral);
+    //       evt.map.allOverlays = false;
+    //     }
+    //   } catch(e) {
+    //    }
+    //  }
 
-      if('lizmapExternalBaselayers' in evt.config){
+    //   if('lizmapExternalBaselayers' in evt.config){
 
-        var externalService = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
-        if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
-            externalService = [];
-            for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
-              externalService.push(
-                OpenLayers.Util.urlAppend(
-                  lizUrls.publicUrlList[j],
-                  OpenLayers.Util.getParameterString(lizUrls.params)
-                )
-              );
-            }
-        }
+    //     var externalService = OpenLayers.Util.urlAppend(lizUrls.wms
+    //       ,OpenLayers.Util.getParameterString(lizUrls.params)
+    //     );
+    //     if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
+    //         externalService = [];
+    //         for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
+    //           externalService.push(
+    //             OpenLayers.Util.urlAppend(
+    //               lizUrls.publicUrlList[j],
+    //               OpenLayers.Util.getParameterString(lizUrls.params)
+    //             )
+    //           );
+    //         }
+    //     }
 
-        // Add lizmap external baselayers
-        for (var id in evt.config['lizmapExternalBaselayers']) {
+    //     // Add lizmap external baselayers
+    //     for (var id in evt.config['lizmapExternalBaselayers']) {
 
-          var layerConfig = evt.config['lizmapExternalBaselayers'][id];
+    //       var layerConfig = evt.config['lizmapExternalBaselayers'][id];
 
-          if (!('repository' in layerConfig) || !('project' in layerConfig))
-            continue;
+    //       if (!('repository' in layerConfig) || !('project' in layerConfig))
+    //         continue;
 
-          var layerName = evt.cleanName(layerConfig.layerName);
+    //       var layerName = evt.cleanName(layerConfig.layerName);
 
-          var layerWmsParams = {
-            layers:layerConfig.layerName
-            ,version:'1.3.0'
-            ,exceptions:'application/vnd.ogc.se_inimage'
-            ,format:(layerConfig.layerImageFormat) ? 'image/'+layerConfig.layerImageFormat : 'image/png'
-            ,dpi:96
-          };
-          if (layerWmsParams.format != 'image/jpeg')
-            layerWmsParams['transparent'] = true;
+    //       var layerWmsParams = {
+    //         layers:layerConfig.layerName
+    //         ,version:'1.3.0'
+    //         ,exceptions:'application/vnd.ogc.se_inimage'
+    //         ,format:(layerConfig.layerImageFormat) ? 'image/'+layerConfig.layerImageFormat : 'image/png'
+    //         ,dpi:96
+    //       };
+    //       if (layerWmsParams.format != 'image/jpeg')
+    //         layerWmsParams['transparent'] = true;
 
-          // Change repository and project in service URL
-          var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
-          if (! (externalService instanceof Array) )
-            var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
-          else
-            var url = jQuery.map(externalService, function(element) { return element.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project) });
+    //       // Change repository and project in service URL
+    //       var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
+    //       if (! (externalService instanceof Array) )
+    //         var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
+    //       else
+    //         var url = jQuery.map(externalService, function(element) { return element.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project) });
 
-          // creating the base layer
-          layerConfig.title = layerConfig.layerTitle
-          layerConfig.name = layerConfig.layerName
-          layerConfig.baselayer = true;
-          layerConfig.singleTile = "False";
-          evt.config.layers[layerName] = layerConfig;
-          evt.baselayers.push(new OpenLayers.Layer.WMS(layerName,url
-            ,layerWmsParams
-            ,{isBaseLayer:true
-            ,gutter:(layerConfig.cached == 'True') ? 0 : 5
-            ,buffer:0
-            ,singleTile:(layerConfig.singleTile == 'True')
-            ,ratio:1
-          }));
-          evt.map.allOverlays = false;
+    //       // creating the base layer
+    //       layerConfig.title = layerConfig.layerTitle
+    //       layerConfig.name = layerConfig.layerName
+    //       layerConfig.baselayer = true;
+    //       layerConfig.singleTile = "False";
+    //       evt.config.layers[layerName] = layerConfig;
+    //       evt.baselayers.push(new OpenLayers.Layer.WMS(layerName,url
+    //         ,layerWmsParams
+    //         ,{isBaseLayer:true
+    //         ,gutter:(layerConfig.cached == 'True') ? 0 : 5
+    //         ,buffer:0
+    //         ,singleTile:(layerConfig.singleTile == 'True')
+    //         ,ratio:1
+    //       }));
+    //       evt.map.allOverlays = false;
 
-        }
-      }
+    //     }
+    //   }
 
-    }
-   ,
+    // }
+  //  ,
    'uicreated': function(evt){
-     var map = evt.map;
-     if ( map.id in OpenLayers.Layer.Google.cache ) {
-        google.maps.event.addListenerOnce(OpenLayers.Layer.Google.cache[map.id].mapObject, 'tilesloaded', function() {
-            var olLayers = map.layers;
-            var gVisibility = false;
-            for (var i=olLayers.length-1; i>=0; --i) {
-                var layer = olLayers[i];
-                if (layer instanceof OpenLayers.Layer.Google &&
-                            layer.visibility === true && layer.inRange === true) {
-                    layer.redraw(true);
-                    gVisibility = true;
-                    break;
-                }
-            }
-            if (!gVisibility) {
-                for (var i=olLayers.length-1; i>=0; --i) {
-                    var layer = olLayers[i];
-                    if (layer instanceof OpenLayers.Layer.Google) {
-                        layer.display(false);
-                        break;
-                    }
-                }
-            }
-        });
-     }
+    //  var map = evt.map;
+    //  if ( map.id in OpenLayers.Layer.Google.cache ) {
+    //     google.maps.event.addListenerOnce(OpenLayers.Layer.Google.cache[map.id].mapObject, 'tilesloaded', function() {
+    //         var olLayers = map.layers;
+    //         var gVisibility = false;
+    //         for (var i=olLayers.length-1; i>=0; --i) {
+    //             var layer = olLayers[i];
+    //             if (layer instanceof OpenLayers.Layer.Google &&
+    //                         layer.visibility === true && layer.inRange === true) {
+    //                 layer.redraw(true);
+    //                 gVisibility = true;
+    //                 break;
+    //             }
+    //         }
+    //         if (!gVisibility) {
+    //             for (var i=olLayers.length-1; i>=0; --i) {
+    //                 var layer = olLayers[i];
+    //                 if (layer instanceof OpenLayers.Layer.Google) {
+    //                     layer.display(false);
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     });
+    //  }
 
       // Update legend if mobile
       if( lizMap.checkMobile() ){

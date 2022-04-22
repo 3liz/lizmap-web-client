@@ -83,6 +83,7 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
         $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js');
         $this->addJSLink($bp.'assets/js/dataTables.bootstrap.min.js');
         $this->addJSLink($bp.'assets/js/map.js');
+        $this->addJSLink('https://maps.googleapis.com/maps/api/js?v=3&key=');
         $this->addJSLink($bp.'assets/js/lizmap.js');
 
         $generalJSConfig = 'Proj4js.libPath = "'.$bp.'assets/js/Proj4js/";';

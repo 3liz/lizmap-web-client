@@ -133,12 +133,12 @@ class lizMapCtrl extends jController
 
         // Add js link if google is needed
         if ($lproj->needsGoogle()) {
-            $googleKey = $lproj->getGoogleKey();
-            if ($googleKey != '') {
-                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3&key='.$googleKey);
-            } else {
-                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3');
-            }
+            // $googleKey = $lproj->getGoogleKey();
+            // if ($googleKey != '') {
+            //     $rep->addJSLink('https://maps.googleapis.com/maps/api/js?v=3&key='.$googleKey);
+            // } else {
+            //     $rep->addJSLink('https://maps.googleapis.com/maps/api/js?v=3');
+            // }
         }
 
         $confUrlEngine = &jApp::config()->urlengine;
