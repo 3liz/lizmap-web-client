@@ -832,8 +832,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 return false;
             });
             $('#edition-point-coord-crs').change(function(){
-                var vertex = editCtrls[editionLayer.geometryType].handler.point.geometry.clone();
-                displayCoordinates(vertex);
+                if (editCtrls[editionLayer.geometryType].handler.point !== null) {
+                    var vertex = editCtrls[editionLayer.geometryType].handler.point.geometry.clone();
+                    displayCoordinates(vertex);
+                }
             });
             $('#edition-point-coord-x').keyup(keyUpPointCoord);
             $('#edition-point-coord-y').keyup(keyUpPointCoord);
