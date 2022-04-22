@@ -46,6 +46,7 @@ export default class Map extends olMap {
             target: 'baseLayersOlMap'
         });
 
+        // OSM
         if(mainLizmap.config.options?.['osmMapnik']){
             this.addLayer(
                 new TileLayer({
@@ -64,8 +65,18 @@ export default class Map extends olMap {
             );
         }
 
+        if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
+            this.addLayer(
+                new TileLayer({
+                  source: new OSM({
+                      url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
+                  })
+                })
+            );
+        }
+
         // IGN
-        if(Object.keys(lizMap.config.options).some( option => option.startsWith('ign'))){
+        if(Object.keys(mainLizmap.config.options).some( option => option.startsWith('ign'))){
 
             const proj3857 = getProjection('EPSG:3857');
             const maxResolution = getWidth(proj3857.getExtent()) / 256;
@@ -85,7 +96,7 @@ export default class Map extends olMap {
                 },
                 ignTerrain : {
                     layer : 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
-                    urlPart : lizMap.config.options?.ignKey,
+                    urlPart : mainLizmap.config.options?.ignKey,
                     format : 'image/jpeg',
                     numZoomLevels: 18
                 },
@@ -98,7 +109,7 @@ export default class Map extends olMap {
             };
 
             for (const key in ignConfigs) {
-                if(lizMap.config.options?.[key]){
+                if(mainLizmap.config.options?.[key]){
 
                     const ignConfig = ignConfigs[key];
 
