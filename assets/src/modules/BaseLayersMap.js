@@ -7,6 +7,7 @@ import {Image as ImageLayer} from 'ol/layer';
 
 import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
+import XYZ from 'ol/source/XYZ';
 import TileLayer from 'ol/layer/Tile';
 
 import WMTS from 'ol/source/WMTS';
@@ -50,7 +51,7 @@ export default class Map extends olMap {
         if(mainLizmap.config.options?.['osmMapnik']){
             this.addLayer(
                 new TileLayer({
-                  source: new OSM()
+                    source: new OSM()
                 })
             );
         }
@@ -59,18 +60,28 @@ export default class Map extends olMap {
             this.addLayer(
                 new TileLayer({
                     source: new Stamen({
-                      layer: 'toner-lite',
+                        layer: 'toner-lite',
                     }),
-                  }),
+                }),
             );
         }
 
         if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
             this.addLayer(
                 new TileLayer({
-                  source: new OSM({
-                      url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
-                  })
+                    source: new XYZ({
+                        url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
+                    })
+                })
+            );
+        }
+
+        if(mainLizmap.config.options?.['openTopoMap']){
+            this.addLayer(
+                new TileLayer({
+                    source: new XYZ({
+                        url : 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
+                    })
                 })
             );
         }
