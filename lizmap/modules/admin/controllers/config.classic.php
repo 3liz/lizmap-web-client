@@ -20,7 +20,7 @@ class configCtrl extends jController
         'saveServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
     );
 
-    protected function prepareServicesForm(jFormsBase $form, LizmapServices $services)
+    protected function prepareServicesForm(jFormsBase $form, lizmapServices $services)
     {
         // Set form data values
         foreach ($services->getProperties() as $ser) {
@@ -39,7 +39,9 @@ class configCtrl extends jController
                   break;
 
               default:
-                  if ($form->getControl($ser)) {
+                  /** @var null|jFormsControl $ctrl */
+                  $ctrl = $form->getControl($ser);
+                  if ($ctrl) {
                       $form->setData($ser, $services->{$ser});
                   }
           }
@@ -48,7 +50,9 @@ class configCtrl extends jController
         // hide sensitive services properties
         if ($services->hideSensitiveProperties()) {
             foreach ($services->getSensitiveProperties() as $ser) {
-                if ($form->getControl($ser)) {
+                /** @var null|jFormsControl $ctrl */
+                $ctrl = $form->getControl($ser);
+                if ($ctrl) {
                     $form->deactivate($ser);
                 }
             }
@@ -57,9 +61,12 @@ class configCtrl extends jController
 
     /**
      * Display a summary of the information taken from the ~ configuration file.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get Lizmap version from project.xml
@@ -93,7 +100,7 @@ class configCtrl extends jController
     public function modifyServices()
     {
 
-    // Get the data
+        // Get the data
         $services = lizmap::getServices();
 
         // Create the form
@@ -107,8 +114,9 @@ class configCtrl extends jController
             $form->setData('cacheRootDirectory', sys_get_temp_dir());
         }
 
-        // redirect to the form display action
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // redirect to the form display action
         $rep->action = 'admin~config:editServices';
 
         return $rep;
@@ -117,15 +125,16 @@ class configCtrl extends jController
     /**
      * Display the form to modify the services.
      *
-     * @return jResponse display the form
+     * @return jResponseHtml|jResponseRedirect display the form
      */
     public function editServices()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get the form
         $form = jForms::get('admin~config_services');
-
+        /** @var null|jFormsBase $form */
         if ($form) {
             if (lizmap::getServices()->isLdapEnabled()) {
                 $ctrl = $form->getControl('allowUserAccountRequests');
@@ -151,6 +160,7 @@ class configCtrl extends jController
         }
         // redirect to default page
         jMessage::add('error in editServices');
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'admin~config:index';
 
@@ -160,19 +170,21 @@ class configCtrl extends jController
     /**
      * Save the data for the services section.
      *
-     * @return jResponse redirect to the index
+     * @return jResponseRedirect redirect to the index
      */
     public function saveServices()
     {
 
         // If the section does exists in the ini file : get the data
         $services = lizmap::getServices();
+        /** @var null|jFormsBase $form */
         $form = jForms::get('admin~config_services');
 
         // token
         $token = $this->param('__JFORMS_TOKEN__');
+        // redirection vers la page d'erreur
         if (!$token) {
-            // redirection vers la page d'erreur
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~config:index';
 
@@ -181,6 +193,7 @@ class configCtrl extends jController
 
         // If the form is not defined, redirection
         if (!$form) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~config:index';
 
@@ -193,7 +206,9 @@ class configCtrl extends jController
         // force sensitive services properties
         if ($services->hideSensitiveProperties()) {
             foreach ($services->getSensitiveProperties() as $ser) {
-                if ($form->getControl($ser)) {
+                /** @var null|jFormsControl $ctrl */
+                $ctrl = $form->getControl($ser);
+                if ($ctrl) {
                     $form->setData($ser, $services->{$ser});
                 }
             }
@@ -253,8 +268,9 @@ class configCtrl extends jController
             }
         }
 
+        // Errors : redirection to the display action
         if (!$ok) {
-            // Errors : redirection to the display action
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~config:editServices';
             $rep->params['errors'] = '1';
@@ -265,7 +281,9 @@ class configCtrl extends jController
         // Save the data
         $data = array();
         foreach ($services->getProperties() as $prop) {
-            if ($form->getControl($prop)) {
+            /** @var null|jFormsControl $ctrl */
+            $ctrl = $form->getControl($prop);
+            if ($ctrl) {
                 $data[$prop] = $form->getData($prop);
             }
         }
@@ -280,8 +298,9 @@ class configCtrl extends jController
 
         jForms::destroy('admin~config_services');
 
-        // Redirect to the validation page
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the validation page
         $rep->action = 'admin~config:index';
 
         return $rep;
