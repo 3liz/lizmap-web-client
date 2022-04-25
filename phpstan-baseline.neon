@@ -1,26 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method actionConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
-			count: 5
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
-			message: "#^Property actionConfig\\:\\:\\$lproj is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
-			message: "#^Property actionConfig\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
-			message: "#^Property actionConfig\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionConfig.class.php
-
-		-
 			message: "#^Constructor of class actionDatasource has an unused parameter \\$layerId\\.$#"
 			count: 1
 			path: lizmap/modules/action/classes/actionDatasource.class.php
@@ -54,11 +34,6 @@ parameters:
 			message: "#^Property actionDatasource\\:\\:\\$repository is never read, only written\\.$#"
 			count: 1
 			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 2
-			path: lizmap/modules/action/controllers/service.classic.php
 
 		-
 			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDatasourceConnection\\(\\)\\.$#"
@@ -241,13 +216,8 @@ parameters:
 			path: lizmap/modules/admin/controllers/maps.classic.php
 
 		-
-			message: "#^Elseif condition is always true\\.$#"
-			count: 2
-			path: lizmap/modules/admin/controllers/maps.classic.php
-
-		-
 			message: "#^If condition is always true\\.$#"
-			count: 4
+			count: 2
 			path: lizmap/modules/admin/controllers/maps.classic.php
 
 		-
@@ -322,22 +292,12 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 5
+			count: 1
 			path: lizmap/modules/admin/controllers/maps.classic.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
 			count: 3
-			path: lizmap/modules/admin/controllers/maps.classic.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 2
-			path: lizmap/modules/admin/controllers/maps.classic.php
-
-		-
-			message: "#^Right side of && is always true\\.$#"
-			count: 1
 			path: lizmap/modules/admin/controllers/maps.classic.php
 
 		-
@@ -636,11 +596,6 @@ parameters:
 			path: lizmap/modules/filter/classes/filterDatasource.class.php
 
 		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 6
-			path: lizmap/modules/filter/controllers/service.classic.php
-
-		-
 			message: "#^Property serviceCtrl\\:\\:\\$config is never read, only written\\.$#"
 			count: 1
 			path: lizmap/modules/filter/controllers/service.classic.php
@@ -671,33 +626,8 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmap.class.php
 
 		-
-			message: "#^Method lizmap\\:\\:createRepository\\(\\) should return lizmapRepository but returns null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^Method lizmap\\:\\:getRepository\\(\\) should return lizmapRepository but returns null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 2
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^Property lizmap\\:\\:\\$appContext has unknown class lizmapJelixContext as its type\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^Static property lizmap\\:\\:\\$appContext \\(lizmapJelixContext\\) does not accept Lizmap\\\\App\\\\JelixContext\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^Static property lizmap\\:\\:\\$lizmapLogConfigInstance \\(lizmapLogConfig\\) does not accept Lizmap\\\\Logger\\\\Config\\.$#"
-			count: 1
 			path: lizmap/modules/lizmap/classes/lizmap.class.php
 
 		-
@@ -722,16 +652,6 @@ parameters:
 
 		-
 			message: "#^Method lizmapFts\\:\\:query\\(\\) has invalid return type Result\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$profile Name of the DB profile\\)\\: Unexpected token \"\\$profile\", expected type at offset 108$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$sql Query to run\\)\\: Unexpected token \"\\$sql\", expected type at offset 76$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
 
@@ -831,26 +751,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapTiler.class.php
 
 		-
-			message: "#^Method qgisExpressionUtils\\:\\:evaluateExpressions\\(\\) should return array but returns null\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(array\\(\\)         \\$expresions   The expressions' list to evaluate\\)\\: Unexpected token \"\\(\", expected variable at offset 173$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(array\\(\\)         \\$form_feature A feature to add to the evaluation context\\)\\: Unexpected token \"\\(\", expected variable at offset 251$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$expresion$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
 			message: "#^Result of \\|\\| is always false\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
@@ -869,11 +769,6 @@ parameters:
 			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisForm.listener.php
 
 		-
 			message: "#^Access to an undefined property jDbFieldProperties\\:\\:\\$unifiedType\\.$#"
@@ -971,11 +866,6 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/default.classic.php
 
 		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/default.classic.php
-
-		-
 			message: "#^Method defaultCtrl\\:\\:index\\(\\) should return jResponseRedirect but returns jResponse\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/default.classic.php
@@ -1067,7 +957,7 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 16
+			count: 12
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
@@ -1192,22 +1082,12 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method jResponse\\:\\:addContent\\(\\)\\.$#"
-			count: 2
+			count: 10
 			path: lizmap/modules/lizmap/controllers/repository.cmdline.php
 
 		-
 			message: "#^Call to an undefined method jResponse\\:\\:setExitCode\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/repository.cmdline.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/repository.cmdline.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
+			count: 5
 			path: lizmap/modules/lizmap/controllers/repository.cmdline.php
 
 		-
@@ -1236,28 +1116,8 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/service.classic.php
 
 		-
-			message: "#^If condition is always true\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Method serviceCtrl\\:\\:iParam\\(\\) should return string but returns null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
 			message: "#^Property serviceCtrl\\:\\:\\$services \\(lizmapServices\\) does not accept default value of type string\\.$#"
 			count: 1
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Right side of \\|\\| is always true\\.$#"
-			count: 2
 			path: lizmap/modules/lizmap/controllers/service.classic.php
 
 		-
@@ -1712,11 +1572,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Request/WMSRequest.php
 
 		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Request/WMSRequest.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$xmldata$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Request/WMSRequest.php
@@ -1877,11 +1732,6 @@ parameters:
 			path: lizmap/modules/view/controllers/default.classic.php
 
 		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
 			message: "#^Method defaultCtrl\\:\\:error\\(\\) has invalid return type Html\\.$#"
 			count: 1
 			path: lizmap/modules/view/controllers/default.classic.php
@@ -1962,11 +1812,6 @@ parameters:
 			path: lizmap/modules/view/controllers/lizAjax.classic.php
 
 		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 2
-			path: lizmap/modules/view/controllers/lizAjax.classic.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$project$#"
 			count: 1
 			path: lizmap/modules/view/controllers/lizAjax.classic.php
@@ -2033,11 +1878,6 @@ parameters:
 
 		-
 			message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/lizMap.classic.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: lizmap/modules/view/controllers/lizMap.classic.php
 
@@ -2154,11 +1994,6 @@ parameters:
 		-
 			message: "#^Method mediaCtrl\\:\\:themeImage\\(\\) should return Admin but returns jResponse\\.$#"
 			count: 1
-			path: lizmap/modules/view/controllers/media.classic.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 3
 			path: lizmap/modules/view/controllers/media.classic.php
 
 		-

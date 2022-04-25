@@ -1,5 +1,7 @@
 <?php
 /**
+ * PHP proxy to execute action request.
+ *
  * @author    3liz
  * @copyright 2017 3liz
  *
@@ -9,20 +11,19 @@
  */
 class serviceCtrl extends jController
 {
-    private $repository;
-    private $project;
-    private $config;
-    private $layerId;
-
-    public function __construct($request)
-    {
-        parent::__construct($request);
-    }
-
+    /**
+     * Perform the appropriate action depending on the NAME parameter.
+     *
+     * @urlparam $REPOSITORY Name of the repository
+     * @urlparam $PROJECT Name of the project
+     * @urlparam $LAYERID Layer Id
+     * @urlparam $FEATUREID Feature Id
+     * @urlparam $NAME The action name
+     *
+     * @return jResponseJson the request response
+     */
     public function index()
     {
-        $rep = $this->getResponse('json');
-
         // Get parameters
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -78,9 +79,6 @@ class serviceCtrl extends jController
         if (empty($config)) {
             return $this->error($dv->getErrors());
         }
-        $this->repository = $repository;
-        $this->project = $project;
-        $this->config = $config;
 
         // Check if configuration exists for this layer and name
         $name = $this->param('name');
@@ -159,15 +157,24 @@ class serviceCtrl extends jController
             return $this->error($errors);
         }
 
-        // Send respons
+        // Send response
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $data;
 
         return $rep;
     }
 
+    /**
+     * Provide errors.
+     *
+     * @param mixed $errors
+     *
+     * @return jResponseJson the errors response
+     */
     public function error($errors)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array('errors' => $errors);
 

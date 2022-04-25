@@ -116,9 +116,8 @@ class qgisExpressionUtils
      * Returns the expression updated if filter by login is applied for the layer.
      *
      * @param qgisVectorLayer $layer      A QGIS vector layer
-     * @param string          $expresion  The expression to update
-     * @param bool            $edition    It's for editon
-     * @param mixed           $expression
+     * @param string          $expression The expression to update
+     * @param bool            $edition    It's for edition
      *
      * @return string the expression updated or not
      */
@@ -137,11 +136,10 @@ class qgisExpressionUtils
      * Request QGIS Server and the lizmap plugin to evaluate QGIS expressions.
      *
      * @param qgisVectorLayer $layer        A QGIS vector layer
-     * @param array()         $expresions   The expressions' list to evaluate
-     * @param array()         $form_feature A feature to add to the evaluation context
-     * @param mixed           $expressions
+     * @param array           $expressions  The expressions' list to evaluate
+     * @param array           $form_feature A feature to add to the evaluation context
      *
-     * @return array() the results of expressions' evalutaion
+     * @return null|array the results of expressions' evaluation
      */
     public static function evaluateExpressions($layer, $expressions, $form_feature = null)
     {
@@ -166,18 +164,20 @@ class qgisExpressionUtils
             if (!$json) {
                 return null;
             }
-            if (property_exists($json, 'status') && $json->status != 'success') {
+            if (property_exists($json, 'status')
+                && $json->status == 'success'
+                && property_exists($json, 'results')) {
+                // Get results
+                return $json->results[0];
+            }
+            if (property_exists($json, 'data')) {
                 // TODO parse errors
                 // if (property_exists($json, 'errors')) {
                 // }
                 jLog::log($json->data, 'error');
-            } elseif (property_exists($json, 'results')
-                && array_key_exists(0, $json->results)) {
-                // Get results
-                return $json->results[0];
             } else {
                 // Data not well formed
-                jLog::log($json->data, 'error');
+                jLog::log(json_encode($json), 'error');
             }
         }
 
@@ -343,6 +343,14 @@ class qgisExpressionUtils
         return $visibilities;
     }
 
+    /**
+     * Performing the request to QGIS Server.
+     *
+     * @param array                               $params
+     * @param \Lizmap\Project\Project|qgisProject $project
+     *
+     * @return null|object The response content or null
+     */
     protected static function request($params, $project)
     {
         // Add user identification parameters
