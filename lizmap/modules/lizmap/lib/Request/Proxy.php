@@ -53,7 +53,7 @@ class Proxy
     /**
      * Sets the appContext property that contains the context of the application (Jelix or Test).
      *
-     * @param Lizmap\App\AppContextInterface $appContext
+     * @param \Lizmap\App\AppContextInterface $appContext
      */
     public static function setAppContext(App\AppContextInterface $appContext)
     {
@@ -89,9 +89,11 @@ class Proxy
     }
 
     /**
-     * @param $project
-     * @param $params
-     * @param null $requestXml
+     * Build OGC Request.
+     *
+     * @param \Lizmap\Project\Project $project    the project
+     * @param array                   $params     the params array
+     * @param null|string             $requestXml the params array
      *
      * @return null|WFSRequest|WMSRequest|WMTSRequest
      */
@@ -230,6 +232,13 @@ class Proxy
         return $url.$bparams;
     }
 
+    /**
+     * @param null|array|string $options
+     * @param string            $method
+     * @param null|int          $debug
+     *
+     * @return array
+     */
     protected static function buildOptions($options, $method, $debug)
     {
         $services = self::getServices();
@@ -264,6 +273,12 @@ class Proxy
         return $options;
     }
 
+    /**
+     * @param string $url
+     * @param array  $options
+     *
+     * @return array(string $url, array $option)
+     */
     protected static function buildHeaders($url, $options)
     {
         if ($options['method'] == 'post' || $options['method'] == 'put') {
@@ -301,6 +316,12 @@ class Proxy
         return array($url, $options);
     }
 
+    /**
+     * @param string $url
+     * @param array  $options
+     *
+     * @return array(string $data, string $mime, int $http_code) Array containing the data and the mime type
+     */
     protected static function curlProxy($url, $options)
     {
         $services = self::getServices();
@@ -359,6 +380,9 @@ class Proxy
             }
         }
         $data = curl_exec($ch);
+        if (!$data) {
+            $data = '';
+        }
         $info = curl_getinfo($ch);
         $mime = $info['content_type'];
         $http_code = (int) $info['http_code'];
@@ -372,6 +396,12 @@ class Proxy
         return array($data, $mime, $http_code);
     }
 
+    /**
+     * @param string $url
+     * @param array  $options
+     *
+     * @return array(string $data, string $mime, int $http_code) Array containing the data and the mime type
+     */
     protected static function fileProxy($url, $options)
     {
         $services = self::getServices();
@@ -423,6 +453,9 @@ class Proxy
         //use stream_context_set_params($context, array("notification" => "lizmap_stream_notification_callback"));
 
         $data = file_get_contents($url, false, $context);
+        if (!$data) {
+            $data = '';
+        }
         $mime = 'image/png';
         $matches = array();
         $http_code = 0;
@@ -465,7 +498,7 @@ class Proxy
      * @param string|string[]   $method  deprecated. the http method.
      *                                   it is ignored if $options is an array.
      *
-     * @return array($data, $mime, $http_code) Array containing the data and the mime type
+     * @return array(string $data, string $mime, int $http_code) Array containing the data and the mime type
      */
     public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
     {
@@ -481,6 +514,9 @@ class Proxy
         return self::fileProxy($url, $options);
     }
 
+    /**
+     * @return array
+     */
     protected static function userHttpHeader()
     {
         $appContext = self::getAppContext();
@@ -503,6 +539,11 @@ class Proxy
         );
     }
 
+    /**
+     * @param array $optionHeaders
+     *
+     * @return array
+     */
     protected static function encodeHttpHeaders($optionHeaders)
     {
         $headers = array();
@@ -513,6 +554,11 @@ class Proxy
         return $headers;
     }
 
+    /**
+     * @param string $cacheDirectory
+     * @param string $cacheName
+     * @param int    $cacheExpiration
+     */
     protected static function createFileProfile($cacheDirectory, $cacheName, $cacheExpiration)
     {
         $appContext = self::getAppContext();
@@ -533,6 +579,12 @@ class Proxy
         $appContext->createVirtualProfile('jcache', $cacheName, $cacheParams);
     }
 
+    /**
+     * @param string $cacheDirectory
+     * @param string $cacheName
+     * @param int    $cacheExpiration
+     * @param string $cacheDatabase
+     */
     protected static function createSqLiteProfile($cacheDirectory, $cacheName, $cacheExpiration, $cacheDatabase)
     {
         $appContext = self::getAppContext();
@@ -627,6 +679,14 @@ class Proxy
         return $cacheName;
     }
 
+    /**
+     * @param \lizmapServices $ser
+     * @param string          $cacheName
+     * @param string          $repository
+     * @param null|string     $project
+     * @param null|string     $layers
+     * @param null|string     $crs
+     */
     protected static function declareRedisProfile($ser, $cacheName, $repository, $project = null, $layers = null, $crs = null)
     {
         $cacheRedisHost = 'localhost';
@@ -678,16 +738,12 @@ class Proxy
     }
 
     /**
-     * @param Lizmap\Project\Repository $lrep
+     * @param \Lizmap\Project\Repository $lrep
      *
-     * @return mixed the repository key, or false if clear has failed
+     * @return false|string the repository key, or false if clear has failed
      */
     public static function clearCache($lrep)
     {
-        if (!$lrep) {
-            return null;
-        }
-
         // Get config utility
         $repository = $lrep->getKey();
         $ser = self::getServices();
@@ -705,7 +761,7 @@ class Proxy
             // remove the cache from redis
             $cacheName = 'lizmapCache_'.$repository;
             self::declareRedisProfile($ser, $cacheName, $repository);
-            $clearCacheOk = $clearCacheOk && \jCache::flush($cacheName);
+            $clearCacheOk = \jCache::flush($cacheName);
         }
         self::getAppContext()->eventNotify('lizmapProxyClearCache', array('repository' => $repository));
         if ($clearCacheOk) {
