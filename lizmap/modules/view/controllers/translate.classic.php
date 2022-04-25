@@ -23,7 +23,6 @@ class translateCtrl extends jController
         $rep = $this->getResponse('binary');
         $rep->mimeType = 'text/javascript';
         $rep->doDownload = false;
-        $rep->setExpires('+1 year');
 
         $lang = $this->param('lang');
 
