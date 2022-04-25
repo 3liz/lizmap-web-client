@@ -18,9 +18,12 @@ class server_informationCtrl extends jController
 
     /**
      * Get the information from QGIS Server and display them.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get the metadata
