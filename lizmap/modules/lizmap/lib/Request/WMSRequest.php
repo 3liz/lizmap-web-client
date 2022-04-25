@@ -75,8 +75,8 @@ class WMSRequest extends OGCRequest
         }
 
         // merge client filter parameter
-        $clientFilter = $this->param('filter');
-        if ($clientFilter != null && !empty($clientFilter)) {
+        $clientFilter = $this->param('filter', '');
+        if (!empty($clientFilter)) {
             $cfexp = explode(';', $clientFilter);
             foreach ($cfexp as $a) {
                 $b = explode(':', $a);
@@ -475,8 +475,7 @@ class WMSRequest extends OGCRequest
     /**
      * gfiXmlToHtml : return HTML for the getFeatureInfo XML.
      *
-     * @param string $xmldata XML data from getFeatureInfo
-     * @param mixed  $xmlData
+     * @param string $xmlData XML data from getFeatureInfo
      *
      * @return string feature Info in HTML format
      */
@@ -557,12 +556,12 @@ class WMSRequest extends OGCRequest
     /**
      * gfiVectorXmlToHtml : return Vector HTML for the getFeatureInfo XML.
      *
-     * @param string           $layerId
-     * @param string           $layerName
-     * @param string           $layerTitle
-     * @param SimpleXmlElement $layer
-     * @param object           $configLayer
-     * @param array            $filterFid
+     * @param string            $layerId
+     * @param string            $layerName
+     * @param string            $layerTitle
+     * @param \SimpleXmlElement $layer
+     * @param object            $configLayer
+     * @param array             $filterFid
      *
      * @return array Vector features Info in HTML format
      */
@@ -573,6 +572,7 @@ class WMSRequest extends OGCRequest
 
         // Get the template for the popup content
         $templateConfigured = false;
+        $popupTemplate = '';
         if (property_exists($configLayer, 'popupTemplate')) {
             // Get template content
             $popupTemplate = (string) trim($configLayer->popupTemplate);
@@ -623,6 +623,7 @@ class WMSRequest extends OGCRequest
             $autoContent = $popupFeatureContent;
 
             // Get specific template for the layer has been configured
+            $lizmapContent = '';
             if ($templateConfigured) {
                 $popupFeatureContent = $popupTemplate;
 
@@ -707,10 +708,10 @@ class WMSRequest extends OGCRequest
     /**
      * gfiRasterXmlToHtml : return Raster HTML for the getFeatureInfo XML.
      *
-     * @param string           $layerId
-     * @param string           $layerName
-     * @param string           $layerTitle
-     * @param SimpleXmlElement $layer
+     * @param string            $layerId
+     * @param string            $layerName
+     * @param string            $layerTitle
+     * @param \SimpleXmlElement $layer
      *
      * @return array Raster feature Info in HTML format
      */
@@ -744,9 +745,7 @@ class WMSRequest extends OGCRequest
                 'repository' => $this->repository->getKey(),
                 'project' => $this->project->getKey(),
                 'path' => $matches[2],
-            ),
-            0,
-            $req->getDomainName().$req->getPort()
+            )
         );
         $return .= '"';
 
@@ -924,6 +923,12 @@ class WMSRequest extends OGCRequest
         return $key;
     }
 
+    /**
+     * @param array  $params
+     * @param string $metatileSize
+     *
+     * @return array(array $params, array $originalParams, int $xFactor, int $yFactor)
+     */
     protected function getMetaTileData($params, $metatileSize)
     {
         $metatileBuffer = 5;
@@ -934,35 +939,41 @@ class WMSRequest extends OGCRequest
 
         // Get requested bbox
         $bboxExp = explode(',', $params['bbox']);
-        $width = $bboxExp[2] - $bboxExp[0];
-        $height = $bboxExp[3] - $bboxExp[1];
+        $bbox0 = (float) $bboxExp[0];
+        $bbox1 = (float) $bboxExp[1];
+        $bbox2 = (float) $bboxExp[2];
+        $bbox3 = (float) $bboxExp[3];
+        $width = $bbox2 - $bbox0;
+        $height = $bbox3 - $bbox1;
         // Calculate factors
         $xFactor = (int) ($metatileSizeX / 2);
         $yFactor = (int) ($metatileSizeY / 2);
         // Calculate the new bbox
-        $xmin = $bboxExp[0] - $xFactor * $width - $metatileBuffer * $width / $params['width'];
-        $ymin = $bboxExp[1] - $yFactor * $height - $metatileBuffer * $height / $params['height'];
-        $xmax = $bboxExp[2] + $xFactor * $width + $metatileBuffer * $width / $params['width'];
-        $ymax = $bboxExp[3] + $yFactor * $height + $metatileBuffer * $height / $params['height'];
+        $param_width = (int) $params['width'];
+        $param_height = (int) $params['height'];
+        $xmin = $bbox0 - $xFactor * $width - $metatileBuffer * $width / $param_width;
+        $ymin = $bbox1 - $yFactor * $height - $metatileBuffer * $height / $param_height;
+        $xmax = $bbox2 + $xFactor * $width + $metatileBuffer * $width / $param_width;
+        $ymax = $bbox3 + $yFactor * $height + $metatileBuffer * $height / $param_height;
         // Replace request bbox by metatile bbox
         $params['bbox'] = "${xmin},${ymin},${xmax},${ymax}";
 
         // Keep original param value
-        $originalParams = array('width' => $params['width'], 'height' => $params['height']);
+        $originalParams = array('width' => $param_width, 'height' => $param_height);
         // Replace width and height before requesting the image from qgis
-        $params['width'] = $metatileSizeX * $params['width'] + 2 * $metatileBuffer;
-        $params['height'] = $metatileSizeY * $params['height'] + 2 * $metatileBuffer;
+        $params['width'] = $metatileSizeX * $param_width + 2 * $metatileBuffer;
+        $params['height'] = $metatileSizeY * $param_height + 2 * $metatileBuffer;
 
         return array($params, $originalParams, $xFactor, $yFactor);
     }
 
     /**
-     * @param string $data           data of the original image
-     * @param array  $params
-     * @param array  $originalParams
-     * @param float  $xFactor
-     * @param float  $yFactor
-     * @param false  $debug          deprecated
+     * @param string $data           string data of the original image
+     * @param array  $params         array
+     * @param array  $originalParams array
+     * @param float  $xFactor        int
+     * @param float  $yFactor        int
+     * @param false  $debug          bool deprecated
      *
      * @return false|string content of the image
      */
@@ -1080,12 +1091,6 @@ class WMSRequest extends OGCRequest
             }
         }
 
-        // Also checks if gd is installed
-        if ($metatileSize && $useCache && $wmsClient == 'web'
-            && extension_loaded('gd') && function_exists('gd_info')) {
-            list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
-        }
-
         // Get data from the map server: use POST to avoid too long URLS
         $options = array('method' => 'post');
         list($data, $mime, $code) = Proxy::getRemoteData(
@@ -1107,6 +1112,7 @@ class WMSRequest extends OGCRequest
         if ($metatileSize && $useCache && $wmsClient == 'web'
             && extension_loaded('gd') && function_exists('gd_info')
         ) {
+            list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
             $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor);
         }
 
