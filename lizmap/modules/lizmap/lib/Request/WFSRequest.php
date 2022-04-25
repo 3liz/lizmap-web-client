@@ -25,12 +25,12 @@ class WFSRequest extends OGCRequest
     protected $wfs_typename;
 
     /**
-     * @var \qgisVectorLayer
+     * @var null|\qgisVectorLayer
      */
     protected $qgisLayer;
 
     /**
-     * @var object datasource parameters
+     * @var null|object datasource parameters
      */
     protected $datasource;
 
@@ -327,11 +327,13 @@ class WFSRequest extends OGCRequest
         // but only of not OGC filter is passed (complex to implement)
         // and only for GeoJSON (specific to Lizmap)
         // and only if it is not a complex query like table="(SELECT ...)"
+        // and if FORCE_QGIS parameter is not set to 1
         if ($provider == 'postgres'
             && empty($filter)
             && strtolower($output) == 'geojson'
             && $dtparams !== null
             && $dtparams->table[0] != '('
+            && $this->param('force_qgis', '') != '1'
         ) {
             return $this->getfeaturePostgres();
         }
@@ -346,6 +348,28 @@ class WFSRequest extends OGCRequest
      */
     protected function getfeatureQgis()
     {
+        // In the WFS OGC standard FEATUREID and BBOX parameters cannot be mutually set
+        // but in Lizmap, the user can do a selection, based on featureid, and can request
+        // a download, a WFS GetFeature request, based on this selection with a restriction
+        // to map extent, sofeatureid and bbox parameter can be set mutually and featureid
+        // parameter needs to be transform in an expression filter.
+        // The transformation is only available if the QGIS layer has been set.
+        if ($this->param('featureid')
+            && $this->param('bbox')
+            && $this->qgisLayer) {
+            $typename = $this->requestedTypename();
+            $featureid = $this->param('featureid', '');
+
+            $expFilter = $this->getFeatureIdFilterExp($featureid, $typename, $this->qgisLayer);
+
+            // Update parameters when expression filter has been build
+            if ($expFilter) {
+                $this->params['exp_filter'] = $expFilter;
+                $this->params['typename'] = $typename;
+                unset($this->params['featureid']);
+            }
+        }
+
         // Else pass query to QGIS Server
         // Get remote data
         $response = $this->request(true);
@@ -372,6 +396,116 @@ class WFSRequest extends OGCRequest
             'data' => $data,
             'cached' => false,
         );
+    }
+
+    /**
+     * @param string           $featureid The FEATUREID parameter
+     * @param string           $typename  The layer's typename from TYPENAME or FEATUREID parameter
+     * @param \qgisVectorLayer $qgisLayer The QGIS layer based on typename
+     *
+     * @return string The QGIS expression based on FEATUREID parameter
+     */
+    protected function getFeatureIdFilterExp($featureid, $typename, $qgisLayer)
+    {
+        if (empty($featureid)) {
+            return '';
+        }
+        // Get QGIS Layer provider
+        $provider = $qgisLayer->getProvider();
+
+        // The featureid is based on multi fields key
+        $hasDoubleAtSign = !empty(strstr($featureid, '@@'));
+
+        // We can only build expression filter for multi
+        // fields key for postgres layer
+        if ($hasDoubleAtSign && $provider != 'postgres') {
+            return '';
+        }
+
+        // get primary keys values
+        $fids = preg_split('/\\s*,\\s*/', $featureid);
+        $pks = array();
+        foreach ($fids as $fid) {
+            $exp = explode('.', $fid);
+            if (count($exp) == 2 && $exp[0] == $typename && !empty($exp[1])) {
+                if ($hasDoubleAtSign) {
+                    $pks[] = explode('@@', $exp[1]);
+                } else {
+                    $pks[] = $exp[1];
+                }
+            }
+        }
+
+        if (count($pks) == 0) {
+            return '';
+        }
+
+        // mapping primary keys values to be used in an
+        // expression filter
+        if (!$hasDoubleAtSign) {
+            // for single field key
+            $pks = array_map(
+                function ($n) {
+                    if (ctype_digit($n)) {
+                        return $n;
+                    }
+
+                    return "'".addslashes($n)."'";
+                },
+                $pks
+            );
+        } else {
+            // for multi fields key
+            $formatPks = array();
+            foreach ($pks as $pk) {
+                $formatPks[] = array_map(
+                    function ($n) {
+                        if (ctype_digit($n)) {
+                            return $n;
+                        }
+
+                        return "'".addslashes($n)."'";
+                    },
+                    $pk
+                );
+            }
+            $pks = $formatPks;
+        }
+
+        // Building the expression filter
+        if ($provider == 'postgres') {
+            // for postgres layer we can build the expression filter for
+            // simple and multi fields key
+            $dtparams = $qgisLayer->getDatasourceParameters();
+            $keys = preg_split('/\\s*,\\s*/', $dtparams->key);
+            if (count($keys) == 1 && !$hasDoubleAtSign) {
+                // for simple field key
+                return '"'.$keys[0].'" IN ('.implode(', ', $pks).')';
+            }
+            if (count($keys) > 1 && $hasDoubleAtSign) {
+                // for multi fields key
+                $filters = array();
+                foreach ($pks as $pk) {
+                    $filter = '(';
+                    $i = 0;
+                    $v = '';
+                    foreach ($keys as $key) {
+                        $filter .= $v.'"'.$key.'" = '.$pk[$i].'';
+                        $v = ' AND ';
+                        ++$i;
+                    }
+                    $filter .= ')';
+                    $filters[] = $filter;
+                }
+
+                return implode(' OR ', $filters);
+            }
+        } else {
+            // for other layers with simple field key
+            return '$id IN ('.implode(', ', $pks).')';
+        }
+
+        return '';
     }
 
     protected function buildQueryBase($cnx, $params, $wfsFields)
