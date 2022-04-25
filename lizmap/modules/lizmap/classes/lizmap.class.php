@@ -41,12 +41,12 @@ class lizmap
     protected static $lizmapServicesInstance;
 
     /**
-     * @var lizmapLogConfig The lizmapLogConfig instance for the singleton
+     * @var \Lizmap\Logger\Config The Lizmap Logger Config instance for the singleton
      */
     protected static $lizmapLogConfigInstance;
 
     /**
-     * @var lizmapJelixContext The jelixContext instance for the singleton
+     * @var \Lizmap\App\JelixContext The jelixContext instance for the singleton
      */
     protected static $appContext;
 
@@ -73,6 +73,9 @@ class lizmap
         return self::$lizmapServicesInstance;
     }
 
+    /**
+     * @return \Lizmap\App\JelixContext The lizmap application jelixContext
+     */
     public static function getAppContext()
     {
         if (!self::$appContext) {
@@ -244,7 +247,7 @@ class lizmap
      *
      * @param string $key Key of the repository to get
      *
-     * @return lizmapRepository
+     * @return null|lizmapRepository
      */
     public static function getRepository($key)
     {
@@ -271,7 +274,7 @@ class lizmap
      * @param string $key  the repository name
      * @param array  $data list of properties for the repository
      *
-     * @return lizmapRepository
+     * @return null|lizmapRepository
      */
     public static function createRepository($key, $data)
     {
@@ -378,7 +381,7 @@ class lizmap
     /**
      * Get global configuration for logs.
      *
-     * @return lizmapLogConfig
+     * @return \Lizmap\Logger\Config
      */
     public static function getLogConfig()
     {
@@ -405,7 +408,7 @@ class lizmap
      *
      * @param string $key Key of the log item to get
      *
-     * @return lizmapLogItem
+     * @return \Lizmap\Logger\Item
      *
      * @deprecated
      */
