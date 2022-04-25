@@ -2022,56 +2022,6 @@ parameters:
 			path: lizmap/modules/view/controllers/media.classic.php
 
 		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$doDownload\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^Method translateCtrl\\:\\:getDictionary\\(\\) has invalid return type binary\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^Method translateCtrl\\:\\:getDictionary\\(\\) should return binary but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^Method translateCtrl\\:\\:index\\(\\) has invalid return type javaScript\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^Method translateCtrl\\:\\:index\\(\\) should return javaScript but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$lang$#"
-			count: 2
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$property$#"
-			count: 1
-			path: lizmap/modules/view/controllers/translate.classic.php
-
-		-
 			message: "#^Cannot access property \\$id on array\\.$#"
 			count: 5
 			path: lizmap/modules/view/zones/ajax_view.zone.php
