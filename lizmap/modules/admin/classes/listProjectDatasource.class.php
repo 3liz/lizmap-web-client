@@ -52,10 +52,10 @@ class listProjectDatasource extends jFormsDynamicDatasource
             } catch (UnknownLizmapProjectException $e) {
                 jLog::logEx($e, 'error');
 
-                return null;
+                return '';
             }
         }
 
-        return null;
+        return '';
     }
 }
