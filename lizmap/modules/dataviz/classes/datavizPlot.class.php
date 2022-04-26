@@ -62,15 +62,8 @@ class datavizPlot
      * @param string $repository
      * @param string $project
      * @param string $layerId
-     * @param string $x_field
-     * @param string $y_field
-     * @param array  $colors
-     * @param array  $colorfields
-     * @param string $title
-     * @param null   $layout
-     * @param null   $aggregation
+     * @param array  $plotConfig
      * @param null   $data
-     * @param mixed  $plotConfig
      *
      * @throws jExceptionSelector
      */
@@ -85,7 +78,7 @@ class datavizPlot
         // Get the project data
         $lproj = $this->getProject($repository, $project);
         if (!$lproj) {
-            return false;
+            return;
         }
         $this->lproj = $lproj;
 
@@ -103,8 +96,6 @@ class datavizPlot
         // layout and data (use default if none given)
         $this->setLayout($this->layout);
         $this->setData($data);
-
-        return true;
     }
 
     private function parsePlotConfig($plotConfig)
@@ -141,7 +132,7 @@ class datavizPlot
             // Fields
             $str_x_fields = $plotConfig['plot']['x_field'];
             $exp_x_fields = explode(',', $str_x_fields);
-            if (count($exp_x_fields) > 0 and $exp_x_fields != array('')) {
+            if ($exp_x_fields != array('')) {
                 $x_fields = $exp_x_fields;
             }
             $str_y_fields = $plotConfig['plot']['y_field'];
@@ -149,7 +140,7 @@ class datavizPlot
                 $str_y_fields .= ','.$plotConfig['plot']['y2_field'];
             }
             $exp_y_fields = explode(',', $str_y_fields);
-            if (count($exp_y_fields) > 0 and $exp_y_fields != array('')) {
+            if ($exp_y_fields != array('')) {
                 $y_fields = $exp_y_fields;
             }
             $str_z_fields = '';
@@ -157,7 +148,7 @@ class datavizPlot
                 $str_z_fields = $plotConfig['plot']['z_field'];
             }
             $exp_z_fields = explode(',', $str_z_fields);
-            if (count($exp_z_fields) > 0 and $exp_z_fields != array('')) {
+            if ($exp_z_fields != array('')) {
                 $z_fields = $exp_z_fields;
             }
 
@@ -243,6 +234,9 @@ class datavizPlot
         return $lproj;
     }
 
+    /**
+     * @param string $layerId
+     */
     protected function parseLayer($layerId)
     {
         $layer = $this->lproj->getLayer($this->layerId);
@@ -253,11 +247,18 @@ class datavizPlot
         }
     }
 
+    /**
+     * @param string $title
+     */
     protected function setTitle($title)
     {
         $this->title = $title;
     }
 
+    /**
+     * @param null|array|string $layout
+     * @param string            $format the layout format: array or json
+     */
     protected function setLayout($layout = null, $format = 'array')
     {
         // First get layout template
@@ -278,8 +279,14 @@ class datavizPlot
         }
     }
 
+    /**
+     * @param string $field the field name
+     *
+     * @return string the field alias
+     */
     protected function getFieldAlias($field)
     {
+        /** @var qgisVectorLayer $layer */
         $layer = $this->lproj->getLayer($this->layerId);
         $aliases = $layer->getAliasFields();
         $name = $field;
@@ -290,6 +297,9 @@ class datavizPlot
         return $name;
     }
 
+    /**
+     * @return array
+     */
     protected function getLayoutTemplate()
     {
         $layout = array(
@@ -358,6 +368,10 @@ class datavizPlot
         return $layout;
     }
 
+    /**
+     * @param null|array|string $data
+     * @param string            $format the data format: array or json
+     */
     protected function setData($data = null, $format = 'json')
     {
         if (!empty($data)) {
@@ -376,6 +390,11 @@ class datavizPlot
         return null;
     }
 
+    /**
+     * @param string $format the data format: raw or json
+     *
+     * @return array|object
+     */
     public function getData($format = 'raw')
     {
         $data = $this->data;
@@ -387,6 +406,11 @@ class datavizPlot
         return $data;
     }
 
+    /**
+     * @param string $format the data format: raw or json
+     *
+     * @return array|object
+     */
     public function getLayout($format = 'raw')
     {
         $layout = $this->layout;
@@ -465,6 +489,7 @@ class datavizPlot
             $features = null;
 
             // Check data
+            $featureData = null;
             if (property_exists($wfsresponse, 'data')) {
                 $data = $wfsresponse->data;
                 if (property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data)) {
@@ -563,17 +588,30 @@ class datavizPlot
                 $featcolors = array();
 
                 // Creation of array who will be used to aggregate when the type is pie or sunburst
+                $x_aggregate_sum = null;
+                $x_aggregate_count = null;
+                $x_aggregate_min = null;
+                $x_aggregate_max = null;
+                $x_aggregate_first = null;
+                $x_aggregate_stddev = null;
+                $x_aggregate_median = null;
+                $x_aggregate_last = null;
+                $x_distinct_parent = null;
                 if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html') {
                     $x_aggregate_sum = array();
                     $x_aggregate_count = array();
                     $x_aggregate_min = array();
                     $x_aggregate_max = array();
+                    $x_aggregate_first = array();
                     $x_aggregate_stddev = array();
                     $x_aggregate_median = array();
+                    $x_aggregate_last = array();
                     $x_distinct_parent = array();
                 }
 
                 // Fill in the trace for each dimension
+                $parents_distinct_values = null;
+                $parents_distinct_colors = null;
                 if ($this->type == 'sunburst') {
                     $parents_distinct_values = array();
                     $parents_distinct_colors = array();
