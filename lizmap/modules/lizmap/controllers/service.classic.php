@@ -29,6 +29,11 @@ class serviceCtrl extends jController
     protected $params = array();
 
     /**
+     * @var null|bool
+     */
+    protected $respCanBeCached;
+
+    /**
      * Redirect to the appropriate action depending on the REQUEST parameter.
      *
      * @urlparam $PROJECT Name of the project
@@ -164,6 +169,37 @@ class serviceCtrl extends jController
         }
 
         return null;
+    }
+
+    /**
+     * Check if cache can be used because it is impossible
+     * to use cache on other request type that GET or HEAD.
+     *
+     * @return bool
+     */
+    protected function canBeCached()
+    {
+        if ($this->respCanBeCached === null) {
+            $this->respCanBeCached = in_array($_SERVER['REQUEST_METHOD'], array('GET', 'HEAD'));
+        }
+
+        return $this->respCanBeCached;
+    }
+
+    /**
+     * @param jResponse $resp
+     * @param string    $etag
+     *
+     * @return jResponse the response updated
+     */
+    protected function setEtagCacheHeaders($resp, $etag)
+    {
+        if ($this->canBeCached()) {
+            $resp->addHttpHeader('ETag', $etag);
+            $resp->addHttpHeader('Cache-Control', 'no-cache');
+        }
+
+        return $resp;
     }
 
     /**
@@ -822,6 +858,14 @@ class serviceCtrl extends jController
         return $rep;
     }
 
+    /**
+     * @param string $repository
+     * @param string $project
+     * @param string $typename
+     * @param string $ids
+     *
+     * @return array
+     */
     private function _getSelectionToken($repository, $project, $typename, $ids)
     {
         $token = md5($repository.$project.$typename.implode(',', $ids));
@@ -836,7 +880,7 @@ class serviceCtrl extends jController
             $incache = false;
             jCache::set($token, json_encode($data), 3600);
         } else {
-            $data = json_decode($data);
+            $data = json_decode($data, true);
         }
 
         return $data;
@@ -857,19 +901,32 @@ class serviceCtrl extends jController
 
         // Get params
         $typename = $this->params['typename'];
-        $ids = explode(',', $this->params['ids']);
+        $ids = preg_split('/\\s*,\\s*/', $this->params['ids']);
         sort($ids);
 
         // Token
         $data = $this->_getSelectionToken($this->iParam('repository'), $this->iParam('project'), $typename, $ids);
+        if ($this->canBeCached() && $rep->isValidCache(null, $data['token'])) {
+            return $rep;
+        }
+
         $json = array();
         $json['token'] = $data['token'];
 
         $rep->data = $json;
+        $this->setEtagCacheHeaders($rep, $data['token']);
 
         return $rep;
     }
 
+    /**
+     * @param string $repository
+     * @param string $project
+     * @param string $typename
+     * @param string $filter
+     *
+     * @return array
+     */
     private function _getFilterToken($repository, $project, $typename, $filter)
     {
         $token = md5($repository.$project.$typename.$filter);
@@ -884,7 +941,7 @@ class serviceCtrl extends jController
             $incache = false;
             jCache::set($token, json_encode($data), 3600);
         } else {
-            $data = json_decode($data);
+            $data = json_decode($data, true);
         }
 
         return $data;
@@ -906,10 +963,15 @@ class serviceCtrl extends jController
 
         // Token
         $data = $this->_getFilterToken($this->iParam('repository'), $this->iParam('project'), $typename, $filter);
+        if ($this->canBeCached() && $rep->isValidCache(null, $data['token'])) {
+            return $rep;
+        }
+
         $json = array();
         $json['token'] = $data['token'];
 
         $rep->data = $json;
+        $this->setEtagCacheHeaders($rep, $data['token']);
 
         return $rep;
     }
