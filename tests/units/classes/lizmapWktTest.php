@@ -3,6 +3,42 @@ use PHPUnit\Framework\TestCase;
 
 class lizmapWktTest extends TestCase {
 
+    function testChecking() {
+        $wktArray = array(
+            'POINT (30 10)',
+            'POINT(30 10)',
+            'MULTIPOINT ((30 10))',
+            'MULTIPOINT ((30 10), (40 40))',
+            'MULTIPOINT((30 10))',
+            'LINESTRING (30 10, 10 30, 40 40)',
+            'LINESTRING(30 10, 10 30, 40 40)',
+            'MULTILINESTRING ((30 10, 10 30, 40 40))',
+            'MULTILINESTRING ((30 10, 10 30, 40 40), (20 30, 35 35))',
+            'MULTILINESTRING((30 10, 10 30, 40 40))',
+            'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))',
+            'POLYGON ((35 10, 45 45, 15 40, 10 20, 35 10), (20 30, 35 35, 30 20, 20 30))',
+            'POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))',
+            'MULTIPOLYGON (((30 10, 40 40, 20 40, 10 20, 30 10)))',
+            'MULTIPOLYGON ((35 10, 45 45, 15 40, 10 20, 35 10), (20 30, 35 35, 30 20, 20 30))',
+            'MULTIPOLYGON(((30 10, 40 40, 20 40, 10 20, 30 10)))',
+            'GEOMETRY (((30 10, 40 40, 20 40, 10 20, 30 10)))',
+        );
+        foreach($wktArray as $wkt) {
+            $this->assertIsArray(lizmapWkt::check($wkt), 'The '.$wkt.' has not been checked!');
+        }
+
+        $notWktArray = array(
+            '',
+            'POINT',
+            'POINT ',
+            'POINT()',
+            'POINT(A)',
+        );
+        foreach($notWktArray as $wkt) {
+            $this->assertFalse(lizmapWkt::check($wkt), 'The '.$wkt.' has been checked!');
+        }
+    }
+
     function testPoint() {
         $wkt = 'POINT (30 10)';
         $geom = lizmapWkt::parse($wkt);
