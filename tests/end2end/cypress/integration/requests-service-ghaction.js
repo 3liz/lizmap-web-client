@@ -24,6 +24,129 @@ describe('Request service', function () {
         })
     })
 
+    it('Lizmap GetSelectionToken', function () {
+        cy.request({
+            method: 'GET',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetSelectionToken',
+                'TYPENAME': 'selection_polygon',
+                'IDS': '1,2',
+            },
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.eq('application/json')
+            expect(resp.headers['cache-control']).to.eq('no-cache')
+            expect(resp.headers['etag']).to.not.eq(undefined)
+
+            const etag = resp.headers['etag']
+            expect(resp.body).to.have.property('token', etag)
+
+            cy.request({
+                method: 'GET',
+                url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+                qs: {
+                    'SERVICE': 'WMS',
+                    'REQUEST': 'GetSelectionToken',
+                    'TYPENAME': 'selection_polygon',
+                    'IDS': '2, 1',
+                },
+                failOnStatusCode: false,
+            }).then((resp) => {
+                expect(resp.status).to.eq(200)
+                expect(resp.headers['content-type']).to.eq('application/json')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(undefined)
+                expect(resp.headers['etag']).to.eq(etag)
+
+                expect(resp.body).to.have.property('token', etag)
+            })
+
+            cy.request({
+                method: 'GET',
+                url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+                qs: {
+                    'SERVICE': 'WMS',
+                    'REQUEST': 'GetSelectionToken',
+                    'TYPENAME': 'selection_polygon',
+                    'IDS': '2,1',
+                },
+                headers: {
+                    'If-None-Match': etag,
+                },
+                failOnStatusCode: false,
+            }).then((resp) => {
+                expect(resp.status).to.eq(304)
+                expect(resp.body).to.have.length(0)
+            })
+        })
+    })
+
+    it('Lizmap GetFilterToken', function () {
+        cy.request({
+            method: 'GET',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetFilterToken',
+                'TYPENAME': 'selection_polygon',
+                'FILTER': '"id" IN (1, 2)',
+            },
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.eq('application/json')
+            expect(resp.headers['cache-control']).to.eq('no-cache')
+            expect(resp.headers['etag']).to.not.eq(undefined)
+
+            const etag = resp.headers['etag']
+            expect(resp.body).to.have.property('token', etag)
+
+            cy.request({
+                method: 'GET',
+                url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+                qs: {
+                    'SERVICE': 'WMS',
+                    'REQUEST': 'GetFilterToken',
+                    'TYPENAME': 'selection_polygon',
+                    'FILTER': '"id" IN (1, 2)',
+                },
+                headers: {
+                    'If-None-Match': etag,
+                },
+                failOnStatusCode: false,
+            }).then((resp) => {
+                expect(resp.status).to.eq(304)
+                expect(resp.body).to.have.length(0)
+            })
+
+            cy.request({
+                method: 'GET',
+                url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+                qs: {
+                    'SERVICE': 'WMS',
+                    'REQUEST': 'GetFilterToken',
+                    'TYPENAME': 'selection_polygon',
+                    'FILTER': '"id" IN (2, 1)',
+                },
+                headers: {
+                    'If-None-Match': etag,
+                },
+                failOnStatusCode: false,
+            }).then((resp) => {
+                expect(resp.status).to.eq(200)
+                expect(resp.headers['content-type']).to.eq('application/json')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(etag)
+
+                expect(resp.body).to.have.property('token')
+                expect(resp.body.token).to.not.eq(etag)
+            })
+        })
+    })
+
     it('WMS GetCapabilities', function () {
         cy.request('/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities')
             .then((resp) => {
