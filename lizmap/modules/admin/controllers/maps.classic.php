@@ -30,9 +30,12 @@ class mapsCtrl extends jController
 
     /**
      * Display the list of repositories and maps.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get rights for repositories per subject and groups
@@ -115,8 +118,8 @@ class mapsCtrl extends jController
      * Used to manage rights for each subject and for each group of each repositories.
      *
      * @param object $form       jform object concerned
-     * @param object $repository repository key
-     * @param bool   $load       if true, load data from jacl2 database and set form control data
+     * @param string $repository repository key
+     * @param string $load       if db, load data from jacl2 database and set form control data
      *
      * @return object modified form
      */
@@ -182,7 +185,7 @@ class mapsCtrl extends jController
      * Used to save rights for each subject and for each group of one repository.
      *
      * @param object $form       jform object concerned
-     * @param object $repository repository key
+     * @param string $repository repository key
      */
     protected function saveRepositoryRightsFromRequest($form, $repository)
     {
@@ -226,7 +229,7 @@ class mapsCtrl extends jController
     /**
      * Creation of a new section.
      *
-     * @return Redirect to the form display action
+     * @return jResponseRedirect to the form display action
      */
     public function createSection()
     {
@@ -236,8 +239,9 @@ class mapsCtrl extends jController
         $form->setData('new', '1');
         $form->setReadOnly('repository', false);
 
-        // Redirect to the form display action.
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the form display action.
         $rep->action = 'admin~maps:editSection';
 
         return $rep;
@@ -246,7 +250,7 @@ class mapsCtrl extends jController
     /**
      * Modification of a repository.
      *
-     * @return Redirect to the form display action
+     * @return jResponseRedirect to the form display action
      */
     public function modifySection()
     {
@@ -258,6 +262,7 @@ class mapsCtrl extends jController
 
         // Redirect if no repository with this key
         if (!$lrep || $lrep->getKey() != $repository) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~maps:index';
 
@@ -274,8 +279,9 @@ class mapsCtrl extends jController
         // Create and fill the form control relative to rights for each group for this repository
         $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), 'db');
 
-        // redirect to the form display action
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // redirect to the form display action
         $rep->params['repository'] = $repository;
         $rep->action = 'admin~maps:editSection';
 
@@ -285,12 +291,13 @@ class mapsCtrl extends jController
     /**
      * Display the form to create/modify a Section.
      *
-     * @param string $repository (optional) Name of the repository
+     * @urlparam string $repository (optional) Name of the repository
      *
-     * @return Display the form
+     * @return jResponseHtml|jResponseRedirect the form
      */
     public function editSection()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         $repository = $this->param('repository');
@@ -302,8 +309,9 @@ class mapsCtrl extends jController
         $lrep = lizmap::getRepository($repository);
         // what to do if it's a new one!
 
-        // Get the form
+        /** @var null|jFormsBase $form */
         $form = jForms::get('admin~config_section');
+        // get the form
 
         if ($form) {
             // Create and fill form controls relatives to repository data
@@ -325,6 +333,7 @@ class mapsCtrl extends jController
         }
         // Redirect to default page
         jMessage::add('error in editSection');
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'admin~maps:index';
 
@@ -334,7 +343,7 @@ class mapsCtrl extends jController
     /**
      * Save the data for one section.
      *
-     * @return Redirect to the index
+     * @return jResponseRedirect to the index
      */
     public function saveSection()
     {
@@ -349,8 +358,9 @@ class mapsCtrl extends jController
         $lrep = lizmap::getRepository($repository);
         // what to do if it's a new one!
 
-        // Get the form
+        /** @var null|jFormsBase $form */
         $form = jForms::get('admin~config_section');
+        // Get the form
 
         // token
         $token = $this->param('__JFORMS_TOKEN__');
@@ -366,6 +376,7 @@ class mapsCtrl extends jController
 
         // Redirection in case of errors
         if (!$ok) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~maps:index';
 
@@ -425,8 +436,9 @@ class mapsCtrl extends jController
             }
         }
 
+        // Errors : redirection to the display action
         if (!$ok) {
-            // Errors : redirection to the display action
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~maps:editSection';
             $rep->params['repository'] = $repository;
@@ -468,8 +480,9 @@ class mapsCtrl extends jController
         // group rights data
         $this->saveRepositoryRightsFromRequest($form, $repository);
 
-        // Redirect to the validation page
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the validation page
         $rep->params['repository'] = $repository;
         if ($new) {
             $rep->params['new'] = 1;
@@ -482,26 +495,30 @@ class mapsCtrl extends jController
     /**
      * Save the data for one section.
      *
-     * @return Redirect to the index
+     * @return jResponseRedirect to the index
      */
     public function validateSection()
     {
         $repository = $this->param('repository');
         $new = $this->intParam('new');
 
+        /** @var null|jFormsBase $form */
+        $form = jForms::get('admin~config_section');
         // Destroy the form
-        if ($form = jForms::get('admin~config_section')) {
+        if ($form) {
             jForms::destroy('admin~config_section');
         } else {
-            // undefined form : redirect
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
+            // undefined form : redirect
             $rep->action = 'admin~config:index';
 
             return $rep;
         }
 
-        // Redirect to the index
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the index
 
         if ($new) {
             jMessage::add(jLocale::get('admin~admin.form.admin_section.message.configure.rights'));
@@ -517,7 +534,7 @@ class mapsCtrl extends jController
     /**
      * Remove a section.
      *
-     * @return Redirect to the index
+     * @return jResponseRedirect to the index
      */
     public function removeSection()
     {
@@ -535,8 +552,9 @@ class mapsCtrl extends jController
             jMessage::add(jLocale::get('admin~admin.form.admin_section.message.data.removed.failed'), 'error');
         }
 
-        // Redirect to the index
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the index
         $rep->action = 'admin~maps:index';
 
         return $rep;
@@ -545,7 +563,7 @@ class mapsCtrl extends jController
     /**
      * Empty a map service cache.
      *
-     * @param string $repository Repository for which to remove all tile cache
+     * @urlparam string $repository Repository for which to remove all tile cache
      *
      * @return jResponseRedirect Redirection to the index
      */
@@ -557,8 +575,9 @@ class mapsCtrl extends jController
             jMessage::add(jLocale::get('admin~admin.cache.repository.removed', array($repoKey)));
         }
 
-        // Redirect to the index
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the index
         $rep->action = 'admin~maps:index';
 
         return $rep;
@@ -567,14 +586,15 @@ class mapsCtrl extends jController
     /**
      * Empty a map service cache.
      *
-     * @param string $repository Repository for which to remove all tile cache
+     * @urlparam string $repository Repository for which to remove all tile cache
      *
      * @return jResponseRedirect Redirection to the index
      */
     public function removeLayerCache()
     {
-        // Create response to redirect to the index
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Create response to redirect to the index
         $rep->action = 'admin~maps:index';
 
         $repository = $this->param('repository');
@@ -611,7 +631,5 @@ class mapsCtrl extends jController
 
             return $rep;
         }
-
-        return $rep;
     }
 }
