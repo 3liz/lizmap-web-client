@@ -320,7 +320,7 @@ class Proxy
      * @param string $url
      * @param array  $options
      *
-     * @return array(string $data, string $mime, int $http_code) Array containing the data and the mime type
+     * @return array{0: string, 1: string, 2: int} Array containing data (0: string), mime type (1: string) and HTTP code (2: int)
      */
     protected static function curlProxy($url, $options)
     {
@@ -400,7 +400,7 @@ class Proxy
      * @param string $url
      * @param array  $options
      *
-     * @return array(string $data, string $mime, int $http_code) Array containing the data and the mime type
+     * @return array{0: string, 1: string, 2: int} Array containing data (0: string), mime type (1: string) and HTTP code (2: int)
      */
     protected static function fileProxy($url, $options)
     {
@@ -498,7 +498,7 @@ class Proxy
      * @param string|string[]   $method  deprecated. the http method.
      *                                   it is ignored if $options is an array.
      *
-     * @return array(string $data, string $mime, int $http_code) Array containing the data and the mime type
+     * @return array{0: string, 1: string, 2: int} Array containing data (0: string), mime type (1: string) and HTTP code (2: int)
      */
     public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
     {
