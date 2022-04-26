@@ -39,5 +39,11 @@ cacheRootDirectory="/tmp/"
 
 ; path to find repositories
 ;rootRepositories="path"
+
+; path to find the QGIS projects private data
+; created by Lizmap or other tools, related to Qgis projects
+; if empty, rootRepositories is used.
+qgisProjectsPrivateDataFolder=""
+
 ; Does the server use relative path from root folder? 0/1
 ;relativeWMSPath=0

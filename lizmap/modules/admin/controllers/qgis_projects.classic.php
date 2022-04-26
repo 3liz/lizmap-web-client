@@ -28,12 +28,12 @@ class qgis_projectsCtrl extends jController
         $rep->title = 'Admin - Lizmap projects';
 
         // Get the project list from the zone
-        $project_list = jZone::get('project_list', array('repository' => ''));
+        $projectList = jZone::get('project_list', array('repository' => ''));
 
         // Set the HTML content
         $tpl = new jTpl();
         $assign = array(
-            'project_list' => $project_list,
+            'projectList' => $projectList,
         );
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('project_list'));
