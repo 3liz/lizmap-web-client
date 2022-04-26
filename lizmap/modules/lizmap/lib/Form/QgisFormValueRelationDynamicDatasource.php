@@ -61,10 +61,12 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                         if ($ref == $form->getData('liz_geometryColumn')) {
                             // from wkt to geom
                             $wkt = trim($form->getData($ref));
-                            $geom = \lizmapWkt::parse($wkt);
-                        /*if ($geom === null) {
-                            \jLog::log('Parsing WKT failed! '.$wkt, 'error');
-                        }*/
+                            if ($wkt && \lizmapWkt::check($wkt)) {
+                                $geom = \lizmapWkt::parse($wkt);
+                                if ($geom === null) {
+                                    \jLog::log('Parsing WKT failed! '.$wkt, 'error');
+                                }
+                            }
                         } else {
                             // properties
                             $values[$ref] = $form->getData($ref);
