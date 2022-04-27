@@ -473,6 +473,7 @@ class WFSRequest extends OGCRequest
         }
 
         // Building the expression filter
+        $expFilter = '';
         if ($provider == 'postgres') {
             // for postgres layer we can build the expression filter for
             // simple and multi fields key
@@ -480,7 +481,7 @@ class WFSRequest extends OGCRequest
             $keys = preg_split('/\\s*,\\s*/', $dtparams->key);
             if (count($keys) == 1 && !$hasDoubleAtSign) {
                 // for simple field key
-                return '"'.$keys[0].'" IN ('.implode(', ', $pks).')';
+                $expFilter = '"'.$keys[0].'" IN ('.implode(', ', $pks).')';
             }
             if (count($keys) > 1 && $hasDoubleAtSign) {
                 // for multi fields key
@@ -498,11 +499,15 @@ class WFSRequest extends OGCRequest
                     $filters[] = $filter;
                 }
 
-                return implode(' OR ', $filters);
+                $expFilter = implode(' OR ', $filters);
             }
         } else {
             // for other layers with simple field key
-            return '$id IN ('.implode(', ', $pks).')';
+            $expFilter = '$id IN ('.implode(', ', $pks).')';
+        }
+
+        if ($expFilter && $this->validateExpressionFilter($expFilter)) {
+            return $expFilter;
         }
 
         return '';
@@ -854,6 +859,25 @@ class WFSRequest extends OGCRequest
     }
 
     /**
+     * Validate an expression filter.
+     *
+     * @param string $filter The expression filter to validate
+     *
+     * @return bool returns if the expression does not contains dangerous chars
+     */
+    protected function validateExpressionFilter($filter)
+    {
+        $block_items = array();
+        if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
+            $this->appContext->logMessage('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Parses and validate a filter for postgresql.
      *
      * @param string $filter The filter to parse
@@ -862,16 +886,13 @@ class WFSRequest extends OGCRequest
      */
     protected function validateFilter($filter)
     {
-        $block_items = array();
-        if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            $this->appContext->logMessage('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
-
+        if (!$this->validateExpressionFilter($filter)) {
             return false;
         }
-        $filter = str_replace('intersects', 'ST_Intersects', $filter);
-        $filter = str_replace('geom_from_gml', 'ST_GeomFromGML', $filter);
+        $vfilter = str_replace('intersects', 'ST_Intersects', $filter);
+        $vfilter = str_replace('geom_from_gml', 'ST_GeomFromGML', $vfilter);
 
-        return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
+        return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $vfilter);
     }
 
     /**

@@ -46,6 +46,11 @@ class WFSRequestForTests extends WFSRequest {
         return $this->getQueryOrder($cnx, $params, $wfsFields);
     }
 
+    public function validateExpressionFilterForTests($filter)
+    {
+        return $this->validateExpressionFilter($filter);
+    }
+
     public function validateFilterForTests($filter)
     {
         return $this->validateFilter($filter);
