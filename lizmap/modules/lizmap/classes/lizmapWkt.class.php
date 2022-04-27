@@ -16,7 +16,38 @@ class lizmapWkt
         'parenComma' => '/\)\s*,\s*\(/',
         'doubleParenComma' => '/\)\s*\)\s*,\s*\(\s*\(/',  // can't use {2} here
         'trimParens' => '/^\s*\(?(.*?)\)?\s*$/',
+        'checkCoordinates' => '/^[0-9 \(\)\.,]*$/',
     );
+
+    /**
+     * Check if the WKT string is well formed.
+     *
+     * @param string $wkt A WKT string
+     *
+     * @return array|false The WKT string is well formed
+     */
+    public static function check($wkt)
+    {
+        preg_match(self::$regExes['typeStr'], $wkt, $matches);
+
+        if (count($matches) != 4) {
+            return false;
+        }
+        // geomType has not to be empty
+        if (empty($matches[1])) {
+            return false;
+        }
+        // the string has not to been empty
+        if (empty($matches[3]) || !preg_match(self::$regExes['checkCoordinates'], $matches[3])) {
+            return false;
+        }
+
+        return array(
+            'geomType' => strtolower($matches[1]),
+            'dim' => strtolower($matches[2]),
+            'str' => $matches[3],
+        );
+    }
 
     /**
      * Return a geometry array likes it is defined in GeoJSON.
@@ -27,14 +58,14 @@ class lizmapWkt
      */
     public static function parse($wkt)
     {
-        // Extracting geometry type, dimension and coordinates
-        preg_match(self::$regExes['typeStr'], $wkt, $matches);
-        if (count($matches) != 4) {
+        // Checking and extracting geometry type, dimension and coordinates
+        $matches = self::check($wkt);
+        if (!$matches) {
             return null;
         }
-        $geomType = strtolower($matches[1]);
-        $dim = strtolower($matches[2]);
-        $str = $matches[3];
+        $geomType = $matches['geomType'];
+        $dim = $matches['dim'];
+        $str = $matches['str'];
 
         if (substr($geomType, -2) === 'zm') {
             $geomType = substr($geomType, 0, -2);
