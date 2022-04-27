@@ -78,8 +78,9 @@ class project_listZone extends jZone
         }
         $this->_tpl->assign('serverVersions', $serverVersions);
 
-        // Add JS code for datatable
-        $bp = jApp::urlBasePath();
+        // Add the application base path to let the template load the CSS and JS assets
+        $basePath = jApp::urlBasePath();
+        $this->_tpl->assign('basePath', $basePath);
     }
 
     /**
