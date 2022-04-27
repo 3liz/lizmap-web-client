@@ -1115,11 +1115,9 @@ class WMSRequest extends OGCRequest
         }
 
         // Metatile : if needed, crop the metatile into a single tile
-        // Also checks if gd is installed
         if ($metatileSize && $useCache && $wmsClient == 'web'
             && extension_loaded('gd') && function_exists('gd_info')
         ) {
-            //list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
             $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor);
         }
 
