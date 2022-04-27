@@ -255,6 +255,45 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
+    public function getValidateExpressionFilterData()
+    {
+        return array(
+            array(';', false),
+            array('select', false),
+            array('delete', false),
+            array('insert', false),
+            array('update', false),
+            array('drop', false),
+            array('alter', false),
+            array('--', false),
+            array('truncate', false),
+            array('vacuum', false),
+            array('create', false),
+            array('selectoioio', false),
+            array('test intersects other test', true),
+            array('test geom_from_gml other test', true),
+            array('test intersects $geometry', true),
+            array('$id IN (1)', true),
+            array('$id IN (1, 2)', true),
+            array('"id" IN (1)', true),
+            array('"id" IN (1, 2)', true),
+            array('"id" IN (\'test\')', true),
+            array('("foo" = \'test\' AND "id" = 55)', true),
+            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', true),
+            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44); -- SELECT * FROM jlx_user', false),
+        );
+    }
+
+    /**
+     * @dataProvider getValidateExpressionFilterData
+     */
+    public function testValidateExpressionFilter($filter, $expectedResult)
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = new ContextForTests();
+        $this->assertEquals($expectedResult, $wfs->validateExpressionFilterForTests($filter));
+    }
+
     public function getValidateFilterData()
     {
         return array(
