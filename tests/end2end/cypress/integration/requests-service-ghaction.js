@@ -158,11 +158,13 @@ describe('Request service', function () {
     })
 
     it('WMTS GetCapabilities', function () {
-        cy.request('/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities')
+        cy.request('/index.php/lizmap/service/?repository=testsrepository&project=cache&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities')
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
                 expect(resp.body).to.contain('version="1.0.0"')
+                expect(resp.body).to.contain('<ows:Identifier>Quartiers</ows:Identifier>')
+                expect(resp.body).to.contain('<TileMatrixSet>EPSG:3857</TileMatrixSet>')
             })
     })
 
@@ -638,6 +640,95 @@ describe('Request service', function () {
             expect(feature.geometry.coordinates[0][2]).to.have.length(2)
             expect(feature.geometry.coordinates[0][3]).to.have.length(2)
             expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+    })
+
+    it('WMTS GetTile', function () {
+        // Get full transparent tile TILEMATRIX=13&TILEROW=2989&TILECOL=4185
+        cy.request({
+            method: 'GET',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=cache',
+            qs: {
+                'SERVICE': 'WMTS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetTile',
+                'LAYER': 'Quartiers',
+                'STYLE': 'default',
+                'TILEMATRIXSET': 'EPSG:3857',
+                'TILEMATRIX': '13',
+                'TILEROW': '2989',
+                'TILECOL': '4185',
+                'FORMAT': 'image/png',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('image/png')
+            expect(resp.headers).to.have.property('content-length', '355') // Transparent
+            expect(resp.headers).to.have.property('date')
+            const tileDate = new Date(resp.headers['date'])
+            expect(resp.headers).to.have.property('expires')
+            const tileExpires = new Date(resp.headers['expires'])
+            expect(tileExpires).to.be.greaterThan(tileDate)
+            /*expect(resp.body).to.contain('version="1.0.0"')*/
+        })
+
+        // Get not full transparent tile TILEMATRIX=13&TILEROW=2991&TILECOL=4184
+        cy.request({
+            method: 'GET',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=cache',
+            qs: {
+                'SERVICE': 'WMTS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetTile',
+                'LAYER': 'Quartiers',
+                'STYLE': 'default',
+                'TILEMATRIXSET': 'EPSG:3857',
+                'TILEMATRIX': '13',
+                'TILEROW': '2991',
+                'TILECOL': '4184',
+                'FORMAT': 'image/png',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('image/png')
+            expect(resp.headers).to.have.property('content-length')
+            expect(parseInt(resp.headers['content-length'])).to.be.greaterThan(355) // Not transparent
+            expect(parseInt(resp.headers['content-length'])).to.be.eq(10825) // Monochrome
+            expect(resp.headers).to.have.property('date')
+            const tileDate = new Date(resp.headers['date'])
+            expect(resp.headers).to.have.property('expires')
+            const tileExpires = new Date(resp.headers['expires'])
+            expect(tileExpires).to.be.greaterThan(tileDate)
+            /*expect(resp.body).to.contain('version="1.0.0"')*/
+        })
+
+        // Get monochrome tile TILEMATRIX=15&TILEROW=11964&TILECOL=16736
+        cy.request({
+            method: 'GET',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=cache',
+            qs: {
+                'SERVICE': 'WMTS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetTile',
+                'LAYER': 'Quartiers',
+                'STYLE': 'default',
+                'TILEMATRIXSET': 'EPSG:3857',
+                'TILEMATRIX': '15',
+                'TILEROW': '11964',
+                'TILECOL': '16736',
+                'FORMAT': 'image/png',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('image/png')
+            expect(resp.headers).to.have.property('content-length')
+            expect(parseInt(resp.headers['content-length'])).to.be.greaterThan(355) // Not transparent
+            expect(resp.headers).to.have.property('date')
+            const tileDate = new Date(resp.headers['date'])
+            expect(resp.headers).to.have.property('expires')
+            const tileExpires = new Date(resp.headers['expires'])
+            expect(tileExpires).to.be.greaterThan(tileDate)
+            /*expect(resp.body).to.contain('version="1.0.0"')*/
         })
     })
 
