@@ -1,7 +1,7 @@
 
-{meta_html css '/assets/css/dataTables.bootstrap.min.css'}
-{meta_html js '/assets/js/jquery.dataTables.min.js'}
-{meta_html js '/assets/js/admin/activate_datatable.js'}
+{meta_html css $basePath.'assets/css/dataTables.bootstrap.min.css'}
+{meta_html js $basePath.'assets/js/jquery.dataTables.min.js'}
+{meta_html js $basePath.'assets/js/admin/activate_datatable.js'}
 {assign $tableClass=''}
 {if $hasInspectionData}
     {assign $tableClass='has_inspection_data'}
