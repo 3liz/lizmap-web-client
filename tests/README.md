@@ -6,10 +6,8 @@ A docker configuration is provided to launch Lizmap into a container.
 
 ### With Windows
 
-1. Install Docker
-https://docs.docker.com/desktop/windows/install/
-2. Install Git
-https://git-scm.com/download/win
+1. Install [Docker](https://docs.docker.com/desktop/windows/install/)
+2. Install [Git](https://git-scm.com/download/win)
 3. Launch Git Bash as administrator (right-click, run as administrator), then in the new window...
 ```bash
 # Create a directory for Git repositories
