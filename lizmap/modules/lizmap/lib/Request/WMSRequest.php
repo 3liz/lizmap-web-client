@@ -1112,6 +1112,9 @@ class WMSRequest extends OGCRequest
         }
 
         // Also checks if gd is installed
+        $originalParams = array();
+        $xFactor = -1;
+        $yFactor = -1;
         if ($metatileSize && $useCache && $wmsClient == 'web'
             && extension_loaded('gd') && function_exists('gd_info')
         ) {
