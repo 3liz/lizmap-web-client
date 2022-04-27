@@ -24,7 +24,7 @@ class lizmapWktTest extends PHPUnit_Framework_TestCase {
             'GEOMETRY (((30 10, 40 40, 20 40, 10 20, 30 10)))',
         );
         foreach($wktArray as $wkt) {
-            $this->assertIsArray(lizmapWkt::check($wkt), 'The '.$wkt.' has not been checked!');
+            $this->assertTrue(is_array(lizmapWkt::check($wkt)), 'The '.$wkt.' has not been checked!');
         }
 
         $notWktArray = array(
