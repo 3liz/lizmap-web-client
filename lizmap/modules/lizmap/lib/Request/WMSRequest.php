@@ -1111,6 +1111,13 @@ class WMSRequest extends OGCRequest
             }
         }
 
+        // Also checks if gd is installed
+        if ($metatileSize && $useCache && $wmsClient == 'web'
+            && extension_loaded('gd') && function_exists('gd_info')
+        ) {
+            list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
+        }
+
         // Get data from the map server: use POST to avoid too long URLS
         $options = array('method' => 'post');
         list($data, $mime, $code) = Proxy::getRemoteData(
@@ -1132,7 +1139,7 @@ class WMSRequest extends OGCRequest
         if ($metatileSize && $useCache && $wmsClient == 'web'
             && extension_loaded('gd') && function_exists('gd_info')
         ) {
-            list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
+            //list($params, $originalParams, $xFactor, $yFactor) = $this->getMetaTileData($params, $metatileSize);
             $data = $this->getImageData($data, $params, $originalParams, $xFactor, $yFactor);
         }
 
