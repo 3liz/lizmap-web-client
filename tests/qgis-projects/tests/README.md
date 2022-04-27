@@ -44,4 +44,5 @@ psql service=SERVICE -f set_tests_respository_rights.sql
 
 # Import data, check there isn't any ACL before
 psql service=SERVICE -f tests_dataset.sql
+psql service=SERVICE -f set_tests_lizmap_search.sql
 ```
