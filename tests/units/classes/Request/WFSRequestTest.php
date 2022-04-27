@@ -84,6 +84,45 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedParameters, $parameters);
     }
 
+    public function getGetFeatureIdFilterExpData()
+    {
+        return array(
+            array('', '', '', array()), //nothing
+            array('type.1', '', '', array()), // only featureid
+            array('type', 'type', '', array()), // featureid not well formed
+            array('type.', 'type', '', array()), // fetaureid not well formed
+            array('type.1', 'typed', '', array()), // featureid and typename are not for the same layer
+            array('type.test@@55', 'type', '', array()), // featureid with multi fields key not for postgres layer
+            array('type.test@@55', 'type', '', array('provider'=>'postgres')), // featureid with multi fields key for postgres layer with simple field key
+            array('type.1', 'type', '$id IN (1)', array()),
+            array('type.1,type.2', 'type', '$id IN (1, 2)', array()),
+            array('type.1', 'type', '"id" IN (1)', array('provider'=>'postgres')),
+            array('type.1,type.2', 'type', '"id" IN (1, 2)', array('provider'=>'postgres')),
+            array('type.test', 'type', '"id" IN (\'test\')', array('provider'=>'postgres')),
+            array('type.test@@55', 'type', '("foo" = \'test\' AND "id" = 55)', array('provider'=>'postgres', 'dtparams'=>array('key' => 'foo,id'))),
+            array('type.test@@55,type.bar@@44', 'type', '("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', array('provider'=>'postgres', 'dtparams'=>array('key' => 'foo,id'))),
+        );
+    }
+
+    /**
+     * @dataProvider getGetFeatureIdFilterExpData
+     */
+    public function testGetFeatureIdFilterExp($featureid, $typename, $expectedExpFilter, $layerOptions)
+    {
+        $wfs = new WFSRequestForTests();
+        $qgisLayer = new LayerWFSForTests();
+        if ($layerOptions) {
+            if (array_key_exists('provider', $layerOptions)) {
+                $qgisLayer->provider = $layerOptions['provider'];
+            }
+            if (array_key_exists('dtparams', $layerOptions)) {
+                $qgisLayer->dtparams = $layerOptions['dtparams'];
+            }
+        }
+        $expFilter = $wfs->getFeatureIdFilterExpForTests($featureid, $typename, $qgisLayer);
+        $this->assertEquals($expectedExpFilter, $expFilter);
+    }
+
     public function getBuildQueryBaseData()
     {
         $paramsComplete = array(
@@ -176,6 +215,7 @@ class WFSRequestTest extends TestCase
             array('', '', '', ''),
             array('type', 'type.test@@55', 'key,otherKey', ' AND (key = "test" AND otherKey = 55)'),
             array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', ' AND (key = "test" AND otherKey = 55) OR (key = "name" AND otherKey = 42)'),
+            array('', 'type.test@@55', 'key,otherKey', ' AND (key = "test" AND otherKey = 55)'),
         );
     }
 
@@ -213,6 +253,45 @@ class WFSRequestTest extends TestCase
         $result = '';
         $result = $wfs->getQueryOrderForTests(new jDbConnectionForTests(), $params, $wfsFields);
         $this->assertEquals($expectedSql, $result);
+    }
+
+    public function getValidateExpressionFilterData()
+    {
+        return array(
+            array(';', false),
+            array('select', false),
+            array('delete', false),
+            array('insert', false),
+            array('update', false),
+            array('drop', false),
+            array('alter', false),
+            array('--', false),
+            array('truncate', false),
+            array('vacuum', false),
+            array('create', false),
+            array('selectoioio', false),
+            array('test intersects other test', true),
+            array('test geom_from_gml other test', true),
+            array('test intersects $geometry', true),
+            array('$id IN (1)', true),
+            array('$id IN (1, 2)', true),
+            array('"id" IN (1)', true),
+            array('"id" IN (1, 2)', true),
+            array('"id" IN (\'test\')', true),
+            array('("foo" = \'test\' AND "id" = 55)', true),
+            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', true),
+            array('("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44); -- SELECT * FROM jlx_user', false),
+        );
+    }
+
+    /**
+     * @dataProvider getValidateExpressionFilterData
+     */
+    public function testValidateExpressionFilter($filter, $expectedResult)
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = new ContextForTests();
+        $this->assertEquals($expectedResult, $wfs->validateExpressionFilterForTests($filter));
     }
 
     public function getValidateFilterData()

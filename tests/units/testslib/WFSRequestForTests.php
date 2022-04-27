@@ -15,6 +15,11 @@ class WFSRequestForTests extends WFSRequest {
     public function __construct()
     {}
 
+    public function getFeatureIdFilterExpForTests($featureid, $typename, $qgisLayer)
+    {
+        return $this->getFeatureIdFilterExp($featureid, $typename, $qgisLayer);
+    }
+
     public function buildQueryBaseForTests($cnx, $params, $wfsFields)
     {
         return $this->buildQueryBase($cnx, $params, $wfsFields);
@@ -39,6 +44,11 @@ class WFSRequestForTests extends WFSRequest {
     public function getQueryOrderForTests($cnx, $params, $wfsFields)
     {
         return $this->getQueryOrder($cnx, $params, $wfsFields);
+    }
+
+    public function validateExpressionFilterForTests($filter)
+    {
+        return $this->validateExpressionFilter($filter);
     }
 
     public function validateFilterForTests($filter)
