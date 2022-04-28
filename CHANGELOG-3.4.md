@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### Fixed
+
+* Allow a project thumbnail with capital letters in the extension
+* Open a PDF in a new tab when possible on Firefox instead of the internal viewer
+* Fix about dataviz panel : plot order and custom plot layout, contribution from @tethysgeco
+* Fix some exports issues when there is a selection
+* Fix an issue about editing capabilities when using a geometry involved in a QGIS expression
+* Fix about some WFS requests about vector data
+* Fix about QGIS 3.22 when a group has a shortname
+* Fix about QGIS 3.22 with the "Show feature count"
+* Fix about geometries in WKT when it's multipart.
+
+### Translations
+
+* Update from Transifex about translated strings
+
+### Backend
+
+* Update of Jelix 1.6
+
 ## 3.4.10 - 2022-03-24
 
 ### Fixed
