@@ -527,8 +527,8 @@ var lizDataviz = function() {
 
     var obj = {
 
-        buildPlot: function(id, conf) {
-          return buildPlot(id, conf);
+        buildPlot: function(id, conf, pid = null) {
+          return buildPlot(id, conf, pid);
         },
         buildPlotContainerHtml: function(title, abstract, target_id, with_title) {
           return buildPlotContainerHtml(title, abstract, target_id, with_title);
