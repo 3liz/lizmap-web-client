@@ -171,27 +171,5 @@ A docker-compose.yml file is provided, launching a full stack of softwares to
 run Lizmap (nginx, php-fpm, qgis, postgresql...).
 
 You can test with Android browsers in your Ubuntu Desktop thanks to [Anbox](https://docs.anbox.io/userguide/install.html#install-anbox).
-For example, you can [download a x86 version of Firefox Mobile](https://ftp.mozilla.org/pub/mobile/) then [install it](https://docs.anbox.io/userguide/install_apps.html#install-applications).
-<<<<<<< Updated upstream
-
-## Localization
-
-The locale files (except for en_US language) are stored into the `lizmap/app/locales` directory.
-The files are `*.properties`. You can find documentation about localizing Jelix
-application here : https://docs.jelix.org/en/manual-1.6/locales.
-
-Locale files for en_US language are stored into modules directly (see `locales/`
-directory into sub-directories of `lizmap/modules/`).
-
-Only modifications on en_US locales are accepted in Pull Requests.
-
-All other locales are translated with Transifex. So to help us to translate, 
-please go on Transifex:  
-
-- https://www.transifex.com/3liz-1/lizmap-locales/  to translate Lizmap strings
-- https://www.transifex.com/3liz-1/jelix/ to translate Jelix strings
-
-For core developers, see the repository https://github.com/3liz/lizmap-locales/
-and https://github.com/jelix/jelix-langpacks.
-=======
->>>>>>> Stashed changes
+For example, you can [download a x86 version of Firefox Mobile](https://ftp.mozilla.org/pub/mobile/) then
+[install it](https://docs.anbox.io/userguide/install_apps.html#install-applications).
