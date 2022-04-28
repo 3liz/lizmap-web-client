@@ -2,6 +2,10 @@
 
 **Project : cache**
 
+## Requirements
+
+Having the repository called `testsrepository` and having access to PHP CLI
+
 ## Procedure
 
 This test is to check the cache.
