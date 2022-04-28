@@ -73,6 +73,7 @@ tests/qgis-projects/*
 tests/qgis-projects/tests/media
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
+tests/lizmap-qgis-plugin.master.zip
 tests/end2end/node_modules/
 tests/end2end/cypress/downloads/
 tests/end2end/cypress/screenshots/

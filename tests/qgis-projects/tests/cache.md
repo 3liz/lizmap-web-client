@@ -2,6 +2,10 @@
 
 **Project : cache**
 
+## Requirements
+
+Having the repository called `testsrepository` and having access to PHP CLI
+
 Not possible to make this test on lizmap.com because we need the CLI
 
 ## Procedure
