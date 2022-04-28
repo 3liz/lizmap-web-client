@@ -4,7 +4,36 @@
 
 ### Changed
 
-- Overview's map extent is the same as the main map's initial extent and is fixed by default (previous behavior before 3.5.0). Dynamic scale can be activated in Lizmap plugin. 
+* Restore the previous behavior from Lizmap 3.4 about the overview map
+  Use the new parameter in the Lizmap QGIS plugin to have a dynamic scale
+
+### Fixed
+
+* Allow a project thumbnail with capital letters in the extension
+* Open a PDF in a new tab when possible on Firefox instead of the internal viewer
+* Fix about dataviz panel : plot order and custom plot layout, contribution from @tethysgeco
+* Fix some exports issues when there is a selection
+* Fix an issue about editing capabilities when using a geometry involved in a QGIS expression
+* Fix about some WFS requests about vector data
+* Fix about QGIS 3.22 when a group has a shortname
+* Fix about QGIS 3.22 with the "Show feature count"
+* Fix about geometries in WKT when it's multipart
+* Fix the `lizmap_search` feature
+
+### Translations
+
+* Update from Transifex about translated strings
+
+### Backend
+
+* Upgrade our coding standards by fixing a lot of warnings from PHPStan
+* Update of Jelix 1.6
+
+### Tests
+
+* Improve the testing infrastructure
+* Upgrade to Cypress 9.5.3
+* Upgrade PHPStan
 
 ## 3.5.2 - 2022-03-24
 
