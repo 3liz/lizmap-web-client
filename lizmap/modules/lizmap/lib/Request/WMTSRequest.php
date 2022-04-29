@@ -97,9 +97,13 @@ class WMTSRequest extends OGCRequest
         );
 
         // Default values
+        /** @var null|string $LayerName */
         $LayerName = null;
+        /** @var null|string $Format */
         $Format = null;
+        /** @var null|string $TileMatrixSetId */
         $TileMatrixSetId = null;
+        /** @var null|string $TileMatrixId */
         $TileMatrixId = null;
         $TileRow = -1;
         $TileCol = -1;
