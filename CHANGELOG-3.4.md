@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.4.11 - 2022-04-29
+
 ### Fixed
 
 * Allow a project thumbnail with capital letters in the extension
