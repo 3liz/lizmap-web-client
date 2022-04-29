@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.3 - 2022-04-29
+
 ### Changed
 
 * Restore the previous behavior from Lizmap 3.4 about the overview map
