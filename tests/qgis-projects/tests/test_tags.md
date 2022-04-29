@@ -4,7 +4,9 @@
 
 ## Procedure
 
-For this test you need the two empty projects (test_tags_nature_flower, test_tags_nature_tree).
+For this test you need the two empty projects :
+  * `test_tags_nature_flower` -> Test tags: nature, flower
+  * `test_tags_nature_tree` -> Tests tags: nature, tree
 This is to test the feature to filter by tags.
 
 - [ ] Those two projects should display keywords with the label `Keyword list`

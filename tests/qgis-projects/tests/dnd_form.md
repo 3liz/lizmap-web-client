@@ -12,7 +12,7 @@
   * [ ] Check that a new point is displayed on the map
 * [ ] Click on the new `dnd_form_geom` feature
   * [ ] Check that `Field in`  field should not be empty
-  * [ ] Check that `Field not in` field should be empty
+  * [ ] Check that `Field not in` field should not be visible
 
 * [ ] Open attribute table tool then `dnd_form` layer details
   * [ ] Click Add a feature button, set `Field in` input value and save
