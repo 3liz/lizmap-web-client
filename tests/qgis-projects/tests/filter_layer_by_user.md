@@ -8,7 +8,7 @@ For the folder `tests`, do not have any `Show even if admin for feature filtered
 
 ## Procedure
 
-* [ ] When clicking on the single feature of `layer_with_no_filter` layer :
+* [ ] When clicking on the single red feature of `layer_with_no_filter` layer :
   * [ ] the popup should show edition and deletion capabilities
 
 * When not connected :
