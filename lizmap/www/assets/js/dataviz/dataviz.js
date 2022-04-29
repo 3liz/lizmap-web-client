@@ -20,6 +20,8 @@ var lizDataviz = function() {
         if(!dv.config.layers)
             return false;
         for( var i in dv.config.layers) {
+            // initialize plot info
+            dv.plots[i] = {'json': null, 'filter': null, 'show_plot': true, 'cache': null};
             if (!( optionToBoolean(dv.config.layers[i]['only_show_child']) )) {
                 addPlotContainer(i);
             }
