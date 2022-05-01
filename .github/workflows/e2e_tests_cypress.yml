@@ -69,7 +69,7 @@ jobs:
           wait-on: http://localhost:8130
 
       - name: Save screenshots as artifacts if a test fails to ease debug
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
