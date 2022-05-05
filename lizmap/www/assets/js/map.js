@@ -4700,7 +4700,13 @@ var lizMap = function() {
                   if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
               }
 
-              const type = xhr.getResponseHeader('Content-Type');
+              let type = xhr.getResponseHeader('Content-Type');
+
+              // Firefox >= 98 opens blob in its pdf viewer
+              // This is a hack to force download as in Chrome
+              if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && type == 'application/pdf'){
+                type = 'application/octet-stream';
+              }
               const blob = new File([this.response], filename, { type: type });
               const downloadUrl = URL.createObjectURL(blob);
 
