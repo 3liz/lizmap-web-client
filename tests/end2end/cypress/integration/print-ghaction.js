@@ -140,18 +140,6 @@ describe('Print', function () {
     it('should print PDF', function () {
         cy.get('#print-format').select('pdf')
         cy.intercept('POST', '*test_print*').as('GetPrint')
-        let getprintUrl = null
-        let getprintTarget = null
-        cy.window().then((win) => {
-            cy.stub(win, 'open', (_url, _target) => {
-                expect(_url).to.contain('blob:')
-                getprintUrl = _url
-                getprintTarget = _target
-                // By default the method is replaced and do nothing
-                // To reactivate window.open uncomment the next line
-                //return win.open.wrappedMethod.call(win, _url, _target)
-            }).as("OpenGetPrint")
-        })
 
         // Default values in title labels
         cy.get('#print-launch').click()
@@ -159,21 +147,11 @@ describe('Print', function () {
         cy.wait('@GetPrint').should(({ request, response }) => {
             expect(response.headers['content-type']).to.contain('application/pdf')
             expect(response.headers['content-disposition']).to.contain('attachment; filename=')
+            expect(parseInt(response.headers['content-length'])).to.be.greaterThan(8000)
+            const contentLength = parseInt(response.headers['content-length'])
 
-            // stub has been called
-            cy.get('@OpenGetPrint').should("be.called")
-            expect(getprintUrl).to.be.not.null
-            expect(getprintTarget).to.be.not.null
-            expect(getprintTarget).to.be.equal('test_print_print_labels.pdf')
-
-            // check URL provided window.open
-            fetch(getprintUrl).then(r => {
-                expect([...(r.headers.keys())]).to.include.members(['content-type', 'content-length'])
-                expect(r.headers.get('content-type')).to.contain('application/pdf')
-                expect(parseInt(r.headers.get('content-length'))).to.be.greaterThan(0)
-                expect(r.url).to.contain('blob:')
-                //r.blob()
-            })
+            cy.readFile(path.join(downloadsFolder, "test_print_print_labels.pdf"), 'binary')
+                .should(buffer => expect(buffer.length).to.be.eq(contentLength))
         })
     })
 
