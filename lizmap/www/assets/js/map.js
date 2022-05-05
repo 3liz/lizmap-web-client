@@ -4744,14 +4744,9 @@ var lizMap = function() {
               if (filename) {
                 // use HTML5 a[download] attribute to specify filename
                 const a = document.createElement('a');
-                // old safari doesn't support this
-                if (typeof a.download === 'undefined') {
-                    window.open(downloadUrl, filename);
-                } else {
-                    a.href = downloadUrl;
-                    a.download = filename;
-                    a.dispatchEvent(new MouseEvent('click'));
-                }
+                a.href = downloadUrl;
+                a.download = filename;
+                a.dispatchEvent(new MouseEvent('click'));
               } else {
                 window.open(downloadUrl);
               }
