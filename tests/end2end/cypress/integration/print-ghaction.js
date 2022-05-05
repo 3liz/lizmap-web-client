@@ -57,12 +57,19 @@ describe('Print', function () {
                 const img2 = PNG.sync.read(Buffer.from(image, 'base64'));
                 const { width, height } = img1;
 
+                // Check pixel match
                 expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print default values in the title labels').to.equal(0)
 
-                /*const fixturePNG = image
-                cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'base64').then((downloadedPNG) => {
-                    expect(fixturePNG, 'expect print default values in the title labels').to.equal(downloadedPNG)
-                })*/
+                // Check content length > 17000 and < 20000
+                expect(parseInt(response.headers['content-length']))
+                    .to.be.greaterThan(17000)
+                    .to.be.lessThan(20000)
+                const contentLength = parseInt(response.headers['content-length'])
+
+                // Check file exists in downloads folder and
+                // the content length is the same as the one intercepted
+                cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'binary')
+                    .should(buffer => expect(buffer.length).to.be.eq(contentLength))
             })
         })
 
@@ -85,12 +92,17 @@ describe('Print', function () {
                 const img2 = PNG.sync.read(Buffer.from(image, 'base64'));
                 const { width, height } = img1;
 
+                // Check pixel match
                 expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print changed values in the title labels').to.equal(0)
 
-                /*const fixturePNG = image
-                cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'base64').then((downloadedPNG) => {
-                    expect(fixturePNG, 'expect print default values in the title labels').to.equal(downloadedPNG)
-                })*/
+                // Check content length > 20000
+                expect(parseInt(response.headers['content-length'])).to.be.greaterThan(20000)
+                const contentLength = parseInt(response.headers['content-length'])
+
+                // Check file exists in downloads folder and
+                // the content length is the same as the one intercepted
+                cy.readFile(path.join(downloadsFolder, "test_print_print_labels.png"), 'binary')
+                    .should(buffer => expect(buffer.length).to.be.eq(contentLength))
             })
         })
     })
@@ -105,6 +117,15 @@ describe('Print', function () {
         cy.wait('@GetPrint').should(({ request, response }) => {
             expect(response.headers['content-type']).to.contain('image/jpeg')
             expect(response.headers['content-disposition']).to.contain('attachment; filename=')
+
+            // Check content length > 22000
+            expect(parseInt(response.headers['content-length'])).to.be.greaterThan(22000)
+            const contentLength = parseInt(response.headers['content-length'])
+
+            // Check file exists in downloads folder and
+            // the content length is the same as the one intercepted
+            cy.readFile(path.join(downloadsFolder, "test_print_print_labels.jpg"), 'binary')
+                .should(buffer => expect(buffer.length).to.be.eq(contentLength))
         })
     })
 
@@ -118,7 +139,19 @@ describe('Print', function () {
         cy.wait('@GetPrint').should(({ request, response }) => {
             expect(response.headers['content-type']).to.contain('image/svg+xml')
             expect(response.headers['content-disposition']).to.contain('attachment; filename=')
+
             expect(response.body).to.contain('Change title')
+
+            // Check content length > 24000 and < 33000
+            expect(parseInt(response.headers['content-length']))
+                .to.be.greaterThan(24000)
+                .to.be.lessThan(33000)
+            const contentLength = parseInt(response.headers['content-length'])
+
+            // Check file exists in downloads folder and
+            // the content length is the same as the one intercepted
+            cy.readFile(path.join(downloadsFolder, "test_print_print_labels.svg"), 'binary')
+                .should(buffer => expect(buffer.length).to.be.eq(contentLength))
         })
 
         // Changed values in title labels
@@ -132,7 +165,17 @@ describe('Print', function () {
         cy.wait('@GetPrint').should(({ request, response }) => {
             expect(response.headers['content-type']).to.contain('image/svg+xml')
             expect(response.headers['content-disposition']).to.contain('attachment; filename=')
+
             expect(response.body).to.contain('A test')
+
+            // Check content length > 33000
+            expect(parseInt(response.headers['content-length'])).to.be.greaterThan(33000)
+            const contentLength = parseInt(response.headers['content-length'])
+
+            // Check file exists in downloads folder and
+            // the content length is the same as the one intercepted
+            cy.readFile(path.join(downloadsFolder, "test_print_print_labels.svg"), 'binary')
+                .should(buffer => expect(buffer.length).to.be.eq(contentLength))
         })
     })
 
@@ -147,9 +190,13 @@ describe('Print', function () {
         cy.wait('@GetPrint').should(({ request, response }) => {
             expect(response.headers['content-type']).to.contain('application/pdf')
             expect(response.headers['content-disposition']).to.contain('attachment; filename=')
+
+            // Check content length > 8000
             expect(parseInt(response.headers['content-length'])).to.be.greaterThan(8000)
             const contentLength = parseInt(response.headers['content-length'])
 
+            // Check file exists in downloads folder and
+            // the content length is the same as the one intercepted
             cy.readFile(path.join(downloadsFolder, "test_print_print_labels.pdf"), 'binary')
                 .should(buffer => expect(buffer.length).to.be.eq(contentLength))
         })
