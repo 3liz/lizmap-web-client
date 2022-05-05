@@ -3033,18 +3033,18 @@ var lizMap = function() {
                 var plotLayers = lizMap.config.datavizLayers.layers;
                 var lrelations = lizMap.config.relations[layerId];
                 var nbPlotByLayer = 1;
-                
+
                 for ( var i in plotLayers) {
-  
+
                     for(var x in lrelations){
                       var rel = lrelations[x];
                       // Id of the layer which is the child of layerId
                       var getChildrenId = rel.referencingLayer;
-    
+
                       // Filter of the plot
                       var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
-                    
-  
+
+
                         if(plotLayers[i].layer_id==getChildrenId)
                         {
                             var plot_config=plotLayers[i];
@@ -4799,7 +4799,24 @@ var lizMap = function() {
               } else {
                   var URL = window.URL || window.webkitURL;
                   var downloadUrl = URL.createObjectURL(blob);
-                  window.open(downloadUrl, '_blank');
+
+                  if (filename && type != 'application/pdf') {
+                    // use HTML5 a[download] attribute to specify filename
+                    var a = document.createElement("a");
+                    // safari doesn't support this yet
+                    if (typeof a.download === 'undefined') {
+                        window.open(downloadUrl, filename);
+                    } else {
+                        a.href = downloadUrl;
+                        a.download = filename;
+                        a.rel = 'noopener';
+                        a.target = '_blank';
+                        //document.body.appendChild(a);
+                        a.dispatchEvent(new MouseEvent('click'));
+                    }
+                  } else {
+                    window.open(downloadUrl, filename);
+                  }
 
                   setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
               }
