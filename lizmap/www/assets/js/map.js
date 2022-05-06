@@ -2919,18 +2919,18 @@ var lizMap = function() {
                 var plotLayers = lizMap.config.datavizLayers.layers;
                 var lrelations = lizMap.config.relations[layerId];
                 var nbPlotByLayer = 1;
-                
+
                 for ( var i in plotLayers) {
-  
+
                     for(var x in lrelations){
                       var rel = lrelations[x];
                       // Id of the layer which is the child of layerId
                       var getChildrenId = rel.referencingLayer;
-    
+
                       // Filter of the plot
                       var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
-                    
-  
+
+
                         if(plotLayers[i].layer_id==getChildrenId)
                         {
                             var plot_config=plotLayers[i];
@@ -4699,21 +4699,28 @@ var lizMap = function() {
                   var matches = filenameRegex.exec(disposition);
                   if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
               }
-              var type = xhr.getResponseHeader('Content-Type');
 
-              var blob = typeof File === 'function'
-                  ? new File([this.response], filename, { type: type })
-                  : new Blob([this.response], { type: type });
-              if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                  // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-                  window.navigator.msSaveBlob(blob, filename);
-              } else {
-                  var URL = window.URL || window.webkitURL;
-                  var downloadUrl = URL.createObjectURL(blob);
-                  window.open(downloadUrl, '_blank');
+              let type = xhr.getResponseHeader('Content-Type');
 
-                  setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+              // Firefox >= 98 opens blob in its pdf viewer
+              // This is a hack to force download as in Chrome
+              if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && type == 'application/pdf'){
+                type = 'application/octet-stream';
               }
+              const blob = new File([this.response], filename, { type: type });
+              const downloadUrl = URL.createObjectURL(blob);
+
+              if (filename) {
+                // use HTML5 a[download] attribute to specify filename
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                a.dispatchEvent(new MouseEvent('click'));
+              } else {
+                window.open(downloadUrl);
+              }
+
+              setTimeout(() => URL.revokeObjectURL(downloadUrl), 100); // cleanup
           }
 
           // Note 31/01/2022
