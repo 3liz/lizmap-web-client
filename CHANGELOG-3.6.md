@@ -25,7 +25,7 @@
     * QGIS version, layer count and projection: shows a help message if an issue has been detected
   * The admin user will be able to **sort the projects* by clicking on the columns header
     or **filter the list** by typing the searched value in the top text input.
-  * A right **sidebar** shows the project informations when a line is selected: project image, title, abstract.
+  * A right **sidebar** shows the project information when a line is selected: project image, title, abstract.
   * More project properties are shown if the proprietary tool `qgis-project-validator` has been used to
     generate the expected JSON and LOG files for each project:
     * **Invalid layers** count and list of layer names with the `datasource` visible in the tooltip
@@ -35,15 +35,15 @@
   * Funded by **Valabre** (Centre de gravité de la formation des métiers de la Sécurité Civile,
     de la Recherche, des Nouvelles Technologies et de la Prévention dans le domaine des risques naturels)
 
-* Internal PHP code
+### Backend 
 
+* Lizmap QGIS server plugin has been split in two different plugins : server and desktop
+* Internal PHP code
   * New method in `AppContext` to get user public groups id
   * Convert QGIS XML `Option` value based on type attribute
-  - Add a revision parameter on assets url for cache
-
-
+  * Add a revision parameter on assets url for cache
 
 ### Tests
 
-- e2e: Add Lizmap Service requests tests
-- e2e: Update Cypress to 9.5.0
+* End2End: Add Lizmap Service requests tests
+* End2End: Update Cypress to 9.5.0
