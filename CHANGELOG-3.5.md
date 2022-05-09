@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Fixed
+
+* Fix the download of files (layer export, PDF) depending on the web-browser (and its version) 
+
+### Tests
+
+* Update end-to-end Cypress tests about continuous integration
+
 ## 3.5.3 - 2022-04-29
 
 ### Changed
