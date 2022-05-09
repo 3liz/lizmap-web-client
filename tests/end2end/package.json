@@ -4,7 +4,7 @@
   "description": "Test Lizmap JavaScript",
   "main": "index.js",
   "devDependencies": {
-    "cypress": "^9.5.3",
+    "cypress": "^9.6.0",
     "cypress-file-upload": "^5.0.8"
   },
   "scripts": {
@@ -14,6 +14,6 @@
   "author": "3Liz",
   "license": "ISC",
   "dependencies": {
-    "pixelmatch": "^5.2.1"
+    "pixelmatch": "^5.3.0"
   }
 }
