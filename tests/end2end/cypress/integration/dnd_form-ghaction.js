@@ -26,7 +26,7 @@ describe('Drag and drop from', function () {
         cy.get('#attribute-table-panel-dnd_form_geom > div.lizmapPopupSingleFeature > div > table > tbody > tr:nth-child(3) > td').should('not.be.empty')
 
         // Assert data has not been removed after form submission w/o modification
-        cy.get('#attribute-layer-table-dnd_form_geom .feature-edit').click({ force: true })
+        cy.get('#attribute-layer-table-dnd_form_geom .attribute-layer-feature-edit').click({ force: true })
         cy.get('#jforms_view_edition__submit_submit').click()
 
         cy.wait(300)
@@ -35,7 +35,7 @@ describe('Drag and drop from', function () {
         cy.get('#attribute-table-panel-dnd_form_geom > div.lizmapPopupSingleFeature > div > table > tbody > tr:nth-child(3) > td').should('not.be.empty')
 
         // Assert data has changed after form submission w modification
-        cy.get('#attribute-layer-table-dnd_form_geom .feature-edit').click({ force: true })
+        cy.get('#attribute-layer-table-dnd_form_geom .attribute-layer-feature-edit').click({ force: true })
         cy.get('#jforms_view_edition-tabs > li:nth-child(2)').click()
 
         cy.get('#jforms_view_edition_field_in_dnd_form').clear().type('modified')
@@ -50,7 +50,7 @@ describe('Drag and drop from', function () {
         // Write back original data (TODO: refresh database data?)
         cy.wait(300)
 
-        cy.get('#attribute-layer-table-dnd_form_geom .feature-edit').click({ force: true })
+        cy.get('#attribute-layer-table-dnd_form_geom .attribute-layer-feature-edit').click({ force: true })
         cy.get('#jforms_view_edition-tabs > li:nth-child(2)').click()
 
         cy.get('#jforms_view_edition_field_in_dnd_form').clear().type('test_geom')
