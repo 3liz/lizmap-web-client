@@ -128,9 +128,16 @@ class project_listZone extends jZone
         $projectItem['qgis_version_int'] = (int) substr($qgisVersionInt, 0, 3);
 
         // Add the information based on the qgis-project-validator inspection output
+        $services = lizmap::getServices();
+        $rootRepositories = $services->getRootRepositories();
+        $mapParam = $projectMetadata->getMap();
+        if ($rootRepositories != '' && strpos($mapParam, $rootRepositories) === 0) {
+            $mapParam = str_replace($rootRepositories, '', $mapParam);
+            $mapParam = ltrim($mapParam, '/');
+        }
         $inspectionData = $this->getProjectInspection(
             $inspectionDirectoryPath,
-            $projectMetadata->getMap()
+            $mapParam
         );
         foreach ($inspectionData as $key => $val) {
             $projectItem[$key] = $val;
