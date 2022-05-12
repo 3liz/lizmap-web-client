@@ -21,13 +21,13 @@ export default class Scaleline extends HTMLElement {
             dpi: ADJUSTED_DPI
         });
 
-        mainLizmap.map.addControl(
+        mainLizmap.baseLayersMap.addControl(
             this._olScaleline
         );
     }
 
     disconnectedCallback() {
-        mainLizmap.map.removeControl(
+        mainLizmap.baseLayersMap.removeControl(
             this._olScaleline
         );
     }

@@ -278,8 +278,8 @@ var lizAttributeTable = function() {
 
                 // Calculate bbox from map extent if needed
                 if (config.options?.limitDataToBbox == 'True') {
-                    wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                    wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                    wfsParams['BBOX'] = lizMap.mainLizmap.baseLayersMap.getView().calculateExtent();
+                    wfsParams['SRSNAME'] = lizMap.mainLizmap.baseLayersMap.getView().getProjection().getCode();
                 }
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);

@@ -35,18 +35,18 @@ export default class OverviewMap extends HTMLElement {
             collapseLabel: '\u00BB',
             label: '\u00AB',
             view: hasDynamicView ? undefined : new View({
-                resolutions: [mainLizmap.map.getView().getResolutionForExtent(mainLizmap.config.options.initialExtent, [220, 100])],
+                resolutions: [mainLizmap.baseLayersMap.getView().getResolutionForExtent(mainLizmap.config.options.initialExtent, [220, 100])],
                 projection: mainLizmap.qgisProjectProjection
             })
         });
         
-        mainLizmap.map.addControl(
+        mainLizmap.baseLayersMap.addControl(
             this._olOverviewMap
         );
     }
 
     disconnectedCallback() {
-        mainLizmap.map.removeControl(
+        mainLizmap.baseLayersMap.removeControl(
             this._olOverviewMap
         );
     }
