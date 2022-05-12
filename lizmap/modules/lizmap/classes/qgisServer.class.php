@@ -53,7 +53,7 @@ class qgisServer
                 $metadata = $json->lizmap;
                 $plugins[$metadata->name] = array('version' => $metadata->version);
             }
-            //$plugins['lizmap'] = $json;
+            // $plugins['lizmap'] = $json;
         }
 
         // Check for atlasprint plugin

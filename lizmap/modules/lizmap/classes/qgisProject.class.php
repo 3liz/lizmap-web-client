@@ -781,6 +781,7 @@ class qgisProject
                 if ($layer['type'] == 'vector') {
                     $fields = array();
                     $wfsFields = array();
+
                     /** @var array<string, string> $aliases */
                     $aliases = array();
                     $defaults = array();

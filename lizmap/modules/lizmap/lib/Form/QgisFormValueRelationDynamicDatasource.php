@@ -6,13 +6,13 @@ require_once JELIX_LIB_PATH.'forms/jFormsDatasource.class.php';
 
 class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 {
-    //protected $formid;
+    // protected $formid;
     protected $ref;
     protected $forceEmptyValue;
 
     public function __construct($ref, $forceEmptyValue = false)
     {
-        //$this->formid = $formid;
+        // $this->formid = $formid;
         $this->ref = $ref;
         $this->forceEmptyValue = $forceEmptyValue;
     }
