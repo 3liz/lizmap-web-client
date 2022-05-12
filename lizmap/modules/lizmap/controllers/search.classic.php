@@ -107,7 +107,7 @@ class searchCtrl extends jController
             $sql_search = $sql.' AND search_id = '.$cnx->quote($skey);
             $limit = $limit_search;
             $sql_search .= ' LIMIT '.$limit;
-            //jLog::log($sql_search);
+            // jLog::log($sql_search);
 
             // Run query
             $res = $cnx->query($sql_search);

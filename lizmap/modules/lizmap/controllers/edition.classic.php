@@ -779,7 +779,7 @@ class editionCtrl extends jController
             // if we have retrieved the pkeys only one integer pkey
             && (is_array($pkvals) && count($pkvals) == 1)
         ) {
-            //Get the fields info
+            // Get the fields info
             $dbFieldsInfo = $this->layer->getDbFieldsInfo();
             foreach ($dbFieldsInfo->primaryKeys as $key) {
                 if ($dbFieldsInfo->dataFields[$key]->unifiedType != 'integer') {

@@ -20,10 +20,12 @@ class Project
      * @var Repository
      */
     protected $repository;
+
     /**
      * @var QgisProject QGIS project XML
      */
     protected $qgis;
+
     /**
      * @var ProjectConfig CFG project JSON
      */
@@ -43,6 +45,7 @@ class Project
      * @var string .qgs file path
      */
     protected $file;
+
     /**
      * Lizmap project key.
      *
@@ -1782,8 +1785,8 @@ class Project
             $switcherTpl->fetch('view~map_switcher'),
             1
         );
-        //$legendTpl = new jTpl();
-        //$dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
+        // $legendTpl = new jTpl();
+        // $dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
 
         $metadataTpl = new \jTpl();
         // Get the WMS information

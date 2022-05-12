@@ -82,7 +82,7 @@ class QgisForm implements QgisFormControlsInterface
             throw new \Exception('The layer "'.$layer->getName().'" is not an editable vector layer!');
         }
 
-        //Get the fields info
+        // Get the fields info
         $dbFieldsInfo = $layer->getDbFieldsInfo();
         // verifying db fields info
         if (!$dbFieldsInfo) {
@@ -1007,6 +1007,7 @@ class QgisForm implements QgisFormControlsInterface
         if ($targetFullPath == '') {
             return 'NULL';
         }
+
         /** @var \jFormsControlUpload2 $uploadCtrl */
         $uploadCtrl = $form->getControl($ref);
         $filename = $form->getData($ref);
@@ -1282,9 +1283,9 @@ class QgisForm implements QgisFormControlsInterface
         // @FIXME Is this big comment useful or can we delete it  ?
         // Add default empty value for required fields
         // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-        //if ($formControl->ctrl->required) {
+        // if ($formControl->ctrl->required) {
         //    $data[''] = '';
-        //}
+        // }
 
         /*
         $wfsData = null;

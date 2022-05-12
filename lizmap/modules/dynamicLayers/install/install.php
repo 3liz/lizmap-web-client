@@ -11,7 +11,7 @@ class dynamicLayersModuleInstaller extends jInstallerModule
 {
     public function install()
     {
-        //if ($this->firstDbExec())
+        // if ($this->firstDbExec())
         //    $this->execSQLScript('sql/install');
 
         /*if ($this->firstExec('acl2')) {

@@ -96,7 +96,7 @@ class popup
 
                 $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
                 $n_abspath = $n_repositoryPath.'/'.trim($attributeValue, '/');
-                //manually canonize path to authorize symlink
+                // manually canonize path to authorize symlink
                 $n_abspath = explode('/', $n_abspath);
                 $n_keys = array_keys($n_abspath, '..');
                 foreach ($n_keys as $keypos => $key) {

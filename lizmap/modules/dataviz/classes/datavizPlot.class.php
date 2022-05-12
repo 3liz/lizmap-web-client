@@ -240,7 +240,7 @@ class datavizPlot
     protected function parseLayer($layerId)
     {
         $layer = $this->lproj->getLayer($this->layerId);
-        //FIXME do not use this deprecated method and XML stuff here
+        // FIXME do not use this deprecated method and XML stuff here
         $layerXml = $this->lproj->getXmlLayer($this->layerId);
         if (count($layerXml) > 0) {
             $this->layerXmlZero = $layerXml[0];
@@ -303,7 +303,7 @@ class datavizPlot
     protected function getLayoutTemplate()
     {
         $layout = array(
-            //'title' => $this->title,
+            // 'title' => $this->title,
             'showlegend' => $this->display_legend,
             'legend' => array(
                 'orientation' => 'h',
@@ -738,11 +738,11 @@ class datavizPlot
                         } elseif ($this->aggregation == 'stddev') {
                             $trace[$this->y_property_name][] = sqrt($x_aggregate_stddev[$key] / $x_aggregate_count[$key]);
                         } elseif ($this->aggregation == 'median') {
-                            //if count is even
+                            // if count is even
                             if ($x_aggregate_count[$key] % 2 == 0) {
                                 $trace[$this->y_property_name][] = $x_aggregate_median[$key][$x_aggregate_count[$key] / 2];
                             }
-                            //si count is odd
+                            // si count is odd
                             else {
                                 $mid = floor($x_aggregate_count[$key] / 2);
                                 $trace[$this->y_property_name][] = ($x_aggregate_median[$key][$mid] + $x_aggregate_median[$key][$mid + 1]) / 2;
@@ -806,7 +806,7 @@ class datavizPlot
                         array(
                             'type' => 'aggregate',
                             'groups' => $this->x_property_name,
-                            //'groups' => 'x',
+                            // 'groups' => 'x',
                             'aggregations' => array(
                                 array(
                                     'target' => $this->y_property_name,
@@ -887,9 +887,9 @@ class datavizPlotBox extends datavizPlot
             'x' => array(),
             'y' => array(),
             'text' => array(),
-            //'marker'=> array(
-            //'color' => 'orange'
-            //),
+            // 'marker'=> array(
+            // 'color' => 'orange'
+            // ),
             'boxmean' => null,
             'orientation' => 'v',
             'boxpoints' => false,
@@ -1014,7 +1014,7 @@ class datavizPlotPie extends datavizPlot
             'hovertemplate' => '%{label}<br>%{value:.1f}<br>%{percent:,.0%}',
             'textinfo' => 'value',
             'texttemplate' => '%{value:.1f}',
-            //'textposition' => 'inside',
+            // 'textposition' => 'inside',
             'insidetextorientation' => 'horizontal',
             'opacity' => null,
             'hole' => '0.4',
@@ -1095,9 +1095,9 @@ class datavizPlotSunburst extends datavizPlot
             'labels' => array(),
             'parents' => array(),
             'branchvalues' => 'total',
-            //'hoverinfo' => "label+value",
+            // 'hoverinfo' => "label+value",
             'hovertemplate' => '%{label}<br>%{value:.1f}<br>%{percentEntry:,.0%}',
-            //'textinfo' => 'value',
+            // 'textinfo' => 'value',
             'texttemplate' => '%{value:.1f}',
             'opacity' => null,
         );

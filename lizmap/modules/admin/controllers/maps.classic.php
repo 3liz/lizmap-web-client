@@ -43,13 +43,13 @@ class mapsCtrl extends jController
         $repositories = array();
         $data = array();
         foreach (lizmap::getRepositoryList() as $repo) {
-            //$sql = " SELECT r.id_aclsbj, group_concat(g.name, ' - ') AS group_names";
+            // $sql = " SELECT r.id_aclsbj, group_concat(g.name, ' - ') AS group_names";
             $sql = ' SELECT r.id_aclsbj, g.name AS group_name';
             $sql .= ' FROM jacl2_rights r';
             $sql .= ' INNER JOIN jacl2_group g ON r.id_aclgrp = g.id_aclgrp';
             $sql .= ' WHERE (g.grouptype = 0 OR g.grouptype = 1)';
             $sql .= ' AND id_aclres='.$cnx->quote($repo);
-            //$sql.= " GROUP BY r.id_aclsbj;";
+            // $sql.= " GROUP BY r.id_aclsbj;";
             $sql .= ' ORDER BY g.name';
             $rights = $cnx->query($sql);
 
@@ -333,6 +333,7 @@ class mapsCtrl extends jController
         }
         // Redirect to default page
         jMessage::add('error in editSection');
+
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'admin~maps:index';
