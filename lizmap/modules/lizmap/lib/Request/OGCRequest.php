@@ -66,7 +66,7 @@ abstract class OGCRequest
      */
     public function __construct($project, $params, $services, $requestXml = null)
     {
-        //print_r( $project != null );
+        // print_r( $project != null );
         $this->project = $project;
         $this->repository = $project->getRepository();
 

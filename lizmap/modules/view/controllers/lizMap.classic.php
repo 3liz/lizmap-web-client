@@ -356,7 +356,7 @@ class lizMapCtrl extends jController
                             'path' => $cssRelPath,
                         )
                     );
-                    //~ $rep->addCssLink( $cssUrl );
+                    // ~ $rep->addCssLink( $cssUrl );
                     // Use addHeadContent and not addCssLink to be sure it will be loaded after minified code
                     $rep->addHeadContent('<link type="text/css" href="'.$cssUrl.'" rel="stylesheet" />');
                 }
@@ -375,7 +375,7 @@ class lizMapCtrl extends jController
                                 'path' => $cssRelPath,
                             )
                         );
-                        //~ $rep->addCssLink( $cssUrl );
+                        // ~ $rep->addCssLink( $cssUrl );
                         // Use addHeadContent and not addCssLink to be sure it will be loaded after minified code
                         $rep->addHeadContent('<link type="text/css" href="'.$cssUrl.'" rel="stylesheet" />');
                     }
@@ -466,7 +466,7 @@ class lizMapCtrl extends jController
             || $lproj->getBooleanOption('hideLegend')
         ) {
             $l = 0;
-            //~ $rep->addStyle('#dock', 'display:none;');
+            // ~ $rep->addStyle('#dock', 'display:none;');
             $jsCode .= "
       $( document ).ready( function() {
         lizMap.events.on({
@@ -536,7 +536,7 @@ class lizMapCtrl extends jController
             }
         }
 
-        //$assign['auth_url_return'] = jUrl::get('view~default:index');
+        // $assign['auth_url_return'] = jUrl::get('view~default:index');
 
         // switcher-layers-actions javascript
         $rep->addJSLink($bp.'assets/js/switcher-layers-actions.js');

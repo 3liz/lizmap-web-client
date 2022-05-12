@@ -289,7 +289,7 @@ class lizmapProject
      * Get login filtered configs with the build expressions.
      *
      * @param Array[string] $layers  : layers' name list
-     * @param bool          $edition : get login filters for edition
+     * @param bool $edition : get login filters for edition
      *
      * @return array the login filtered configs with build expressions
      */

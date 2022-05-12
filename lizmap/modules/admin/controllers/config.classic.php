@@ -134,6 +134,7 @@ class configCtrl extends jController
 
         // Get the form
         $form = jForms::get('admin~config_services');
+
         /** @var null|jFormsBase $form */
         if ($form) {
             if (lizmap::getServices()->isLdapEnabled()) {
@@ -160,6 +161,7 @@ class configCtrl extends jController
         }
         // redirect to default page
         jMessage::add('error in editServices');
+
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'admin~config:index';
@@ -177,6 +179,7 @@ class configCtrl extends jController
 
         // If the section does exists in the ini file : get the data
         $services = lizmap::getServices();
+
         /** @var null|jFormsBase $form */
         $form = jForms::get('admin~config_services');
 

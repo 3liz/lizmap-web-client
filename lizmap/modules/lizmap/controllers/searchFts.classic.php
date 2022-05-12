@@ -73,7 +73,7 @@ class searchFtsCtrl extends jController
 
         // Redirect if no rights to access this repository
         if (!$lproj->checkAcl()) {
-            //jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+            // jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
 
             return $rep;
         }

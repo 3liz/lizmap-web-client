@@ -166,7 +166,7 @@ class WMSRequest extends OGCRequest
             }
         }
 
-        //INSERT MaxWidth and MaxHeight
+        // INSERT MaxWidth and MaxHeight
         $dimensions = array('Width', 'Height');
         foreach ($dimensions as $d) {
             if (!preg_match('@Service>.*?Max'.$d.'.*?</Service@si', $data)) {
@@ -680,6 +680,7 @@ class WMSRequest extends OGCRequest
             // Feature toolbar
             // edition can be restricted on current feature
             $qgisLayer = $this->project->getLayer($layerId);
+
             /** @var \qgisVectorLayer $qgisLayer */
             $editableFeatures = $qgisLayer->editableFeatures();
             $editionRestricted = '';
@@ -1147,7 +1148,7 @@ class WMSRequest extends OGCRequest
         // Store into cache if needed
         $cached = false;
         if ($useCache) {
-            //~ \jLog::log( ' Store into cache');
+            // ~ \jLog::log( ' Store into cache');
             $cacheExpiration = (int) $this->services->cacheExpiration;
             if (property_exists($configLayer, 'cacheExpiration')) {
                 $cacheExpiration = (int) $configLayer->cacheExpiration;

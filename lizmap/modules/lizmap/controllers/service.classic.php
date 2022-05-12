@@ -218,6 +218,7 @@ class serviceCtrl extends jController
         if (!$messages) {
             $messages = array();
         }
+
         /** @var jResponseXml $rep */
         $rep = $this->getResponse('xml');
         $rep->contentTpl = 'lizmap~wms_exception';
@@ -725,6 +726,7 @@ class serviceCtrl extends jController
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
+
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $this->project->getLayersLabeledFieldsConfig();

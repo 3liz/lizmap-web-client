@@ -66,7 +66,7 @@ class QgisFormControl
 
     public $DefaultRoot;
 
-    const QGIS_NULL_VALUE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
+    public const QGIS_NULL_VALUE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
 
     // Table mapping QGIS and jelix forms
     protected static $qgisEdittypeMap = array(
@@ -138,7 +138,7 @@ class QgisFormControl
     );
 
     // Table to map arbitrary data types to expected ones
-    const castDataType = array(
+    public const castDataType = array(
         'float' => 'decimal',
         'real' => 'decimal',
         'double' => 'decimal',
@@ -257,7 +257,7 @@ class QgisFormControl
                 break;
 
             case 'time':
-                //$this->ctrl = new \jFormsControlDatetime($this->ref);
+                // $this->ctrl = new \jFormsControlDatetime($this->ref);
                 $this->ctrl = new \jFormsControlInput($this->ref);
 
                 break;
@@ -401,7 +401,7 @@ class QgisFormControl
         if ($this->ctrl->datatype instanceof \jDatatypeString) {
             // let's change datatype when control has the default one, \jDatatypeString
             // we don't want to change datatype that are specific to a control type, like in\jFormsControlHtmlEditor,
-            //\jFormsControlDate etc..
+            // \jFormsControlDate etc..
             $typeTab = array('Integer', 'Decimal', 'Date', 'DateTime', 'Time', 'Boolean');
             foreach ($typeTab as $type) {
                 if ($this->fieldDataType === strtolower($type)) {
