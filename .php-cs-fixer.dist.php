@@ -15,8 +15,9 @@ $finder = PhpCsFixer\Finder::create()
           //->exclude(__DIR__.'/lizmap/modules/proj4php/classes/')
         ;
 
-return PhpCsFixer\Config::create()
-          ->setCacheFile(__DIR__.'/.php_cs.cache')
+$config = new PhpCsFixer\Config();
+return $config
+          ->setCacheFile(__DIR__.'/.php-cs-fixer.cache')
           ->setRules([
               '@PSR2' => true,
               '@Symfony' => true,
