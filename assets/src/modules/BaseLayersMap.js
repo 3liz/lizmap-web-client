@@ -11,6 +11,7 @@ import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
 import TileLayer from 'ol/layer/Tile';
+import BingMaps from 'ol/source/BingMaps';
 
 import WMTS from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
@@ -112,6 +113,46 @@ export default class Map extends olMap {
             );
         }
 
+        // Bing
+        if(Object.keys(mainLizmap.config.options).some( option => option.startsWith('bing'))){
+
+            const bingConfigs = {
+                bingStreets : {
+                    title: 'Bing Road',
+                    imagerySet: 'RoadOnDemand'
+                },
+                bingSatellite : {
+                    title: 'Bing Aerial',
+                    imagerySet: 'Aerial'
+                },
+                bingHybrid : {
+                    title: 'Bing Hybrid',
+                    imagerySet: 'AerialWithLabelsOnDemand'
+                }
+            };
+
+            for (const key in bingConfigs) {
+                if(mainLizmap.config.options?.[key]){
+
+                    const bingConfig = bingConfigs[key];
+
+                    this._baseLayers.push(
+                        new TileLayer({
+                            title: bingConfig.title,
+                            preload: Infinity,
+                            source: new BingMaps({
+                                key: mainLizmap.config.options.bingKey,
+                                imagerySet: bingConfig.imagerySet,
+                            // use maxZoom 19 to see stretched tiles instead of the BingMaps
+                            // "no photos at this zoom level" tiles
+                            // maxZoom: 19
+                            }),
+                        })
+                    );
+                }
+            }
+        }
+
         // IGN
         if(Object.keys(mainLizmap.config.options).some( option => option.startsWith('ign'))){
 
@@ -194,7 +235,7 @@ export default class Map extends olMap {
 
         // Handle visibility at startup
         this._baseLayers.map((baseLayer) => {
-            baseLayer.setVisible(baseLayer.get('title') == startupBaselayersReplacement?.[mainLizmap.config.options?.['startupBaselayer']]);
+            baseLayer.setVisible(baseLayer.get('title') === startupBaselayersReplacement?.[mainLizmap.config.options?.['startupBaselayer']]);
         });
 
         const layerGroup = new LayerGroup({
@@ -231,6 +272,6 @@ export default class Map extends olMap {
     }
 
     setLayerVisibilityByTitle(title){
-        this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') == title));
+        this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') === title));
     }
 }
