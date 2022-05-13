@@ -27,7 +27,7 @@ export default class GoogleMap extends olMap {
             if(lizMap.config.options?.[key]){
                 googleLayers.push(new GoogleLayer({
                     mapTypeId: google.maps.MapTypeId[googleLayerMapping[key]]
-                  })
+                })
                 );
             }
         }
@@ -39,9 +39,9 @@ export default class GoogleMap extends olMap {
             layers: googleLayers,
             target: 'googleMap',
             view: new View({
-              resolutions: mainLizmap.lizmap3.map.resolutions
+                resolutions: mainLizmap.lizmap3.map.resolutions
             })
-          });
+        });
 
         var olGM = new OLGoogleMaps({map: this}); // map is the ol.Map instance
         olGM.activate();

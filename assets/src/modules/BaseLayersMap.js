@@ -1,9 +1,11 @@
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olMap from 'ol/Map';
 import View from 'ol/View';
 
 import ImageWMS from 'ol/source/ImageWMS';
 import {Image as ImageLayer} from 'ol/layer';
+
+import LayerGroup from 'ol/layer/Group';
 
 import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
@@ -47,18 +49,40 @@ export default class Map extends olMap {
             target: 'baseLayersOlMap'
         });
 
+        var startupBaselayersReplacement = {
+            'osm-mapnik': 'OpenStreetMap',
+            'osm-stamen-toner': 'OSM Stamen Toner',
+            'osm-cyclemap': 'OSM CycleMap',
+            'google-satellite': 'Google Satellite',
+            'google-hybrid': 'Google Hybrid',
+            'google-terrain': 'Google Terrain',
+            'google-street': 'Google Streets',
+            'bing-road': 'Bing Road',
+            'bing-aerial': 'Bing Aerial',
+            'bing-hybrid': 'Bing Hybrid',
+            'ign-scan': 'IGN Scan',
+            'ign-plan': 'IGN Plan',
+            'ign-photo': 'IGN Photos',
+            'ign-cadastral': 'IGN Cadastre',
+            'empty': lizDict['baselayer.empty.title']
+        };
+
+        this._baseLayers = [];
+
         // OSM
         if(mainLizmap.config.options?.['osmMapnik']){
-            this.addLayer(
+            this._baseLayers.push(
                 new TileLayer({
+                    title: 'OpenStreetMap',
                     source: new OSM()
                 })
             );
         }
 
         if(mainLizmap.config.options?.['osmStamenToner']){
-            this.addLayer(
+            this._baseLayers.push(
                 new TileLayer({
+                    title: 'OSM Stamen Toner',
                     source: new Stamen({
                         layer: 'toner-lite',
                     }),
@@ -67,8 +91,9 @@ export default class Map extends olMap {
         }
 
         if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
-            this.addLayer(
+            this._baseLayers.push(
                 new TileLayer({
+                    title: 'OSM CycleMap',
                     source: new XYZ({
                         url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
                     })
@@ -77,8 +102,9 @@ export default class Map extends olMap {
         }
 
         if(mainLizmap.config.options?.['openTopoMap']){
-            this.addLayer(
+            this._baseLayers.push(
                 new TileLayer({
+                    title: 'OpenTopoMap',
                     source: new XYZ({
                         url : 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
                     })
@@ -94,24 +120,28 @@ export default class Map extends olMap {
 
             const ignConfigs = {
                 ignStreets : {
+                    title : 'IGN Plan',
                     layer : 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
                     urlPart : 'cartes',
                     format : 'image/png',
                     numZoomLevels: 20
                 },
                 ignSatellite : {
+                    title : 'IGN Photos',
                     layer : 'ORTHOIMAGERY.ORTHOPHOTOS',
                     urlPart : 'ortho',
                     format : 'image/jpeg',
                     numZoomLevels: 22
                 },
                 ignTerrain : {
+                    title : 'IGN Scan',
                     layer : 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
                     urlPart : mainLizmap.config.options?.ignKey,
                     format : 'image/jpeg',
                     numZoomLevels: 18
                 },
                 ignCadastral : {
+                    title : 'IGN Cadastre',
                     layer : 'CADASTRALPARCELS.PARCELLAIRE_EXPRESS',
                     urlPart : 'parcellaire',
                     format : 'image/png',
@@ -128,14 +158,14 @@ export default class Map extends olMap {
                     const matrixIds = [];
                     
                     for (let i = 0; i < ignConfig.numZoomLevels; i++) {
-                      matrixIds[i] = i.toString();
-                      resolutions[i] = maxResolution / Math.pow(2, i);
+                        matrixIds[i] = i.toString();
+                        resolutions[i] = maxResolution / Math.pow(2, i);
                     }
                     
                     const tileGrid = new WMTSTileGrid({
-                      origin: [-20037508, 20037508],
-                      resolutions: resolutions,
-                      matrixIds: matrixIds,
+                        origin: [-20037508, 20037508],
+                        resolutions: resolutions,
+                        matrixIds: matrixIds,
                     });
 
                     const ign_source = new WMTS({
@@ -150,16 +180,32 @@ export default class Map extends olMap {
                           '<a href="https://www.ign.fr/" target="_blank">' +
                           '<img src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'' +
                           'information géographique et forestière" alt="IGN"></a>',
-                      });
+                    });
                       
-                      const ign = new TileLayer({
+                    const ign = new TileLayer({
+                        title: ignConfig.title,
                         source: ign_source,
-                      });
+                    });
                       
-                      this.addLayer(ign);
+                    this._baseLayers.push(ign);
                 }
             }
         }
+
+        // Handle visibility at startup
+        this._baseLayers.map((baseLayer) => {
+            baseLayer.setVisible(baseLayer.get('title') == startupBaselayersReplacement?.[mainLizmap.config.options?.['startupBaselayer']]);
+        });
+
+        const layerGroup = new LayerGroup({
+            layers: this._baseLayers
+        });
+
+        layerGroup.on('change', () => {
+            mainEventDispatcher.dispatch('baseLayers.changed');
+        });
+
+        this.setLayerGroup(layerGroup);
 
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
@@ -182,5 +228,9 @@ export default class Map extends olMap {
             zoom: mainLizmap.lizmap3.map.getZoom(),
             duration: 0
         });
+    }
+
+    setLayerVisibilityByTitle(title){
+        this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') == title));
     }
 }

@@ -7,10 +7,9 @@ import Scaleline from './components/Scaleline.js';
 import MousePosition from './components/MousePosition.js';
 import Digitizing from './components/Digitizing.js';
 import OverviewMap from './components/OverviewMap.js';
-
 import FeatureToolbar from './components/FeatureToolbar.js';
-
 import ReverseGeom from './components/edition/ReverseGeom.js';
+import BaseLayers from './components/BaseLayers.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 
@@ -30,8 +29,8 @@ lizMap.events.on({
         }
 
         window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
-
         window.customElements.define('lizmap-reverse-geom', ReverseGeom);
+        window.customElements.define('lizmap-base-layers', BaseLayers);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;

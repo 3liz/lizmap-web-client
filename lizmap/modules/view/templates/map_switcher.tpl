@@ -24,8 +24,6 @@
         </span>
     </h3>
     <div class="menu-content">
-        <div class="baselayer-select">
-            <select id="switcher-baselayer-select" class="label"></select>
-        </div>
+        <lizmap-base-layers></lizmap-base-layers>
     </div>
 </div>
