@@ -53,6 +53,7 @@ export default class Map extends olMap {
         var startupBaselayersReplacement = {
             'osm-mapnik': 'OpenStreetMap',
             'osm-stamen-toner': 'OSM Stamen Toner',
+            'opentopomap': 'OpenTopoMap',
             'osm-cyclemap': 'OSM CycleMap',
             'google-satellite': 'Google Satellite',
             'google-hybrid': 'Google Hybrid',
@@ -91,23 +92,23 @@ export default class Map extends olMap {
             );
         }
 
-        if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
-            this._baseLayers.push(
-                new TileLayer({
-                    title: 'OSM CycleMap',
-                    source: new XYZ({
-                        url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
-                    })
-                })
-            );
-        }
-
         if(mainLizmap.config.options?.['openTopoMap']){
             this._baseLayers.push(
                 new TileLayer({
                     title: 'OpenTopoMap',
                     source: new XYZ({
                         url : 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
+                    })
+                })
+            );
+        }
+
+        if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
+            this._baseLayers.push(
+                new TileLayer({
+                    title: 'OSM CycleMap',
+                    source: new XYZ({
+                        url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
                     })
                 })
             );
