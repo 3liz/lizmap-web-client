@@ -260,6 +260,14 @@ export default class Map extends olMap {
         this.syncNewOLwithOL2View();
     }
 
+    get hasEmptyBaseLayer() {
+        return mainLizmap.config.options?.['emptyBaselayer'];
+    }
+
+    get hasEmptyBaseLayerAtStartup() {
+        return mainLizmap.config.options?.['startupBaselayer'] === "empty";
+    }
+
     /**
      * Synchronize new OL view with OL2 one
      * @memberof Map
