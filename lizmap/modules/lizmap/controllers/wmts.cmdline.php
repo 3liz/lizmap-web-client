@@ -36,6 +36,7 @@ class wmtsCtrl extends jControllerCmdLine
             '-v' => false,
             '-f' => false,
             '-bbox' => true,
+            '-dry-run' => false,
         ),
         'cleaning' => array(
             '-v' => false,
@@ -88,9 +89,10 @@ class wmtsCtrl extends jControllerCmdLine
         ',
         'seeding' => 'Generate cache for a layer
     options:
-        -v  verbose
-        -f  forced the cache generation, overwrite already done cache
-        -bbox bounding box to restrict generation
+        -v       verbose
+        -f       forced the cache generation, overwrite already done cache
+        -bbox    bounding box to restrict generation
+        -dry-run it does not generate the cache, it only gives statistics
     parameters:
         repository      the repository id
         project         the project name
@@ -99,7 +101,7 @@ class wmtsCtrl extends jControllerCmdLine
         TileMatrixMin   the min zoom level to generate
         TileMatrixMax   the min zoom level to generate
     Use:
-        php lizmap/scripts/script.php lizmap~wmts:seeding [-v] [-f] [-bbox xmin,ymin,xmax,ymax] repository project layer TileMatrixSet TileMatrixMin TileMatrixMax
+        php lizmap/scripts/script.php lizmap~wmts:seeding [-v] [-f] [-dry-run] [-bbox xmin,ymin,xmax,ymax] repository project layer TileMatrixSet TileMatrixMin TileMatrixMax
         ',
         'cleaning' => 'Cleaning cache
     options:
@@ -211,6 +213,7 @@ class wmtsCtrl extends jControllerCmdLine
 
         $forced = $this->option('-f');
         $verbose = $this->option('-v');
+        $dryRun = $this->option('-dry-run');
 
         $rep = $this->getResponse(); // cmdline response by default
 
@@ -384,7 +387,10 @@ class wmtsCtrl extends jControllerCmdLine
                         $tileMatrixLimits[] = $tileMatrix;
 
                         $tmCount = ($tileMatrix->maxRow - $tileMatrix->minRow + 1) * ($tileMatrix->maxCol - $tileMatrix->minCol + 1);
-                        if ($verbose) {
+                        if ($verbose || $dryRun) {
+                            $rep->addContent($tileMatrixLimit->minRow.' '.$tileMatrixLimit->maxRow.' / '.$tileMatrixLimit->minCol.' '.$tileMatrixLimit->maxCol."\n");
+                            $rep->addContent($minRow.' '.$maxRow.' / '.$minCol.' '.$maxCol."\n");
+                            $rep->addContent($tileMatrix->minRow.' '.$tileMatrix->maxRow.' / '.$tileMatrix->minCol.' '.$tileMatrix->maxCol."\n");
                             $rep->addContent($tmCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" "'.$tileMatrixLimit->id.'" "'.implode(',', $bbox).'"'."\n");
                         }
                         $tileCount += $tmCount;
@@ -392,15 +398,18 @@ class wmtsCtrl extends jControllerCmdLine
                         $tileMatrixLimits[] = $tileMatrixLimit;
 
                         $tmCount = ($tileMatrixLimit->maxRow - $tileMatrixLimit->minRow + 1) * ($tileMatrixLimit->maxCol - $tileMatrixLimit->minCol + 1);
-                        if ($verbose) {
+                        if ($verbose || $dryRun) {
                             $rep->addContent($tmCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" "'.$tileMatrixLimit->id.'"'."\n");
                         }
                         $tileCount += $tmCount;
                     }
                 }
             }
-            if ($verbose) {
+            if ($verbose || $dryRun) {
                 $rep->addContent($tileCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" between "'.$TileMatrixMin.'" and "'.$TileMatrixMax.'"'."\n");
+            }
+            if ($dryRun) {
+                return $rep;
             }
 
             // generate tiles
