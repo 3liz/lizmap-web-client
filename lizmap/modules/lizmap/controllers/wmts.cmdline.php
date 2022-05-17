@@ -122,6 +122,7 @@ class wmtsCtrl extends jControllerCmdLine
 
         $verbose = $this->option('-v');
 
+        /** @var jResponseCmdline $rep */
         $rep = $this->getResponse(); // cmdline response by default
 
         $project = null;
@@ -215,6 +216,7 @@ class wmtsCtrl extends jControllerCmdLine
         $verbose = $this->option('-v');
         $dryRun = $this->option('-dry-run');
 
+        /** @var jResponseCmdline $rep */
         $rep = $this->getResponse(); // cmdline response by default
 
         $project = null;
@@ -480,6 +482,7 @@ class wmtsCtrl extends jControllerCmdLine
 
         $verbose = $this->option('-v');
 
+        /** @var jResponseCmdline $rep */
         $rep = $this->getResponse(); // cmdline response by default
 
         $project = null;
