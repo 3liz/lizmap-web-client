@@ -379,18 +379,22 @@ class wmtsCtrl extends jControllerCmdLine
 
                         $tileMatrix = (object) array(
                             'id' => $tileMatrixLimit->id,
-                            'minRow' => min($minRow, $tileMatrixLimit->minRow),
-                            'minCol' => min($minCol, $tileMatrixLimit->minCol),
+                            'minRow' => max($minRow, $tileMatrixLimit->minRow),
+                            'minCol' => max($minCol, $tileMatrixLimit->minCol),
                             'maxRow' => min($maxRow, $tileMatrixLimit->maxRow),
                             'maxCol' => min($maxCol, $tileMatrixLimit->maxCol),
                         );
+
+                        if (($tileMatrix->maxRow < $tileMatrix->minRow) || ($tileMatrix->maxCol < $tileMatrix->minCol)) {
+                            // the BBox is out of tile matrix limit
+                            // do not save tile matrix
+                            continue;
+                        }
+
                         $tileMatrixLimits[] = $tileMatrix;
 
                         $tmCount = ($tileMatrix->maxRow - $tileMatrix->minRow + 1) * ($tileMatrix->maxCol - $tileMatrix->minCol + 1);
                         if ($verbose || $dryRun) {
-                            $rep->addContent($tileMatrixLimit->minRow.' '.$tileMatrixLimit->maxRow.' / '.$tileMatrixLimit->minCol.' '.$tileMatrixLimit->maxCol."\n");
-                            $rep->addContent($minRow.' '.$maxRow.' / '.$minCol.' '.$maxCol."\n");
-                            $rep->addContent($tileMatrix->minRow.' '.$tileMatrix->maxRow.' / '.$tileMatrix->minCol.' '.$tileMatrix->maxCol."\n");
                             $rep->addContent($tmCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" "'.$tileMatrixLimit->id.'" "'.implode(',', $bbox).'"'."\n");
                         }
                         $tileCount += $tmCount;
