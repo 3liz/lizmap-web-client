@@ -78,7 +78,7 @@ export default class Lizmap {
     }
 
     get projection() {
-        return this._lizmap3.map.getProjection();
+        return this._lizmap3.map.getProjection() === 'EPSG:900913' ? 'EPSG:3857' : this._lizmap3.map.getProjection();
     }
 
     get qgisProjectProjection(){

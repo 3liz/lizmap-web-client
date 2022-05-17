@@ -42,7 +42,7 @@ export default class Map extends olMap {
                 resolutions: mainLizmap.lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
                 center: mainLizmap.center,
-                projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection,
+                projection: mainLizmap.projection,
                 enableRotation: false,
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
@@ -234,9 +234,33 @@ export default class Map extends olMap {
             }
         }
 
+        // User-defined
+        for (const key in mainLizmap.config?.layers) {
+            const layerCfg = mainLizmap.config.layers[key];
+            if(layerCfg?.baseLayer === "True"){
+                this._baseLayers.push(
+                    new ImageLayer({
+                        title: layerCfg.title,
+                        extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+                        source: new ImageWMS({
+                            url: mainLizmap.serviceURL,
+                            projection: mainLizmap.projection,
+                            params: {
+                                'LAYERS': layerCfg.name,
+                                'FORMAT': layerCfg.imageFormat
+                            },
+                            serverType: 'qgis',
+                        }),
+                    }),
+                )
+            }
+        }
+
         // Handle visibility at startup
+        const startupBaselayer = mainLizmap.config.options?.['startupBaselayer'];
+
         this._baseLayers.map((baseLayer) => {
-            baseLayer.setVisible(baseLayer.get('title') === startupBaselayersReplacement?.[mainLizmap.config.options?.['startupBaselayer']]);
+            baseLayer.setVisible(baseLayer.get('title') === (startupBaselayersReplacement?.[startupBaselayer] || startupBaselayer) );
         });
 
         const layerGroup = new LayerGroup({
