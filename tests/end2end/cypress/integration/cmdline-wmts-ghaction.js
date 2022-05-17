@@ -51,10 +51,17 @@ describe('WMTS command line', function () {
 
         //417094.94691622, 5398163.2080343, 445552.52931222, 5412833.0143902
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run -bbox 417094.94691622,5398163.2080343,445552.52931222,5412833.0143902 testsrepository cache Quartiers EPSG:3857 10 10')
-        .its('stdout')
-        .should('contain', 'The TileMatrixSet \'EPSG:3857\'!')
-        .should('contain', '9 tiles to generate for "Quartiers" "EPSG:3857" "10"')
-        .should('contain', '9 tiles to generate for "Quartiers" "EPSG:3857" between "10" and "10"')
+            .its('stdout')
+            .should('contain', 'The TileMatrixSet \'EPSG:3857\'!')
+            .should('contain', '9 tiles to generate for "Quartiers" "EPSG:3857" "10"')
+            .should('contain', '9 tiles to generate for "Quartiers" "EPSG:3857" between "10" and "10"')
+
+        // out of 417094.94691622, 5398163.2080343, 445552.52931222, 5412833.0143902
+        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run -bbox 617094.94691622,5598163.2080343,645552.52931222,5612833.0143902 testsrepository cache Quartiers EPSG:3857 10 10')
+            .its('stdout')
+            .should('contain', 'The TileMatrixSet \'EPSG:3857\'!')
+            .should('not.contain', '9 tiles to generate for "Quartiers" "EPSG:3857" "10"')
+            .should('contain', '0 tiles to generate for "Quartiers" "EPSG:3857" between "10" and "10"')
     })
 
     it('lizmap~wmts:capabilities failed', function () {
