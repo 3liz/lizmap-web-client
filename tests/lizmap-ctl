@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 COMMAND="$1"
+EXTRA="${*:2}"
 shift
 
 SCRIPTDIR="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -81,10 +82,8 @@ function execInPhp() {
     echo "ERROR: The lizmap container is not running"
     exit 1
   fi
-  docker exec -i $CONTAINER appctl.sh $1
+  docker exec -i $CONTAINER appctl.sh $*
 }
-
-
 
 case $COMMAND in
     clean)
@@ -98,6 +97,8 @@ case $COMMAND in
        execInPhp reset-sqlite;;
     install)
         execInPhp install;;
+    script)
+        execInPhp script $EXTRA;;
     rights)
         execInPhp rights;;
     composer-install | composer_install)
@@ -134,4 +135,3 @@ case $COMMAND in
         exit 2
         ;;
 esac
-
