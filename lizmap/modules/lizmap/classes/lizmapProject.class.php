@@ -859,6 +859,9 @@ class lizmapProject extends qgisProject
     public function hasEditionLayers()
     {
         if (property_exists($this->cfg, 'editionLayers')) {
+            if (count((array) $this->cfg->editionLayers) == 0) {
+                return false;
+            }
             if (!jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey())) {
                 return false;
             }
@@ -1669,6 +1672,10 @@ class lizmapProject extends qgisProject
 
             // Add data into editionLayers from configuration
             $editionLayers = $cfg->editionLayers;
+
+            if (count((array) $this->editionLayers) == 0) {
+                return $editionLayers;
+            }
 
             // Check ability to load spatialite extension
             // And remove ONLY spatialite layers if no extension found
