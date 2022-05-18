@@ -65,48 +65,53 @@ describe('WMTS command line', function () {
     })
 
     it('lizmap~wmts:capabilities failed', function () {
-        // Not enough parameters
-        cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+        // Only run on local
+        if (!Cypress.env('continuous_integration')) {
+            // Not enough parameters
+            cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v testsrepository', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v testsrepository', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        // Bad parameters
-        cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v norepository cache', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            // Bad parameters
+            cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v norepository cache', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v testsrepository unknown', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
-
+            cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v testsrepository unknown', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
+        }
     })
 
     it('lizmap~wmts:seeding failed', function () {
-        // Not enough parameters
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+        // Only run on local
+        if (!Cypress.env('continuous_integration')) {
+            // Not enough parameters
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers EPSG:3857', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers EPSG:3857', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers EPSG:3857 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers EPSG:3857 10', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        // Bad parameters
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run norepository cache Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            // Bad parameters
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run norepository cache Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
 
-        cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository unknown Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository unknown Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
+                .its('code').should('eq', 1)
+        }
 
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache unknown EPSG:3857 10 10', {failOnNonZeroExit: false})
             .its('code').should('eq', 1)
