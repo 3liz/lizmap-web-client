@@ -13,7 +13,8 @@ import XYZ from 'ol/source/XYZ';
 import TileLayer from 'ol/layer/Tile';
 import BingMaps from 'ol/source/BingMaps';
 
-import WMTS from 'ol/source/WMTS';
+import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS';
+import WMTSCapabilities from 'ol/format/WMTSCapabilities';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import {get as getProjection} from 'ol/proj';
 import {getWidth} from 'ol/extent';
@@ -238,21 +239,37 @@ export default class Map extends olMap {
         for (const key in mainLizmap.config?.layers) {
             const layerCfg = mainLizmap.config.layers[key];
             if(layerCfg?.baseLayer === "True"){
-                this._baseLayers.push(
-                    new ImageLayer({
-                        title: layerCfg.title,
-                        extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
-                        source: new ImageWMS({
-                            url: mainLizmap.serviceURL,
-                            projection: mainLizmap.projection,
-                            params: {
-                                'LAYERS': layerCfg.name,
-                                'FORMAT': layerCfg.imageFormat
-                            },
-                            serverType: 'qgis',
+
+                if(layerCfg.singleTile === "True"){
+                    this._baseLayers.push(
+                        new ImageLayer({
+                            title: layerCfg.title,
+                            extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+                            source: new ImageWMS({
+                                url: mainLizmap.serviceURL,
+                                projection: mainLizmap.projection,
+                                params: {
+                                    'LAYERS': layerCfg.name,
+                                    'FORMAT': layerCfg.imageFormat
+                                },
+                                serverType: 'qgis',
+                            }),
                         }),
-                    }),
-                )
+                    )
+                }else{
+                    const parser = new WMTSCapabilities();
+                    const result = parser.read(mainLizmap.wmtsCapaData);
+                    const options = optionsFromCapabilities(result, {
+                        layer: layerCfg.name,
+                    });
+
+                    this._baseLayers.push(
+                        new TileLayer({
+                            title: layerCfg.title,
+                            source: new WMTS(options),
+                        }),
+                    )
+                }
             }
         }
 

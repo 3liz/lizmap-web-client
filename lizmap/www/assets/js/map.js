@@ -877,9 +877,9 @@ var lizMap = function() {
       }
 
       var wmtsLayer = null;
-      if ( layerConfig.cached == 'True' && wmtsCapabilities ) {
+      if ( layerConfig.cached == 'True' && layerConfig.baseLayer == 'False' && wmtsCapabilities ) {
           $.each(wmtsCapabilities.contents.layers, function(i, l) {
-            if ( l.identifier != layer.name)
+            if ( l.identifier != layer.name )
               return true;
             var wmtsOptions = {
                 layer: layer.name,
@@ -887,7 +887,7 @@ var lizMap = function() {
                 name: layerName,
                 params: layerWmsParams,
                 attribution:layer.attribution,
-                isBaseLayer: (layerConfig.baseLayer == 'True'),
+                isBaseLayer: false,
                 alwaysInRange: false,
                 url: serviceUrl
             };
@@ -964,18 +964,6 @@ var lizMap = function() {
           wmtsLayer.removeBackBufferDelay = 250;
           wmtsLayer.order = getLayerOrder(layer);
           layers.push( wmtsLayer );
-      }
-      else if (layerConfig.baseLayer == 'True') {
-        // creating the base layer
-          baselayers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
-              ,layerWmsParams
-              ,{isBaseLayer:true
-               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
-               ,buffer:0
-               ,singleTile:(layerConfig.singleTile == 'True')
-               ,ratio:1
-               ,attribution:layer.attribution
-              }));
       }
       else if (layerConfig.type == 'layer') {
           var wmsLayer = new OpenLayers.Layer.WMS(layerName,serviceUrl
@@ -5943,6 +5931,9 @@ var lizMap = function() {
 
         const wmsCapaData = responses[2];
         const wmtsCapaData = responses[3];
+        // Expose wmtsCapaData to use it w/ OL6 base layers
+        self.wmtsCapaData = wmtsCapaData;
+
         const wfsCapaData = responses[4];
 
         config.options.hasOverview = false;

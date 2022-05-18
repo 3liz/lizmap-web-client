@@ -73,6 +73,10 @@ export default class Lizmap {
         return this._lizmap3;
     }
 
+    get wmtsCapaData() {
+        return this._lizmap3.wmtsCapaData;
+    }
+
     get config() {
         return this._lizmap3.config;
     }
