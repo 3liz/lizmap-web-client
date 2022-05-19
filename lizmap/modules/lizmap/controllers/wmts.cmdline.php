@@ -375,9 +375,9 @@ class wmtsCtrl extends jControllerCmdLine
                         $res = $tileMatrix->resolution;
 
                         $minCol = floor(($bbox[0] - $tileMatrix->left) / ($width * $res));
-                        $maxCol = ceil(($bbox[2] - $tileMatrix->left) / ($width * $res));
+                        $maxCol = floor(($bbox[2] - $tileMatrix->left) / ($width * $res));
                         $minRow = floor(($tileMatrix->top - $bbox[3]) / ($height * $res));
-                        $maxRow = ceil(($tileMatrix->top - $bbox[1]) / ($height * $res));
+                        $maxRow = floor(($tileMatrix->top - $bbox[1]) / ($height * $res));
 
                         $tileMatrix = (object) array(
                             'id' => $tileMatrixLimit->id,
