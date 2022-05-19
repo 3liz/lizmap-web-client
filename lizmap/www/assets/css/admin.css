@@ -81,3 +81,10 @@ fieldset {
         margin-left: 0px;
     }
 }
+
+
+.jacl2-list.jacl2-list-sticky-heads thead,
+.jacl2-list-user.jacl2-list-sticky-heads thead
+{
+    top: 75px;
+}
