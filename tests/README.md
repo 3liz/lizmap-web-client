@@ -53,6 +53,7 @@ Available commands :
 * `clean-tmp`: to delete temp files
 * `install`: to launch the Jelix installer
 * `script`: to launch lizmap command line like wmts
+* `docker-exec` : exec command into the php container
 * `shell` and `shell-root` : to enter into the php container
 * `ldap-reset` to reset the ldap content, and `ldap-users` to store some users for tests
 * `psql` to enter into the interactive command line of postgresql (psql)
