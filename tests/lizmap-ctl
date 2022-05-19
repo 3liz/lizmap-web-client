@@ -109,6 +109,8 @@ case $COMMAND in
         execInPhp unittests;;
     phpstan)
         execInPhp phpstan;;
+    docker-exec)
+        docker exec lizmap${LZMBRANCH}_test_php $EXTRA;;
     shell)
        docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shell-root | shellroot)
