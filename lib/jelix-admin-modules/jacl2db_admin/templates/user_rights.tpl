@@ -8,7 +8,7 @@
 <fieldset><legend>{@jacl2db_admin~acl2.rights.title@}</legend>
 
 <div>{formurlparam 'jacl2db_admin~users:saverights',array('user'=>$user)}</div>
-<table class="records-list jacl2-list-user" id="rights-list"
+<table class="records-list jacl2-list-user  jacl2-list-sticky-heads" id="rights-list"
        data-yes-img="{$j_jelixwww}/design/icons/accept.png"
        data-yes-title="{@jacl2db_admin~acl2.group.rights.yes@}"
        data-no-img="{$j_jelixwww}/design/icons/cancel.png"

@@ -140,3 +140,9 @@ dd#dd_qgis_logs_value {
     font-size: 0.8em;
     line-height: 15px;
 }
+
+.jacl2-list.jacl2-list-sticky-heads thead,
+.jacl2-list-user.jacl2-list-sticky-heads thead
+{
+    top: 75px;
+}

@@ -2,7 +2,7 @@
 
 <h1>{@jacl2db_admin~acl2.user.rights.title@} {$user}</h1>
 
-<table class="records-list jacl2-list-user">
+<table class="records-list jacl2-list-user jacl2-list-sticky-heads">
 <thead>
     <tr>
         <th rowspan="2"></th>
