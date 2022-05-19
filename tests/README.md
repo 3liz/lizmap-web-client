@@ -201,6 +201,13 @@ You can also use GNU Parallel to parallelize Cypress tests execution on 8 cores 
 
 Output colors can be kept with `--tty` parameter but it won't work with `--group` which is useful to not mix outputs from different tests.
 
+### GitHub Action
+
+Cypress files must follow this naming convention :
+
+* `*-ghaction.js` **must** run without any PHP error
+* `*-ghaction-with-error.js` can generate some PHP errors for testing some edge cases
+
 ## Manual tests
 
 *First add testing data as explained above.*

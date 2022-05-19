@@ -54,7 +54,7 @@ jobs:
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
-      - name: Cypress run
+      - name: Run Cypress without any PHP errors
         uses: cypress-io/github-action@v2
         with:
           browser: chrome
@@ -79,6 +79,16 @@ jobs:
             cat lizmap/var/log/errors.log;
             exit -1;
           fi
+
+      - name: Run Cypress having some PHP errors
+        uses: cypress-io/github-action@v2
+        with:
+          browser: chrome
+          headless: true
+          working-directory: tests/end2end
+          spec: cypress/integration/*-ghaction-with-error.js
+          wait-on: http://localhost:8130
+
 #  debug:
 #    name: "Debug"
 #    runs-on: ubuntu-latest
