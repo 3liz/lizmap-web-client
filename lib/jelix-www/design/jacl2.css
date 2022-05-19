@@ -29,3 +29,29 @@ select.right-yes, span.right-yes {
    color: green;
    font-weight: bold;
 }
+
+
+.jacl2-list.jacl2-list-sticky-heads,
+.jacl2-list-user.jacl2-list-sticky-heads
+{
+    overflow: scroll;
+    position: relative;
+    border-collapse: separate;
+}
+
+.jacl2-list.jacl2-list-sticky-heads thead,
+.jacl2-list-user.jacl2-list-sticky-heads thead
+{
+    position: -webkit-sticky; /* for Safari */
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.jacl2-list.jacl2-list-sticky-heads tbody th ,
+.jacl2-list-user.jacl2-list-sticky-heads tbody th
+{
+    position: -webkit-sticky; /* for Safari */
+    position: sticky;
+    left: 0;
+    background: #ecebeb
+}
