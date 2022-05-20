@@ -449,6 +449,34 @@ SubDock
   margin-top:5px;
 }
 
+.btn-opacity-layer{
+  background-image: none;
+  text-shadow: none;
+}
+
+.btn-opacity-layer:nth-of-type(1){
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.btn-opacity-layer:nth-of-type(2){
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-opacity-layer:nth-of-type(3){
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.btn-opacity-layer:nth-of-type(4){
+  color: lightgray;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.btn-opacity-layer:nth-of-type(5){
+  color: lightgray;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+
 /* Mini-Dock */
 #mini-dock {
   position:absolute;
@@ -1713,7 +1741,7 @@ transform: none !important;
   cursor:pointer;
 }
 
-a.btn.btn-opacity-layer.active {
+.btn.btn-opacity-layer.active {
   background-color:#0094d6 !important;
   color:white !important;
 }
