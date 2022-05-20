@@ -18,3 +18,16 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+
+beforeEach(function () {
+    // Clear errors
+    cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+})
+
+afterEach(function () {
+    // Check errors
+    cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
+        .its('stdout')
+        .should('be.empty')
+})
