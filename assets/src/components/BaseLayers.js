@@ -10,9 +10,9 @@ export default class BaseLayers extends HTMLElement {
     connectedCallback() {
 
         this._template = () => html`
-        <select @change=${(event) => { mainLizmap.baseLayersMap.setLayerVisibilityByTitle(event.target.value) }}>
+        <select @change=${(event) => { mainLizmap.baseLayersMap.setLayerVisibilityByName(event.target.value) }}>
             ${mainLizmap.baseLayersMap.getAllLayers().map((layer) => 
-                html`<option ?selected="${layer.getVisible()}" value="${layer.get('title')}">${layer.get('title')}</option>`)}
+                html`<option ?selected="${layer.getVisible()}" value="${layer.get('name')}">${layer.get('title')}</option>`)}
             <option class="${mainLizmap.baseLayersMap.hasEmptyBaseLayer ? '' : 'hide'}" ?selected="${mainLizmap.baseLayersMap.hasEmptyBaseLayerAtStartup}" value="emptyBaselayer">${lizDict['baselayer.empty.title']}</option>
         </select>`;
 

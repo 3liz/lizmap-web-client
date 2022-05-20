@@ -76,6 +76,7 @@ export default class Map extends olMap {
         if(mainLizmap.config.options?.['osmMapnik']){
             this._baseLayers.push(
                 new TileLayer({
+                    name: 'osm',
                     title: 'OpenStreetMap',
                     source: new OSM()
                 })
@@ -85,6 +86,7 @@ export default class Map extends olMap {
         if(mainLizmap.config.options?.['osmStamenToner']){
             this._baseLayers.push(
                 new TileLayer({
+                    name: 'osm-toner',
                     title: 'OSM Stamen Toner',
                     source: new Stamen({
                         layer: 'toner-lite',
@@ -96,6 +98,7 @@ export default class Map extends olMap {
         if(mainLizmap.config.options?.['openTopoMap']){
             this._baseLayers.push(
                 new TileLayer({
+                    name: 'opentopomap',
                     title: 'OpenTopoMap',
                     source: new XYZ({
                         url : 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
@@ -107,6 +110,7 @@ export default class Map extends olMap {
         if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
             this._baseLayers.push(
                 new TileLayer({
+                    name: 'osm-cycle',
                     title: 'OSM CycleMap',
                     source: new XYZ({
                         url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
@@ -120,14 +124,17 @@ export default class Map extends olMap {
 
             const bingConfigs = {
                 bingStreets : {
+                    name: 'bmap',
                     title: 'Bing Road',
                     imagerySet: 'RoadOnDemand'
                 },
                 bingSatellite : {
+                    name: 'baerial',
                     title: 'Bing Aerial',
                     imagerySet: 'Aerial'
                 },
                 bingHybrid : {
+                    name: 'bhybrid',
                     title: 'Bing Hybrid',
                     imagerySet: 'AerialWithLabelsOnDemand'
                 }
@@ -140,6 +147,7 @@ export default class Map extends olMap {
 
                     this._baseLayers.push(
                         new TileLayer({
+                            name: bingConfig.name,
                             title: bingConfig.title,
                             preload: Infinity,
                             source: new BingMaps({
@@ -163,6 +171,7 @@ export default class Map extends olMap {
 
             const ignConfigs = {
                 ignStreets : {
+                    name : 'ignplan',
                     title : 'IGN Plan',
                     layer : 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
                     urlPart : 'cartes',
@@ -170,6 +179,7 @@ export default class Map extends olMap {
                     numZoomLevels: 20
                 },
                 ignSatellite : {
+                    name : 'ignphoto',
                     title : 'IGN Photos',
                     layer : 'ORTHOIMAGERY.ORTHOPHOTOS',
                     urlPart : 'ortho',
@@ -177,6 +187,7 @@ export default class Map extends olMap {
                     numZoomLevels: 22
                 },
                 ignTerrain : {
+                    name : 'ignmap',
                     title : 'IGN Scan',
                     layer : 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
                     urlPart : mainLizmap.config.options?.ignKey,
@@ -184,6 +195,7 @@ export default class Map extends olMap {
                     numZoomLevels: 18
                 },
                 ignCadastral : {
+                    name : 'igncadastral',
                     title : 'IGN Cadastre',
                     layer : 'CADASTRALPARCELS.PARCELLAIRE_EXPRESS',
                     urlPart : 'parcellaire',
@@ -243,6 +255,7 @@ export default class Map extends olMap {
                 if(layerCfg.singleTile === "True"){
                     this._baseLayers.push(
                         new ImageLayer({
+                            name: layerCfg.name,
                             title: layerCfg.title,
                             extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                             source: new ImageWMS({
@@ -265,6 +278,7 @@ export default class Map extends olMap {
 
                     this._baseLayers.push(
                         new TileLayer({
+                            name: layerCfg.name,
                             title: layerCfg.title,
                             source: new WMTS(options),
                         }),
@@ -277,7 +291,7 @@ export default class Map extends olMap {
         const startupBaselayer = mainLizmap.config.options?.['startupBaselayer'];
 
         this._baseLayers.map((baseLayer) => {
-            baseLayer.setVisible(baseLayer.get('title') === (startupBaselayersReplacement?.[startupBaselayer] || startupBaselayer) );
+            baseLayer.setVisible(baseLayer.get('name') === (startupBaselayersReplacement?.[startupBaselayer] || startupBaselayer) );
         });
 
         const layerGroup = new LayerGroup({
@@ -309,6 +323,14 @@ export default class Map extends olMap {
         return mainLizmap.config.options?.['startupBaselayer'] === "empty";
     }
 
+    get activeBaseLayer() {
+        for (const layer of mainLizmap.baseLayersMap.getAllLayers()) {
+            if(layer.getVisible()){
+                return layer;
+            }
+        }
+    }
+
     /**
      * Synchronize new OL view with OL2 one
      * @memberof Map
@@ -321,7 +343,7 @@ export default class Map extends olMap {
         });
     }
 
-    setLayerVisibilityByTitle(title){
-        this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') === title));
+    setLayerVisibilityByName(name){
+        this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('name') === name));
     }
 }
