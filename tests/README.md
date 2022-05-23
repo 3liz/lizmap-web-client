@@ -58,6 +58,7 @@ Available commands :
 * `ldap-reset` to reset the ldap content, and `ldap-users` to store some users for tests
 * `psql` to enter into the interactive command line of postgresql (psql)
 * `redis-cli` to enter into the interactive command line of Redis (redis-cli)
+* `phpstan` to launch PHP code quality tool phpstan
 
 ## Accessing to Postgresql
 
