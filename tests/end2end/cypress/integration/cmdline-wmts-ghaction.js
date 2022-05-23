@@ -230,7 +230,7 @@ describe('WMTS command line', function () {
         .its('stdout')
         .should('contain', 'Missing parameter "repository"')
         .should('contain', 'Missing parameter "project"')
-        .should('contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
+        .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
         // Clear errors
         cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
@@ -341,7 +341,7 @@ describe('WMTS command line', function () {
             .should('contain', 'Missing parameter "TileMatrixSet"')
             .should('contain', 'Missing parameter "TileMatrixMin"')
             .should('contain', 'Missing parameter "TileMatrixMax"')
-            .should('contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
+            .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
         // Clear errors
         cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
