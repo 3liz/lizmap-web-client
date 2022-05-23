@@ -643,7 +643,6 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         // FEATUREID
         $featureid = '';
-        $sql = '';
         $typename = $this->requestedTypename();
         $keys = explode(',', $this->datasource->key);
         if (array_key_exists('featureid', $params)) {
