@@ -539,9 +539,9 @@ class lizmapTiler
                 if ($tileMatrix->scaleDenominator <= $maxScale && $tileMatrix->scaleDenominator >= $minScale) {
                     $res = $tileMatrix->resolution;
                     $minCol = floor(($extent[0] - $tileMatrix->left) / ($tileWidth * $res));
-                    $maxCol = ceil(($extent[2] - $tileMatrix->left) / ($tileWidth * $res));
+                    $maxCol = floor(($extent[2] - $tileMatrix->left) / ($tileWidth * $res));
                     $minRow = floor(($tileMatrix->top - $extent[3]) / ($tileHeight * $res));
-                    $maxRow = ceil(($tileMatrix->top - $extent[1]) / ($tileHeight * $res));
+                    $maxRow = floor(($tileMatrix->top - $extent[1]) / ($tileHeight * $res));
                     $tileMatrixLimits[] = (object) array(
                         'id' => $k,
                         'minRow' => $minRow,

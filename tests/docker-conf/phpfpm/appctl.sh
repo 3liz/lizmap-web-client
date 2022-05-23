@@ -84,6 +84,10 @@ function launchInstaller() {
     su $APP_USER -c "php $APPDIR/install/installer.php"
 }
 
+function launchScript() {
+    su $APP_USER -c "php $APPDIR/scripts/script.php $*"
+}
+
 function setRights() {
     USER="$1"
     GROUP="$2"
@@ -215,6 +219,8 @@ case $COMMAND in
         launch;;
     install)
         launchInstaller;;
+    script)
+        launchScript ${*:2};;
     rights)
         setRights;;
     composer_install)
@@ -230,4 +236,3 @@ case $COMMAND in
         exit 2
         ;;
 esac
-
