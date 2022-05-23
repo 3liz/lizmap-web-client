@@ -1385,19 +1385,21 @@ class Project
 
     protected function readEditionLayers(QgisProject $xml)
     {
+        if (!$this->cfg->hasEditionLayers()) {
+            return;
+        }
+
         $editionLayers = $this->cfg->getEditionLayers();
 
-        if ($editionLayers) {
-            // Check ability to load spatialite extension
-            // And remove ONLY spatialite layers if no extension found
-            $spatialiteExt = '';
-            if (class_exists('SQLite3')) {
-                $spatialiteExt = $this->getSpatialiteExtension();
-            }
-            if (!$spatialiteExt) {
-                $this->appContext->logMessage('Spatialite is not available', 'error');
-                $xml->readEditionLayers($editionLayers);
-            }
+        // Check ability to load spatialite extension
+        // And remove ONLY spatialite layers if no extension found
+        $spatialiteExt = '';
+        if (class_exists('SQLite3')) {
+            $spatialiteExt = $this->getSpatialiteExtension();
+        }
+        if (!$spatialiteExt) {
+            $this->appContext->logMessage('Spatialite is not available', 'error');
+            $xml->readEditionLayers($editionLayers);
         }
     }
 
