@@ -61,6 +61,7 @@
   * Convert QGIS XML `Option` value based on type attribute
   * Add a revision parameter on assets url for cache
   * Add ETag HTTP header to GetCapabilities, GetProjectConfig, GetProj4 and WMTS GetTile responses
+  * New class `\Lizmap\Request\OGCResponse`
 * Update Jelix to 1.6.37
 * Update PHP CS Fixer to 3.8.0
 
