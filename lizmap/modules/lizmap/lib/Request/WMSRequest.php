@@ -234,9 +234,7 @@ class WMSRequest extends OGCRequest
             return $this->serviceException();
         }
 
-        $getMap = $this->getMapData($this->project, $this->parameters(), $this->forceRequest);
-
-        return new OGCResponse($getMap[2], $getMap[1], $getMap[0], $getMap[3]);
+        return $this->getMapData($this->project, $this->parameters(), $this->forceRequest);
     }
 
     /**
@@ -1036,7 +1034,7 @@ class WMSRequest extends OGCRequest
      * @param array   $params  array of parameters
      * @param mixed   $forced
      *
-     * @return array $data normalized and filtered array
+     * @return OGCResponse normalized and filtered response
      */
     protected function getMapData($project, $params, $forced = false)
     {
@@ -1060,7 +1058,7 @@ class WMSRequest extends OGCRequest
         list($repository, $project) = $this->getVProfileInfos($configLayer, $repository, $project);
 
         if ($repository === 'error') {
-            return array('error', 'text/plain', '404', false);
+            return new OGCResponse(404, 'text/plain', 'error', false);
         }
 
         // Get tile cache virtual profile (tile storage)
@@ -1077,7 +1075,7 @@ class WMSRequest extends OGCRequest
         // Get cache if exists
         $key = $this->getTileCache($params, $profile, $useCache, $forced);
         if (is_array($key)) {
-            return $key;
+            return new OGCResponse($key[2], $key[1], $key[0], $key[3]);
         }
 
         // ***************************
@@ -1150,6 +1148,6 @@ class WMSRequest extends OGCRequest
             }
         }
 
-        return array($data, $mime, $code, $cached);
+        return new OGCResponse($code, $mime, $data, $cached);
     }
 }
