@@ -276,21 +276,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapOGCRequest.class.php
 
 		-
-			message: "#^Method lizmapProject\\:\\:getUpdatedConfig\\(\\) should return string\\|false but returns object\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapProject.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$layerId\\)\\: Unexpected token \"\\$layerId\", expected type at offset 18$#"
-			count: 2
-			path: lizmap/modules/lizmap/classes/lizmapProject.class.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(Array\\[string\\] \\$layers  \\: layers' name list\\)\\: Unexpected token \"\\[\", expected variable at offset 92$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapProject.class.php
-
-		-
 			message: "#^Method lizmapServices\\:\\:getLizmapRepository\\(\\) should return lizmapRepository but returns false\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmapServices.class.php
