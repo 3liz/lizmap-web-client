@@ -128,16 +128,7 @@ describe('WMTS command line', function () {
             .its('stdout')
             .should('contain', '228')
 
-        // Login as admin
-        cy.visit('admin.php/auth/login')
-
-        cy.wait(1000)
-
-        cy.get('#jforms_jcommunity_login_auth_login').type('admin')
-        cy.get('#jforms_jcommunity_login_auth_password').type('admin')
-        cy.get('form').submit()
-
-        cy.wait(1000)
+        cy.loginAsAdmin();
 
         // Go to the map
         cy.visit('/index.php/view/map/?repository=testsrepository&project=cache&bbox=425367.933686%2C5402026.205439%2C437311.219354%2C5408953.311127&crs=EPSG%3A3857')
@@ -150,20 +141,7 @@ describe('WMTS command line', function () {
             .should('contain', '228')
 
         // Logout
-        cy.visit('admin.php/auth/login/out')
-
-        cy.wait(1000)
-
-        // Login as user_in_group_a
-        cy.visit('admin.php/auth/login')
-
-        cy.wait(1000)
-
-        cy.get('#jforms_jcommunity_login_auth_login').type('user_in_group_a')
-        cy.get('#jforms_jcommunity_login_auth_password').type('admin')
-        cy.get('form').submit()
-
-        cy.wait(1000)
+        cy.loginAsUserA()
 
         // Go to the map
         cy.visit('/index.php/view/map/?repository=testsrepository&project=cache&bbox=425367.933686%2C5402026.205439%2C437311.219354%2C5408953.311127&crs=EPSG%3A3857')
@@ -176,9 +154,7 @@ describe('WMTS command line', function () {
             .should('contain', '228')
 
         // Logout
-        cy.visit('admin.php/auth/login/out')
-
-        cy.wait(1000)
+        cy.logout()
 
         cy.visit('index.php')
 
