@@ -56,15 +56,8 @@ describe('Selection tool', function () {
 
 describe('Selection tool connected as admin', function () {
     beforeEach(function () {
-        // Login as admin and get redirected to selection project
-        // TODO: log with request() and not via UI
-        cy.visit('/admin.php/auth/login/?auth_url_return=%2Findex.php%2Fview%2Fmap%2F%3Frepository%3Dtestsrepository%26project%3Dselection')
-
-        cy.get('#jforms_jcommunity_login_auth_login').type('admin')
-        cy.get('#jforms_jcommunity_login_auth_password').type('admin')
-        cy.get('form').submit()
-
-        cy.get('#info-user-login').should('have.text', 'admin')
+        cy.loginAsAdmin()
+        cy.visit('index.php/view/map/?repository=testsrepository&project=selection')
     })
 
     it('should select the single point on map which turns yellow', function () {

@@ -26,3 +26,33 @@
 
 //Adds for cypress-file-upload
 import 'cypress-file-upload';
+
+Cypress.Commands.add('logout', () => {
+    cy.visit('admin.php/auth/login/out')
+    cy.visit('index.php/view/')
+    cy.get('li.login a span.text.hidden-phone').should('have.text', "Connect")
+})
+
+Cypress.Commands.add(
+    '_login',(username, password) => {
+        cy.logout();
+        cy.visit('admin.php/auth/login')
+
+        cy.get('#jforms_jcommunity_login_auth_login').type(username)
+        cy.get('#jforms_jcommunity_login_auth_password').type(password)
+        cy.get('form').submit()
+        cy.get('#info-user-login').should('have.text', username)
+    }
+)
+
+Cypress.Commands.add(
+    'loginAsAdmin',() => {
+        cy._login(Cypress.env('login_admin'), Cypress.env('password_admin'))
+    }
+)
+
+Cypress.Commands.add(
+    'loginAsUserA',() => {
+        cy._login(Cypress.env('login_user_a'), Cypress.env('password_user_a'))
+    }
+)
