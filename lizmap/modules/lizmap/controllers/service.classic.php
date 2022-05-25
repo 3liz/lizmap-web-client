@@ -811,8 +811,8 @@ class serviceCtrl extends jController
             return $rep;
         }
 
-        if (property_exists($result, 'file') and $result->file and is_file($result->data)) {
-            $rep->fileName = $result->data;
+        if (substr($result->data, 0, 7) == 'file://' && is_file(substr($result->data, 7))) {
+            $rep->fileName = substr($result->data, 7);
             $rep->deleteFileAfterSending = true;
         } else {
             $rep->content = $result->data; // causes memory_limit for big content

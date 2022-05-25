@@ -150,6 +150,8 @@ class WFSRequest extends OGCRequest
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
     protected function process_getcapabilities()
@@ -196,15 +198,12 @@ class WFSRequest extends OGCRequest
         }
         $data = str_replace('&amp;&amp;', '&amp;', $data);
 
-        return (object) array(
-            'code' => 200,
-            'mime' => $result->mime,
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse($result->code, $result->mime, $data, $result->cached);
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
     protected function process_describefeaturetype()
@@ -260,15 +259,12 @@ class WFSRequest extends OGCRequest
             $mime = 'application/json; charset=utf-8';
         }
 
-        return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse($code, $mime, $data);
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
     protected function process_getfeature()
@@ -349,6 +345,8 @@ class WFSRequest extends OGCRequest
     /**
      * Queries Qgis Server for getFeature.
      *
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      */
     protected function getfeatureQgis()
@@ -395,12 +393,7 @@ class WFSRequest extends OGCRequest
             }
         }
 
-        return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse($code, $mime, $data);
     }
 
     /**
@@ -726,8 +719,11 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      * Queries The PostGreSQL Server for getFeature.
+     *
+     * @return OGCResponse
+     *
+     * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      */
     protected function getfeaturePostgres()
     {
@@ -854,13 +850,14 @@ class WFSRequest extends OGCRequest
         fclose($fd);
 
         // Return response
-        return (object) array(
+        /*return (object) array(
             'code' => '200',
             'mime' => 'application/vnd.geo+json; charset=utf-8',
             'file' => true, // we use this to inform controler postgres has been used
             'data' => $path,
             'cached' => false,
-        );
+        );*/
+        return new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', 'file://'.$path);
     }
 
     /**
