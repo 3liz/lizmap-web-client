@@ -1110,8 +1110,8 @@ class qgisVectorLayer extends qgisMapLayer
 
         // Get data
         $wfsData = $result->data;
-        if (property_exists($result, 'file') and $result->file and is_file($wfsData)) {
-            $wfsData = jFile::read($wfsData);
+        if (substr($wfsData, 0, 7) == 'file://' && is_file(substr($wfsData, 7))) {
+            $wfsData = \jFile::read(substr($wfsData, 7));
         }
 
         // Check data: if there is no data returned by WFS, the user has not access to it
