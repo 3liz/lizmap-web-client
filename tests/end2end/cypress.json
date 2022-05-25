@@ -2,5 +2,14 @@
     "baseUrl": "http://localhost:8130",
     "viewportWidth": 1280,
     "viewportHeight": 800,
-    "video": false
+    "video": false,
+    "retries": {
+        "runMode": 2
+    },
+    "env": {
+        "login_admin": "admin",
+        "password_admin": "admin",
+        "login_user_a": "user_in_group_a",
+        "password_user_a": "admin"
+    }
 }
