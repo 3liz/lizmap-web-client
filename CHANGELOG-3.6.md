@@ -34,8 +34,9 @@
     * **QGIS Log file** written when loading the project
   * Funded by **Valabre** (Centre de gravité de la formation des métiers de la Sécurité Civile,
     de la Recherche, des Nouvelles Technologies et de la Prévention dans le domaine des risques naturels)
+* **Edition**: New button to restart drawing geometry - Provide the capability to update geometry with GPS and form coordinates
 
-### Backend 
+### Backend
 
 * Lizmap QGIS server plugin has been split in two different plugins : server and desktop
 * Internal PHP code
