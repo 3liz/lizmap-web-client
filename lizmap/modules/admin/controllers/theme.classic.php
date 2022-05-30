@@ -110,6 +110,7 @@ class themeCtrl extends jController
         }
         // redirect to default page
         jMessage::add('error in theme edition');
+
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'theme:index';

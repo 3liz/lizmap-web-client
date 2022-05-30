@@ -427,7 +427,7 @@ class wmtsCtrl extends jControllerCmdLine
             foreach ($tileMatrixLimits as $tileMatrixLimit) {
                 if ($tileMatrixLimit->id >= $TileMatrixMin && $tileMatrixLimit->id <= $TileMatrixMax) {
                     $row = (int) $tileMatrixLimit->minRow;
-                    //$rep->addContent( $tileMatrixLimit->id.' '.$tileMatrixLimit->minRow.' '.$tileMatrixLimit->maxRow.' '.$tileMatrixLimit->minCol.' '.$tileMatrixLimit->maxCol."\n");
+                    // $rep->addContent( $tileMatrixLimit->id.' '.$tileMatrixLimit->minRow.' '.$tileMatrixLimit->maxRow.' '.$tileMatrixLimit->minCol.' '.$tileMatrixLimit->maxCol."\n");
                     while ($row <= $tileMatrixLimit->maxRow) {
                         $col = (int) $tileMatrixLimit->minCol;
                         while ($col <= $tileMatrixLimit->maxCol) {
@@ -456,7 +456,7 @@ class wmtsCtrl extends jControllerCmdLine
                             if (!$result->cached) {
                                 $rep->addContent('Error, tile not cached: '.$layer->name.' / '.$TileMatrixSetId.' / '.$tileMatrixLimit->id.' / '.$row.' / '.$col."\n");
                             }
-                            //$rep->addContent($layer->name.' '.$layer->imageFormat.' '.$TileMatrixSetId.' '.$tileMatrixLimit->id.' '.$row.' '.$col.' '.$result->code."\n");
+                            // $rep->addContent($layer->name.' '.$layer->imageFormat.' '.$TileMatrixSetId.' '.$tileMatrixLimit->id.' '.$row.' '.$col.' '.$result->code."\n");
                             ++$col;
                             ++$tileProgress;
                             if ($verbose && $tileProgress * 100 / $tileCount >= $tileStep) {

@@ -64,7 +64,7 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
             } elseif ($this->ctrl->valueOnUncheck == $this->getValue()) {
                 $attr['checked'] = 'checked';
             }
-            $attr['value'] = ''; //In the HTML form uncheck is equal to no value $this->ctrl->valueOnUncheck;
+            $attr['value'] = ''; // In the HTML form uncheck is equal to no value $this->ctrl->valueOnUncheck;
             $attr['id'] = $attrid.'_'.$this->ctrl->valueOnUncheck;
 
             echo '<input';

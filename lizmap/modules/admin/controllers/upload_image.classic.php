@@ -43,7 +43,7 @@ class upload_imageCtrl extends jController
         $rep = $this->getResponse('json');
 
         $paramName = 'upload';
-        $maxSize = 2 * 1024 * 1024; //Mb
+        $maxSize = 2 * 1024 * 1024; // Mb
         $allowedMimeType = array('image/jpg', 'image/jpeg', 'image/png', 'image/gif');
         $uploadPath = 'live/images/home/';
 
