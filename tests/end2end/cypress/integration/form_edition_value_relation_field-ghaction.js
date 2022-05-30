@@ -159,4 +159,97 @@ describe('Form edition all field type', function() {
         cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
     })
 
+    it('Child field menulist after geometry changed', function () {
+        // Wait before clicking on the map
+        cy.wait(800)
+
+        // Intercept getListData query to wait for its end
+        cy.intercept('/index.php/jelix/jforms/getListData*').as('getListData')
+
+        // Click on map as form needs a geometry
+        cy.log('Create a geometry over Zone A1')
+        cy.get('#map').click(500, 300)
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_geom').invoke('val')
+            .should('contain', 'POINT')
+            .should('contain', '(0.816082')
+            .should('contain', ' 47.072853')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone A1')
+
+        // restart drawing
+        cy.on('window:confirm', () => true);
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+            .click(true)
+            .parent().should('have.class', 'active')
+        cy.get('#edition-geomtool-restart-drawing').click(true)
+
+        cy.get('#map').click(700, 300)
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_geom').invoke('val')
+            .should('contain', 'POINT')
+            .should('contain', '(3.192879')
+            .should('contain', ' 47.072853')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone A2')
+
+        // restart drawing
+        cy.on('window:confirm', () => true);
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+            .click(true)
+            .parent().should('have.class', 'active')
+        cy.get('#edition-geomtool-restart-drawing').click(true)
+        cy.get('#edition-point-coord-crs').select('EPSG:4326').should('have.value', '4326')
+        cy.get('#edition-point-coord-x').clear()
+        cy.get('#edition-point-coord-x').type('0.9824579737302558')
+        cy.get('#edition-point-coord-y').clear()
+        cy.get('#edition-point-coord-y').type('44.97311997845858')
+        cy.get('#edition-point-coord-submit').click(true)
+
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_geom').invoke('val')
+            .should('contain', 'POINT')
+            .should('contain', '(0.982457')
+            .should('contain', ' 44.973119')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone B1')
+
+        // restart drawing
+        cy.on('window:confirm', () => true);
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+            .click(true)
+            .parent().should('have.class', 'active')
+        cy.get('#edition-geomtool-restart-drawing').click(true)
+        cy.get('#edition-point-coord-crs').select('3857')
+        cy.get('#edition-point-coord-x').clear()
+        cy.get('#edition-point-coord-x').type('336243')
+        cy.get('#edition-point-coord-y').clear()
+        cy.get('#edition-point-coord-y').type('5621259')
+        cy.get('#edition-point-coord-submit').click(true)
+
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_geom').invoke('val')
+            .should('contain', 'POINT')
+            .should('contain', '(3.020522')
+            .should('contain', ' 44.998332')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone B2')
+    })
+
 })
