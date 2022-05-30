@@ -1486,6 +1486,32 @@ var lizAttributeTable = function() {
 
                     var newcolumnsfinal = lizcols.concat(newcolumns)
                     colToReturn['columns'] = newcolumnsfinal;
+                } else if (
+                    'columns' in config.layers[aName]
+                    && config.layers[aName]['columns']
+                    && Object.keys(config.layers[aName]['columns']).length > 0
+                ) {
+                    var lizcols = columns.slice(0, firstDisplayedColIndex);
+                    var newcolumns = columns.slice(firstDisplayedColIndex);
+
+                    var newpos = 0;
+                    // columns is an object with key as integer
+                    for (const key in config.layers[aName]['columns']) {
+                        const fieldname = config.layers[aName]['columns'][key];
+                        // Rearrange columns
+                        for (var i=0; i < newcolumns.length; i++) {
+                            // move item
+                            if ('mData' in newcolumns[i] && newcolumns[i].mData === fieldname) {
+                                // Move the item
+                                var cfrom = i;
+                                newcolumns.splice(newpos, 0, newcolumns.splice(cfrom,1)[0]);
+                                newpos+= 1;
+                            }
+                        }
+                    }
+
+                    var newcolumnsfinal = lizcols.concat(newcolumns)
+                    colToReturn['columns'] = newcolumnsfinal;
                 }
 
                 return colToReturn;
@@ -2779,7 +2805,7 @@ var lizAttributeTable = function() {
                 h -= $(container + ' div.dataTables_paginate').height() ? $(container + ' div.dataTables_paginate').height() : 0;
                 h -= $(container + ' div.dataTables_filter').height() ? $(container + ' div.dataTables_filter').height() : 0;
                 h -= 20;
-                
+
                 dtable.parent('div.dataTables_scrollBody').height(h);
 
                 // Width : adapt columns size
