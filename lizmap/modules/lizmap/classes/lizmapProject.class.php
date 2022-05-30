@@ -138,7 +138,7 @@ class lizmapProject
     }
 
     /**
-     * @param $layerId
+     * @param string $layerId
      *
      * @return SimpleXMLElement[]
      *
@@ -263,7 +263,7 @@ class lizmapProject
     }
 
     /**
-     * @param $layerId
+     * @param string $layerId
      *
      * @return null|object
      */
@@ -288,8 +288,8 @@ class lizmapProject
     /**
      * Get login filtered configs with the build expressions.
      *
-     * @param Array[string] $layers  : layers' name list
-     * @param bool $edition : get login filters for edition
+     * @param array<string> $layers  : layers' name list
+     * @param bool          $edition : get login filters for edition
      *
      * @return array the login filtered configs with build expressions
      */
@@ -371,7 +371,7 @@ class lizmapProject
     }
 
     /**
-     * @return false|string the JSON object corresponding to the configuration
+     * @return object the updated JSON object corresponding to the configuration
      */
     public function getUpdatedConfig()
     {
@@ -379,7 +379,7 @@ class lizmapProject
     }
 
     /**
-     * @return object
+     * @return object the full JSON object corresponding to the configuration
      */
     public function getFullCfg()
     {

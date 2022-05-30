@@ -887,6 +887,29 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
             });
 
+            $('#edition-geomtool-restart-drawing').click(function(){
+                if ( !confirm( lizDict['edition.confirm.restart-drawing'] ) ) {
+                    return false;
+                }
+
+                var ctrl = editCtrls[editionLayer.geometryType];
+                // Check drawing is active
+                if (ctrl.active)
+                    return false;
+
+                // Disable every modifying geometry controls
+                editCtrls.featsplit.deactivate();
+                editCtrls.reshape.deactivate();
+                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                editCtrls.modify.createVertices = true;
+                editCtrls.modify.deactivate();
+                editCtrls.panel.deactivate();
+                // Clear edition layers
+                editionLayer.clearLayers();
+                // activate drawing control
+                ctrl.activate();
+            });
+
             $('#edition-geomtool-nodetool').click(function(){
                 editCtrls.reshape.deactivate();
                 editCtrls.featsplit.deactivate();
