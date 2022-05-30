@@ -235,11 +235,14 @@ class lizmapWFSRequest extends lizmapOGCRequest
                     $typename = (string) $xml->complexType->attributes()->name;
                     if ($typename == $wfs_typename.'Type') {
                         $jsonData['name'] = $layer->name;
+                        $columns = array();
                         $types = array();
                         $elements = $xml->complexType->complexContent->extension->sequence->element;
                         foreach ($elements as $element) {
+                            $columns[] = (string) $element->attributes()->name;
                             $types[(string) $element->attributes()->name] = (string) $element->attributes()->type;
                         }
+                        $jsonData['columns'] = (object) $columns;
                         $jsonData['types'] = (object) $types;
                     }
                 }
