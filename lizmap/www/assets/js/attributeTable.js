@@ -330,6 +330,7 @@ var lizAttributeTable = function() {
                         allColumnsKeyValues[columnName] = keyValue;
 
                     }
+                    lizMap.config.layers[layerName]['columns'] = responses[1].columns;
                     buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, responses[1].aliases, responses[1].types, allColumnsKeyValues, callBack);
 
                     document.body.style.cursor = 'default';
@@ -1458,6 +1459,32 @@ var lizAttributeTable = function() {
                                     newpos+= 1;
                                 }
                                 break;
+                            }
+                        }
+                    }
+
+                    var newcolumnsfinal = lizcols.concat(newcolumns)
+                    colToReturn['columns'] = newcolumnsfinal;
+                } else if (
+                    'columns' in config.layers[aName]
+                    && config.layers[aName]['columns']
+                    && Object.keys(config.layers[aName]['columns']).length > 0
+                ) {
+                    var lizcols = columns.slice(0, firstDisplayedColIndex);
+                    var newcolumns = columns.slice(firstDisplayedColIndex);
+
+                    var newpos = 0;
+                    // columns is an object with key as integer
+                    for (const key in config.layers[aName]['columns']) {
+                        const fieldname = config.layers[aName]['columns'][key];
+                        // Rearrange columns
+                        for (var i=0; i < newcolumns.length; i++) {
+                            // move item
+                            if ('data' in newcolumns[i] && newcolumns[i].data === fieldname) {
+                                // Move the item
+                                var cfrom = i;
+                                newcolumns.splice(newpos, 0, newcolumns.splice(cfrom,1)[0]);
+                                newpos+= 1;
                             }
                         }
                     }
