@@ -4,6 +4,11 @@
 
 A docker configuration is provided to launch Lizmap into a container.
 
+This docker-compose project is using :
+
+* [3liz/postgis](https://hub.docker.com/r/3liz/postgis/tags)
+* [3liz/qgis-map-server](https://hub.docker.com/r/3liz/qgis-map-server/tags)
+
 ### With Windows
 
 1. Install [Docker](https://docs.docker.com/desktop/windows/install/)
