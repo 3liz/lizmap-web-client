@@ -410,7 +410,7 @@ class QgisProject
      */
     protected function unsetPropAfterRead(ProjectConfig $cfg)
     {
-        //remove plugin layer
+        // remove plugin layer
         $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
         if ($pluginLayers) {
             foreach ($pluginLayers as $layer) {
@@ -419,7 +419,7 @@ class QgisProject
             }
         }
 
-        //unset cache for editionLayers
+        // unset cache for editionLayers
         $eLayers = $cfg->getEditionLayers();
         foreach ($eLayers as $key => $obj) {
             $layerCfg = $cfg->getLayer($key);
@@ -432,7 +432,7 @@ class QgisProject
             }
         }
 
-        //unset cache for loginFilteredLayers
+        // unset cache for loginFilteredLayers
         $loginFiltered = $cfg->getLoginFilteredLayers();
         foreach ($loginFiltered as $key => $obj) {
             $layerCfg = $cfg->getLayer($key);
@@ -445,7 +445,7 @@ class QgisProject
             }
         }
 
-        //unset displayInLegend for geometryType none or unknown
+        // unset displayInLegend for geometryType none or unknown
         $layers = $cfg->getLayers();
         foreach ($layers as $key => $layerCfg) {
             if (property_exists($layerCfg, 'geometryType')
@@ -1774,7 +1774,7 @@ class QgisProject
             $accepts = array();
             $FileWidgetFilter = $fieldEditOptions['FileWidgetFilter'] ?? '';
             if ($FileWidgetFilter) {
-                //QFileDialog::getOpenFileName filter
+                // QFileDialog::getOpenFileName filter
                 $FileWidgetFilter = explode(';;', $FileWidgetFilter);
                 $re = '/\*(\.\w{3,6})/';
                 $hasNoImageItem = false;
@@ -1867,9 +1867,9 @@ class QgisProject
         $fieldEditOptions['UploadImage'] = $imageUpload;
     }
 
-    const MAP_VALUES_AS_VALUES = 0;
-    const MAP_VALUES_AS_KEYS = 1;
-    const MAP_ONLY_VALUES = 2;
+    public const MAP_VALUES_AS_VALUES = 0;
+    public const MAP_VALUES_AS_KEYS = 1;
+    public const MAP_ONLY_VALUES = 2;
 
     /**
      * @param \SimpleXMLElement $optionList

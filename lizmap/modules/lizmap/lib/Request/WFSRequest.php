@@ -247,6 +247,7 @@ class WFSRequest extends OGCRequest
                         $jsonData['types'] = (object) $types;
                     }
                 }
+
                 /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $jsonData['aliases'] = (object) $layer->getAliasFields();
@@ -294,6 +295,7 @@ class WFSRequest extends OGCRequest
 
             return $this->serviceException();
         }
+
         /** @var \qgisVectorLayer $qgisLayer The QGIS vector layer instance */
         $qgisLayer = $this->project->getLayer($lizmapLayer->id);
         $this->qgisLayer = $qgisLayer;
@@ -676,7 +678,7 @@ class WFSRequest extends OGCRequest
                     $fidsSql[] = $fidSql;
                 }
             }
-            //$this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
+            // $this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
             $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
@@ -814,10 +816,10 @@ class WFSRequest extends OGCRequest
             $geometryname = strtolower($params['geometryname']);
         }
 
-        //$this->appContext->logMessage($sql);
+        // $this->appContext->logMessage($sql);
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
-        //$this->appContext->logMessage($sql);
+        // $this->appContext->logMessage($sql);
         // Run query
         try {
             $q = $cnx->query($sql);
@@ -986,9 +988,9 @@ class WFSRequest extends OGCRequest
         }
 
         // bbox
-        //$sql.= "
-        //trim(regexp_replace( Box2D(" . $geosql . ")::text, 'BOX', ''), '()') AS bbox,
-        //";
+        // $sql.= "
+        // trim(regexp_replace( Box2D(" . $geosql . ")::text, 'BOX', ''), '()') AS bbox,
+        // ";
 
         $sql .= '
                     row_to_json(

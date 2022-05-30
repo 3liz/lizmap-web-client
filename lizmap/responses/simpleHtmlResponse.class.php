@@ -25,7 +25,7 @@ class simpleHtmlResponse extends AbstractLizmapHtmlResponse
     {
         // Include all process in common for all actions, like the settings of the
         // main template, the settings of the response etc..
-        //$this->bodyTagAttributes = array('onload'=>'init()');
+        // $this->bodyTagAttributes = array('onload'=>'init()');
         $this->body->assignIfNone('MAIN', '<p>Pas de contenu</p>');
     }
 }

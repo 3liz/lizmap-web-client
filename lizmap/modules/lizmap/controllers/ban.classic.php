@@ -62,7 +62,7 @@ class banCtrl extends jController
             return $rep;
         }
         $obj = $var->features;
-        //$licence = 'Data © '.$obj->attribution.', '.$obj->licence;
+        // $licence = 'Data © '.$obj->attribution.', '.$obj->licence;
         $res = array();
         $res['search_name'] = 'BAN';
         $res['layer_name'] = 'ban';

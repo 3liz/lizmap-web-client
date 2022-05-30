@@ -450,7 +450,7 @@ class Proxy
 
         $context = stream_context_create(array($scheme => $opts));
         // for debug, uncomment it and uncomment  the lizmap_stream_notification_callback function below
-        //use stream_context_set_params($context, array("notification" => "lizmap_stream_notification_callback"));
+        // use stream_context_set_params($context, array("notification" => "lizmap_stream_notification_callback"));
 
         $data = file_get_contents($url, false, $context);
         if (!$data) {
