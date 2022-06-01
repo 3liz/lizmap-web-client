@@ -199,4 +199,19 @@ describe('Projects homepage', function () {
             cy.get('.liz-repository-project-item:visible').should('length', num)
         })
     })
+
+    it('Check project_acl visibility according to the connected user and its group', function () {
+        cy.logout();
+        cy.visit('/index.php/view/');
+        cy.get('.liz-project-title').contains('project_acl').should('not.exist');
+
+        cy.loginAsUserA();
+        cy.visit('/index.php/view/');
+        cy.get('.liz-project-title').contains('project_acl').should('exist');
+
+        cy.loginAsAdmin();
+        cy.visit('/index.php/view/');
+        cy.get('.liz-project-title').contains('project_acl').should('not.exist');
+        cy.logout();
+    })
 })
