@@ -57,6 +57,15 @@ class datavizConfig
             return;
         }
 
+        if (empty($datavizConfig['layers'])) {
+            $this->errors = array(
+                'title' => 'Dataviz Configuration: empty layers',
+                'detail' => 'No layers dataviz configuration has been found for this project',
+            );
+
+            return;
+        }
+
         $this->status = true;
         $this->config = $datavizConfig;
     }
