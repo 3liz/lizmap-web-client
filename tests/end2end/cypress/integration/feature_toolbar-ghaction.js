@@ -1,12 +1,4 @@
-const arrayBufferToBase64 = (buffer) => {
-    var binary = '';
-    var bytes = new Uint8Array(buffer);
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-}
+import {arrayBufferToBase64} from '../support/function.js'
 
 describe('Feature Toolbar', function () {
 
