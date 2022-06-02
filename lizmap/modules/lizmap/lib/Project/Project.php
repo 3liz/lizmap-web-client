@@ -1207,19 +1207,23 @@ class Project
     }
 
     /**
-     * @return array|bool
+     * @return array the dataviz layers config extended with locale
      */
     public function getDatavizLayersConfig()
     {
-        $datavizLayers = $this->cfg->getDatavizLayers();
-        if (!$datavizLayers) {
-            return false;
-        }
+        // initialize config
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
             'locale' => $this->appContext->appConfig()->locale,
         );
+
+        $datavizLayers = $this->cfg->getDatavizLayers();
+        if (!$datavizLayers) {
+            // provide the empty config with locale
+            return $config;
+        }
+
         foreach ($datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
                 continue;
@@ -1308,8 +1312,10 @@ class Project
             }
             $config['layers'][$order] = $plotConf;
         }
+
         if (empty($config['layers'])) {
-            return false;
+            // provide the empty config with locale
+            return $config;
         }
 
         $config['dataviz'] = array(
