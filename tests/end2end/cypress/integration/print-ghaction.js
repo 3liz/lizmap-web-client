@@ -15,15 +15,7 @@
 // * [ ] Launch the print by clicking on the blue button
 // * [ ] Open the exported PNG and see that `A test` is printed upper, `A test{enter}with a line break` is printed at bottom
 
-const arrayBufferToBase64 = (buffer) => {
-    var binary = '';
-    var bytes = new Uint8Array(buffer);
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-}
+import {arrayBufferToBase64} from '../support/function.js'
 
 describe('Print', function () {
     beforeEach(function () {

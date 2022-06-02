@@ -1,3 +1,5 @@
+import {arrayBufferToBase64} from '../support/function.js'
+
 describe('Treeview', () => {
     before( () => {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=treeview')
@@ -24,16 +26,7 @@ describe('Treeview', () => {
 
         cy.get('@glg').should(({ request, response }) => {
 
-            function _arrayBufferToBase64(buffer) {
-                var binary = '';
-                var bytes = new Uint8Array(buffer);
-                var len = bytes.byteLength;
-                for (var i = 0; i < len; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                return window.btoa(binary);
-            }
-            const responseBodyAsBase64 = _arrayBufferToBase64(response.body)
+            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
 
             cy.fixture('images/treeview/glg_feature_count.png').then((image) => {
                 // image encoded as base64

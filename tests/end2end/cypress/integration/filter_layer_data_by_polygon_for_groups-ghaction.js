@@ -34,15 +34,7 @@
 //     * [] The user can only edit data for the layers`townhalls_pg` and`shop_bakery_pg` ** inside the 3 red polygons **
 //     * [] For these layers, if the user creates a point or move a point outside the red polygons, an error must be raised: "The given geometry is outside the authorized polygon".
 
-const arrayBufferToBase64 = (buffer) => {
-    var binary = '';
-    var bytes = new Uint8Array(buffer);
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-}
+import {arrayBufferToBase64} from '../support/function.js'
 
 describe('Filter layer data by polygon for groups', function () {
 

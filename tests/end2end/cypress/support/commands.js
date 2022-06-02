@@ -56,3 +56,13 @@ Cypress.Commands.add(
         cy._login(Cypress.env('login_user_a'), Cypress.env('password_user_a'))
     }
 )
+
+Cypress.Commands.add(
+    'mapClick', (x, y) => {
+        // Make a click on the map when we have absolute coordinates from the whole web-browser canvas.
+        // We need to remove some pixels to focus only on the map
+        // The left menu measures 30 pixels
+        // The header measures 75 pixels
+        cy.get('#map').click(x - 30, y - 75)
+    }
+)
