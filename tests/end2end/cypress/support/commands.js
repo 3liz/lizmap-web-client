@@ -28,7 +28,7 @@
 import 'cypress-file-upload';
 
 Cypress.Commands.add('logout', () => {
-    cy.visit('admin.php/auth/login/out')
+    cy.visit('admin.php/auth/login/out?lang=en_US')
     cy.visit('index.php/view/')
     cy.get('li.login a span.text.hidden-phone').should('have.text', "Connect")
 })
