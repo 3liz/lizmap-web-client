@@ -1100,18 +1100,22 @@ class lizmapProject extends qgisProject
     }
 
     /**
-     * @return array|bool
+     * @return array the dataviz layers config extended with locale
      */
     public function getDatavizLayersConfig()
     {
-        if (!property_exists($this->cfg, 'datavizLayers')) {
-            return false;
-        }
+        // initialize config
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
             'locale' => jApp::config()->locale,
         );
+
+        if (!property_exists($this->cfg, 'datavizLayers')) {
+            // provide the empty config with locale
+            return $config;
+        }
+
         foreach ($this->cfg->datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
                 continue;
@@ -1236,8 +1240,10 @@ class lizmapProject extends qgisProject
 
             $config['layers'][$order] = $plotConf;
         }
+
         if (empty($config['layers'])) {
-            return false;
+            // provide the empty config with locale
+            return $config;
         }
 
         $config['dataviz'] = array(
@@ -1981,13 +1987,11 @@ class lizmapProject extends qgisProject
         }
 
         // Update dataviz config
-        if (property_exists($configJson, 'datavizLayers')) {
-            $datavizLayers = $this->getDatavizLayersConfig();
-            if ($datavizLayers) {
-                $configJson->datavizLayers = $datavizLayers;
-            } else {
-                unset($configJson->datavizLayers);
-            }
+        $datavizLayers = $this->getDatavizLayersConfig();
+        if ($datavizLayers) {
+            $configJson->datavizLayers = $datavizLayers;
+        } else {
+            unset($configJson->datavizLayers);
         }
 
         // Get server plugins
