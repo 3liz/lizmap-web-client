@@ -1116,6 +1116,7 @@ class lizmapProject extends qgisProject
             return $config;
         }
 
+        $countPlotOnlyChild = 0;
         foreach ($this->cfg->datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
                 continue;
@@ -1161,6 +1162,7 @@ class lizmapProject extends qgisProject
             }
             if (property_exists($lc, 'only_show_child')) {
                 $plotConf['only_show_child'] = $lc->only_show_child;
+                ++$countPlotOnlyChild;
             }
             if (property_exists($lc, 'y2_field')) {
                 $plotConf['plot']['y2_field'] = $lc->y2_field;
@@ -1259,6 +1261,10 @@ class lizmapProject extends qgisProject
             and in_array($this->cfg->options->theme, array('dark', 'light'))
         ) {
             $config['dataviz']['theme'] = $this->cfg->options->theme;
+        }
+
+        if ($countPlotOnlyChild === count($config['layers'])) {
+            $config['dataviz']['location'] = 'only-popup';
         }
 
         return $config;

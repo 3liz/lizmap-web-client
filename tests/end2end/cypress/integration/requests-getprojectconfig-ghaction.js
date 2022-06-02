@@ -40,8 +40,11 @@ describe('Request Lizmap GetProjectConfig', function () {
             expect(resp.body.datavizLayers.locale).to.be.not.empty
             expect(resp.body.datavizLayers).to.have.property('layers')
             expect(resp.body.datavizLayers.layers).to.be.not.empty
+            // Check dataviz config
             expect(resp.body.datavizLayers).to.have.property('dataviz')
             expect(resp.body.datavizLayers.dataviz).to.be.not.empty
+            expect(resp.body.datavizLayers.dataviz).to.have.property('location', 'only-popup')
+            expect(resp.body.datavizLayers.dataviz).to.have.property('theme', 'light')
         })
     })
 })
