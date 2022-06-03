@@ -1,4 +1,4 @@
-name: Remove Labels
+name: ♻ Remove Labels
 
 on: [issue_comment]
 
