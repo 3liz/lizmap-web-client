@@ -5,7 +5,9 @@
   "main": "index.js",
   "devDependencies": {
     "cypress": "^9.6.0",
-    "cypress-file-upload": "^5.0.8"
+    "cypress-dotenv": "^2.0.0",
+    "cypress-file-upload": "^5.0.8",
+    "dotenv": "^16.0.1"
   },
   "scripts": {
     "cy:open": "cypress open",
