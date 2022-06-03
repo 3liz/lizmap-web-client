@@ -64,6 +64,11 @@ class ProjectConfig
     protected $datavizLayers;
 
     /**
+     * @var object
+     */
+    protected $metadata;
+
+    /**
      * @var mixed
      */
     protected $options;
@@ -81,6 +86,7 @@ class ProjectConfig
         'loginFilteredLayers',
         'filter_by_polygon',
         'datavizLayers',
+        'metadata',
     );
 
     /**
@@ -89,7 +95,7 @@ class ProjectConfig
     public function __construct($data)
     {
         foreach (self::$cachedProperties as $prop) {
-            if (isset($data->{$prop})) {
+            if (isset($data->{$prop}) && $data->{$prop}) {
                 $this->{$prop} = $data->{$prop};
             } else {
                 $this->{$prop} = new \stdClass();
@@ -481,5 +487,22 @@ class ProjectConfig
     public function getDatavizLayers()
     {
         return $this->datavizLayers;
+    }
+
+    /**
+     * Get the metadata written by Lizmap plugin
+     * about the desktop version used.
+     * qgis_desktop_version, lizmap_plugin_version,
+     * lizmap_web_client_target_version, project_valid.
+     *
+     * @return null|object
+     */
+    public function getPluginMetadata()
+    {
+        if (property_exists($this->metadata, 'lizmap_plugin_version')) {
+            return $this->metadata;
+        }
+
+        return null;
     }
 }

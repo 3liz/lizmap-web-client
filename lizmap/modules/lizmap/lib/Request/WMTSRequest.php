@@ -85,8 +85,8 @@ class WMTSRequest extends OGCRequest
      */
     protected function process_gettile()
     {
-        //\jLog::log('GetTile '.http_build_query($this->params));
-        // Get the layer
+        // \jLog::log('GetTile '.http_build_query($this->params));
+        // Get the parameters values
         $params = array(
             'LayerName' => 'Layer',
             'Format' => 'Format',
@@ -95,6 +95,21 @@ class WMTSRequest extends OGCRequest
             'TileRow' => 'TileRow',
             'TileCol' => 'TileCol',
         );
+
+        // Default values
+        /** @var null|string $LayerName */
+        $LayerName = null;
+
+        /** @var null|string $Format */
+        $Format = null;
+
+        /** @var null|string $TileMatrixSetId */
+        $TileMatrixSetId = null;
+
+        /** @var null|string $TileMatrixId */
+        $TileMatrixId = null;
+        $TileRow = -1;
+        $TileCol = -1;
 
         foreach ($params as $var => $param) {
             ${$var} = $this->param($param);

@@ -13,9 +13,6 @@ class datavizConfig
 {
     private $status = false;
     private $errors = array();
-    private $repository;
-    private $project;
-    private $lproj;
     private $config;
 
     public function __construct($repository, $project)
@@ -28,7 +25,7 @@ class datavizConfig
                     'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
                 );
 
-                return false;
+                return;
             }
         } catch (UnknownLizmapProjectException $e) {
             $this->errors = array(
@@ -36,7 +33,7 @@ class datavizConfig
                 'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
             );
 
-            return false;
+            return;
         }
 
         // Check acl
@@ -46,7 +43,7 @@ class datavizConfig
                 'detail' => jLocale::get('view~default.repository.access.denied'),
             );
 
-            return false;
+            return;
         }
 
         // Get config
@@ -57,12 +54,18 @@ class datavizConfig
                 'detail' => 'No dataviz configuration has been found for this project',
             );
 
-            return false;
+            return;
         }
 
-        $this->repository = $repository;
-        $this->project = $project;
-        $this->lproj = $lproj;
+        if (empty($datavizConfig['layers'])) {
+            $this->errors = array(
+                'title' => 'Dataviz Configuration: empty layers',
+                'detail' => 'No layers dataviz configuration has been found for this project',
+            );
+
+            return;
+        }
+
         $this->status = true;
         $this->config = $datavizConfig;
     }

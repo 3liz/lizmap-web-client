@@ -1,4 +1,4 @@
-name: "Unit tests 🎳"
+name: "🎳 Unit tests"
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   tests:
-    name: "Unit tests"
+    name: "php-unit"
     runs-on: ubuntu-latest
     steps:
 

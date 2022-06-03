@@ -88,3 +88,61 @@ fieldset {
         margin-left: 0px;
     }
 }
+
+/* Admin QGIS project lists */
+div#lizmap_project_list_container {
+    display: flex;
+    flex-wrap: wrap;
+    height: 80%;
+    width: 100%;
+    margin: auto;
+ }
+
+#lizmap_project_list {
+    flex-basis: 0;
+    flex-grow: 999;
+    min-inline-size: 60%;
+    border: 1px solid lightgray;
+    padding: 5px;
+}
+#lizmap_project_list_sidebar {
+    background-color: lightgray;
+    padding: 5px;
+    flex-basis: 30%;
+    flex-grow: 1;
+}
+#lizmap_project_list_sidebar.collapsed {
+    display: none;
+}
+table.lizmap_project_list tr {
+    cursor: pointer;
+}
+table.lizmap_project_list tr.selected {
+    background-color: lightskyblue;
+}
+
+#lizmap_project_list_sidebar dt {
+    margin-top: 5px;
+}
+#lizmap_project_list_sidebar dd {
+    padding: 5px;
+    max-height: 250px;
+    overflow: auto;
+    background-color: #efefef;
+}
+dd#dd_image_value {
+    background-color: transparent;
+}
+dd#dd_image_value img {
+    height: 150px;
+}
+dd#dd_qgis_logs_value {
+    font-size: 0.8em;
+    line-height: 15px;
+}
+
+.jacl2-list.jacl2-list-sticky-heads thead,
+.jacl2-list-user.jacl2-list-sticky-heads thead
+{
+    top: 75px;
+}

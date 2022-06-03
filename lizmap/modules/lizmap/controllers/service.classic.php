@@ -34,6 +34,11 @@ class serviceCtrl extends jController
     protected $params = array();
 
     /**
+     * @var null|bool
+     */
+    protected $respCanBeCached;
+
+    /**
      * Redirect to the appropriate action depending on the REQUEST parameter.
      *
      * @urlparam $PROJECT Name of the project
@@ -157,7 +162,7 @@ class serviceCtrl extends jController
      *
      * @param string $param request parameter
      *
-     * @return string request parameter value
+     * @return null|string request parameter value
      */
     protected function iParam($param)
     {
@@ -172,6 +177,37 @@ class serviceCtrl extends jController
     }
 
     /**
+     * Check if cache can be used because it is impossible
+     * to use cache on other request type that GET or HEAD.
+     *
+     * @return bool
+     */
+    protected function canBeCached()
+    {
+        if ($this->respCanBeCached === null) {
+            $this->respCanBeCached = in_array($_SERVER['REQUEST_METHOD'], array('GET', 'HEAD'));
+        }
+
+        return $this->respCanBeCached;
+    }
+
+    /**
+     * @param jResponse $resp
+     * @param string    $etag
+     *
+     * @return jResponse the response updated
+     */
+    protected function setEtagCacheHeaders($resp, $etag)
+    {
+        if ($this->canBeCached()) {
+            $resp->addHttpHeader('ETag', $etag);
+            $resp->addHttpHeader('Cache-Control', 'no-cache');
+        }
+
+        return $resp;
+    }
+
+    /**
      * Send an OGC service Exception.
      *
      * @return jResponseXml XML OGC Service Exception
@@ -182,6 +218,7 @@ class serviceCtrl extends jController
         if (!$messages) {
             $messages = array();
         }
+
         /** @var jResponseXml $rep */
         $rep = $this->getResponse('xml');
         $rep->contentTpl = 'lizmap~wms_exception';
@@ -383,6 +420,7 @@ class serviceCtrl extends jController
         $service = $ogcRequest->param('service');
         $result = $ogcRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -408,6 +446,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         // Return response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -433,6 +472,7 @@ class serviceCtrl extends jController
         $result = $wmsRequest->process();
 
         // Return response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -451,7 +491,7 @@ class serviceCtrl extends jController
      *
      * @param WFSRequest|WMSRequest|WMTSRequest $wmsRequest
      *
-     * @return jResponseBinary image rendered by the Map Server
+     * @return jResponseBinary|jResponseXml image rendered by the Map Server or Service Exception
      */
     protected function GetMap($wmsRequest)
     {
@@ -506,6 +546,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -539,6 +580,7 @@ class serviceCtrl extends jController
         );
         jEvent::notify('LizLogItem', $eventParams);
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -563,6 +605,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -597,6 +640,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -633,6 +677,7 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -649,7 +694,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseJson JSON configuration file for the specified project
+     * @return jResponseJson|jResponseXml JSON configuration file for the specified project or Service Exception
      */
     public function getProjectConfig()
     {
@@ -659,6 +704,7 @@ class serviceCtrl extends jController
             return $this->serviceException();
         }
 
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $this->project->getUpdatedConfig();
 
@@ -671,7 +717,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseJson key/value JSON configuration file for the specified project
+     * @return jResponseJson|jResponseXml key/value JSON configuration file for the specified project or Service Exception
      */
     public function getKeyValueConfig()
     {
@@ -680,6 +726,8 @@ class serviceCtrl extends jController
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
+
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $this->project->getLayersLabeledFieldsConfig();
 
@@ -700,6 +748,7 @@ class serviceCtrl extends jController
     {
         $result = $wfsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
         $rep->doDownload = false;
@@ -720,7 +769,7 @@ class serviceCtrl extends jController
         }
 
         // Define file name
-        $typenames = implode('_', array_map('trim', explode(',', $this->params['typename'])));
+        $typenames = implode('_', array_map('trim', explode(',', $wfsRequest->requestedTypename())));
         $zipped_files = array('shp', 'mif', 'tab');
         $outputformat = 'gml2';
         if (isset($this->params['outputformat'])) {
@@ -768,6 +817,7 @@ class serviceCtrl extends jController
         $result = $wfsRequest->process();
 
         // Return response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
@@ -785,7 +835,7 @@ class serviceCtrl extends jController
      * @urlparam string $project Name of the project : mandatory
      * @urlparam string $authid SRS or CRS authid like USER:*
      *
-     * @return jResponseText
+     * @return jResponseText|jResponseXml
      */
     protected function GetProj4()
     {
@@ -796,6 +846,7 @@ class serviceCtrl extends jController
         }
 
         // Return response
+        /** @var jResponseText $rep */
         $rep = $this->getResponse('text');
         $content = $this->project->getProj4($this->iParam('authid'));
         if (!$content) {
@@ -816,6 +867,7 @@ class serviceCtrl extends jController
     {
         $result = $wmtsRequest->process();
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
@@ -847,13 +899,21 @@ class serviceCtrl extends jController
         return $rep;
     }
 
+    /**
+     * @param string $repository
+     * @param string $project
+     * @param string $typename
+     * @param string $ids
+     *
+     * @return array
+     */
     private function _getSelectionToken($repository, $project, $typename, $ids)
     {
         $token = md5($repository.$project.$typename.implode(',', $ids));
 
         $data = jCache::get($token);
         $incache = true;
-        if (!$data or true) {
+        if (!$data) {
             $data = array();
             $data['token'] = $token;
             $data['typename'] = $typename;
@@ -861,14 +921,14 @@ class serviceCtrl extends jController
             $incache = false;
             jCache::set($token, json_encode($data), 3600);
         } else {
-            $data = json_decode($data);
+            $data = json_decode($data, true);
         }
 
         return $data;
     }
 
     /**
-     * @return jResponseJson
+     * @return jResponseJson|jResponseXml
      */
     protected function getSelectionToken()
     {
@@ -878,30 +938,44 @@ class serviceCtrl extends jController
         }
 
         // Prepare response
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params
         $typename = $this->params['typename'];
-        $ids = explode(',', $this->params['ids']);
+        $ids = preg_split('/\\s*,\\s*/', $this->params['ids']);
         sort($ids);
 
         // Token
         $data = $this->_getSelectionToken($this->iParam('repository'), $this->iParam('project'), $typename, $ids);
+        if ($this->canBeCached() && $rep->isValidCache(null, $data['token'])) {
+            return $rep;
+        }
+
         $json = array();
         $json['token'] = $data['token'];
 
         $rep->data = $json;
+        $this->setEtagCacheHeaders($rep, $data['token']);
 
         return $rep;
     }
 
+    /**
+     * @param string $repository
+     * @param string $project
+     * @param string $typename
+     * @param string $filter
+     *
+     * @return array
+     */
     private function _getFilterToken($repository, $project, $typename, $filter)
     {
         $token = md5($repository.$project.$typename.$filter);
 
         $data = jCache::get($token);
         $incache = true;
-        if (!$data or true) {
+        if (!$data) {
             $data = array();
             $data['token'] = $token;
             $data['typename'] = $typename;
@@ -909,7 +983,7 @@ class serviceCtrl extends jController
             $incache = false;
             jCache::set($token, json_encode($data), 3600);
         } else {
-            $data = json_decode($data);
+            $data = json_decode($data, true);
         }
 
         return $data;
@@ -923,6 +997,7 @@ class serviceCtrl extends jController
         }
 
         // Prepare response
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Get params
@@ -931,10 +1006,15 @@ class serviceCtrl extends jController
 
         // Token
         $data = $this->_getFilterToken($this->iParam('repository'), $this->iParam('project'), $typename, $filter);
+        if ($this->canBeCached() && $rep->isValidCache(null, $data['token'])) {
+            return $rep;
+        }
+
         $json = array();
         $json['token'] = $data['token'];
 
         $rep->data = $json;
+        $this->setEtagCacheHeaders($rep, $data['token']);
 
         return $rep;
     }

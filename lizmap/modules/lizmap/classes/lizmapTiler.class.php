@@ -15,13 +15,13 @@ class lizmapTiler
     protected static $tileMatrixInfo = array(
         'EPSG:3857' => array(
             'extent' => array(-20037508.3427892480, -20037508.3427892480, 20037508.3427892480, 20037508.3427892480),
-            //'scaleDenominator'=> 559082264.0287178958533332,
+            // 'scaleDenominator'=> 559082264.0287178958533332,
             'scaleDenominator' => 559082264.0287179,
             'unit' => 'm',
         ),
         'EPSG:900913' => array(
             'extent' => array(-20037508.3427892480, -20037508.3427892480, 20037508.3427892480, 20037508.3427892480),
-            //'scaleDenominator'=> 559082264.0287178958533332,
+            // 'scaleDenominator'=> 559082264.0287178958533332,
             'scaleDenominator' => 559082264.0287179,
             'unit' => 'm',
         ),
@@ -238,7 +238,7 @@ class lizmapTiler
                 $tileMatrixList = array();
                 $scale = $scaleDenominator;
                 $res = 0.28E-3 * $scale / $METERS_PER_INCH / $INCHES_PER_UNIT[$unit];
-                //$res = $scale / ($INCHES_PER_UNIT[ $unit ] * 96.0);
+                // $res = $scale / ($INCHES_PER_UNIT[ $unit ] * 96.0);
                 $col = round(($extent[2] - $extent[0]) / ($tileWidth * $res));
                 $row = round(($extent[3] - $extent[1]) / ($tileHeight * $res));
                 $left = ($extent[0] + ($extent[2] - $extent[0]) / 2) - ($col / 2) * ($tileWidth * $res);
@@ -257,7 +257,7 @@ class lizmapTiler
                     $scaleDenominator = $scaleDenominator / 2;
                     $scale = $scaleDenominator;
                     $res = 0.28E-3 * $scale / $METERS_PER_INCH / $INCHES_PER_UNIT[$unit];
-                    //$res = $scale / ($INCHES_PER_UNIT[ $unit ] * 96.0);
+                    // $res = $scale / ($INCHES_PER_UNIT[ $unit ] * 96.0);
                     $col = round(($extent[2] - $extent[0]) / ($tileWidth * $res));
                     $row = round(($extent[3] - $extent[1]) / ($tileHeight * $res));
                     $left = ($extent[0] + ($extent[2] - $extent[0]) / 2) - ($col / 2) * ($tileWidth * $res);
@@ -299,7 +299,7 @@ class lizmapTiler
                 preg_match('/ \+units=(?P<unit>\w+) /', $projection->proj4, $matches);
                 $unit = $matches['unit'];
 
-                //$res = 0.28E-3 * $scales[0] / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
+                // $res = 0.28E-3 * $scales[0] / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
                 $res = $scales[0] / ($INCHES_PER_UNIT[$unit] * 96.0);
                 $scale = $res * $METERS_PER_INCH * $INCHES_PER_UNIT[$unit] / 0.28E-3;
                 $col = ceil(($extent[2] - $extent[0]) / ($tileWidth * $res));
@@ -539,9 +539,9 @@ class lizmapTiler
                 if ($tileMatrix->scaleDenominator <= $maxScale && $tileMatrix->scaleDenominator >= $minScale) {
                     $res = $tileMatrix->resolution;
                     $minCol = floor(($extent[0] - $tileMatrix->left) / ($tileWidth * $res));
-                    $maxCol = ceil(($extent[2] - $tileMatrix->left) / ($tileWidth * $res));
+                    $maxCol = floor(($extent[2] - $tileMatrix->left) / ($tileWidth * $res));
                     $minRow = floor(($tileMatrix->top - $extent[3]) / ($tileHeight * $res));
-                    $maxRow = ceil(($tileMatrix->top - $extent[1]) / ($tileHeight * $res));
+                    $maxRow = floor(($tileMatrix->top - $extent[1]) / ($tileHeight * $res));
                     $tileMatrixLimits[] = (object) array(
                         'id' => $k,
                         'minRow' => $minRow,

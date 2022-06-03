@@ -1,13 +1,12 @@
-name: Backport ♻
+name: ♻ Backport
 on:
   pull_request_target:
     types:
       - closed
-      - labeled
 
 jobs:
   backport:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     name: Backport
     steps:
       - name: Backport Bot

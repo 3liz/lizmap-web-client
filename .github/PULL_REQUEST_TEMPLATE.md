@@ -3,5 +3,7 @@
 This PR will be harvested on changelog.lizmap.com if there is a "changelog" label.
 Funded by NAME URL
 -->
-* Ticket : #
-* Funded by
+
+Ticket : # 
+
+Funded by

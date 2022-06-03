@@ -30,6 +30,6 @@ class listRepositoryDatasource implements jIFormsDatasource
             return $this->data[$key];
         }
 
-        return null;
+        return '';
     }
 }

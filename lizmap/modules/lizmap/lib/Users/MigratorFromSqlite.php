@@ -16,8 +16,8 @@ class MigratorFromSqlite
     {
     }
 
-    const MIGRATE_RES_OK = 1;
-    const MIGRATE_RES_ALREADY_MIGRATED = 2;
+    public const MIGRATE_RES_OK = 1;
+    public const MIGRATE_RES_ALREADY_MIGRATED = 2;
 
     public function migrateUsersAndRights($resetBefore = false)
     {

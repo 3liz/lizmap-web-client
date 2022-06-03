@@ -28,6 +28,15 @@ class configListener extends jEventListener
                 );
             }
 
+            // Project list menu
+            $bloc->childItems[] = new masterAdminMenuItem(
+                'lizmap_project_list',
+                jLocale::get('admin~admin.menu.lizmap.project.list.label'),
+                jUrl::get('admin~qgis_projects:index'),
+                112,
+                'lizmap'
+            );
+
             // Child for the configuration of lizmap landing page content
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_landing_page_content',
@@ -79,7 +88,7 @@ class configListener extends jEventListener
 
     public function onjauthdbAdminGetViewInfo(jEvent $event)
     {
-        if (/*!$event->himself && */ jAcl2::check('acl.user.view')) {
+        if (/* !$event->himself && */ jAcl2::check('acl.user.view')) {
             $user = $event->tpl->get('id');
 
             $groups = jAcl2DbUserGroup::getGroupList($user);

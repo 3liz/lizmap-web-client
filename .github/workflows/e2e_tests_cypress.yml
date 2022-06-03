@@ -1,4 +1,4 @@
-name: "Cypress 🎳"
+name: "🎳 Cypress"
 on:
   pull_request:
     types: [ labeled, opened, synchronize, reopened ]
@@ -9,17 +9,26 @@ on:
     # Run every monday at 3:00
     - cron:  '0 3 * * 1'
   workflow_dispatch:
+
 jobs:
   cypress:
     # The first condition is triggered when we set the new label
     # The second one when we update the PR with new commits without changing labels
     # The third one when it's a cron job
-    if: github.event.label.name == 'run cypress' || contains(github.event.pull_request.labels.*.name, 'run cypress') || github.event_name == 'schedule'
-    name: "Cypress"
+    # The fourth one is for the manual button
+    if: |
+      github.event.label.name == 'run cypress' ||
+      contains(github.event.pull_request.labels.*.name, 'run cypress') ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch'
+    name: "End-to-end"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/}
 
       - name: Install Lizmap as a QGIS Server plugin
         run: cd tests && ./add_server_plugins.sh
@@ -55,7 +64,7 @@ jobs:
           wait-on: http://localhost:8130
 
       - name: Save screenshots as artifacts if a test fails to ease debug
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
@@ -70,3 +79,12 @@ jobs:
             cat lizmap/var/log/errors.log;
             exit -1;
           fi
+#  debug:
+#    name: "Debug"
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Dump GitHub context
+#        env:
+#          GITHUB_CONTEXT: ${{ toJson(github) }}
+#        run: |
+#          echo "$GITHUB_CONTEXT"

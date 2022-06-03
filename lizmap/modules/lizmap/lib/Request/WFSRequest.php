@@ -20,12 +20,17 @@ class WFSRequest extends OGCRequest
     protected $tplExceptions = 'lizmap~wfs_exception';
 
     /**
-     * @var qgisMapLayer|qgisVectorLayer
+     * @var null|string the requested typename
+     */
+    protected $wfs_typename;
+
+    /**
+     * @var null|\qgisVectorLayer
      */
     protected $qgisLayer;
 
     /**
-     * @var object datasource parameters
+     * @var null|object datasource parameters
      */
     protected $datasource;
 
@@ -63,15 +68,15 @@ class WFSRequest extends OGCRequest
         }
 
         // filter data by login
-        $typenames = $this->param('typename');
-        if (is_string($typenames)) {
+        $typenames = $this->requestedTypename();
+        if (is_string($typenames) && $typenames !== '') {
             $typenames = explode(',', $typenames);
         }
 
         // get login filters
         $loginFilters = array();
 
-        if ($typenames) {
+        if (is_array($typenames)) {
             $loginFilters = $this->project->getLoginFilters($typenames);
         }
 
@@ -89,8 +94,8 @@ class WFSRequest extends OGCRequest
         $expFilters = array();
 
         // Get client exp_filter parameter
-        $clientExpFilter = $this->param('exp_filter');
-        if ($clientExpFilter != null && !empty($clientExpFilter)) {
+        $clientExpFilter = $this->param('exp_filter', '');
+        if (!empty($clientExpFilter)) {
             $expFilters[] = $clientExpFilter;
         }
 
@@ -105,13 +110,43 @@ class WFSRequest extends OGCRequest
         $params['exp_filter'] = implode(' AND ', $expFilters);
 
         // Update propertyname parameter
-        $propertyName = $this->param('propertyname');
-        if ($propertyName != null && !empty($propertyName)) {
+        $propertyName = $this->param('propertyname', '');
+        if (!empty($propertyName)) {
             $propertyName = trim($propertyName).",${attribute}";
             $params['propertyname'] = $propertyName;
         }
 
         return $params;
+    }
+
+    /**
+     * Get the requested typename based on TYPENAME or FEATUREID parameter.
+     *
+     * @return string the requested typename
+     */
+    public function requestedTypename()
+    {
+        if (!is_string($this->wfs_typename)) {
+            $typename = $this->param('typename', '');
+            if (!$typename) {
+                $featureid = $this->param('featureid', '');
+                if ($featureid) {
+                    $featureIds = explode(',', $featureid);
+                    $typenames = array();
+                    foreach ($featureIds as $fid) {
+                        $exp_fid = explode('.', $fid);
+                        if (count($exp_fid) == 2) {
+                            $typenames[] = trim($exp_fid[0]);
+                        }
+                    }
+                    $typenames = array_unique($typenames);
+                    $typename = implode(',', $typenames);
+                }
+            }
+            $this->wfs_typename = $typename;
+        }
+
+        return $this->wfs_typename;
     }
 
     /**
@@ -122,7 +157,7 @@ class WFSRequest extends OGCRequest
         $version = $this->param('version');
         // force version if not defined
         if (!$version) {
-            $this->params['version'] = '1.3.0';
+            $this->params['version'] = '1.0.0';
         }
 
         $result = parent::process_getcapabilities();
@@ -189,7 +224,8 @@ class WFSRequest extends OGCRequest
         if ($code < 400 && $returnJson) {
             $jsonData = array();
 
-            $layer = $this->project->findLayerByAnyName($this->param('typename'));
+            $wfs_typename = $this->requestedTypename();
+            $layer = $this->project->findLayerByAnyName($wfs_typename);
             if ($layer != null) {
 
                 // Get data from XML
@@ -201,7 +237,7 @@ class WFSRequest extends OGCRequest
                 }
                 if ($go && $xml->complexType) {
                     $typename = (string) $xml->complexType->attributes()->name;
-                    if ($typename == $this->param('typename', '').'Type') {
+                    if ($typename == $wfs_typename.'Type') {
                         $jsonData['name'] = $layer->name;
                         $types = array();
                         $elements = $xml->complexType->complexContent->extension->sequence->element;
@@ -211,13 +247,14 @@ class WFSRequest extends OGCRequest
                         $jsonData['types'] = (object) $types;
                     }
                 }
-                /** @var qgisVectorLayer $layer The QGIS vector layer instance */
+
+                /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $jsonData['aliases'] = (object) $layer->getAliasFields();
                 $jsonData['defaults'] = (object) $layer->getDefaultValues();
             }
             $data = json_encode((object) $jsonData);
-            $mime = 'text/json; charset=utf-8';
+            $mime = 'application/json; charset=utf-8';
         }
 
         return (object) array(
@@ -238,9 +275,9 @@ class WFSRequest extends OGCRequest
         }
 
         // Get type name
-        $typename = $this->param('typename');
+        $typename = $this->requestedTypename();
         if (!$typename) {
-            \jMessage::add('TYPENAME is mandatory', 'RequestNotWellFormed');
+            \jMessage::add('TYPENAME or FEATUREID is mandatory', 'RequestNotWellFormed');
 
             return $this->serviceException();
         }
@@ -258,13 +295,14 @@ class WFSRequest extends OGCRequest
 
             return $this->serviceException();
         }
-        /** @var qgisVectorLayer $qgisLayer The QGIS vector layer instance */
+
+        /** @var \qgisVectorLayer $qgisLayer The QGIS vector layer instance */
         $qgisLayer = $this->project->getLayer($lizmapLayer->id);
         $this->qgisLayer = $qgisLayer;
 
         // Get provider
         $provider = $qgisLayer->getProvider();
-
+        $dtparams = null;
         if ($provider == 'postgres') {
             $dtparams = $qgisLayer->getDatasourceParameters();
             // Add key if not present ( WFS need to export id = typename.id for each feature)
@@ -291,10 +329,13 @@ class WFSRequest extends OGCRequest
         // but only of not OGC filter is passed (complex to implement)
         // and only for GeoJSON (specific to Lizmap)
         // and only if it is not a complex query like table="(SELECT ...)"
+        // and if FORCE_QGIS parameter is not set to 1
         if ($provider == 'postgres'
             && empty($filter)
             && strtolower($output) == 'geojson'
+            && $dtparams !== null
             && $dtparams->table[0] != '('
+            && $this->param('force_qgis', '') != '1'
         ) {
             return $this->getfeaturePostgres();
         }
@@ -309,6 +350,28 @@ class WFSRequest extends OGCRequest
      */
     protected function getfeatureQgis()
     {
+        // In the WFS OGC standard FEATUREID and BBOX parameters cannot be mutually set
+        // but in Lizmap, the user can do a selection, based on featureid, and can request
+        // a download, a WFS GetFeature request, based on this selection with a restriction
+        // to map extent, sofeatureid and bbox parameter can be set mutually and featureid
+        // parameter needs to be transform in an expression filter.
+        // The transformation is only available if the QGIS layer has been set.
+        if ($this->param('featureid')
+            && $this->param('bbox')
+            && $this->qgisLayer) {
+            $typename = $this->requestedTypename();
+            $featureid = $this->param('featureid', '');
+
+            $expFilter = $this->getFeatureIdFilterExp($featureid, $typename, $this->qgisLayer);
+
+            // Update parameters when expression filter has been build
+            if ($expFilter) {
+                $this->params['exp_filter'] = $expFilter;
+                $this->params['typename'] = $typename;
+                unset($this->params['featureid']);
+            }
+        }
+
         // Else pass query to QGIS Server
         // Get remote data
         $response = $this->request(true);
@@ -317,10 +380,10 @@ class WFSRequest extends OGCRequest
         $data = $response->data;
 
         if ($mime == 'text/plain' && strtolower($this->param('outputformat')) == 'geojson') {
-            $mime = 'text/json';
-            $layer = $this->project->findLayerByAnyName($this->param('typename'));
+            $mime = 'application/vnd.geo+json; charset=utf-8';
+            $layer = $this->project->findLayerByAnyName($this->requestedTypename());
             if ($layer != null) {
-                /** @var qgisVectorLayer $layer The QGIS vector layer instance */
+                /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
                 $layer = $this->project->getLayer($layer->id);
                 $aliases = $layer->getAliasFields();
                 $layer = json_decode($data);
@@ -335,6 +398,121 @@ class WFSRequest extends OGCRequest
             'data' => $data,
             'cached' => false,
         );
+    }
+
+    /**
+     * @param string           $featureid The FEATUREID parameter
+     * @param string           $typename  The layer's typename from TYPENAME or FEATUREID parameter
+     * @param \qgisVectorLayer $qgisLayer The QGIS layer based on typename
+     *
+     * @return string The QGIS expression based on FEATUREID parameter
+     */
+    protected function getFeatureIdFilterExp($featureid, $typename, $qgisLayer)
+    {
+        if (empty($featureid)) {
+            return '';
+        }
+        // Get QGIS Layer provider
+        $provider = $qgisLayer->getProvider();
+
+        // The featureid is based on multi fields key
+        $hasDoubleAtSign = !empty(strstr($featureid, '@@'));
+
+        // We can only build expression filter for multi
+        // fields key for postgres layer
+        if ($hasDoubleAtSign && $provider != 'postgres') {
+            return '';
+        }
+
+        // get primary keys values
+        $fids = preg_split('/\\s*,\\s*/', $featureid);
+        $pks = array();
+        foreach ($fids as $fid) {
+            $exp = explode('.', $fid);
+            if (count($exp) == 2 && $exp[0] == $typename && !empty($exp[1])) {
+                if ($hasDoubleAtSign) {
+                    $pks[] = explode('@@', $exp[1]);
+                } else {
+                    $pks[] = $exp[1];
+                }
+            }
+        }
+
+        if (count($pks) == 0) {
+            return '';
+        }
+
+        // mapping primary keys values to be used in an
+        // expression filter
+        if (!$hasDoubleAtSign) {
+            // for single field key
+            $pks = array_map(
+                function ($n) {
+                    if (ctype_digit($n)) {
+                        return $n;
+                    }
+
+                    return "'".addslashes($n)."'";
+                },
+                $pks
+            );
+        } else {
+            // for multi fields key
+            $formatPks = array();
+            foreach ($pks as $pk) {
+                $formatPks[] = array_map(
+                    function ($n) {
+                        if (ctype_digit($n)) {
+                            return $n;
+                        }
+
+                        return "'".addslashes($n)."'";
+                    },
+                    $pk
+                );
+            }
+            $pks = $formatPks;
+        }
+
+        // Building the expression filter
+        $expFilter = '';
+        if ($provider == 'postgres') {
+            // for postgres layer we can build the expression filter for
+            // simple and multi fields key
+            $dtparams = $qgisLayer->getDatasourceParameters();
+            $keys = preg_split('/\\s*,\\s*/', $dtparams->key);
+            if (count($keys) == 1 && !$hasDoubleAtSign) {
+                // for simple field key
+                $expFilter = '"'.$keys[0].'" IN ('.implode(', ', $pks).')';
+            }
+            if (count($keys) > 1 && $hasDoubleAtSign) {
+                // for multi fields key
+                $filters = array();
+                foreach ($pks as $pk) {
+                    $filter = '(';
+                    $i = 0;
+                    $v = '';
+                    foreach ($keys as $key) {
+                        $filter .= $v.'"'.$key.'" = '.$pk[$i].'';
+                        $v = ' AND ';
+                        ++$i;
+                    }
+                    $filter .= ')';
+                    $filters[] = $filter;
+                }
+
+                $expFilter = implode(' OR ', $filters);
+            }
+        } else {
+            // for other layers with simple field key
+            $expFilter = '$id IN ('.implode(', ', $pks).')';
+        }
+
+        if ($expFilter && $this->validateExpressionFilter($expFilter)) {
+            return $expFilter;
+        }
+
+        return '';
     }
 
     protected function buildQueryBase($cnx, $params, $wfsFields)
@@ -389,39 +567,56 @@ class WFSRequest extends OGCRequest
         return $sql;
     }
 
+    /**
+     * Get the SQL clause to instersects bbox in the request parameters.
+     *
+     * @param array<string, string> $params the request parameters
+     *
+     * @return string the SQL clause to instersects bbox in the request parameters or empty string
+     */
     protected function getBboxSql($params)
     {
-        if (!empty($this->datasource->geocol)) {
-            $bbox = '';
-            if (array_key_exists('bbox', $params)) {
-                $bbox = $params['bbox'];
-            }
-            $bboxvalid = false;
-            if (!empty($bbox)) {
-                $bboxitem = explode(',', $bbox);
-                if (count($bboxitem) == 4) {
-                    $bboxvalid = true;
-                    foreach ($bboxitem as $coord) {
-                        if (!is_numeric(trim($coord))) {
-                            $bboxvalid = false;
-                        }
-                    }
-                }
-            }
-            if ($bboxvalid) {
-                $xmin = trim($bboxitem[0]);
-                $ymin = trim($bboxitem[1]);
-                $xmax = trim($bboxitem[2]);
-                $ymax = trim($bboxitem[3]);
-                $sql = ' AND ST_Intersects("';
-                $sql .= $this->datasource->geocol;
-                $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+        if (empty($this->datasource->geocol)) {
+            // No geometry column
+            return '';
+        }
 
-                return $sql;
+        if (!array_key_exists('bbox', $params)) {
+            // No BBOX parameter in the request
+            return '';
+        }
+
+        $bbox = $params['bbox'];
+        if (empty($bbox)) {
+            // BBOX parameter but it is empty
+            return '';
+        }
+
+        // Check the BBOX parameter
+        // It has to contain 4 numeric separated by comma
+        $bboxitem = explode(',', $bbox);
+        if (count($bboxitem) !== 4) {
+            // BBOX parameter does not contain 4 elements
+            return '';
+        }
+
+        // Check numeric elements
+        foreach ($bboxitem as $coord) {
+            if (!is_numeric(trim($coord))) {
+                return '';
             }
         }
 
-        return '';
+        // Build the SQL
+        $xmin = trim($bboxitem[0]);
+        $ymin = trim($bboxitem[1]);
+        $xmax = trim($bboxitem[2]);
+        $ymax = trim($bboxitem[3]);
+        $sql = ' AND ST_Intersects("';
+        $sql .= $this->datasource->geocol;
+        $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+
+        return $sql;
     }
 
     protected function parseExpFilter($cnx, $params)
@@ -454,7 +649,7 @@ class WFSRequest extends OGCRequest
     {
         $featureid = '';
         $sql = '';
-        $typename = $params['typename'];
+        $typename = $this->requestedTypename();
         $keys = explode(',', $this->datasource->key);
         if (array_key_exists('featureid', $params)) {
             $featureid = $params['featureid'];
@@ -483,7 +678,7 @@ class WFSRequest extends OGCRequest
                     $fidsSql[] = $fidSql;
                 }
             }
-            //$this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
+            // $this->appContext->logMessage(implode(' OR ', $fidsSql), 'error');
             $sql .= ' AND '.implode(' OR ', $fidsSql);
         }
 
@@ -615,16 +810,16 @@ class WFSRequest extends OGCRequest
             $sql .= ' OFFSET '.$startindex;
         }
 
-        $typename = $params['typename'];
+        $typename = $this->requestedTypename();
         $geometryname = '';
         if (array_key_exists('geometryname', $params)) {
             $geometryname = strtolower($params['geometryname']);
         }
 
-        //$this->appContext->logMessage($sql);
+        // $this->appContext->logMessage($sql);
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
-        //$this->appContext->logMessage($sql);
+        // $this->appContext->logMessage($sql);
         // Run query
         try {
             $q = $cnx->query($sql);
@@ -658,7 +853,7 @@ class WFSRequest extends OGCRequest
         // Return response
         return (object) array(
             'code' => '200',
-            'mime' => 'text/json; charset=utf-8',
+            'mime' => 'application/vnd.geo+json; charset=utf-8',
             'file' => true, // we use this to inform controler postgres has been used
             'data' => $path,
             'cached' => false,
@@ -666,11 +861,13 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * Parses and validate a filter for postgresql.
+     * Validate an expression filter.
      *
-     * @param string $filter The filter to parse
+     * @param string $filter The expression filter to validate
+     *
+     * @return bool returns if the expression does not contains dangerous chars
      */
-    protected function validateFilter($filter)
+    protected function validateExpressionFilter($filter)
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
@@ -678,17 +875,33 @@ class WFSRequest extends OGCRequest
 
             return false;
         }
-        $filter = str_replace('intersects', 'ST_Intersects', $filter);
-        $filter = str_replace('geom_from_gml', 'ST_GeomFromGML', $filter);
 
-        return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
+        return true;
     }
 
     /**
-     * @param string        $sql
-     * @param jDbConnection $cnx
-     * @param mixed         $typename
-     * @param mixed         $geometryname
+     * Parses and validate a filter for postgresql.
+     *
+     * @param string $filter The filter to parse
+     *
+     * @return false|string returns the validate filter if the expression does not contains dangerous chars
+     */
+    protected function validateFilter($filter)
+    {
+        if (!$this->validateExpressionFilter($filter)) {
+            return false;
+        }
+        $vfilter = str_replace('intersects', 'ST_Intersects', $filter);
+        $vfilter = str_replace('geom_from_gml', 'ST_GeomFromGML', $vfilter);
+
+        return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $vfilter);
+    }
+
+    /**
+     * @param string         $sql
+     * @param \jDbConnection $cnx
+     * @param mixed          $typename
+     * @param mixed          $geometryname
      *
      * @return string
      */
@@ -745,11 +958,24 @@ class WFSRequest extends OGCRequest
         }
 
         if (!empty($geosql)) {
+            // Define BBOX SQL
+            $bboxsql = 'ST_Envelope(lg.geosource::geometry)';
             // For new QGIS versions, export into EPSG:4326
             $lizservices = $this->services;
             if (version_compare($lizservices->qgisServerVersion, '2.18', '>=')) {
                 $geosql = 'ST_Transform('.$geosql.', 4326)';
+                $bboxsql = 'ST_Transform('.$bboxsql.', 4326)';
             }
+
+            // Transform BBOX into JSON
+            $sql .= '
+                        array_to_json(ARRAY[
+                            ST_XMin('.$bboxsql.'),
+                            ST_YMin('.$bboxsql.'),
+                            ST_XMax('.$bboxsql.'),
+                            ST_YMax('.$bboxsql.')
+                        ]) As bbox,
+            ';
 
             // Transform into GeoJSON
             $sql .= '
@@ -762,9 +988,9 @@ class WFSRequest extends OGCRequest
         }
 
         // bbox
-        //$sql.= "
-        //trim(regexp_replace( Box2D(" . $geosql . ")::text, 'BOX', ''), '()') AS bbox,
-        //";
+        // $sql.= "
+        // trim(regexp_replace( Box2D(" . $geosql . ")::text, 'BOX', ''), '()') AS bbox,
+        // ";
 
         $sql .= '
                     row_to_json(

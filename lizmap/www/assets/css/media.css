@@ -91,6 +91,11 @@ only screen and (                   max-device-height : 640px) {
   #header {
     height : 30px;
   }
+    .jacl2-list.jacl2-list-sticky-heads thead,
+    .jacl2-list-user.jacl2-list-sticky-heads thead
+    {
+        top: 35px;
+    }
   #logo {
     height : 30px;
     margin: 0px 5px;

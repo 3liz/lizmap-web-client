@@ -16,8 +16,14 @@ class upload_imageCtrl extends jController
         '*' => array('jacl2.right' => 'lizmap.admin.access'),
     );
 
+    /**
+     * @param string $message
+     *
+     * @return jResponseJson
+     */
     protected function uploadError($message)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array(
             'error' => array(
@@ -28,12 +34,16 @@ class upload_imageCtrl extends jController
         return $rep;
     }
 
+    /**
+     * @return jResponseJson
+     */
     public function uploadfile()
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         $paramName = 'upload';
-        $maxSize = 2 * 1024 * 1024; //Mb
+        $maxSize = 2 * 1024 * 1024; // Mb
         $allowedMimeType = array('image/jpg', 'image/jpeg', 'image/png', 'image/gif');
         $uploadPath = 'live/images/home/';
 
@@ -88,6 +98,7 @@ class upload_imageCtrl extends jController
         $webPath = jApp::urlBasePath().$uploadPath.rawurlencode($file['name']);
 
         if (move_uploaded_file($file['tmp_name'], $directoryPath)) {
+            /** @var jResponseJson $rep */
             $rep = $this->getResponse('json');
             $rep->data = array(
                 'url' => $webPath,

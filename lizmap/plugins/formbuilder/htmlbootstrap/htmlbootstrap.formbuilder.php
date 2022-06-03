@@ -38,7 +38,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
         $resp->addJSLink($www.'jquery/include/jquery.include.js');
         $resp->addAssets('jforms_imageupload');
 
-        //we loop on root control has they fill call the outputMetaContent recursively
+        // we loop on root control has they fill call the outputMetaContent recursively
         foreach ($this->_form->getRootControls() as $ctrlref => $ctrl) {
             if ($ctrl->type == 'hidden') {
                 continue;
