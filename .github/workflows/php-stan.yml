@@ -1,4 +1,4 @@
-name: "PHPStan"
+name: "🐘 PHPStan"
 
 on:
   push:
@@ -16,7 +16,7 @@ defaults:
 
 jobs:
   phpstan:
-    name: "Php-Stan"
+    name: "Analyze"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
