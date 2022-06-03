@@ -1,4 +1,4 @@
-name: "Close feedback issues"
+name: "🚮 Close feedback issues"
 on:
   schedule:
   - cron: "0 4 * * 2,5"
