@@ -16,7 +16,7 @@ describe('Legend tests', function () {
                 expect(interception.response.headers['content-type'], 'expect mime type to be image/png').to.equal('image/png')
 
                 const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
-                cy.fixture('images/treeview/' + check +'.png').then((image) => {
+                cy.fixture('images/treeview/' + check +'_316.png').then((image) => {
                     expect(image, 'expect legend to be displayed').to.equal(responseBodyAsBase64)
                 })
             })
