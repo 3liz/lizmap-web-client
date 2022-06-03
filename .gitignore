@@ -50,8 +50,8 @@ lizmap/lizmap-modules/*
 lizmap/my-packages/*
 !lizmap/my-packages/composer.json.dist
 !lizmap/my-packages/README.md
-.php_cs
-.php_cs.cache
+.php-cs-fixer.php
+.php-cs-fixer.cache
 .phpstan.cache
 
 .drafts
@@ -72,6 +72,7 @@ tests/qgis-projects/*
 tests/qgis-projects/tests/media
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
+tests/lizmap-qgis-plugin.master.zip
 tests/end2end/node_modules/
 tests/end2end/cypress/downloads/
 tests/end2end/cypress/screenshots/

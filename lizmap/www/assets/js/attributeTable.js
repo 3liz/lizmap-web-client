@@ -1223,16 +1223,15 @@ var lizAttributeTable = function() {
                         $( aTable ).dataTable( {
                              data: dataSet
                             ,columns: columns
-                            , drawCallback: () => {
-                                // Check editable features
-                                if (canEdit || canDelete) {
-                                    lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
-                                }
-                            }
                             ,initComplete: function(settings, json) {
                                 const api = new $.fn.dataTable.Api(settings);
                                 const tableId = api.table().node().id;
                                 const featureType = tableId.split('attribute-layer-table-')[1];
+
+                                // Check editable features
+                                if (canEdit || canDelete) {
+                                    lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
+                                }
 
                                 // Trigger event telling attribute table is ready
                                 lizMap.events.triggerEvent("attributeLayerContentReady",

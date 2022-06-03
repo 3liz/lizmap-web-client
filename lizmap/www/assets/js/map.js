@@ -2915,52 +2915,53 @@ var lizMap = function() {
               return true;
 
           lizMap.getLayerFeature(featureType, fid, function(feat) {
-              // Where there is all plots
-              var plotLayers = lizMap.config.datavizLayers.layers;
-              var lrelations = lizMap.config.relations[layerId];
-              var nbPlotByLayer = 1;
-              for(var x in lrelations){
-                  var rel = lrelations[x];
-                  // Id of the layer which is the child of layerId
-                  var getChildrenId = rel.referencingLayer;
+                // Where there is all plots
+                var plotLayers = lizMap.config.datavizLayers.layers;
+                var lrelations = lizMap.config.relations[layerId];
+                var nbPlotByLayer = 1;
 
-                  // Filter of the plot
-                  var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
-                  for ( var i in plotLayers) {
-                      if(plotLayers[i].layer_id==getChildrenId)
-                      {
-                          var plot_config=plotLayers[i];
-                          if('popup_display_child_plot' in plot_config
-                            && plot_config.popup_display_child_plot == "True"
-                          ){
-                            var plot_id = plotLayers[i].plot_id;
-                            // We must add the plot id in the global variable as it is needed by the dataviz.js file
-                            lizDataviz.data.plots[plot_id] = {'json': null, 'filter': null, 'show_plot': true, 'cache': null};
-                            popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
-                            // Be sure the id is unique ( popup can be displayed in atlas tool too)
-                            popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
+                for ( var i in plotLayers) {
 
-                            var phtml = lizDataviz.buildPlotContainerHtml(
-                                plot_config.title,
-                                plot_config.abstract,
-                                popupId,
-                                false
-                            );
-                            var html = '<div class="lizmapPopupChildren lizdataviz">';
-                            html+= '<h4>'+ plot_config.title+'</h4>';
-                            html+= phtml
-                            html+= '</div>';
-                            var haspc = $(mydiv).find('div.lizmapPopupChildren:first');
-                            if( haspc.length > 0 )
-                                $(haspc).before(html);
-                            else
-                                $(mydiv).append(html);
-                            lizDataviz.getPlot(plot_id, filter, popupId);
-                            nbPlotByLayer++;
-                          }
-                      }
-                  }
-              }
+                    for(var x in lrelations){
+                      var rel = lrelations[x];
+                      // Id of the layer which is the child of layerId
+                      var getChildrenId = rel.referencingLayer;
+
+                      // Filter of the plot
+                      var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
+
+
+                        if(plotLayers[i].layer_id==getChildrenId)
+                        {
+                            var plot_config=plotLayers[i];
+                            if('popup_display_child_plot' in plot_config
+                              && plot_config.popup_display_child_plot == "True"
+                            ){
+                              var plot_id=plotLayers[i].plot_id;
+                              popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
+                              // Be sure the id is unique ( popup can be displayed in atlas tool too)
+                              popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
+                              var phtml = lizDataviz.buildPlotContainerHtml(
+                                  plot_config.title,
+                                  plot_config.abstract,
+                                  popupId,
+                                  false
+                              );
+                              var html = '<div class="lizmapPopupChildren lizdataviz">';
+                              html+= '<h4>'+ plot_config.title+'</h4>';
+                              html+= phtml
+                              html+= '</div>';
+                              var haspc = $(mydiv).find('div.lizmapPopupChildren:last');
+                              if( haspc.length > 0 )
+                                  $(haspc).after(html);
+                              else
+                                  $(mydiv).append(html);
+                              lizDataviz.getPlot(plot_id, filter, popupId);
+                              nbPlotByLayer++;
+                            }
+                        }
+                    }
+                }
           });
         }
       });
@@ -4698,36 +4699,28 @@ var lizMap = function() {
                   var matches = filenameRegex.exec(disposition);
                   if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
               }
-              var type = xhr.getResponseHeader('Content-Type');
 
-              var blob = typeof File === 'function'
-                  ? new File([this.response], filename, { type: type })
-                  : new Blob([this.response], { type: type });
-              if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                  // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-                  window.navigator.msSaveBlob(blob, filename);
-              } else {
-                  var URL = window.URL || window.webkitURL;
-                  var downloadUrl = URL.createObjectURL(blob);
+              let type = xhr.getResponseHeader('Content-Type');
 
-                  if (filename) {
-                      // use HTML5 a[download] attribute to specify filename
-                      var a = document.createElement("a");
-                      // safari doesn't support this yet
-                      if (typeof a.download === 'undefined') {
-                          window.location = downloadUrl;
-                      } else {
-                          a.href = downloadUrl;
-                          a.download = filename;
-                          document.body.appendChild(a);
-                          a.click();
-                      }
-                  } else {
-                      window.location = downloadUrl;
-                  }
-
-                  setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+              // Firefox >= 98 opens blob in its pdf viewer
+              // This is a hack to force download as in Chrome
+              if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && type == 'application/pdf'){
+                type = 'application/octet-stream';
               }
+              const blob = new File([this.response], filename, { type: type });
+              const downloadUrl = URL.createObjectURL(blob);
+
+              if (filename) {
+                // use HTML5 a[download] attribute to specify filename
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                a.dispatchEvent(new MouseEvent('click'));
+              } else {
+                window.open(downloadUrl);
+              }
+
+              setTimeout(() => URL.revokeObjectURL(downloadUrl), 100); // cleanup
           }
 
           // Note 31/01/2022

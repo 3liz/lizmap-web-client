@@ -20,6 +20,7 @@ be manually activated within the browser javascript console
 * [ ] Choose the scale `1000`, keep the other fields as default
 * [ ] Launch the print by clicking on the blue button
 * [ ] Open the exported PDF, set the Zoom to 100%.
+      On 3Liz Dell screen, set to 49% to have a A4 size. (Etienne's screen)
 With Evince on Ubuntu, make sure that the 100% Zoom respects your screen resolution and shows the real size.
 If you have a real A4 paper sheet, you can check the size of the page in the screen equals the real A4 page
 and adapt the Zoom accordingly.

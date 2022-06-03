@@ -18,9 +18,12 @@ class landing_page_contentCtrl extends jController
 
     /**
      * Display a wysiwyg editor.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Create the form
@@ -43,15 +46,19 @@ class landing_page_contentCtrl extends jController
 
     /**
      * Save wysiwyg editor content in ini file.
+     *
+     * @return jResponseRedirect
      */
     public function save()
     {
+        /** @var null|jFormsBase $form */
         $form = jForms::get('admin~landing_page_content');
 
         // token
         $token = $this->param('__JFORMS_TOKEN__');
+        // redirection vers la page d'erreur
         if (!$token) {
-            // redirection vers la page d'erreur
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'landing_page_content:index';
 
@@ -60,6 +67,7 @@ class landing_page_contentCtrl extends jController
 
         // If the form is not defined, redirection
         if (!$form) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'landing_page_content:index';
 
@@ -75,8 +83,9 @@ class landing_page_contentCtrl extends jController
             $ok = false;
         }
 
+        // Errors : redirection
         if (!$ok) {
-            // Errors : redirection
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'landing_page_content:index';
             $rep->params['errors'] = '1';
@@ -87,8 +96,9 @@ class landing_page_contentCtrl extends jController
         // Save HTML content
         $fileWriteOK = jFile::write(jApp::varPath('lizmap-theme-config/landing_page_content.html'), $form->getData('HTMLContent'));
 
+        // Errors : redirection
         if (!$fileWriteOK) {
-            // Errors : redirection
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'landing_page_content:index';
             $rep->params['errors'] = '1';
@@ -96,8 +106,9 @@ class landing_page_contentCtrl extends jController
             return $rep;
         }
 
-        // Redirect to the edition page
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the edition page
         $rep->action = 'landing_page_content:index';
 
         return $rep;

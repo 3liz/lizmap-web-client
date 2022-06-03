@@ -18,9 +18,12 @@ class logsCtrl extends jController
 
     /**
      * Display a summary of the logs.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get counter count
@@ -63,9 +66,12 @@ class logsCtrl extends jController
 
     /**
      * Display the logs counter.
+     *
+     * @return jResponseHtml
      */
     public function counter()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get counter
@@ -86,9 +92,12 @@ class logsCtrl extends jController
 
     /**
      * Empty the counter logs table.
+     *
+     * @return jResponseRedirect
      */
     public function emptyCounter()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Get counter
@@ -108,9 +117,12 @@ class logsCtrl extends jController
 
     /**
      * Display the detailed logs.
+     *
+     * @return jResponseHtml
      */
     public function detail()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         $maxvisible = 50;
@@ -139,6 +151,8 @@ class logsCtrl extends jController
 
     /**
      * Export the detailed logs in CSV.
+     *
+     * @return jResponseBinary|jResponseRedirect
      */
     public function export()
     {
@@ -152,6 +166,7 @@ class logsCtrl extends jController
             $conditions = jDao::createConditions();
             $nblogs = $dao->countBy($conditions);
         } catch (Exception $e) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             jMessage::add('Error : '.$e->getMessage(), 'error');
             $rep->action = 'admin~logs:index';
@@ -189,8 +204,9 @@ class logsCtrl extends jController
         // Closing file
         fclose($fp);
 
-        // Create response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        // Create response
         $rep->mimeType = 'text/csv';
         $rep->addHttpHeader('charset', 'UTF-8');
         $rep->doDownload = true;
@@ -203,9 +219,12 @@ class logsCtrl extends jController
 
     /**
      * Empty the detail logs table.
+     *
+     * @return jResponseRedirect
      */
     public function emptyDetail()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Get counter
@@ -223,9 +242,13 @@ class logsCtrl extends jController
         return $rep;
     }
 
-    // Erase the error log file
+    /** Erase the error log file.
+     *
+     * @return jResponseRedirect
+     */
     public function eraseError()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Erase the log file

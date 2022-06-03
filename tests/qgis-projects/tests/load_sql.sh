@@ -1,8 +1,11 @@
 #!/bin/bash
 SCRIPTDIR="$( cd "$(dirname "$0")" ; pwd -P )"
-DATA=$(find $SCRIPTDIR/ -type f -name "*.sql")
-for i in $DATA
-do
-    echo "* Run file $i"
-    PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f ${i}
-done
+
+echo "* Run file $SCRIPTDIR/tests_dataset.sql"
+PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f $SCRIPTDIR/tests_dataset.sql
+
+echo "* Run file $SCRIPTDIR/set_tests_respository_rights.sql"
+PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f $SCRIPTDIR/set_tests_respository_rights.sql
+
+echo "* Run file $SCRIPTDIR/set_tests_lizmap_search.sql"
+PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f $SCRIPTDIR/set_tests_lizmap_search.sql

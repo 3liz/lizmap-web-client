@@ -24,23 +24,17 @@ export default class MousePosition extends HTMLElement {
         this._latInput;
     }
 
-    // Render editablePositionTemplate and readonlyPositionTemplate apart because values change a lot
     // Don't add line break between <input>s or it adds a space in UI
-    editablePositionTemplate(lon, lat){
-        return html`<input type="number" step="any" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lon}><input type="number" step="any" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lat}>`;
-    }
-
-    readonlyPositionTemplate(lon, lat) {
-        return html`
-            <span>${lon}</span>
-            <span>${lat}</span>`;
-    }
-
     mainTemplate(lon, lat){
         return html`
             <div class="mouse-position">
-                <div class="editable-position ${['dm', 'dms'].includes(this._displayUnit) ? 'hide' : ''}">${this.editablePositionTemplate(lon, lat)}</div>
-                <div class="readonly-position ${['dm', 'dms'].includes(this._displayUnit) ? '' : 'hide'}">${this.readonlyPositionTemplate(lon, lat)}</div>
+                <div class="editable-position ${['dm', 'dms'].includes(this._displayUnit) ? 'hide' : ''}">
+                    <input type="number" step="any" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${isNaN(lon) ? 0 : lon}><input type="number" step="any" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${isNaN(lat) ? 0 : lat}>
+                </div>
+                <div class="readonly-position ${['dm', 'dms'].includes(this._displayUnit) ? '' : 'hide'}">
+                    <span>${lon}</span>
+                    <span>${lat}</span>
+                </div>
                 <button class="btn btn-mini" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
             </div>
             <div class="coords-unit">
@@ -90,7 +84,6 @@ export default class MousePosition extends HTMLElement {
 
         if (this._longitude && this._latitude){
             this.redraw(this._longitude, this._latitude);
-            render(this.mainTemplate(this._longitude, this._latitude), this);
         }
     }
 
@@ -128,21 +121,18 @@ export default class MousePosition extends HTMLElement {
 
             // If in degrees, lon/lat are editable
             if (this._displayUnit === 'degrees'){
-                render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
-                    this.querySelector('.mouse-position > .editable-position'));
+                render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
 
             }else{
                 lonLatToDisplay[0] = this.getFormattedLonLat(lonLatToDisplay[0], 'lon', this._displayUnit);
                 lonLatToDisplay[1] = this.getFormattedLonLat(lonLatToDisplay[1], 'lat', this._displayUnit);
 
-                render(this.readonlyPositionTemplate(lonLatToDisplay[0], lonLatToDisplay[1]),
-                    this.querySelector('.mouse-position > .readonly-position'));
+                render(this.mainTemplate(lonLatToDisplay[0], lonLatToDisplay[1]), this);
             }
         }else{
             lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, mainLizmap.qgisProjectProjection);
 
-            render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
-                this.querySelector('.mouse-position > .editable-position'));
+            render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
         }
 
         this._lonInput = lonLatToDisplay[0];

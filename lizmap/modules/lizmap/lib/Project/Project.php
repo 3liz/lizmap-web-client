@@ -20,10 +20,12 @@ class Project
      * @var Repository
      */
     protected $repository;
+
     /**
      * @var QgisProject QGIS project XML
      */
     protected $qgis;
+
     /**
      * @var ProjectConfig CFG project JSON
      */
@@ -43,6 +45,7 @@ class Project
      * @var string .qgs file path
      */
     protected $file;
+
     /**
      * Lizmap project key.
      *
@@ -317,6 +320,22 @@ class Project
         return $this->qgis->getQgisProjectVersion();
     }
 
+    /**
+     * Get the version of the Lizmap plugin
+     * used by the project editor on QGIS Desktop.
+     *
+     * @return null|string Version of the lizmap plugin
+     */
+    public function getLizmapPluginVersion()
+    {
+        $pluginMetadata = $this->cfg->getPluginMetadata();
+        if (!is_null($pluginMetadata)) {
+            return $pluginMetadata->lizmap_plugin_version;
+        }
+
+        return null;
+    }
+
     public function getRelations()
     {
         return $this->qgis->getRelations();
@@ -570,6 +589,16 @@ class Project
     public function getLayers()
     {
         return $this->cfg->getLayers();
+    }
+
+    /**
+     * Get the number of layers.
+     *
+     * @return int
+     */
+    public function getLayerCount()
+    {
+        return count((array) $this->cfg->getLayers());
     }
 
     /**
@@ -1112,7 +1141,7 @@ class Project
             }
 
             // attribute to filter
-            $attribute = strtolower($loginFilteredConfig->filterAttribute);
+            $attribute = $loginFilteredConfig->filterAttribute;
 
             // default no user connected
             $filter = "\"{$attribute}\" = 'all'";
@@ -1259,19 +1288,23 @@ class Project
     }
 
     /**
-     * @return array|bool
+     * @return array the dataviz layers config extended with locale
      */
     public function getDatavizLayersConfig()
     {
-        $datavizLayers = $this->cfg->getDatavizLayers();
-        if (!$datavizLayers) {
-            return false;
-        }
+        // initialize config
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
             'locale' => $this->appContext->appConfig()->locale,
         );
+
+        $datavizLayers = $this->cfg->getDatavizLayers();
+        if (!$datavizLayers) {
+            // provide the empty config with locale
+            return $config;
+        }
+
         foreach ($datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
                 continue;
@@ -1359,8 +1392,10 @@ class Project
             }
             $config['layers'][$order] = $plotConf;
         }
+
         if (empty($config['layers'])) {
-            return false;
+            // provide the empty config with locale
+            return $config;
         }
 
         $config['dataviz'] = array(
@@ -1439,19 +1474,21 @@ class Project
 
     protected function readEditionLayers(QgisProject $xml)
     {
+        if (!$this->cfg->hasEditionLayers()) {
+            return;
+        }
+
         $editionLayers = $this->cfg->getEditionLayers();
 
-        if ($editionLayers) {
-            // Check ability to load spatialite extension
-            // And remove ONLY spatialite layers if no extension found
-            $spatialiteExt = '';
-            if (class_exists('SQLite3')) {
-                $spatialiteExt = $this->getSpatialiteExtension();
-            }
-            if (!$spatialiteExt) {
-                $this->appContext->logMessage('Spatialite is not available', 'error');
-                $xml->readEditionLayers($editionLayers);
-            }
+        // Check ability to load spatialite extension
+        // And remove ONLY spatialite layers if no extension found
+        $spatialiteExt = '';
+        if (class_exists('SQLite3')) {
+            $spatialiteExt = $this->getSpatialiteExtension();
+        }
+        if (!$spatialiteExt) {
+            $this->appContext->logMessage('Spatialite is not available', 'error');
+            $xml->readEditionLayers($editionLayers);
         }
     }
 
@@ -1845,8 +1882,8 @@ class Project
             $switcherTpl->fetch('view~map_switcher'),
             1
         );
-        //$legendTpl = new jTpl();
-        //$dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
+        // $legendTpl = new jTpl();
+        // $dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
 
         $metadataTpl = new \jTpl();
         // Get the WMS information

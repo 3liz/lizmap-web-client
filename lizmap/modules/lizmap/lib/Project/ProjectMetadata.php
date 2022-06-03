@@ -40,7 +40,15 @@ class ProjectMetadata
             'wmtsGetCapabilitiesUrl' => $project->getWMTSGetCapabilitiesUrl(),
             'map' => $project->getRelativeQgisPath(),
             'acl' => $project->checkAcl(),
+            'qgisProjectVersion' => $project->getQgisProjectVersion(),
+            'lizmapPluginVersion' => $project->getLizmapPluginVersion(),
+            'layerCount' => $project->getLayerCount(),
+            'fileTime' => $project->getFileTime(),
+            'aclGroups' => '',
         );
+        if (is_array($project->getOption('acl'))) {
+            $metadata['aclGroups'] = implode(', ', $project->getOption('acl'));
+        }
 
         $metadata['hidden'] = $project->getBooleanOption('hideProject');
 
@@ -167,6 +175,56 @@ class ProjectMetadata
     public function getWMTSGetCapabilitiesUrl()
     {
         return $this->data['wmtsGetCapabilitiesUrl'];
+    }
+
+    /**
+     * The QGIS desktop project version.
+     *
+     * @return string
+     */
+    public function getQgisProjectVersion()
+    {
+        return $this->data['qgisProjectVersion'];
+    }
+
+    /**
+     * The version of the Desktop lizmap plugin.
+     *
+     * @return string
+     */
+    public function getLizmapPluginVersion()
+    {
+        return $this->data['lizmapPluginVersion'];
+    }
+
+    /**
+     * The project file time.
+     *
+     * @return string
+     */
+    public function getFileTime()
+    {
+        return $this->data['fileTime'];
+    }
+
+    /**
+     * The number of layers in the QGIS project.
+     *
+     * @return string
+     */
+    public function getLayerCount()
+    {
+        return $this->data['layerCount'];
+    }
+
+    /**
+     * The acl option which corresponds to authorized groups.
+     *
+     * @return string
+     */
+    public function getAclGroups()
+    {
+        return $this->data['aclGroups'];
     }
 
     /**

@@ -4,9 +4,59 @@
 
 ### Fixed
 
+* Fix the download of files (layer export, PDF) depending on the web-browser (and its version) 
+
+### Tests
+
+* Update end-to-end Cypress tests about continuous integration
+
+## 3.5.3 - 2022-04-29
+
+### Changed
+
+* Restore the previous behavior from Lizmap 3.4 about the overview map
+  Use the new parameter in the Lizmap QGIS plugin to have a dynamic scale
+
+### Fixed
+
+* Allow a project thumbnail with capital letters in the extension
+* Open a PDF in a new tab when possible on Firefox instead of the internal viewer
+* Fix about dataviz panel : plot order and custom plot layout, contribution from @tethysgeco
+* Fix some exports issues when there is a selection
+* Fix an issue about editing capabilities when using a geometry involved in a QGIS expression
+* Fix about some WFS requests about vector data
+* Fix about QGIS 3.22 when a group has a shortname
+* Fix about QGIS 3.22 with the "Show feature count"
+* Fix about geometries in WKT when it's multipart
+* Fix the `lizmap_search` feature
+
+### Translations
+
+* Update from Transifex about translated strings
+
+### Backend
+
+* Upgrade our coding standards by fixing a lot of warnings from PHPStan
+* Update of Jelix 1.6
+
+### Tests
+
+* Improve the testing infrastructure
+* Upgrade to Cypress 9.5.3
+* Upgrade PHPStan
+
+## 3.5.2 - 2022-03-24
+
+### Fixed
+
+- Improve the image dialog upload size on tiny screens
+- Review the error message about the HTTP code from QGIS Server
+- Fix editing feature having an ID equal to 0
+- Fix when an attribute name is starting with a capital name
+- Do not show custom labels when printing from a popup about `lizmap_user` and `lizmap_user_groups`
 - Fix: HTTP Status Messages for lizmap service responses
 - Check version attribute in WxS request in XML to return error
-- Fix: GetProj4 request to get proj4 CRS defintion from QGIS project
+- Fix: GetProj4 request to get proj4 CRS definition from QGIS project
 - Speed up GetProjectConfig request by using cache for QGIS Server plugins data
 - Fix typo in English sentences
 - Do not send private user group to QGIS Server for access control
@@ -16,9 +66,13 @@
 
 ### Added
 
-- new method in AppContext to get user public groups id
+- New method in `AppContext` to get user public groups ID
 - Convert QGis XML Option value based on type attribute
 - Add a revision parameter on assets url for cache 
+
+### Backend
+
+- Upgrade jelix to 1.6.36
 
 ### Tests
 

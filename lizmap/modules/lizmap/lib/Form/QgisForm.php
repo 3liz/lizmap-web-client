@@ -82,7 +82,7 @@ class QgisForm implements QgisFormControlsInterface
             throw new \Exception('The layer "'.$layer->getName().'" is not an editable vector layer!');
         }
 
-        //Get the fields info
+        // Get the fields info
         $dbFieldsInfo = $layer->getDbFieldsInfo();
         // verifying db fields info
         if (!$dbFieldsInfo) {
@@ -954,7 +954,7 @@ class QgisForm implements QgisFormControlsInterface
 
                 break;
 
-            case 'float':
+            case 'decimal':
                 if (is_numeric($value)) {
                     $value = (float) $value;
                     if (!$value && $value !== 0.0) {
@@ -1007,6 +1007,7 @@ class QgisForm implements QgisFormControlsInterface
         if ($targetFullPath == '') {
             return 'NULL';
         }
+
         /** @var \jFormsControlUpload2 $uploadCtrl */
         $uploadCtrl = $form->getControl($ref);
         $filename = $form->getData($ref);
@@ -1245,14 +1246,23 @@ class QgisForm implements QgisFormControlsInterface
         // In lib/jelix/plugins/formwidget/menulist_html/menulist_html.formwidget.php
         // An empty value is added with these rules
         // if ($this->ctrl->emptyItemLabel !== null || !$this->ctrl->required)
-        // In lizmap, we add an empty value except for required allowMulti
-        // Lizmap does not take into account the QGIS configuration $formControl->valueRelationData['allowNull']
-        // because of the way empty value is added by Jelix
+        // To add an empty value to ValueRelation displayed as menulist, we only
+        // have to set an emptyItemLabel !== null
         $formControl->ctrl->emptyItemLabel = '';
-        if ($formControl->valueRelationData['allowMulti'] && $formControl->ctrl->required) {
-            $formControl->ctrl->emptyItemLabel = null;
-        }
+
+        // Create Datasource
         $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref);
+
+        // In lib/jelix/plugins/formwidget/checkboxes_html/checkboxes_html.formwidget.php
+        // no empty value is added by checking the value of the Jelix Control attributes
+        // emptyItemLabel and required
+        // To get an empty checkbox in the list of values like in QGIS, we have to force
+        // an empty value for ValueRelation not required with allowMulti and allowNull
+        if ($formControl->valueRelationData['allowMulti']
+            && $formControl->valueRelationData['allowNull']
+            && !$formControl->ctrl->required) {
+            $dataSource->setForceEmptyValue(true);
+        }
 
         // criteriaFrom based on current_value in filterExpression
         if (array_key_exists('filterExpression', $formControl->valueRelationData)
@@ -1273,9 +1283,9 @@ class QgisForm implements QgisFormControlsInterface
         // @FIXME Is this big comment useful or can we delete it  ?
         // Add default empty value for required fields
         // Jelix does not do it, but we think it is better this way to avoid unwanted set values
-        //if ($formControl->ctrl->required) {
+        // if ($formControl->ctrl->required) {
         //    $data[''] = '';
-        //}
+        // }
 
         /*
         $wfsData = null;

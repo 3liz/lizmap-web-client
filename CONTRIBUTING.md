@@ -6,20 +6,46 @@
 at https://lists.osgeo.org/pipermail/lizmap/
 - We are also hanging out on #lizmap on https://libera.chat
 
-## Pull request
+## Localization and translation
+
+### For the English language
+
+The locale files (except for `en_US` language) are stored into the `lizmap/app/locales` directory.
+The files are `*.properties`. You can find [documentation about localizing Jelix](https://docs.jelix.org/en/manual-1.6/locales).
+
+Locale files for `en_US` language are stored into modules directly (see `locales/`
+directory into sub-directories of `lizmap/modules/`).
+
+Only modifications on `en_US` locales are accepted in Pull Requests.
+
+### For other locales
+
+All locales are translated with [Transifex](https://www.transifex.com/) with the **help of the opensource community**.
+So to help us to translate, please go on Transifex, create an account and ask to join these projects :  
+
+- https://www.transifex.com/3liz-1/lizmap-locales/  to translate Lizmap Web Client and Lizmap QGIS plugin strings
+- https://www.transifex.com/3liz-1/jelix/ to translate Jelix strings (the web framework used in Lizmap Web Client)
+- https://www.transifex.com/3liz-1/lizmap-documentation/dashboard/ to translate the [documentation](https://docs.lizmap.com)
+
+If the language is not yet available, you **request** the language on Transifex.
+
+For **core developers**, see the repository https://github.com/3liz/lizmap-locales/
+and https://github.com/jelix/jelix-langpacks.
+
+## Source code about PHP/Javascript
 
 To contribute you should clone the 3liz/lizmap-web-client repository into your
 GitHub account. After adding some changes in a new branch (see Branches and Commits),
 you should do a pull request in GitHub.
 
-## Branches
+### Branches
 
 * New features are developed in `master` branch
 * `release_X_Y` branches are created for each stable version, for example `release_3_4` for Lizmap 3.4
 * Starting from January 2021, bug fixes must land on the `master` branch. To backport to a released branch,
   either use the backport bot or do the cheery-pick manually. It's your responsibility to check the backport.
 
-## Commits
+### Commits
 
 You should create commits in a new branch based on the `master` branch.
 
@@ -145,24 +171,5 @@ A docker-compose.yml file is provided, launching a full stack of softwares to
 run Lizmap (nginx, php-fpm, qgis, postgresql...).
 
 You can test with Android browsers in your Ubuntu Desktop thanks to [Anbox](https://docs.anbox.io/userguide/install.html#install-anbox).
-For example, you can [download a x86 version of Firefox Mobile](https://ftp.mozilla.org/pub/mobile/) then [install it](https://docs.anbox.io/userguide/install_apps.html#install-applications).
-
-## Localization
-
-The locale files (except for en_US language) are stored into the `lizmap/app/locales` directory.
-The files are `*.properties`. You can find documentation about localizing Jelix
-application here : https://docs.jelix.org/en/manual-1.6/locales.
-
-Locale files for en_US language are stored into modules directly (see `locales/`
-directory into sub-directories of `lizmap/modules/`).
-
-Only modifications on en_US locales are accepted in Pull Requests.
-
-All other locales are translated with Transifex. So to help us to translate, 
-please go on Transifex:  
-
-- https://www.transifex.com/3liz-1/lizmap-locales/  to translate Lizmap strings
-- https://www.transifex.com/3liz-1/jelix/ to translate Jelix strings
-
-For core developers, see the repository https://github.com/3liz/lizmap-locales/
-and https://github.com/jelix/jelix-langpacks.
+For example, you can [download a x86 version of Firefox Mobile](https://ftp.mozilla.org/pub/mobile/) then
+[install it](https://docs.anbox.io/userguide/install_apps.html#install-applications).

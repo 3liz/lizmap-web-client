@@ -124,7 +124,7 @@ class embedCtrl extends lizMapCtrl
     protected function getProjectDockables()
     {
         $assign = parent::getProjectDockables();
-        $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer', 'permaLink'); //, 'print', 'permaLink'
+        $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer', 'permaLink'); // , 'print', 'permaLink'
         $dAssign = array();
         foreach ($assign['dockable'] as $dock) {
             if (in_array($dock->id, $available)) {

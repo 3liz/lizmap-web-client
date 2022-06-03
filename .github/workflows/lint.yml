@@ -1,4 +1,4 @@
-name: "Lint"
+name: "🔤 Lint"
 
 on:
   push:
@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: "PHP-CS-Fixer"
-      uses: docker://oskarstark/php-cs-fixer-ga:2.19.0
+      uses: docker://oskarstark/php-cs-fixer-ga:3.8.0
       with:
-        args: --config=.php_cs.dist --allow-risky=yes --dry-run --diff -- lizmap/modules
+        args: --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff

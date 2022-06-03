@@ -17,7 +17,7 @@ class qgisVectorLayer extends qgisMapLayer
     protected $fields = array();
 
     /**
-     * @var string[] list of aliases name for each fields
+     * @var array<string, string> list of aliases name for each fields
      */
     protected $aliases = array();
 
@@ -102,7 +102,7 @@ class qgisVectorLayer extends qgisMapLayer
     /**
      * list of aliases.
      *
-     * @return string[]
+     * @return array<string, string>
      */
     public function getAliasFields()
     {
@@ -731,7 +731,7 @@ class qgisVectorLayer extends qgisMapLayer
         foreach ($values as $ref => $value) {
             // For insert, only for not NULL values to allow serial and default values to work
             if ($value !== 'NULL') {
-                $insert[] = $value; //FIXME no $cnx->quote($value) ?
+                $insert[] = $value; // FIXME no $cnx->quote($value) ?
                 $refs[] = $cnx->encloseName($ref);
                 // For log
                 if (in_array($ref, $primaryKeys)) {

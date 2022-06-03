@@ -42,63 +42,66 @@ class main_viewZone extends jZone
         // Get excluded project
         $excludedProject = $this->param('excludedProject');
         foreach ($repositories as $r) {
-            if (jAcl2::check('lizmap.repositories.view', $r)) {
-                $lrep = lizmap::getRepository($r);
-                $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
+            // Check if the repository can be viewed
+            if (!jAcl2::check('lizmap.repositories.view', $r)) {
+                continue;
+            }
 
-                // WMS GetCapabilities Url
-                $wmsGetCapabilitiesUrl = jAcl2::check(
-                    'lizmap.tools.displayGetCapabilitiesLinks',
-                    $lrep->getKey()
-                );
-                $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
+            $lrep = lizmap::getRepository($r);
+            $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
 
-                $metadata = $lrep->getProjectsMetadata();
-                foreach ($metadata as $meta) {
-                    // Avoid project with no access rights
-                    if (!$meta->getAcl()) {
-                        continue;
-                    }
+            // WMS GetCapabilities Url
+            $wmsGetCapabilitiesUrl = jAcl2::check(
+                'lizmap.tools.displayGetCapabilitiesLinks',
+                $lrep->getKey()
+            );
+            $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
 
-                    // Hide project with option "hideProject"
-                    if ($meta->getHidden()) {
-                        continue;
-                    }
-
-                    // Get project information
-                    if ($wmsGetCapabilitiesUrl) {
-                        $wmsGetCapabilitiesUrl = $meta->getWMSGetCapabilitiesUrl();
-                        $wmtsGetCapabilitiesUrl = $meta->getWMTSGetCapabilitiesUrl();
-                    }
-                    if ($lrep->getKey().'~'.$meta->getId() != $excludedProject) {
-                        $mrep->childItems[] = new lizmapMainViewItem(
-                            $meta->getId(),
-                            $meta->getTitle(),
-                            $meta->getAbstract(),
-                            $meta->getKeywordList(),
-                            $meta->getProj(),
-                            $meta->getBbox(),
-                            jUrl::get('view~map:index', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
-                            jUrl::get('view~media:illustration', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
-                            0,
-                            $r,
-                            'map',
-                            $wmsGetCapabilitiesUrl,
-                            $wmtsGetCapabilitiesUrl
-                        );
-                        /*} else {
-                          $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
-                            array(
-                              "repository"=>$lrep->getKey(),
-                              "project"=>$meta->getId(),
-                            )
-                          ) );*/
-                    }
+            $metadata = $lrep->getProjectsMetadata();
+            foreach ($metadata as $meta) {
+                // Avoid project with no access rights
+                if (!$meta->getAcl()) {
+                    continue;
                 }
-                if (count($mrep->childItems) != 0) {
-                    usort($mrep->childItems, 'lizmapMainViewItem::mainViewItemSort');
-                    $maps[$r] = $mrep;
+
+                // Hide project with option "hideProject"
+                if ($meta->getHidden()) {
+                    continue;
                 }
+
+                // Get project information
+                if ($wmsGetCapabilitiesUrl) {
+                    $wmsGetCapabilitiesUrl = $meta->getWMSGetCapabilitiesUrl();
+                    $wmtsGetCapabilitiesUrl = $meta->getWMTSGetCapabilitiesUrl();
+                }
+                if ($lrep->getKey().'~'.$meta->getId() != $excludedProject) {
+                    $mrep->childItems[] = new lizmapMainViewItem(
+                        $meta->getId(),
+                        $meta->getTitle(),
+                        $meta->getAbstract(),
+                        $meta->getKeywordList(),
+                        $meta->getProj(),
+                        $meta->getBbox(),
+                        jUrl::get('view~map:index', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
+                        jUrl::get('view~media:illustration', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
+                        0,
+                        $r,
+                        'map',
+                        $wmsGetCapabilitiesUrl,
+                        $wmtsGetCapabilitiesUrl
+                    );
+                    /*} else {
+                        $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
+                        array(
+                            "repository"=>$lrep->getKey(),
+                            "project"=>$meta->getId(),
+                        )
+                        ) );*/
+                }
+            }
+            if (count($mrep->childItems) != 0) {
+                usort($mrep->childItems, 'lizmapMainViewItem::mainViewItemSort');
+                $maps[$r] = $mrep;
             }
         }
 

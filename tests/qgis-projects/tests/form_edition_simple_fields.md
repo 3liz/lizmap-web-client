@@ -1,6 +1,6 @@
 # Creating/editing geometries/attributes
 
-**Project : form_edition_simple_field**
+**Project : form_edition_simple_fields**
 
 ## Procedure
 

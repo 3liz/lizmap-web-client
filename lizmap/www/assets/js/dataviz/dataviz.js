@@ -20,6 +20,8 @@ var lizDataviz = function() {
         if(!dv.config.layers)
             return false;
         for( var i in dv.config.layers) {
+            // initialize plot info
+            dv.plots[i] = {'json': null, 'filter': null, 'show_plot': true, 'cache': null};
             if (!( optionToBoolean(dv.config.layers[i]['only_show_child']) )) {
                 addPlotContainer(i);
             }
@@ -184,7 +186,8 @@ var lizDataviz = function() {
                 }
 
                 // Build plot
-                var plot = buildPlot(target_id, json);
+                // Pass plot_id to inherit custom configurations in child charts
+                var plot = buildPlot(target_id, json, plot_id);
                 $('#'+target_id).prev('.dataviz-waiter:first').hide();
             }
         );
@@ -295,7 +298,7 @@ var lizDataviz = function() {
         return pid;
     }
 
-    function buildPlot(id, conf){
+    function buildPlot(id, conf, pid = null){
         // Build plot with plotly or lizmap
         if(conf.data.length && conf.data[0]['type'] == 'html'){
             buildHtmlPlot(id, conf.data, conf.layout);
@@ -332,7 +335,8 @@ var lizDataviz = function() {
 
             // Apply user defined layout
             // We need to get the plot Lizmap config from its container id
-            var pid = getPlotIdByContainerId(id);
+            pid = pid != null ? pid : getPlotIdByContainerId(id);
+
             // Do nothing if pid not found
             if (pid == null) {
                 return;
@@ -525,8 +529,8 @@ var lizDataviz = function() {
 
     var obj = {
 
-        buildPlot: function(id, conf) {
-          return buildPlot(id, conf);
+        buildPlot: function(id, conf, pid = null) {
+          return buildPlot(id, conf, pid);
         },
         buildPlotContainerHtml: function(title, abstract, target_id, with_title) {
           return buildPlotContainerHtml(title, abstract, target_id, with_title);
