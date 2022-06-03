@@ -175,10 +175,17 @@ You can also use GNU Parallel to parallelize Cypress tests execution on 8 cores 
 
 Output colors can be kept with `--tty` parameter but it won't work with `--group` which is useful to not mix outputs from different tests.
 
+### Artifacts
+
+When GitHub Action is failing, all screenshots and downloaded files are uploaded in an ZIP.
+It's available in the CI **Summary page** of the CI job, with a zip called `cypress-screenshots.zip`.
+
 ### Mouse coordinates
 
 It's possible to use the [Coords](https://addons.mozilla.org/fr/firefox/addon/coords/) Firefox plugin to get mouse coordinates.
+
 You need to be sure to use the same viewport size as Cypress : `1280 * 800 DPR 1`. We suggest you to save this configuration as `Cypress`.
+
 In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` function using coordinates
 
 ## Manual tests
