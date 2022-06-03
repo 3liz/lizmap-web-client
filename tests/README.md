@@ -210,9 +210,9 @@ Output colors can be kept with `--tty` parameter but it won't work with `--group
 
 ### Mouse coordinates
 
-It's possible to use the [Coords](https://addons.mozilla.org/fr/firefox/addon/coords/) FireFox plugin.
-You need to be sure to use the same viewport size as Cypress : 1280 * 800 DPR 1.
-To click on the map, it's recommended to use the `cy.mapClick(x,y)` function.
+It's possible to use the [Coords](https://addons.mozilla.org/fr/firefox/addon/coords/) Firefox plugin to get mouse coordinates.
+You need to be sure to use the same viewport size as Cypress : `1280 * 800 DPR 1`. We suggest you to save this configuration as `Cypress`.
+In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` function using coordinates
 
 ## Manual tests
 
