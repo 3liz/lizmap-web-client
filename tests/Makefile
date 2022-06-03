@@ -40,9 +40,7 @@ env:
 
 
 build-plugins: 
-	if [ ! -d qgis-server-plugins/lizmap ]; then
-		./add_server_plugins.sh
-	fi
+	./add_server_plugins.sh
 
 up: env
 	docker-compose up  -V --force-recreate -d
