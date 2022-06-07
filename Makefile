@@ -252,6 +252,9 @@ docker-hub:
 php-cs-fixer-test:
 	php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
 
+php-cs-fixer-test-docker:
+	docker run --rm -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php  --dry-run --diff
+
 php-cs-fixer-apply:
 	php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes
 

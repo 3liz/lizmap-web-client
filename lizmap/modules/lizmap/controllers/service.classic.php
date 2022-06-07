@@ -71,15 +71,8 @@ class serviceCtrl extends jController
         }
 
         $requestXml = null;
-        global $HTTP_RAW_POST_DATA;
-        if (isset($HTTP_RAW_POST_DATA)) {
-            $requestXml = $HTTP_RAW_POST_DATA;
-        } elseif (isset($_SERVER['CONTENT_TYPE'])) {
-            $contentType = $_SERVER['CONTENT_TYPE'];
-            if (strpos($contentType, 'text/xml') === 0) {
-                $requestXml = file('php://input');
-                $requestXml = implode("\n", $requestXml);
-            }
+        if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'text/xml') === 0) {
+            $requestXml = $this->request->getBody();
         }
 
         $ogcRequest = \Lizmap\Request\Proxy::build($this->project, $this->params, $requestXml);

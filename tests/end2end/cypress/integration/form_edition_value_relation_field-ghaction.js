@@ -43,7 +43,7 @@ describe('Form edition all field type', function() {
 
     it('Child field menulist after parent select', function () {
         // Intercept getListData query to wait for its end
-        cy.intercept('/index.php/jelix/jforms/getListData*').as('getListData')
+        cy.intercept('/index.php/jelix/forms/getdata*').as('getListData')
 
         // Select A in parent field
         cy.get('#jforms_view_edition_code_for_drill_down_exp').select('A').should('have.value', 'A')
@@ -82,7 +82,7 @@ describe('Form edition all field type', function() {
         cy.wait(800)
 
         // Intercept getListData query to wait for its end
-        cy.intercept('/index.php/jelix/jforms/getListData*').as('getListData')
+        cy.intercept('/index.php/jelix/forms/getdata*').as('getListData')
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone A1')
@@ -164,7 +164,7 @@ describe('Form edition all field type', function() {
         cy.wait(800)
 
         // Intercept getListData query to wait for its end
-        cy.intercept('/index.php/jelix/jforms/getListData*').as('getListData')
+        cy.intercept('/index.php/jelix/forms/getdata*').as('getListData')
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone A1')
