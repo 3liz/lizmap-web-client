@@ -4,7 +4,8 @@
 
 ### Fixed
 
-* Fix the download of files (layer export, PDF) depending on the web-browser (and its version) 
+* Fix the download of files (layer export, PDF) depending on the web-browser (and its version)
+* Selected theme can be selected again without selecting another one before
 
 ### Tests
 
