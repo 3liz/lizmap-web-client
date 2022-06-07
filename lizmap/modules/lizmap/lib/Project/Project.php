@@ -1305,6 +1305,7 @@ class Project
             return $config;
         }
 
+        $countPlotOnlyChild = 0;
         foreach ($datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {
                 continue;
@@ -1352,6 +1353,7 @@ class Project
             }
             if (property_exists($lc, 'only_show_child')) {
                 $plotConf['only_show_child'] = $lc->only_show_child;
+                ++$countPlotOnlyChild;
             }
 
             $abstract = $layer->abstract;
@@ -1413,6 +1415,10 @@ class Project
         $theme = $this->cfg->getOption('theme');
         if (in_array($theme, array('dark', 'light'))) {
             $config['dataviz']['theme'] = $theme;
+        }
+
+        if ($countPlotOnlyChild === count($config['layers'])) {
+            $config['dataviz']['location'] = 'only-popup';
         }
 
         return $config;
