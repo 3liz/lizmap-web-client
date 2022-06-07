@@ -4,7 +4,7 @@
 
 A docker configuration is provided to launch Lizmap into a container.
 
-This docker-compose project is using :
+This Docker Compose project is using :
 
 * [3liz/postgis](https://hub.docker.com/r/3liz/postgis/tags)
 * [3liz/qgis-map-server](https://hub.docker.com/r/3liz/qgis-map-server/tags)
@@ -22,8 +22,8 @@ cd GIT && git clone https://github.com/3liz/lizmap-web-client.git --config core.
 # Go to tests repository
 cd lizmap-web-client/tests/
 # Download Lizmap plugin for QGIS Server (https://packages.3liz.org/pub/lizmap-qgis-plugin/master/lizmap-qgis-plugin.master.zip) and unzip the content in `qgis-server-plugins/` directory
-# Launch Lizmap Web Client with docker-compose
-docker-compose --env-file .env.windows up
+# Launch Lizmap Web Client with docker compose
+docker compose --env-file .env.windows up
 # You can now go to http://localhost:8130 and test!
 
 # Later, you can get the latest changes in Lizmap Web Client with:
