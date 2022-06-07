@@ -253,7 +253,7 @@ var lizLayerActionButtons = function() {
                 $('#switcher-layers-actions').prepend(themeSelector);
 
                 // Handle theme switching
-                $('#theme-selector').on('click', '.theme:not(.selected)', function () {
+                $('#theme-selector').on('click', '.theme', function () {
                 // Set theme as selected
                     $('#theme-selector .theme').removeClass('selected');
                     $(this).addClass('selected');
