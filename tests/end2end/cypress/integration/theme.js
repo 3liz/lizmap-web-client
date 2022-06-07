@@ -13,10 +13,10 @@ describe('Theme', () => {
         cy.get('#group-group1 > td:nth-child(1) > button').should('not.have.class', 'checked')
         cy.get('#layer-sousquartiers > td:nth-child(1) > button').should('not.have.class', 'checked')
 
-        cy.get('#layer-quartiers > td:nth-child(1) > button').should('have.class', 'checked')
+        cy.get('#layer-Les_quartiers > td:nth-child(1) > button').should('have.class', 'checked')
 
         // Assert layer style is correctly selected
-        cy.get('#layer-quartiers').click()
+        cy.get('#layer-Les_quartiers').click()
 
         cy.get('#sub-dock select.styleLayer option[value="style1"]').should('have.attr', 'selected')
     })
@@ -34,10 +34,10 @@ describe('Theme', () => {
         cy.get('#group-group1 > td:nth-child(1) > button').should('have.class', 'checked')
         cy.get('#layer-sousquartiers > td:nth-child(1) > button').should('have.class', 'checked')
 
-        cy.get('#layer-quartiers > td:nth-child(1) > button').should('have.class', 'checked')
+        cy.get('#layer-Les_quartiers > td:nth-child(1) > button').should('have.class', 'checked')
 
         // Assert layer style is correctly selected
-        cy.get('#layer-quartiers').click()
+        cy.get('#layer-Les_quartiers').click()
 
         cy.get('#sub-dock select.styleLayer option[value="style2"]').should('have.attr', 'selected')
     })
