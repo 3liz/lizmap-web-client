@@ -35,7 +35,7 @@ class defaultCtrl extends jController
             if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
                 try {
                     $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
-                    if ($project) {
+                    if ($project && $project->checkAcl()) {
                         // test redirection to an other controller
                         $items = jEvent::notify('mainviewGetMaps')->getResponse();
                         foreach ($items as $item) {
@@ -52,6 +52,7 @@ class defaultCtrl extends jController
 
                         return $rep;
                     }
+                    jMessage::add('The \'only maps\' option is not well configured!', 'error');
                 } catch (UnknownLizmapProjectException $e) {
                     jMessage::add('The \'only maps\' option is not well configured!', 'error');
                     jLog::logEx($e, 'error');
