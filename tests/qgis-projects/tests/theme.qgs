@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis saveUserFull="nboisteault" projectname="" version="3.22.4-Białowieża" saveUser="nboisteault" saveDateTime="2022-06-07T16:16:28">
+<qgis saveUserFull="nboisteault" projectname="" version="3.22.4-Białowieża" saveUser="nboisteault" saveDateTime="2022-06-07T17:51:44">
   <homePath path=""/>
   <title></title>
   <autotransaction active="0"/>
@@ -34,7 +34,7 @@
         </customproperties>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-layer expanded="1" patch_size="-1,-1" name="quartiers" source="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" providerKey="postgres" legend_exp="" id="quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d" legend_split_behavior="0" checked="Qt::Checked">
+    <layer-tree-layer expanded="1" patch_size="-1,-1" name="Les quartiers" source="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" providerKey="postgres" legend_exp="" id="quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d" legend_split_behavior="0" checked="Qt::Checked">
       <customproperties>
         <Option type="Map">
           <Option name="expandedLegendNodes"/>
@@ -88,7 +88,7 @@
         </filegroup>
       </legendlayer>
     </legendgroup>
-    <legendlayer drawingOrder="-1" open="true" name="quartiers" showFeatureCount="0" checked="Qt::Checked">
+    <legendlayer drawingOrder="-1" open="true" name="Les quartiers" showFeatureCount="0" checked="Qt::Checked">
       <filegroup open="true" hidden="false">
         <legendlayerfile isInOverview="0" visible="1" layerid="quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d"/>
       </filegroup>
@@ -162,10 +162,11 @@
       </wgs84extent>
       <id>quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d</id>
       <datasource>service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
+      <shortname>quartiers</shortname>
       <keywordList>
         <value></value>
       </keywordList>
-      <layername>quartiers</layername>
+      <layername>Les quartiers</layername>
       <srs>
         <spatialrefsys>
           <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
@@ -464,8 +465,8 @@
       <customproperties>
         <Option type="Map">
           <Option value="0" type="int" name="embeddedWidgets/count"/>
-          <Option type="invalid" name="variableNames"/>
-          <Option type="invalid" name="variableValues"/>
+          <Option name="variableNames"/>
+          <Option name="variableValues"/>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
