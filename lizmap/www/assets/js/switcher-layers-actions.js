@@ -297,7 +297,7 @@ var lizLayerActionButtons = function() {
                                     // Style
                                     if ('style' in themeSelected.layers[layerId]) {
                                         var layerStyle = themeSelected.layers[layerId]['style'];
-                                        var layers = lizMap.map.getLayersByName(layerName);
+                                        var layers = lizMap.map.getLayersByName(lizMap.cleanName(layerName));
                                         if (layers.length == 0) {
                                             continue;
                                         }
