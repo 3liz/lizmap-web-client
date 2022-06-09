@@ -155,6 +155,15 @@ describe('Request service', function () {
                 expect(resp.body).to.contain('WMS_Capabilities')
                 expect(resp.body).to.contain('version="1.3.0"')
             })
+
+        // Project with config.options.hideProject: "True"
+        cy.request('/index.php/lizmap/service/?repository=testsrepository&project=hide_project&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities')
+            .then((resp) => {
+                expect(resp.status).to.eq(200)
+                expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.body).to.contain('WMS_Capabilities')
+                expect(resp.body).to.contain('version="1.3.0"')
+            })
     })
 
     it('WMTS GetCapabilities', function () {
@@ -170,6 +179,15 @@ describe('Request service', function () {
 
     it('WFS GetCapabilities', function () {
         cy.request('/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities')
+            .then((resp) => {
+                expect(resp.status).to.eq(200)
+                expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.body).to.contain('WFS_Capabilities')
+                expect(resp.body).to.contain('version="1.0.0"')
+            })
+
+        // Project with config.options.hideProject: "True"
+        cy.request('/index.php/lizmap/service/?repository=testsrepository&project=hide_project&SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities')
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
