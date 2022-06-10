@@ -9,7 +9,7 @@
 */
 
 
-var lizMap = function() {
+window.lizMap = function() {
   /**
    * PRIVATE Property: config
    * {object} The map config
