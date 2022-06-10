@@ -3294,6 +3294,11 @@ var lizMap = function() {
             queryVisible: true,
             infoFormat: 'text/html',
             vendorParams: getFeatureInfoTolerances(),
+            handlerOptions: {
+              click: {
+                pixelTolerance: 10
+              }
+            },
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var eventLonLatInfo = map.getLonLatFromPixel(event.xy);
