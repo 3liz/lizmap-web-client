@@ -9,13 +9,6 @@ describe('Request Lizmap GetProjectConfig', function () {
             expect(resp.status).to.eq(200)
             expect(resp.headers['content-type']).to.eq('application/json')
 
-            expect(resp.body).to.have.property('metadata')
-            expect(resp.body.metadata).to.have.property('lizmap_plugin_version')
-            expect(resp.body.metadata).to.have.property('lizmap_plugin_version_str')
-            expect(resp.body.metadata).to.have.property('lizmap_web_client_target_version')
-            expect(resp.body.metadata).to.have.property('project_valid')
-            expect(resp.body.metadata).to.have.property('qgis_desktop_version')
-
             expect(resp.body).to.have.property('options')
             expect(resp.body.options).to.have.property('hideProject', 'True')
             expect(resp.body.options).to.have.property('bbox')
