@@ -214,4 +214,26 @@ describe('Projects homepage', function () {
         cy.get('.liz-repository-project-item:visible .liz-project-title').contains('project_acl').should('not.exist');
         cy.logout();
     })
+
+    it('Check hide_project visibility, it has to never been displayed because config.options.hideProject:"True"', function () {
+        cy.logout();
+        cy.visit('/index.php/view/');
+        cy.get('.liz-repository-project-item:visible .liz-project-title').contains('hide_project').should('not.exist');
+
+        cy.loginAsUserA();
+        cy.visit('/index.php/view/');
+        cy.get('.liz-repository-project-item:visible .liz-project-title').contains('hide_project').should('not.exist');
+
+        cy.loginAsAdmin();
+        cy.visit('/index.php/view/');
+        cy.get('.liz-repository-project-item:visible .liz-project-title').contains('hide_project').should('not.exist');
+        cy.logout();
+
+        // try to go to the hide_project map view
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=hide_project')
+        // redirection to home page
+        cy.url().should('eq', Cypress.config().baseUrl + '/index.php/view/')
+        // with alert error div
+        cy.get('#content div.alert.alert-block.alert-error').should('length', 1)
+    })
 })
