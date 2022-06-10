@@ -2277,3 +2277,5 @@ lizEditionErrorDecorator.prototype = {
         }
     }
 };
+
+window.lizEditionErrorDecorator = lizEditionErrorDecorator;
