@@ -16,6 +16,10 @@ lizMap.events.on({
                 // Atlas print link already exist
                 return true;
             }
+            if($(this).find('input.lizmap-popup-layer-feature-id').length == 0) {
+                // The feature id is not found
+                return true;
+            }
 
             var getLayerId = $(this).find('input.lizmap-popup-layer-feature-id:first').val().split('.');
             var layerId = getLayerId[0];
