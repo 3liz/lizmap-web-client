@@ -34,8 +34,7 @@
     * **QGIS Log file** written when loading the project
   * Funded by **Valabre** (Centre de gravité de la formation des métiers de la Sécurité Civile,
     de la Recherche, des Nouvelles Technologies et de la Prévention dans le domaine des risques naturels)
-* **Layer legend**: Enable auto display the legend image for a layer
-…ge at startup
+* **Layer legend**: Enable auto display the legend image for a layer at startup
 * **Edition**: New button to restart drawing geometry - Provide the capability to update geometry with GPS and form coordinates
 * New `-dry-run` for the cache generation to see how many tiles might be generated
 
