@@ -2,9 +2,29 @@
 
 ## Unreleased
 
+### Added
+
+* New `-dry-run` for the cache generation to see how many tiles might be generated
+
+### Changed
+
+* Improve the table in the right's management panel when having a dozen of groups
+* Add tolerance for clicking on mobile to get the popup
+
 ### Fixed
 
 * Fix the download of files (layer export, PDF) depending on the web-browser (and its version) 
+* CLI tool about cache : fix an issue about the `-bbox` parameter out of the tile matrix limit
+* Provide the dataviz button in the left menu only there is at least one non filtered dataviz
+* The style was not updated when the layer has a shortname and was included in a QGIS theme
+
+### Backend
+
+* Update Jelix to version 1.6.37
+
+### Translations
+
+* Update from Transifex about translated strings
 
 ### Tests
 
