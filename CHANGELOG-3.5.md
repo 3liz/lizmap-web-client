@@ -9,6 +9,7 @@
 ### Changed
 
 * Improve the table in the right's management panel when having a dozen of groups
+* Minify legacy JS files to save 400Ko in best case. This reduces first page load
 * Add tolerance for clicking on mobile to get the popup
 
 ### Fixed
