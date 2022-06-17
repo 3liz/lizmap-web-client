@@ -1790,6 +1790,8 @@ ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT n
 
 COPY tests_projects.children_layer (id, parent_id, comment) FROM stdin;
 1	2	\N
+2	1	first comment
+3	1	second comment
 \.
 
 
@@ -2278,7 +2280,7 @@ COPY tests_projects.tramway_stops (id_stop, geom) FROM stdin;
 -- Name: children_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.children_layer_id_seq', 1, true);
+SELECT pg_catalog.setval('tests_projects.children_layer_id_seq', 3, true);
 
 
 --

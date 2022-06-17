@@ -19,4 +19,8 @@ describe('Popup', function() {
         cy.get('#popup_dd_1_tab2').should('have.class', 'active')
     })
 
+    it('displays children popups', function(){
+        cy.get('#liz_layer_popup .lizmapPopupChildren .lizmapPopupSingleFeature').should('have.length', 2)
+    })
+
 })
