@@ -352,7 +352,7 @@ class ProjectConfig
     public function getEditionLayerByName($name)
     {
         $editionLayers = $this->editionLayers;
-        if ($editionLayers && property_exists($editionLayers, $name)) {
+        if ($editionLayers && $name && property_exists($editionLayers, $name)) {
             return $editionLayers->{$name};
         }
 

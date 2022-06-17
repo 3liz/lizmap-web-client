@@ -108,8 +108,7 @@ class lizAjaxCtrl extends jController
         $rep = $this->getResponse('htmlfragment');
 
         // Get the project
-        $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
-
+        $project = htmlspecialchars(strip_tags($this->param('project')));
         // Get repository data
         $repository = $this->param('repository');
 

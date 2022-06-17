@@ -996,7 +996,7 @@ class Project
 
     public function getLoginFilteredConfig($layerName)
     {
-        if (!$this->hasLoginFilteredLayers()) {
+        if (!$this->hasLoginFilteredLayers() || $layerName === null || $layerName === '') {
             return null;
         }
 
