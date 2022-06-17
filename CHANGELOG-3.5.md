@@ -19,6 +19,7 @@
 * The style was not updated when the layer has a shortname and was included in a QGIS theme
 * CLI tool about cache : fix an issue about the `-bbox` parameter out of the tile matrix limit
 * Provide the dataviz button in the left menu only there is at least one non filtered dataviz
+* Children popups were not displayed when layer had shortname
 * Javascript error when clicking on an atlas link when no feature ID was found
 
 ### Backend
