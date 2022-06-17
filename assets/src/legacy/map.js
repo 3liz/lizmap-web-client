@@ -3036,24 +3036,20 @@ window.lizMap = function() {
           const rConfigLayerAll = [];
 
           // Build POST query for every child based on QGIS relations
-          for ( var i=0, len=relations.length; i<len; i++ ){
-              var r = relations[i];
-              var rLayerId = r.referencingLayer;
-              var rGetLayerConfig = getLayerConfigById( rLayerId );
+          for ( const relation of relations ){
+              const rLayerId = relation.referencingLayer;
+              const rGetLayerConfig = getLayerConfigById( rLayerId );
               if ( rGetLayerConfig ) {
-                  var rConfigLayer = rGetLayerConfig[1];
-                  var clname = rConfigLayer.cleanname;
+                  const rConfigLayer = rGetLayerConfig[1];
+                  let clname = rConfigLayer?.shortname || rConfigLayer.cleanname;
                   if ( clname === undefined ) {
                       clname = cleanName(configLayer.name);
                       rConfigLayer.cleanname = clname;
                   }
                   if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
-                      var qLayerName = rConfigLayer.name;
-                      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
-                          qLayerName = layerIdMap[rConfigLayer.name];
-                      var wmsOptions = {
-                            'LAYERS': qLayerName
-                          ,'QUERY_LAYERS': qLayerName
+                      const wmsOptions = {
+                            'LAYERS': clname
+                          ,'QUERY_LAYERS': clname
                           ,'STYLES': ''
                           ,'SERVICE': 'WMS'
                           ,'VERSION': '1.3.0'
@@ -3070,9 +3066,9 @@ window.lizMap = function() {
                           wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
                       if ( rConfigLayer.request_params && rConfigLayer.request_params.filter &&
                             rConfigLayer.request_params.filter !== '' )
-                          wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
+                          wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
                       else
-                          wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
+                          wmsOptions['FILTER'] = clname+':"'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
 
                     var parentDiv = self.parent();
 
