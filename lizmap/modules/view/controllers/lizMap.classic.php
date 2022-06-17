@@ -43,7 +43,7 @@ class lizMapCtrl extends jController
         $ok = true;
 
         // Get the project
-        $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
+        $project = htmlspecialchars(strip_tags($this->param('project')));
 
         // Get repository data
         $repository = $this->param('repository');
@@ -329,9 +329,13 @@ class lizMapCtrl extends jController
         }
 
         // Override default theme with color set in admin panel
-        if ($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/').'theme.css')) {
-            $css = '<style type="text/css">'.$cssContent.'</style>';
-            $rep->addHeadContent($css);
+        $CSSThemeFile = jApp::varPath('lizmap-theme-config/').'theme.css';
+        if (file_exists($CSSThemeFile)) {
+            $cssContent = file_get_contents($CSSThemeFile);
+            if ($cssContent) {
+                $css = '<style type="text/css">'.$cssContent.'</style>';
+                $rep->addHeadContent($css);
+            }
         }
 
         // Override default theme by themes found in folder media/themes/...

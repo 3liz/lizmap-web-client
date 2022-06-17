@@ -69,7 +69,7 @@ class geobookmarkCtrl extends jController
         $ok = true;
 
         // Check name
-        $name = filter_var($this->param('name'), FILTER_SANITIZE_STRING);
+        $name = htmlspecialchars(strip_tags($this->param('name')));
         if (empty($name)) {
             $ok = false;
             jMessage::add('Please give a name', 'error');
@@ -81,7 +81,7 @@ class geobookmarkCtrl extends jController
             $record->name = $name;
             $params = array();
             foreach ($this->whiteParams as $param) {
-                $val = filter_var($this->param($param), FILTER_SANITIZE_STRING);
+                $val = htmlspecialchars(strip_tags($this->param($param)));
                 $params[$param] = $val;
             }
             $record->map = $params['repository'].':'.$params['project'];

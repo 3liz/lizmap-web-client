@@ -30,9 +30,12 @@ class landing_page_contentCtrl extends jController
         $form = jForms::create('admin~landing_page_content');
 
         // Get HTML content
-        $HTMLContent = jFile::read(jApp::varPath('lizmap-theme-config/landing_page_content.html'));
-        if ($HTMLContent) {
-            $form->setData('HTMLContent', $HTMLContent);
+        $HTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content.html');
+        if (file_exists($HTMLContentFile)) {
+            $HTMLContent = jFile::read($HTMLContentFile);
+            if ($HTMLContent) {
+                $form->setData('HTMLContent', $HTMLContent);
+            }
         }
 
         $tpl = new jTpl();
