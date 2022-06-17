@@ -1,19 +1,19 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
-ARG composer_version=2.2.7
+ARG composer_version=2.3.7
 ARG lizmap_user_id
 ARG lizmap_group_id
 
 ENV LIZMAP_USER_ID=${lizmap_user_id}
 ENV LIZMAP_GROUP_ID=${lizmap_group_id}
-ENV PHP_VERSION=7.4
+ENV PHP_VERSION=8.1
 
 RUN set -eux; \
 	apt-get update; \
     apt-get -y install apt-transport-https lsb-release ca-certificates curl wget git unzip; \
     wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg; \
     sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'; \
-    apt-get update;
+    apt-get  update;
 
 RUN apt-get -y install \
     php${PHP_VERSION}-cli \
@@ -21,7 +21,6 @@ RUN apt-get -y install \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-gd \
     php${PHP_VERSION}-intl \
-    php${PHP_VERSION}-json \
     php${PHP_VERSION}-ldap \
     php${PHP_VERSION}-mbstring \
     php${PHP_VERSION}-pgsql \
@@ -47,7 +46,7 @@ RUN set -eux; \
     useradd --uid $LIZMAP_USER_ID --gid $LIZMAP_GROUP_ID usertest ; \
     mkdir -p /etc/openldap/ /etc/ssl/ldap/; \
     chmod 755 /etc/openldap/ /etc/ssl/ldap/; \
-    ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm7; \
+    ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm; \
     mkdir -p /run/php/ /srv/sqlite_ext; \
     sed -i "/^;sqlite3.extension_dir =/c\sqlite3.extension_dir = \/srv\/sqlite_ext\/" /etc/php/${PHP_VERSION}/fpm/php.ini; \
     cp /usr/lib/x86_64-linux-gnu/mod_spatialite.so /srv/sqlite_ext/mod_spatialite.so
@@ -61,4 +60,4 @@ RUN chmod 755 /bin/entrypoint.sh /bin/appctl.sh
 
 WORKDIR /srv/lzm/
 ENTRYPOINT ["/bin/entrypoint.sh"]
-CMD ["/usr/sbin/php-fpm7", "-F", "-O"]
+CMD ["/usr/sbin/php-fpm", "-F", "-O"]
