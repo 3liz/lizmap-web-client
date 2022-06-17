@@ -501,7 +501,7 @@ class QgisForm implements QgisFormControlsInterface
                 $form->getControl($ref)->setDataFromDao($value, 'boolean');
             }
             // ValueRelation can be an array (i.e. {1,2,3} or {'foo', 'bar'})
-            elseif ($this->formControls[$ref]->isValueRelation() && strpos($value, '{') === 0) {
+            elseif ($this->formControls[$ref]->isValueRelation() && is_string($value) && strpos($value, '{') === 0) {
                 $arrayValue = explode(',', trim($value, '{}'));
                 // Depending on the QGIS version or values,
                 // QGIS also enclose each single value with double-quotes
@@ -933,7 +933,7 @@ class QgisForm implements QgisFormControlsInterface
             case 'date':
             case 'time':
             case 'datetime':
-                $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+                $value = htmlspecialchars(strip_tags($value), ENT_NOQUOTES);
                 if (!$value) {
                     $value = 'NULL';
                 } else {
@@ -987,7 +987,7 @@ class QgisForm implements QgisFormControlsInterface
 
             default:
                 $value = $cnx->quote(
-                    filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+                    htmlspecialchars(strip_tags($value), ENT_NOQUOTES)
                 );
 
                 break;

@@ -29,6 +29,7 @@ class dummyForm
 
     public function getSelector()
     {
+        return 'test~dummy';
     }
 
     public function getContainer()
