@@ -54,6 +54,7 @@
 
 ### Backend
 
+* support of PHP 7.4 to 8.1
 * Lizmap QGIS server plugin has been split in two different plugins : server and desktop
 * Internal PHP code
   * New method in `AppContext` to get user public groups id
