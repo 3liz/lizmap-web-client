@@ -4,6 +4,20 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('application/json')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(undefined)
+
+                const etag = resp.headers['etag']
+                cy.request({
+                    url: '/index.php/lizmap/service/getProjectConfig?repository=testsrepository&project=selection',
+                    headers: {
+                        'If-None-Match': etag,
+                    },
+                    failOnStatusCode: false,
+                }).then((resp) => {
+                    expect(resp.status).to.eq(304)
+                    expect(resp.body).to.have.length(0)
+                })
             })
     })
 
@@ -20,7 +34,28 @@ describe('Request service', function () {
         }).then((resp) => {
             expect(resp.status).to.eq(200)
             expect(resp.headers['content-type']).to.contain('text/plain')
+            expect(resp.headers['cache-control']).to.eq('no-cache')
+            expect(resp.headers['etag']).to.not.eq(undefined)
+
             expect(resp.body).to.contain('+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs')
+
+            const etag = resp.headers['etag']
+            cy.request({
+                url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+                qs: {
+                    'SERVICE': 'WMS',
+                    'VERSION': '1.3.0',
+                    'REQUEST': 'GetProj4',
+                    'AUTHID': 'EPSG:2154',
+                },
+                headers: {
+                    'If-None-Match': etag,
+                },
+                failOnStatusCode: false,
+            }).then((resp) => {
+                expect(resp.status).to.eq(304)
+                expect(resp.body).to.have.length(0)
+            })
         })
     })
 
@@ -152,8 +187,23 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(undefined)
+
                 expect(resp.body).to.contain('WMS_Capabilities')
                 expect(resp.body).to.contain('version="1.3.0"')
+
+                const etag = resp.headers['etag']
+                cy.request({
+                    url: '/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
+                    headers: {
+                        'If-None-Match': etag,
+                    },
+                    failOnStatusCode: false,
+                }).then((resp) => {
+                    expect(resp.status).to.eq(304)
+                    expect(resp.body).to.have.length(0)
+                })
             })
 
         // Project with config.options.hideProject: "True"
@@ -161,6 +211,7 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+
                 expect(resp.body).to.contain('WMS_Capabilities')
                 expect(resp.body).to.contain('version="1.3.0"')
             })
@@ -171,9 +222,24 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(undefined)
+
                 expect(resp.body).to.contain('version="1.0.0"')
                 expect(resp.body).to.contain('<ows:Identifier>Quartiers</ows:Identifier>')
                 expect(resp.body).to.contain('<TileMatrixSet>EPSG:3857</TileMatrixSet>')
+
+                const etag = resp.headers['etag']
+                cy.request({
+                    url: '/index.php/lizmap/service/?repository=testsrepository&project=cache&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities',
+                    headers: {
+                        'If-None-Match': etag,
+                    },
+                    failOnStatusCode: false,
+                }).then((resp) => {
+                    expect(resp.status).to.eq(304)
+                    expect(resp.body).to.have.length(0)
+                })
             })
     })
 
@@ -182,8 +248,23 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(undefined)
+
                 expect(resp.body).to.contain('WFS_Capabilities')
                 expect(resp.body).to.contain('version="1.0.0"')
+
+                const etag = resp.headers['etag']
+                cy.request({
+                    url: '/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities',
+                    headers: {
+                        'If-None-Match': etag,
+                    },
+                    failOnStatusCode: false,
+                }).then((resp) => {
+                    expect(resp.status).to.eq(304)
+                    expect(resp.body).to.have.length(0)
+                })
             })
 
         // Project with config.options.hideProject: "True"
@@ -191,6 +272,7 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+
                 expect(resp.body).to.contain('WFS_Capabilities')
                 expect(resp.body).to.contain('version="1.0.0"')
             })
@@ -202,8 +284,23 @@ describe('Request service', function () {
             .then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+                expect(resp.headers['cache-control']).to.eq('no-cache')
+                expect(resp.headers['etag']).to.not.eq(undefined)
+
                 expect(resp.body).to.contain('WFS_Capabilities')
                 expect(resp.body).to.contain('version="1.1.0"')
+
+                const etag = resp.headers['etag']
+                cy.request({
+                    url: '/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities',
+                    headers: {
+                        'If-None-Match': etag,
+                    },
+                    failOnStatusCode: false,
+                }).then((resp) => {
+                    expect(resp.status).to.eq(304)
+                    expect(resp.body).to.have.length(0)
+                })
             })
     })
 

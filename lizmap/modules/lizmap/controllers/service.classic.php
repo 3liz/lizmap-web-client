@@ -425,15 +425,40 @@ class serviceCtrl extends jController
     protected function GetCapabilities($ogcRequest)
     {
         $service = $ogcRequest->param('service');
-        $result = $ogcRequest->process();
+        $version = $ogcRequest->param('version');
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+
+        // Etag header and cache control
+        $etag = 'getcapabilities~'.strtolower($service);
+        if ($version) {
+            $etag .= '~'.$version;
+        }
+        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
+        $appContext = $this->project->getAppContext();
+        if ($appContext->UserIsConnected()) {
+            $etag .= '-'.implode('~', $appContext->aclUserPublicGroupsId());
+        } else {
+            $etag .= '-__anonymous';
+        }
+        $cacheHandler = $this->project->getCacheHandler();
+        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
+        $etag = sha1($etag);
+        if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            return $rep;
+        }
+
+        $result = $ogcRequest->process();
+
         $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_server_'.$service.'_capabilities_'.$this->repository->getKey().'_'.$this->project->getKey();
+        if ($result->code < 400) {
+            $this->setEtagCacheHeaders($rep, $etag);
+        }
 
         return $rep;
     }
@@ -705,15 +730,33 @@ class serviceCtrl extends jController
      */
     public function getProjectConfig()
     {
-
-        // Get parameters
+        // Get and Check parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
 
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
+
+        // Etag header and cache control
+        $etag = 'getprojectconfig';
+        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
+        $appContext = $this->project->getAppContext();
+        if ($appContext->UserIsConnected()) {
+            $etag .= '-'.implode('~', $appContext->aclUserPublicGroupsId());
+        } else {
+            $etag .= '-__anonymous';
+        }
+        $cacheHandler = $this->project->getCacheHandler();
+        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
+        $etag = sha1($etag);
+        if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            return $rep;
+        }
+
+        // Set body
         $rep->data = $this->project->getUpdatedConfig();
+        $this->setEtagCacheHeaders($rep, $etag);
 
         return $rep;
     }
@@ -768,8 +811,8 @@ class serviceCtrl extends jController
             return $rep;
         }
 
-        if (property_exists($result, 'file') and $result->file and is_file($result->data)) {
-            $rep->fileName = $result->data;
+        if (substr($result->data, 0, 7) == 'file://' && is_file(substr($result->data, 7))) {
+            $rep->fileName = substr($result->data, 7);
             $rep->deleteFileAfterSending = true;
         } else {
             $rep->content = $result->data; // causes memory_limit for big content
@@ -855,12 +898,29 @@ class serviceCtrl extends jController
         // Return response
         /** @var jResponseText $rep */
         $rep = $this->getResponse('text');
-        $content = $this->project->getProj4($this->iParam('authid'));
+
+        // Projection authority id (ESPG:* or USER:*)
+        $authid = $this->iParam('authid');
+
+        // Etag header and cache control
+        $etag = 'getproj4';
+        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
+        $etag .= '-'.$authid;
+        $cacheHandler = $this->project->getCacheHandler();
+        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
+        $etag = sha1($etag);
+        if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            return $rep;
+        }
+
+        // Get content
+        $content = $this->project->getProj4($authid);
         if (!$content) {
             $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
         }
         $rep->content = $content;
         $rep->setExpires('+300 seconds');
+        $this->setEtagCacheHeaders($rep, $etag);
 
         return $rep;
     }
