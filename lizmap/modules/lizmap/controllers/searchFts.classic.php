@@ -27,7 +27,7 @@ class searchFtsCtrl extends jController
         $rep->data = $content;
 
         // Parameters
-        $pquery = $this->param('query');
+        $pquery = htmlspecialchars(strip_tags($this->param('query')), ENT_NOQUOTES);
         if (!$pquery) {
             return $rep;
         }
@@ -77,8 +77,6 @@ class searchFtsCtrl extends jController
 
             return $rep;
         }
-
-        $pquery = filter_var($pquery, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
         // Run query
         $fts = jClasses::getService('lizmap~lizmapFts');

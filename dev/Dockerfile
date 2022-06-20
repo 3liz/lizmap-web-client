@@ -2,8 +2,8 @@ FROM ubuntu:20.04
 
 LABEL Maintainer="3Liz"
 
-ARG COMPOSER_VERSION=2.0.8
-ARG PHP_VERSION=7.4
+ARG COMPOSER_VERSION=2.3.7
+ARG PHP_VERSION=8.1
   
 ENV PHP_VERSION=${PHP_VERSION}
 
@@ -23,7 +23,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y --no-install-rec
         php${PHP_VERSION}-zip \
         php${PHP_VERSION}-curl \
         php${PHP_VERSION}-intl \
-        php${PHP_VERSION}-json \
         php${PHP_VERSION}-mbstring \
         php${PHP_VERSION}-xml \
     ; sed -i "/^display_errors =/c\display_errors = On" /etc/php/${PHP_VERSION}/cli/php.ini \

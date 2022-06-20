@@ -20,7 +20,7 @@ class mapCtrl extends lizMapCtrl
         // Get repository key
         $repository = $this->param('repository');
         // Get the project key
-        $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
+        $project = htmlspecialchars(strip_tags($this->param('project')));
 
         $url_params = array(
             'repository' => $repository,

@@ -1,40 +1,39 @@
 ARG REGISTRY_PREFIX=''
-FROM ${REGISTRY_PREFIX}alpine:3.15 as build
+FROM ${REGISTRY_PREFIX}alpine:3.16 as build
 
 COPY lizmap_web_client.zip .
 RUN unzip lizmap_web_client.zip
 
-FROM ${REGISTRY_PREFIX}alpine:3.15
+FROM ${REGISTRY_PREFIX}alpine:3.16
 MAINTAINER David Marteau <david.marteau@3liz.com>
-LABEL Description="Lizmap web client" Vendor="3liz.org" Version="21.05.0"
+LABEL Description="Lizmap web client" Vendor="3liz.org" Version="22.06.0"
 
 RUN apk update && apk upgrade
-RUN apk --no-cache add git fcgi php7 php7-fpm \
-    php7-tokenizer \
-    php7-opcache \
-    php7-session \
-    php7-iconv \
-    php7-intl \
-    php7-mbstring \
-    php7-openssl \
-    php7-fileinfo \
-    php7-curl \
-    php7-json \
-    php7-redis \
-    php7-pgsql \
-    php7-sqlite3 \
-    php7-gd \
-    php7-dom \
-    php7-xml \
-    php7-xmlrpc \
-    php7-xmlreader \
-    php7-xmlwriter \
-    php7-simplexml \
-    php7-phar \
-    php7-gettext \
-    php7-ctype \
-    php7-zip \
-    php7-ldap \
+RUN apk --no-cache add git fcgi php8 php8-fpm \
+    php8-tokenizer \
+    php8-opcache \
+    php8-session \
+    php8-iconv \
+    php8-intl \
+    php8-mbstring \
+    php8-openssl \
+    php8-fileinfo \
+    php8-curl \
+    php8-json \
+    php8-redis \
+    php8-pgsql \
+    php8-sqlite3 \
+    php8-gd \
+    php8-dom \
+    php8-xml \
+    php8-xmlreader \
+    php8-xmlwriter \
+    php8-simplexml \
+    php8-phar \
+    php8-gettext \
+    php8-ctype \
+    php8-zip \
+    php8-ldap \
     composer 
 
 COPY --from=build /lizmap_web_client /www
@@ -55,13 +54,13 @@ COPY php-fpm-healthcheck /usr/local/bin/
 
 RUN chmod 755 /bin/lizmap-entrypoint.sh /bin/update-config.php /usr/local/bin/php-fpm-healthcheck
 
-ENV PHP_INI_DIR /etc/php7
+ENV PHP_INI_DIR /etc/php8
 
 HEALTHCHECK --interval=60s --timeout=30s CMD php-fpm-healthcheck || exit 1
 
 WORKDIR /www
 ENTRYPOINT ["/bin/lizmap-entrypoint.sh"]
-CMD ["/usr/sbin/php-fpm7", "-F", "-O"]
+CMD ["/usr/sbin/php-fpm8", "-F", "-O"]
 
 
 
