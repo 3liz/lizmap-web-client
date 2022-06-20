@@ -53,11 +53,10 @@ class searchCtrl extends jController
         }
 
         // Parameters
-        $pquery = $this->param('query');
+        $pquery = htmlspecialchars(strip_tags($this->param('query')), ENT_NOQUOTES);
         if (!$pquery) {
             return $rep;
         }
-        $pquery = filter_var($pquery, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
         // Get FTS searches
         $ftsSearches = $lproj->hasFtsSearches();

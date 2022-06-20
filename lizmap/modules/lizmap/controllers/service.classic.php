@@ -91,8 +91,14 @@ class serviceCtrl extends jController
         }
 
         // Return the appropriate action
-        $service = strtoupper($ogcRequest->param('service'));
-        $request = strtoupper($ogcRequest->param('request'));
+        $request = $ogcRequest->param('request');
+        if (!$request) {
+            jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
+
+            return $this->serviceException();
+        }
+
+        $request = strtoupper($request);
 
         // Extra request
         if ($request == 'GETPROJ4') {
@@ -146,11 +152,7 @@ class serviceCtrl extends jController
             return $this->GetTile($ogcRequest);
         }
 
-        if (!$request) {
-            jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
-        } else {
-            jMessage::add('Request '.$request.' is not supported', 'OperationNotSupported');
-        }
+        jMessage::add('Request '.$request.' is not supported', 'OperationNotSupported');
 
         return $this->serviceException();
     }
@@ -283,6 +285,11 @@ class serviceCtrl extends jController
 
         // Get repository data
         $repository = $this->iParam('repository');
+        if (!$repository) {
+            jMessage::add('The repository parameter is missing', 'RepositoryNotDefined');
+
+            return false;
+        }
 
         // Get the corresponding repository
         $lrep = lizmap::getRepository($repository);
