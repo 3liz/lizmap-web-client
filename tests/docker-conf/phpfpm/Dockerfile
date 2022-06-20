@@ -33,12 +33,12 @@ RUN apt-get -y install \
     libsqlite3-mod-spatialite \
     ; apt-get clean
 
-## Install Composer
+# Install Composer
 RUN wget -O /bin/composer https://getcomposer.org/download/$composer_version/composer.phar \
     && chmod +x /bin/composer && /bin/composer self-update
 
-#install nodejs and npm to build js files
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+# Install nodejs and npm to build js files
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs
 
 RUN set -eux; \
