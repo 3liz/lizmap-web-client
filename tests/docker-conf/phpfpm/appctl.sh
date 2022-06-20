@@ -186,10 +186,14 @@ function launch() {
       )
     fi
 
-    if [ ! -f "$APPDIR/www/assets/js/lizmap.js" ]; then
+    cd "$ROOTDIR/assets/";
+    if [[ -z "${CYPRESS_CI}" ]]; then
       (
-        cd "$ROOTDIR/assets/";
         npm run build
+      )
+    else
+      (
+        npm run watch
       )
     fi
 
