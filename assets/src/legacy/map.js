@@ -5078,6 +5078,8 @@ window.lizMap = function() {
                   aConfig['alias'] = describe.aliases;
                   if ('types' in describe)
                       aConfig['types'] = describe.types;
+                  if ('columns' in describe && !('columns' in aConfig && aConfig['columns']))
+                      aConfig['columns'] = describe.columns;
 
                   callFeatureDataCallBacks(poolId, data.features);
 
