@@ -21,17 +21,27 @@ class WMTSRequest extends OGCRequest
 
     private $forceRequest = false;
 
+    /**
+     * @return bool
+     */
     public function getForceRequest()
     {
         return $this->forceRequest;
     }
 
+    /**
+     * @param bool $forced
+     *
+     * @return bool
+     */
     public function setForceRequest($forced)
     {
         return $this->forceRequest = $forced;
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
      */
     protected function process_getcapabilities()
@@ -72,15 +82,12 @@ class WMTSRequest extends OGCRequest
         $tpl->assign('tileMatrixSetList', $tileCapabilities->tileMatrixSetList);
         $tpl->assign('layers', $tileCapabilities->layerTileInfoList);
 
-        return (object) array(
-            'code' => 200,
-            'mime' => 'text/xml; charset=utf-8',
-            'data' => $tpl->fetch('lizmap~wmts_capabilities'),
-            'cached' => false,
-        );
+        return new OGCResponse(200, 'text/xml; charset=utf-8', $tpl->fetch('lizmap~wmts_capabilities'));
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
      */
     protected function process_gettile()
