@@ -205,6 +205,17 @@ To launch PHP tests:
 - Launch the lizmap application as indicated above.
 - launch `./lizmap-ctl unit-tests`
 
+
+## Automatic JavaScript tests
+
+The `js-units` directory contains some unit tests.
+
+Go in `js-units` directory and execute `npm install` to install Mocha (only the first time).
+
+You can then :
+
+- launch `npm run js:test` to run the JavaScript unit tests
+
 ## Testing data
 
 You must execute `tests/qgis-projects/tests/load_sql.sh` to populate postgreSQL database with testing data.
