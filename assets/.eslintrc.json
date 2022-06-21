@@ -4,7 +4,7 @@
         "es6": true,
         "jquery": true
     },
-    "extends": ["eslint:recommended"],
+    "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly",
@@ -17,6 +17,9 @@
         "ecmaVersion": 2020,
         "sourceType": "module"
     },
+    "plugins": [
+        "jsdoc"
+    ],
     "rules": {
         "indent": ["error", 4, {
                 "SwitchCase": 1, "ignoredNodes": ["TemplateLiteral *"]
