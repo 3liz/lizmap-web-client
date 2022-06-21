@@ -8,6 +8,7 @@
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
+import WFS from '../modules/WFS.js';
 
 window.lizMap = function() {
   /**
@@ -1287,8 +1288,9 @@ window.lizMap = function() {
   /**
    * PRIVATE function: createMap
    * creating the map {<OpenLayers.Map>}
+   * @param {array} initialExtent initial extent in EPSG:4326 projection
    */
-  function createMap() {
+  function createMap(initialExtent) {
     // get projection
     var proj = config.options.projection;
     var projection = new OpenLayers.Projection(proj.ref);
@@ -1298,10 +1300,16 @@ window.lizMap = function() {
     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
 
     var restrictedExtent = extent.scale(3);
-    var initialExtent = extent.clone();
-    if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
-      var initBbox = config.options.initialExtent;
-      initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
+
+    if(initialExtent){
+        initialExtent = new OpenLayers.Bounds(initialExtent);
+        initialExtent.transform(new OpenLayers.Projection('EPSG:4326'), projection);
+    }else{
+        initialExtent = extent.clone();
+        if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
+          var initBbox = config.options.initialExtent;
+          initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
+        }
     }
 
     // calculate the map height
@@ -1348,37 +1356,37 @@ window.lizMap = function() {
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
         ,eventListeners:{
          zoomend: function(){
-  // private treeTable
-  var options = {
-    childPrefix : "child-of-"
-  };
+            // private treeTable
+            var options = {
+                childPrefix : "child-of-"
+            };
 
-  function childrenOf(node) {
-    return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  }
+            function childrenOf(node) {
+                return $(node).siblings("tr." + options.childPrefix + node[0].id);
+            }
 
-  function parentOf(node) {
-    if (node.length == 0 )
-      return null;
+            function parentOf(node) {
+                if (node.length == 0 )
+                return null;
 
-    var classNames = node[0].className.split(' ');
+                var classNames = node[0].className.split(' ');
 
-    for(var key=0; key<classNames.length; key++) {
-      if(classNames[key].match(options.childPrefix)) {
-        return $(node).siblings("#" + classNames[key].substring(options.childPrefix.length));
-      }
-    }
+                for(var key=0; key<classNames.length; key++) {
+                if(classNames[key].match(options.childPrefix)) {
+                    return $(node).siblings("#" + classNames[key].substring(options.childPrefix.length));
+                }
+                }
 
-    return null;
-  }
+                return null;
+            }
 
-  function ancestorsOf(node) {
-    var ancestors = [];
-    while(node = parentOf(node)) {
-      ancestors[ancestors.length] = node[0];
-    }
-    return ancestors;
-  }
+            function ancestorsOf(node) {
+                var ancestors = [];
+                while(node = parentOf(node)) {
+                ancestors[ancestors.length] = node[0];
+                }
+                return ancestors;
+            }
            //layer visibility
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
@@ -2706,15 +2714,15 @@ window.lizMap = function() {
   }
 
   function getUrlParameters(){
-    var oParametre = {};
+    const urlParameters = {};
 
     if (window.location.search.length > 1) {
-      for (var aItKey, nKeyId = 0, aCouples = window.location.search.substr(1).split("&"); nKeyId < aCouples.length; nKeyId++) {
-        aItKey = aCouples[nKeyId].split("=");
-        oParametre[decodeURIComponent(aItKey[0])] = aItKey.length > 1 ? decodeURIComponent(aItKey[1]) : "";
+      for (const keyValue of window.location.search.slice(1).split("&")) {
+        const [key, value] = keyValue.split("=");
+        urlParameters[decodeURIComponent(key)] = decodeURIComponent(value);
       }
     }
-    return oParametre;
+    return urlParameters;
   }
 
   function updatePermalinkInputs() {
@@ -6016,8 +6024,25 @@ window.lizMap = function() {
         return response.text()
       });
 
+      // Get feature extent if defined in URL
+      let featureExtentRequest;
+      const urlParameters = getUrlParameters();
+
+      if(urlParameters.layer && urlParameters.fid){
+          const wfs = new WFS();
+          const wfsParams = {
+              TYPENAME: urlParameters.layer,
+              FEATUREID: urlParameters.layer + '.' + urlParameters.fid,
+              PROPERTYNAME: urlParameters.fid,
+              GEOMETRYNAME: 'extent'
+          };
+  
+          featureExtentRequest = wfs.getFeature(wfsParams);
+      }
+
+
       // Request config and capabilities in parallel
-      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest]).then(responses => {
+      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest, featureExtentRequest]).then(responses => {
         // config is defined globally
         config = responses[0];
         keyValueConfig = responses[1];
@@ -6027,6 +6052,8 @@ window.lizMap = function() {
         const wmsCapaData = responses[2];
         const wmtsCapaData = responses[3];
         const wfsCapaData = responses[4];
+
+        const featureExtent = responses[5]?.features?.[0]?.bbox;
 
         config.options.hasOverview = false;
 
@@ -6116,7 +6143,7 @@ window.lizMap = function() {
 
         // create the map
         initProjections(firstLayer);
-        createMap();
+        createMap(featureExtent);
         self.map = map;
         self.layers = layers;
         self.baselayers = baselayers;
