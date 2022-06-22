@@ -400,6 +400,16 @@ var lizLayerActionButtons = function() {
                     lex[2],
                     lex[3]
                 );
+                // Reverse axis
+                if (OpenLayers.Projection.defaults[mapProjection] &&
+                    OpenLayers.Projection.defaults[mapProjection].yx) {
+                    lBounds = new OpenLayers.Bounds(
+                        lex[1],
+                        lex[0],
+                        lex[3],
+                        lex[2]
+                    );
+                }
                 lizMap.map.zoomToExtent( lBounds );
 
                 return false;
