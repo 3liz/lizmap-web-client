@@ -148,7 +148,7 @@ export default class SelectionTool {
         });
     }
 
-    
+
     /**
      * Is selection tool active or not
      * @todo active state should be set on UI's events
