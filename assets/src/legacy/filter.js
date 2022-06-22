@@ -3,7 +3,6 @@ var lizLayerFilterTool = function () {
     lizMap.events.on({
         'uicreated': function () {
 
-
             // If filterConfig is empty, there is no filter set => hide filter tool
             if (!filterConfig || (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0)) {
                 $('#mapmenu li.filter.nav-dock').addClass('hide');
@@ -381,7 +380,7 @@ var lizLayerFilterTool = function () {
                 };
 
                 fetchRequests.push(
-                        fetch(filterConfigData.url + '&' + new URLSearchParams(sdata)).then( response => {
+                    fetch(filterConfigData.url + '&' + new URLSearchParams(sdata)).then(response => {
                         return response.json();
                     })
                 );
@@ -395,7 +394,7 @@ var lizLayerFilterTool = function () {
                 if (fieldConf) {
                     if (fieldConf.type == 'ValueMap') {
                         keyValues = fieldConf.data;
-                    }else{
+                    } else {
                         fetchRequests.push(
                             lizMap.mainLizmap.wfs.getFeature({
                                 TYPENAME: fieldConf.source_layer,
@@ -414,7 +413,7 @@ var lizLayerFilterTool = function () {
                         return false;
                     }
 
-                    if(rawKeyValues){
+                    if (rawKeyValues) {
                         rawKeyValues.features.forEach(feature => keyValues[feature.properties[fieldConf.code_field]] = feature.properties[fieldConf.label_field]);
                     }
 
@@ -431,7 +430,7 @@ var lizLayerFilterTool = function () {
 
                     $("#filter-field-order" + String(field_item.order)).append(html);
 
-                    if (!('items' in filterConfig[field_item.order])){
+                    if (!('items' in filterConfig[field_item.order])) {
                         filterConfig[field_item.order]['items'] = {};
                     }
 
@@ -500,7 +499,7 @@ var lizLayerFilterTool = function () {
                 }
 
                 // Update global form filter
-                setFormFilter();
+                activateFilter();
             }
 
             // Set the filter for the uniqueValues field type
@@ -696,10 +695,95 @@ var lizLayerFilterTool = function () {
                 filterConfig[field_item.order]['filter'] = filter;
             }
 
-
-            // Compute the global filter to pass to the layer
-            function setFormFilter() {
+            /**
+             * Get the list of feature ids for a given filter.
+             *
+             * This is needed to trigger the filter with the selection tool
+             *
+             * @param {string} filter - The SQL like filter
+             *
+             */
+            function getFilteredFeatureIds(filter, pkField, aCallBack) {
+                filter = typeof filter !== 'undefined' ? filter : '';
                 var layerId = filterConfigData.layerId;
+                var field = pkField;
+                var sdata = {
+                    request: 'getUniqueValues',
+                    layerId: layerId,
+                    fieldname: field,
+                    filter: filter
+                };
+                $.get(filterConfigData.url, sdata, function (result) {
+                    if (!checkResult(result)) {
+                        return false;
+                    }
+                    var ids = [];
+                    for (var a in result) {
+                        var feat = result[a];
+                        if (feat['v'] === null || !feat['v'] || (typeof feat['v'] === 'string' && feat['v'].trim() === ''))
+                            continue;
+                        ids.push(feat['v']);
+                    }
+                    if (aCallBack) {
+                        aCallBack(ids);
+                    }
+                }, 'json');
+            }
+
+            /**
+             * Get the method to use to trigger the layer filter
+             *
+             * 'simple' means like before 3.6: directly change layer request_params and run
+             * 'full' means we first get the features ids for the filter and then trigger the
+             * Lizmap filter based on the attribute table methods. This will cascade the filter
+             * to child layers.
+             *
+             * If there an attribute table config for this layer
+             * we use the filter with selection, in order
+             * to trigger the filter for the children tables
+             * and propagate the filter to the other tools
+             * such as the dataviz, the attribute table, etc.
+             *
+             * You can force the method in the JS console with;
+             * filterConfigData.filterMethod = 'simple'
+             *
+             * @return {string} filterMethod - The method: simple or full
+             */
+            function getFilterMethod() {
+
+                // Default is simple
+                var filterMethod = 'simple';
+
+                // If the filter method is already configured, use it
+                if (filterConfigData.hasOwnProperty('filterMethod')) {
+                    filterMethod = filterConfigData.filterMethod;
+                    if (filterMethod == 'simple' || filterMethod == 'full') {
+                        return filterMethod;
+                    }
+                }
+
+                // If the layer has attribute layer configuration, use full
+                var layerName = filterConfigData.layerName;
+                if ('attributeLayers' in lizMap.config && layerName in lizMap.config.attributeLayers) {
+                    var attributeLayerConfig = lizMap.config.attributeLayers[layerName];
+                    var pkField = attributeLayerConfig['primaryKey'];
+                    if (pkField.split(',').length == 1) {
+                        filterMethod = 'full';
+                    }
+                }
+
+                return filterMethod;
+            }
+
+
+            /**
+             * Compute the global filter to pass to the layer
+             * and apply it to the map and other tools
+             *
+             */
+            function activateFilter() {
+                var layerId = filterConfigData.layerId;
+                var layerName = filterConfigData.layerName;
 
                 var afilter = [];
                 for (var o in filterConfig) {
@@ -708,18 +792,55 @@ var lizLayerFilterTool = function () {
                         afilter.push(field_item['filter']);
                     }
                 }
+
+                // We use AND clause between fields
                 var filter = afilter.join(' AND ');
 
-                // Trigger the filter on the layer
-                var layerName = filterConfigData.layerName;
-                lizMap.triggerLayerFilter(layerName, filter);
+                // Deactivate the filter if it is empty.
+                // It can occur when the user unchecks the only checkbox
+                // which was checked before,
+                // or resetted the field input with the reset button
+                // when only this field filter was active
+                if (afilter.length == 0 || filter.trim() == '') {
+                    deactivateFilter();
+                    return true;
+                }
 
+                // Lizmap method to filter the data: simple or full
+                var filterMethod = getFilterMethod();
+                if (filterMethod == 'simple') {
+                    // Use a simple filter only for the getmap and other WMS/WFS queries
+                    lizMap.triggerLayerFilter(layerName, filter);
+                } else {
+                    // Get the filtered features fids
+                    var pkField = lizMap.config.attributeLayers[layerName]['primaryKey'];
+                    getFilteredFeatureIds(filter, pkField, function (filteredIds) {
+                        // Pass a fake false filter if no ids are returned.
+                        // It means the global filter between fields returns no data
+                        if (filteredIds.length == 0) {
+                            filteredIds = [-9999999];
+                        }
+                        // Update the selectedfeatures object
+                        if (!lizMap.config.layers[layerName]['selectedFeatures']) {
+                            lizMap.config.layers[layerName]['selectedFeatures'] = [];
+                        }
+                        lizMap.config.layers[layerName]['selectedFeatures'] = filteredIds;
+
+                        // Trigger the filter based on these selected features
+                        lizMap.events.triggerEvent("layerfeaturefilterselected",
+                            { 'featureType': layerName }
+                        );
+                    });
+                }
+
+                // Get the feature count and display it
                 getFeatureCount(filter);
 
                 if ($('#liz-filter-zoom').is(":visible")) {
                     setZoomExtent(filter);
                 }
 
+                // Set the filter in the global variable
                 filterConfigData.filter = filter;
 
             }
@@ -730,6 +851,7 @@ var lizLayerFilterTool = function () {
                 var layerId = filterConfigData.layerId;
 
                 // Deactivate all triggers to avoid unnecessary requests
+                // and then empty all the input values
                 filterConfigData.deactivated = true;
                 for (var o in filterConfig) {
                     var field_item = filterConfig[o];
@@ -741,16 +863,28 @@ var lizLayerFilterTool = function () {
 
                 // Remove filter on map layers
                 var layerName = filterConfigData.layerName;
-                lizMap.deactivateMaplayerFilter(layerName);
 
-                // Refresh plots
-                lizMap.events.triggerEvent("layerFilterParamChanged",
-                    {
-                        'featureType': layerName,
-                        'filter': null,
-                        'updateDrawing': false
-                    }
-                );
+                // Lizmap method to filter the data: simple or full
+                var filterMethod = getFilterMethod();
+                if (filterMethod == 'simple') {
+                    // Use a simple filter only for the getmap and other WMS/WFS queries
+                    lizMap.deactivateMaplayerFilter(layerName);
+
+                    // Refresh plots
+                    lizMap.events.triggerEvent("layerFilterParamChanged",
+                        {
+                            'featureType': layerName,
+                            'filter': null,
+                            'updateDrawing': false
+                        }
+                    );
+                } else {
+                    // Deactivate the filter
+                    lizMap.events.triggerEvent('layerfeatureremovefilter',
+                        { 'featureType': layerName }
+                    );
+                }
+
 
                 // Get feature count
                 getFeatureCount();
@@ -1024,7 +1158,7 @@ var lizLayerFilterTool = function () {
                 // Add event on reset buttons
                 $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' button.liz-filter-reset-field').click(function () {
                     resetFormField($(this).val());
-                    setFormFilter();
+                    activateFilter();
                 });
 
                 // Add tooltip
@@ -1147,8 +1281,3 @@ var lizLayerFilterTool = function () {
 
 
 }();
-
-var todo = '</br>' +
-    '* Print get filtertoken if not yet set</br>' +
-    '* Updata attribute table if displayed: display the Orange button to refresh</br>' +
-    '* Update dataviz on filter</br>';

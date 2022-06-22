@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 14.3 (Ubuntu 14.3-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 13.7 (Ubuntu 13.7-1.pgdg20.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -139,6 +139,34 @@ COMMENT ON FUNCTION tests_projects.query_to_geojson(datasource text) IS 'Generat
 
 
 SET default_tablespace = '';
+
+--
+-- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.quartiers (
+    quartier integer NOT NULL,
+    geom public.geometry(MultiPolygon,4326),
+    quartmno character varying(2),
+    libquart character varying(32),
+    photo character varying(255),
+    url character varying(255)
+);
+
+
+--
+-- Name: sousquartiers; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.sousquartiers (
+    id integer NOT NULL,
+    quartmno character varying,
+    squartmno character varying,
+    libsquart character varying,
+    quartiers_libquart character varying,
+    geom public.geometry(MultiPolygon,2154)
+);
+
 
 --
 -- Name: attribute_table; Type: TABLE; Schema: tests_projects; Owner: -
@@ -1044,6 +1072,38 @@ CREATE TABLE tests_projects.form_filter (
 
 
 --
+-- Name: form_filter_child_bus_stops; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_filter_child_bus_stops (
+    id integer NOT NULL,
+    label text,
+    id_parent integer,
+    geom public.geometry(Point,2154)
+);
+
+
+--
+-- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_filter_child_bus_stops_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_filter_child_bus_stops_id_seq OWNED BY tests_projects.form_filter_child_bus_stops.id;
+
+
+--
 -- Name: form_filter_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
 --
 
@@ -1184,20 +1244,6 @@ ALTER SEQUENCE tests_projects.parent_layer_id_seq OWNED BY tests_projects.parent
 
 
 --
--- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.quartiers (
-    quartier integer NOT NULL,
-    geom public.geometry(MultiPolygon,4326),
-    quartmno character varying(2),
-    libquart character varying(32),
-    photo character varying(255),
-    url character varying(255)
-);
-
-
---
 -- Name: reverse_geom; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -1316,20 +1362,6 @@ CREATE SEQUENCE tests_projects.shop_bakery_id_0_seq
 --
 
 ALTER SEQUENCE tests_projects.shop_bakery_id_0_seq OWNED BY tests_projects.shop_bakery_pg.id;
-
-
---
--- Name: sousquartiers; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.sousquartiers (
-    id integer NOT NULL,
-    quartmno character varying,
-    squartmno character varying,
-    libsquart character varying,
-    quartiers_libquart character varying,
-    geom public.geometry(MultiPolygon,2154)
-);
 
 
 --
@@ -1770,6 +1802,13 @@ ALTER TABLE ONLY tests_projects.form_filter ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: form_filter_child_bus_stops id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_filter_child_bus_stops ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_filter_child_bus_stops_id_seq'::regclass);
+
+
+--
 -- Name: layer_legend_categorized id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -2142,6 +2181,19 @@ COPY tests_projects.form_edition_vr_point (id, code_without_exp, code_with_simpl
 COPY tests_projects.form_filter (id, label, geom) FROM stdin;
 1	simple label	01010000206A08000000000000007083400000000000207AC0
 2	Œuvres d'art et monuments de l'espace urbain	01010000206A0800000000000000B0844000000000004885C0
+\.
+
+
+--
+-- Data for Name: form_filter_child_bus_stops; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_filter_child_bus_stops (id, label, id_parent, geom) FROM stdin;
+1	A	1	01010000206A0800001C5BC7B631F68040A21EAB7E894977C0
+2	B	1	01010000206A0800002D1379C37B518140E28527210ADA7BC0
+3	C	2	01010000206A080000603B8EE959638240BB2C5267D48D87C0
+4	D	2	01010000206A080000AE18084A26198540F50F666C58B287C0
+5	E	2	01010000206A08000098E70BAD34E18740BB2C5267D48D87C0
 \.
 
 
@@ -2580,6 +2632,13 @@ SELECT pg_catalog.setval('tests_projects.form_edition_vr_point_id_seq', 1, false
 
 
 --
+-- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_filter_child_bus_stops_id_seq', 5, true);
+
+
+--
 -- Name: form_filter_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -2936,6 +2995,14 @@ ALTER TABLE ONLY tests_projects.form_edition_vr_list
 
 ALTER TABLE ONLY tests_projects.form_edition_vr_point
     ADD CONSTRAINT form_edition_vr_point_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_filter_child_bus_stops form_filter_child_bus_stops_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_filter_child_bus_stops
+    ADD CONSTRAINT form_filter_child_bus_stops_pkey PRIMARY KEY (id);
 
 
 --
