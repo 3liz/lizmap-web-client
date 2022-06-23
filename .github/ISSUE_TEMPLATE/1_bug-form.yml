@@ -36,7 +36,8 @@ body:
     attributes:
       label: Versions
       description: |
-        You MUST do this step. In QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard". Finally paste here. There isn't any personal data provided.
+        YOU MUST DO THIS STEP AS DESCRIBED. Go in QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard". Finally paste here. There isn't any personal data provided.
+        Please check that if you are using Lizmap Web Client 3.5, you have a login and password valid for administration.
     validations:
       required: true
 
