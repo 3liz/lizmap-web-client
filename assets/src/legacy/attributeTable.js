@@ -1083,7 +1083,39 @@ var lizAttributeTable = function() {
                 };
             })();
 
-            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, cTypes, allColumnsKeyValues, aCallback ) {
+            function refreshLayerAttributeDatatable(aName, aTable, cFeatures, aCallback) {
+                // Get config
+                var lConfig = config.layers[aName];
+                // get cleaned name
+                var cleanName = lizMap.cleanName( aName );
+
+                // Detect if table is parent or child
+                var isChild = true;
+                let parentLayerID = '';
+                if (['#attribute-layer-table-', '#edition-table-'].includes(aTable.replace(cleanName, ''))){
+                    isChild = false;
+                }else{
+                    let parentLayerName = '';
+                    if (aTable.startsWith('#attribute-layer-table-')){
+                        parentLayerName =  aTable.replace('#attribute-layer-table-', '').split('-')[0];
+                    } else if (aTable.startsWith('#edition-table-')) {
+                        parentLayerName = aTable.replace('#edition-table-', '').split('-')[0];
+                    }
+
+                    if(parentLayerName){
+                        parentLayerID = config.layers[parentLayerName]['id'];
+                    }
+                }
+
+                // Hidden fields
+                var hiddenFields = [];
+                if( aName in config.attributeLayers
+                    && 'hiddenFields' in config.attributeLayers[aName]
+                    && config.attributeLayers[aName]['hiddenFields']
+                ){
+                    var hf = config.attributeLayers[aName]['hiddenFields'].trim();
+                    hiddenFields = hf.split(/[\s,]+/);
+                }
 
                 cFeatures = typeof cFeatures !== 'undefined' ?  cFeatures : null;
                 if( !cFeatures ){
@@ -1095,23 +1127,63 @@ var lizAttributeTable = function() {
                     });
                 }
 
+                if( cFeatures && cFeatures.length > 0 ){
+                    // Format features for datatable
+                    var ff = formatDatatableFeatures(
+                        cFeatures,
+                        isChild,
+                        hiddenFields,
+                        lConfig['selectedFeatures'],
+                        lConfig['id'],
+                        parentLayerID);
+                    var foundFeatures = ff.foundFeatures;
+                    var dataSet = ff.dataSet;
+
+                    // Datatable configuration
+                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
+                        var oTable = $( aTable ).dataTable();
+                        oTable.fnClearTable();
+                        oTable.fnAddData( dataSet );
+                    }
+                    lConfig['features'] = foundFeatures;
+                }
+
+                if ( !cFeatures || cFeatures.length == 0 ){
+                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
+                        var oTable = $( aTable ).dataTable();
+                        oTable.fnClearTable();
+                    }
+                    $(aTable).hide();
+
+                    $('#attribute-layer-'+ cleanName +' span.attribute-layer-msg').html(
+                        lizDict['attributeLayers.toolbar.msg.data.nodata'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
+                    ).addClass('failure');
+                } else {
+                    $(aTable).show();
+                }
+
+                if (aCallback)
+                    aCallback(aName,aTable);
+
+                return false;
+            }
+
+            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, cTypes, allColumnsKeyValues, aCallback ) {
+                // Get config
+                var lConfig = config.layers[aName];
+
+                // get cleaned name
+                var cleanName = lizMap.cleanName( aName );
+
                 cAliases = typeof cAliases !== 'undefined' ?  cAliases : null;
                 if( !cAliases ){
-                    cAliases = config.layers[aName]['alias'];
+                    cAliases = lConfig['alias'];
                 }
                 for( const key in cAliases){
                     if(cAliases[key]==""){
                         cAliases[key]=key;
                     }
                 }
-
-                var atFeatures = cFeatures;
-                var dataLength = atFeatures.length;
-
-                // Get config
-                var lConfig = config.layers[aName];
-                // get cleaned name
-                var cleanName = lizMap.cleanName( aName );
 
                 // Detect if table is parent or child
                 var isChild = true;
@@ -1161,6 +1233,19 @@ var lizAttributeTable = function() {
                         canDelete = true;
                 }
 
+                cFeatures = typeof cFeatures !== 'undefined' ?  cFeatures : null;
+                if( !cFeatures ){
+                    // features is an object, let's transform it to an array
+                    // XXX IE compat: Object.values is not available on IE...
+                    var features = config.layers[aName]['features'];
+                    cFeatures = Object.keys(features).map(function (key) {
+                        return features[key];
+                    });
+                }
+
+                var atFeatures = cFeatures;
+                var dataLength = atFeatures.length;
+
                 if( cFeatures && cFeatures.length > 0 ){
                     // Create columns for datatable
                     var cdc = createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues);
@@ -1168,34 +1253,41 @@ var lizAttributeTable = function() {
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
                     // Format features for datatable
-                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures'], lConfig['id'], parentLayerID);
+                    var ff = formatDatatableFeatures(
+                        atFeatures,
+                        isChild,
+                        hiddenFields,
+                        lConfig['selectedFeatures'],
+                        lConfig['id'],
+                        parentLayerID
+                    );
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
                     var refillFeatures = false;
-                    var dLen = config.layers[aName]['features'] ? Object.keys(config.layers[aName]['features']).length : 0;
+                    var dLen = lConfig['features'] ? Object.keys(lConfig['features']).length : 0;
                     if( dLen == 0 ){
                         refillFeatures = true;
                         if( !isChild ){
-                            config.layers[aName]['featuresFullSet'] = true;
+                            lConfig['featuresFullSet'] = true;
                         }
                     }
                     else{
                         if( isChild ){
-                            if( !config.layers[aName]['featuresFullSet'] ){
+                            if( !lConfig['featuresFullSet'] ){
                                 refillFeatures = true;
                             }
                         }else{
-                            config.layers[aName]['featuresFullSet'] = true;
+                            lConfig['featuresFullSet'] = true;
                             refillFeatures = true;
                         }
                     }
                     if( refillFeatures  )
-                        config.layers[aName]['features'] = foundFeatures;
+                        lConfig['features'] = foundFeatures;
 
-                    config.layers[aName]['alias'] = cAliases;
+                    lConfig['alias'] = cAliases;
                     // Datatable configuration
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
                         var oTable = $( aTable ).dataTable();
@@ -1245,7 +1337,7 @@ var lizAttributeTable = function() {
                             ,language: { url:lizUrls["dataTableLanguage"] }
                             ,deferRender: true
                             ,createdRow: function ( row, data, dataIndex ) {
-                                if ( $.inArray( data.DT_RowId.toString(), config.layers[aName]['selectedFeatures'] ) != -1
+                                if ( $.inArray( data.DT_RowId.toString(), lConfig['selectedFeatures'] ) != -1
                                 ) {
                                     $(row).addClass('selected');
                                     data.lizSelected = 'a';
@@ -1497,7 +1589,7 @@ var lizAttributeTable = function() {
             }
 
 
-            function formatDatatableFeatures(atFeatures, geometryType, isChild, isPivot, hiddenFields, selectedFeatures, layerId, parentLayerID){
+            function formatDatatableFeatures(atFeatures, isChild, hiddenFields, selectedFeatures, layerId, parentLayerID){
                 var dataSet = [];
                 var foundFeatures = {};
                 atFeatures.forEach(function(feat) {
@@ -1824,6 +1916,9 @@ var lizAttributeTable = function() {
             }
 
         function updateLayer( typeNamePile, typeNameFilter, typeNameDone,  cascade ){
+            if (typeNamePile.length == 0) {
+                return;
+            }
             cascade = typeof cascade !== 'undefined' ?  cascade : true;
 
             // Get first elements of the pile and withdraw it from the pile
@@ -1848,6 +1943,113 @@ var lizAttributeTable = function() {
             $('#layerActionUnfilter' ).toggle( ( lizMap.lizmapLayerFilterActive !== null ) ).css( 'background-color', 'rgba(255, 171, 0, 0.4)');
         }
 
+        function buildChildParam( relation, typeNameDone ) {
+            var childLayerConfigA = lizMap.getLayerConfigById(
+                relation.referencingLayer,
+                config.attributeLayers,
+                'layerId'
+            );
+
+            // if no config
+            if( !childLayerConfigA ) {
+                return null;
+            }
+
+            var childLayerKeyName = childLayerConfigA[0];
+            var childLayerConfig = childLayerConfigA[1];
+
+            // Avoid typeName already done ( infinite loop )
+            if( $.inArray( childLayerKeyName, typeNameDone ) != -1 )
+                return null;
+
+            // Check if it is a pivot table
+            var relationIsPivot = false;
+            if( 'pivot' in childLayerConfig
+                && childLayerConfig.pivot == 'True'
+                && childLayerConfig.layerId in config.relations.pivot
+            ){
+                relationIsPivot = true;
+            }
+            // Build parameter for this child
+            var fParam = {
+                'filter': null,
+                'fieldToFilter': relation.referencingField,
+                'parentField': relation.referencedField,
+                'parentValues': [],
+                'pivot': relationIsPivot,
+                'otherParentTypeName': null,
+                'otherParentRelation': null,
+                'otherParentValues': []
+            };
+
+            return [childLayerKeyName, fParam];
+        }
+
+        function getPivotParam( typeNameId, attributeLayerConfig, typeNameDone ) {
+            var isPivot = false;
+            var pivotParam = null;
+            if( 'pivot' in attributeLayerConfig
+                && attributeLayerConfig.pivot == 'True'
+                && attributeLayerConfig.layerId in config.relations.pivot
+            ){
+                isPivot = true;
+            }
+
+            if (!isPivot) {
+                return pivotParam;
+            }
+
+            var otherParentId = null;
+            var otherParentRelation = null;
+            var otherParentTypeName = null;
+
+            for( var rx in config.relations ){
+                // Do not take pivot object into account
+                if( rx == 'pivot' )
+                    continue;
+                // Do not get relation for parent layer (we are looking for other parents only)
+                if( rx == typeNameId)
+                    continue;
+                // Do not get relation for parent to avoid ( infinite loop otherwise )
+                var otherParentConfig = lizMap.getLayerConfigById(
+                    rx,
+                    config.attributeLayers,
+                    'layerId'
+                );
+                if( otherParentConfig
+                    && $.inArray( otherParentConfig[0], typeNameDone ) != -1
+                )
+                    continue;
+
+                var aLayerRelations = config.relations[rx];
+
+                for( var xx in aLayerRelations){
+                    // Only look at relations concerning typeName
+                    if( aLayerRelations[xx].referencingLayer != attributeLayerConfig.layerId)
+                        continue;
+
+                    otherParentId = rx;
+                    otherParentRelation = aLayerRelations[xx];
+
+                    var otherParentConfig = lizMap.getLayerConfigById(
+                        rx,
+                        config.attributeLayers,
+                        'layerId'
+                    );
+                    otherParentTypeName =  otherParentConfig[0];
+                }
+            }
+
+            if( otherParentId && otherParentRelation){
+                pivotParam = {};
+                pivotParam['otherParentTypeName'] = otherParentTypeName;
+                pivotParam['otherParentRelation'] = otherParentRelation;
+                pivotParam['otherParentValues'] = [];
+            }
+
+            return pivotParam;
+        }
+
         function applyLayerFilter( typeName, aFilter, typeNamePile, typeNameFilter, typeNameDone, cascade ){
 
             // Add done typeName to the list
@@ -1865,132 +2067,43 @@ var lizAttributeTable = function() {
 
                 // **1** Get children info
                 var cFeatures = aNameFeatures;
-                var dataLength = cFeatures.length;
                 var typeNameId = layerConfig['id'];
                 var typeNamePkey = config.attributeLayers[typeName]['primaryKey'];
                 var typeNamePkeyValues = [];
                 var typeNameChildren = {};
 
-                var getTypeNameConfig = lizMap.getLayerConfigById(
+                var getAttributeLayerConfig = lizMap.getLayerConfigById(
                     typeNameId,
                     config.attributeLayers,
                     'layerId'
                 );
-                var typeNameConfig = null;
-                if( getTypeNameConfig )
-                    typeNameConfig = getTypeNameConfig[1]
+                var attributeLayerConfig = null;
+                if( getAttributeLayerConfig )
+                    attributeLayerConfig = getAttributeLayerConfig[1];
 
                 if( 'relations' in config
                     && typeNameId in config.relations
                     && cascade
                 ) {
-                    var isPivot = false;
                     // Loop through relations to get children data
                     var layerRelations = config.relations[typeNameId];
                     for( var lid in layerRelations ) {
 
                         var relation = layerRelations[lid];
-                        var childLayerConfigA = lizMap.getLayerConfigById(
-                            relation.referencingLayer,
-                            config.attributeLayers,
-                            'layerId'
-                        );
+                        var childParam = buildChildParam(relation, typeNameDone);
 
-                        // if no config
-                        if( !childLayerConfigA )
+                        // if no child param
+                        if( !childParam )
                             continue;
 
-                        var childLayerKeyName = childLayerConfigA[0];
-                        var childLayerConfig = childLayerConfigA[1];
-
-                        // Avoid typeName already done ( infinite loop )
-                        if( $.inArray( childLayerKeyName, typeNameDone ) != -1 )
-                            continue;
-
-                        // Check if it is a pivot table
-                        if( 'pivot' in childLayerConfig
-                            && childLayerConfig.pivot == 'True'
-                            && childLayerConfig.layerId in config.relations.pivot
-                        ){
-                            isPivot = true;
-                        }
-                        // Build parameter for this child
-                        var fParam = {
-                            'filter': null,
-                            'fieldToFilter': relation.referencingField,
-                            'parentField': relation.referencedField,
-                            'parentValues': [],
-                            'pivot': isPivot,
-                            'otherParentTypeName': null,
-                            'otherParentRelation': null,
-                            'otherParentValues': []
-                        };
-
-                        typeNameChildren[ childLayerKeyName ] = fParam;
+                        typeNameChildren[ childParam[0] ] = childParam[1];
 
                     }
                 }
 
                 // ** ** If typeName is a pivot, add some info about the otherParent
                 // If pivot, re-loop relations to find configuration for other parents (go up)
-                var isPivot = false;
-                var pivotParam = null;
-                if( 'pivot' in typeNameConfig
-                    && typeNameConfig.pivot == 'True'
-                    && typeNameConfig.layerId in config.relations.pivot
-                ){
-                    isPivot = true;
-                }
-
-                if( isPivot ){
-                    var otherParentId = null;
-                    var otherParentRelation = null;
-                    var otherParentTypeName = null;
-
-                    for( var rx in config.relations ){
-                        // Do not take pivot object into account
-                        if( rx == 'pivot' )
-                            continue;
-                        // Do not get relation for parent layer (we are looking for other parents only)
-                        if( rx == typeNameId)
-                            continue;
-                        // Do not get relation for parent to avoid ( infinite loop otherwise )
-                        var otherParentConfig = lizMap.getLayerConfigById(
-                            rx,
-                            config.attributeLayers,
-                            'layerId'
-                        );
-                        if( otherParentConfig
-                            && $.inArray( otherParentConfig[0], typeNameDone ) != -1
-                        )
-                            continue;
-
-                        var aLayerRelations = config.relations[rx];
-
-                        for( var xx in aLayerRelations){
-                            // Only look at relations concerning typeName
-                            if( aLayerRelations[xx].referencingLayer != typeNameConfig.layerId)
-                                continue;
-
-                            otherParentId = rx;
-                            otherParentRelation = aLayerRelations[xx];
-
-                            var otherParentConfig = lizMap.getLayerConfigById(
-                                rx,
-                                config.attributeLayers,
-                                'layerId'
-                            );
-                            otherParentTypeName =  otherParentConfig[0];
-                        }
-                    }
-
-                    if( otherParentId && otherParentRelation){
-                        pivotParam = {};
-                        pivotParam['otherParentTypeName'] = otherParentTypeName;
-                        pivotParam['otherParentRelation'] = otherParentRelation;
-                        pivotParam['otherParentValues'] = [];
-                    }
-                }
+                var pivotParam = getPivotParam( typeNameId, attributeLayerConfig, typeNameDone );
 
                 // **2** Loop through features && get children filter values
                 var filteredFeatures = [];
@@ -2028,7 +2141,7 @@ var lizAttributeTable = function() {
                     }
 
                     // If pivot, we need also to get the values to filter the other parent
-                    if( isPivot && pivotParam && aFilter ){
+                    if( pivotParam && aFilter ){
                         var referencingField = pivotParam['otherParentRelation'].referencingField;
                         pivotParam['otherParentValues'].push( "'" + feat.properties[ referencingField ] + "'" );
                     }
@@ -2115,7 +2228,7 @@ var lizAttributeTable = function() {
                 // Refresh attributeTable
                 var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
                 if( $( opTable ).length ){
-                    buildLayerAttributeDatatable(typeName, opTable, cFeatures, aNameAliases, aNameTypes );
+                    refreshLayerAttributeDatatable(typeName, opTable, cFeatures);
                 }
 
                 // And send event so that getFeatureInfo and getPrint use the updated layer filters
@@ -2157,7 +2270,7 @@ var lizAttributeTable = function() {
                 }
 
                 // **5** Add other parent to pile when typeName is a pivot
-                if( isPivot && pivotParam ){
+                if( pivotParam ){
                     // Add a Filter to the "other parent" layers
                     var cFilter = null;
                     var orObj = null;
@@ -2193,9 +2306,9 @@ var lizAttributeTable = function() {
                 }
 
                 // **6** Launch the method again if typeName is not empty
-                if( typeNamePile.length > 0 )
+                if( typeNamePile.length > 0 ) {
                     updateLayer( typeNamePile, typeNameFilter, typeNameDone, cascade );
-
+                }
             });
         }
 
