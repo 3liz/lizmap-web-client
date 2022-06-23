@@ -339,6 +339,34 @@ var lizAttributeTable = function() {
                 });
             }
 
+            function getDataAndRefreshAttributeTable(layerName, filter, tableSelector, callBack){
+
+                const typeName = lizMap.config.layers[layerName].typename;
+
+                const wfsParams = {
+                    TYPENAME: typeName,
+                    GEOMETRYNAME: 'extent'
+                };
+
+                if(filter){
+                    wfsParams['EXP_FILTER'] = filter;
+                }
+
+                // Calculate bbox from map extent if needed
+                if (config.options?.limitDataToBbox == 'True') {
+                    wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
+                    wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                }
+
+                const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
+                Promise.all([getFeatureRequest]).then(responses => {
+                    refreshLayerAttributeDatatable(layerName, tableSelector, responses[0].features);
+                    document.body.style.cursor = 'default';
+                }).catch(() => {
+                    document.body.style.cursor = 'default';
+                });
+            }
+
             function activateAttributeLayers() {
                 attributeLayersActive = true;
 
@@ -1929,7 +1957,11 @@ var lizAttributeTable = function() {
             var aFilter = typeNameFilter[typeName];
 
             // Apply filter and get children
-            applyLayerFilter( typeName, aFilter, typeNamePile, typeNameFilter, typeNameDone, cascade );
+            if (aFilter) {
+                applyLayerFilter( typeName, aFilter, typeNamePile, typeNameFilter, typeNameDone, cascade );
+            } else {
+                applyEmptyLayerFilter( typeName, typeNamePile, typeNameFilter, typeNameDone, cascade );
+            }
 
             // Change background in switcher
             var trFilteredBgcolor = 'inherit';
@@ -2050,7 +2082,113 @@ var lizAttributeTable = function() {
             return pivotParam;
         }
 
+        function applyEmptyLayerFilter( typeName, typeNamePile, typeNameFilter, typeNameDone, cascade ){
+            // Add done typeName to the list
+            typeNameDone.push( typeName );
+
+            // **0** Prepare some variable. e.g. reset features stored in the layer config
+            var layerConfig = config.layers[typeName];
+            layerConfig['features'] = {};
+
+            // **1** Get children info
+            var typeNameId = layerConfig['id'];
+            var typeNameChildren = {};
+
+            var getAttributeLayerConfig = lizMap.getLayerConfigById(
+                typeNameId,
+                config.attributeLayers,
+                'layerId'
+            );
+            var attributeLayerConfig = null;
+            if( getAttributeLayerConfig ) {
+                attributeLayerConfig = getAttributeLayerConfig[1];
+            }
+
+            if( 'relations' in config
+                && typeNameId in config.relations
+                && cascade
+            ) {
+                // Loop through relations to get children data
+                var layerRelations = config.relations[typeNameId];
+                for( var lid in layerRelations ) {
+                    var relation = layerRelations[lid];
+                    var childParam = buildChildParam(relation, typeNameDone);
+
+                    // if no child param
+                    if( !childParam )
+                        continue;
+
+                    typeNameChildren[ childParam[0] ] = childParam[1];
+                }
+            }
+
+            // ** ** If typeName is a pivot, add some info about the otherParent
+            // If pivot, re-loop relations to find configuration for other parents (go up)
+            var pivotParam = getPivotParam( typeNameId, attributeLayerConfig, attributeLayerConfig, typeNameDone );
+
+            // **3** Apply filter to the typeName and redraw if necessary
+            var layer = lizMap.map.getLayersByName( lizMap.cleanName(typeName) )[0];
+            layerConfig['request_params']['filter'] = null;
+            layerConfig['request_params']['exp_filter'] = null;
+            layerConfig['request_params']['filtertoken'] = null;
+
+            if( layer ) {
+                delete layer.params['FILTER'];
+                delete layer.params['FILTERTOKEN'];
+            }
+
+            // Redraw openlayers layer
+            if( layer
+                && layerConfig['geometryType'] != 'none'
+                && layerConfig['geometryType'] != 'unknown'
+            ){
+                layer.redraw(true);
+            }
+
+            // Refresh attributeTable
+            var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
+            if( $( opTable ).length ){
+                getDataAndRefreshAttributeTable(typeName, null, opTable);
+            }
+
+            // And send event so that getFeatureInfo and getPrint use the updated layer filters
+            lizMap.events.triggerEvent("layerFilterParamChanged",
+                {
+                    'featureType': typeName,
+                    'filter': null,
+                    'updateDrawing': true
+                }
+            );
+
+            // **4** build children filters
+            if( cascade ) {
+                for( var x in typeNameChildren ){
+                    typeNameFilter[x] = null;
+                    typeNamePile.push( x );
+                }
+            }
+
+            // **5** Add other parent to pile when typeName is a pivot
+            if( pivotParam ){
+                // Add a Filter to the "other parent" layers
+                config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = null;
+
+                typeNameFilter[ pivotParam['otherParentTypeName'] ] = null;
+                typeNamePile.push( pivotParam['otherParentTypeName'] );
+            }
+
+            // **6** Launch the method again if typeName is not empty
+            if( typeNamePile.length > 0 ) {
+                updateLayer( typeNamePile, typeNameFilter, typeNameDone, cascade );
+            }
+
+        }
+
         function applyLayerFilter( typeName, aFilter, typeNamePile, typeNameFilter, typeNameDone, cascade ){
+            if (!aFilter) {
+                applyEmptyLayerFilter( typeName, typeNamePile, typeNameFilter, typeNameDone, cascade );
+                return;
+            }
 
             // Add done typeName to the list
             typeNameDone.push( typeName );
