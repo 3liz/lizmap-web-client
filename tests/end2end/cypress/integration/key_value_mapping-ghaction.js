@@ -5,6 +5,8 @@ describe('Key/value in attribute table', function () {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=key_value_mapping')
 
         cy.get('#button-attributeLayers').click()
+
+        cy.get('#bottom-dock-window-buttons .btn-bottomdock-size').click()
     })
 
     it('must display values instead of key in parent attribute table', function () {
@@ -104,7 +106,11 @@ describe('Key/value in attribute table', function () {
 
         // Main attribute table
         cy.get('#attribute-layer-table-data_integers tbody tr').first().click({ force: true })
+        cy.wait(300)
 
+        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr')
+            .should('have.length', 1)
+            .should('have.attr', 'id').and('equal', '1')
         cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollHead th').then(theaders => {
             expect(theaders).to.have.length(11)
             const headers = [...theaders].map(t => t.innerText)
@@ -121,23 +127,38 @@ describe('Key/value in attribute table', function () {
                 'label from text (value map)',
                 'label from text (value relation)'
             ])
-            cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tr[id="1"] td').then(tdata => {
-                expect(tdata).to.have.length(11)
-                const data = [...tdata].map(t => t.innerText)
-                expect(data).to.have.length(11)
-                expect(data).to.include.members([
-                    '1',
-                    'first',
-                    'premier',
-                    'one',
-                    'one',
-                    'first',
-                    'premier',
-                    'first',
-                    'premier',
-                    'premier'
-                ])
-            })
+            return cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr td')
+        }).then(tdata => {
+            expect(tdata).to.have.length(11)
+            const data = [...tdata].map(t => t.innerText)
+            expect(data).to.have.length(11)
+            expect(data).to.include.members([
+                '1',
+                'first',
+                'premier',
+                'one',
+                'one',
+                'first',
+                'premier',
+                'first',
+                'premier',
+                'premier'
+            ])
+        })
+
+        // click on a second line
+        cy.get('#attribute-layer-table-data_integers tbody tr').first().next().click({ force: true })
+        cy.wait(300)
+        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr')
+            .should('have.length', 1)
+            .should('have.attr', 'id').and('equal', '2')
+        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr td').then(tdata => {
+            expect(tdata).to.have.length(11)
+            const data = [...tdata].map(t => t.innerText)
+            expect(data).to.have.length(11)
+            expect(data).to.include.members([
+                '2', 'second', 'deuxième', 'two', 'two', 'second', 'deuxième', 'second', 'deuxième', 'deuxième'
+            ])
         })
 
         // Attribute table in edition mode
