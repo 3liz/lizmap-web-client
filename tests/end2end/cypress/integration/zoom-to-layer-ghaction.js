@@ -12,7 +12,7 @@ describe('Zoom to layer', function() {
 
         // Check popup displayed
         cy.get('#mapmenu li.nav-dock.popupcontent').should('have.class', 'active')
-        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('length', 1)
+        cy.get('#popupcontent div.lizmapPopupContent div.lizmapPopupSingleFeature h4').should('length', 1)
 
         // Zoom to world layer
         cy.get('#button-switcher').click()
@@ -24,7 +24,7 @@ describe('Zoom to layer', function() {
 
         // Check no popup displayed
         cy.get('#mapmenu li.nav-dock.popupcontent').should('have.class', 'active')
-        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('length', 0)
+        cy.get('#popupcontent div.lizmapPopupContent div.lizmapPopupSingleFeature h4').should('length', 0)
 
         // The dock with content will be closed
         //cy.wait(5000)
@@ -43,7 +43,7 @@ describe('Zoom to layer', function() {
 
         // Check popup displayed
         cy.get('#mapmenu li.nav-dock.popupcontent').should('have.class', 'active')
-        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('length', 1)
+        cy.get('#popupcontent div.lizmapPopupContent div.lizmapPopupSingleFeature h4').should('length', 1)
 
         // Zoom to world layer
         cy.get('#button-switcher').click()
@@ -55,6 +55,6 @@ describe('Zoom to layer', function() {
 
         // Check no popup displayed
         cy.get('#mapmenu li.nav-dock.popupcontent').should('have.class', 'active')
-        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('length', 0)
+        cy.get('#popupcontent div.lizmapPopupContent div.lizmapPopupSingleFeature h4').should('length', 0)
     })
 })
