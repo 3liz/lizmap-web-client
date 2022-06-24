@@ -1520,6 +1520,13 @@ class QgisProject
         }
         $layerName = (string) $_layerName[0];
         $typeName = str_replace(' ', '_', $layerName);
+        $_shortname = $referencedLayerXml->xpath('shortname');
+        if (count($_shortname) > 0) {
+            $shortname = (string) $_shortname[0];
+            if (!empty($shortname)) {
+                $typeName = $shortname;
+            }
+        }
         $referencedField = (string) $relationXml->fieldRef->attributes()->referencedField;
         $referencingField = (string) $relationXml->fieldRef->attributes()->referencingField;
 

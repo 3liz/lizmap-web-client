@@ -239,7 +239,6 @@ class datavizPlot
      */
     protected function parseLayer($layerId)
     {
-        $layer = $this->lproj->getLayer($this->layerId);
         // FIXME do not use this deprecated method and XML stuff here
         $layerXml = $this->lproj->getXmlLayer($this->layerId);
         if (count($layerXml) > 0) {
@@ -437,7 +436,10 @@ class datavizPlot
 
         // Prepare request and get data
         if ($method == 'wfs') {
-            $typename = str_replace(' ', '_', $layerName);
+            // Get WFS typename
+            /** @var qgisVectorLayer $layer */
+            $layer = $this->lproj->getLayer($this->layerId);
+            $typeName = $layer->getWfsTypeName();
             $propertyname = array();
             if (count($this->x_fields) > 0) {
                 $propertyname = array_merge($propertyname, $this->x_fields);
@@ -452,7 +454,7 @@ class datavizPlot
                 'SERVICE' => 'WFS',
                 'VERSION' => '1.0.0',
                 'REQUEST' => 'GetFeature',
-                'TYPENAME' => $typename,
+                'TYPENAME' => $typeName,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
                 'PROPERTYNAME' => implode(',', $propertyname),
