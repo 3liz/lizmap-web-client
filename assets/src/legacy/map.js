@@ -4672,28 +4672,6 @@ window.lizMap = function() {
   }
 
   /**
-   * PRIVATE function: parseData
-   * parsing capability
-   *
-   * Parameters:
-   * aData - {String} the WMS capabilities
-   *
-   * Returns:
-   * {Boolean} the capability is OK
-   */
-  function parseData(aData) {
-    var format =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
-    capabilities = format.read(aData);
-
-    var capability = capabilities.capability;
-    if (!capability) {
-      $('#map').html('SERVICE NON DISPONIBLE!');
-      return false;
-    }
-    return true;
-  }
-
-  /**
    * PRIVATE function: loadProjDefinition
    * load CRS definition and activate it
    *
@@ -6016,22 +5994,37 @@ window.lizMap = function() {
 
       // Get config
       const configRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.config, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+        if (!response.ok) {
+          throw 'Config not loaded: ' + response.status + ' ' + response.statusText
+        }
         return response.json()
       });
 
       // Get key/value config
       const keyValueConfigRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.keyValueConfig, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+        if (!response.ok) {
+          throw 'Key/value config not loaded: ' + response.status + ' ' + response.statusText
+        }
         return response.json()
       });
 
       // Get WMS, WMTS, WFS capabilities
       const WMSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' }))).then(function (response) {
+        if (!response.ok) {
+          throw 'WMS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
+        }
         return response.text()
       });
       const WMTSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+        if (!response.ok) {
+          throw 'WMTS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
+        }
         return response.text()
       });
       const WFSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+        if (!response.ok) {
+          throw 'WFS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
+        }
         return response.text()
       });
 
@@ -6039,6 +6032,7 @@ window.lizMap = function() {
       let featureExtentRequest;
       // Get feature info if defined in URL
       let getFeatureInfoRequest;
+      let getFeatureInfo;
 
       const urlParameters = (new URL(document.location)).searchParams;
 
@@ -6088,7 +6082,7 @@ window.lizMap = function() {
           }
         }
 
-        const getFeatureInfo = responses[6];
+        getFeatureInfo = responses[6];
         
         const domparser = new DOMParser();
 
@@ -6109,11 +6103,16 @@ window.lizMap = function() {
           configLayer.cleanname = cleanName(layerName);
         }
 
-        //parse capabilities
-        if (!parseData(wmsCapaData))
-          return true;
+        // Parse WMS capabilities
+        const wmsFormat =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
+        capabilities = wmsFormat.read(wmsCapaData);
+    
+        if (!capabilities.capability) {
+          throw 'WMS Capabilities error';
+        }
 
-        var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+        // Parse WMTS capabilities
+        const wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
         wmtsCapabilities = wmtsFormat.read(wmtsCapaData);
         if ('exceptionReport' in wmtsCapabilities) {
           var wmtsElem = $('#metadata-wmts-getcapabilities-url');
@@ -6123,6 +6122,7 @@ window.lizMap = function() {
           wmtsCapabilities = null;
         }
 
+        // Parse WFS capabilities
         wfsCapabilities = domparser.parseFromString(wfsCapaData, "application/xml");
         var featureTypes = getVectorLayerFeatureTypes();
 
@@ -6485,7 +6485,15 @@ window.lizMap = function() {
         $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
         $('#mapmenu .nav a[rel="tooltip"]').tooltip();
         self.events.triggerEvent("uicreated", self);
-
+      })
+      .catch((error) => {
+        console.error(error);
+        const errorMsg = `
+          <p class="error-msg">${lizDict['startup.error']}
+          <br><a href="${lizUrls.basepath}">${lizDict['startup.goToProject']}</a></p>`;
+        document.getElementById('header').insertAdjacentHTML('afterend', errorMsg);
+      })
+      .finally(() => {
         $('body').css('cursor', 'auto');
         $('#loading').dialog('close');
 
