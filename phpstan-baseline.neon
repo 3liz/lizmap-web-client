@@ -802,11 +802,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
 
 		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$ref\\)\\: Unexpected token \"\\$ref\", expected type at offset 18$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$cnx$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
@@ -947,26 +942,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Project/Project.php
 
 		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$layerId\\)\\: Unexpected token \"\\$layerId\", expected type at offset 172$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$layerName\\)\\: Unexpected token \"\\$layerName\", expected type at offset 118$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$layerName\\)\\: Unexpected token \"\\$layerName\", expected type at offset 18$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$name\\)\\: Unexpected token \"\\$name\", expected type at offset 337$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
 			message: "#^Property Lizmap\\\\Project\\\\Project\\:\\:\\$printCapabilities \\(object\\) does not accept default value of type array\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Project/Project.php
@@ -988,11 +963,6 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$layerId\\)\\: Unexpected token \"\\$layerId\", expected type at offset 18$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
 
@@ -1373,11 +1343,6 @@ parameters:
 
 		-
 			message: "#^Offset 'filename' on array\\{dirname\\: string, basename\\: string, filename\\: string, extension\\?\\: string\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/media.classic.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$key \\: type of image\\. Can be 'headerLogo' or 'headerBackgroundImage'\\)\\: Unexpected token \"\\$key\", expected type at offset 106$#"
 			count: 1
 			path: lizmap/modules/view/controllers/media.classic.php
 

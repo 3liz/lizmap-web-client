@@ -19,10 +19,13 @@ class adminLoginHtmlResponse extends AbstractLizmapHtmlResponse
         $this->prepareHeadContent();
 
         // Override default theme with color set in admin panel
-        if ($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/').'theme.css')) {
-            $css = '<style type="text/css">'.$cssContent.'</style>
-           ';
-            $this->addHeadContent($css);
+        $CSSThemeFile = jApp::varPath('lizmap-theme-config/').'theme.css';
+        if (file_exists($CSSThemeFile)) {
+            $cssContent = file_get_contents($CSSThemeFile);
+            if ($cssContent) {
+                $css = '<style type="text/css">'.$cssContent.'</style>';
+                $this->addHeadContent($css);
+            }
         }
     }
 

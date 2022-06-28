@@ -1,15 +1,15 @@
 ARG REGISTRY_PREFIX=''
-FROM ${REGISTRY_PREFIX}alpine:3.15 as build
+FROM ${REGISTRY_PREFIX}alpine:3.16 as build
 
 COPY lizmap_web_client.zip .
 RUN unzip lizmap_web_client.zip
 
-FROM ${REGISTRY_PREFIX}alpine:3.15
+FROM ${REGISTRY_PREFIX}alpine:3.16
 MAINTAINER David Marteau <david.marteau@3liz.com>
-LABEL Description="Lizmap web client" Vendor="3liz.org" Version="21.05.0"
+LABEL Description="Lizmap web client" Vendor="3liz.org" Version="22.06.0"
 
-RUN apk update && apk upgrade
-RUN apk --no-cache add git fcgi php8 \
+RUN apk update && apk upgrade && \
+    apk --no-cache add git fcgi php8 \
     php8-ctype \
     php8-curl \
     php8-dom \
@@ -20,13 +20,14 @@ RUN apk --no-cache add git fcgi php8 \
     php8-gettext \
     php8-iconv \
     php8-intl \
+    php8-json \
     php8-ldap \
     php8-mbstring \
     php8-opcache \
     php8-openssl \
     php8-pgsql \
     php8-phar \
-    php8-pecl-redis \
+    php8-redis \
     php8-session \
     php8-simplexml \
     php8-sqlite3 \

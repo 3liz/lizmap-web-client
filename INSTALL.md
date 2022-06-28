@@ -10,13 +10,15 @@ QGIS Server, webbrowsers etc.
 First you should install :
 
 - The web server Apache or Nginx
-- The PHP-FPM package (`php7.4-fpm`, `php8.0-fpm` or `php8.1-fpm` on debian/ubuntu)
-- The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml`:
-- [QGIS](http://qgis.org/en/site/forusers/download.html)
-and [its documentation about QGIS Server](https://docs.qgis.org/3.16/en/docs/user_manual/working_with_ogc/server/index.html).
+- The PHP-FPM package (`php7.4-fpm`, `php8.0-fpm` or  `php8.1-fpm` on debian/ubuntu).
+  You can install PHP 7.4/8.0/8.1. You can use generic package names, which will install latest
+  version available (`php7.4`, `php8.0` etc.)
+- The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml`
+- [QGIS](http://qgis.org/en/site/forusers/download.html) 3.16 or 3.22
+and [its documentation about QGIS Server](https://docs.qgis.org/3.22/en/docs/server_manual/index.html).
   We recommend **strongly** to use the same version on the server **and** on the desktop. QGIS Server will read
   your QGS file and obviously can't read a file made with a newer version of QGIS Desktop.
-- Optional but highly recommended: PostgreSQL with PostGIS and its php extension (`php-pgsql` or equivalents)
+- (optional but highly recommended) PostgreSQL with PostGIS and its php extension (`php8.1-pgsql` or equivalents)
 
 ## Get the source
 
@@ -50,7 +52,7 @@ then exit the directory:
 cd ../../..
 ```
 
-Set rights for Apache, so php scripts could write some temporary files or do changes.
+Set rights for Nginx/Apache, so php scripts could write some temporary files or do changes.
 
 ```bash
 lizmap/install/set_rights.sh www-data www-data

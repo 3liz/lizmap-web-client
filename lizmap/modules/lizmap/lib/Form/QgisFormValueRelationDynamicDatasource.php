@@ -106,8 +106,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                 $wfsResult = $wfsRequest->process();
 
                 $data = $wfsResult->data;
-                if (property_exists($wfsResult, 'file') and $wfsResult->file and is_file($data)) {
-                    $data = \jFile::read($data);
+                if (substr($data, 0, 7) == 'file://' && is_file(substr($data, 7))) {
+                    $data = \jFile::read(substr($data, 7));
                 }
                 $mime = $wfsResult->mime;
 
@@ -184,8 +184,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         $wfsResult = $wfsRequest->process();
 
         $data = $wfsResult->data;
-        if (property_exists($wfsResult, 'file') and $wfsResult->file and is_file($data)) {
-            $data = \jFile::read($data);
+        if (substr($data, 0, 7) == 'file://' && is_file(substr($data, 7))) {
+            $data = \jFile::read(substr($data, 7));
         }
         $mime = $wfsResult->mime;
 

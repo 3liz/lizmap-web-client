@@ -7,6 +7,16 @@ describe('Feature Toolbar', function () {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
 
         cy.wait(300)
+
+        cy.intercept('*REQUEST=GetFeatureInfo*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getFeatureInfo')
     })
 
     it('should select', function () {
@@ -23,6 +33,7 @@ describe('Feature Toolbar', function () {
 
         // Click feature with id=1 on the map
         cy.get('#map').click(625, 362)
+        cy.wait('@getFeatureInfo')
 
         cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
@@ -76,6 +87,7 @@ describe('Feature Toolbar', function () {
 
         // Click feature with id=1 on the map
         cy.get('#map').click(625, 362)
+        cy.wait('@getFeatureInfo')
 
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').click()
 
@@ -112,6 +124,7 @@ describe('Feature Toolbar', function () {
 
         // Click feature with id=1 on the map
         cy.get('#map').click(625, 362)
+        cy.wait('@getFeatureInfo')
 
         // Open parent_layer in attribute table
         cy.get('#button-attributeLayers').click()
@@ -150,8 +163,10 @@ describe('Feature Toolbar', function () {
     })
 
     it('should display working custom action', function () {
+
         // Click feature with id=1 on the map
         cy.get('#map').click(625, 362)
+        cy.wait('@getFeatureInfo')
 
         cy.get('.popupButtonBar .popup-action').click()
 
@@ -171,6 +186,7 @@ describe('Feature Toolbar', function () {
     it('should start child edition linked to a parent feature', function () {
         // Click feature with id=2 on the map
         cy.get('#map').click(1025, 362)
+        cy.wait('@getFeatureInfo')
 
         // Start parent edition
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"] .feature-edit').click()

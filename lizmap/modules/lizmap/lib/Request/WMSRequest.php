@@ -101,6 +101,8 @@ class WMSRequest extends OGCRequest
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
      */
     protected function process_getcapabilities()
@@ -180,14 +182,12 @@ class WMSRequest extends OGCRequest
             }
         }
 
-        return (object) array(
-            'code' => 200,
-            'mime' => $result->mime,
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse($result->code, $result->mime, $data, $result->cached);
     }
 
+    /**
+     * @return OGCResponse
+     */
     protected function process_getcontext()
     {
         // Get remote data
@@ -202,14 +202,12 @@ class WMSRequest extends OGCRequest
         $data = $response->data;
         $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
-        return (object) array(
-            'code' => $response->code,
-            'mime' => $response->mime,
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse($response->code, $response->mime, $data, $response->cached);
     }
 
+    /**
+     * @return OGCResponse
+     */
     protected function process_getschemaextension()
     {
         $data = '<?xml version="1.0" encoding="UTF-8"?>
@@ -220,15 +218,12 @@ class WMSRequest extends OGCRequest
   <element name="GetStyles" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
 </schema>';
 
-        return (object) array(
-            'code' => 200,
-            'mime' => 'text/xml',
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse(200, 'text/xml', $data);
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
      */
     protected function process_getmap()
@@ -239,18 +234,13 @@ class WMSRequest extends OGCRequest
             return $this->serviceException();
         }
 
-        $getMap = $this->getMapData($this->project, $this->parameters(), $this->forceRequest);
-
-        return (object) array(
-            'code' => $getMap[2],
-            'mime' => $getMap[1],
-            'data' => $getMap[0],
-            'cached' => $getMap[3],
-        );
+        return $this->getMapData($this->project, $this->parameters(), $this->forceRequest);
     }
 
     /**
      * Check wether the height and width values are valid.
+     *
+     * @return bool
      */
     protected function checkMaximumWidthHeight()
     {
@@ -276,6 +266,8 @@ class WMSRequest extends OGCRequest
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
      */
     protected function process_getlegendgraphic()
@@ -296,17 +288,12 @@ class WMSRequest extends OGCRequest
         }
 
         // Get remote data
-        $response = $this->request(true);
-
-        return (object) array(
-            'code' => $response->code,
-            'mime' => $response->mime,
-            'data' => $response->data,
-            'cached' => false,
-        );
+        return $this->request(true);
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
      */
     protected function process_getfeatureinfo()
@@ -400,27 +387,21 @@ class WMSRequest extends OGCRequest
             $rep .= $data;
         }
 
-        return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $rep,
-            'cached' => false,
-        );
+        return new OGCResponse($code, $mime, $rep, $response->cached);
     }
 
+    /**
+     * @return OGCResponse
+     */
     protected function process_getprint()
     {
         // Get remote data
-        $response = $this->request(true);
-
-        return (object) array(
-            'code' => $response->code,
-            'mime' => $response->mime,
-            'data' => $response->data,
-            'cached' => false,
-        );
+        return $this->request(true);
     }
 
+    /**
+     * @return OGCResponse
+     */
     protected function process_getprintatlas()
     {
         // Trigger optional actions by other modules
@@ -433,30 +414,30 @@ class WMSRequest extends OGCRequest
         $this->appContext->eventNotify('BeforePdfCreation', $eventParams);
 
         // Get remote data
-        $response = $this->request(true);
-
-        return (object) array(
-            'code' => $response->code,
-            'mime' => $response->mime,
-            'data' => $response->data,
-            'cached' => false,
-        );
+        return $this->request(true);
     }
 
+    /**
+     * @return OGCResponse
+     *
+     * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
+     */
     protected function process_getstyles()
     {
 
         // Get remote data
-        $response = $this->request(true);
-
-        return (object) array(
-            'code' => $response->code,
-            'mime' => $response->mime,
-            'data' => $response->data,
-            'cached' => false,
-        );
+        return $this->request(true);
     }
 
+    /**
+     * @param mixed $tplName
+     * @param mixed $layerName
+     * @param mixed $layerId
+     * @param mixed $layerTitle
+     * @param mixed $params
+     *
+     * @return string
+     */
     protected function getViewTpl($tplName, $layerName, $layerId, $layerTitle, $params = array())
     {
         $tpl = new \jTpl();
@@ -734,7 +715,7 @@ class WMSRequest extends OGCRequest
      * @param string            $layerTitle
      * @param \SimpleXmlElement $layer
      *
-     * @return array Raster feature Info in HTML format
+     * @return string Raster feature Info in HTML format
      */
     protected function gfiRasterXmlToHtml($layerId, $layerName, $layerTitle, $layer)
     {
@@ -1053,7 +1034,7 @@ class WMSRequest extends OGCRequest
      * @param array   $params  array of parameters
      * @param mixed   $forced
      *
-     * @return array $data normalized and filtered array
+     * @return OGCResponse normalized and filtered response
      */
     protected function getMapData($project, $params, $forced = false)
     {
@@ -1077,7 +1058,7 @@ class WMSRequest extends OGCRequest
         list($repository, $project) = $this->getVProfileInfos($configLayer, $repository, $project);
 
         if ($repository === 'error') {
-            return array('error', 'text/plain', '404', false);
+            return new OGCResponse(404, 'text/plain', 'error', false);
         }
 
         // Get tile cache virtual profile (tile storage)
@@ -1094,7 +1075,7 @@ class WMSRequest extends OGCRequest
         // Get cache if exists
         $key = $this->getTileCache($params, $profile, $useCache, $forced);
         if (is_array($key)) {
-            return $key;
+            return new OGCResponse($key[2], $key[1], $key[0], $key[3]);
         }
 
         // ***************************
@@ -1167,6 +1148,6 @@ class WMSRequest extends OGCRequest
             }
         }
 
-        return array($data, $mime, $code, $cached);
+        return new OGCResponse($code, $mime, $data, $cached);
     }
 }
