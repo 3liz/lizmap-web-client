@@ -36,27 +36,28 @@ describe('External WMS layers', function () {
                 })
             }).as('getMap')
 
-        // Test bakeries layer
-        cy.wait(4000)
-        cy.get('#layer-bakeries button').click()
+        // WMS https://demo.lizmap.com/lizmap/index.php/lizmap/service/?repository=cypress&project=base_external_layers&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities
+        // URL demo.lizmap.com
+        // Repository cypress
+        // Project base_external_layers
 
+        // As PNG
+        cy.get('#layer-png button').click()
         cy.wait('@getMap').then((interception) => {
             expect(interception.response.headers['content-type'], 'expect mime type to be image/png').to.equal('image/png')
+            console.log(interception.response)
         })
-        
-        // Test Plan IGN v2 2154 jpeg
-        cy.get('#layer-Plan_IGN_v2_2154_jpeg button').click()
+        cy.get('#layer-png button').click()
 
+        // Wait for all GetMap requests
+        cy.wait(4000)
+
+        // As JPEG
+        cy.get('#layer-jpeg button').click()
         cy.wait('@getMap').then((interception) => {
             expect(interception.response.headers['content-type'], 'expect mime type to be image/jpeg').to.equal('image/jpeg')
         })
-
-        // Test Plan IGN v2 2154 png
-        cy.get('#layer-Plan_IGN_v2_2154_png button').click()
-
-        cy.wait('@getMap').then((interception) => {
-            expect(interception.response.headers['content-type'], 'expect mime type to be image/png').to.equal('image/png')
-        })
+        cy.get('#layer-jpeg  button').click()
 
     })
 })
