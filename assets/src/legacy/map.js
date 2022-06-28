@@ -9,7 +9,7 @@
 */
 
 
-var lizMap = function() {
+window.lizMap = function() {
   /**
    * PRIVATE Property: config
    * {object} The map config
@@ -167,6 +167,52 @@ var lizMap = function() {
    *
    */
   var editionPending = false;
+
+  /**
+   * Get the metadata written in the configuration file by the desktop Lizmap plugin.
+   *
+   * This method should be used EVERY TIME we need to add "if" conditions
+   * to adapt the code for configuration parameters changes across versions.
+   * This will ease in the future the review of the code to remove all the "if"
+   * conditions: we will just need to search for "getLizmapDesktopPluginMetadata"
+   * and not: "if 'someproperty' in someconfig".
+   *
+   * For very old configuration files, which have not the needed metadata, we
+   * return fake versions for each property.
+   *
+   * Dependencies:
+   * config
+   */
+  function getLizmapDesktopPluginMetadata()
+  {
+    // Default fake versions if the properties does not yet exist in configuration file
+    var plugin_metadata = {
+      lizmap_plugin_version_str: "3.1.8",
+      lizmap_plugin_version: 30108,
+      lizmap_web_client_target_version: 30200,
+      project_valid: null,
+      qgis_desktop_version: 30000
+    };
+
+    if (!('metadata' in config)) {
+      return plugin_metadata;
+    }
+    if ('lizmap_plugin_version' in config['metadata']) {
+      plugin_metadata['lizmap_plugin_version'] = config['metadata']['lizmap_plugin_version'];
+    }
+    if ('lizmap_web_client_target_version' in config['metadata']) {
+      plugin_metadata['lizmap_web_client_target_version'] = config['metadata']['lizmap_web_client_target_version'];
+    }
+    if ('project_valid' in config['metadata']) {
+      plugin_metadata['project_valid'] = config['metadata']['project_valid'];
+    }
+    if ('qgis_desktop_version' in config['metadata']) {
+      plugin_metadata['qgis_desktop_version'] = config['metadata']['qgis_desktop_version'];
+    }
+
+    return plugin_metadata;
+
+  }
 
   function performCleanName(aName) {
     var accentMap = {
@@ -1093,6 +1139,25 @@ var lizMap = function() {
     if (('children' in aNode) && aNode['children'].length!=0){
       html += ' expanded parent';
     }
+
+    // Legend properties
+    // Read the plugin metadata to get the legend options
+    // depending on the configuration version
+    let lizmap_plugin_metadata = getLizmapDesktopPluginMetadata();
+    if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30600) {
+      var legendOption = nodeConfig.legend_image_option;
+    } else {
+      var legendOption = 'hide_at_startup';
+      if (nodeConfig.noLegendImage && nodeConfig.noLegendImage == 'True') {
+        legendOption = 'disabled';
+      }
+    }
+
+    // Expand layer legend at startup
+    if (nodeConfig.type == 'layer' && legendOption == 'expand_at_startup') {
+      html += ' expanded ';
+    }
+
     if (('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False') ||
         (parentConfig && 'displayInLegend' in parentConfig && parentConfig.displayInLegend == 'False')){
       html += ' liz-hidden';
@@ -1138,7 +1203,7 @@ var lizMap = function() {
     html += '</tr>';
 
     if (nodeConfig.type == 'layer'
-    && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')
+    && (legendOption != 'disabled')
     && ('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
       if ( url != null && url != '' ) {
@@ -1746,10 +1811,21 @@ var lizMap = function() {
     // add layer title
     html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
 
+    // Read the plugin metadata to get the legend options
+    // depending on the configuration version
+    let lizmap_plugin_metadata = getLizmapDesktopPluginMetadata();
+    if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30600) {
+      var legendOption = nodeConfig.legend_image_option;
+    } else {
+      var legendOption = 'hide_at_startup';
+      if (nodeConfig.noLegendImage && nodeConfig.noLegendImage == 'True') {
+        legendOption = 'disabled';
+      }
+    }
+
     if (('children' in aNode) && aNode['children'].length!=0) {
       html += getSwitcherUl(aNode, aLevel+1);
-    } else if (nodeConfig.type == 'layer'
-           && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
+    } else if (nodeConfig.type == 'layer' && legendOption != 'disabled') {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
       if ( url != null && url != '' ) {
           html += '<ul id="legend-layer-'+aNode.name+'">';
@@ -3005,24 +3081,20 @@ var lizMap = function() {
           const rConfigLayerAll = [];
 
           // Build POST query for every child based on QGIS relations
-          for ( var i=0, len=relations.length; i<len; i++ ){
-              var r = relations[i];
-              var rLayerId = r.referencingLayer;
-              var rGetLayerConfig = getLayerConfigById( rLayerId );
+          for ( const relation of relations ){
+              const rLayerId = relation.referencingLayer;
+              const rGetLayerConfig = getLayerConfigById( rLayerId );
               if ( rGetLayerConfig ) {
-                  var rConfigLayer = rGetLayerConfig[1];
-                  var clname = rConfigLayer.cleanname;
+                  const rConfigLayer = rGetLayerConfig[1];
+                  let clname = rConfigLayer?.shortname || rConfigLayer.cleanname;
                   if ( clname === undefined ) {
                       clname = cleanName(configLayer.name);
                       rConfigLayer.cleanname = clname;
                   }
                   if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
-                      var qLayerName = rConfigLayer.name;
-                      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
-                          qLayerName = layerIdMap[rConfigLayer.name];
-                      var wmsOptions = {
-                            'LAYERS': qLayerName
-                          ,'QUERY_LAYERS': qLayerName
+                      const wmsOptions = {
+                            'LAYERS': clname
+                          ,'QUERY_LAYERS': clname
                           ,'STYLES': ''
                           ,'SERVICE': 'WMS'
                           ,'VERSION': '1.3.0'
@@ -3039,9 +3111,9 @@ var lizMap = function() {
                           wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
                       if ( rConfigLayer.request_params && rConfigLayer.request_params.filter &&
                             rConfigLayer.request_params.filter !== '' )
-                          wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
+                          wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
                       else
-                          wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
+                          wmsOptions['FILTER'] = clname+':"'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
 
                     var parentDiv = self.parent();
 
@@ -3208,6 +3280,11 @@ var lizMap = function() {
             queryVisible: true,
             infoFormat: 'text/html',
             vendorParams: getFeatureInfoTolerances(),
+            handlerOptions: {
+              click: {
+                pixelTolerance: 10
+              }
+            },
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var eventLonLatInfo = map.getLonLatFromPixel(event.xy);
@@ -5613,6 +5690,13 @@ var lizMap = function() {
     lizmapLayerFilterActive: null,
 
     /**
+     * Method: getLizmapDesktopPluginMetadata
+     */
+     getLizmapDesktopPluginMetadata: function() {
+      return getLizmapDesktopPluginMetadata();
+    },
+
+    /**
      * Method: checkMobile
      */
     checkMobile: function() {
@@ -6013,10 +6097,18 @@ var lizMap = function() {
         // Copy QGIS project's projection
         config.options.qgisProjectProjection = Object.assign({}, config.options.projection);
 
+        // Add the config in self here to be able
+        // to let the JS external script modify some plugin cfg layers properties
+        // before Lizmap will create the layer tree
+        self.config = config;
+        self.events.triggerEvent("beforetreecreated", self);
         beforeLayerTreeCreated();
+
         var firstLayer = capability.nestedLayers[0];
         getLayerTree(firstLayer, tree);
         analyseNode(tree);
+
+        // Re-save the config in self
         self.config = config;
         self.keyValueConfig = keyValueConfig;
         self.tree = tree;

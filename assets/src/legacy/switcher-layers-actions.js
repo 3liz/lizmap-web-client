@@ -253,7 +253,7 @@ var lizLayerActionButtons = function() {
                 $('#switcher-layers-actions').prepend(themeSelector);
 
                 // Handle theme switching
-                $('#theme-selector').on('click', '.theme:not(.selected)', function () {
+                $('#theme-selector').on('click', '.theme', function () {
                 // Set theme as selected
                     $('#theme-selector .theme').removeClass('selected');
                     $(this).addClass('selected');
@@ -297,7 +297,7 @@ var lizLayerActionButtons = function() {
                                     // Style
                                     if ('style' in themeSelected.layers[layerId]) {
                                         var layerStyle = themeSelected.layers[layerId]['style'];
-                                        var layers = lizMap.map.getLayersByName(layerName);
+                                        var layers = lizMap.map.getLayersByName(lizMap.cleanName(layerName));
                                         if (layers.length == 0) {
                                             continue;
                                         }
@@ -400,6 +400,16 @@ var lizLayerActionButtons = function() {
                     lex[2],
                     lex[3]
                 );
+                // Reverse axis
+                if (OpenLayers.Projection.defaults[mapProjection] &&
+                    OpenLayers.Projection.defaults[mapProjection].yx) {
+                    lBounds = new OpenLayers.Bounds(
+                        lex[1],
+                        lex[0],
+                        lex[3],
+                        lex[2]
+                    );
+                }
                 lizMap.map.zoomToExtent( lBounds );
 
                 return false;

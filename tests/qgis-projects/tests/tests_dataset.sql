@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 13.6 (Ubuntu 13.6-1.pgdg18.04+1)
+-- Dumped by pg_dump version 14.3 (Ubuntu 14.3-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1885,6 +1885,8 @@ COPY tests_projects.attribute_table (id, label_from_int_value_relation, label_fr
 
 COPY tests_projects.children_layer (id, parent_id, comment) FROM stdin;
 1	2	\N
+2	1	first comment
+3	1	second comment
 \.
 
 
@@ -2392,7 +2394,7 @@ SELECT pg_catalog.setval('tests_projects.attribute_table_id_seq', 4, true);
 -- Name: children_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.children_layer_id_seq', 1, true);
+SELECT pg_catalog.setval('tests_projects.children_layer_id_seq', 3, true);
 
 
 --

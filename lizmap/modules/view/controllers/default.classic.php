@@ -35,7 +35,7 @@ class defaultCtrl extends jController
             if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
                 try {
                     $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
-                    if ($project) {
+                    if ($project && $project->checkAcl()) {
                         // test redirection to an other controller
                         $items = jEvent::notify('mainviewGetMaps')->getResponse();
                         foreach ($items as $item) {
@@ -52,6 +52,7 @@ class defaultCtrl extends jController
 
                         return $rep;
                     }
+                    jMessage::add('The \'only maps\' option is not well configured!', 'error');
                 } catch (UnknownLizmapProjectException $e) {
                     jMessage::add('The \'only maps\' option is not well configured!', 'error');
                     jLog::logEx($e, 'error');
@@ -99,10 +100,13 @@ class defaultCtrl extends jController
         }
 
         // Add custom HTML content at top of page
-        $HTMLContent = jFile::read(jApp::varPath('lizmap-theme-config/landing_page_content.html'));
-        if ($HTMLContent) {
-            $tpl = new jTpl();
-            $rep->body->assign('landing_page_content', $tpl->fetchFromString($HTMLContent, 'html'));
+        $HTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content.html');
+        if (file_exists($HTMLContentFile)) {
+            $HTMLContent = jFile::read($HTMLContentFile);
+            if ($HTMLContent) {
+                $tpl = new jTpl();
+                $rep->body->assign('landing_page_content', $tpl->fetchFromString($HTMLContent, 'html'));
+            }
         }
 
         // Hide header if parameter h=0
@@ -134,9 +138,13 @@ class defaultCtrl extends jController
         $rep->addAssets('view');
 
         // Override default theme with color set in admin panel
-        if ($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/').'theme.css')) {
-            $css = '<style type="text/css">'.$cssContent.'</style>';
-            $rep->addHeadContent($css);
+        $CSSThemeFile = jApp::varPath('lizmap-theme-config/').'theme.css';
+        if (file_exists($CSSThemeFile)) {
+            $cssContent = file_get_contents($CSSThemeFile);
+            if ($cssContent) {
+                $css = '<style type="text/css">'.$cssContent.'</style>';
+                $rep->addHeadContent($css);
+            }
         }
 
         return $rep;

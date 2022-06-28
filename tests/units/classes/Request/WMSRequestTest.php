@@ -3,6 +3,7 @@
 use Lizmap\Project\Repository;
 use PHPUnit\Framework\TestCase;
 use Lizmap\Request\WMSRequest;
+use Lizmap\Request\OGCResponse;
 
 class WMSRequestTest extends TestCase
 {
@@ -84,16 +85,22 @@ class WMSRequestTest extends TestCase
 
     public function getGetContextData()
     {
-        $responseNoUrl = (object)array(
+        $responseNoUrl = new OGCResponse(
+            200,
+            'text/xml',
+            '<whatever><nourl/></whatever>'
+        );
+
+        $expectedResponseNoUrl = (object)array(
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<whatever><nourl/></whatever>',
         );
 
-        $responseSimpleUrl = (object)array(
-            'code' => 200,
-            'mime' => 'text/xml',
-            'data' => '<whatever><location xlink:href="test.google.com"/></whatever>',
+        $responseSimpleUrl = new OGCResponse(
+            200,
+            'text/xml',
+            '<whatever><location xlink:href="test.google.com"/></whatever>',
         );
 
         $expectedResponseSimpleUrl = (object)array(
@@ -102,10 +109,10 @@ class WMSRequestTest extends TestCase
             'data' => '<whatever><location xlink:href="http://localhost?repo=test&amp;project=test&amp;&amp;"/></whatever>',
         );
 
-        $responseMultiplesUrl = (object)array(
-            'code' => 200,
-            'mime' => 'text/xml',
-            'data' => '<xml>
+        $responseMultiplesUrl = new OGCResponse(
+            200,
+            'text/xml',
+            '<xml>
             <tagtest xlink:href="http://localhost?test=test&otherTest=test"/>
             <otherTagTest>
             <just to=see if=itsworking xlink:href=""/>
@@ -125,7 +132,7 @@ class WMSRequestTest extends TestCase
         );
 
         return array(
-            array($responseNoUrl, 'http://localhost?repo=test&project=test', $responseNoUrl),
+            array($responseNoUrl, 'http://localhost?repo=test&project=test', $expectedResponseNoUrl),
             array($responseSimpleUrl, 'http://localhost?repo=test&project=test', $expectedResponseSimpleUrl),
             array($responseSimpleUrl, 'http://localhost?repo=test&project=test', $expectedResponseSimpleUrl),
         );

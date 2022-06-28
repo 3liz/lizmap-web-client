@@ -190,8 +190,8 @@ abstract class OGCRequest
      *
      * @param bool $post Force to use POST request
      *
-     * @return object The request result with HTTP code, response mime-type and response data
-     *                (properties $code, $mime, $data)
+     * @return OGCResponse The request result with HTTP code, response mime-type and response data
+     *                     (properties $code, $mime, $data)
      */
     protected function request($post = false)
     {
@@ -213,11 +213,7 @@ abstract class OGCRequest
 
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
 
-        return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
-        );
+        return new OGCResponse($code, $mime, $data);
     }
 
     /**
@@ -225,8 +221,8 @@ abstract class OGCRequest
      *
      * @param int $code The HTTP code to return
      *
-     * @return object The request result with HTTP code, response mime-type, response data
-     *                (properties $code, $mime, $data, $cached)
+     * @return OGCResponse The request result with HTTP code, response mime-type, response data
+     *                     (properties $code, $mime, $data, $cached)
      */
     protected function serviceException($code = 400)
     {
@@ -247,19 +243,14 @@ abstract class OGCRequest
         }
         \jMessage::clearAll();
 
-        return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse($code, $mime, $data);
     }
 
     /**
      * Perform an OGC GetCapabilities Request.
      *
-     * @return object The request result with HTTP code, response mime-type, response data
-     *                (properties $code, $mime, $data, $cached)
+     * @return OGCResponse The request result with HTTP code, response mime-type, response data
+     *                     (properties $code, $mime, $data, $cached)
      */
     protected function process_getcapabilities()
     {
@@ -284,12 +275,7 @@ abstract class OGCRequest
         }
         // return cached data
         if ($cached !== false) {
-            return (object) array(
-                'code' => $cached['code'],
-                'mime' => $cached['mime'],
-                'data' => $cached['data'],
-                'cached' => true,
-            );
+            return new OGCResponse($cached['code'], $cached['mime'], $cached['data'], true);
         }
 
         // Get remote data
@@ -310,12 +296,7 @@ abstract class OGCRequest
             $cached = $this->project->getCacheHandler()->setProjectRelatedDataCache($key, $cachedContent, 3600);
         }
 
-        return (object) array(
-            'code' => $response->code,
-            'mime' => $response->mime,
-            'data' => $response->data,
-            'cached' => $cached,
-        );
+        return new OGCResponse($response->code, $response->mime, $response->data, $cached);
     }
 
     /*
