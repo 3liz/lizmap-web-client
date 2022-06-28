@@ -2563,6 +2563,111 @@ window.lizMap = function() {
     return true;
   }
 
+  function displayGetFeatureInfo(text, xy){
+    var eventLonLatInfo = map.getLonLatFromPixel(xy);
+
+    if (map.popups.length != 0)
+        map.removePopup(map.popups[0]);
+
+    var popup = null;
+    var popupContainerId = null;
+    if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+      popupContainerId = 'popupcontent';
+
+      // create content
+      var popupReg = new RegExp('lizmapPopupTable', 'g');
+      text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
+      var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
+      var hasPopupContent = (!(!text || text == null || text == ''));
+      $('#popupcontent div.menu-content').html(pcontent);
+      if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
+        $('#mapmenu .nav-list > li.popupcontent').show();
+
+      // Warn user no data has been found
+      if( !hasPopupContent ){
+        pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
+        $('#popupcontent div.menu-content').html(pcontent);
+        window.setTimeout(function(){
+            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
+                $('#button-popupcontent').click();
+        },2000);
+      }
+
+      // Display dock if needed
+      if(
+        !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+          && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
+          && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
+      ){
+          $('#button-popupcontent').click();
+      }
+      else if(
+        $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+          && ( mCheckMobile() && hasPopupContent )
+      ){
+          $('#button-popupcontent').click();
+      }
+      // Resize minidock if displayed
+      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
+          updateMiniDockSize();
+
+    }
+    else{
+      if (!text || text == null || text == '')
+          return false;
+      // Use openlayers map popup anchored
+      popupContainerId = "liz_layer_popup";
+      popup = new OpenLayers.Popup.LizmapAnchored(
+          popupContainerId,
+          eventLonLatInfo,
+          null,
+          text,
+          null,
+          true,
+          function() {
+            map.removePopup(this);
+            if(mCheckMobile()){
+              $('#navbar').show();
+              $('#overview-box').show();
+            }
+
+            // clean locate layer
+            clearDrawLayer('locatelayer');
+            return false;
+          }
+      );
+      popup.panMapIfOutOfView = true;
+      map.addPopup(popup);
+
+      // Activate Boostrap 2 tabs here as they are not
+      // automatically activated when created in popup anchored
+      $('#' + popupContainerId + ' a[data-toggle="tab"]').on( 'click',function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      });
+
+      popup.verifySize();
+      // Hide navbar and overview in mobile mode
+      if(mCheckMobile()){
+          $('#navbar').hide();
+          $('#overview-box').hide();
+      }
+    }
+    lastLonLatInfo = eventLonLatInfo;
+
+    // Display related children objects
+    addChildrenFeatureInfo( popup, popupContainerId );
+    // Display geometries
+    addGeometryFeatureInfo( popup, popupContainerId );
+    // Display the plots of the children layers features filtered by popup item
+    addChildrenDatavizFilteredByPopupFeature( popup, popupContainerId );
+
+    // Trigger event
+    lizMap.events.triggerEvent("lizmappopupdisplayed",
+        {'popup': popup, 'containerId': popupContainerId}
+    );
+  }
+
 
   /**
    * PRIVATE function: createPermalink
@@ -3295,109 +3400,7 @@ window.lizMap = function() {
             },
             eventListeners: {
                 getfeatureinfo: function(event) {
-                    var eventLonLatInfo = map.getLonLatFromPixel(event.xy);
-                    var text = event.text;
-
-                    if (map.popups.length != 0)
-                        map.removePopup(map.popups[0]);
-
-                    var popup = null;
-                    var popupContainerId = null;
-                    if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
-                      popupContainerId = 'popupcontent';
-
-                      // create content
-                      var popupReg = new RegExp('lizmapPopupTable', 'g');
-                      text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
-                      var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
-                      var hasPopupContent = (!(!text || text == null || text == ''));
-                      $('#popupcontent div.menu-content').html(pcontent);
-                      if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
-                        $('#mapmenu .nav-list > li.popupcontent').show();
-
-                      // Warn user no data has been found
-                      if( !hasPopupContent ){
-                        pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
-                        $('#popupcontent div.menu-content').html(pcontent);
-                        window.setTimeout(function(){
-                            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
-                                $('#button-popupcontent').click();
-                        },2000);
-                      }
-
-                      // Display dock if needed
-                      if(
-                        !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
-                         && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
-                         && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
-                      ){
-                          $('#button-popupcontent').click();
-                      }
-                      else if(
-                        $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
-                         && ( mCheckMobile() && hasPopupContent )
-                      ){
-                          $('#button-popupcontent').click();
-                      }
-                      // Resize minidock if displayed
-                      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
-                          updateMiniDockSize();
-
-                    }
-                    else{
-                      if (!text || text == null || text == '')
-                          return false;
-                      // Use openlayers map popup anchored
-                      popupContainerId = "liz_layer_popup";
-                      popup = new OpenLayers.Popup.LizmapAnchored(
-                          popupContainerId,
-                          eventLonLatInfo,
-                          null,
-                          text,
-                          null,
-                          true,
-                          function() {
-                            map.removePopup(this);
-                            if(mCheckMobile()){
-                              $('#navbar').show();
-                              $('#overview-box').show();
-                            }
-
-                            // clean locate layer
-                            clearDrawLayer('locatelayer');
-                            return false;
-                          }
-                      );
-                      popup.panMapIfOutOfView = true;
-                      map.addPopup(popup);
-
-                      // Activate Boostrap 2 tabs here as they are not
-                      // automatically activated when created in popup anchored
-                      $('#' + popupContainerId + ' a[data-toggle="tab"]').on( 'click',function (e) {
-                        e.preventDefault();
-                        $(this).tab('show');
-                      });
-
-                      popup.verifySize();
-                      // Hide navbar and overview in mobile mode
-                      if(mCheckMobile()){
-                          $('#navbar').hide();
-                          $('#overview-box').hide();
-                      }
-                    }
-                    lastLonLatInfo = eventLonLatInfo;
-
-                    // Display related children objects
-                    addChildrenFeatureInfo( popup, popupContainerId );
-                    // Display geometries
-                    addGeometryFeatureInfo( popup, popupContainerId );
-                    // Display the plots of the children layers features filtered by popup item
-                    addChildrenDatavizFilteredByPopupFeature( popup, popupContainerId );
-
-                    // Trigger event
-                    lizMap.events.triggerEvent("lizmappopupdisplayed",
-                        {'popup': popup, 'containerId': popupContainerId}
-                    );
+                    displayGetFeatureInfo(event.text, event.xy);
                 }
             }
      });
@@ -5857,6 +5860,10 @@ window.lizMap = function() {
 
     deactivateToolControls: function( evt ) {
       return deactivateToolControls( evt );
+    },
+
+    displayGetFeatureInfo: function( text, xy ) {
+      return displayGetFeatureInfo( text, xy );
     },
 
     /**
