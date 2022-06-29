@@ -96,7 +96,7 @@ class serviceCtrl extends jController
         $repository = $this->repository;
         $project = $this->project;
         $plot_id = $this->intParam('plot_id');
-        $exp_filter = trim($this->param('exp_filter'));
+        $exp_filter = trim((string) $this->param('exp_filter'));
         $color = null;
         $color2 = null;
         $layout = null;
