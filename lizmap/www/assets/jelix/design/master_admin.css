@@ -41,6 +41,7 @@ fieldset {
     color:#eff4f6;
     padding:5px 10px;
     height:3em;
+    display:flex;
 }
 
 #header a { color:#eff4f6; text-decoration:none; }
@@ -48,11 +49,11 @@ fieldset {
 #header a:hover { text-decoration:underline; }
 
 #top {
-    float:left;
     font-size:1.3em;
 }
 
 #info-box {
+    flex: 10 10 auto;
     text-align:right;
     margin: 0;
 }
@@ -76,18 +77,19 @@ fieldset {
     padding-right:10px;
     padding-top: 20px;
     min-height:40em;
+    display:flex;
 }
 
 
 
-#main a { color:#3f6f7a; text-decoration:underline; }
+#main a:not(.ui-button, .ui-tabs-anchor) { color:#3f6f7a; text-decoration:underline; }
 #main a:visited {  color : #002830;}
 #main a:hover { color: #0f82af; background-color: #d7e7eb; }
 
 #main .clear { clear:both;}
 
 #content {
-    margin-left: 230px;
+    flex: 10 10 auto;
     padding: 5px;
 }
 
@@ -96,8 +98,7 @@ fieldset {
 }
 
 #menu {
-    width:180px;
-    float:left;
+    flex: 0 0 180px;
     padding: 5px;
 }
 

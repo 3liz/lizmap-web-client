@@ -34,6 +34,7 @@
     * **QGIS Log file** written when loading the project
   * Funded by **Valabre** (Centre de gravité de la formation des métiers de la Sécurité Civile,
     de la Recherche, des Nouvelles Technologies et de la Prévention dans le domaine des risques naturels)
+* **Administration** new interface to manager rights, easier to use, especially when there are many groups
 * **Layer legend**: Enable auto display the legend image for a layer at startup
 * **Edition**: New button to restart drawing geometry - Provide the capability to update geometry with GPS and form coordinates
 * New `-dry-run` for the cache generation to see how many tiles might be generated
@@ -62,7 +63,7 @@
   * Add a revision parameter on assets url for cache
   * Add ETag HTTP header to GetCapabilities, GetProjectConfig, GetProj4 and WMTS GetTile responses
   * New class `\Lizmap\Request\OGCResponse`
-* Update Jelix to 1.6.37
+* Update Jelix to 1.8-pre
 * Update PHP CS Fixer to 3.8.0
 
 ### Translations

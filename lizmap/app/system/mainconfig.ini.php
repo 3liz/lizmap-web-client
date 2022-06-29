@@ -66,19 +66,6 @@ saml.installparam="localconfig"
 ;name = file_ini_name or 1
 autolocale=1
 
-[coordplugin_jacl2]
-; What to do if a right is required but the user has not this right
-; 1 = generate an error. This value should be set for web services (xmlrpc, jsonrpc...)
-; 2 = redirect to an action
-on_error=2
-
-; locale key for the error message when on_error=1
-error_message="jelix~errors.acl.action.right.needed"
-
-; action to execute on a missing authentification when on_error=2
-on_error_action="jcommunity~login:index"
-
-
 [coordplugin_autolocale]
 ; activate the detection from a parameter given in the url
 enableUrlDetection=on
@@ -204,10 +191,23 @@ smtpPassword=
 ; SMTP server timeout in seconds
 smtpTimeout=10
 
+[jacl2]
+; What to do if a right is required but the user has not this right
+; 1 = generate an error. This value should be set for web services (xmlrpc, jsonrpc...)
+; 2 = redirect to an action
+on_error=2
 
+; locale key for the error message when on_error=1
+error_message="jelix~errors.acl.action.right.needed"
+
+; action to execute on a missing authentification when on_error=2
+on_error_action="jcommunity~login:index"
 
 [acl2]
+hiddenRights=
+hideRights=off
 driver=db
+authAdapterClass=jAcl2JAuthAdapter
 
 
 [forms]
@@ -318,3 +318,11 @@ view.js[]=assets/js/view.js
 embed.css[]=assets/css/embed.css
 embed.css[]="$theme/css/embed.css"
 
+jauthdb_admin.js[]="$jelix/js/authdb_admin.js"
+jauthdb_admin.require[]=jquery_ui
+
+jacl2_admin.css[]="$jelix/design/jacl2.css"
+jacl2_admin.js[]="$jelix/js/jacl2db_admin.js"
+jacl2_admin.require[]=jquery_ui
+
+;master_admin.css[]="$jelix/design/master_admin.css"
