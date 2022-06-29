@@ -115,7 +115,7 @@ class jBundle {
 
         if (($f = @fopen ($fichier, 'r')) !== false) {
             $utf8Mod = ($charset=='UTF-8')?'u':'';
-            $unbreakablespace = ($charset=='UTF-8')?utf8_encode(chr(160)):chr(160);
+            $unbreakablespace = ($charset=='UTF-8')?chr(0xc2).chr(160):chr(160);
             $escapedChars = array('\#','\n', '\w', '\S', '\s');
             $unescape = array('#',"\n", ' ', $unbreakablespace, ' ');
             $multiline=false;

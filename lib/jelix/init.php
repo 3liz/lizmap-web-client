@@ -6,7 +6,7 @@
 * @subpackage core
 * @author   Laurent Jouanneau
 * @contributor Loic Mathaud, Julien Issler
-* @copyright 2005-2020 Laurent Jouanneau
+* @copyright 2005-2022 Laurent Jouanneau
 * @copyright 2007 Julien Issler
 * @link     http://www.jelix.org
 * @licence  GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -16,7 +16,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.6.37');
+define ('JELIX_VERSION', '1.6.38-pre');
 
 /**
  * base of namespace path used in xml files of jelix
@@ -172,16 +172,50 @@ function checkAppOpened() {
             exit(1);
         }
 
-        if (file_exists(jApp::appPath('install/closed.html'))) {
+        // note: we are not supposed to have the configuration loaded here
+        // so we cannot use the selected theme or any other configuration parameters
+        // like calculated basePath. We mimic what it is done into the configuration compiler
+        $basePath = jApp::urlBasePath();
+        if ($basePath == null) {
+            try {
+                $urlScript = $_SERVER[jConfigCompiler::findServerName()];
+                $basePath = substr($urlScript, 0, strrpos($urlScript, '/')) . '/';
+            } catch (Exception $e) {
+                $basePath = '/';
+            }
+            $themePath = 'themes/default/';
+        }
+        else {
+            $themePath = 'themes/'.jApp::config()->theme.'/';
+        }
+
+        // html file installed for the current instance of the application
+        if (file_exists(jApp::varPath($themePath.'closed.html'))) {
+            $file = jApp::varPath($themePath.'closed.html');
+        }
+        else if (file_exists(jApp::varPath('themes/closed.html'))) {
+            $file = jApp::varPath('themes/closed.html');
+        }
+        // html file provided by the application
+        elseif (file_exists(jApp::appPath('install/closed.html'))) {
             $file = jApp::appPath('install/closed.html');
         }
+        // default html file
         else {
             $file = JELIX_LIB_PATH.'installer/closed.html';
         }
 
         header("HTTP/1.1 503 Application not available");
         header('Content-type: text/html');
-        echo str_replace('%message%', $message, file_get_contents($file));
+        echo str_replace(array(
+            '%message%',
+            '%basePath%',
+            '%themePath%',
+        ), array(
+            $message,
+            $basePath,
+            $themePath
+        ), file_get_contents($file));
         exit(1);
     }
 }

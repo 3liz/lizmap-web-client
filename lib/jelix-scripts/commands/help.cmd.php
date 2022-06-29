@@ -114,11 +114,13 @@ List of available commands:\n\t",
        }
     }
 
-    protected function disp($str){
-       if( !$this->config->displayHelpUtf8){
-         echo utf8_decode($str);
-       }else{
-         echo $str;
-       }
+    protected function disp($str)
+    {
+        if (! $this->config->displayHelpUtf8) {
+            echo $this->ut8Decode($str);
+        }
+        else {
+            echo $str;
+        }
     }
 }

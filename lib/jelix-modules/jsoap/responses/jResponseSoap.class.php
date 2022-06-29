@@ -50,8 +50,20 @@ final class jResponseSoap extends jResponse {
 
         //soapFault param have to be UTF-8 encoded (soapFault seems to not use the encoding param of the SoapServer)
         if(jApp::config()->charset != 'UTF-8'){
-            $errorCode  = utf8_encode($errorCode);
-            $errorMessage = utf8_encode($errorMessage);
+
+            if (function_exists('mb_convert_encoding')) {
+                $errorCode  = mb_convert_encoding($errorCode, 'UTF-8','ISO-8859-1');
+                $errorMessage = mb_convert_encoding($errorMessage, 'UTF-8','ISO-8859-1');
+            }
+            else if (function_exists('iconv')) {
+                $errorCode = iconv('ISO-8859-1', 'UTF-8', $errorCode);
+                $errorMessage = iconv('ISO-8859-1', 'UTF-8', $errorMessage);
+            }
+            else {
+                // WARNING, utf8_encode is deprecated
+                $errorCode  = utf8_encode($errorCode);
+                $errorMessage = utf8_encode($errorMessage);
+            }
         }
         $soapServer = $coord->getSoapServer();
         $soapServer->fault($errorCode, $errorMessage);
