@@ -9,6 +9,7 @@
 */
 
 import WFS from '../modules/WFS.js';
+import WMS from '../modules/WMS.js';
 
 window.lizMap = function() {
   /**
@@ -168,6 +169,8 @@ window.lizMap = function() {
    *
    */
   var editionPending = false;
+
+  var lastLonLatInfo = null;
 
   /**
    * Get the metadata written in the configuration file by the desktop Lizmap plugin.
@@ -3385,7 +3388,6 @@ window.lizMap = function() {
         lizUrls.wms,
         OpenLayers.Util.getParameterString(lizUrls.params)
       )
-      var lastLonLatInfo = null;
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: fiurl,
             title: 'Identify features by clicking',
@@ -6033,34 +6035,47 @@ window.lizMap = function() {
 
       // Get feature extent if defined in URL
       let featureExtentRequest;
+      // Get feature info if defined in URL
+      let getFeatureInfoRequest;
+
       const urlParameters = getUrlParameters();
 
       if(urlParameters.layer && urlParameters.fid){
+          // Feature extent
           const wfs = new WFS();
           const wfsParams = {
               TYPENAME: urlParameters.layer,
               FEATUREID: urlParameters.layer + '.' + urlParameters.fid,
-              PROPERTYNAME: urlParameters.fid,
               GEOMETRYNAME: 'extent'
           };
   
           featureExtentRequest = wfs.getFeature(wfsParams);
+
+          // Feature info
+          if(urlParameters?.popup === 'true'){
+            const wms = new WMS();
+            const wmsParams = {
+              QUERY_LAYERS: urlParameters.layer,
+              LAYERS: urlParameters.layer,
+              FILTER: `sousquartiers:"id" = '${urlParameters.fid}'`,
+            };
+
+            getFeatureInfoRequest = wms.getFeatureInfo(wmsParams);
+          }
       }
 
-
       // Request config and capabilities in parallel
-      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest, featureExtentRequest]).then(responses => {
+      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest, featureExtentRequest, getFeatureInfoRequest]).then(responses => {
         // config is defined globally
         config = responses[0];
         keyValueConfig = responses[1];
-
-        const domparser = new DOMParser();
-
         const wmsCapaData = responses[2];
         const wmtsCapaData = responses[3];
         const wfsCapaData = responses[4];
-
         const featureExtent = responses[5]?.features?.[0]?.bbox;
+        const getFeatureInfo = responses[6];
+        
+        const domparser = new DOMParser();
 
         config.options.hasOverview = false;
 
@@ -6458,6 +6473,15 @@ window.lizMap = function() {
 
         $('body').css('cursor', 'auto');
         $('#loading').dialog('close');
+
+        // Display getFeatureInfo if requested
+        if(getFeatureInfo){
+          displayGetFeatureInfo(getFeatureInfo, 
+            {
+              x: map.size.w / 2,
+              y: map.size.h / 2
+            });
+        }
       });
     }
   };

@@ -8,6 +8,7 @@ import Snapping from './Snapping.js';
 import Draw from './interaction/Draw.js';
 import Layers from './Layers.js';
 import WFS from './WFS.js';
+import WMS from './WMS.js';
 import Utils from './Utils.js';
 
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj';
@@ -52,6 +53,7 @@ export default class Lizmap {
                 this.layers = new Layers();
                 this.proxyEvents = new ProxyEvents();
                 this.wfs = new WFS();
+                this.wms = new WMS();
                 this.utils = Utils;
             }
         });
