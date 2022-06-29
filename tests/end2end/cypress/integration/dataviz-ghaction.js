@@ -1,4 +1,12 @@
 describe('Dataviz tests', function () {
+    it('Test dataviz', function () {
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=dataviz')
+        cy.get('#button-dataviz').click()
+        cy.get('#dataviz_plot_0_container > h3:nth-child(1) > span:nth-child(1) > span:nth-child(2)')
+            .should('have.text', 'Municipalities')
+        // This test is not really covering the dataviz capabilities for now.
+    })
+
     it('Test filtered dataviz in a popup', function () {
         const path = require("path")
         const PNG = require('pngjs').PNG;
