@@ -4,7 +4,7 @@ describe('Feature Toolbar', function () {
 
     beforeEach(function () {
         // Runs before each tests in the block
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
 
         cy.wait(300)
 
@@ -203,7 +203,7 @@ describe('Export data', function () {
 
     beforeEach(function () {
         // Runs before each tests in the block
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
 
         cy.wait(300)
     })
@@ -426,49 +426,4 @@ describe('Export data', function () {
         })
     })
 
-    // Note 31/01/2022
-    // REMOVE WHEN THE QGIS SERVER BUG HAS BEEN FIXED
-    // Related PR for QGIS Master https://github.com/qgis/QGIS/pull/47051
-    // It should be fixed for 3.24.1 and 3.22.5
-    it('should not export the selected features and display a message for a layer with parenthesis', function () {
-        // Open parent_layer in attribute table
-        cy.get('#button-attributeLayers').click()
-        cy.get('button[value="tramway_stop__with_parenthesis__and_spaces"].btn-open-attribute-layer').click({ force: true })
-
-        // Select the second feature
-        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces lizmap-feature-toolbar[value="tramway_stops_fd557309_c85f_4bdb_83e1_93e4fb027c07.2"] .feature-select').click({ force: true })
-        cy.wait(300)
-
-        // Intercept only the GetFeature requests for the test layer
-        cy.intercept(
-            'index.php/lizmap/service?repository=testsrepository&project=feature_toolbar',
-            { method: 'POST', middleware: true },
-            (req) => {
-                // no cache
-                req.on('before:response', (res) => {
-                    res.headers['cache-control'] = 'no-store'
-                })
-
-                if (req.body.includes('REQUEST=GetFeature')
-                && req.body.includes('TYPENAME=tramway_stop_(with_parenthesis)_and_spaces')
-                && req.body.includes('dl=1')
-                ) {
-                    req.alias = 'GetExport'
-                }
-            }
-        )
-
-        // Click on the export button
-        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
-
-        cy.wait('@GetExport')
-        .then(() => {
-            cy.get('#message > div').should('have.class', 'alert')
-        })
-        cy.get('#message > div.alert > a.close').click()
-
-        // Unselect
-        cy.get('#attribute-layer-main-tramway_stop__with_parenthesis__and_spaces lizmap-feature-toolbar[value="tramway_stops_fd557309_c85f_4bdb_83e1_93e4fb027c07.2"] .feature-select').click({ force: true })
-    })
 })
