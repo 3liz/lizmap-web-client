@@ -166,7 +166,7 @@ class createformCommand extends JelixScriptCommand {
             if($property->comment!='' && $this->getOption('-usecomments')) {
                 if ($this->getOption('-createlocales')) {
                     // replace special chars by dot
-                    $locale_content .= 'form.'.$name.'='.htmlspecialchars(utf8_decode($property->comment))."\n";
+                    $locale_content .= 'form.'.$name.'='.htmlspecialchars($property->comment)."\n";
                     $content.="\n\n<$tag ref=\"$name\"$attr>\n\t<label locale='".$locale_base.$name."' />\n</$tag>";
                 } else {
                     // encoding special chars

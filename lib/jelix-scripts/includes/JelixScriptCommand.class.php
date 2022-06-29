@@ -628,6 +628,21 @@ abstract class JelixScriptCommand {
 
       return $prefix.implode($sep, $newPath);
    }
+
+   protected function ut8Decode($str)
+   {
+       if (function_exists('mb_convert_encoding')) {
+           $str  = mb_convert_encoding($str, 'ISO-8859-1', 'UTF-8' );
+       }
+       else if (function_exists('iconv')) {
+           $str = iconv('UTF-8', 'ISO-8859-1', $str);
+       }
+       else {
+           // WARNING, utf8_decode is deprecated
+           $str  = utf8_decode($str);
+       }
+       return $str;
+   }
 }
 
 

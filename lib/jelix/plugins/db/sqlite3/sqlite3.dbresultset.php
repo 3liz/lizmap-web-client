@@ -94,6 +94,6 @@ class sqlite3DbResultSet extends jDbResultSet {
     public function columnCount()
       { return $this->_idResult->numColumns(); }
     public function execute($parameters=null)
-      {throw new jException('jelix~db.error.feature.unsupported', array('sqlite3','bindColumn')); }
+      {throw new jException('jelix~db.error.feature.unsupported', array('sqlite3','execute')); }
 }
 
