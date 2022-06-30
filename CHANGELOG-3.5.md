@@ -11,6 +11,7 @@
 * Improve the table in the right's management panel when having a dozen of groups
 * Minify legacy JS files to save 400Ko in best case. This reduces first page load
 * Add tolerance for clicking on mobile to get the popup
+* Do not build the attribute table when refreshing attribute table
 
 ### Fixed
 
@@ -21,11 +22,17 @@
 * Provide the dataviz button in the left menu only there is at least one non filtered dataviz
 * Children popups were not displayed when layer had shortname
 * Javascript error when clicking on an atlas link when no feature ID was found
+* Fix infinite HTTP loop when the user hasn't any access to the default project
+* Fix the attribute table order defined in QGIS desktop
+* Fix the "zoom to layer" button when the layer is in EPSG:4326 (Funded by Geocobet)
+* When a layer has a shortname, fix one issue about dataviz & relations and fix the children popup wasn't displayed
+* Dataviz & relations - Fix possible bug when layer has a shortname
 
 ### Backend
 
-* Update Jelix to 1.6.37
+* Update Jelix to version 1.6.38-pre
 * Update PHP CS Fixer to 3.8.0
+* Update the code to support PHP 8.1
 
 ### Translations
 
