@@ -31,7 +31,6 @@ Get the lizmap archive (by downloading an archive or by doing a git clone/pull)
 
 You should
 
-- replace the lib/ directory by the new lib/ directory
 - replace the lizmap/ directory by new lizmap/
 
 

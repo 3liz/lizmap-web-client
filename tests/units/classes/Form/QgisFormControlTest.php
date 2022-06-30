@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use Lizmap\Form\QgisFormControl;
 
-require_once __DIR__.'/../../../../lib/jelix/forms/jFormsBase.class.php';
+require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFormsBase.class.php';
 
 /**
  * @internal

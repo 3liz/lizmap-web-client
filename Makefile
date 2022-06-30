@@ -71,10 +71,10 @@ BUILD_ARGS += --build-arg REGISTRY_PREFIX=$(REGISTRY_PREFIX)
 #-------- build
 DIST=$(STAGE)/$(PACKAGE_NAME)
 
-FILES=lib lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRADE.md
+FILES=lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRADE.md
 
-FORBIDDEN_CONFIG_FILES := installer.ini.php liveconfig.ini.php localframework.ini.php lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
-EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions
+FORBIDDEN_CONFIG_FILES := installer.ini.php installer.bak.ini.php liveconfig.ini.php localframework.ini.php localurls.xml lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
+EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions var/lizmap-theme-config/ var/themes/default
 
 .PHONY: debug build tests clean check-release check-registry check-factory stage package deploy_download deploy_download_stable saas_package saas_release
 .PHONY: local_saas_package docker-build docker-build-ci docker-tag docker-deliver docker-clean docker-clean-all docker-release docker-hub docker-run
@@ -251,6 +251,9 @@ docker-hub:
 
 php-cs-fixer-test:
 	php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
+
+php-cs-fixer-test-docker:
+	docker run --rm -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php  --dry-run --diff
 
 php-cs-fixer-apply:
 	php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes

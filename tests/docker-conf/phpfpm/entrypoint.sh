@@ -3,7 +3,9 @@
 set -e
 set -x
 
-/bin/appctl.sh launch
+if [ "$1" != "appctl.sh" ]; then
+  /bin/appctl.sh launch
+fi
 
 echo "launch exec $@"
 exec "$@"

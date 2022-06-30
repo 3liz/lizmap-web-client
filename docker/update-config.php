@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
-require('/www/lib/jelix/utils/jIniFileModifier.class.php');
+require('/www/lizmap/vendor/autoload.php');
+use \Jelix\IniFile\IniModifier;
 
 function load_include_config($varname, $iniFileModifier)
 {
@@ -9,29 +10,16 @@ function load_include_config($varname, $iniFileModifier)
         echo("Checking for lizmap configuration files in ".$includeConfigDir."\n");
         foreach (glob(rtrim($includeConfigDir,"/")."/*.ini.php") as $includeFile) {
             echo("* Loading lizmap configuration: ".$includeFile."\n"); 
-            $includeConfig = new jIniFileModifier($includeFile);
+            $includeConfig = new IniModifier($includeFile);
             $iniFileModifier->import($includeConfig);
         }  
     }  
 } 
 
-/** 
- * mainconfig.ini.php
- */
-$mainconfig = new jIniFileModifier('/www/lizmap/var/config/mainconfig.ini.php');
-
-// Configure metric logger
-$logger_metric = getenv('LIZMAP_LOGMETRICS');
-if ($logger_metric !== false) {
-    $mainconfig->setValue('metric', $logger_metric, 'logger');
-}
-
-$mainconfig->save();
-
 /**
  * lizmapConfig.ini.php
  */
-$lizmapConfig = new jIniFileModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
+$lizmapConfig = new \Jelix\IniFile\IniModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
 
 $lizmapConfig->setValue('wmsServerURL', getenv('LIZMAP_WMSSERVERURL'), 'services');
 $lizmapConfig->setValue('lizmapPluginAPIURL', getenv('LIZMAP_LIZMAPPLUGINAPIURL'), 'services');
@@ -57,6 +45,7 @@ foreach(array(
 load_include_config('LIZMAP_LIZMAPCONFIG_INCLUDE', $lizmapConfig);
 
 // Enable metrics
+$logger_metric = getenv('LIZMAP_LOGMETRICS');
 if ($logger_metric !== false) {
     $lizmapConfig->setValue('metricsEnabled', 1, 'services');
 } 
@@ -66,12 +55,17 @@ $lizmapConfig->save();
 /**
  * localconfig.ini.php
  */
-$localConfig = new jIniFileModifier('/www/lizmap/var/config/localconfig.ini.php');
+$localConfig = new \Jelix\IniFile\IniModifier('/www/lizmap/var/config/localconfig.ini.php');
 
 // Let's modify the install configuration of jcommunity, to not create a default
 // admin account (no `defaultusers` parameter). We're relying on
 // lizmap-entrypoint.sh to setup it
 $localConfig->setValue('jcommunity.installparam', 'manualconfig', 'modules');
+
+
+if ($logger_metric !== false) {
+    $localConfig->setValue('metric', $logger_metric, 'logger');
+}
 
 // Set urlengine config
 
@@ -120,7 +114,7 @@ $localConfig->save();
 /**
  * profiles.ini.php
  */
-$profilesConfig = new jIniFileModifier('/www/lizmap/var/config/profiles.ini.php');
+$profilesConfig = new IniModifier('/www/lizmap/var/config/profiles.ini.php');
 
 // DropIn capabilities: Merge all ini file in LIZMAP_PROFILES_INCLUDE
 load_include_config('LIZMAP_PROFILES_INCLUDE', $profilesConfig);

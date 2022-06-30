@@ -31,21 +31,6 @@ if [ "$COMMAND" == "" ]; then
 fi
 
 function resetfiles() {
-  if [ -f $APPDIR/var/config/installer.ini.php ]; then
-    rm -f $APPDIR/var/config/installer.ini.php
-  fi
-  if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
-    rm -f $APPDIR/var/config/liveconfig.ini.php
-  fi
-  if [ -f $APPDIR/var/config/localframework.ini.php ]; then
-    rm -f $APPDIR/var/config/localframework.ini.php
-  fi
-  if [ -f $APPDIR/var/config/localconfig.ini.php ]; then
-    rm -f $APPDIR/var/config/localconfig.ini.php
-  fi
-  if [ -f $APPDIR/var/config/profiles.ini.php ]; then
-    rm -f $APPDIR/var/config/profiles.ini.php
-  fi
 
   if [ -d $APPDIR/vendor ]; then
     rm -rf $APPDIR/vendor
@@ -73,6 +58,8 @@ function resetfiles() {
   if [ -d $SCRIPTDIR/../assets/node_modules ]; then
     rm -rf $SCRIPTDIR/../assets/node_modules
   fi
+
+  $APPDIR/install/reset.sh reset
 
 }
 

@@ -14,8 +14,6 @@ namespace Lizmap\Form;
 
 use Lizmap\App;
 
-require_once JELIX_LIB_UTILS_PATH.'FileUtilities/Path.php';
-
 class QgisFormControl
 {
     public $ref = '';

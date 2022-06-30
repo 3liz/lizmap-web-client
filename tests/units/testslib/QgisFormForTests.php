@@ -41,7 +41,7 @@ class QgisFormForTests extends Form\QgisForm
 
     public function fillControlFromUniqueValuesForTests($fieldName, $control)
     {
-        return $this->fillControlFromUniqueValues($fieldName, $control);
+        $this->fillControlFromUniqueValues($fieldName, $control);
     }
 }
 

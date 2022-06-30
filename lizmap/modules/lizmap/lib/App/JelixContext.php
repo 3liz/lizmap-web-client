@@ -12,7 +12,7 @@
 
 namespace Lizmap\App;
 
-use jIniFileModifier;
+use Jelix\IniFile\IniModifier;
 
 class JelixContext implements AppContextInterface
 {
@@ -26,7 +26,7 @@ class JelixContext implements AppContextInterface
 
     public function appConfigPath($file = '')
     {
-        return \jApp::configPath($file);
+        return \jApp::varConfigPath($file);
     }
 
     public function appVarPath($file = '')
@@ -348,7 +348,7 @@ class JelixContext implements AppContextInterface
 
     public function getIniModifier($ini)
     {
-        return new jIniFileModifier($ini);
+        return new IniModifier($ini);
     }
 
     public function getFormPath()

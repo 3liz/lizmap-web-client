@@ -25,6 +25,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
 
     public function outputMetaContent($t)
     {
+        /** @var jResponseHtml $resp */
         $resp = jApp::coord()->response;
         if ($resp === null || $resp->getType() != 'html') {
             return;
@@ -33,16 +34,9 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
         $confUrlEngine = &jApp::config()->urlengine;
         $www = $confUrlEngine['jelixWWWPath'];
 
-        $resp->addJSLink(jApp::config()->jquery['jquery']);
-        $resp->addJSLink($www.'/jquery/include/jquery.include.js');
-        $resp->addJSLink($www.'js/jforms_jquery.js');
-        $resp->addCSSLink($www.'design/jform.css');
-
-        // for imageupload
-        $resp->addJSLink($www.'js/cropper.min.js');
-        $resp->addJSLink($www.'js/jforms/choice.js');
-        $resp->addJSLink($www.'js/jforms/imageSelector.js');
-        $resp->addCSSLink($www.'js/cropper.min.css');
+        $resp->addAssets('jforms_html');
+        $resp->addJSLink($www.'jquery/include/jquery.include.js');
+        $resp->addAssets('jforms_imageupload');
 
         // we loop on root control has they fill call the outputMetaContent recursively
         foreach ($this->_form->getRootControls() as $ctrlref => $ctrl) {
