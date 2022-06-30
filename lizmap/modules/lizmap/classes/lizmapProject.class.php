@@ -1162,7 +1162,9 @@ class lizmapProject extends qgisProject
             }
             if (property_exists($lc, 'only_show_child')) {
                 $plotConf['only_show_child'] = $lc->only_show_child;
-                ++$countPlotOnlyChild;
+                if (strtolower($plotConf['only_show_child']) == 'true') {
+                    ++$countPlotOnlyChild;
+                }
             }
             if (property_exists($lc, 'y2_field')) {
                 $plotConf['plot']['y2_field'] = $lc->y2_field;
