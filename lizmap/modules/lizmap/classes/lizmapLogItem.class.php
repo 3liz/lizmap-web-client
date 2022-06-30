@@ -89,8 +89,8 @@ class lizmapLogItem
     public function update($data)
     {
         // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = jApp::varConfigPath('lizmapLogConfig.ini.php');
+        $ini = new \Jelix\IniFile\IniModifier($iniFile);
 
         // Set section
         $section = 'item:'.$this->item->getKey();

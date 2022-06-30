@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+=============================================================================
+WARNING: DON'T CHANGE ANYTHING IN THIS FILE. IF YOU WANT TO ADD/ MODIFY SOME
+OPTIONS, SET THEM INTO var/config/localurls.xml
+=============================================================================
+ATTENTION: NE CHANGEZ RIEN DANS CE FICHIER
+SI VOUS VOULEZ MODIFIER/AJOUTER DES OPTIONS DANS CE FICHIER, METTEZ LES
+DANS LE FICHIER var/config/localurls.xml
+=============================================================================
+-->
+<urls xmlns="http://jelix.org/ns/urls/1.0">
+    <entrypoint name="index" default="true">
+        <url pathinfo="/" module="view" action="default:index"/>
+        <url pathinfo="/jelix" module="jelix" include="urls.xml"/>
+        <url pathinfo="/lizmap" module="lizmap"/>
+        <url pathinfo="/view" module="view"/>
+        <url module="filter"/>
+        <url module="action"/>
+        <url module="dataviz"/>
+        <url pathinfo="/dynamic-layers" module="dynamicLayers"/>
+    </entrypoint>
+    <entrypoint name="admin">
+        <url pathinfo="/" module="master_admin" action="default:index"/>
+        <url module="admin"/>
+        <url pathinfo="/users-admin" module="jauthdb_admin"/>
+        <url pathinfo="/acl-admin" module="jacl2db_admin"/>
+        <url pathinfo="/auth" module="jcommunity"/>
+    </entrypoint>
+    <entrypoint name="cmdline" type="cmdline"/>
+</urls>

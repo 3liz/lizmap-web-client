@@ -9,7 +9,7 @@ $finder = PhpCsFixer\Finder::create()
                 __DIR__.'/lizmap/modules/lizmap',
                 __DIR__.'/lizmap/modules/view',
                 __DIR__.'/lizmap/plugins/',
-                __DIR__.'/lizmap/responses/',
+                __DIR__.'/lizmap/app/responses',
                 __DIR__.'/lizmap/scripts/',
               ))
           //->exclude(__DIR__.'/lizmap/modules/proj4php/classes/')

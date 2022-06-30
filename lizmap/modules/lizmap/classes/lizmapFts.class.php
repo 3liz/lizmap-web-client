@@ -23,7 +23,7 @@ class lizmapFts
         $sql = "
         SELECT
         item_layer, item_label, concat('EPSG:', ST_SRID(geom)) AS item_epsg, ST_AsText(geom) AS item_wkt,
-        similarity(trim( $1 ), item_label) AS sim
+        similarity(trim( :term ), item_label) AS sim
         ";
 
         // FROM
@@ -42,7 +42,7 @@ class lizmapFts
         $sql .= "
         AND f_unaccent(item_label) ILIKE ALL (
             string_to_array(
-                '%' || regexp_replace( f_unaccent( trim( $1 ) ), '[^0-9a-zA-Z]+', '%,%', 'g') || '%',
+                '%' || regexp_replace( f_unaccent( trim( :term ) ), '[^0-9a-zA-Z]+', '%,%', 'g') || '%',
                 ',',
                 ' '
             )
@@ -52,7 +52,7 @@ class lizmapFts
         // Add filter by projects
         $sql .= "
         AND (
-            item_project IS NULL OR $2 = ANY ( string_to_array(item_project, ',', ' ') )
+            item_project IS NULL OR :proj = ANY ( string_to_array(item_project, ',', ' ') )
         )
         ";
 
@@ -75,7 +75,7 @@ class lizmapFts
         $sql .= ' )';
         $sql .= '
         ORDER BY sim DESC
-        LIMIT $3;
+        LIMIT :lim;
         ';
         $this->sql = $sql;
     }
@@ -140,7 +140,11 @@ class lizmapFts
             // Format words into {foo,bar}
             $result = $this->query(
                 $sql,
-                array(trim($term), $project->getKey(), $limit)
+                array(
+                    'term' => trim($term),
+                    'proj' => $project->getKey(),
+                    'lim' => $limit,
+                )
             );
 
             // Limitations

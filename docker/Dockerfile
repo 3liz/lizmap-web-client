@@ -8,33 +8,35 @@ FROM ${REGISTRY_PREFIX}alpine:3.16
 MAINTAINER David Marteau <david.marteau@3liz.com>
 LABEL Description="Lizmap web client" Vendor="3liz.org" Version="22.06.0"
 
-RUN apk update && apk upgrade
-RUN apk --no-cache add git fcgi php8 php8-fpm \
-    php8-tokenizer \
-    php8-opcache \
-    php8-session \
+RUN apk update && apk upgrade && \
+    apk --no-cache add git fcgi php8 \
+    php8-ctype \
+    php8-curl \
+    php8-dom \
+    php8-exif \
+    php8-fileinfo \
+    php8-fpm \
+    php8-gd \
+    php8-gettext \
     php8-iconv \
     php8-intl \
-    php8-mbstring \
-    php8-openssl \
-    php8-fileinfo \
-    php8-curl \
     php8-json \
-    php8-redis \
+    php8-ldap \
+    php8-mbstring \
+    php8-opcache \
+    php8-openssl \
     php8-pgsql \
+    php8-phar \
+    php8-redis \
+    php8-session \
+    php8-simplexml \
     php8-sqlite3 \
-    php8-gd \
-    php8-dom \
+    php8-tokenizer \
     php8-xml \
     php8-xmlreader \
     php8-xmlwriter \
-    php8-simplexml \
-    php8-phar \
-    php8-gettext \
-    php8-ctype \
     php8-zip \
-    php8-ldap \
-    composer 
+    composer
 
 COPY --from=build /lizmap_web_client /www
 ## Rename original config files so that they wont be overriden at startup

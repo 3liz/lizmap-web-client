@@ -232,7 +232,7 @@ describe('Projects homepage', function () {
         // try to go to the hide_project map view
         cy.visit('/index.php/view/map/?repository=testsrepository&project=hide_project')
         // redirection to home page
-        cy.url().should('eq', Cypress.config().baseUrl + '/index.php/view/')
+        cy.url().should('eq', Cypress.config().baseUrl + '/index.php')
         // with alert error div
         cy.get('#content div.alert.alert-block.alert-error').should('length', 1)
     })

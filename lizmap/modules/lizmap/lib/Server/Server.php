@@ -48,19 +48,24 @@ class Server
         $data = array();
 
         // Get Lizmap version from project.xml
-        $xmlPath = \jApp::appPath('project.xml');
-        $xmlLoad = simplexml_load_file($xmlPath);
-
+        $projectInfos = \Jelix\Core\Infos\AppInfos::load();
         // Version
         $data['info'] = array();
-        $data['info']['version'] = (string) $xmlLoad->info->version;
-        $data['info']['date'] = (string) $xmlLoad->info->version->attributes()->date;
+        $data['info']['version'] = $projectInfos->version;
+        $data['info']['date'] = $projectInfos->versionDate;
+
+        $jelixVersion = \jFramework::version();
 
         // Dependencies
-        $data['dependencies'] = array();
-        $data['dependencies']['jelix'] = array();
-        $data['dependencies']['jelix']['minversion'] = (string) $xmlLoad->dependencies->jelix->attributes()->minversion;
-        $data['dependencies']['jelix']['maxversion'] = (string) $xmlLoad->dependencies->jelix->attributes()->maxversion;
+        $data['dependencies'] = array(
+            'jelix' => array(
+                'version' => $jelixVersion,
+                // @deprecated
+                'minversion' => $jelixVersion,
+                // @deprecated
+                'maxversion' => $jelixVersion,
+            ),
+        );
 
         // Get Lizmap services
         $services = \lizmap::getServices();

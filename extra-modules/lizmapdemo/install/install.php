@@ -1,21 +1,17 @@
 <?php
 /**
  * @author    3liz
- * @copyright 2011-2020 3liz
+ * @copyright 2011-2022 3liz
  *
  * @see      http://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapdemoModuleInstaller extends jInstallerModule
+class lizmapdemoModuleInstaller extends \Jelix\Installer\Module\Installer
 {
-    public function install()
+    public function install(Jelix\Installer\Module\API\InstallHelpers $helpers)
     {
-
-        if (!$this->firstExec('acl2')) {
-            return;
-        }
-        $this->useDbProfile('auth');
+        $helpers->database()->useDbProfile('auth');
 
         // create group
         jAcl2DbUserGroup:: createGroup('lizadmins');
@@ -25,11 +21,19 @@ class lizmapdemoModuleInstaller extends jInstallerModule
         require_once JELIX_LIB_PATH.'auth/jAuth.class.php';
         require_once JELIX_LIB_PATH.'plugins/auth/db/db.auth.php';
 
-        $authconfig = $this->config->getValue('auth', 'coordplugins');
-        $confIni = parse_ini_file(jApp::configPath($authconfig), true);
-        $authConfig = jAuth::loadConfig($confIni);
-        $driverConfig = $authConfig[$authConfig['driver']];
-        if ($authConfig['driver'] == 'Db' ||
+        //$configIni = $helpers->getEntryPointsById('index')->getConfigIni();
+
+
+        /** @var $authConfig \Jelix\IniFile\IniModifier */
+        //list($authConfig, $authSection) = $helpers->getCoordPluginConfig('auth', $configIni);
+
+        /*$driver = $authConfig->getValue('driver', $authSection);
+        $driverConfig = $authConfig->getValues($driver);*/
+
+        $authConfig = jAuth::loadConfig();
+        $driver = $authConfig['driver'];
+        $driverConfig = jAuth::getDriverConfig();
+        if ($driver == 'Db' ||
             (isset($driverConfig['compatiblewithdb']) &&
                 $driverConfig['compatiblewithdb'])
         ) {
@@ -125,8 +129,8 @@ class lizmapdemoModuleInstaller extends jInstallerModule
         jAcl2DbManager::addRight('__anonymous', 'lizmap.tools.displayGetCapabilitiesLinks', 'montpellier');
 
         // declare the repositories of demo in the configuration
-        $lizmapConfFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($lizmapConfFile);
+        $lizmapConfFile = jApp::varConfigPath('lizmapConfig.ini.php');
+        $ini = new \Jelix\IniFile\IniModifier($lizmapConfFile);
 
         $sourceDemo = realpath(__DIR__.'/../qgis-projects/').'/';
 

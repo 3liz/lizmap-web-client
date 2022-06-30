@@ -12,7 +12,7 @@ wmsPublicUrlList=
 lizmapPluginAPIURL="http://map:8080/lizmap/"
 
 onlyMaps=off
-defaultRepository=montpellier
+defaultRepository=testsrepository
 defaultProject=
 
 ; cache configuration for tiles
@@ -53,16 +53,6 @@ requestProxyType=http
 requestProxyNotForDomain="localhost,127.0.0.1"
 adminContactEmail="laurent@jelix.org"
 proxyHttpBackend=curl
-
-[repository:montpellier]
-label=Demo
-path="demoqgis/"
-allowUserDefinedThemes=1
-
-[repository:intranet]
-label="Demo - Intranet"
-path="demoqgis_intranet/"
-allowUserDefinedThemes=0
 
 [repository:testsrepository]
 label="Tests repository"

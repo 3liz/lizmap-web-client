@@ -105,7 +105,7 @@ class ConfigTest extends TestCase
         $iniFile = __DIR__.'/../../tmp/logConfig.ini.php';
         file_put_contents($iniFile, '');
 
-        $ini = new jIniFileModifier($iniFile);
+        $ini = new \Jelix\IniFile\IniModifier($iniFile);
         $testLizmapLogConfig = new ConfigForTests($data, $this->context, $iniFile);
         if ($changedProp) {
             $data['general'][$changedProp] = $changedValue;

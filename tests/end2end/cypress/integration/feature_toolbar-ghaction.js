@@ -4,7 +4,7 @@ describe('Feature Toolbar', function () {
 
     beforeEach(function () {
         // Runs before each tests in the block
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
 
         cy.wait(300)
 
@@ -203,7 +203,7 @@ describe('Export data', function () {
 
     beforeEach(function () {
         // Runs before each tests in the block
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_en')
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
 
         cy.wait(300)
     })
@@ -215,7 +215,7 @@ describe('Export data', function () {
 
         // Intercept only the GetFeature requests for the parent layer
         cy.intercept(
-            'index.php/lizmap/service/?repository=testsrepository&project=feature_toolbar',
+            'index.php/lizmap/service?repository=testsrepository&project=feature_toolbar',
             { method: 'POST', middleware: true },
             (req) => {
                 // no cache
@@ -344,7 +344,7 @@ describe('Export data', function () {
 
         // Intercept only the GetFeature requests for the test layer
         cy.intercept(
-            'index.php/lizmap/service/?repository=testsrepository&project=feature_toolbar',
+            'index.php/lizmap/service?repository=testsrepository&project=feature_toolbar',
             { method: 'POST', middleware: true },
             (req) => {
                 // no cache
@@ -425,4 +425,5 @@ describe('Export data', function () {
             })
         })
     })
+
 })

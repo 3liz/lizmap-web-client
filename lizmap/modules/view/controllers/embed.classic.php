@@ -26,10 +26,8 @@ class embedCtrl extends lizMapCtrl
         }
 
         // add embed specific css
-        $bp = jApp::config()->urlengine['basePath'];
-        $rep->addCSSLink($bp.'assets/css/embed.css');
-        $themePath = $bp.'themes/'.jApp::config()->theme.'/';
-        $rep->addCSSLink($themePath.'css/embed.css');
+        $rep->addAssets('embed');
+
         // force undisplay home
         $rep->addStyle('#mapmenu li.home', 'display:none;');
         // do not display locate by layer

@@ -31,6 +31,44 @@ select.right-yes, span.right-yes {
 }
 
 
+.list-filter-form {
+    float:right;
+    margin: 0 1em;
+}
+
+.list-filter-form select {
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 5px;
+    background-color: transparent;
+}
+
+#groups-list td .cell-btn-edit {
+    /*display:none;*/
+    border: none;
+    background-color: transparent;
+}
+#groups-list td:hover .cell-btn-edit {
+    /*display:inline;*/
+    cursor: pointer;
+}
+
+#groups-list .cell-form {
+    display:none;
+}
+
+#groups-list tbody tr.even { background-color: #fcfcfc }
+#groups-list tbody tr.odd { background-color: #f7f7f7 }
+
+.dataTable .ui-button {
+    padding: 0.1em;
+}
+
+.dataTable .group-delete-link {
+    font-size:0.7em;
+
+}
+
 .jacl2-list.jacl2-list-sticky-heads,
 .jacl2-list-user.jacl2-list-sticky-heads
 {

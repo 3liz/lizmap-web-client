@@ -10,7 +10,7 @@ QGIS Server, webbrowsers etc.
 First you should install :
 
 - The web server Apache or Nginx
-- The PHP-FPM package (`php7.4-fpm` or `php8.1-fpm` on debian/ubuntu).
+- The PHP-FPM package (`php7.4-fpm`, `php8.0-fpm` or  `php8.1-fpm` on debian/ubuntu).
   You can install PHP 7.4/8.0/8.1. You can use generic package names, which will install latest
   version available (`php7.4`, `php8.0` etc.)
 - The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml`

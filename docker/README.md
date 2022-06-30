@@ -86,7 +86,7 @@ The following volumes are used:
 
 ```
 lizmap:
-    image: lizmap-wps-web-client:3.2
+    image: lizmap-wps-web-client:3.6
     command: 
       - php-fpm
     environment:

@@ -123,8 +123,8 @@ class lizmapTheme
     public function save()
     {
         // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = jApp::varConfigPath('lizmapConfig.ini.php');
+        $ini = new \Jelix\IniFile\IniModifier($iniFile);
 
         foreach ($this->properties as $prop) {
             if ($this->{$prop} != '') {
