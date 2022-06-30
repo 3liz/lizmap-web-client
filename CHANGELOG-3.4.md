@@ -18,10 +18,13 @@
 * Provide the dataviz button in the left menu only there is at least one non filtered dataviz
 * The style was not updated when the layer has a shortname and was included in a QGIS theme
 * Javascript error when clicking on an atlas link when no feature ID was found
+* Fix infinite HTTP loop when the user hasn't any access to the default project
+* Fix the attribute table order defined in QGIS desktop
+* Fix the "zoom to layer" button when the layer is in EPSG:4326 (Funded by Geocobet)
 
 ### Backend
 
-* Update Jelix to version 1.6.37
+* Update Jelix to version 1.6.38-pre
 
 ### Translations
 
