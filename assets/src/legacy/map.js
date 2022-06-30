@@ -8,6 +8,8 @@
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
+import {extend} from 'ol/extent';
+
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 
@@ -3256,7 +3258,7 @@ window.lizMap = function() {
           // Fetch GetFeatureInfo query for every children popups
           Promise.allSettled(popupChidrenRequests).then(popupChildrenData => {
 
-            childPopupElements = [];
+            const childPopupElements = [];
 
             for (let index = 0; index < popupChildrenData.length; index++) {
               let popupChildData = popupChildrenData[index].value;
@@ -5217,7 +5219,7 @@ window.lizMap = function() {
 
 
   function getFeaturePopupContent( aName, feat, aCallback) {
-      // Only use this functino with callback
+      // Only use this function with callback
       if ( !aCallback )
           return;
 
@@ -6038,26 +6040,31 @@ window.lizMap = function() {
       // Get feature info if defined in URL
       let getFeatureInfoRequest;
 
-      const urlParameters = getUrlParameters();
+      const urlParameters = (new URL(document.location)).searchParams;
 
-      if(urlParameters.layer && urlParameters.fid){
+      const layerName = urlParameters.get('layer');
+      const filter = urlParameters.get('filter');
+
+      if(layerName && filter){
+
           // Feature extent
           const wfs = new WFS();
           const wfsParams = {
-              TYPENAME: urlParameters.layer,
-              FEATUREID: urlParameters.layer + '.' + urlParameters.fid,
+              TYPENAME: layerName,
+              EXP_FILTER: filter,
               GEOMETRYNAME: 'extent'
           };
-  
+
           featureExtentRequest = wfs.getFeature(wfsParams);
 
           // Feature info
-          if(urlParameters?.popup === 'true'){
+          if(urlParameters.get('popup') === 'true'){
             const wms = new WMS();
             const wmsParams = {
-              QUERY_LAYERS: urlParameters.layer,
-              LAYERS: urlParameters.layer,
-              FILTER: `sousquartiers:"id" = '${urlParameters.fid}'`,
+              QUERY_LAYERS: layerName,
+              LAYERS: layerName,
+              FEATURE_COUNT: 50, // TODO: get this value from config after it has been loaded?
+              FILTER: `${layerName}:${filter}`,
             };
 
             getFeatureInfoRequest = wms.getFeatureInfo(wmsParams);
@@ -6072,7 +6079,15 @@ window.lizMap = function() {
         const wmsCapaData = responses[2];
         const wmtsCapaData = responses[3];
         const wfsCapaData = responses[4];
-        const featureExtent = responses[5]?.features?.[0]?.bbox;
+
+        let featuresExtent = responses[5]?.features?.[0]?.bbox;
+
+        if(featuresExtent){
+          for (const feature of responses[5].features) {
+            featuresExtent = extend(featuresExtent, feature.bbox);
+          }
+        }
+
         const getFeatureInfo = responses[6];
         
         const domparser = new DOMParser();
@@ -6165,7 +6180,7 @@ window.lizMap = function() {
 
         // create the map
         initProjections(firstLayer);
-        createMap(featureExtent);
+        createMap(featuresExtent);
         self.map = map;
         self.layers = layers;
         self.baselayers = baselayers;
