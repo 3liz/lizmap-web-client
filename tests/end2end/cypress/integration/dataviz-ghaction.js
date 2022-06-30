@@ -4,6 +4,30 @@ describe('Dataviz tests', function () {
         cy.get('#button-dataviz').click()
         cy.get('#dataviz_plot_0_container > h3:nth-child(1) > span:nth-child(1) > span:nth-child(2)')
             .should('have.text', 'Municipalities')
+
+        cy.get('#dataviz_plot_1_container > h3:nth-child(1) > span:nth-child(1) > span:nth-child(2)')
+            .should('have.text', 'Bar Bakeries by municipalities')
+
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 10)
+
+        cy.get('#dataviz_plot_2_container > h3:nth-child(1) > span:nth-child(1) > span:nth-child(2)')
+            .should('have.text', 'Pie Bakeries by municipalities')
+
+        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace g.slice')
+            .should('have.length', 10)
         // This test is not really covering the dataviz capabilities for now.
     })
 
