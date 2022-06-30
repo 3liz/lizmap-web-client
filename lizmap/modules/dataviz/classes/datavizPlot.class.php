@@ -61,7 +61,6 @@ class datavizPlot
      *
      * @param string $repository
      * @param string $project
-     * @param string $layerId
      * @param array  $plotConfig
      * @param null   $data
      *
@@ -70,7 +69,6 @@ class datavizPlot
     public function __construct(
         $repository,
         $project,
-        $layerId,
         $plotConfig,
         $data = null
     ) {
@@ -91,7 +89,7 @@ class datavizPlot
         $this->parsePlotConfig($plotConfig);
 
         // Get layer data
-        $this->parseLayer($layerId);
+        $this->parseLayer();
 
         // layout and data (use default if none given)
         $this->setLayout($this->layout);
@@ -235,9 +233,9 @@ class datavizPlot
     }
 
     /**
-     * @param string $layerId
+     * Parse layer based on layer id provided by plotConfig.
      */
-    protected function parseLayer($layerId)
+    protected function parseLayer()
     {
         // FIXME do not use this deprecated method and XML stuff here
         $layerXml = $this->lproj->getXmlLayer($this->layerId);
