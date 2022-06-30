@@ -101,8 +101,6 @@ class serviceCtrl extends jController
         $color2 = null;
         $layout = null;
 
-        $layerId = null;
-
         // Fins layer by id
         if (array_key_exists($plot_id, $this->config['layers'])) {
             $plotConfig = $this->config['layers'][$plot_id];
@@ -120,23 +118,23 @@ class serviceCtrl extends jController
 
         $type = $plotConfig['plot']['type'];
         if ($type == 'scatter') {
-            $dplot = new datavizPlotScatter($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotScatter($repository, $project, $plotConfig);
         } elseif ($type == 'box') {
-            $dplot = new datavizPlotBox($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotBox($repository, $project, $plotConfig);
         } elseif ($type == 'bar') {
-            $dplot = new datavizPlotBar($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotBar($repository, $project, $plotConfig);
         } elseif ($type == 'histogram') {
-            $dplot = new datavizPlotHistogram($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotHistogram($repository, $project, $plotConfig);
         } elseif ($type == 'pie') {
-            $dplot = new datavizPlotPie($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotPie($repository, $project, $plotConfig);
         } elseif ($type == 'histogram2d') {
-            $dplot = new datavizPlotHistogram2d($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotHistogram2d($repository, $project, $plotConfig);
         } elseif ($type == 'polar') {
-            $dplot = new datavizPlotPolar($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotPolar($repository, $project, $plotConfig);
         } elseif ($type == 'sunburst') {
-            $dplot = new datavizPlotSunburst($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotSunburst($repository, $project, $plotConfig);
         } elseif ($type == 'html') {
-            $dplot = new datavizPlotHtml($repository, $project, $layerId, $plotConfig);
+            $dplot = new datavizPlotHtml($repository, $project, $plotConfig);
         } else {
             $dplot = null;
         }
