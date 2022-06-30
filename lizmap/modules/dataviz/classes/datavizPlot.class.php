@@ -61,7 +61,6 @@ class datavizPlot
      *
      * @param string $repository
      * @param string $project
-     * @param string $layerId
      * @param array  $plotConfig
      * @param null   $data
      *
@@ -70,7 +69,6 @@ class datavizPlot
     public function __construct(
         $repository,
         $project,
-        $layerId,
         $plotConfig,
         $data = null
     ) {
@@ -91,7 +89,7 @@ class datavizPlot
         $this->parsePlotConfig($plotConfig);
 
         // Get layer data
-        $this->parseLayer($layerId);
+        $this->parseLayer();
 
         // layout and data (use default if none given)
         $this->setLayout($this->layout);
@@ -235,11 +233,10 @@ class datavizPlot
     }
 
     /**
-     * @param string $layerId
+     * Parse layer based on layer id provided by plotConfig.
      */
-    protected function parseLayer($layerId)
+    protected function parseLayer()
     {
-        $layer = $this->lproj->getLayer($this->layerId);
         // FIXME do not use this deprecated method and XML stuff here
         $layerXml = $this->lproj->getXmlLayer($this->layerId);
         if (count($layerXml) > 0) {
@@ -437,7 +434,10 @@ class datavizPlot
 
         // Prepare request and get data
         if ($method == 'wfs') {
-            $typename = str_replace(' ', '_', $layerName);
+            // Get WFS typename
+            /** @var qgisVectorLayer $layer */
+            $layer = $this->lproj->getLayer($this->layerId);
+            $typeName = $layer->getWfsTypeName();
             $propertyname = array();
             if (count($this->x_fields) > 0) {
                 $propertyname = array_merge($propertyname, $this->x_fields);
@@ -452,7 +452,7 @@ class datavizPlot
                 'SERVICE' => 'WFS',
                 'VERSION' => '1.0.0',
                 'REQUEST' => 'GetFeature',
-                'TYPENAME' => $typename,
+                'TYPENAME' => $typeName,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
                 'PROPERTYNAME' => implode(',', $propertyname),
