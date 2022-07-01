@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.4 - 2022-07-01
+
 ### Added
 
 * New `-dry-run` for the cache generation to see how many tiles might be generated
