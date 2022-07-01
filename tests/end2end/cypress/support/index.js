@@ -16,13 +16,9 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
-
-
 beforeEach(function () {
     // Clear errors
-    //cy.exec('./../lizmap-ctl docker-exec rm -f /srv/lzm/lizmap/var/log/errors.log', {failOnNonZeroExit: false})
+    cy.exec('./../lizmap-ctl docker-exec rm -f /srv/lzm/lizmap/var/log/errors.log', {failOnNonZeroExit: false})
 })
 
 afterEach(function () {
