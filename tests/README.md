@@ -192,8 +192,10 @@ You must execute `tests/qgis-projects/tests/load_sql.sh` to populate postgreSQL 
 
 *First add testing data as explained above.*
 
-The `end2end` directory contains some end-to-end tests made for Cypress.
-Go in `end2end` directory and execute `npm install` to install Cypress (only the first time).
+The `end2end` directory contains some end-to-end tests made for Cypress and Playwright.
+Go in `end2end` directory and execute `npm install` to install Cypress and Playwright (only the first time).
+
+### Cypress
 You can then :
 - execute `npm run cy:open` to open Cypress window.
 - select the target browser then click one of the integration tests or 'Run n integration specs' to run all.
@@ -207,6 +209,13 @@ You can also use GNU Parallel to parallelize Cypress tests execution on 8 cores 
 `find cypress/integration/ -name '*.js' | parallel -j8 --group  npx cypress run --spec {}`
 
 Output colors can be kept with `--tty` parameter but it won't work with `--group` which is useful to not mix outputs from different tests.
+
+### Playwright
+You can then :
+- execute `npx playwright test` to execute all tests
+- other command line : https://playwright.dev/docs/intro#command-line
+
+You can also install the handy Visual Studio Code extension : https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
 
 ### Artifacts
 
