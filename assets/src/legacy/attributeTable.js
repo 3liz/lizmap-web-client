@@ -187,10 +187,13 @@ var lizAttributeTable = function() {
                             addLayerDiv(layerName);
                         }
 
+                        const layerFilter = ( 'request_params' in config.layers[layerName] && config.layers[layerName]['request_params']['exp_filter'] ) ?
+                            config.layers[layerName]['request_params']['exp_filter'] : null;
+
                         const tableSelector = '#attribute-layer-table-' + cleanName;
 
                         // Get data and fill attribute table
-                        getDataAndFillAttributeTable(layerName, null, tableSelector);
+                        getDataAndFillAttributeTable(layerName, layerFilter, tableSelector);
 
                         $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
 
