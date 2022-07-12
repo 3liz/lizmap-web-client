@@ -90,6 +90,15 @@ describe('Attribute table', () => {
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 3)
 
+        // close the tab
+        cy.get('#nav-tab-attribute-layer-quartiers .btn-close-attribute-tab').click({ force: true })
+        cy.wait(10)
+        // reopen the tab
+        cy.get('button[value="quartiers"].btn-open-attribute-layer').click({ force: true })
+        cy.wait(10)
+        // check that the layer is filtered
+        cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 3)
+
         // refresh
         cy.get('#attribute-layer-main-quartiers .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
         cy.wait('@getMap')
