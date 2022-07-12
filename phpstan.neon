@@ -3,9 +3,9 @@ includes:
 
 parameters:
   bootstrapFiles:
-    - lib/jelix/init.php
+    - lizmap/vendor/autoload.php
+    - lizmap/vendor/jelix/jelix/lib/jelix/init.php
   scanDirectories:
-    - lib/
     - lizmap/vendor/
   level: 4
   paths:
