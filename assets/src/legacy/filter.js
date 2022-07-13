@@ -526,22 +526,32 @@ var lizLayerFilterTool = function () {
                 var filter = null;
                 var field = field_item['field'];
                 if (clist.length) {
+                    // If there is a separator in the field values, and we need
+                    // to explode the values into single items, we need to use
+                    // LIKE statements joined with OR
                     if ('splitter' in field_item && field_item['splitter'] != '') {
 
                         filter = ' ( ';
                         var sep = '';
                         var lk = 'LIKE';
+
+                        // For a PostgreSQL layer, we can use ILIKE instead of LIKE
+                        // for WMS filtered requests to be case insensitive
                         if (field_item.provider == 'postgres') {
                             lk = 'ILIKE';
                         }
                         for (var i in clist) {
                             var cval = clist[i];
                             filter += sep + '"' + field + '"' + " " + lk + " '%" + cval + "%' ";
-                            // if postgresql use ILIKE instead for WMS filtered requests
-                            sep = ' AND ';
+                            // We need to use a OR to display features with
+                            // 'Theatre, Culture' or 'Theatre', or 'Culture, Information'
+                            // When 'Theatre' and 'Culture' are checked in the list
+                            sep = ' OR ';
                         }
                         filter += ' ) ';
                     } else {
+                        // If there is not separator in the field values, use IN to get all features
+                        // corresponding to one of the checked values
                         filter = '"' + field + '"' + " IN ( '" + clist.join("' , '") + "' ) ";
                     }
                 }
