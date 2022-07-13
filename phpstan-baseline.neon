@@ -206,16 +206,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmap.class.php
 
 		-
-			message: "#^Call to method execute\\(\\) on an unknown class statement\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
-			message: "#^Call to method fetchAll\\(\\) on an unknown class statement\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
 			message: "#^Iterating over an object of an unknown class Result\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
@@ -1057,11 +1047,6 @@ parameters:
 			path: lizmap/modules/view/controllers/default.classic.php
 
 		-
-			message: "#^Call to an undefined method jResponse\\:\\:addJSLink\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
 			message: "#^Cannot access property \\$id on array\\.$#"
 			count: 1
 			path: lizmap/modules/view/controllers/default.classic.php
@@ -1100,26 +1085,6 @@ parameters:
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
 			count: 1
 			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$body\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/embed.classic.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:addCSSLink\\(\\)\\.$#"
-			count: 2
-			path: lizmap/modules/view/controllers/embed.classic.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:addJSCode\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/embed.classic.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:addStyle\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/embed.classic.php
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$title\\.$#"
@@ -1183,7 +1148,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method jResponse\\:\\:addCSSLink\\(\\)\\.$#"
-			count: 2
+			count: 1
 			path: lizmap/modules/view/controllers/lizMap.classic.php
 
 		-
@@ -1193,7 +1158,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method jResponse\\:\\:addCssLink\\(\\)\\.$#"
-			count: 5
+			count: 2
 			path: lizmap/modules/view/controllers/lizMap.classic.php
 
 		-
@@ -1208,7 +1173,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method jResponse\\:\\:addJSLink\\(\\)\\.$#"
-			count: 22
+			count: 14
 			path: lizmap/modules/view/controllers/lizMap.classic.php
 
 		-
@@ -1235,21 +1200,6 @@ parameters:
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
 			count: 1
 			path: lizmap/modules/view/controllers/lizMap.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/map.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$body\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/map.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$params\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/map.classic.php
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
