@@ -16,7 +16,7 @@ class defaultCtrl extends jController
      *
      * @param string $repository. Name of the repository.
      *
-     * @return Html page with a list of projects
+     * @return jResponseHtml|jResponseRedirect|jResponseRedirectUrl page with a list of projects
      */
     public function index()
     {
@@ -24,6 +24,7 @@ class defaultCtrl extends jController
             jApp::config()->theme = $this->param('theme');
         }
 
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get lizmap services
@@ -40,6 +41,7 @@ class defaultCtrl extends jController
                         $items = jEvent::notify('mainviewGetMaps')->getResponse();
                         foreach ($items as $item) {
                             if ($item->parentId == $repository->getKey() && $item->id == $services->defaultProject) {
+                                /** @var jResponseRedirectUrl $rep */
                                 $rep = $this->getResponse('redirectUrl');
                                 $rep->url = $item->url;
 
@@ -47,6 +49,7 @@ class defaultCtrl extends jController
                             }
                         }
                         // redirection to default controller
+                        /** @var jResponseRedirect $rep */
                         $rep = $this->getResponse('redirect');
                         $rep->action = 'view~map:index';
 
@@ -66,6 +69,7 @@ class defaultCtrl extends jController
         $repositoryList = array();
         if ($repository) {
             if (!jAcl2::check('lizmap.repositories.view', $repository)) {
+                /** @var jResponseRedirect $rep */
                 $rep = $this->getResponse('redirect');
                 $rep->action = 'view~default:index';
                 jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
@@ -153,10 +157,11 @@ class defaultCtrl extends jController
     /**
      * Displays an error.
      *
-     * @return Html page with the error message
+     * @return jResponseHtml page with the error message
      */
     public function error()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
         $tpl = new jTpl();
         $rep->body->assign('MAIN', '');
