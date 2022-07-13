@@ -17,10 +17,11 @@ class mediaCtrl extends jController
     /**
      * Returns error.
      *
-     * @param mixed $message
+     * @param jResponseRedirect $message
      */
     protected function error($message)
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'view~default:error';
         jMessage::add($message, 'error');
@@ -31,10 +32,11 @@ class mediaCtrl extends jController
     /**
      * Return 404.
      *
-     * @param mixed $message
+     * @param jResponseJson $message
      */
     protected function error404($message)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array('error' => '404 not found (wrong action)', 'message' => $message);
         $rep->setHttpStatus('404', 'Not Found');
@@ -51,10 +53,11 @@ class mediaCtrl extends jController
     /**
      * Return 403.
      *
-     * @param mixed $message
+     * @param jResponseJson $message
      */
     protected function error403($message)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array('error' => '403 forbidden (you\'re not allowed to access to this media)', 'message' => $message);
         $rep->setHttpStatus('403', 'Forbidden');
@@ -65,10 +68,11 @@ class mediaCtrl extends jController
     /**
      * Return 401.
      *
-     * @param mixed $message
+     * @param jResponseJson $message
      */
     protected function error401($message)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array('error' => '401 Unauthorized (authentication is required)', 'message' => $message);
         $rep->setHttpStatus('401', 'Unauthorized');
@@ -84,7 +88,7 @@ class mediaCtrl extends jController
      * @param string $project    project key
      * @param string $path       path to the media relative to the project file
      *
-     * @return binary object The media
+     * @return jResponseBinary|jResponseJson object The media
      */
     public function getMedia()
     {
@@ -164,6 +168,7 @@ class mediaCtrl extends jController
         }
 
         // Prepare the file to return
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->doDownload = false;
         $rep->fileName = $abspath;
@@ -191,7 +196,7 @@ class mediaCtrl extends jController
         $mimeTextArray = array('text/html', 'text/text');
         if (in_array($mime, $mimeTextArray)) {
             $content = jFile::read($abspath);
-            $rep->fileName = null;
+            $rep->fileName = '';
             $rep->content = $content;
         }
 
@@ -206,10 +211,11 @@ class mediaCtrl extends jController
      * @param string $repository repository of the project
      * @param string $project    project key
      *
-     * @return binary object The image for this project
+     * @return jResponseBinary|jResponseJson object The image for this project
      */
     public function illustration()
     {
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->doDownload = false;
 
@@ -288,7 +294,7 @@ class mediaCtrl extends jController
      * @param string $project    project key
      * @param string $path       path to the CSS file relative to the project file
      *
-     * @return binary object The transformed CSS file
+     * @return jResponseBinary|jResponseText object The transformed CSS file
      */
     public function getCssFile()
     {
@@ -353,6 +359,8 @@ class mediaCtrl extends jController
         // Redirect if errors
         if (!$ok) {
             $content = 'No CSS file in the specified path';
+
+            /** @var jResponseText $rep */
             $rep = $this->getResponse('text');
             $rep->content = $content;
 
@@ -360,6 +368,7 @@ class mediaCtrl extends jController
         }
 
         // Prepare the file to return
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->doDownload = false;
         $rep->fileName = $abspath;
@@ -398,10 +407,11 @@ class mediaCtrl extends jController
     /**
      * Get default Lizmap theme as a ZIP file.
      *
-     * @return Zip file containing the default theme
+     * @return jResponseZip file containing the default theme
      */
     public function getDefaultTheme()
     {
+        /** @var jResponseZip $rep */
         $rep = $this->getResponse('zip');
         $rep->zipFilename = 'lizmapWebClient_default_theme.zip';
         $rep->content->addDir(jApp::wwwPath().'/themes/default/', 'default', true);
@@ -414,7 +424,7 @@ class mediaCtrl extends jController
      *
      * @param $key : type of image. Can be 'headerLogo' or 'headerBackgroundImage'
      *
-     * @return Admin configured theme logo
+     * @return jResponseBinary|jResponseJson configured theme logo
      */
     public function themeImage()
     {
@@ -423,6 +433,7 @@ class mediaCtrl extends jController
             $key = 'headerLogo';
         }
 
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->doDownload = false;
 

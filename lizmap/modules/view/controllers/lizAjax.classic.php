@@ -14,10 +14,11 @@ class lizAjaxCtrl extends jController
     /**
      * Return 404.
      *
-     * @param mixed $message
+     * @param jResponseHtmlFragment $message
      */
     protected function error404($message)
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $content = '<p>404 not found (wrong action)</p>';
         $content .= '<p>'.$message.'</p>';
@@ -36,10 +37,11 @@ class lizAjaxCtrl extends jController
     /**
      * Return 403.
      *
-     * @param mixed $message
+     * @param jResponseHtmlFragment $message
      */
     protected function error403($message)
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $content = '<p>403 forbidden (you\'re not allowed to access to this content)</p>';
         $content .= '<p>'.$message.'</p>';
@@ -52,10 +54,11 @@ class lizAjaxCtrl extends jController
     /**
      * Return 401.
      *
-     * @param mixed $message
+     * @param jResponseHtmlFragment $message
      */
     protected function error401($message)
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $content = '<p>401 Unauthorized (authentication is required)</p>';
         $content .= '<p>'.$message.'</p>';
@@ -68,12 +71,11 @@ class lizAjaxCtrl extends jController
     /**
      * Displays the list of project for a given repository for ajax request.
      *
-     * @param string $repository. Name of the repository.
-     *
-     * @return Html fragment with a list of projects
+     * @return jResponseHtmlFragment fragment with a list of projects
      */
     public function index()
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
 
         // Get repository data
@@ -98,13 +100,11 @@ class lizAjaxCtrl extends jController
     /**
      * Displays map for ajax request.
      *
-     * @param string $repository. Name of the repository.
-     * @param string $project.    Name of the project.
-     *
-     * @return Html fragment with a list of projects
+     * @return jResponseHtmlFragment fragment with a list of projects
      */
     public function map()
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
 
         // Get the project
@@ -192,12 +192,6 @@ class lizAjaxCtrl extends jController
 
         // Get the WMS information
         $wmsInfo = $lproj->getWMSInformation();
-        // Set page title from projet title
-        if ($wmsInfo['WMSServiceTitle'] != '') {
-            $rep->title = $wmsInfo['WMSServiceTitle'];
-        } else {
-            $rep->title = $repository.' - '.$project;
-        }
 
         $assign = array_merge(array(
             'repositoryLabel' => $lrep->getLabel(),

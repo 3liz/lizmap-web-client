@@ -18,6 +18,7 @@ class appCtrl extends jController
      */
     public function metadata()
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Authenticate
