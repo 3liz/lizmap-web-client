@@ -61,6 +61,7 @@ class lizMapCtrl extends jController
 
         // default response
         // redirection if error encountered
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'view~default:index';
 
@@ -124,6 +125,7 @@ class lizMapCtrl extends jController
         }
 
         // the html response
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('htmlmap');
         $rep->addJSLink((jUrl::get('view~translate:index')).'?lang='.jApp::config()->locale);
 
