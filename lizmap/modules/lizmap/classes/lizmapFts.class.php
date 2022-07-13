@@ -94,7 +94,7 @@ class lizmapFts
      * @param mixed       $filterParams
      * @param null|string $profile      Name of the DB profile
      *
-     * @return Result as an array
+     * @return array<object> as an array
      */
     protected function query($sql, $filterParams, $profile = null)
     {

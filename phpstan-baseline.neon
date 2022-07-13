@@ -216,16 +216,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
 
 		-
-			message: "#^Iterating over an object of an unknown class Result\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
-			message: "#^Method lizmapFts\\:\\:query\\(\\) has invalid return type Result\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapFts.class.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
