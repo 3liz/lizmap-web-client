@@ -13,6 +13,9 @@ include jApp::getModulePath('view').'controllers/lizMap.classic.php';
 
 class embedCtrl extends lizMapCtrl
 {
+    /**
+     * @return jResponseHtml|jResponseRedirect
+     */
     public function index()
     {
         $req = jApp::coord()->request;
@@ -22,9 +25,11 @@ class embedCtrl extends lizMapCtrl
         $rep = parent::index();
 
         if ($rep->getType() != 'html') {
+            // @var jResponseRedirect $rep
             return $rep;
         }
 
+        // @var jResponseHtml $rep
         // add embed specific css
         $rep->addAssets('embed');
 
