@@ -8,6 +8,10 @@
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
+import {extend} from 'ol/extent';
+
+import WFS from '../modules/WFS.js';
+import WMS from '../modules/WMS.js';
 
 window.lizMap = function() {
   /**
@@ -167,6 +171,8 @@ window.lizMap = function() {
    *
    */
   var editionPending = false;
+
+  var lastLonLatInfo = null;
 
   /**
    * Get the metadata written in the configuration file by the desktop Lizmap plugin.
@@ -1287,8 +1293,9 @@ window.lizMap = function() {
   /**
    * PRIVATE function: createMap
    * creating the map {<OpenLayers.Map>}
+   * @param {array} initialExtent initial extent in EPSG:4326 projection
    */
-  function createMap() {
+  function createMap(initialExtent) {
     // get projection
     var proj = config.options.projection;
     var projection = new OpenLayers.Projection(proj.ref);
@@ -1298,10 +1305,16 @@ window.lizMap = function() {
     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
 
     var restrictedExtent = extent.scale(3);
-    var initialExtent = extent.clone();
-    if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
-      var initBbox = config.options.initialExtent;
-      initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
+
+    if(initialExtent){
+        initialExtent = new OpenLayers.Bounds(initialExtent);
+        initialExtent.transform(new OpenLayers.Projection('EPSG:4326'), projection);
+    }else{
+        initialExtent = extent.clone();
+        if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
+          var initBbox = config.options.initialExtent;
+          initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
+        }
     }
 
     // calculate the map height
@@ -1348,37 +1361,37 @@ window.lizMap = function() {
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
         ,eventListeners:{
          zoomend: function(){
-  // private treeTable
-  var options = {
-    childPrefix : "child-of-"
-  };
+            // private treeTable
+            var options = {
+                childPrefix : "child-of-"
+            };
 
-  function childrenOf(node) {
-    return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  }
+            function childrenOf(node) {
+                return $(node).siblings("tr." + options.childPrefix + node[0].id);
+            }
 
-  function parentOf(node) {
-    if (node.length == 0 )
-      return null;
+            function parentOf(node) {
+                if (node.length == 0 )
+                return null;
 
-    var classNames = node[0].className.split(' ');
+                var classNames = node[0].className.split(' ');
 
-    for(var key=0; key<classNames.length; key++) {
-      if(classNames[key].match(options.childPrefix)) {
-        return $(node).siblings("#" + classNames[key].substring(options.childPrefix.length));
-      }
-    }
+                for(var key=0; key<classNames.length; key++) {
+                if(classNames[key].match(options.childPrefix)) {
+                    return $(node).siblings("#" + classNames[key].substring(options.childPrefix.length));
+                }
+                }
 
-    return null;
-  }
+                return null;
+            }
 
-  function ancestorsOf(node) {
-    var ancestors = [];
-    while(node = parentOf(node)) {
-      ancestors[ancestors.length] = node[0];
-    }
-    return ancestors;
-  }
+            function ancestorsOf(node) {
+                var ancestors = [];
+                while(node = parentOf(node)) {
+                ancestors[ancestors.length] = node[0];
+                }
+                return ancestors;
+            }
            //layer visibility
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
@@ -2555,6 +2568,111 @@ window.lizMap = function() {
     return true;
   }
 
+  function displayGetFeatureInfo(text, xy){
+    var eventLonLatInfo = map.getLonLatFromPixel(xy);
+
+    if (map.popups.length != 0)
+        map.removePopup(map.popups[0]);
+
+    var popup = null;
+    var popupContainerId = null;
+    if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+      popupContainerId = 'popupcontent';
+
+      // create content
+      var popupReg = new RegExp('lizmapPopupTable', 'g');
+      text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
+      var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
+      var hasPopupContent = (!(!text || text == null || text == ''));
+      $('#popupcontent div.menu-content').html(pcontent);
+      if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
+        $('#mapmenu .nav-list > li.popupcontent').show();
+
+      // Warn user no data has been found
+      if( !hasPopupContent ){
+        pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
+        $('#popupcontent div.menu-content').html(pcontent);
+        window.setTimeout(function(){
+            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
+                $('#button-popupcontent').click();
+        },2000);
+      }
+
+      // Display dock if needed
+      if(
+        !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+          && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
+          && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
+      ){
+          $('#button-popupcontent').click();
+      }
+      else if(
+        $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+          && ( mCheckMobile() && hasPopupContent )
+      ){
+          $('#button-popupcontent').click();
+      }
+      // Resize minidock if displayed
+      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
+          updateMiniDockSize();
+
+    }
+    else{
+      if (!text || text == null || text == '')
+          return false;
+      // Use openlayers map popup anchored
+      popupContainerId = "liz_layer_popup";
+      popup = new OpenLayers.Popup.LizmapAnchored(
+          popupContainerId,
+          eventLonLatInfo,
+          null,
+          text,
+          null,
+          true,
+          function() {
+            map.removePopup(this);
+            if(mCheckMobile()){
+              $('#navbar').show();
+              $('#overview-box').show();
+            }
+
+            // clean locate layer
+            clearDrawLayer('locatelayer');
+            return false;
+          }
+      );
+      popup.panMapIfOutOfView = true;
+      map.addPopup(popup);
+
+      // Activate Boostrap 2 tabs here as they are not
+      // automatically activated when created in popup anchored
+      $('#' + popupContainerId + ' a[data-toggle="tab"]').on( 'click',function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      });
+
+      popup.verifySize();
+      // Hide navbar and overview in mobile mode
+      if(mCheckMobile()){
+          $('#navbar').hide();
+          $('#overview-box').hide();
+      }
+    }
+    lastLonLatInfo = eventLonLatInfo;
+
+    // Display related children objects
+    addChildrenFeatureInfo( popup, popupContainerId );
+    // Display geometries
+    addGeometryFeatureInfo( popup, popupContainerId );
+    // Display the plots of the children layers features filtered by popup item
+    addChildrenDatavizFilteredByPopupFeature( popup, popupContainerId );
+
+    // Trigger event
+    lizMap.events.triggerEvent("lizmappopupdisplayed",
+        {'popup': popup, 'containerId': popupContainerId}
+    );
+  }
+
 
   /**
    * PRIVATE function: createPermalink
@@ -2706,15 +2824,15 @@ window.lizMap = function() {
   }
 
   function getUrlParameters(){
-    var oParametre = {};
+    const urlParameters = {};
 
     if (window.location.search.length > 1) {
-      for (var aItKey, nKeyId = 0, aCouples = window.location.search.substr(1).split("&"); nKeyId < aCouples.length; nKeyId++) {
-        aItKey = aCouples[nKeyId].split("=");
-        oParametre[decodeURIComponent(aItKey[0])] = aItKey.length > 1 ? decodeURIComponent(aItKey[1]) : "";
+      for (const keyValue of window.location.search.slice(1).split("&")) {
+        const [key, value] = keyValue.split("=");
+        urlParameters[decodeURIComponent(key)] = decodeURIComponent(value);
       }
     }
-    return oParametre;
+    return urlParameters;
   }
 
   function updatePermalinkInputs() {
@@ -3140,7 +3258,7 @@ window.lizMap = function() {
           // Fetch GetFeatureInfo query for every children popups
           Promise.allSettled(popupChidrenRequests).then(popupChildrenData => {
 
-            childPopupElements = [];
+            const childPopupElements = [];
 
             for (let index = 0; index < popupChildrenData.length; index++) {
               let popupChildData = popupChildrenData[index].value;
@@ -3272,7 +3390,6 @@ window.lizMap = function() {
         lizUrls.wms,
         OpenLayers.Util.getParameterString(lizUrls.params)
       )
-      var lastLonLatInfo = null;
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: fiurl,
             title: 'Identify features by clicking',
@@ -3287,109 +3404,7 @@ window.lizMap = function() {
             },
             eventListeners: {
                 getfeatureinfo: function(event) {
-                    var eventLonLatInfo = map.getLonLatFromPixel(event.xy);
-                    var text = event.text;
-
-                    if (map.popups.length != 0)
-                        map.removePopup(map.popups[0]);
-
-                    var popup = null;
-                    var popupContainerId = null;
-                    if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
-                      popupContainerId = 'popupcontent';
-
-                      // create content
-                      var popupReg = new RegExp('lizmapPopupTable', 'g');
-                      text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
-                      var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
-                      var hasPopupContent = (!(!text || text == null || text == ''));
-                      $('#popupcontent div.menu-content').html(pcontent);
-                      if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
-                        $('#mapmenu .nav-list > li.popupcontent').show();
-
-                      // Warn user no data has been found
-                      if( !hasPopupContent ){
-                        pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
-                        $('#popupcontent div.menu-content').html(pcontent);
-                        window.setTimeout(function(){
-                            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
-                                $('#button-popupcontent').click();
-                        },2000);
-                      }
-
-                      // Display dock if needed
-                      if(
-                        !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
-                         && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
-                         && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
-                      ){
-                          $('#button-popupcontent').click();
-                      }
-                      else if(
-                        $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
-                         && ( mCheckMobile() && hasPopupContent )
-                      ){
-                          $('#button-popupcontent').click();
-                      }
-                      // Resize minidock if displayed
-                      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
-                          updateMiniDockSize();
-
-                    }
-                    else{
-                      if (!text || text == null || text == '')
-                          return false;
-                      // Use openlayers map popup anchored
-                      popupContainerId = "liz_layer_popup";
-                      popup = new OpenLayers.Popup.LizmapAnchored(
-                          popupContainerId,
-                          eventLonLatInfo,
-                          null,
-                          text,
-                          null,
-                          true,
-                          function() {
-                            map.removePopup(this);
-                            if(mCheckMobile()){
-                              $('#navbar').show();
-                              $('#overview-box').show();
-                            }
-
-                            // clean locate layer
-                            clearDrawLayer('locatelayer');
-                            return false;
-                          }
-                      );
-                      popup.panMapIfOutOfView = true;
-                      map.addPopup(popup);
-
-                      // Activate Boostrap 2 tabs here as they are not
-                      // automatically activated when created in popup anchored
-                      $('#' + popupContainerId + ' a[data-toggle="tab"]').on( 'click',function (e) {
-                        e.preventDefault();
-                        $(this).tab('show');
-                      });
-
-                      popup.verifySize();
-                      // Hide navbar and overview in mobile mode
-                      if(mCheckMobile()){
-                          $('#navbar').hide();
-                          $('#overview-box').hide();
-                      }
-                    }
-                    lastLonLatInfo = eventLonLatInfo;
-
-                    // Display related children objects
-                    addChildrenFeatureInfo( popup, popupContainerId );
-                    // Display geometries
-                    addGeometryFeatureInfo( popup, popupContainerId );
-                    // Display the plots of the children layers features filtered by popup item
-                    addChildrenDatavizFilteredByPopupFeature( popup, popupContainerId );
-
-                    // Trigger event
-                    lizMap.events.triggerEvent("lizmappopupdisplayed",
-                        {'popup': popup, 'containerId': popupContainerId}
-                    );
+                    displayGetFeatureInfo(event.text, event.xy);
                 }
             }
      });
@@ -5204,7 +5219,7 @@ window.lizMap = function() {
 
 
   function getFeaturePopupContent( aName, feat, aCallback) {
-      // Only use this functino with callback
+      // Only use this function with callback
       if ( !aCallback )
           return;
 
@@ -5851,6 +5866,10 @@ window.lizMap = function() {
       return deactivateToolControls( evt );
     },
 
+    displayGetFeatureInfo: function( text, xy ) {
+      return displayGetFeatureInfo( text, xy );
+    },
+
     /**
      * Method: exportVectorLayer
      */
@@ -6016,17 +6035,62 @@ window.lizMap = function() {
         return response.text()
       });
 
+      // Get feature extent if defined in URL
+      let featureExtentRequest;
+      // Get feature info if defined in URL
+      let getFeatureInfoRequest;
+
+      const urlParameters = (new URL(document.location)).searchParams;
+
+      const layerName = urlParameters.get('layer');
+      const filter = urlParameters.get('filter');
+
+      if(layerName && filter){
+
+          // Feature extent
+          const wfs = new WFS();
+          const wfsParams = {
+              TYPENAME: layerName,
+              EXP_FILTER: filter,
+              GEOMETRYNAME: 'extent'
+          };
+
+          featureExtentRequest = wfs.getFeature(wfsParams);
+
+          // Feature info
+          if(urlParameters.get('popup') === 'true'){
+            const wms = new WMS();
+            const wmsParams = {
+              QUERY_LAYERS: layerName,
+              LAYERS: layerName,
+              FEATURE_COUNT: 50, // TODO: get this value from config after it has been loaded?
+              FILTER: `${layerName}:${filter}`,
+            };
+
+            getFeatureInfoRequest = wms.getFeatureInfo(wmsParams);
+          }
+      }
+
       // Request config and capabilities in parallel
-      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest]).then(responses => {
+      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest, featureExtentRequest, getFeatureInfoRequest]).then(responses => {
         // config is defined globally
         config = responses[0];
         keyValueConfig = responses[1];
-
-        const domparser = new DOMParser();
-
         const wmsCapaData = responses[2];
         const wmtsCapaData = responses[3];
         const wfsCapaData = responses[4];
+
+        let featuresExtent = responses[5]?.features?.[0]?.bbox;
+
+        if(featuresExtent){
+          for (const feature of responses[5].features) {
+            featuresExtent = extend(featuresExtent, feature.bbox);
+          }
+        }
+
+        const getFeatureInfo = responses[6];
+        
+        const domparser = new DOMParser();
 
         config.options.hasOverview = false;
 
@@ -6116,7 +6180,7 @@ window.lizMap = function() {
 
         // create the map
         initProjections(firstLayer);
-        createMap();
+        createMap(featuresExtent);
         self.map = map;
         self.layers = layers;
         self.baselayers = baselayers;
@@ -6424,6 +6488,15 @@ window.lizMap = function() {
 
         $('body').css('cursor', 'auto');
         $('#loading').dialog('close');
+
+        // Display getFeatureInfo if requested
+        if(getFeatureInfo){
+          displayGetFeatureInfo(getFeatureInfo, 
+            {
+              x: map.size.w / 2,
+              y: map.size.h / 2
+            });
+        }
       });
     }
   };
