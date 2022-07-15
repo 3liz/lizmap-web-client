@@ -13,6 +13,9 @@ include jApp::getModulePath('view').'controllers/lizMap.classic.php';
 
 class mapCtrl extends lizMapCtrl
 {
+    /**
+     * @return jResponseHtml|jResponseRedirect
+     */
     public function index()
     {
         $rep = parent::index();
@@ -47,6 +50,7 @@ class mapCtrl extends lizMapCtrl
         }
 
         if ($rep->getType() === 'html') {
+            // @var jResponseHtml $rep
             $url_params['repository'] = $this->repositoryKey;
             $url_params['project'] = $this->projectKey;
 
@@ -55,6 +59,7 @@ class mapCtrl extends lizMapCtrl
             return $rep;
         }
 
+        /** @var jResponseRedirect $rep */
         if ($rep->getType() === 'redirect' && $rep->action === 'jcommunity~login:index') {
             $rep->params['auth_url_return'] = jUrl::get('view~map:index', $url_params);
         }
