@@ -6,6 +6,12 @@ body {
 #title {
   margin-top : 5px;
 }
+p.error-msg{
+  font-size: 1.5em;
+  margin-top: 10px;
+  text-align: center;
+  line-height: 1.5em;
+}
 [class^="icon-"], [class*=" icon-"] {
   background-image: url('images/glyphicons-halflings.png');
 }
