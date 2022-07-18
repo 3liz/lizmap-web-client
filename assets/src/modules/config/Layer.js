@@ -1,4 +1,5 @@
 import { BaseObjectConfig } from './Base.js';
+import { ValidationError } from './../Errors.js';
 //import { Extent } from './Tools.js';
 
 const requiredProperties = {
@@ -36,7 +37,7 @@ const optionalProperties = {
     'mutuallyExclusive': {type: 'boolean', default: false},
 };
 
-export class LayerConfig  extends BaseObjectConfig {
+export class LayerConfig extends BaseObjectConfig {
 
     /**
      * @param {Object} cfg - the lizmap config object for layer
@@ -304,5 +305,137 @@ export class LayerConfig  extends BaseObjectConfig {
      **/
     get mutuallyExclusive() {
         return this._mutuallyExclusive;
+    }
+}
+
+export class LayersConfig {
+
+    /**
+     * @param {Object} cfg - the lizmap config object for layers
+     */
+    constructor(cfg) {
+        if (!cfg || typeof cfg !== "object") {
+            throw new ValidationError('The cfg parameter is not an Object!');
+        }
+
+        this._names = [];
+        this._ids = [];
+        this._configs = [];
+
+        for (const key in cfg) {
+            const lConfig = new LayerConfig(cfg[key]);
+            this._names.push(lConfig.name);
+            this._ids.push(lConfig.id);
+            this._configs.push(lConfig);
+        }
+    }
+
+    /**
+     * The layer names from config
+     *
+     * @type {String[]} the copy of the layer names
+     **/
+    get layerNames() {
+        return [...this._names];
+    }
+
+    /**
+     * The layer ids from config
+     *
+     * @type {String[]} the copy of the layer ids
+     **/
+    get layerIds() {
+        return [...this._ids];
+    }
+
+    /**
+     * The layer configs from config
+     *
+     * @type {LayerConfig[]} the copy of the layer configs
+     **/
+    get layerConfigs() {
+        return [...this._configs];
+    }
+
+    /**
+     * Iterate through layer names
+     *
+     * @generator
+     * @yields {string} The next layer name
+     **/
+    *getLayerNames() {
+        for (const name of this._names) {
+            yield name;
+        }
+    }
+
+    /**
+     * Iterate through layer ids
+     *
+     * @generator
+     * @yields {string} The next layer id
+     **/
+    *getLayerIds() {
+        for (const id of this._ids) {
+            yield id;
+        }
+    }
+
+    /**
+     * Iterate through layer configs
+     *
+     * @generator
+     * @yields {LayerConfig} The next layer config
+     **/
+    *getLayerConfigs() {
+        for (const config of this._configs) {
+            yield config;
+        }
+    }
+
+    /**
+     * Get a layer config by layer name
+     *
+     * @param {String} name the layer name
+     *
+     * @returns {LayerConfig} The layer config associated to the name
+     *
+     * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
+     **/
+    getLayerConfigByLayerName(name) {
+        const idx = this._names.indexOf(name);
+        if (idx == -1) {
+            throw new RangeError('The layer name `'+ name +'` is unknown!');
+        }
+
+        const cfg = this._configs[idx];
+        if (cfg.name != name) {
+            throw 'The config has been corrupted!'
+        }
+
+        return cfg;
+    }
+
+    /**
+     * Get a layer config by layer id
+     *
+     * @param {String} id the layer id
+     *
+     * @returns {LayerConfig} The layer config associated to the id
+     *
+     * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
+     **/
+    getLayerConfigByLayerId(id) {
+        const idx = this._ids.indexOf(id);
+        if (idx == -1) {
+            throw new RangeError('The layer id `'+ id +'` is unknown!');
+        }
+
+        const cfg = this._configs[idx];
+        if (cfg.id != id) {
+            throw 'The config has been corrupted!'
+        }
+
+        return cfg;
     }
 }
