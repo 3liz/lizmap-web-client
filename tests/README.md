@@ -151,15 +151,21 @@ export LZMQGSRVPORT=8152
 
 ```
 
-## Changing PHP and QGIS version
+## Changing PHP, postgresql and QGIS versions
 
-You can change the PHP version and the QGIS version to use, by setting
-the environment variables, respectively `PHP_VERSION` and `LZMQGSRVVERSION` **before** building the stack.
+You can change the version of some softwares to use, by setting
+some environment variables:
+
+- `PHP_VERSION` to set the PHP version
+- `LZMQGSRVVERSION` to set the QGIS version
+- `LZMPOSTGISVERSION` to set the Postgresql/Postgis version (the format is `X-Y` where `X` is the major version of postgresql, and `Y` the major version of Postgis)
+
+You must set these (optional) environment variables, **before** building the stack.
 
 ```bash
 export PHP_VERSION=8.2
 export LZMQGSRVVERSION=3.24
-
+export LZMPOSTGISVERSION=14-3
 ./run-docker build
 ```
 
