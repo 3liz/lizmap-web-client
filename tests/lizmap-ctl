@@ -99,7 +99,7 @@ case $COMMAND in
     docker-exec)
         docker exec lizmap${LZMBRANCH}_test_php $EXTRA;;
     shell)
-       docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
+       docker exec -it --user userphp lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shell-root | shellroot)
        docker exec -it lizmap${LZMBRANCH}_test_php /bin/bash  -l;;
     shell-nginx)

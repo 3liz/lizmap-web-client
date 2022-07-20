@@ -1,8 +1,8 @@
 #!/bin/bash
 ROOTDIR="/srv/lzm"
 APPDIR="$ROOTDIR/lizmap"
-APP_USER=usertest
-APP_GROUP=grouptest
+APP_USER=userphp
+APP_GROUP=groupphp
 
 COMMAND="$1"
 
