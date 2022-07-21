@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+
+## 3.5.5 - 2022-07-21
+
+### Fixed
+
+* fix some issues into the Docker image of lizmap
+* fixed the SQL query produced from the form filtering
+
 ## 3.5.4 - 2022-07-01
 
 ### Added
