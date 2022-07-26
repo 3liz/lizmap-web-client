@@ -1776,7 +1776,8 @@ class Project
                 unset($configJson->tooltipLayers->{$key});
             }
             // editionLayers
-            if (property_exists($configJson->editionLayers, $key)) {
+            if ($this->hasEditionLayersForCurrentUser()
+                && property_exists($configJson->editionLayers, $key)) {
                 unset($configJson->editionLayers->{$key});
             }
             // datavizLayers
