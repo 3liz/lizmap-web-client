@@ -14,7 +14,7 @@ class lizAjaxCtrl extends jController
     /**
      * Return 404.
      *
-     * @param jResponseHtmlFragment $message
+     * @param string $message
      */
     protected function error404($message)
     {
@@ -37,7 +37,9 @@ class lizAjaxCtrl extends jController
     /**
      * Return 403.
      *
-     * @param jResponseHtmlFragment $message
+     * @param string $message
+     *
+     * @return jResponseHtmlFragment
      */
     protected function error403($message)
     {
@@ -54,7 +56,9 @@ class lizAjaxCtrl extends jController
     /**
      * Return 401.
      *
-     * @param jResponseHtmlFragment $message
+     * @param string $message
+     *
+     * @return jResponseHtmlFragment
      */
     protected function error401($message)
     {
