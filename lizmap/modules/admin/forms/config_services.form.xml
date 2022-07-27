@@ -161,7 +161,7 @@
         <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
     </input>
 
-    <input ref="adminSenderEmail" type="email">
+    <input ref="adminSenderEmail" type="email" required="true">
         <label locale="admin~admin.form.admin_services.adminSenderEmail.label"/>
         <help locale="admin~admin.form.admin_services.adminSenderEmail.help"/>
         <alert type="required" locale="admin~admin.form.admin_services.adminSenderEmail.error.required"/>
