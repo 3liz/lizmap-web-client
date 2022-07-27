@@ -150,6 +150,20 @@ class configCtrl extends jController
                 $form->getControl('allowUserAccountRequests')->setReadOnly();
                 $form->getControl('allowUserAccountRequests')->help = jLocale::get('admin~admin.config.services.allowUserAccountRequest.noemail');
             }
+
+            // These variables are temporary until
+            // https://github.com/3liz/lizmap-web-client/issues/2972
+            // If these values are updated, update as well lizmap/modules/admin/controllers/server_information.classic.php
+            $qgisMinimumVersionRequired = '3.10';
+            $lizmapPluginMinimumVersionRequired = '1.1.1';
+            $form->getControl('lizmapPluginAPIURL')->help = jLocale::get(
+                'admin~admin.form.admin_services.lizmapPluginAPIURL.help',
+                array(
+                    $qgisMinimumVersionRequired,
+                    $lizmapPluginMinimumVersionRequired,
+                )
+            );
+
             // Display form
             $tpl = new jTpl();
             $tpl->assign('form', $form);

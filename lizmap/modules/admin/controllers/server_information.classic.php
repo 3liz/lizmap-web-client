@@ -30,10 +30,27 @@ class server_informationCtrl extends jController
         $server = new \Lizmap\Server\Server();
         $data = $server->getMetadata();
 
+        // These variables are temporary until
+        // https://github.com/3liz/lizmap-web-client/issues/2972
+        // If these values are updated, update as well lizmap/modules/admin/controllers/config.classic.php
+        $qgisMinimumVersionRequired = '3.10';
+        $lizmapPluginMinimumVersionRequired = '1.1.1';
+        $linkDocumentation = 'https://docs.lizmap.com/current/en/install/pre_requirements.html#lizmap-server-plugin';
+
         // Set the HTML content
         $tpl = new jTpl();
         $assign = array(
             'data' => $data,
+            'linkDocumentation' => $linkDocumentation,
+            'errorQgisPlugin' => jLocale::get(
+                'admin.server.information.qgis.error.fetching.information.detail',
+                array(
+                    $qgisMinimumVersionRequired,
+                    $lizmapPluginMinimumVersionRequired,
+                    $qgisMinimumVersionRequired,
+                    $lizmapPluginMinimumVersionRequired,
+                )
+            ),
         );
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('server_information'));
