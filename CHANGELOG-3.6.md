@@ -2,9 +2,6 @@
 
 ## Unreleased
 
-
-## 3.6.0-beta.1 - 2022-07-27
-
 ### Added
 
 * **Maps**: take care of `filter` and `popup` parameters from the url when viewing a map
@@ -45,8 +42,6 @@
 * **Layer legend**: Enable auto display the legend image for a layer at startup
 * **Edition**: New button to restart drawing geometry - Provide the capability to update geometry with GPS and form coordinates
 * New `-dry-run` for the cache generation to see how many tiles might be generated
-
-
 
 ### Fixed
 
@@ -92,3 +87,7 @@
 * End2End: Add Lizmap Service requests tests
 * End2End: Update Cypress to 9.5.0
 * Use the new command line `docker compose`
+
+## 3.6.0-beta.1 - 2022-07-27
+
+* First release of the beta version
