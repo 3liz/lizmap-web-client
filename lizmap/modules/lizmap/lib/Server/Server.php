@@ -41,7 +41,7 @@ class Server
     /**
      * Get Lizmap Web Client metadata.
      *
-     * @return array Array containing the Lizmap Web Client instalation metadata
+     * @return array Array containing the Lizmap Web Client installation metadata
      */
     private function getLizmapMetadata()
     {
