@@ -1,4 +1,4 @@
-Upgrading to Lizmap 3.0
+Upgrading to Lizmap 3.6
 ========================
 
 First, be sure that your lizmap installation has been upgraded to the latest version
