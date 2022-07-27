@@ -2,8 +2,15 @@
 
 ## Unreleased
 
+
+## 3.6.0-beta.1 - 2022-07-27
+
 ### Added
 
+* **Maps**: take care of `filter` and `popup` parameters from the url when viewing a map
+  in order to zoom directly to the defined features and to display popups
+* **Maps**: When an error appeared during the load of a project, the user interface
+  has been improved to show a better message, instead of the unreadable "SERVICE NON DISPONIBLE" error message.
 * **Administration**: add a new page in the admin panel showing the **list of published projects**
   in a dynamic table.
 
@@ -38,6 +45,8 @@
 * **Layer legend**: Enable auto display the legend image for a layer at startup
 * **Edition**: New button to restart drawing geometry - Provide the capability to update geometry with GPS and form coordinates
 * New `-dry-run` for the cache generation to see how many tiles might be generated
+
+
 
 ### Fixed
 
