@@ -146,3 +146,9 @@ dd#dd_qgis_logs_value {
 {
     top: 75px;
 }
+
+#groups-list_wrapper,
+#users-list_wrapper
+{
+    padding: 1em 0 1em 2em;
+}
