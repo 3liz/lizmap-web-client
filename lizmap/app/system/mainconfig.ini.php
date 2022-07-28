@@ -286,6 +286,7 @@ bootstrap.css[]="assets/css/bootstrap-responsive.min.css"
 datatables.require=bootstrap
 datatables.js[]=assets/js/jquery.dataTables.min.js
 datatables.js[]=assets/js/dataTables.bootstrap.min.js
+datatables.js[]="$jelix/datatables/i18n/$locale.js"
 datatables.css[]=assets/css/jquery.dataTables.min.css
 datatables.css[]=assets/css/dataTables.bootstrap.min.css
 
@@ -322,6 +323,7 @@ jauthdb_admin.js[]="$jelix/js/authdb_admin.js"
 jauthdb_admin.require[]=jquery_ui
 
 jacl2_admin.css[]="$jelix/design/jacl2.css"
+jacl2_admin.css[]="$jelix/design/records_list.css"
 jacl2_admin.js[]="$jelix/js/jacl2db_admin.js"
 jacl2_admin.require[]=jquery_ui
 
