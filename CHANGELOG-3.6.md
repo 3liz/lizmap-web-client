@@ -88,6 +88,12 @@
 * End2End: Update Cypress to 9.5.0
 * Use the new command line `docker compose`
 
+## 3.6.0-beta.2 - not released yet
+
+* fix display of the new rights interface
+* fix some compatibility issue with some php packages of dependencies with PHP 7.4
+* Fix some potential issues about rights on some temporary files 
+
 ## 3.6.0-beta.1 - 2022-07-27
 
 * First release of the beta version
