@@ -14,17 +14,22 @@ COMMIT_NUMBER=$(shell git rev-list --count HEAD)
 #------- versions
 LIZMAP_VERSION:=$(shell sed -n 's:.*<version[^>]*>\(.*\)</version>.*:\1:p' lizmap/project.xml)
 LTR:=$(shell sed -n 's:.* ltr="\([^"]*\)".*:\1:p' lizmap/project.xml)
-MAJOR_VERSION=$(firstword $(subst ., ,$(LIZMAP_VERSION)))
-MINOR_VERSION=$(word 2,$(subst ., ,$(LIZMAP_VERSION)))
-PATCH_VERSION=$(firstword $(subst -, ,$(word 3,$(subst ., ,$(LIZMAP_VERSION)))))
+STABLE_VERSION=$(firstword $(subst -, ,$(LIZMAP_VERSION)))
+PRERELEASE_VERSION=$(word 2,$(subst -, ,$(LIZMAP_VERSION)))
+MAJOR_VERSION=$(firstword $(subst ., ,$(STABLE_VERSION)))
+MINOR_VERSION=$(word 2,$(subst ., ,$(STABLE_VERSION)))
+PATCH_VERSION=$(word 3,$(subst ., ,$(STABLE_VERSION)))
+
 SHORT_VERSION=$(MAJOR_VERSION).$(MINOR_VERSION)
-STABLE_VERSION=$(MAJOR_VERSION).$(MINOR_VERSION).$(PATCH_VERSION)
 SHORT_VERSION_NAME=$(MAJOR_VERSION)_$(MINOR_VERSION)
 DATE_VERSION=$(shell date +%Y-%m-%d)
 
 LATEST_RELEASE=$(shell git branch -a | grep -Po "(release_\\d+_\\d+)" | sort | tail -n1 | cut -d'_' -f 2,3)
 
 ifdef DO_RELEASE
+ifeq ($(PRERELEASE_VERSION),)
+# if we release a stable version, we tag the docker image with version and the short version
+# and optionally with an ltr tag if this is an ltr version
 DOCKER_MANIFEST_VERSION=$(STABLE_VERSION)
 DOCKER_MANIFEST_VERSION_SHORT=$(SHORT_VERSION)
 ifneq ($(LTR),)
@@ -33,6 +38,11 @@ DOCKER_MANIFEST_RELEASE_TAG=ltr-$(SHORT_VERSION)
 RELEASE_TAG=ltr-$(SHORT_VERSION)
 endif
 else
+# if we release an unstable version, just tag the docker image with the full version
+DOCKER_MANIFEST_VERSION=$(LIZMAP_VERSION)
+endif
+else
+# we don't do a release, we tag the docker image with the -dev label
 DOCKER_MANIFEST_VERSION=$(SHORT_VERSION)-dev
 endif
 
@@ -85,6 +95,7 @@ debug:
 	@echo "MAJOR_VERSION="$(MAJOR_VERSION)
 	@echo "MINOR_VERSION="$(MINOR_VERSION)
 	@echo "PATCH_VERSION="$(PATCH_VERSION)
+	@echo "PRERELEASE_VERSION="$(PRERELEASE_VERSION)
 	@echo "STABLE_VERSION="$(STABLE_VERSION)
 	@echo "SHORT_VERSION="$(SHORT_VERSION)
 	@echo "SHORT_VERSION_NAME="$(SHORT_VERSION_NAME)
@@ -260,7 +271,4 @@ php-cs-fixer-apply:
 
 php-cs-fixer-apply-docker:
 	docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php
-
-php-cs-fixer-test-docker:
-	docker run --rm -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php --dry-run --diff
 
