@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+
+## 3.6.0-beta.2 - 2022-07-29
+
+* Fix configuration form of email: sender email was always required.
+  Add also more explainations to fill correctly email parameters.
+* Fix display of the new rights interface
+* Fix display of admin forms for themes & landing page
+* Fix some compatibility issue with some php packages of dependencies with PHP 7.4
+* Fix some potential issues about rights on some temporary files
+
+## 3.6.0-beta.1 - 2022-07-27
+
 ### Added
 
 * **Maps**: take care of `filter` and `popup` parameters from the url when viewing a map
@@ -87,13 +99,3 @@
 * End2End: Add Lizmap Service requests tests
 * End2End: Update Cypress to 9.5.0
 * Use the new command line `docker compose`
-
-## 3.6.0-beta.2 - not released yet
-
-* fix display of the new rights interface
-* fix some compatibility issue with some php packages of dependencies with PHP 7.4
-* Fix some potential issues about rights on some temporary files 
-
-## 3.6.0-beta.1 - 2022-07-27
-
-* First release of the beta version
