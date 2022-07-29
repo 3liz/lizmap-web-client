@@ -21,6 +21,11 @@ availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it
 ; the locale to fallback when the asked string doesn't exist in the current locale
 fallbackLocale=en_US
 
+[minimumRequiredVersion]
+; The minimum version required about external software to make Lizmap Web Client happy
+qgisServer="3.10"
+lizmapServerPlugin="1.1.1"
+
 [coordplugins]
 ;name = file_ini_name or 1
 autolocale=1
