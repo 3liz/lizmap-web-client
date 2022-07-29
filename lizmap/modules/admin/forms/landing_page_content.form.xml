@@ -6,7 +6,7 @@
     </htmleditor>
 
     <submit ref="_submit">
-        <label locale="admin.form.admin_services.submit.label"/>
+        <label locale="admin~admin.form.admin_services.submit.label"/>
     </submit>
 
 </form>
