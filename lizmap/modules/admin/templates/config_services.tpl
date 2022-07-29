@@ -16,8 +16,18 @@
 
     <div>
         <h2>{@admin~admin.configuration.services.section.emails.label@}</h2>
+        {if $showSystem}
+            <p>{@admin~admin.form.admin_services.emails.help@}</p>
+            {if !$smtpEnabled}
+                <p>{@admin~admin.form.admin_services.emails.server.help@}</p>
+            {/if}
+        {else}
+            {if !$hasSenderEmail}
+                <p>{@admin~admin.form.admin_services.emails.no.server@}</p>
+            {/if}
+        {/if}
         <table class="table services-table">
-            {formcontrols array('allowUserAccountRequests', 'adminContactEmail', 'adminSenderEmail', 'adminSenderName')}
+            {formcontrols array( 'adminSenderEmail', 'adminSenderName', 'allowUserAccountRequests', 'adminContactEmail')}
                 <tr>
                     <th>{ctrl_label}</th><td>{ctrl_control}</td>
                 </tr>
