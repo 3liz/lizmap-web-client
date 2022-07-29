@@ -298,6 +298,15 @@ class lizmapServices
         return $this->isUsingLdap;
     }
 
+    public function isSmtpEnabled()
+    {
+        $config = \jApp::config()->mailer;
+
+        return $config['mailerType'] == 'smtp'
+            && $config['smtpHost'] != ''
+            && $config['smtpPort'] != '';
+    }
+
     /**
      * @return bool|int
      */
