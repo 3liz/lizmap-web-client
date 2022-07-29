@@ -137,6 +137,7 @@ class configCtrl extends jController
 
         /** @var null|jFormsBase $form */
         if ($form) {
+            $hasSenderEmail = ($form->getData('adminSenderEmail') != '');
             if (lizmap::getServices()->isLdapEnabled()) {
                 $ctrl = $form->getControl('allowUserAccountRequests');
                 $ctrl->help = jLocale::get('admin~admin.configuration.services.allowUserAccountRequests.help.deactivated');
@@ -146,14 +147,16 @@ class configCtrl extends jController
             ) {
                 $form->getControl('adminSenderEmail')->required = true;
             }
-            if (lizmap::getServices()->hideSensitiveProperties() && $form->getData('adminSenderEmail') === '') {
+            if (lizmap::getServices()->hideSensitiveProperties() && !$hasSenderEmail) {
                 $form->getControl('allowUserAccountRequests')->setReadOnly();
                 $form->getControl('allowUserAccountRequests')->help = jLocale::get('admin~admin.config.services.allowUserAccountRequest.noemail');
             }
             // Display form
             $tpl = new jTpl();
             $tpl->assign('form', $form);
+            $tpl->assign('hasSenderEmail', $hasSenderEmail);
             $tpl->assign('showSystem', !lizmap::getServices()->hideSensitiveProperties());
+            $tpl->assign('smtpEnabled', lizmap::getServices()->isSmtpEnabled());
             $rep->body->assign('MAIN', $tpl->fetch('admin~config_services'));
             $rep->body->assign('selectedMenuItem', 'lizmap_configuration');
 
