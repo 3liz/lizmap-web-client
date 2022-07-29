@@ -34,7 +34,10 @@
         {if $data['qgis_server_info']['error'] == 'NO_ACCESS'}
             <i>{@admin.server.information.qgis.error.fetching.information.detail.NO_ACCESS@}</i><br>
         {else}
-            <i>{@admin.server.information.qgis.error.fetching.information.detail@}</i><br>
+            <i>{$errorQgisPlugin}</i>
+            <br>
+            <a href="{$linkDocumentation}" target="_blank">{$linkDocumentation}</a>
+            <br>
             {if $data['qgis_server_info']['error_http_code'] == '200'}
                 {* QGIS Server might return a 200, it's confusing for users. Ticket #2755 *}
                 {assign $errorcode='Unknown'}
