@@ -14,7 +14,7 @@
     "proj4php/proj4php": "dev-proj4php5.2"
   },
   "require-dev": {
-    "gettext/gettext": "^4.6.1"
+    "gettext/gettext": "^5.7.0"
   },
   "minimum-stability": "stable",
   "config": {
