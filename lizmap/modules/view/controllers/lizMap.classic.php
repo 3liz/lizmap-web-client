@@ -65,6 +65,27 @@ class lizMapCtrl extends jController
         $rep = $this->getResponse('redirect');
         $rep->action = 'view~default:index';
 
+        // Check server status
+        $server = new \Lizmap\Server\Server();
+
+        // Minimum QGIS server version
+        $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
+        $currentQgisVersion = $server->getQgisServerVersion();
+        if ($server->versionCompare($currentQgisVersion, $requiredQgisVersion)) {
+            jMessage::add(jLocale::get('view~default.server.information.error'), 'error');
+
+            return $rep;
+        }
+
+        // lizmap_server plugin version
+        $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+        $currentLizmapVersion = $server->getLizmapPluginServerVersion();
+        if ($server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
+            jMessage::add(jLocale::get('view~default.server.information.error'), 'error');
+
+            return $rep;
+        }
+
         if (!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())) {
             jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
             if (!jAuth::isConnected()) {
