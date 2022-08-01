@@ -38,6 +38,52 @@ class Server
         return $this->metadata;
     }
 
+    /** Get the current Lizmap server version.
+     *
+     * @return string String containing the current Lizmap QGIS server version
+     */
+    public function getLizmapPluginServerVersion()
+    {
+        return $this->metadata['qgis_server_info']['plugins']['lizmap_server']['version'];
+    }
+
+    /** Get the current QGIS server version.
+     *
+     * @return string String containing the current QGIS server version
+     */
+    public function getQgisServerVersion()
+    {
+        return $this->metadata['qgis_server_info']['metadata']['version'];
+    }
+
+    /** Check if a QGIS server plugin needs to be updated.
+     *
+     * @param string $currentVersion  The current version to check
+     * @param string $requiredVersion The minimum required version
+     *
+     * @return bool boolean If the plugin needs to be updated
+     */
+    public function pluginServerNeedsUpdate($currentVersion, $requiredVersion)
+    {
+        if ($currentVersion == 'master' || $currentVersion == 'dev') {
+            return false;
+        }
+
+        return $this->versionCompare($currentVersion, $requiredVersion);
+    }
+
+    /** Compare two versions and return true if the second parameter is greater or equal to the first parameter.
+     *
+     * @param string $currentVersion  The current version to check
+     * @param string $requiredVersion The minimum required version
+     *
+     * @return bool boolean If the software needs to be updated
+     */
+    public function versionCompare($currentVersion, $requiredVersion)
+    {
+        return version_compare($currentVersion, $requiredVersion) < 0;
+    }
+
     /**
      * Get Lizmap Web Client metadata.
      *
