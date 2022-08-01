@@ -5,8 +5,10 @@
 
 ## 3.6.0-beta.2 - 2022-07-29
 
+### Fixed
+
 * Fix configuration form of email: sender email was always required.
-  Add also more explainations to fill correctly email parameters.
+  Add also more explanations to fill correctly email parameters.
 * Fix display of the new rights interface
 * Fix display of admin forms for themes & landing page
 * Fix some compatibility issue with some php packages of dependencies with PHP 7.4
