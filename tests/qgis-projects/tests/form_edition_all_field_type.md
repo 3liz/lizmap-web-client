@@ -4,7 +4,7 @@
 
 ## Requirements
 
-Check that there is a folder `media` aside the `tests` folder, containing a subfolder `specific_media_folder`:
+Check that there is a folder `media` aside the `tests` folder, containing a sub-folder `specific_media_folder`:
 
 ```
 |-- tests
