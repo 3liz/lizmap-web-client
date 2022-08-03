@@ -207,28 +207,6 @@ class WFSRequest extends OGCRequest
             return $result;
         }
 
-        // Replace qgis server url in the XML (hide real location)
-        $sUrl = $this->appContext->getFullUrl(
-            'lizmap~service:index',
-            array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
-        );
-        $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
-        preg_match('/get[\W\s]*onlineresource.+xlink\:href="([^"]+)"/i', $data, $matches);
-        if (count($matches) < 2) {
-            preg_match('/get onlineresource="([^"]+)"/i', $data, $matches);
-        }
-        if (count($matches) < 2) {
-            preg_match('/ows:get.+xlink\:href="([^"]+)"/i', $data, $matches);
-        }
-        if (count($matches) > 1) {
-            $oldUrl = $matches[1];
-            if (substr($oldUrl, -5) === '&amp;') {
-                $oldUrl = rtrim($oldUrl, '&amp;');
-            }
-            $data = str_replace($oldUrl, $sUrl, $data);
-        }
-        $data = str_replace('&amp;&amp;', '&amp;', $data);
-
         return new OGCResponse($result->code, $result->mime, $data, $result->cached);
     }
 
