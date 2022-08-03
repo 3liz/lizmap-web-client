@@ -8,6 +8,7 @@
   * Lizmap QGIS server plugin is running with a minimum required version
   * QGIS server version is running with at least 3.10
   * These two versions are hardcoded in the source code and updated when a new version of Lizmap is released
+* Display the version of Py-QGIS-Server in the administration panel if it's used
 
 ## 3.6.0-beta.2 - 2022-07-29
 
