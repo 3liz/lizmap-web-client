@@ -136,32 +136,22 @@ class WMSRequest extends OGCRequest
         $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
 
         // Replace qgis server url in the XML (hide real location)
-        $sUrl = \jUrl::getFull(
-            'lizmap~service:index',
-            array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
-        );
-        $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
-        preg_match('/get[\W\s]*onlineresource.+xlink\:href="([^"]+)"/i', $data, $matches);
-        if (count($matches) < 1) {
-            preg_match('/get onlineresource="([^"]+)"/i', $data, $matches);
-        }
-        if (count($matches) > 1) {
-            $oldUrl = $matches[1];
-            if (substr($oldUrl, -5) === '&amp;') {
-                $oldUrl = rtrim($oldUrl, '&amp;');
-            }
-            $data = str_replace($oldUrl, $sUrl, $data);
-        }
-        $data = str_replace('&amp;&amp;', '&amp;', $data);
 
         if (preg_match('@WMS_Capabilities@i', $data)) {
-            // Update namespace
+            // Update namespace and add VERSION to GetSchemaExtension request
             $schemaLocation = 'http://www.opengis.net/wms';
             $schemaLocation .= ' http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd';
             $schemaLocation .= ' http://www.opengis.net/sld';
             $schemaLocation .= ' http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd';
             $schemaLocation .= ' http://www.qgis.org/wms';
+
+            $sUrl = \jUrl::getFull(
+                'lizmap~service:index',
+                array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
+            );
+            $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
             $schemaLocation .= ' '.$sUrl.'SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetSchemaExtension';
+
             $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
             if (!preg_match('@xmlns:qgs@i', $data)) {
                 $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms"', $data);

@@ -197,17 +197,24 @@ abstract class OGCRequest
     protected function request($post = false, $stream = false)
     {
         $querystring = $this->constructUrl();
+        $headers = array(
+            'X-Qgis-Service-Url' => $this->project->getOgcServiceUrl(),
+        );
 
         $options = array();
         if ($this->requestXml !== null) {
             $options = array(
                 'method' => 'post',
-                'headers' => array('Content-Type' => 'text/xml'),
                 'body' => $this->requestXml,
+            );
+            $headers = array_merge(
+                array('Content-Type' => 'text/xml'),
+                $headers,
             );
         } elseif ($post) {
             $options = array('method' => 'post');
         }
+        $options['headers'] = $headers;
 
         // Add login filtered override info
         $options['loginFilteredOverride'] = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
