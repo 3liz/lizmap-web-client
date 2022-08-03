@@ -60,12 +60,14 @@
             <th>{@admin.server.information.qgis.name@}</th>
             <td>{$data['qgis_server_info']['metadata']['name']}</td>
         </tr>
-        {if $data['qgis_server_info']['metadata']['commit_id']}
         <tr>
             <th>{@admin.server.information.qgis.commit_id@}</th>
             <td><a href="https://github.com/qgis/QGIS/commit/{$data['qgis_server_info']['metadata']['commit_id']}" target="_blank">{$data['qgis_server_info']['metadata']['commit_id']}</a></td>
         </tr>
-        {/if}
+        <tr>
+            <th>Py-QGIS-Server</th>
+            <td>{$data['qgis_server_info']['metadata']['py_qgis_server_version']}</td>
+        </tr>
         {if $qgisServerNeedsUpdate }
         <tr>
             <th>{@admin.server.information.qgis.action@}</th>
