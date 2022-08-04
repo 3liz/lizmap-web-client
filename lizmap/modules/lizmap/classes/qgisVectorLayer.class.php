@@ -227,12 +227,10 @@ class qgisVectorLayer extends qgisMapLayer
 
         $dtParams = $this->getDatasourceParameters();
         if ($this->provider == 'spatialite') {
-            $spatialiteExt = $this->project->getSpatialiteExtension();
             $repository = $this->project->getRepository();
             $jdbParams = array(
                 'driver' => 'sqlite3',
                 'database' => realpath($repository->getPath().$dtParams->dbname),
-                'extensions' => $spatialiteExt,
             );
         } elseif ($this->provider == 'postgres') {
             // no persistent connexions, it may reach max connections to pgsql if
@@ -276,12 +274,10 @@ class qgisVectorLayer extends qgisMapLayer
             }
         } elseif ($this->provider == 'ogr'
             and preg_match('#(gpkg|sqlite)$#', $dtParams->dbname)) {
-            $spatialiteExt = $this->project->getSpatialiteExtension();
             $repository = $this->project->getRepository();
             $jdbParams = array(
                 'driver' => 'sqlite3',
                 'database' => realpath($repository->getPath().$dtParams->dbname),
-                'extensions' => $spatialiteExt,
             );
         } else {
             return null;
