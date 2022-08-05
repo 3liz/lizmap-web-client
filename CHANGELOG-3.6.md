@@ -18,6 +18,7 @@
 
 ### Added
 
+* **Maps**: Use values instead of keys in attribute table and form filters like in QGIS
 * **Maps**: take care of `filter` and `popup` parameters from the url when viewing a map
   in order to zoom directly to the defined features and to display popups
 * **Maps**: When an error appeared during the load of a project, the user interface
