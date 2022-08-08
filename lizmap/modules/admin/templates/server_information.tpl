@@ -1,5 +1,21 @@
 {ifacl2 'lizmap.admin.access'}
   <!--Services-->
+  <script type="text/javascript">
+  {literal}
+      function copyTextToClipboard(text) {
+          if (!navigator.clipboard) {
+            console.log('Copy to clipboard API is not available in this web browser');
+            return;
+          }
+
+          navigator.clipboard.writeText(text).then(function() {
+            console.log('Async: Copying to clipboard was successful!');
+          }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+          });
+    };
+  {/literal}
+  </script>
   <div id="lizmap_server_information">
     <h2>{@admin.menu.server.information.label@}</h2>
 
@@ -13,6 +29,15 @@
         <tr>
             <th>{@admin.server.information.lizmap.info.date@}</th>
             <td>{$data['info']['date']}</td>
+        </tr>
+        <tr>
+            <th>{@admin.server.information.lizmap.url@}</th>
+            <td>
+                {$baseUrlApplication}
+                <button onclick="copyTextToClipboard('{$baseUrlApplication}')">
+                    <img src="">Copy
+                </button>
+            </td>
         </tr>
     </table>
     {hook 'LizmapServerVersion', $data['info']}
