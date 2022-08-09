@@ -59,6 +59,12 @@ class main_viewZone extends jZone
 
             $metadata = $lrep->getProjectsMetadata();
             foreach ($metadata as $meta) {
+
+                // Avoid project which needs an update
+                if ($meta->needsUpdateError()) {
+                    continue;
+                }
+
                 // Avoid project with no access rights
                 if (!$meta->getAcl()) {
                     continue;

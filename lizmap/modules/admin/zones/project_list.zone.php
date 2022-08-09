@@ -27,7 +27,7 @@ class project_listZone extends jZone
             $repositories = lizmap::getRepositoryList();
         }
 
-        // Get Lizmap services to find the path where are stored the optionnal inspection data files
+        // Get Lizmap services to find the path where are stored the optional inspection data files
         $services = lizmap::getServices();
         $inspectionDirectoryPath = $services->getQgisProjectsPrivateDataFolder();
 
@@ -109,6 +109,7 @@ class project_listZone extends jZone
                 'view~media:illustration',
                 array('repository' => $projectMetadata->getRepository(), 'project' => $projectMetadata->getId())
             ),
+            'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             'lizmap_plugin_version' => $projectMetadata->getLizmapPluginVersion(),
             'file_time' => $projectMetadata->getFileTime(),
             'layer_count' => $projectMetadata->getLayerCount(),
@@ -126,6 +127,13 @@ class project_listZone extends jZone
         $projectItem['qgis_version'] = $qgisVersion;
         // Integer version: keep only major and minor versions. Ex: 322 for 3.22.04
         $projectItem['qgis_version_int'] = (int) substr($qgisVersionInt, 0, 3);
+
+        // Target Lizmap Web Client version
+        $targetVersion = substr($projectItem['lizmap_web_client_target_version'], 0, 1);
+        $targetVersion .= '.'.ltrim(substr($projectItem['lizmap_web_client_target_version'], 2, 1), '');
+        $projectItem['lizmap_web_client_target_version_display'] = $targetVersion;
+        $projectItem['needs_update_error'] = $projectMetadata->needsUpdateError();
+        $projectItem['needs_update_warning'] = $projectMetadata->needsUpdateWarning();
 
         // Add the information based on the qgis-project-validator inspection output
         $services = lizmap::getServices();

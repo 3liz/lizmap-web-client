@@ -192,6 +192,7 @@ window.lizMap = function() {
   function getLizmapDesktopPluginMetadata()
   {
     // Default fake versions if the properties does not yet exist in configuration file
+    // lizmap/modules/lizmap/lib/Project/Project.php
     var plugin_metadata = {
       lizmap_plugin_version_str: "3.1.8",
       lizmap_plugin_version: 30108,
