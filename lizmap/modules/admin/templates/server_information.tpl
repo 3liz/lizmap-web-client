@@ -60,10 +60,18 @@
             <th>{@admin.server.information.qgis.name@}</th>
             <td>{$data['qgis_server_info']['metadata']['name']}</td>
         </tr>
-        {if $data['qgis_server_info']['metadata']['commit_id']}
         <tr>
             <th>{@admin.server.information.qgis.commit_id@}</th>
             <td><a href="https://github.com/qgis/QGIS/commit/{$data['qgis_server_info']['metadata']['commit_id']}" target="_blank">{$data['qgis_server_info']['metadata']['commit_id']}</a></td>
+        </tr>
+        <tr>
+            <th>Py-QGIS-Server</th>
+            <td>{$data['qgis_server_info']['metadata']['py_qgis_server_version']}</td>
+        </tr>
+        {if $qgisServerNeedsUpdate }
+        <tr>
+            <th>{@admin.server.information.qgis.action@}</th>
+            <td style="background-color:lightcoral;"><strong>{$updateQgisServer}</strong></td>
         </tr>
         {/if}
     </table>
@@ -71,10 +79,24 @@
 
     <h4>{@admin.server.information.qgis.plugins@}</h4>
     <table class="table table-condensed table-striped table-bordered table-server-info">
+        <tr>
+            <th style="width:20%;">{@admin.server.information.qgis.plugin@}</th>
+            <th style="width:20%;">{@admin.server.information.qgis.plugin.version@}</th>
+            {if $displayPluginActionColumn }
+                <th>{@admin.server.information.qgis.plugin.action@}</th>
+            {/if}
+        <tr/>
         {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
         <tr>
-            <th>{$name}</th>
-            <td>{$version['version']}</td>
+            <th style="width:20%;">{$name}</th>
+            <td style="width:20%;">{$version['version']}</td>
+            {if $displayPluginActionColumn }
+                {if $name == 'lizmap_server' && $lizmapQgisServerNeedsUpdate}
+                    <td style="background-color:lightcoral;"><strong>{$lizmapPluginUpdate}</strong></td>
+                {else}
+                <td></td>
+                {/if}
+            {/if}
         </tr>
         {/foreach}
     </table>
