@@ -418,6 +418,26 @@ class lizmapProject
     }
 
     /**
+     * Check if the project needs an update in the QGIS desktop plugin.
+     *
+     * @return bool true if the project needs an update
+     */
+    public function needsUpdateError()
+    {
+        return $this->proj->needsUpdateError();
+    }
+
+    /**
+     * Check if the project needs an update in the QGIS desktop plugin.
+     *
+     * @return bool true if the project needs an update
+     */
+    public function needsUpdateWarning()
+    {
+        return $this->proj->needsUpdateWarning();
+    }
+
+    /**
      * Check acl rights on the project.
      *
      * @return bool true if the current user as rights on the project

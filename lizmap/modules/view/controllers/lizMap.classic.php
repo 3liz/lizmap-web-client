@@ -126,6 +126,13 @@ class lizMapCtrl extends jController
             return $rep;
         }
 
+        // Redirect if the project needs an upgrade
+        if ($lproj->needsUpdateError()) {
+            jMessage::add(jLocale::get('view~default.project.needs.update'), 'error');
+
+            return $rep;
+        }
+
         // Redirect if no right to access the project
         if (!$lproj->checkAcl()) {
             jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
