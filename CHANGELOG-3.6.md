@@ -25,6 +25,7 @@
 
 ### Added
 
+* **Base map**: New https://opentopomap.org as basemap, it's available in the QGIS desktop plugin
 * **Popup**: New option in the desktop plugin to allow the download or not of the feature
 * **Maps**: Use values instead of keys in attribute table and form filters like in QGIS
 * **Maps**: take care of `filter` and `popup` parameters from the url when viewing a map
@@ -85,6 +86,7 @@
 * Improve the table in the right's management panel when having a dozen of groups
 * Add tolerance for clicking on mobile to get the popup
 * Do not build the attribute table when refreshing attribute table
+* The option "Use layer IDs" in the project properties is not possible anymore
 
 ### Backend
 
