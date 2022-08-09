@@ -347,8 +347,7 @@ $("document").ready( function () {
                 {
                     data: "name",
                     render: function (data, type, row) {
-                        if (type === 'display') {
-
+                        if (type === 'display' && row.id !== '__anonymous') {
                             return cellListEditor.getCellHtml(tplNameEdit, data, row);
                         }
 
