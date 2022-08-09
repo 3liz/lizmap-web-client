@@ -42,6 +42,9 @@ class ProjectMetadata
             'acl' => $project->checkAcl(),
             'qgisProjectVersion' => $project->getQgisProjectVersion(),
             'lizmapPluginVersion' => $project->getLizmapPluginVersion(),
+            'lizmapWebClientTargetVersion' => $project->getLizmapWebCLientTargetVersion(),
+            'needsUpdateError' => $project->needsUpdateError(),
+            'needsUpdateWarning' => $project->needsUpdateWarning(),
             'layerCount' => $project->getLayerCount(),
             'fileTime' => $project->getFileTime(),
             'aclGroups' => '',
@@ -195,6 +198,36 @@ class ProjectMetadata
     public function getLizmapPluginVersion()
     {
         return $this->data['lizmapPluginVersion'];
+    }
+
+    /**
+     * The target version written in the CFG file.
+     *
+     * @return int
+     */
+    public function getLizmapWebCLientTargetVersion()
+    {
+        return $this->data['lizmapWebClientTargetVersion'];
+    }
+
+    /**
+     * Check if the project needs an update which is critical.
+     *
+     * @return bool true if the project needs an update
+     */
+    public function needsUpdateError()
+    {
+        return $this->data['needsUpdateError'];
+    }
+
+    /**
+     * Check if the project needs an update which is not critical.
+     *
+     * @return bool true if the project needs an update
+     */
+    public function needsUpdateWarning()
+    {
+        return $this->data['needsUpdateWarning'];
     }
 
     /**

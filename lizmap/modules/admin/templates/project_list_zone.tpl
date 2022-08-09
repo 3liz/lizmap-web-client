@@ -24,6 +24,7 @@
         {/if}
             <th>{@admin.project.list.column.qgis.desktop.version.label@}</th>
             <th>{@admin.project.list.column.lizmap.plugin.version.label@}</th>
+            <th>{@admin.project.list.column.target.lizmap.version.label@}</th>
             <th>{@admin.project.list.column.authorized.groups.label@}</th>
             <th>{@admin.project.list.column.hidden.project.label@}</th>
             <th>{@admin.project.list.column.project.file.time.label@}</th>
@@ -158,6 +159,21 @@
             <!-- Version of Lizmap plugin for QGIS Desktop -->
             <td title="">
                 {$p['lizmap_plugin_version']}
+            </td>
+
+            <!-- Target version of Lizmap Web Client -->
+            {assign $style = ''}
+            {assign $title = ''}
+            {if $p['needs_update_error']}
+                {assign $style = 'background-color: '.$colors['error'].';'}
+                {assign $title = @admin.project.list.column.update.in.qgis.desktop@}
+            {/if}
+            {if $p['needs_update_warning']}
+                {assign $style = 'background-color: '.$colors['warning'].';'}
+                {assign $title = @admin.project.list.column.update.soon.in.qgis.desktop@}
+            {/if}
+            <td title="{$title}" style="{$style}">
+                {$p['lizmap_web_client_target_version_display']}
             </td>
 
             <!-- Authorized groups -->
