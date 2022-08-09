@@ -34,11 +34,37 @@ class server_informationCtrl extends jController
         $lizmapPluginMinimumVersionRequired = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
         $linkDocumentation = 'https://docs.lizmap.com/current/en/install/pre_requirements.html#lizmap-server-plugin';
 
+        $qgisServerNeedsUpdate = $server->versionCompare(
+            $server->getQgisServerVersion(),
+            $qgisMinimumVersionRequired
+        );
+        $updateQgisServer = jLocale::get('admin.server.information.qgis.update', array($qgisMinimumVersionRequired));
+        if ($qgisServerNeedsUpdate) {
+            jLog::log($updateQgisServer, 'error');
+        }
+
+        $displayPluginActionColumn = false;
+        $lizmapQgisServerNeedsUpdate = $server->pluginServerNeedsUpdate(
+            $server->getLizmapPluginServerVersion(),
+            $lizmapPluginMinimumVersionRequired
+        );
+        $updateLizmapPlugin = jLocale::get('admin.server.information.plugin.update', array('lizmap_server'));
+        if ($lizmapQgisServerNeedsUpdate) {
+            // lizmap_server is required to use LWC
+            jLog::log($updateLizmapPlugin, 'error');
+            $displayPluginActionColumn = true;
+        }
+
         // Set the HTML content
         $tpl = new jTpl();
         $assign = array(
             'data' => $data,
             'linkDocumentation' => $linkDocumentation,
+            'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
+            'updateQgisServer' => $updateQgisServer,
+            'displayPluginActionColumn' => $displayPluginActionColumn,
+            'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,
+            'lizmapPluginUpdate' => $updateLizmapPlugin,
             'errorQgisPlugin' => jLocale::get(
                 'admin.server.information.qgis.error.fetching.information.detail',
                 array(
