@@ -25,6 +25,7 @@
 
 ### Added
 
+* **Popup**: New option in the desktop plugin to allow the download or not of the feature
 * **Maps**: Use values instead of keys in attribute table and form filters like in QGIS
 * **Maps**: take care of `filter` and `popup` parameters from the url when viewing a map
   in order to zoom directly to the defined features and to display popups
@@ -60,7 +61,7 @@
     * **QGIS Log file** written when loading the project
   * Funded by **Valabre** (Centre de gravité de la formation des métiers de la Sécurité Civile,
     de la Recherche, des Nouvelles Technologies et de la Prévention dans le domaine des risques naturels)
-* **Administration** new interface to manager rights, easier to use, especially when there are many groups
+* **Administration** new interface to manage rights, easier to use, especially when there are many groups
 * **Layer legend**: Enable auto display the legend image for a layer at startup
 * **Edition**: New button to restart drawing geometry - Provide the capability to update geometry with GPS and form coordinates
 * New `-dry-run` for the cache generation to see how many tiles might be generated
