@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## Added
+### Added
 
 * Before opening a QGIS project, Lizmap is now checking that :
   * Lizmap QGIS server plugin is running with a minimum required version
