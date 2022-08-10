@@ -25,17 +25,22 @@
 
 ### Added
 
-* **Base map**: New https://opentopomap.org as basemap, it's available in the QGIS desktop plugin
+* **Base maps**: New https://opentopomap.org as basemap, it's available in the QGIS desktop plugin
 * **Popup**: New option in the desktop plugin to allow the download or not of the feature
-* **Maps**: Use values instead of keys in attribute table and form filters like in QGIS
-* **Maps**: take care of `filter` and `popup` parameters from the url when viewing a map
+* **Maps**: Use values instead of keys in the layer attribute table and Lizmap form filter tool.
+  It works for fields configured with the widgets "Value map", "Value relation", "Relation reference"
+  (if the layer which is the source of the field widget content is published in WFS).
+* **Maps**: take care of `filter` and `popup` parameters from the URL when viewing a map
   in order to zoom directly to the defined features and to display popups
 * **Maps**: When an error appeared during the load of a project, the user interface
   has been improved to show a better message, instead of the unreadable "SERVICE NON DISPONIBLE" error message.
+* **Form filter**: If the filtered layer is related to other layers with a "one to many" relations, the child
+  features of the related layers will also be filtered when the parent layer is filtered with the form
+  (cascading filter). The parent filtered layer and the related layers should be added
+  in the attribute table tool to activate this behavior.
 * **Administration**: add a new page in the admin panel showing the **list of published projects**
   in a dynamic table.
-
-  * **visible properties**: `repository`, project `name`, `modification date`, `projection`,
+  * **Visible properties**: `repository`, project `name`, `modification date`, `projection`,
     `layer count`, `qgis desktop version`, `lizmap plugin version`, `authorized groups`
   * The background of some properties are **colored based on the values**
     to help the admin see what must be corrected:
