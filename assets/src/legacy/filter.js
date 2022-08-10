@@ -216,13 +216,22 @@ var lizLayerFilterTool = function () {
 
             // Get the HTML form element for the date field type
             function dateFormInput(field_item) {
-                // max_date = min_date when undefined
-                const max_date = ('max_date' in field_item) ? field_item.max_date : field_item.min_date;
+                // For LWC >=3.7, the min_date and max_date
+                // are replaced by start_field & end_field
+                var start_field_property = 'min_date';
+                var end_field_property = 'max_date';
+                let lizmap_plugin_metadata = lizMap.getLizmapDesktopPluginMetadata();
+                if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30700) {
+                    start_field_property = 'start_field';
+                    end_field_property = 'end_field';
+                }
+                // end_field = start_field when undefined
+                const end_field = (end_field_property in field_item) ? field_item[end_field_property] : field_item[start_field_property];
 
                 var sdata = {
                     request: 'getMinAndMaxValues',
                     layerId: field_item.layerId,
-                    fieldname: field_item.min_date + ',' + max_date,
+                    fieldname: field_item[start_field_property] + ',' + end_field,
                     filter: ''
                 };
                 $.get(filterConfigData.url, sdata, function (result) {
@@ -278,10 +287,22 @@ var lizLayerFilterTool = function () {
 
             // Get the HTML form element for the numeric field type
             function numericFormInput(field_item) {
+                // Since LWC >=3.7, we can configure a field with the end value
+                var fieldNames = '';
+                let lizmap_plugin_metadata = lizMap.getLizmapDesktopPluginMetadata();
+                if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30700) {
+                    fieldNames += field_item.start_field;
+                    if ('end_field' in field_item && field_item.end_field != '') {
+                        fieldNames += ',' + field_item.end_field;
+                    }
+                } else {
+                    fieldNames += field_item.field;
+                }
+
                 var sdata = {
                     request: 'getMinAndMaxValues',
                     layerId: field_item.layerId,
-                    fieldname: field_item['field'],
+                    fieldname: fieldNames,
                     filter: ''
                 };
                 $.get(filterConfigData.url, sdata, function (result) {
@@ -602,8 +623,17 @@ var lizLayerFilterTool = function () {
                 }
 
                 // fields
-                var startField = field_item.min_date;
-                var endField = ('max_date' in field_item) ? field_item.max_date : field_item.min_date;
+                // Since LWC >=3.7, min_date & max_date
+                // are replaced by start_field & end_field
+                var start_field_property = 'min_date';
+                var end_field_property = 'max_date';
+                let lizmap_plugin_metadata = lizMap.getLizmapDesktopPluginMetadata();
+                if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30700) {
+                    start_field_property = 'start_field';
+                    end_field_property = 'end_field';
+                }
+                const startField = field_item[start_field_property]
+                const endField = (end_field_property in field_item) ? field_item[end_field_property] : field_item[start_field_property];
 
                 // min date filter
                 if (min_val && Date.parse(min_val)) {
@@ -649,19 +679,41 @@ var lizLayerFilterTool = function () {
                     return true;
                 }
 
-                // field
-                var field = field_item['field'];
+                // fields
+                var startField = '';
+                var endField = null;
+
+                // Since LWC >=3.7, we can configure a field with the end value
+                let lizmap_plugin_metadata = lizMap.getLizmapDesktopPluginMetadata();
+                if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30700) {
+                    startField = field_item.start_field;
+                    endField = ('end_field' in field_item && field_item.end_field != '') ? field_item.end_field : startField;
+                } else {
+                    startField = field_item.field;
+                }
 
                 // min value filter
                 if (min_val != '') {
-                    filters.push('( "' + field + '"' + " >= '" + min_val + "' )");
+                    var min_val_filter = '( ';
+                    min_val_filter += '"' + startField + '"' + " >= '" + min_val + "'";
+                    if (endField) {
+                        min_val_filter += " OR " + ' "' + endField + '"' + " >= '" + min_val + "'";
+                    }
+                    min_val_filter += ' )';
+                    filters.push(min_val_filter);
                 } else {
                     min_val = null;
                 }
 
                 // max value filter
                 if (max_val != '') {
-                    filters.push('( "' + field + '"' + " <= '" + max_val + "' )");
+                    var max_val_filter = '( ';
+                    max_val_filter += '"' + startField + '"' + " <= '" + max_val + "'";
+                    if (endField) {
+                        max_val_filter += " OR " + ' "' + endField + '"' + " <= '" + max_val + "'";
+                    }
+                    max_val_filter += ' )';
+                    filters.push(max_val_filter);
                 } else {
                     max_val = null;
                 }
