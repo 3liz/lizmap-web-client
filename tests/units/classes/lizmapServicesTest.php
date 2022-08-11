@@ -312,7 +312,6 @@ class lizmapServicesTest extends TestCase
 
         $defaultPropList = array(
             'appName',
-            'qgisServerVersion',
             'wmsMaxWidth',
             'wmsMaxHeight',
             'relativeWMSPath',

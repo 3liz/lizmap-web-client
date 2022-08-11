@@ -738,9 +738,7 @@ class QgisProject
                         // In QGIS 3.*
                         // Layout maps now use a string UUID as "id", let's assume that the first map
                         // has id 0 and so on ...
-                        if (version_compare($services->qgisServerVersion, '3.0', '>=')) {
-                            $ptMap['id'] = 'map'.(string) count($printTemplate['maps']);
-                        }
+                        $ptMap['id'] = 'map'.(string) count($printTemplate['maps']);
                         $printTemplate['maps'][] = $ptMap;
                     }
                 }
@@ -790,8 +788,7 @@ class QgisProject
         }
         // get layout qgs project version >= 3
         $layouts = $this->xml->xpath('//Layout');
-        if ($layouts && is_array($layouts)
-            && version_compare($services->qgisServerVersion, '3.0', '>=')) {
+        if ($layouts && is_array($layouts)) {
             foreach ($layouts as $layout) {
                 // test restriction
                 if (in_array((string) $layout['name'], $rComposers)) {

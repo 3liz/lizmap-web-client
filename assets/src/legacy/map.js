@@ -885,10 +885,8 @@ window.lizMap = function() {
       });
       if ( wmsStyles.length != 0 ) {
           layerConfig.styles = wmsStyles;
-      } else if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
-          layerConfig.styles = [''];
       } else {
-          layerConfig.styles = ['default'];
+          layerConfig.styles = [''];
       }
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
@@ -1625,9 +1623,7 @@ window.lizMap = function() {
       if( locate.crs != 'EPSG:4326' && features.length != 0) {
           // load projection to be sure to have the definition
           loadProjDefinition( locate.crs, function() {
-              // in QGIS server > 2.14 GeoJSON is in EPSG:4326
-              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
-                locate.crs = 'EPSG:4326';
+            locate.crs = 'EPSG:4326';
           });
       }
 
@@ -3962,11 +3958,8 @@ window.lizMap = function() {
               // Add layer to the list of printed layers
               printLayers.push(l.params['LAYERS']);
 
-              // Optionnaly add layer style if needed (same order as layers )
-              var lst = 'default';
-              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
-                  lst = '';
-              }
+              // Optionally add layer style if needed (same order as layers )
+              var lst = '';
               if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
                 lst = l.params['STYLES'];
               styleLayers.push( lst );
@@ -3996,11 +3989,7 @@ window.lizMap = function() {
             else{
                 printLayers.push(exbl);
             }
-            if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
-                styleLayers.push('');
-            } else {
-                styleLayers.push('default');
-            }
+            styleLayers.push('');
             opacityLayers.push(255);
         }
       }
@@ -4016,23 +4005,16 @@ window.lizMap = function() {
                           printLayers.push(layerConfig.shortname);
                       else
                           printLayers.push(layerConfig.name);
-                      if ( 'qgisServerVersion' in config.options &&
-                           config.options.qgisServerVersion.startsWith('3.') ) {
-                        styleLayers.push('');
-                      } else {
-                        styleLayers.push('default');
-                      }
+                      styleLayers.push('');
                       opacityLayers.push(255);
                   }
               }
           });
       }
 
-      if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
-        printLayers.reverse();
-        styleLayers.reverse();
-        opacityLayers.reverse();
-      }
+      printLayers.reverse();
+      styleLayers.reverse();
+      opacityLayers.reverse();
 
       printParams[dragCtrl.layout.mapId + ':LAYERS'] = printLayers.join(',');
       printParams[dragCtrl.layout.mapId + ':STYLES'] = styleLayers.join(',');
@@ -4050,19 +4032,9 @@ window.lizMap = function() {
         printParams[dragCtrl.layout.overviewId + ':extent'] = oExtent;
         printParams[dragCtrl.layout.overviewId + ':LAYERS'] = 'Overview';
 
-        if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
-            printLayers.push('Overview');
-            if ( config.options.qgisServerVersion.startsWith('3.') ) {
-                styleLayers.push('');
-            } else {
-                styleLayers.push('default');
-            }
-            opacityLayers.push(255);
-        } else {
-            printLayers.unshift('Overview');
-            styleLayers.unshift('default');
-            opacityLayers.unshift(255);
-        }
+        printLayers.push('Overview');
+        styleLayers.push('');
+        opacityLayers.push(255);
       }
       printParams['LAYERS'] = printLayers.join(',');
       printParams['STYLES'] = styleLayers.join(',');
@@ -6083,7 +6055,7 @@ window.lizMap = function() {
         }
 
         getFeatureInfo = responses[6];
-        
+
         const domparser = new DOMParser();
 
         config.options.hasOverview = false;
@@ -6106,7 +6078,7 @@ window.lizMap = function() {
         // Parse WMS capabilities
         const wmsFormat =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
         capabilities = wmsFormat.read(wmsCapaData);
-    
+
         if (!capabilities.capability) {
           throw 'WMS Capabilities error';
         }
@@ -6499,7 +6471,7 @@ window.lizMap = function() {
 
         // Display getFeatureInfo if requested
         if(getFeatureInfo){
-          displayGetFeatureInfo(getFeatureInfo, 
+          displayGetFeatureInfo(getFeatureInfo,
             {
               x: map.size.w / 2,
               y: map.size.h / 2
