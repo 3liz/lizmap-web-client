@@ -26,7 +26,6 @@ class lizmapServices
      */
     private $properties = array(
         'appName',
-        'qgisServerVersion',
         'wmsServerURL',
         'wmsPublicUrlList',
         'wmsMaxWidth',
@@ -68,7 +67,6 @@ class lizmapServices
      * when hideSensitiveServicesProperties is set to 1.
      */
     private $sensitiveProperties = array(
-        'qgisServerVersion',
         'wmsServerURL',
         'wmsPublicUrlList',
         'wmsMaxWidth',
@@ -128,8 +126,6 @@ class lizmapServices
 
     // Wms map server
     public $appName = 'Lizmap';
-    // QGIS Server version
-    public $qgisServerVersion = '3.0';
     // Wms map server
     public $wmsServerURL = '';
     // headers to send to Wms map server

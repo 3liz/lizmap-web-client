@@ -1636,9 +1636,6 @@ class Project
         $wmsMaxHeight = $this->qgis->getWMSMaxHeight();
         $configJson->options->wmsMaxHeight = $wmsMaxHeight ?: $services->wmsMaxHeight;
 
-        // Add QGS Server version
-        $configJson->options->qgisServerVersion = $services->qgisServerVersion;
-
         // Update config with layer relations
         $relations = $this->qgis->getRelations();
         if ($relations) {

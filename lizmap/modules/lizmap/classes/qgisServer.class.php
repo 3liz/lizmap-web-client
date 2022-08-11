@@ -11,9 +11,6 @@
  */
 class qgisServer
 {
-    // QGIS Server version
-    public $qgisServerVersion;
-
     // lizmapServices instance
     protected $services;
 
@@ -24,8 +21,6 @@ class qgisServer
     public function __construct()
     {
         $this->services = lizmap::getServices();
-
-        $this->qgisServerVersion = $this->services->qgisServerVersion;
     }
 
     public function getPlugins($project)

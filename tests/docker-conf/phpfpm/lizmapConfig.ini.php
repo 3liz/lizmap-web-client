@@ -44,7 +44,6 @@ rootRepositories="/srv/lzm/tests/qgis-projects"
 relativeWMSPath=on
 
 appName=Lizmap
-qgisServerVersion=3.0
 wmsMaxWidth=3000
 wmsMaxHeight=3000
 projectSwitcher=off
