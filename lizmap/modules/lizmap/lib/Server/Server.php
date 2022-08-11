@@ -153,12 +153,6 @@ class Server
         // Get Lizmap services
         $services = \lizmap::getServices();
 
-        // Only show QGIS related data for admins
-        $isAdmin = \jAcl2::check('lizmap.admin.access');
-        if (!$isAdmin) {
-            return array('error' => 'NO_ACCESS');
-        }
-
         // Get the data from the QGIS Server Lizmap plugin
         if (empty($services->lizmapPluginAPIURL)) {
             // When the Lizmap API URL is not set, we use the WMS server URL only
