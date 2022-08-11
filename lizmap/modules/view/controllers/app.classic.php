@@ -29,6 +29,12 @@ class appCtrl extends jController
         // Get server metadata from LWC and QGIS Server Lizmap plugin
         $server = new \Lizmap\Server\Server();
         $data = $server->getMetadata();
+
+        // Only show QGIS related data for admins
+        $isAdmin = \jAcl2::check('lizmap.admin.access');
+        if (!$isAdmin) {
+            $data['qgis_server_info'] = array('error' => 'NO_ACCESS');
+        }
         $rep->data = $data;
 
         return $rep;
