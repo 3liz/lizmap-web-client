@@ -149,7 +149,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             $schemaLocation .= ' http://www.opengis.net/sld';
             $schemaLocation .= ' http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd';
             $schemaLocation .= ' http://www.qgis.org/wms';
-            $schemaLocation .= ' '.$sUrl.'SERVICE=WMS&amp;REQUEST=GetSchemaExtension';
+            $schemaLocation .= ' '.$sUrl.'SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetSchemaExtension';
             $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
             if (!preg_match('@xmlns:qgs@i', $data)) {
                 $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms"', $data);
