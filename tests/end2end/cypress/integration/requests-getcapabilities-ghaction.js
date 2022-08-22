@@ -24,6 +24,14 @@ describe('Request GetCapabilities', function () {
                 expect(xmlBody.documentElement.tagName).to.eq('WMS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.3.0')
 
+                let serviceName = null
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
+                        serviceName = nameElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceName).to.eq('WMS')
+
                 // OnlineResource for Service
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
                     for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
@@ -84,6 +92,14 @@ describe('Request GetCapabilities', function () {
                 expect(xmlBody.documentElement.tagName).to.eq('WMT_MS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.1.1')
 
+                let serviceName = null
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
+                        serviceName = nameElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceName).to.eq('WMS')
+
                 // OnlineResource for Service
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
                     for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
@@ -143,6 +159,14 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WMS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.3.0')
+
+                let serviceName = null
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
+                        serviceName = nameElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceName).to.eq('WMS')
 
                 // OnlineResource for Service
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
