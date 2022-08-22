@@ -138,7 +138,7 @@ class WMSRequest extends OGCRequest
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
         $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
-        preg_match('/<get>.*\n*.+xlink\:href="([^"]+)"/i', $data, $matches);
+        preg_match('/onlineresource.+xlink\:href="([^"]+)"/i', $data, $matches);
         if (count($matches) < 2) {
             preg_match('/get onlineresource="([^"]+)"/i', $data, $matches);
         }
