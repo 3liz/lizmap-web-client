@@ -154,6 +154,7 @@ describe('Request service', function () {
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
                 expect(resp.body).to.contain('WMS_Capabilities')
                 expect(resp.body).to.contain('version="1.3.0"')
+                expect(resp.body).to.contain('index.php/lizmap/service/?repository=testsrepository')
             })
 
         // Project with config.options.hideProject: "True"
