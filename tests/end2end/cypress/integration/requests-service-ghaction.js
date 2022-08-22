@@ -192,6 +192,7 @@ describe('Request service', function () {
 
                 expect(resp.body).to.contain('WMS_Capabilities')
                 expect(resp.body).to.contain('version="1.3.0"')
+                expect(resp.body).to.contain('index.php/lizmap/service?repository=testsrepository')
 
                 const etag = resp.headers['etag']
                 cy.request({
