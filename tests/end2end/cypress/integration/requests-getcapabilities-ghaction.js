@@ -1,4 +1,5 @@
 const parser = new DOMParser();
+const baseUrl = Cypress.config('baseUrl')
 
 function* getChildrenByTagName(elem, tagName) {
     for (let i = 0; i < elem.children.length; i++) {
@@ -20,6 +21,29 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WMS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.3.0')
+
+                // OnlineResource for Service
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
+                        expect(onlineResourceElem.getAttribute('xlink:href'))
+                            .to.eq(
+                                baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&',
+                                'OnlineResource error for Service'
+                            )
+                    }
+                }
+                // OnlineResource for Request
+                for (const capabilityElem of getChildrenByTagName(xmlBody.documentElement, 'Capability')) {
+                    for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
+                        for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
+                            expect(onlineResourceElem.getAttribute('xlink:href'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
+                                )
+                        }
+                    }
+                }
             })
 
         // Project with config.options.hideProject: "True"
@@ -43,6 +67,29 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WMT_MS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.1.1')
+
+                // OnlineResource for Service
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
+                        expect(onlineResourceElem.getAttribute('xlink:href'))
+                            .to.eq(
+                                baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&',
+                                'OnlineResource error for Service'
+                            )
+                    }
+                }
+                // OnlineResource for Request
+                for (const capabilityElem of getChildrenByTagName(xmlBody.documentElement, 'Capability')) {
+                    for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
+                        for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
+                            expect(onlineResourceElem.getAttribute('xlink:href'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
+                                )
+                        }
+                    }
+                }
             })
 
         // Project with config.options.hideProject: "True"
@@ -66,6 +113,29 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WMS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.3.0')
+
+                // OnlineResource for Service
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
+                        expect(onlineResourceElem.getAttribute('xlink:href'))
+                            .to.eq(
+                                baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&',
+                                'OnlineResource error for Service'
+                            )
+                    }
+                }
+                // OnlineResource for Request
+                for (const capabilityElem of getChildrenByTagName(xmlBody.documentElement, 'Capability')) {
+                    for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
+                        for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
+                            expect(onlineResourceElem.getAttribute('xlink:href'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
+                                )
+                        }
+                    }
+                }
             })
 
         // Project with config.options.hideProject: "True"
