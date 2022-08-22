@@ -21,6 +21,8 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WMS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.3.0')
+                expect(xmlBody.documentElement.getAttribute('xsi:schemaLocation'))
+                    .to.contain(baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension')
 
                 let serviceName = null
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
@@ -129,6 +131,8 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WMS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.3.0')
+                expect(xmlBody.documentElement.getAttribute('xsi:schemaLocation'))
+                    .to.contain(baseUrl+'/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetSchemaExtension')
 
                 let serviceName = null
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
