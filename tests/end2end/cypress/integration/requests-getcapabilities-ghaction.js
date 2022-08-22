@@ -244,6 +244,14 @@ describe('Request GetCapabilities', function () {
                 expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
 
+                let serviceName = null
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
+                        serviceName = nameElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceName).to.eq('WFS')
+
                 // Requests links
                 for (const capabilityElem of getChildrenByTagName(xmlBody.documentElement, 'Capability')) {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
@@ -287,6 +295,19 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.1.0')
+
+                let serviceType = null
+                let serviceTypeVersion = null
+                for (const serviceIdentificationElem of getChildrenByTagName(xmlBody.documentElement, 'ows:ServiceIdentification')) {
+                    for (const serviceTypeElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceType')) {
+                        serviceType = serviceTypeElem.childNodes[0].nodeValue
+                    }
+                    for (const serviceTypeVersionElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceTypeVersion')) {
+                        serviceTypeVersion = serviceTypeVersionElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceType).to.eq('WFS')
+                expect(serviceTypeVersion).to.eq('1.1.0')
 
                 // Operations links
                 for (const operationsMetadataElem of getChildrenByTagName(xmlBody.documentElement, 'ows:OperationsMetadata')) {
@@ -332,6 +353,14 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
+
+                let serviceName = null
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
+                        serviceName = nameElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceName).to.eq('WFS')
 
                 // Requests links
                 for (const capabilityElem of getChildrenByTagName(xmlBody.documentElement, 'Capability')) {
@@ -386,8 +415,18 @@ describe('Request GetCapabilities', function () {
         }).then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
-                expect(resp.body).to.contain('WFS_Capabilities')
-                expect(resp.body).to.contain('version="1.0.0"')
+
+                const xmlBody = parser.parseFromString(resp.body, 'text/xml')
+                expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
+                expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
+
+                let serviceName = null
+                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                    for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
+                        serviceName = nameElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceName).to.eq('WFS')
             })
     })
 
@@ -411,8 +450,23 @@ describe('Request GetCapabilities', function () {
         }).then((resp) => {
                 expect(resp.status).to.eq(200)
                 expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
-                expect(resp.body).to.contain('WFS_Capabilities')
-                expect(resp.body).to.contain('version="1.1.0"')
+
+                const xmlBody = parser.parseFromString(resp.body, 'text/xml')
+                expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
+                expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.1.0')
+
+                let serviceType = null
+                let serviceTypeVersion = null
+                for (const serviceIdentificationElem of getChildrenByTagName(xmlBody.documentElement, 'ows:ServiceIdentification')) {
+                    for (const serviceTypeElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceType')) {
+                        serviceType = serviceTypeElem.childNodes[0].nodeValue
+                    }
+                    for (const serviceTypeVersionElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceTypeVersion')) {
+                        serviceTypeVersion = serviceTypeVersionElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceType).to.eq('WFS')
+                expect(serviceTypeVersion).to.eq('1.1.0')
             })
     })
 })
