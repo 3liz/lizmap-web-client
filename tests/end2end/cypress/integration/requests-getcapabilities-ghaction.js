@@ -204,6 +204,19 @@ describe('Request GetCapabilities', function () {
                 expect(xmlBody.documentElement.tagName).to.eq('Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
 
+                // Operations get link
+                for (const operationsMetadataElem of getChildrenByTagName(xmlBody.documentElement, 'ows:OperationsMetadata')) {
+                    for (const operationElem of getChildrenByTagName(operationsMetadataElem, 'ows:Operation')) {
+                        for (const getElem of operationElem.getElementsByTagName('ows:Get')) {
+                            expect(getElem.getAttribute('xlink:href'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=cache&',
+                                    'OnlineResource error for '+operationElem.getAttribute('name')
+                                )
+                        }
+                    }
+                }
+
                 let layers = []
                 let tileMatrixSets = []
                 for (const contentsElem of getChildrenByTagName(xmlBody.documentElement, 'Contents')) {
@@ -246,6 +259,19 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
+
+                // Operations get link
+                for (const operationsMetadataElem of getChildrenByTagName(xmlBody.documentElement, 'ows:OperationsMetadata')) {
+                    for (const operationElem of getChildrenByTagName(operationsMetadataElem, 'ows:Operation')) {
+                        for (const getElem of operationElem.getElementsByTagName('ows:Get')) {
+                            expect(getElem.getAttribute('xlink:href'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=cache&',
+                                    'OnlineResource error for '+operationElem.getAttribute('name')
+                                )
+                        }
+                    }
+                }
 
                 let layers = []
                 let tileMatrixSets = []
