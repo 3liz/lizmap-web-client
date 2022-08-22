@@ -228,6 +228,19 @@ describe('Request GetCapabilities', function () {
                 expect(xmlBody.documentElement.tagName).to.eq('Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
 
+                let serviceType = null
+                let serviceTypeVersion = null
+                for (const serviceIdentificationElem of getChildrenByTagName(xmlBody.documentElement, 'ows:ServiceIdentification')) {
+                    for (const serviceTypeElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceType')) {
+                        serviceType = serviceTypeElem.childNodes[0].nodeValue
+                    }
+                    for (const serviceTypeVersionElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceTypeVersion')) {
+                        serviceTypeVersion = serviceTypeVersionElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceType).to.eq('OGC WMTS')
+                expect(serviceTypeVersion).to.eq('1.0.0')
+
                 // Operations get link
                 for (const operationsMetadataElem of getChildrenByTagName(xmlBody.documentElement, 'ows:OperationsMetadata')) {
                     for (const operationElem of getChildrenByTagName(operationsMetadataElem, 'ows:Operation')) {
@@ -283,6 +296,19 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
+
+                let serviceType = null
+                let serviceTypeVersion = null
+                for (const serviceIdentificationElem of getChildrenByTagName(xmlBody.documentElement, 'ows:ServiceIdentification')) {
+                    for (const serviceTypeElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceType')) {
+                        serviceType = serviceTypeElem.childNodes[0].nodeValue
+                    }
+                    for (const serviceTypeVersionElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceTypeVersion')) {
+                        serviceTypeVersion = serviceTypeVersionElem.childNodes[0].nodeValue
+                    }
+                }
+                expect(serviceType).to.eq('OGC WMTS')
+                expect(serviceTypeVersion).to.eq('1.0.0')
 
                 // Operations get link
                 for (const operationsMetadataElem of getChildrenByTagName(xmlBody.documentElement, 'ows:OperationsMetadata')) {
