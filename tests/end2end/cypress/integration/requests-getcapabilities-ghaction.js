@@ -316,6 +316,26 @@ describe('Request GetCapabilities', function () {
                 expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
 
+                // Requests links
+                for (const capabilityElem of getChildrenByTagName(xmlBody.documentElement, 'Capability')) {
+                    for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
+                        for (const getElem of requestElem.getElementsByTagName('Get')) {
+                            expect(getElem.getAttribute('onlineResource'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName
+                                )
+                        }
+                        for (const postElem of requestElem.getElementsByTagName('Post')) {
+                            expect(postElem.getAttribute('onlineResource'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName
+                                )
+                        }
+                    }
+                }
+
                 const etag = resp.headers['etag']
                 cy.request({
                     url: '/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities',
@@ -353,6 +373,26 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.1.0')
+
+                // Operations links
+                for (const operationsMetadataElem of getChildrenByTagName(xmlBody.documentElement, 'ows:OperationsMetadata')) {
+                    for (const operationElem of getChildrenByTagName(operationsMetadataElem, 'ows:Operation')) {
+                        for (const getElem of operationElem.getElementsByTagName('ows:Get')) {
+                            expect(getElem.getAttribute('xlink:href'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for '+operationElem.getAttribute('name')
+                                )
+                        }
+                        for (const postElem of operationElem.getElementsByTagName('ows:Post')) {
+                            expect(postElem.getAttribute('xlink:href'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for '+operationElem.getAttribute('name')
+                                )
+                        }
+                    }
+                }
 
                 const etag = resp.headers['etag']
                 cy.request({
@@ -392,6 +432,26 @@ describe('Request GetCapabilities', function () {
                 const xmlBody = parser.parseFromString(resp.body, 'text/xml')
                 expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
                 expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
+
+                // Requests links
+                for (const capabilityElem of getChildrenByTagName(xmlBody.documentElement, 'Capability')) {
+                    for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
+                        for (const getElem of requestElem.getElementsByTagName('Get')) {
+                            expect(getElem.getAttribute('onlineResource'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName
+                                )
+                        }
+                        for (const postElem of requestElem.getElementsByTagName('Post')) {
+                            expect(postElem.getAttribute('onlineResource'))
+                                .to.eq(
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
+                                    'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName
+                                )
+                        }
+                    }
+                }
 
                 const etag = resp.headers['etag']
                 cy.request({
