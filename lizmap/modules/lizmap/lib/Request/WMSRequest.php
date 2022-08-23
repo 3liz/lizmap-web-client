@@ -140,7 +140,7 @@ class WMSRequest extends OGCRequest
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
         $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
-        preg_match('/<get>.*\n*.+xlink\:href="([^"]+)"/i', $data, $matches);
+        preg_match('/onlineresource.+xlink\:href="([^"]+)"/i', $data, $matches);
         if (count($matches) < 2) {
             preg_match('/get onlineresource="([^"]+)"/i', $data, $matches);
         }
@@ -156,7 +156,7 @@ class WMSRequest extends OGCRequest
             $schemaLocation .= ' http://www.opengis.net/sld';
             $schemaLocation .= ' http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd';
             $schemaLocation .= ' http://www.qgis.org/wms';
-            $schemaLocation .= ' '.$sUrl.'SERVICE=WMS&amp;REQUEST=GetSchemaExtension';
+            $schemaLocation .= ' '.$sUrl.'SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetSchemaExtension';
             $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
             if (!preg_match('@xmlns:qgs@i', $data)) {
                 $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms"', $data);
