@@ -259,6 +259,10 @@ abstract class OGCRequest
         // the cache should be unique between each user/service because the
         // request content depends on rights of the user
         $key = session_id().'-'.$this->param('service');
+        $version = $this->param('version');
+        if ($version) {
+            $key .= '-'.$version;
+        }
         if ($appContext->UserIsConnected()) {
             $juser = $appContext->getUserSession();
             $key .= '-'.$juser->login;
