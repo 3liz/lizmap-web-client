@@ -349,15 +349,18 @@ class lizmapOGCRequest
     protected function process_getcapabilities()
     {
         // Get cached session
-        $key = session_id().'-'.
-               $this->project->getRepository()->getKey().'-'.
-               $this->project->getKey().'-'.
-               $this->param('service').'-getcapabilities';
+        // the cache should be unique between each user/service because the
+        // request content depends on rights of the user
+        $key = session_id().'-'.$this->param('service');
+        $version = $this->param('version');
+        if ($version) {
+            $key .= '-'.$version;
+        }
         if (jAuth::isConnected()) {
             $juser = jAuth::getUserSession();
             $key .= '-'.$juser->login;
         }
-        $key = sha1($key);
+        $key = 'getcapabilities-'.sha1($key);
         $cached = false;
 
         try {
