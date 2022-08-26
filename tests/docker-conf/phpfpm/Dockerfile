@@ -8,10 +8,11 @@ ENV PHP_VERSION=${php_version}
 
 
 RUN set -eux; \
-	apt-get update; \
+    apt-get update; \
     apt-get -y install inotify-tools \
     ldap-utils \
     libsqlite3-mod-spatialite \
+    php${PHP_VERSION}-xdebug \
     ; apt-get clean
 
 # Install nodejs and npm to build js files
@@ -29,6 +30,7 @@ COPY ldap.conf /etc/openldap/ldap.conf
 COPY lizmap-entrypoint.sh /bin/entrypoint.d/
 COPY appctl.sh /bin/
 COPY profile.start /etc/profile.d/start
+COPY xdebug.ini /etc/php/${PHP_VERSION}/fpm/conf.d/90-xdebug.ini
 RUN chmod 755 /bin/entrypoint.d/lizmap-entrypoint.sh /bin/appctl.sh
 
 WORKDIR /srv/lzm/
