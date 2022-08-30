@@ -121,12 +121,12 @@ endif
 	@echo "COMMIT_NUMBER="$(COMMIT_NUMBER)
 
 build: debug
-	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
+	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --no-dev --no-suggest --no-progress
 	cd assets/ && npm install
 	cd assets/ && npm run build
 
 tests: debug build
-	composer update --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
+	composer update --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --no-dev --no-suggest --no-progress
 	cd tests/units/ && php vendor/bin/phpunit -v
 
 quicktests: debug
