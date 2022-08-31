@@ -6596,9 +6596,7 @@ lizMap.events.on({
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
         var osm = new OpenLayers.Layer.OSM('osm',
             [
-            "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+            "https://tile.openstreetmap.org/${z}/${x}/${y}.png",
             ]
             ,options
             );
