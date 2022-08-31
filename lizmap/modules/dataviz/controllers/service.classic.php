@@ -65,7 +65,7 @@ class serviceCtrl extends jController
             array(
                 'title' => 'Not supported request',
                 'detail' => 'The request "'.$request.'" is not supported!',
-            ),
+            )
         );
     }
 
@@ -109,7 +109,7 @@ class serviceCtrl extends jController
                 array(
                     'title' => 'No corresponding plot',
                     'detail' => 'No plot could be created for this request',
-                ),
+                )
             );
         }
 
@@ -143,7 +143,7 @@ class serviceCtrl extends jController
                 array(
                     'title' => 'No corresponding plot',
                     'detail' => 'No plot could be created for this request',
-                ),
+                )
             );
         }
 
