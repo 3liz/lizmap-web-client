@@ -1,8 +1,8 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
-import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
-import GeoJSONWriter from 'jsts/org/locationtech/jts/io/GeoJSONWriter.js';
-import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
+import GeoJSONReader from 'jsts/src/org/locationtech/jts/io/GeoJSONReader.js';
+import GeoJSONWriter from 'jsts/src/org/locationtech/jts/io/GeoJSONWriter.js';
+import BufferOp from 'jsts/src/org/locationtech/jts/operation/buffer/BufferOp.js';
 
 export default class SelectionTool {
 
