@@ -9,6 +9,8 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+require_once JELIX_LIB_UTILS_PATH.'FileUtilities/Path.php';
+
 class mapsCtrl extends jController
 {
     // Configure access via jacl2 rights management
@@ -415,23 +417,27 @@ class mapsCtrl extends jController
             }
             $rootRepositories = $services->getRootRepositories();
             if ($rootRepositories != '') {
+                $fullPath = \Jelix\FileUtilities\Path::normalizePath(
+                    $npath,
+                    \Jelix\FileUtilities\Path::NORM_ADD_TRAILING_SLASH
+                );
                 if ($lrep) {
                     $lrepPath = $lrep->getPath();
                     if (substr($lrepPath, 0, strlen($rootRepositories)) !== $rootRepositories) {
                         // original path is outside repositories root, so we keep it
                         $form->setData('path', $lrepPath);
-                    } elseif (substr(realpath($npath), 0, strlen($rootRepositories)) !== $rootRepositories) {
+                    } elseif (substr($fullPath, 0, strlen($rootRepositories)) !== $rootRepositories) {
                         // If the given path is outside the repositories root:
                         // we don't accept it
                         $form->setErrorOn('path', jLocale::get('admin~admin.form.admin_section.message.path.not_authorized'));
-                        jLog::log('rootRepositories == '.$rootRepositories.', repository '.$lrep->getKey().' path == '.realpath($npath));
+                        jLog::log('rootRepositories == '.$rootRepositories.', repository '.$lrep->getKey().' path == '.$fullPath, 'error');
                         $ok = false;
                     }
-                } elseif (substr(realpath($npath), 0, strlen($rootRepositories)) !== $rootRepositories) {
+                } elseif (substr($fullPath, 0, strlen($rootRepositories)) !== $rootRepositories) {
                     // If the given path is outside the repositories root:
                     // we don't accept it
                     $form->setErrorOn('path', jLocale::get('admin~admin.form.admin_section.message.path.not_authorized'));
-                    jLog::log('rootRepositories == '.$rootRepositories.', new repository path == '.realpath($npath));
+                    jLog::log('rootRepositories == '.$rootRepositories.', new repository path == '.$fullPath, 'error');
                     $ok = false;
                 }
             }
