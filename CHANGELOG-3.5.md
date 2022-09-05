@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+### Fixed
+
+* Better management of paths for Lizmap repositories
+* Form filter - Use OR between the uniques values of the same field
+* Fix some requests to QGIS Server
+* Fix some minor issues when reading the JSON file about editing capabilities
+* Improve the settings about the mail server
+* Improve the error message when the Lizmap server plugin is not found
+* Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
+
+### Backend
+
+* Update OpenLayers to 6.15.1
+
+### Tests
+
+* Add more tests about Cypress
 
 ## 3.5.5 - 2022-07-21
 
