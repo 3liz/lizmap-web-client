@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Fixed
+
+* Form filter - Use OR between the uniques values of the same field
+* Fix some requests to QGIS Server
+
+### Tests
+
+* Add more tests about Cypress
+
 ## 3.4.12 - 2022-07-01
 
 ### Added
