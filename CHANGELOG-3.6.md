@@ -10,6 +10,16 @@
   * These two versions are hardcoded in the source code and updated when a new version of Lizmap is released
 * Display the version of Py-QGIS-Server in the administration panel if it's used
 
+### Fixed
+
+* Better management of paths for Lizmap repositories
+* Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
+* Fix some requests to QGIS Server
+
+### Tests
+
+* Add more tests about Cypress
+
 ## 3.6.0-beta.2 - 2022-07-29
 
 ### Fixed
