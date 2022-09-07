@@ -1,6 +1,7 @@
 # Changelog Lizmap 3.7
 
 ## Unreleased
+
 ### Added
 
 * Better management of QGIS projects about versions (desktop, plugin versions etc)
@@ -10,6 +11,7 @@
 ### Backend
 
 * Some old code about QGIS Server 2
+* Update the OpenLayers library to version 7.1
 
 ### Funders
 
