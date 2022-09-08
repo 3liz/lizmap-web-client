@@ -47,7 +47,7 @@ body:
       label: Check Lizmap plugin
       options:
         - label: I have done the step just before in the Lizmap QGIS desktop plugin before opening this ticket. Otherwise, my ticket is not considered valid and might get closed.
-          required: true
+#          required: true
 
   - type: input
     id: qgis-server-version
