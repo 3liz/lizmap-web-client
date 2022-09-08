@@ -31,9 +31,9 @@ services:
       - "./docker-conf/openldap/ldif:/customldif"
   lizmap:
     build:
-        context: ./docker-conf/phpfpm
-        args:
-          php_version: ${PHP_VERSION}
+      context: ./docker-conf/phpfpm
+      args:
+        php_version: ${PHP_VERSION}
     container_name: "lizmap${LZMBRANCH}_test_php"
     environment:
       - APP_USER_ID=${LIZMAP_USER_ID}
