@@ -37,23 +37,26 @@ class defaultCtrl extends jController
                 try {
                     $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
                     if ($project && $project->checkAcl()) {
-                        // test redirection to an other controller
-                        $items = jEvent::notify('mainviewGetMaps')->getResponse();
-                        foreach ($items as $item) {
-                            if ($item->parentId == $repository->getKey() && $item->id == $services->defaultProject) {
-                                /** @var jResponseRedirectUrl $rep */
-                                $rep = $this->getResponse('redirectUrl');
-                                $rep->url = $item->url;
+                        if (!$project->needsUpdateError()) {
+                            // test redirection to an other controller
+                            $items = jEvent::notify('mainviewGetMaps')->getResponse();
+                            foreach ($items as $item) {
+                                if ($item->parentId == $repository->getKey() && $item->id == $services->defaultProject) {
+                                    /** @var jResponseRedirectUrl $rep */
+                                    $rep = $this->getResponse('redirectUrl');
+                                    $rep->url = $item->url;
 
-                                return $rep;
+                                    return $rep;
+                                }
                             }
-                        }
-                        // redirection to default controller
-                        /** @var jResponseRedirect $rep */
-                        $rep = $this->getResponse('redirect');
-                        $rep->action = 'view~map:index';
+                            // redirection to default controller
+                            /** @var jResponseRedirect $rep */
+                            $rep = $this->getResponse('redirect');
+                            $rep->action = 'view~map:index';
 
-                        return $rep;
+                            return $rep;
+                        }
+                        jMessage::add(jLocale::get('view~default.project.needs.update'), 'error');
                     }
                     jMessage::add('The \'only maps\' option is not well configured!', 'error');
                 } catch (UnknownLizmapProjectException $e) {
