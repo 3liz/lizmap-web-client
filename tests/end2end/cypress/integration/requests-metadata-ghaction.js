@@ -29,7 +29,7 @@ describe('Request JSON metadata', function () {
 
             expect(response.body.qgis_server_info.metadata.py_qgis_server).to.eq(true)
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
-            expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.contain('alpha')
+            expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\.|master|dev)/i)
         });
     })
 
@@ -46,7 +46,7 @@ describe('Request JSON metadata', function () {
 
             expect(response.body.qgis_server_info.metadata.py_qgis_server).to.eq(true)
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
-            expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.contain("alpha")
+            expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\.|master|dev)/i)
         });
     })
 
