@@ -3276,7 +3276,12 @@ window.lizMap = function() {
                   clname = cleanName(configLayer.name);
                   configLayer.cleanname = clname;
                 }
-                var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + popupChildData + '</div>');
+
+                const resizeTablesButtons = 
+                  '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
+                  '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
+
+                var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + resizeTablesButtons + popupChildData + '</div>');
 
                 //Manage if the user choose to create a table for children
                 if (['qgis', 'form'].indexOf(configLayer.popupSource) !== -1 &&
@@ -3333,6 +3338,28 @@ window.lizMap = function() {
                 );
               }
             }
+
+            // Handle compact-tables/explode-tables behaviour
+            $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+              language: { url: lizUrls["dataTableLanguage"] }
+            });
+
+            $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
+
+            $('.lizmapPopupChildren .compact-tables').click(function() {
+              $(this)
+                .addClass('hide')
+                .siblings('.explode-tables').removeClass('hide')
+                .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
+            });
+
+            $('.lizmapPopupChildren .explode-tables').click(function () {
+              $(this)
+                .addClass('hide')
+                .siblings('.compact-tables').removeClass('hide')
+                .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
+            });
+
             // Trigger event for all popup children
             lizMap.events.triggerEvent(
               "lizmappopupallchildrendisplayed",
