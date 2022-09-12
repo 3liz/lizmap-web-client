@@ -3336,20 +3336,18 @@ window.lizMap = function() {
             }
 
             // Handle compact-tables/explode-tables behaviour
-            $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
-              language: { url: lizUrls["dataTableLanguage"] }
-            });
+            $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable();
 
             $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
 
-            $('.lizmapPopupChildren .compact-tables').click(function() {
+            $('.lizmapPopupChildren .compact-tables').off('click').on('click',function() {
               $(this)
                 .addClass('hide')
                 .siblings('.explode-tables').removeClass('hide')
                 .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
             });
 
-            $('.lizmapPopupChildren .explode-tables').click(function () {
+            $('.lizmapPopupChildren .explode-tables').off('click').on('click',function () {
               $(this)
                 .addClass('hide')
                 .siblings('.compact-tables').removeClass('hide')
