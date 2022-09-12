@@ -18,7 +18,6 @@
 
 * Better management of paths for Lizmap repositories
 * Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
-* Fix button to toggle compact/explode table view in popups. Also each button only toggle its own children popup group
 * Fix some requests to QGIS Server
 
 ### Tests
