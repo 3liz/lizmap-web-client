@@ -10,6 +10,7 @@
 * Fix some minor issues when reading the JSON file about editing capabilities
 * Improve the settings about the mail server
 * Improve the error message when the Lizmap server plugin is not found
+* Fix button to toggle compact/explode table view in popups. Also each button only toggle its own children popup group
 * Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
 
 ### Backend
