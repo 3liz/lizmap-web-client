@@ -413,7 +413,7 @@ class QgisFormControl
 
         // Read-only
         if ($this->fieldDataType != 'geometry') {
-            if ($this->fieldEditType !== '' && array_key_exists('readonly', self::$qgisEdittypeMap[$this->fieldEditType]['jform'])) {
+            if ($this->fieldEditType !== '' && is_array(self::$qgisEdittypeMap[$this->fieldEditType]) && array_key_exists('readonly', self::$qgisEdittypeMap[$this->fieldEditType]['jform'])) {
                 $this->isReadOnly = true;
             }
             if ($this->properties !== null && !$this->properties->isEditable()) {
