@@ -39,16 +39,22 @@ env:
 	EOF
 
 
-build-plugins: 
-	./add_server_plugins.sh
+build-plugins:
+	docker run \
+	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
+	    --rm -it \
+	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
+	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
+	    -v $(shell pwd)/:/src \
+        --entrypoint /src/add_server_plugins.sh \
+	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
 
 up: env
 	docker compose up  -V --force-recreate -d
 
 stop:
-	docker compose stop 
+	docker compose stop
 
 reset:
 	docker compose down -v --remove-orphans
 	./lizmap-ctl clean
-
