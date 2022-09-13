@@ -136,6 +136,10 @@ class Server
         if ($isAdmin) {
             $data['qgis_server']['http_code'] = $code;
             $data['qgis_server']['response'] = $resp;
+
+            if (isset(\jApp::config()->lizmap['hosting'])) {
+                $data['hosting'] = \jApp::config()->lizmap['hosting'];
+            }
         }
 
         return $data;
