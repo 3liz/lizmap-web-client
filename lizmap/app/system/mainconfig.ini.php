@@ -37,6 +37,23 @@ lizmapServerPlugin="1.1.1"
 ; 3 versions behind the current version of LWC
 lizmapWebClientTargetVersion=30300
 
+[lizmap]
+; CSP header for the map interface
+; Exemple value: "default-src 'self' http: https:;connect-src 'self' http: https:;script-src http: https: 'unsafe-inline' 'unsafe-eval'; style-src http: https: 'unsafe-inline';object-src 'none';font-src https:;base-uri 'self';form-action 'self' http: https:;img-src http: https: data: blob:;frame-ancestors http: https:"
+; Why these values:
+; - some tiles servers or custom scripts may be on http instead of https servers
+; - script-src: lizmap or external modules may still have inline script code, and integrated old libraries like Plotly and openlayers2 are using eval() sometimes :-/
+; - style-src: lizmap or external modules may still have some inline CSS code
+; - some JS code and modules may use the "data:" uri
+; - frame-ancestors: lizmap has a specific url to be used into frames
+; - connect-src: some JS plugins may do requests to any web API
+; - form-action: lizmap may have redirections to external web site after form submits (for authentication like SAML...)
+; You can adapt this example to your case, if you know what you do.
+; Leave empty if your web server already set the CSP header or if you don't want a CSP header
+mapCSPHeader=
+; CSP header for the admin interface
+adminCSPHeader=
+
 [modules]
 jelix.enabled=on
 jelix.installparam[wwwfiles]=copy
