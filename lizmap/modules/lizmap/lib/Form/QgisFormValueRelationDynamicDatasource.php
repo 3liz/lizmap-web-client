@@ -2,8 +2,6 @@
 
 namespace Lizmap\Form;
 
-require_once JELIX_LIB_PATH.'forms/jFormsDatasource.class.php';
-
 class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 {
     // protected $formid;
