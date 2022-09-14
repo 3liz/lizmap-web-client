@@ -19,7 +19,7 @@ class QgisFormControl
     public $ref = '';
 
     /**
-     * @var\jFormsControl
+     * @var \jFormsControl|\jFormsControlDatasource
      */
     public $ctrl;
 
