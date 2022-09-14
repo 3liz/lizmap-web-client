@@ -11,14 +11,21 @@
 * Lizmap Web Client won't display old CFG file according to the Lizmap Web Client target version defined in QGIS Desktop
   * These projects will still be visible in the administration panel to let you know that you need to upgrade them
   * Be careful to the combobox selector in the QGIS plugin.
-  * The minimum version will be raised and advertised for each release of a major version of Lizmap Web Client.
+  * The minimum version required will be raised and advertised for each release of a major version of Lizmap Web Client.
 * Display the version of Py-QGIS-Server in the administration panel if it's used
 
 ### Fixed
 
+* Fix button to toggle compact/explode table view in popups. Also, each button only toggle its own children popup group
 * Better management of paths for Lizmap repositories
 * Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
 * Fix some requests to QGIS Server
+* Fix an issue with PHP 8 when editing data
+* Fix an issue about group ID when restricting a project to a few groups
+
+### Backend
+
+* Upgrade the Jelix framework
 
 ### Tests
 
