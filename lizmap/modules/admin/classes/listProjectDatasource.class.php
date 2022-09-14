@@ -1,7 +1,5 @@
 <?php
 
-require_once JELIX_LIB_PATH.'forms/jFormsDatasource.class.php';
-
 class listProjectDatasource extends jFormsDynamicDatasource
 {
     protected $formId = 0;
