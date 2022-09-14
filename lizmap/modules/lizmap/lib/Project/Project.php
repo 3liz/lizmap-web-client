@@ -1636,7 +1636,7 @@ class Project
         // Remove editionLayers from config if no right to access this tool
         if ($this->hasEditionLayersForCurrentUser()) {
             // give only layer that the user has the right to edit
-            $configJson->editionLayers = $this->editionLayersForCurrentUser;
+            $configJson->editionLayers = (object) $this->editionLayersForCurrentUser;
         } else {
             unset($configJson->editionLayers);
         }
