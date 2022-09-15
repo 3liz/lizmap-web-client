@@ -7,6 +7,8 @@
         "runMode": 2
     },
     "env": {
+        "login_super_admin": "super_admin",
+        "login_super_admin_": "admin",
         "login_admin": "admin",
         "password_admin": "admin",
         "login_user_a": "user_in_group_a",

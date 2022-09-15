@@ -207,6 +207,12 @@ To launch PHP tests:
 
 You must execute `tests/qgis-projects/tests/load_sql.sh` to populate postgreSQL database with testing data.
 
+A few users will be used in these tests :
+
+* `user_in_group_a`
+* `admin` (See filtered data disabled)
+* `super_admin` (See filtered data enabled)
+
 ## Automatic End-to-End tests
 
 *First add testing data as explained above.*
@@ -280,3 +286,9 @@ Into `lizmap/var/config/profiles.ini.php`, uncomment parameters into the `jcache
 section.
 
 You can inspect the content of Redis with `lizmap-ctl redis-cli`.
+
+## Export of users and groups
+
+```bash
+pg_dump service=lizmapdb --data-only --inserts --column-inserts -n lizmap --no-acl --no-owner --table "lizmap.jacl2_group" --table "lizmap.jlx_user" --table "lizmap.jacl2_user_group" --table "lizmap.jacl2_rights" -f /tmp/export.sql
+```

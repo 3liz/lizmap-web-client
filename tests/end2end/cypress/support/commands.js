@@ -46,6 +46,12 @@ Cypress.Commands.add(
 )
 
 Cypress.Commands.add(
+    'loginAsSuperAdmin',() => {
+        cy._login(Cypress.env('login_super_admin'), Cypress.env('password_admin'))
+    }
+)
+
+Cypress.Commands.add(
     'loginAsAdmin',() => {
         cy._login(Cypress.env('login_admin'), Cypress.env('password_admin'))
     }
