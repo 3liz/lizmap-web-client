@@ -13,12 +13,19 @@ require_once JELIX_LIB_CORE_PATH.'response/jResponseHtml.class.php';
 
 class AbstractLizmapHtmlResponse extends jResponseHtml
 {
+    protected $CSPPropName = 'mapCSPHeader';
+
     protected function prepareHeadContent()
     {
         $bp = jApp::urlBasePath();
 
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
+
+        $csp = \jApp::config()->lizmap[$this->CSPPropName];
+        if ($csp != '') {
+            $this->addHttpHeader('Content-Security-Policy', $csp);
+        }
 
         // Favicon
         $this->addHeadContent('<link rel="shortcut icon" href="'.$bp.'assets/favicon/favicon.ico">');

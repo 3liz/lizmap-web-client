@@ -13,6 +13,8 @@ require_once __DIR__.'/AbstractLizmapHtmlResponse.php';
 
 class adminHtmlResponse extends AbstractLizmapHtmlResponse
 {
+    protected $CSPPropName = 'adminCSPHeader';
+
     public $bodyTpl = 'master_admin~main';
 
     public function __construct()
