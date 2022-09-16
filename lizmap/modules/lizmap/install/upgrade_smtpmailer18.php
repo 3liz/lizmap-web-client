@@ -1,8 +1,7 @@
 <?php
 
-
 /**
- * Move smtp access parameters from localconfig to profiles
+ * Move smtp access parameters from localconfig to profiles.
  */
 class lizmapModuleUpgrader_smtpmailer18 extends \Jelix\Installer\Module\Installer
 {
@@ -28,15 +27,17 @@ class lizmapModuleUpgrader_smtpmailer18 extends \Jelix\Installer\Module\Installe
 
     /**
      * @param \Jelix\IniFile\IniReaderInterface $ini
+     * @param mixed                             $profilesIni
      */
     protected function migrateConfig($ini, $profilesIni)
     {
         if (!$ini instanceof \Jelix\IniFile\IniModifierInterface) {
             echo 'ERROR '.$ini->getFileName()." not allowed to be writable by the Jelix installer\n";
+
             return;
         }
 
-        if ( !$ini->isSection('mailer') || $ini->getValue('smtpHost', 'mailer') === null) {
+        if (!$ini->isSection('mailer') || $ini->getValue('smtpHost', 'mailer') === null) {
             return;
         }
 
@@ -51,9 +52,9 @@ class lizmapModuleUpgrader_smtpmailer18 extends \Jelix\Installer\Module\Installe
             'smtpTimeout' => 'timeout',
         );
 
-        foreach($mapping as $old => $new) {
+        foreach ($mapping as $old => $new) {
             $oldVal = $ini->getValue($old, 'mailer');
-            $profilesIni->setValue($new, $oldVal , 'smtp:mailer');
+            $profilesIni->setValue($new, $oldVal, 'smtp:mailer');
             $ini->removeValue($old, 'mailer');
         }
         $ini->setValue('mailerType', 'smtp', 'mailer');
