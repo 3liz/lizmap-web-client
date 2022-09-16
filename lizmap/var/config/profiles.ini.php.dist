@@ -89,10 +89,10 @@ searchGroupBaseDN=""
 [jcache]
 
 ; name of the default profil to use for cache
-default=myapp
+default=lizmap
 
 
-[jcache:myapp]
+[jcache:lizmap]
 ; disable or enable cache for this profile
 enabled=1
 ; driver type (file, db, memcached)
@@ -141,3 +141,17 @@ cache_file_umask=
 enabled=1
 driver=file
 ttl=0
+
+[smtp:mailer]
+;; to send emails via smtp, uncomment these lines and indicate all needed values.
+;; In localconfig.ini, set mailerType=smtp in the [mailer] section.
+;host=localhost
+;port=25,
+;; "" or "ssl" or "tls"
+;secure_protocol=
+;helo=
+;auth_enabled=true
+;username=
+;password=
+;timeout=10
+
