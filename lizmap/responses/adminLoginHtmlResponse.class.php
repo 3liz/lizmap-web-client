@@ -19,6 +19,9 @@ class adminLoginHtmlResponse extends AbstractLizmapHtmlResponse
 
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
+        if (isset(jApp::config()->lizmap['adminCSPHeader']) && jApp::config()->lizmap['adminCSPHeader'] != '') {
+            $this->addHttpHeader('Content-Security-Policy', jApp::config()->lizmap['adminCSPHeader']);
+        }
 
         // Favicon
         $bp = jApp::urlBasePath();

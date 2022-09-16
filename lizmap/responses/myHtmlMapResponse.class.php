@@ -23,6 +23,10 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
 
         $this->title = '';
 
+        if (isset(jApp::config()->lizmap['mapCSPHeader']) && jApp::config()->lizmap['mapCSPHeader'] != '') {
+            $this->addHttpHeader('Content-Security-Policy', jApp::config()->lizmap['mapCSPHeader']);
+        }
+
         // CSS
         $css = jApp::config()->jquery['jqueryui.css'];
         foreach ($css as $file) {

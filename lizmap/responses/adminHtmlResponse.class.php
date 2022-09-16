@@ -23,6 +23,9 @@ class adminHtmlResponse extends AbstractLizmapHtmlResponse
 
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
+        if (isset(jApp::config()->lizmap['adminCSPHeader']) && jApp::config()->lizmap['adminCSPHeader'] != '') {
+            $this->addHttpHeader('Content-Security-Policy', jApp::config()->lizmap['adminCSPHeader']);
+        }
 
         $this->addJSLink(jApp::config()->jquery['jquery']);
         $this->addJSLink($bp.'assets/js/jquery/jquery-migrate-3.3.1.min.js');
