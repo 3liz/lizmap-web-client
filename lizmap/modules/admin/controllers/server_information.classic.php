@@ -31,7 +31,7 @@ class server_informationCtrl extends jController
         $data = $server->getMetadata();
 
         $qgisMinimumVersionRequired = jApp::config()->minimumRequiredVersion['qgisServer'];
-        $lizmapPluginMinimumVersionRequired = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+        $lizmapPluginMinimumVersionRequired = jApp::config()->minimumRequiredVersion['lizmap_server'];
         $linkDocumentation = 'https://docs.lizmap.com/current/en/install/pre_requirements.html#lizmap-server-plugin';
 
         $qgisServerNeedsUpdate = $server->versionCompare(
@@ -44,15 +44,10 @@ class server_informationCtrl extends jController
         }
 
         $displayPluginActionColumn = false;
-        $lizmapQgisServerNeedsUpdate = $server->pluginServerNeedsUpdate(
-            $server->getLizmapPluginServerVersion(),
-            $lizmapPluginMinimumVersionRequired
-        );
-        $updateLizmapPlugin = jLocale::get('admin.server.information.plugin.update', array('lizmap_server'));
-        if ($lizmapQgisServerNeedsUpdate) {
-            // lizmap_server is required to use LWC
-            jLog::log($updateLizmapPlugin, 'error');
+        $pluginsNeedsUpdate = $server->updatableQgisServerPlugins();
+        if (count($pluginsNeedsUpdate) >= 1) {
             $displayPluginActionColumn = true;
+            jLog::log('At least one QGIS Server plugin needs to be updated. Check the table in the administration panel', 'error');
         }
 
         // Set the HTML content
@@ -63,8 +58,7 @@ class server_informationCtrl extends jController
             'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
             'updateQgisServer' => $updateQgisServer,
             'displayPluginActionColumn' => $displayPluginActionColumn,
-            'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,
-            'lizmapPluginUpdate' => $updateLizmapPlugin,
+            'qgisServerPluginNeedsUpdate' => $pluginsNeedsUpdate,
             'errorQgisPlugin' => jLocale::get(
                 'admin.server.information.qgis.error.fetching.information.detail',
                 array(

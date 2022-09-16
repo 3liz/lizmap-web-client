@@ -30,7 +30,13 @@ fallbackLocale=en_US
 ; Versions on the server, for the system administrator
 ; The minimum version required about external software to make Lizmap Web Client happy
 qgisServer="3.10"
-lizmapServerPlugin="1.1.1"
+lizmap_server="1.1.1"
+; These plugins are optional for Lizmap Web Client, but if they are found, the minimum version is required
+wfsOutputExtension="1.7.0"
+atlasprint="3.3.1"
+; About cadastre, not all versions are related to the server side, check the changelog for "serveur" keyword for instance
+cadastre="1.14.1"
+; dataPlotLy="3.9.2"
 
 ; Versions written in QGIS projects, for the GIS administrator
 ; QGIS project with a lower version are not displayed in the landing page, but displayed in the administration panel

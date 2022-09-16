@@ -77,10 +77,8 @@ class lizMapCtrl extends jController
             return $rep;
         }
 
-        // lizmap_server plugin version
-        $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
-        $currentLizmapVersion = $server->getLizmapPluginServerVersion();
-        if ($server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
+        // QGIS server plugins
+        if (count($server->updatableQgisServerPlugins()) >= 1) {
             jMessage::add(jLocale::get('view~default.server.information.error'), 'error');
 
             return $rep;

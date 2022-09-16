@@ -86,15 +86,15 @@
                 <th>{@admin.server.information.qgis.plugin.action@}</th>
             {/if}
         <tr/>
-        {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
+        {foreach $data['qgis_server_info']['plugins'] as $folder=>$info}
         <tr>
-            <th style="width:20%;">{$name}</th>
-            <td style="width:20%;">{$version['version']}</td>
+            <th style="width:20%;">{$info['name']}</th>
+            <td style="width:20%;">{$info['version']}</td>
             {if $displayPluginActionColumn }
-                {if $name == 'lizmap_server' && $lizmapQgisServerNeedsUpdate}
-                    <td style="background-color:lightcoral;"><strong>{$lizmapPluginUpdate}</strong></td>
+                {if in_array($info['name'], $qgisServerPluginNeedsUpdate)}
+                    <td style="background-color:lightcoral;"><strong>{jlocale 'admin.server.information.plugin.update', array($info['name'])}</strong></td>
                 {else}
-                <td></td>
+                    <td></td>
                 {/if}
             {/if}
         </tr>

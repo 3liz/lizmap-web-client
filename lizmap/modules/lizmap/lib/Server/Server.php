@@ -38,13 +38,54 @@ class Server
         return $this->metadata;
     }
 
-    /** Get the current Lizmap server version.
+    /** Get the QGIS plugin server version matching a given name.
      *
-     * @return string String containing the current Lizmap QGIS server version
+     * @param string $name
+     *
+     * @return null|string String containing the QGIS plugin server version if found
      */
-    public function getLizmapPluginServerVersion()
+    public function getQgisPluginServerVersion($name)
     {
-        return $this->metadata['qgis_server_info']['plugins']['lizmap_server']['version'];
+        if (!in_array($name, $this->metadata['qgis_server_info']['plugins'])) {
+            return null;
+        }
+
+        return $this->metadata['qgis_server_info']['plugins'][$name]['version'];
+    }
+
+    /** List of plugins which must be updated.
+     *
+     * @return array List of plugins which must be updated
+     */
+    public function updatableQgisServerPlugins()
+    {
+        $plugins = array(
+            // name in metadata.txt => name of plugin folder
+            'Lizmap server' => 'lizmap_server',
+            'atlasprint' => 'atlasprint',
+            'cadastre' => 'cadastre',
+            'wfsOutputExtension' => 'wfsOutputExtension',
+        );
+        $updateNeeded = array();
+        foreach ($plugins as $name => $folderName) {
+            $version = $this->getQgisPluginServerVersion($folderName);
+            if (is_null($version)) {
+                if ($name == 'Lizmap server') {
+                    // We must find 'Lizmap server', it shouldn't be renamed
+                    // The only plugin required following this name
+                    array_push($updateNeeded, $name);
+                }
+
+                continue;
+            }
+
+            $requiredPluginVersion = \jApp::config()->minimumRequiredVersion[$folder];
+            if ($this->pluginServerNeedsUpdate($version, $requiredPluginVersion)) {
+                array_push($updateNeeded, $name);
+            }
+        }
+
+        return $updateNeeded;
     }
 
     /** Get the current QGIS server version.

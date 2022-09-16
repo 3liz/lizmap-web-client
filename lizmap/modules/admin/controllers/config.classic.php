@@ -153,7 +153,7 @@ class configCtrl extends jController
             }
 
             $qgisMinimumVersionRequired = jApp::config()->minimumRequiredVersion['qgisServer'];
-            $lizmapPluginMinimumVersionRequired = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+            $lizmapPluginMinimumVersionRequired = jApp::config()->minimumRequiredVersion['lizmap_server'];
             $form->getControl('lizmapPluginAPIURL')->help = jLocale::get(
                 'admin~admin.form.admin_services.lizmapPluginAPIURL.help',
                 array(
