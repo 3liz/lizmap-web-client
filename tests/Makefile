@@ -22,7 +22,7 @@ LIZMAP_ADMIN_EMAIL ?= admin@localhost.local
 LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE ?= /srv/etc/admin.conf
 
 env:
-	@echo "Creating environment file for docker-compose"
+	@echo "Creating environment file for docker compose"
 	@cat <<-EOF > .env
 	LIZMAP_USER_ID=$(LIZMAP_USER_ID)
 	LIZMAP_GROUP_ID=$(LIZMAP_GROUP_ID)
@@ -39,16 +39,15 @@ env:
 	EOF
 
 
-build-plugins: 
+build-plugins:
 	./add_server_plugins.sh
 
 up: env
-	docker-compose up  -V --force-recreate -d
+	docker compose up  -V --force-recreate -d
 
 stop:
-	docker-compose stop 
+	docker compose stop
 
 reset:
-	docker-compose down -v --remove-orphans
+	docker compose down -v --remove-orphans
 	./lizmap-ctl clean
-
