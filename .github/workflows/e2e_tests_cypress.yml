@@ -35,6 +35,9 @@ jobs:
       - name: Install Lizmap as a QGIS Server plugin
         run: cd tests && ./add_server_plugins.sh
 
+      - name: Lizmap QGIS server version
+        run: cat tests/qgis-server-plugins/lizmap_server/metadata.txt | grep version=
+
       - name: Pull docker images
         run: cd tests && ./run-docker pull
 
