@@ -157,14 +157,17 @@ class MGRS extends Graticule {
         } else {
             while (lon != this.minLon_ && cnt++ < maxLines) {
                 lon = Math.max(lon - interval, this.minLon_);
-                idx = this.addMeridian_(
-                    lon,
-                    minLat,
-                    maxLat,
-                    squaredTolerance,
-                    extent,
-                    idx
-                );
+
+                if(lon !== 6){
+                    idx = this.addMeridian_(
+                        lon,
+                        minLat,
+                        maxLat,
+                        squaredTolerance,
+                        extent,
+                        idx
+                    );
+                }
             }
         }
 
@@ -185,16 +188,46 @@ class MGRS extends Graticule {
         } else {
             while (lon != this.maxLon_ && cnt++ < maxLines) {
                 lon = Math.min(lon + interval, this.maxLon_);
-                idx = this.addMeridian_(
-                    lon,
-                    minLat,
-                    maxLat,
-                    squaredTolerance,
-                    extent,
-                    idx
-                );
+                if(lon !== 6){
+                    idx = this.addMeridian_(
+                        lon,
+                        minLat,
+                        maxLat,
+                        squaredTolerance,
+                        extent,
+                        idx
+                    );
+                }
             }
         }
+
+        // Special cases
+
+        // Norway
+        idx = this.addMeridian_(
+            3,
+            56,
+            64,
+            squaredTolerance,
+            extent,
+            idx
+        );
+        idx = this.addMeridian_(
+            6,
+            64,
+            72,
+            squaredTolerance,
+            extent,
+            idx
+        );
+        idx = this.addMeridian_(
+            6,
+            -80,
+            56,
+            squaredTolerance,
+            extent,
+            idx
+        );
 
         this.meridians_.length = idx;
         if (this.meridiansLabels_) {
