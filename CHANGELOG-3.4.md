@@ -2,14 +2,25 @@
 
 ## Unreleased
 
+## 3.4.13 - 2022-09-20
+
 ### Fixed
 
 * Form filter - Use OR between the uniques values of the same field
 * Fix some requests to QGIS Server
+* New configuration to set up the Content Security Policy header
+
+### Translations
+
+* Update from Transifex about translated strings
 
 ### Tests
 
 * Add more tests about Cypress
+
+### Backend
+
+* Update Jelix to version 1.6.38
 
 ## 3.4.12 - 2022-07-01
 
