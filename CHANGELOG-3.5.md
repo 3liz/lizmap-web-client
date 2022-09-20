@@ -4,7 +4,7 @@
 
 ## 3.5.6 - 2022-09-20
 
-### Feature
+### Added
 
 * New configuration to set up the Content Security Policy header
 
