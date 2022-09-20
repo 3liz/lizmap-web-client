@@ -351,7 +351,10 @@ class lizmapOGCRequest
         // Get cached session
         // the cache should be unique between each user/service because the
         // request content depends on rights of the user
-        $key = session_id().'-'.$this->param('service');
+        $key = session_id().'-'.
+               $this->project->getRepository()->getKey().'-'.
+               $this->project->getKey().'-'.
+               $this->param('service');
         $version = $this->param('version');
         if ($version) {
             $key .= '-'.$version;
