@@ -172,6 +172,14 @@ class pgsqlDbConnection extends jDbConnection {
                 throw new jException('jelix~db.error.query.bad',  pg_last_error($cnx).'('.$sql.')');
             }
         }
+
+        if (isset($this->profile['session_role']) && trim($this->profile['session_role']) != '') {
+            $sql = 'SET ROLE TO '.$this->profile['session_role'];
+            if (!@pg_query($cnx, $sql)) {
+                throw new jException('jelix~db.error.query.bad', pg_last_error($cnx).'('.$sql.')');
+            }
+        }
+
         return $cnx;
     }
 

@@ -1,14 +1,15 @@
 <?php
+
 /**
-* @package     jelix
-* @subpackage  datatypes
-* @author      Laurent Jouanneau
-* @contributor Julien Issler, Hadrien Lanneau
-* @copyright   2006-2014 Laurent Jouanneau
-* @copyright   2008 Julien Issler, 2011 Hadrien Lanneau
-* @link        http://www.jelix.org
-* @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
-*/
+ * @package     jelix
+ * @subpackage  datatypes
+ * @author      Laurent Jouanneau
+ * @contributor Julien Issler, Hadrien Lanneau
+ * @copyright   2006-2014 Laurent Jouanneau
+ * @copyright   2008 Julien Issler, 2011 Hadrien Lanneau
+ * @link        http://www.jelix.org
+ * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
+ */
 
 /**
  * interface for datatypes which can filter value
@@ -16,7 +17,8 @@
  * @subpackage  datatypes
  * @since 1.1
  */
-interface jIFilteredDatatype {
+interface jIFilteredDatatype
+{
     /**
      * return the value on which filters are applied
      * should be call after a call of check() method
@@ -29,46 +31,51 @@ interface jIFilteredDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-abstract class jDatatype {
+abstract class jDatatype
+{
 
-    protected $hasFacets= false;
+    protected $hasFacets = false;
     protected $facets = array();
 
     /**
-    * call it to add restriction on possible values
-    * @param string $type
-    * @param string $value
-    */
-    public function addFacet($type,$value=null){
-        if(in_array($type, $this->facets)){
+     * call it to add restriction on possible values
+     * @param string $type
+     * @param string $value
+     */
+    public function addFacet($type, $value = null)
+    {
+        if (in_array($type, $this->facets)) {
             $this->hasFacets = true;
-            $this->_addFacet($type,$value);
+            $this->_addFacet($type, $value);
         }
     }
 
     /**
-    * get a restriction value
-    * @param string $type
-    * @return mixed  the value
-    * @since 1.0
-    */
-    public function getFacet($type){
-        if(in_array($type, $this->facets)){
+     * get a restriction value
+     * @param string $type
+     * @return mixed  the value
+     * @since 1.0
+     */
+    public function getFacet($type)
+    {
+        if (in_array($type, $this->facets)) {
             return $this->$type;
         }
         return null;
     }
 
-    protected function _addFacet($type,$value){
+    protected function _addFacet($type, $value)
+    {
         $this->$type = $value;
     }
 
     /**
-    * verify a value : it should correspond to the datatype
-    * @param string   $value
-    * @return boolean true if the value is ok
-    */
-    public function check($value){
+     * verify a value : it should correspond to the datatype
+     * @param string   $value
+     * @return boolean true if the value is ok
+     */
+    public function check($value)
+    {
         return true;
     }
 
@@ -77,7 +84,8 @@ abstract class jDatatype {
      * @return boolean
      * @since 1.2.7
      */
-    public function allowWhitespace() {
+    public function allowWhitespace()
+    {
         return false;
     }
 }
@@ -85,39 +93,54 @@ abstract class jDatatype {
 /**
  * Datatype String.
  *
- * Possible facets are: 'length','minLength','maxLength', 'pattern'
+ * Possible facets are: 'length','minLength','maxLength', 'pattern', 'filterHtml'
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeString extends jDatatype {
-    protected $length=null;
-    protected $minLength=null;
-    protected $maxLength=null;
-    protected $pattern=null;
-    protected $facets = array('length','minLength','maxLength', 'pattern');
+class jDatatypeString extends jDatatype implements jIFilteredDatatype
+{
+    protected $length = null;
+    protected $minLength = null;
+    protected $maxLength = null;
+    protected $pattern = null;
+    protected $filterHtml = false;
+    protected $filteredValue = '';
+    protected $facets = array('length', 'minLength', 'maxLength', 'pattern', 'filterHtml');
 
-    public function check($value){
+    public function check($value)
+    {
         if ($this->hasFacets) {
             if ($value === null) {
                 $value = '';
             }
-            $len = iconv_strlen(
-                trim(preg_replace( '@\s+@', ' ', $value)),
-                jApp::config()->charset
-            );
-            if($this->length !== null && $len != $this->length)
+            $this->filteredValue = $value;
+            $value = trim(preg_replace('@\s+@', ' ', $value));
+            if ($this->filterHtml) {
+                $value = preg_replace('/<\/?[a-zA-Z0-9]+[^>]*>/', '', $value);
+                $this->filteredValue = $value;
+            }
+
+            $len = iconv_strlen($value, jApp::config()->charset);
+
+            if ($this->length !== null && $len != $this->length)
                 return false;
-            if($this->minLength !== null && $len < $this->minLength)
+            if ($this->minLength !== null && $len < $this->minLength)
                 return false;
-            if($this->maxLength !== null && $len > $this->maxLength)
+            if ($this->maxLength !== null && $len > $this->maxLength)
                 return false;
-            if($this->pattern !== null && !preg_match($this->pattern,$value))
+            if ($this->pattern !== null && !preg_match($this->pattern, $value))
                 return false;
         }
         return true;
     }
 
-    public function allowWhitespace() {
+    public function getFilteredValue()
+    {
+        return $this->filteredValue;
+    }
+
+    public function allowWhitespace()
+    {
         return true;
     }
 }
@@ -130,43 +153,48 @@ class jDatatypeString extends jDatatype {
  * @subpackage  datatypes
  * @since 1.1
  */
-class jDatatypeHtml extends jDatatype implements jIFilteredDatatype {
-    protected $length=null;
-    protected $minLength=null;
-    protected $maxLength=null;
-    protected $facets = array('length','minLength','maxLength');
+class jDatatypeHtml extends jDatatype implements jIFilteredDatatype
+{
+    protected $length = null;
+    protected $minLength = null;
+    protected $maxLength = null;
+    protected $facets = array('length', 'minLength', 'maxLength');
     public $outputXhtml = false;
     public $fromWysiwyg = false;
 
     protected $newValue;
 
-    public function __construct($aOutputXhtml = false, $fromWysiwyg = false) {
+    public function __construct($aOutputXhtml = false, $fromWysiwyg = false)
+    {
         $this->outputXhtml = $aOutputXhtml;
         $this->fromWysiwyg = $fromWysiwyg;
     }
 
-    public function check($value){
-        if($this->hasFacets){
+    public function check($value)
+    {
+        if ($this->hasFacets) {
             if ($this->fromWysiwyg)
-                $len = iconv_strlen(strip_tags($value,'<img><img/><object><embed><video><video/><svg>'), jApp::config()->charset);
+                $len = iconv_strlen(strip_tags($value, '<img><img/><object><embed><video><video/><svg>'), jApp::config()->charset);
             else
                 $len = iconv_strlen($value, jApp::config()->charset);
-            if($this->length !== null && $len != $this->length)
+            if ($this->length !== null && $len != $this->length)
                 return false;
-            if($this->minLength !== null && $len < $this->minLength)
+            if ($this->minLength !== null && $len < $this->minLength)
                 return false;
-            if($this->maxLength !== null && $len > $this->maxLength)
+            if ($this->maxLength !== null && $len > $this->maxLength)
                 return false;
         }
         $this->newValue = jFilter::cleanHtml($value, $this->outputXhtml);
         return is_string($this->newValue);
     }
 
-    public function getFilteredValue() {
+    public function getFilteredValue()
+    {
         return $this->newValue;
     }
 
-    public function allowWhitespace() {
+    public function allowWhitespace()
+    {
         return true;
     }
 }
@@ -176,8 +204,12 @@ class jDatatypeHtml extends jDatatype implements jIFilteredDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeBoolean extends jDatatype {
-    public function check($value) { return jFilter::isBool($value); }
+class jDatatypeBoolean extends jDatatype
+{
+    public function check($value)
+    {
+        return jFilter::isBool($value);
+    }
 }
 
 /**
@@ -187,14 +219,19 @@ class jDatatypeBoolean extends jDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeDecimal extends jDatatype {
+class jDatatypeDecimal extends jDatatype
+{
     // xxxx.yyyyy
-    protected $maxValue=null;
-    protected $minValue=null;
+    protected $maxValue = null;
+    protected $minValue = null;
     protected $facets = array('maxValue', 'minValue');
-    public function check($value) { return jFilter::isFloat($value, $this->minValue, $this->maxValue); }
-    protected function _addFacet($type,$value){
-        if($type == 'maxValue' || $type == 'minValue'){
+    public function check($value)
+    {
+        return jFilter::isFloat($value, $this->minValue, $this->maxValue);
+    }
+    protected function _addFacet($type, $value)
+    {
+        if ($type == 'maxValue' || $type == 'minValue') {
             $this->$type = floatval($value);
         }
     }
@@ -205,10 +242,15 @@ class jDatatypeDecimal extends jDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeInteger extends jDatatypeDecimal {
-    public function check($value) { return jFilter::isInt($value, $this->minValue, $this->maxValue); }
-    protected function _addFacet($type,$value){
-        if($type == 'maxValue' || $type == 'minValue'){
+class jDatatypeInteger extends jDatatypeDecimal
+{
+    public function check($value)
+    {
+        return jFilter::isInt($value, $this->minValue, $this->maxValue);
+    }
+    protected function _addFacet($type, $value)
+    {
+        if ($type == 'maxValue' || $type == 'minValue') {
             $this->$type = intval($value);
         }
     }
@@ -220,14 +262,17 @@ class jDatatypeInteger extends jDatatypeDecimal {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeHexadecimal extends jDatatypeDecimal {
-    public function check($value) {
-        if(substr($value,0,2) != '0x') $value='0x'.$value;
+class jDatatypeHexadecimal extends jDatatypeDecimal
+{
+    public function check($value)
+    {
+        if (substr($value, 0, 2) != '0x') $value = '0x' . $value;
         return jFilter::isHexInt($value, $this->minValue, $this->maxValue);
     }
-    protected function _addFacet($type,$value){
-        if($type == 'maxValue' || $type == 'minValue'){
-            $this->$type = intval($value,16);
+    protected function _addFacet($type, $value)
+    {
+        if ($type == 'maxValue' || $type == 'minValue') {
+            $this->$type = intval($value, 16);
         }
     }
 }
@@ -240,39 +285,44 @@ class jDatatypeHexadecimal extends jDatatypeDecimal {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeDateTime extends jDatatype {
+class jDatatypeDateTime extends jDatatype
+{
     protected $facets = array('maxValue', 'minValue');
     protected $maxValue;
     protected $minValue;
     private $dt;
-    protected $format=21;
+    protected $format = 21;
     protected $_date_format = 'Y-m-d H:i:s';
-    public function check($value) {
+    public function check($value)
+    {
         $this->dt = new jDateTime();
-        if(!$this->dt->setFromString($value,$this->format)) return false;
-        if($this->maxValue !== null){
-            if($this->dt->compareTo($this->maxValue) == 1) return false;
+        if (!$this->dt->setFromString($value, $this->format)) return false;
+        if ($this->maxValue !== null) {
+            if ($this->dt->compareTo($this->maxValue) == 1) return false;
         }
-        if($this->minValue !== null){
-            if($this->dt->compareTo($this->minValue) == -1) return false;
+        if ($this->minValue !== null) {
+            if ($this->dt->compareTo($this->minValue) == -1) return false;
         }
         return true;
     }
 
-    protected function _addFacet($type,$value){
-        if($type == 'maxValue' || $type == 'minValue'){
-            if(!preg_match('#^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$#',$value))
-                $value = date($this->_date_format,strtotime($value));
+    protected function _addFacet($type, $value)
+    {
+        if ($type == 'maxValue' || $type == 'minValue') {
+            if (!preg_match('#^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$#', $value))
+                $value = date($this->_date_format, strtotime($value));
             $this->$type = new jDateTime();
-            $this->$type->setFromString($value,$this->format);
-        }
-        else
-            parent::_addFacet($type,$value);
+            $this->$type->setFromString($value, $this->format);
+        } else
+            parent::_addFacet($type, $value);
     }
     /**
      * @since 1.0
      */
-    public function getFormat() { return $this->format; }
+    public function getFormat()
+    {
+        return $this->format;
+    }
 }
 
 /**
@@ -280,16 +330,18 @@ class jDatatypeDateTime extends jDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeTime extends jDatatypeDateTime {
-    protected $format=22;
+class jDatatypeTime extends jDatatypeDateTime
+{
+    protected $format = 22;
 }
 /**
  * Datatype date
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeDate extends jDatatypeDateTime {
-    protected $format=20;
+class jDatatypeDate extends jDatatypeDateTime
+{
+    protected $format = 20;
     protected $_date_format = 'Y-m-d';
 }
 
@@ -298,8 +350,9 @@ class jDatatypeDate extends jDatatypeDateTime {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeLocaleDateTime extends jDatatypeDateTime {
-    protected $format=11;
+class jDatatypeLocaleDateTime extends jDatatypeDateTime
+{
+    protected $format = 11;
 }
 
 /**
@@ -307,8 +360,9 @@ class jDatatypeLocaleDateTime extends jDatatypeDateTime {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeLocaleDate extends jDatatypeDateTime {
-    protected $format=10;
+class jDatatypeLocaleDate extends jDatatypeDateTime
+{
+    protected $format = 10;
 }
 
 /**
@@ -316,8 +370,9 @@ class jDatatypeLocaleDate extends jDatatypeDateTime {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeLocaleTime extends jDatatypeDateTime {
-    protected $format=12;
+class jDatatypeLocaleTime extends jDatatypeDateTime
+{
+    protected $format = 12;
 }
 
 
@@ -327,8 +382,9 @@ class jDatatypeLocaleTime extends jDatatypeDateTime {
  * @subpackage  datatypes
  * @author dhughuet, time short
  */
-class jDatatypeLocaleTimeShort extends jDatatypeDateTime {
-    protected $format=14;
+class jDatatypeLocaleTimeShort extends jDatatypeDateTime
+{
+    protected $format = 14;
 }
 
 
@@ -340,15 +396,17 @@ class jDatatypeLocaleTimeShort extends jDatatypeDateTime {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeUrl extends jDatatype {
-    protected $schemeRequired=true;
-    protected $hostRequired=true;
-    protected $pathRequired=null;
-    protected $queryRequired=null;
+class jDatatypeUrl extends jDatatype
+{
+    protected $schemeRequired = true;
+    protected $hostRequired = true;
+    protected $pathRequired = null;
+    protected $queryRequired = null;
 
-    protected $facets = array('schemeRequired','hostRequired','pathRequired', 'queryRequired');
+    protected $facets = array('schemeRequired', 'hostRequired', 'pathRequired', 'queryRequired');
 
-    public function check($value){
+    public function check($value)
+    {
         return jFilter::isUrl($value, $this->schemeRequired, $this->hostRequired, $this->pathRequired, $this->queryRequired);
     }
 }
@@ -358,8 +416,10 @@ class jDatatypeUrl extends jDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeIPv4 extends jDatatype {
-    public function check($value){
+class jDatatypeIPv4 extends jDatatype
+{
+    public function check($value)
+    {
         return jFilter::isIPv4($value);
     }
 }
@@ -369,8 +429,10 @@ class jDatatypeIPv4 extends jDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeIPv6 extends jDatatype {
-    public function check($value){
+class jDatatypeIPv6 extends jDatatype
+{
+    public function check($value)
+    {
         return jFilter::isIPv6($value);
     }
 }
@@ -380,8 +442,10 @@ class jDatatypeIPv6 extends jDatatype {
  * @package     jelix
  * @subpackage  datatypes
  */
-class jDatatypeEmail extends jDatatype {
-    public function check($value){
+class jDatatypeEmail extends jDatatype
+{
+    public function check($value)
+    {
         return jFilter::isEmail($value);
     }
 }
