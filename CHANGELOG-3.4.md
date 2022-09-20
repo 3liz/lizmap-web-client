@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.4.13 - 2022-09-20
+
 ### Fixed
 
 * Form filter - Use OR between the uniques values of the same field
