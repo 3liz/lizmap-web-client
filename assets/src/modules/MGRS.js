@@ -20,7 +20,12 @@ class MGRS extends Graticule {
     * @private
     */
     createGraticule_(extent, center, resolution, squaredTolerance) {
-        const interval = this.getInterval_(resolution);
+
+        // Force minLat and maxLat for MGRS
+        this.maxLat_ = 84;
+        this.minLat_ = -80;
+
+        let interval = this.getInterval_(resolution);
         if (interval == -1) {
             this.meridians_.length = 0;
             this.parallels_.length = 0;
@@ -129,6 +134,8 @@ class MGRS extends Graticule {
         }
 
         // Create meridians
+        
+        interval = 6;
 
         centerLon = Math.floor(centerLon / interval) * interval;
         lon = clamp(centerLon, this.minLon_, this.maxLon_);
@@ -196,6 +203,8 @@ class MGRS extends Graticule {
 
         // Create parallels
 
+        interval = 8;
+
         centerLat = Math.floor(centerLat / interval) * interval;
         lat = clamp(centerLat, this.minLat_, this.maxLat_);
 
@@ -219,14 +228,27 @@ class MGRS extends Graticule {
         cnt = 0;
         while (lat != this.maxLat_ && cnt++ < maxLines) {
             lat = Math.min(lat + interval, this.maxLat_);
-            idx = this.addParallel_(
-                lat,
-                minLon,
-                maxLon,
-                squaredTolerance,
-                extent,
-                idx
-            );
+
+            // The northmost latitude band, X, is 12° high
+            if(lat === 80){
+                idx = this.addParallel_(
+                    84,
+                    minLon,
+                    maxLon,
+                    squaredTolerance,
+                    extent,
+                    idx
+                );
+            }else{
+                idx = this.addParallel_(
+                    lat,
+                    minLon,
+                    maxLon,
+                    squaredTolerance,
+                    extent,
+                    idx
+                );
+            }
         }
 
         this.parallels_.length = idx;
