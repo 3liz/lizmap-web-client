@@ -109,11 +109,12 @@ class jDatatypeString extends jDatatype implements jIFilteredDatatype
 
     public function check($value)
     {
+        if ($value === null) {
+            $value = '';
+        }
+        $this->filteredValue = $value;
+
         if ($this->hasFacets) {
-            if ($value === null) {
-                $value = '';
-            }
-            $this->filteredValue = $value;
             $value = trim(preg_replace('@\s+@', ' ', $value));
             if ($this->filterHtml) {
                 $value = preg_replace('/<\/?[a-zA-Z0-9]+[^>]*>/', '', $value);
@@ -131,6 +132,7 @@ class jDatatypeString extends jDatatype implements jIFilteredDatatype
             if ($this->pattern !== null && !preg_match($this->pattern, $value))
                 return false;
         }
+
         return true;
     }
 
