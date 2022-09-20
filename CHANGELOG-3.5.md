@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Feature
+
+* New configuration to set up the Content Security Policy header
+
 ### Fixed
 
 * Better management of paths for Lizmap repositories
@@ -11,9 +15,15 @@
 * Improve the settings about the mail server
 * Improve the error message when the Lizmap server plugin is not found
 * Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
+* Fix one issue with PHP8
+
+### Translations
+
+* Update from Transifex about translated strings
 
 ### Backend
 
+* Update Jelix to version 1.6.38
 * Update OpenLayers to 6.15.1
 
 ### Tests
