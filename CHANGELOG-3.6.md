@@ -13,6 +13,7 @@
   * Be careful to the combobox selector in the QGIS plugin.
   * The minimum version required will be raised and advertised for each release of a major version of Lizmap Web Client.
 * Display the version of Py-QGIS-Server in the administration panel if it's used
+* New configuration to set up the Content Security Policy header
 
 ### Fixed
 
@@ -22,10 +23,11 @@
 * Fix some requests to QGIS Server
 * Fix an issue with PHP 8 when editing data
 * Fix an issue about group ID when restricting a project to a few groups
+* Fix a regression in form
 
 ### Backend
 
-* Upgrade the Jelix framework
+* Upgrade the Jelix framework to 1.8
 
 ### Tests
 
