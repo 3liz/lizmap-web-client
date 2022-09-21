@@ -33,10 +33,10 @@ jobs:
         run: echo running on branch ${GITHUB_REF##*/} with ${CYPRESS_CI}
 
       - name: Install Lizmap as a QGIS Server plugin
-        run: cd tests && ./add_server_plugins.sh
+        run: cd tests && make build-plugins
 
-      - name: Lizmap QGIS server version
-        run: cat tests/qgis-server-plugins/lizmap_server/metadata.txt | grep version=
+      - name: Show QGIS server versions
+        run: cd tests && make show-qgis-server-versions
 
       - name: Pull docker images
         run: cd tests && ./run-docker pull
