@@ -13,8 +13,16 @@ import {
 
 import { clamp } from 'ol/math.js';
 
-import {forward} from 'mgrs';
+import { forward } from 'mgrs';
 class MGRS extends Graticule {
+
+    latLabelFormatter_ = () => {
+        return '';
+    };
+
+    lonLabelFormatter_ = () => {
+        return '';
+    };
 
     /**
      * @param {number} lon Longitude.
@@ -40,10 +48,10 @@ class MGRS extends Graticule {
                 let text;
 
                 // Handle single digit GZD
-                if(lon <= -132){
-                    text = mgrsLabel.slice(0,2);
-                }else{
-                    text = mgrsLabel.slice(0,3);
+                if (lon <= -132) {
+                    text = mgrsLabel.slice(0, 2);
+                } else {
+                    text = mgrsLabel.slice(0, 3);
                 }
                 if (index in this.meridiansLabels_) {
                     this.meridiansLabels_[index].text = text;
@@ -69,7 +77,7 @@ class MGRS extends Graticule {
     createGraticule_(extent, center, resolution, squaredTolerance) {
 
         // Force minLat and maxLat for MGRS
-        this.maxLat_ = 84;
+        this.maxLat_ = 72;
         this.minLat_ = -80;
 
         let interval = this.getInterval_(resolution);
@@ -181,13 +189,21 @@ class MGRS extends Graticule {
         }
 
         const lonInterval = 6;
-        const latInterval = 8;
+        let latInterval = 8;
 
         let idxParallels = 0;
         let idxMeridians = 0;
 
         for (lon = this.minLon_; lon <= this.maxLon_; lon += lonInterval) {
             for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
+
+                // The northmost latitude band, X, is 12° high
+                if (lat == 72) {
+                    latInterval = 12
+                } else {
+                    latInterval = 8;
+                }
+
                 idxParallels = this.addParallel_(
                     lat,
                     lon,
@@ -196,6 +212,17 @@ class MGRS extends Graticule {
                     extent,
                     idxParallels
                 );
+
+                // Special cases
+                // Norway
+                if (lat === 56 && lon === 6) {
+                    continue;
+                }
+
+                // Svalbard
+                if (lat === 72 && lon >= 6 && lon <= 36) {
+                    continue;
+                }
 
                 idxMeridians = this.addMeridian_(
                     lon,
@@ -206,6 +233,29 @@ class MGRS extends Graticule {
                     idxMeridians
                 );
             }
+        }
+
+        // Special cases
+        // Norway
+        idxMeridians = this.addMeridian_(
+            3,
+            56,
+            64,
+            squaredTolerance,
+            extent,
+            idxMeridians
+        );
+
+        // Svalbard
+        for (const lon of [9, 21, 33]) {
+            idxMeridians = this.addMeridian_(
+                lon,
+                72,
+                84,
+                squaredTolerance,
+                extent,
+                idxMeridians
+            );
         }
 
         this.parallels_.length = idxParallels;
