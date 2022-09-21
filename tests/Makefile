@@ -40,14 +40,7 @@ env:
 
 
 build-plugins:
-	docker run \
-	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
-	    --rm -it \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
-	    -v $(shell pwd)/:/src \
-        --entrypoint /src/add_server_plugins.sh \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+	./add_server_plugins.sh
 
 up: env
 	docker compose up  -V --force-recreate -d
