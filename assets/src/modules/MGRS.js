@@ -1,16 +1,63 @@
 import Graticule from 'ol/layer/Graticule';
 
+import Point from 'ol/geom/Point.js';
+
 import {
     applyTransform,
     containsCoordinate,
     containsExtent,
     getWidth,
+    intersects,
     wrapX as wrapExtentX,
 } from 'ol/extent.js';
 
 import { clamp } from 'ol/math.js';
 
+import {forward} from 'mgrs';
 class MGRS extends Graticule {
+
+    /**
+     * @param {number} lon Longitude.
+     * @param {number} minLat Minimal latitude.
+     * @param {number} maxLat Maximal latitude.
+     * @param {number} squaredTolerance Squared tolerance.
+     * @param {import("../extent.js").Extent} extent Extent.
+     * @param {number} index Index.
+     * @return {number} Index.
+     * @private
+     */
+    addMeridian_(lon, minLat, maxLat, squaredTolerance, extent, index) {
+        const lineString = this.getMeridian_(
+            lon,
+            minLat,
+            maxLat,
+            squaredTolerance,
+            index
+        );
+        if (intersects(lineString.getExtent(), extent)) {
+            if (this.meridiansLabels_) {
+                const mgrsLabel = forward([lon, minLat]);
+                let text;
+
+                // Handle single digit GZD
+                if(lon <= -132){
+                    text = mgrsLabel.slice(0,2);
+                }else{
+                    text = mgrsLabel.slice(0,3);
+                }
+                if (index in this.meridiansLabels_) {
+                    this.meridiansLabels_[index].text = text;
+                } else {
+                    this.meridiansLabels_[index] = {
+                        geom: new Point([]),
+                        text: text,
+                    };
+                }
+            }
+            this.meridians_[index++] = lineString;
+        }
+        return index;
+    }
 
     /**
     * @param {import("../extent.js").Extent} extent Extent.
@@ -133,163 +180,44 @@ class MGRS extends Graticule {
             minLon = clamp(minLon, this.minLon_, centerLon);
         }
 
-        // Create meridians
-        
-        interval = 6;
+        const lonInterval = 6;
+        const latInterval = 8;
 
-        centerLon = Math.floor(centerLon / interval) * interval;
-        lon = clamp(centerLon, this.minLon_, this.maxLon_);
+        let idxParallels = 0;
+        let idxMeridians = 0;
 
-        idx = this.addMeridian_(lon, minLat, maxLat, squaredTolerance, extent, 0);
-
-        cnt = 0;
-        if (wrapX) {
-            while ((lon -= interval) >= minLon && cnt++ < maxLines) {
-                idx = this.addMeridian_(
-                    lon,
-                    minLat,
-                    maxLat,
-                    squaredTolerance,
-                    extent,
-                    idx
-                );
-            }
-        } else {
-            while (lon != this.minLon_ && cnt++ < maxLines) {
-                lon = Math.max(lon - interval, this.minLon_);
-
-                if(lon !== 6){
-                    idx = this.addMeridian_(
-                        lon,
-                        minLat,
-                        maxLat,
-                        squaredTolerance,
-                        extent,
-                        idx
-                    );
-                }
-            }
-        }
-
-        lon = clamp(centerLon, this.minLon_, this.maxLon_);
-
-        cnt = 0;
-        if (wrapX) {
-            while ((lon += interval) <= maxLon && cnt++ < maxLines) {
-                idx = this.addMeridian_(
-                    lon,
-                    minLat,
-                    maxLat,
-                    squaredTolerance,
-                    extent,
-                    idx
-                );
-            }
-        } else {
-            while (lon != this.maxLon_ && cnt++ < maxLines) {
-                lon = Math.min(lon + interval, this.maxLon_);
-                if(lon !== 6){
-                    idx = this.addMeridian_(
-                        lon,
-                        minLat,
-                        maxLat,
-                        squaredTolerance,
-                        extent,
-                        idx
-                    );
-                }
-            }
-        }
-
-        // Special cases
-
-        // Norway
-        idx = this.addMeridian_(
-            3,
-            56,
-            64,
-            squaredTolerance,
-            extent,
-            idx
-        );
-        idx = this.addMeridian_(
-            6,
-            64,
-            72,
-            squaredTolerance,
-            extent,
-            idx
-        );
-        idx = this.addMeridian_(
-            6,
-            -80,
-            56,
-            squaredTolerance,
-            extent,
-            idx
-        );
-
-        this.meridians_.length = idx;
-        if (this.meridiansLabels_) {
-            this.meridiansLabels_.length = idx;
-        }
-
-        // Create parallels
-
-        interval = 8;
-
-        centerLat = Math.floor(centerLat / interval) * interval;
-        lat = clamp(centerLat, this.minLat_, this.maxLat_);
-
-        idx = this.addParallel_(lat, minLon, maxLon, squaredTolerance, extent, 0);
-
-        cnt = 0;
-        while (lat != this.minLat_ && cnt++ < maxLines) {
-            lat = Math.max(lat - interval, this.minLat_);
-            idx = this.addParallel_(
-                lat,
-                minLon,
-                maxLon,
-                squaredTolerance,
-                extent,
-                idx
-            );
-        }
-
-        lat = clamp(centerLat, this.minLat_, this.maxLat_);
-
-        cnt = 0;
-        while (lat != this.maxLat_ && cnt++ < maxLines) {
-            lat = Math.min(lat + interval, this.maxLat_);
-
-            // The northmost latitude band, X, is 12° high
-            if(lat === 80){
-                idx = this.addParallel_(
-                    84,
-                    minLon,
-                    maxLon,
-                    squaredTolerance,
-                    extent,
-                    idx
-                );
-            }else{
-                idx = this.addParallel_(
+        for (lon = this.minLon_; lon <= this.maxLon_; lon += lonInterval) {
+            for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
+                idxParallels = this.addParallel_(
                     lat,
-                    minLon,
-                    maxLon,
+                    lon,
+                    lon + lonInterval,
                     squaredTolerance,
                     extent,
-                    idx
+                    idxParallels
+                );
+
+                idxMeridians = this.addMeridian_(
+                    lon,
+                    lat,
+                    lat + latInterval,
+                    squaredTolerance,
+                    extent,
+                    idxMeridians
                 );
             }
         }
 
-        this.parallels_.length = idx;
+        this.parallels_.length = idxParallels;
         if (this.parallelsLabels_) {
-            this.parallelsLabels_.length = idx;
+            this.parallelsLabels_.length = idxParallels;
+        }
+
+        this.meridians_.length = idxMeridians;
+        if (this.meridiansLabels_) {
+            this.meridiansLabels_.length = idxMeridians;
         }
     }
-
 }
 
 export default MGRS;
