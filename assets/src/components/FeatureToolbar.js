@@ -33,7 +33,7 @@ export default class FeatureToolbar extends HTMLElement {
             <button class="btn btn-mini feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
             <button class="btn btn-mini feature-zoom ${this.attributeTableConfig && this.hasGeometry ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
             <button class="btn btn-mini feature-center ${this.attributeTableConfig && this.hasGeometry ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
-            <button class="btn btn-mini feature-edit ${this.isLayerEditable ? '' : 'hide'}" @click=${() => this.edit()} ?disabled="${!this._isFeatureEditable}" title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
+            <button class="btn btn-mini feature-edit ${this.isLayerEditable && this._isFeatureEditable ? '' : 'hide'}" @click=${() => this.edit()} title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
             <button class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
             <button class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isLayerPivot ? this.delete() : this.unlink()} title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
 
@@ -152,12 +152,13 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     /**
-     * Feature can be delete if delete capabilities has been set and layer is not pivot
+     * Feature can be delete if it is editable and has delete capabilities and layer is not pivot
      * If layer is a pivot, unlink button is displayed but a delete action is made instead
      * @readonly
      */
     get isDeletable(){
-        return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True"
+        return this._isFeatureEditable
+            && lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True"
             && !this.isLayerPivot;
     }
 
