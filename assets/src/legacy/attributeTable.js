@@ -1352,11 +1352,6 @@ var lizAttributeTable = function() {
                                 const tableId = api.table().node().id;
                                 const featureType = tableId.split('attribute-layer-table-')[1];
 
-                                // Check editable features
-                                if (canEdit || canDelete) {
-                                    lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
-                                }
-
                                 // Trigger event telling attribute table is ready
                                 lizMap.events.triggerEvent("attributeLayerContentReady",
                                     {
@@ -1415,6 +1410,11 @@ var lizAttributeTable = function() {
                             return false;
 
                         });
+                    }
+
+                    // Check editable features
+                    if (canEdit || canDelete) {
+                        lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
                     }
                 }
 
