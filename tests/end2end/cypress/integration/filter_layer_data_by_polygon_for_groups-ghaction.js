@@ -118,11 +118,12 @@ describe('Filter layer data by polygon for groups', function () {
 
         // The user cannot edit the data, even for the layer townhalls_pg
 
-        // Every buttons are disabled
-        cy.get('#attribute-layer-table-townhalls_pg button:disabled.feature-edit').should('have.length', 16)
+        // Every edit and delete buttons are hidden
+        cy.get('#attribute-layer-table-townhalls_pg button.feature-edit.hide').should('have.length', 16)
+        cy.get('#attribute-layer-table-townhalls_pg button.feature-delete.hide').should('have.length', 16)
 
-        // Edition is impossible even when removing disabled on button
-        cy.get('.feature-edit:first').invoke("removeAttr", "disabled").click({ force: true })
+        // Edition is impossible even when displaying button
+        cy.get('.feature-edit:first').invoke("removeClass", "hide").click({ force: true })
         // => a message is displayed
         cy.get('ul.jelix-msg > li').should('have.class', 'jelix-msg-item-FeatureNotEditable')
     })
@@ -185,10 +186,10 @@ describe('Filter layer data by polygon for groups', function () {
 
         cy.get('.lizmapPopupTitle').should('have.text', 'townhalls_pg')
 
-        cy.get('.lizmapPopupDiv .feature-edit').should('be.disabled')
+        cy.get('.lizmapPopupDiv .feature-edit').should('have.class', 'hide')
 
         cy.get('#map').click(525, 270)//558,345
-        cy.get('.lizmapPopupDiv .feature-edit').should('not.be.disabled')
+        cy.get('.lizmapPopupDiv .feature-edit').should('not.have.class', 'hide')
 
         // 3/ attribute table
 
@@ -210,9 +211,9 @@ describe('Filter layer data by polygon for groups', function () {
         cy.get('button[value="townhalls_pg"].btn-open-attribute-layer').click({ force: true })
         cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
 
-        // The user can only edit 5 features for the layer townhalls_pg (16 - 5 = 11 are disabled)
-        cy.get('#attribute-layer-table-townhalls_pg button:disabled.feature-edit').should('have.length', 11)
-        cy.get('#attribute-layer-table-townhalls_pg button:not(:disabled).feature-edit').should('have.length', 5)
+        // The user can only edit 5 features for the layer townhalls_pg (16 - 5 = 11 are hidden)
+        cy.get('#attribute-layer-table-townhalls_pg button.feature-edit.hide').should('have.length', 11)
+        cy.get('#attribute-layer-table-townhalls_pg button.feature-edit:not(.hide)').should('have.length', 5)
 
         // Close attribute table
         cy.get('.btn-bottomdock-clear').click({force: true})
