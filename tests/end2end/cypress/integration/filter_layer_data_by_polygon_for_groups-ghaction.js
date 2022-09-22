@@ -93,7 +93,7 @@ describe('Filter layer data by polygon for groups', function () {
         })
 
         // 2/ popup
-        cy.get('#map').click(600, 340)
+        cy.mapClick(630, 415)
 
         cy.get('.lizmapPopupTitle').should('have.text','townhalls_pg')
 
@@ -181,13 +181,13 @@ describe('Filter layer data by polygon for groups', function () {
         })
 
         // 2/ popup
-        cy.get('#map').click(600, 340)
+        cy.mapClick(630, 415)
 
         cy.get('.lizmapPopupTitle').should('have.text', 'townhalls_pg')
 
         cy.get('.popup-layer-feature-edit').should('have.length', 0)
 
-        cy.get('#map').click(525, 270)//558,345
+        cy.mapClick(555, 345) //588,420
         cy.get('.popup-layer-feature-edit').should('have.length', 1)
 
         // 3/ attribute table
@@ -231,7 +231,7 @@ describe('Filter layer data by polygon for groups', function () {
         cy.wait(200)
 
         // Click to create feature outside allowed area
-        cy.get('#map').click(645, 390)
+        cy.mapClick(675, 465)
 
         cy.get('#jforms_view_edition__submit_submit').click()
 
