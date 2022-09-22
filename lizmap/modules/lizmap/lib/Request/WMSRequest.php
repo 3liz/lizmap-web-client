@@ -668,7 +668,8 @@ class WMSRequest extends OGCRequest
             if (array_key_exists('status', $editableFeatures) && $editableFeatures['status'] === 'restricted') {
                 $editionRestricted = 'edition-restricted="true"';
                 foreach ($editableFeatures['features'] as $editableFeature) {
-                    if ($editableFeature->properties->id == $id) {
+                    $pKeyValue = explode('.', $editableFeature->id)[1];
+                    if ($pKeyValue == $id) {
                         $editionRestricted = 'edition-restricted="false"';
 
                         break;
