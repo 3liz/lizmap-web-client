@@ -225,7 +225,8 @@ describe('Filter layer data by polygon for groups', function () {
 
         // 4/ For townhalls_pg (tested) and shop_bakery_pg if the user creates a point outside the red polygons
         //    => an error must be raised: "The given geometry is outside the authorized polygon".
-        cy.get('#button-edition').click()
+        // The edition dock is already displayed because of the error message
+        //cy.get('#button-edition').click()
 
         cy.get('#edition-layer').select('townhalls_pg_f97f7bce_29dc_469b_a5ef_baaf25ba1b31')
 
@@ -243,5 +244,6 @@ describe('Filter layer data by polygon for groups', function () {
 
         // Assert error message
         cy.get('#jforms_view_edition_errors > p').should('have.text', 'The given geometry is outside the authorized polygon.')
+
     })
 })
