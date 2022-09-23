@@ -10,7 +10,7 @@ describe('Form edition without creation', function () {
         cy.get('#edition-creation').should('not.be.visible')
 
         // Click on a feature then launch its edition form
-        cy.get('#map').click(600, 250)
+        cy.mapClick(630, 325)
         cy.get('.feature-edit').click()
 
         // Only edition form should be visible...
