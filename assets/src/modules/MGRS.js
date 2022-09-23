@@ -13,7 +13,7 @@ import {
 
 import { clamp } from 'ol/math.js';
 
-import { forward } from 'mgrs';
+import { forward, inverse } from 'mgrs';
 class MGRS extends Graticule {
 
     latLabelFormatter_ = () => {
@@ -49,9 +49,9 @@ class MGRS extends Graticule {
 
                 // Handle single digit GZD
                 if (lon <= -132) {
-                    text = mgrsLabel.slice(0, 2);
+                    text = mgrsLabel.slice(0, 4);
                 } else {
-                    text = mgrsLabel.slice(0, 3);
+                    text = mgrsLabel.slice(0, 5);
                 }
                 if (index in this.meridiansLabels_) {
                     this.meridiansLabels_[index].text = text;
@@ -188,6 +188,10 @@ class MGRS extends Graticule {
             minLon = clamp(minLon, this.minLon_, centerLon);
         }
 
+
+        // Get code inside grid
+        const delta = 0.01;
+
         const lonInterval = 6;
         let latInterval = 8;
 
@@ -196,6 +200,73 @@ class MGRS extends Graticule {
 
         for (lon = this.minLon_; lon <= this.maxLon_; lon += lonInterval) {
             for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
+
+                // 100KM grid
+                if (lon === -180 && lat === 0) {
+                    const leftBottom = forward([lon, lat], 1).substring(0, 4);
+                    const rightTop = forward([lon + lonInterval - delta, lat + latInterval - delta], 1).substring(0, 4);
+
+                    let rowLetter = leftBottom.charCodeAt(2);
+                    while ((rowLetter += 1) <= rightTop.charCodeAt(2)) {
+
+                        // Discard I and O
+                        if(rowLetter === 73 || rowLetter === 79 ){
+                            continue;
+                        }
+
+                        let columnLetter = leftBottom.charCodeAt(3) -1 ;
+                        while ((columnLetter += 1) <= rightTop.charCodeAt(3)) {
+
+                            // Discard I and O
+                            if(columnLetter === 73 || columnLetter === 79 ){
+                                continue;
+                            }
+
+                            let temp = leftBottom.slice(0, 2) + String.fromCharCode(rowLetter) + String.fromCharCode(columnLetter);
+
+                            const bbox = inverse(temp);
+
+                            idxParallels = this.addParallel_(
+                                bbox[1],
+                                bbox[0],
+                                bbox[2],
+                                squaredTolerance,
+                                extent,
+                                idxParallels
+                            );
+
+                            idxParallels = this.addParallel_(
+                                bbox[3],
+                                bbox[0],
+                                bbox[2],
+                                squaredTolerance,
+                                extent,
+                                idxParallels
+                            );
+
+                            idxMeridians = this.addMeridian_(
+                                bbox[0],
+                                bbox[1],
+                                bbox[3],
+                                squaredTolerance,
+                                extent,
+                                idxMeridians
+                            );
+
+                            idxMeridians = this.addMeridian_(
+                                bbox[2],
+                                bbox[1],
+                                bbox[3],
+                                squaredTolerance,
+                                extent,
+                                idxMeridians
+                            );
+                        }
+                    }
+
+
+
+                }
 
                 // The northmost latitude band, X, is 12° high
                 if (lat == 72) {
