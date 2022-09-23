@@ -15,4 +15,11 @@ window.onload = () => {
       });
     });
   }
+  else {
+    // Website is maybe without HTTPS
+    document.querySelectorAll('.copy-to-clipboard').forEach((el) => {
+        el.style.display = "none";
+    });
+    console.log("The clipboard API is not enabled");
+  }
 };
