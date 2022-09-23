@@ -17,3 +17,15 @@ rm lizmap_server.master.zip
 if [ -d qgis-server-plugins/lizmap/ ]; then
   rm -rf qgis-server-plugins/lizmap
 fi
+
+# AtlasPrint
+VERSION=3.3.1
+wget https://github.com/3liz/qgis-atlasprint/releases/latest/download/atlasprint.${VERSION}.zip -O atlasprint.zip
+unzip -o atlasprint.zip -d qgis-server-plugins/
+rm atlasprint.zip
+
+# WfsOutputExtension
+VERSION=1.7.0
+wget https://github.com/3liz/qgis-wfsOutputExtension/releases/latest/download/wfsOutputExtension.${VERSION}.zip -O wfsoutputextension.zip
+unzip -o wfsoutputextension.zip -d qgis-server-plugins/
+rm wfsoutputextension.zip
