@@ -86,7 +86,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone A1')
-        cy.get('#map').click(500, 300)
+        cy.mapClick(530, 375)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -103,7 +103,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone A2')
-        cy.get('#map').click(700, 300)
+        cy.mapClick(730, 375)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -119,7 +119,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone B1')
-        cy.get('#map').click(500, 500)
+        cy.mapClick(530, 575)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -135,7 +135,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone B2')
-        cy.get('#map').click(700, 500)
+        cy.mapClick(730, 575)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -151,12 +151,43 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry outside zones')
-        cy.get('#map').click(700, 700)
+        cy.mapClick(730, 775)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
         cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 1)
         cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+    })
+
+    it('Child field menulist after geometry form', function () {
+        // Wait before clicking on the map
+        cy.wait(800)
+
+        // Intercept getListData query to wait for its end
+        cy.intercept('/index.php/jelix/jforms/getListData*').as('getListData')
+
+        // Edition point coord
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+            .click(true)
+            .parent().should('have.class', 'active')
+        cy.get('#edition-point-coord-crs').select('EPSG:4326').should('have.value', '4326')
+        cy.get('#edition-point-coord-x').clear()
+        cy.get('#edition-point-coord-x').type('0.9824579737302558')
+        cy.get('#edition-point-coord-y').clear()
+        cy.get('#edition-point-coord-y').type('44.97311997845858')
+        cy.get('#edition-point-coord-submit').click(true)
+
+        // Wait getListData query ends + slight delay for UI to be ready
+        cy.wait('@getListData')
+
+        cy.get('#jforms_view_edition_geom').invoke('val')
+            .should('contain', 'POINT')
+            .should('contain', '(0.982457')
+            .should('contain', ' 44.973119')
+
+        cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
+        cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
+        cy.get('#jforms_view_edition_code_with_geom_exp option').last().should('have.text', 'Zone B1')
     })
 
 })

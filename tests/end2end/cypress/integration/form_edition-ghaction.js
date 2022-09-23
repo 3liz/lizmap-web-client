@@ -47,14 +47,14 @@ describe('Form edition', function () {
 
         // Assert success message is displayed
         cy.get('#message .jelix-msg-item-success').should('be.visible')
-        
+
         // Allow geom creation when not existing
         cy.get('button[value="end2end_form_edition_geom"].btn-open-attribute-layer').click({ force: true })
         cy.get('button.attribute-layer-feature-edit:first').click({ force: true })
         cy.get('.edition-tabs a[href="#tabdigitization"]').should('be.visible')
 
         // Draw point
-        cy.get('#map').click(600, 250)
+        cy.mapClick(630, 325)
 
         // Save feature with new geom point
         cy.get('#jforms_view_edition__submit_submit').click()
