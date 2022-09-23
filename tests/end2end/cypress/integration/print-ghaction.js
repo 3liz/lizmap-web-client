@@ -137,7 +137,7 @@ describe('Print', function () {
             // Check content length > 24000 and < 33000
             expect(parseInt(response.headers['content-length']))
                 .to.be.greaterThan(24000)
-                .to.be.lessThan(33000)
+                .to.be.lessThan(32000)
             const contentLength = parseInt(response.headers['content-length'])
 
             // Check file exists in downloads folder and
@@ -160,8 +160,8 @@ describe('Print', function () {
 
             expect(response.body).to.contain('A test')
 
-            // Check content length > 33000
-            expect(parseInt(response.headers['content-length'])).to.be.greaterThan(33000)
+            // Check content length > 32000
+            expect(parseInt(response.headers['content-length'])).to.be.greaterThan(32000)
             const contentLength = parseInt(response.headers['content-length'])
 
             // Check file exists in downloads folder and
@@ -210,4 +210,12 @@ describe('Print', function () {
     //     })
     // })
 
+
+    it('should get atlas print', function () {
+        cy.get('#layer-quartiers button.btn.checkbox').click()
+        // Click quartier
+        cy.mapClick(480,340)
+
+        cy.get('#popupcontent .lizmapPopupContent .lizmapPopupSingleFeature a.lizmap-atlasprint-link').should('have.length', 1)
+    })
 })
