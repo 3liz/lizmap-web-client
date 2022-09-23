@@ -237,5 +237,6 @@ describe('Filter layer data by polygon for groups', function () {
 
         // Assert error message
         cy.get('#jforms_view_edition_errors > p').should('have.text', 'The given geometry is outside the authorized polygon.')
+
     })
 })

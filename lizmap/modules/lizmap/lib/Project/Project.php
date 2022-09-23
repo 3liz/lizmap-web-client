@@ -994,9 +994,17 @@ class Project
         return false;
     }
 
-    public function getLoginFilteredConfig($layerName)
+    /**
+     * Get login filtered config.
+     *
+     * @param string $layerName : layer's name
+     * @param bool   $edition   : get login filters for edition
+     *
+     * @return null|object the login filtered config
+     */
+    public function getLoginFilteredConfig($layerName, $edition = false)
     {
-        if (!$this->hasLoginFilteredLayers() || $layerName === null || $layerName === '') {
+        if (!$this->hasLoginFilteredLayers() || !$layerName) {
             return null;
         }
 
@@ -1012,7 +1020,17 @@ class Project
             return null;
         }
 
-        return $login->{$ln};
+        $loginFilteredConfig = $login->{$ln};
+
+        // If login filter is configured for edition only and the expression
+        // is not requested for edition, do not return expression
+        if (property_exists($loginFilteredConfig, 'edition_only')
+            && $this->optionToBoolean($loginFilteredConfig->edition_only)
+            && !$edition) {
+            return null;
+        }
+
+        return $loginFilteredConfig;
     }
 
     /**
@@ -1046,16 +1064,8 @@ class Project
             }
 
             // Get config
-            $loginFilteredConfig = $this->getLoginFilteredConfig($lName);
+            $loginFilteredConfig = $this->getLoginFilteredConfig($lName, $edition);
             if ($loginFilteredConfig == null) {
-                continue;
-            }
-
-            // If login filter is configured for edition only and the expression
-            // is not requested for edition, do not return expression
-            if (property_exists($loginFilteredConfig, 'edition_only')
-                && $this->optionToBoolean($loginFilteredConfig->edition_only)
-                && !$edition) {
                 continue;
             }
 
