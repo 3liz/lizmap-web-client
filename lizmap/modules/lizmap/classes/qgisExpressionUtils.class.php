@@ -139,7 +139,7 @@ class qgisExpressionUtils
      * @param array           $expressions  The expressions' list to evaluate
      * @param array           $form_feature A feature to add to the evaluation context
      *
-     * @return null|array the results of expressions' evaluation
+     * @return null|object the results of expressions' evaluation
      */
     public static function evaluateExpressions($layer, $expressions, $form_feature = null)
     {
