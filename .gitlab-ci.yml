@@ -121,7 +121,7 @@ deploy-package-unstable:
 deploy-docker-unstable:
   stage: deploy
   script:
-    - $HOME/bin/lzmservicectl update -C MUTU lizmap  --annotate="Updated image ($CI_COMMIT_SHORT_SHA)"
+    - echo "FIXME, update v3 service" 
   environment:
     name: snap
   dependencies:
