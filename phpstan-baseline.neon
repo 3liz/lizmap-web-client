@@ -1042,11 +1042,6 @@ parameters:
 			path: lizmap/modules/view/controllers/lizMap.classic.php
 
 		-
-			message: "#^Offset 'filename' on array\\{dirname\\: string, basename\\: string, filename\\: string, extension\\?\\: string\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/media.classic.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$path$#"
 			count: 2
 			path: lizmap/modules/view/controllers/media.classic.php
