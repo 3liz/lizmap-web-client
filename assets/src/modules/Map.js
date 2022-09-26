@@ -56,7 +56,7 @@ export default class Map extends olMap {
                     center: this._lizmap3Center,
                     zoom: mainLizmap.lizmap3.map.getZoom(),
                     duration: 0
-                }, () => this.on('moveend', this._refreshOL2View));
+                }, setTimeout(() => this.on('moveend', this._refreshOL2View), 500));
 
                 mainEventDispatcher.dispatch('map.moveend');
             },
@@ -69,7 +69,7 @@ export default class Map extends olMap {
                 this.getView().animate({
                     zoom: evt.zoom,
                     duration: 0
-                }, () => this.on('moveend', this._refreshOL2View));
+                }, setTimeout(() => this.on('moveend', this._refreshOL2View), 500));
 
                 mainEventDispatcher.dispatch('map.zoomstart');
             },
