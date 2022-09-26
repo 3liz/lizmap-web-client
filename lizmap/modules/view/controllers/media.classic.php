@@ -84,10 +84,6 @@ class mediaCtrl extends jController
      * Get a media file (image, html, csv, pdf, etc.) store in the repository.
      * Used to display media in the popup, via the information icon, etc.
      *
-     * @param string $repository repository of the project
-     * @param string $project    project key
-     * @param string $path       path to the media relative to the project file
-     *
      * @return jResponseBinary|jResponseJson object The media
      */
     public function getMedia()
@@ -209,9 +205,6 @@ class mediaCtrl extends jController
     /**
      * Get illustration image for a specified project.
      *
-     * @param string $repository repository of the project
-     * @param string $project    project key
-     *
      * @return jResponseBinary|jResponseJson object The image for this project
      */
     public function illustration()
@@ -290,10 +283,6 @@ class mediaCtrl extends jController
     /**
      * Get a CSS file stored in the repository in a "media/themes" folder.
      * Url to images are replaced by getMedia URL.
-     *
-     * @param string $repository repository of the project
-     * @param string $project    project key
-     * @param string $path       path to the CSS file relative to the project file
      *
      * @return jResponseBinary|jResponseText object The transformed CSS file
      */

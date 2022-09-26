@@ -1042,21 +1042,6 @@ parameters:
 			path: lizmap/modules/view/controllers/lizMap.classic.php
 
 		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$path$#"
-			count: 2
-			path: lizmap/modules/view/controllers/media.classic.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$project$#"
-			count: 3
-			path: lizmap/modules/view/controllers/media.classic.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
-			count: 3
-			path: lizmap/modules/view/controllers/media.classic.php
-
-		-
 			message: "#^Cannot access property \\$id on array\\.$#"
 			count: 5
 			path: lizmap/modules/view/zones/ajax_view.zone.php
