@@ -41,7 +41,8 @@ class WMSRequest extends OGCRequest
         // as configured in the plugin for login filtered layers.
 
         // Filter data by login for request: getmap, getfeatureinfo, getprint, getprintatlas
-        if (!in_array($this->param('request'), array('getmap', 'getfeatureinfo', 'getprint', 'getprintatlas'))) {
+        $wmsRequest = strtolower($this->param('request'));
+        if (!in_array($wmsRequest, array('getmap', 'getfeatureinfo', 'getprint', 'getprintatlas'))) {
             return $params;
         }
 
@@ -54,7 +55,7 @@ class WMSRequest extends OGCRequest
         $layers = $this->param('layers');
 
         // 'getprintatlas' request has param 'layer' and not 'layers'
-        if ($this->param('request') == 'getprintatlas') {
+        if ($wmsRequest == 'getprintatlas') {
             $layers = $this->param('layer');
         }
 
