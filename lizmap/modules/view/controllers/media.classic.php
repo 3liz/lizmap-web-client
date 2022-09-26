@@ -175,7 +175,8 @@ class mediaCtrl extends jController
 
         // Get the name of the file
         $path_parts = pathinfo($abspath);
-        if (isset($path_parts['filename'])) {
+        // If the basename of the path starts with a dot, the following characters are interpreted as extension, and the filename is empty
+        if ($path_parts['filename'] !== '') {
             $rep->outputFileName = $path_parts['filename'].'.'.$path_parts['extension'];
         } else {
             $rep->outputFileName = $path_parts['basename'];
