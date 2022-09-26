@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* Fix extent synchro between OL2 and OL6 which could cause the center of the map to wrongly move when zooming with mouse
+
 ## 3.5.6 - 2022-09-20
 
 ### Added
