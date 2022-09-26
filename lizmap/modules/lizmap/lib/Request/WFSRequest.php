@@ -85,7 +85,7 @@ class WFSRequest extends OGCRequest
         // as configured in the plugin for login filtered layers.
 
         // Filter data by login for request: getfeature
-        if ($this->param('request') !== 'getfeature') {
+        if (strtolower($this->param('request')) !== 'getfeature') {
             return $params;
         }
 
