@@ -145,7 +145,7 @@ deploy-package-unstable:
 deploy-docker-unstable:
   stage: deploy
   script:
-    - echo "FIXME, update v3 service" 
+    - $FACTORY_SCRIPTS/update-service lizmap
   environment:
     name: snap
   dependencies:
