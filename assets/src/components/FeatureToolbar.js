@@ -44,7 +44,7 @@ export default class FeatureToolbar extends HTMLElement {
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right" role="menu">
-                            ${this._downloadFormats.map((format) => 
+                            ${this._downloadFormats.map((format) =>
                                 html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
                         </ul>
                     </div>`
@@ -146,13 +146,13 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     get isUnlinkable(){
-        return this.parentLayerId && 
-            (this.isLayerEditable && !this.isLayerPivot) || 
+        return this.parentLayerId &&
+            (this.isLayerEditable && !this.isLayerPivot) ||
             (lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True" && this.isLayerPivot);
     }
 
     /**
-     * Feature can be delete if it is editable and has delete capabilities and layer is not pivot
+     * Feature can be deleted if it is editable & if it has delete capabilities & if layer is not pivot
      * If layer is a pivot, unlink button is displayed but a delete action is made instead
      * @readonly
      */
@@ -181,8 +181,8 @@ export default class FeatureToolbar extends HTMLElement {
      * @readonly
      */
     get isFeatureExportable(){
-        return this.attributeTableConfig && 
-                this.hasGeometry && 
+        return this.attributeTableConfig &&
+                this.hasGeometry &&
                 Object.entries(lizMap.config.layers).some(
                     ([ ,value]) => value?.typename == this._featureType && value?.popup_allow_download
                 );

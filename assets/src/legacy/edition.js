@@ -1794,6 +1794,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             sendFormPromise.then(() => {
                 displayEditionForm( formResult );
             });
+
             return false;
         });
     }

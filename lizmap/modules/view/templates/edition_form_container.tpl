@@ -1,13 +1,15 @@
-
-
 {foreach $container->getChildrenBeforeTab() as $child}
     {if $child->isGroupBox()}
         <fieldset id="{$child->getHtmlId()}"{if !$groupVisibilities[$child->getHtmlId()]} style="display:none;"{/if}>
         <legend style="font-weight:bold;">{$child->getName()}</legend>
-            <div class="jforms-table-group" id="{$child->getHtmlId()}">
+            <div class="jforms-table-group" id="{$child->getHtmlId()}-group">
             {fetchtpl 'view~edition_form_container',array('container'=>$child, 'groupVisibilities'=>$groupVisibilities)}
             </div>
         </fieldset>
+    {elseif $child->isRelationWidget()}
+        <div id="{$child->getHtmlId()}" class="lizmap-form-relation" data-relation-id="{$child->getName()}">
+            <span style="font-weight:bold; padding-left:5px;">{$child->getLabel()}</span>
+        </div>
     {else}
         <div class="control-group">
             {ctrl_label $child->getCtrlRef()}
@@ -39,10 +41,12 @@
     {if $child->isGroupBox()}
         <fieldset id="{$child->getHtmlId()}"{if !$groupVisibilities[$child->getHtmlId()]} style="display:none;"{/if}>
             <legend style="font-weight:bold;">{$child->getName()}</legend>
-            <div class="jforms-table-group" id="{$child->getHtmlId()}">
+            <div class="jforms-table-group" id="{$child->getHtmlId()}-group">
                 {fetchtpl 'view~edition_form_container',array('container'=>$child, 'groupVisibilities'=>$groupVisibilities)}
             </div>
         </fieldset>
+    {elseif $child->isRelationWidget()}
+        <div id="{$child->getHtmlId()}" class="lizmap-form-relation" data-relation-id="{$child->getName()}" data-relation-referencedLayer="" data-relation-referencingLayer="d"></div>
     {else}
         <div class="control-group">
             {ctrl_label $child->getCtrlRef()}
