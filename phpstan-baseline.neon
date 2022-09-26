@@ -761,7 +761,7 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/lib/App/JelixContext.php
 
-		
+
 		-
 			message: "#^Access to an undefined property jICoordPlugin\\:\\:\\$config\\.$#"
 			count: 2
@@ -822,7 +822,7 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
 
-		
+
 		-
 			message: "#^Elseif condition is always true\\.$#"
 			count: 1
@@ -1200,11 +1200,6 @@ parameters:
 
 		-
 			message: "#^Method mediaCtrl\\:\\:themeImage\\(\\) should return Admin but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/media.classic.php
-
-		-
-			message: "#^Offset 'filename' on array\\{dirname\\: string, basename\\: string, filename\\: string, extension\\?\\: string\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lizmap/modules/view/controllers/media.classic.php
 
