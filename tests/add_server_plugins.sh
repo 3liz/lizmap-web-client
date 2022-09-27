@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+echo "Remove legacy folders about qgis-plugin-manager"
+# For a few weeks
+rm -rf /srv/plugins/sources.list
+rm -rf /srv/plugins/.cache_qgis_plugin_manager
 
 echo "QGIS Server Lizmap plugin"
 
