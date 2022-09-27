@@ -14,9 +14,7 @@ class lizmapLogListener extends jEventListener
     /**
      * When a user logs in.
      *
-     * @param string $login The login
-     * @param object $user  jAuth user
-     * @param mixed  $event
+     * @param mixed $event
      */
     public function onAuthCanLogin($event)
     {
@@ -34,11 +32,7 @@ class lizmapLogListener extends jEventListener
     /**
      * Event emitted by lizmap controllers.
      *
-     * @param string $key        Key of the log item
-     * @param string $content    Content to log (optional)
-     * @param string $repository Lizmap repository key (optional)
-     * @param string $project    Lizmap project key (optional)
-     * @param mixed  $event
+     * @param mixed $event
      */
     public function onLizLogItem($event)
     {
@@ -107,10 +101,8 @@ class lizmapLogListener extends jEventListener
     /**
      * Send an email to the administrator.
      *
-     * @param string $subject Email subject
-     * @param string $body    Email body
-     * @param mixed  $key
-     * @param mixed  $data
+     * @param mixed $key
+     * @param mixed $data
      */
     private function sendEmail($key, $data)
     {
