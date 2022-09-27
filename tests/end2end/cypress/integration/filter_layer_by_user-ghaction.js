@@ -329,8 +329,8 @@ describe('Filter layer data by user', function () {
         cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"] .feature-filter').should('have.class', 'hide')
         cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"] .feature-zoom').should('have.class', 'hide')
         cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"] .feature-center').should('have.class', 'hide')
-        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"] .feature-edit').should('have.class', 'hide')
-        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"] .feature-delete').should('have.class', 'hide')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"] .feature-edit').should('not.have.class', 'hide')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"] .feature-delete').should('not.have.class', 'hide')
 
         // no user point
         cy.mapClick(623, 634)
@@ -342,7 +342,7 @@ describe('Filter layer data by user', function () {
         cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"] .feature-filter').should('have.class', 'hide')
         cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"] .feature-zoom').should('have.class', 'hide')
         cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"] .feature-center').should('have.class', 'hide')
-        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"] .feature-edit').should('have.class', 'hide')
-        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"] .feature-delete').should('have.class', 'hide')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"] .feature-edit').should('not.have.class', 'hide')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"] .feature-delete').should('not.have.class', 'hide')
     })
 })
