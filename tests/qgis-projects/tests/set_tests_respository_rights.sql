@@ -37,6 +37,7 @@ VALUES
 ('lizmap.tools.displayGetCapabilitiesLinks', 'admins', 'testsrepository', 0),
 ('lizmap.tools.edition.use', 'admins', 'testsrepository', 0),
 ('lizmap.tools.layer.export', 'admins', 'testsrepository', 0),
+('lizmap.tools.loginFilteredLayers.override', 'admins', 'testsrepository', 0),
 -- ...for users in group_a group
 ('lizmap.repositories.view', 'group_a', 'testsrepository', 0),
 ('lizmap.tools.displayGetCapabilitiesLinks', 'group_a', 'testsrepository', 0),

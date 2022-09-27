@@ -329,8 +329,8 @@ describe('Filter layer data by user', function () {
         cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"].popup-layer-feature-filter').should('have.length', 0)
         cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"].popup-layer-feature-zoom').should('have.length', 0)
         cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"].popup-layer-feature-center').should('have.length', 0)
-        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"].popup-layer-feature-edit').should('have.length', 0)
-        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"].popup-layer-feature-delete').should('have.length', 0)
+        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"].popup-layer-feature-edit').should('have.length', 1)
+        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.2"].popup-layer-feature-delete').should('have.length', 1)
 
         // no user point
         cy.mapClick(623, 634)
@@ -342,7 +342,7 @@ describe('Filter layer data by user', function () {
         cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"].popup-layer-feature-filter').should('have.length', 0)
         cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"].popup-layer-feature-zoom').should('have.length', 0)
         cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"].popup-layer-feature-center').should('have.length', 0)
-        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"].popup-layer-feature-edit').should('have.length', 0)
-        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"].popup-layer-feature-delete').should('have.length', 0)
+        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"].popup-layer-feature-edit').should('have.length', 1)
+        cy.get('#popupcontent button[value="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f.3"].popup-layer-feature-delete').should('have.length', 1)
     })
 })
