@@ -2022,7 +2022,7 @@ COPY tests_projects.end2end_form_edition_geom (id, value, geom) FROM stdin;
 
 COPY tests_projects.filter_layer_by_user (gid, "user", "group", geom) FROM stdin;
 1	admin	\N	01010000206A08000000E08B6EAA0E744090DC4977C6372F41
-2	other-user	\N	01010000206A08000084D3086E0FDFF3404A2C05E482472F41
+2	user_in_group_a	\N	01010000206A08000084D3086E0FDFF3404A2C05E482472F41
 3	\N	\N	01010000206A08000028B76AD632CBE540B5C59180B9102E41
 \.
 
@@ -2033,7 +2033,7 @@ COPY tests_projects.filter_layer_by_user (gid, "user", "group", geom) FROM stdin
 
 COPY tests_projects.filter_layer_by_user_edition_only (gid, "user", "group", geom) FROM stdin;
 1	admin	\N	01010000206A08000038F12038DF36C9409B93D65E66BE2C41
-2	other-user	\N	01010000206A0800009E69E05761FFEF40ACBFA74377BA2C41
+2	user_in_group_a	\N	01010000206A0800009E69E05761FFEF40ACBFA74377BA2C41
 3	\N	\N	01010000206A0800007E208A652CB4E3403CB2FDB3DAB42B41
 \.
 
@@ -3224,4 +3224,3 @@ ALTER TABLE ONLY tests_projects.tramway_pivot
 --
 -- PostgreSQL database dump complete
 --
-
