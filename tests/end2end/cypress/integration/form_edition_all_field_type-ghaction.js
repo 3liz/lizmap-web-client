@@ -144,5 +144,18 @@ describe('Form edition all field type', function() {
         cy.get('#jforms_view_edition_value_map_integer').should('have.value', '3')
     })
 
+    it('multiline text field', function () {
+        // The html_text field must be a textarea (multiline is checked)
+        cy.get('textarea#jforms_view_edition_html_text').should('have.length', 1)
+    })
+
+    it('multiline HTML field, must show WYSIWIG tools', function () {
+        // The html_text field must be a textarea (multiline is checked)
+        cy.get('textarea#jforms_view_edition_multiline_text').should('have.length', 1)
+
+        // The WYSIWYG tools must be activated
+
+    })
+
 
 })
