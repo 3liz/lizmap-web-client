@@ -23,7 +23,7 @@ import {
 
 import { clamp } from 'ol/math.js';
 
-import { forward, inverse } from 'mgrs';
+import { forward, toPoint } from 'mgrs';
 class MGRS extends Graticule {
 
     /**
@@ -90,14 +90,14 @@ class MGRS extends Graticule {
         return index;
     }
 
-    addCell100km_(minLat, maxLat, minLon, maxLon, extent, index) {
+    addCell100km_(leftBottomCoords, rightBottomCoords, rightTopCoords, leftTopCoords, extent, index) {
         // const cell100km = new Polygon([[[minLat, minLon], [minLat, maxLon], [maxLat, maxLon], [maxLat, minLon], [minLat, minLon]]]);
         const cell100km = new Polygon([[
-            transform([minLon, minLat], 'EPSG:4326', this.projection_),
-            transform([maxLon, minLat], 'EPSG:4326', this.projection_),
-            transform([maxLon, maxLat], 'EPSG:4326', this.projection_),
-            transform([minLon, maxLat], 'EPSG:4326', this.projection_),
-            transform([minLon, minLat], 'EPSG:4326', this.projection_),
+            transform(leftBottomCoords, 'EPSG:4326', this.projection_),
+            transform(rightBottomCoords, 'EPSG:4326', this.projection_),
+            transform(rightTopCoords, 'EPSG:4326', this.projection_),
+            transform(leftTopCoords, 'EPSG:4326', this.projection_),
+            transform(leftBottomCoords, 'EPSG:4326', this.projection_),
         ]]);
 
 
@@ -287,54 +287,38 @@ class MGRS extends Graticule {
                                 continue;
                             }
 
-                            let temp = leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetter);
+                            // Next letters
+                            let columnLetterNext = columnLetter + 1;
 
-                            const bbox = inverse(temp);
+                            if (columnLetterNext === 73 || columnLetterNext === 79) {
+                                columnLetterNext++;
+                            }
+
+                            let rowLetterNext = rowLetter + 1;
+
+                            // Row letter stops at 'V' => after we go back to 'A'
+                            if (rowLetterNext === 87) {
+                                rowLetterNext = 65;
+                            }
+
+                            // Discard I and O
+                            if (rowLetterNext === 73 || rowLetterNext === 79) {
+                                rowLetterNext++;
+                            }
+
+                            let leftBottomCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetter));
+                            let rightBottomCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetterNext) + String.fromCharCode(rowLetter));
+                            let rightTopCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetterNext) + String.fromCharCode(rowLetterNext));
+                            let leftTopCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetterNext));
 
                             idxCells100km = this.addCell100km_(
-                                bbox[1],
-                                bbox[3],
-                                bbox[0],
-                                bbox[2],
+                                leftBottomCoords,
+                                rightBottomCoords,
+                                rightTopCoords,
+                                leftTopCoords,
                                 extent,
                                 idxCells100km
                             );
-
-                            // idxParallels = this.addParallel_(
-                            //     bbox[1],
-                            //     bbox[0],
-                            //     bbox[2],
-                            //     squaredTolerance,
-                            //     extent,
-                            //     idxParallels
-                            // );
-
-                            // idxParallels = this.addParallel_(
-                            //     bbox[3],
-                            //     bbox[0],
-                            //     bbox[2],
-                            //     squaredTolerance,
-                            //     extent,
-                            //     idxParallels
-                            // );
-
-                            // idxMeridians = this.addMeridian_(
-                            //     bbox[0],
-                            //     bbox[1],
-                            //     bbox[3],
-                            //     squaredTolerance,
-                            //     extent,
-                            //     idxMeridians
-                            // );
-
-                            // idxMeridians = this.addMeridian_(
-                            //     bbox[2],
-                            //     bbox[1],
-                            //     bbox[3],
-                            //     squaredTolerance,
-                            //     extent,
-                            //     idxMeridians
-                            // );
                         }
                     }
                 }
