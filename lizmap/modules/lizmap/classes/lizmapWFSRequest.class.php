@@ -176,7 +176,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
             array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
         );
         $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
-        preg_match('/<get>.*\n*.+xlink\:href="([^"]+)"/i', $data, $matches);
+        preg_match('/get[\W\s]*onlineresource.+xlink\:href="([^"]+)"/i', $data, $matches);
         if (count($matches) < 2) {
             preg_match('/get onlineresource="([^"]+)"/i', $data, $matches);
         }
@@ -184,7 +184,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
             preg_match('/ows:get.+xlink\:href="([^"]+)"/i', $data, $matches);
         }
         if (count($matches) > 1) {
-            $data = str_replace($matches[1], $sUrl, $data);
+            $oldUrl = $matches[1];
+            if (substr($oldUrl, -5) === '&amp;') {
+                $oldUrl = rtrim($oldUrl, '&amp;');
+            }
+            $data = str_replace($oldUrl, $sUrl, $data);
         }
         $data = str_replace('&amp;&amp;', '&amp;', $data);
 
