@@ -4,6 +4,7 @@
 
 ### Added
 
+* Display the URL to use in the QGIS desktop plugin in the administration panel
 * Before opening a QGIS project, Lizmap is now checking that :
   * Lizmap QGIS server plugin is running with a minimum required version
   * QGIS server version is running with at least 3.10
