@@ -63,6 +63,7 @@ show-qgis-server-versions:
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
 	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
+	    -e QGIS_PLUGIN_MANAGER_SKIP_SOURCES_FILE=True \
 	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
 	    -v $(shell pwd)/:/src \
 	    --entrypoint qgis-plugin-manager \
