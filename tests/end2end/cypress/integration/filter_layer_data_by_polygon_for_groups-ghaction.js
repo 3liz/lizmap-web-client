@@ -38,15 +38,19 @@ import {arrayBufferToBase64} from '../support/function.js'
 
 describe('Filter layer data by polygon for groups', function () {
 
-    it('not connected', function () {
+    beforeEach(function () {
         // Runs before each tests in the block
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=filter_layer_data_by_polygon_for_groups')
-
-        cy.wait(3000)
-        // The user can see the data in the map, popup and attribute table only for the layer`townhalls_pg`
-
-        // 1/ map
         cy.intercept('*REQUEST=GetMap*',
+        { middleware: true },
+        (req) => {
+            req.on('before:response', (res) => {
+                // force all API responses to not be cached
+                // It is needed when launching tests multiple time in headed mode
+                res.headers['cache-control'] = 'no-store'
+            })
+        }).as('getMap')
+
+        cy.intercept('*REQUEST=GetFeatureInfo*',
             { middleware: true },
             (req) => {
                 req.on('before:response', (res) => {
@@ -54,8 +58,34 @@ describe('Filter layer data by polygon for groups', function () {
                     // It is needed when launching tests multiple time in headed mode
                     res.headers['cache-control'] = 'no-store'
                 })
-        }).as('getMap')
+            }).as('getFeatureInfo')
 
+        cy.intercept({
+            method: 'POST',
+            url: '**/lizmap/service/**',
+            middleware: true
+        },
+        (req) => {
+            req.on('before:response', (res) => {
+                // force all API responses to not be cached
+                // It is needed when launching tests multiple time in headed mode
+                res.headers['cache-control'] = 'no-store'
+            })
+        }).as('getFeature')
+    })
+
+    afterEach(function () {
+        cy.logout()
+    })
+
+    it('not connected', function () {
+        // Runs before each tests in the block
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=filter_layer_data_by_polygon_for_groups')
+        cy.wait('@getMap')
+        cy.wait(1000)
+        // The user can see the data in the map, popup and attribute table only for the layer`townhalls_pg`
+
+        // 1/ map
         cy.get('#layer-townhalls_pg button').click()
         cy.wait('@getMap').then((interception) => {
             const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
@@ -94,6 +124,7 @@ describe('Filter layer data by polygon for groups', function () {
 
         // 2/ popup
         cy.mapClick(630, 415)
+        cy.wait('@getFeatureInfo')
 
         cy.get('.lizmapPopupTitle').should('have.text','townhalls_pg')
 
@@ -102,18 +133,22 @@ describe('Filter layer data by polygon for groups', function () {
         cy.get('#button-attributeLayers').click()
 
         cy.get('button[value="shop_bakery"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-shop_bakery tbody tr').should('have.length', 0)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_EPSG2154"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-townhalls_EPSG2154 tbody tr').should('have.length', 0)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="shop_bakery_pg"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-shop_bakery_pg tbody tr').should('have.length', 0)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_pg"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
 
         // The user cannot edit the data, even for the layer townhalls_pg
@@ -130,20 +165,11 @@ describe('Filter layer data by polygon for groups', function () {
     it('connected as user_in_group_a', function () {
         cy.loginAsUserA()
         cy.visit('index.php/view/map/?repository=testsrepository&project=filter_layer_data_by_polygon_for_groups')
-
+        cy.wait('@getMap')
+        cy.wait(1000)
         // The user can see all the data in the map, popup and attribute table for the layers`townhalls_pg` and`townhalls_EPSG2154`.
 
         // 1/ map
-        cy.intercept('*REQUEST=GetMap*',
-            { middleware: true },
-            (req) => {
-                req.on('before:response', (res) => {
-                    // force all API responses to not be cached
-                    // It is needed when launching tests multiple time in headed mode
-                    res.headers['cache-control'] = 'no-store'
-                })
-            }).as('getMap')
-
         cy.get('#layer-townhalls_pg button').click()
         cy.wait('@getMap').then((interception) => {
             const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
@@ -182,32 +208,37 @@ describe('Filter layer data by polygon for groups', function () {
 
         // 2/ popup
         cy.mapClick(630, 415)
+        cy.wait('@getFeatureInfo')
 
         cy.get('.lizmapPopupTitle').should('have.text', 'townhalls_pg')
 
         cy.get('.popup-layer-feature-edit').should('have.length', 0)
 
         cy.mapClick(555, 345) //588,420
+        cy.wait('@getFeatureInfo')
         cy.get('.popup-layer-feature-edit').should('have.length', 1)
 
         // 3/ attribute table
-
         // only townhalls_pg should return all data, other should be filtered
         cy.get('#button-attributeLayers').click()
 
         cy.get('button[value="shop_bakery"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-shop_bakery tbody tr').should('have.length', 5)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_EPSG2154"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-townhalls_EPSG2154 tbody tr').should('have.length', 4)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="shop_bakery_pg"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-shop_bakery_pg tbody tr').should('have.length', 4)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_pg"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
         cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
 
         // The user can only edit 5 features for the layer townhalls_pg (16 - 5 = 11 are disabled)
@@ -238,5 +269,103 @@ describe('Filter layer data by polygon for groups', function () {
         // Assert error message
         cy.get('#jforms_view_edition_errors > p').should('have.text', 'The given geometry is outside the authorized polygon.')
 
+    })
+
+    it('connected as admin', function () {
+        cy.loginAsAdmin()
+        cy.visit('index.php/view/map/?repository=testsrepository&project=filter_layer_data_by_polygon_for_groups')
+        cy.wait('@getMap')
+        cy.wait(1000)
+        // The admin can see all the data in the map, popup and attribute table.
+
+        // 1/ map
+        cy.get('#layer-townhalls_pg button').click()
+        cy.wait('@getMap').then((interception) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
+
+            cy.fixture('images/filter_layer_data_by_polygon_for_groups/townhalls_pg_getmap.png').then((image) => {
+                expect(image, 'expect townhalls_pg map being displayed').to.equal(responseBodyAsBase64)
+            })
+        })
+
+        cy.get('#layer-shop_bakery_pg button').click()
+        cy.wait('@getMap').then((interception) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
+
+            cy.fixture('images/blank_getmap.png').then((image) => {
+                expect(image, 'expect shop_bakery_pg map being displayed as not blank').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/filter_layer_data_by_polygon_for_groups/shop_bakery_pg_getmap.png').then((image) => {
+                expect(image, 'expect shop_bakery_pg map being displayed with all data').to.not.equal(responseBodyAsBase64)
+            })
+        })
+
+        cy.get('#layer-townhalls_EPSG2154 button').click()
+        cy.wait('@getMap').then((interception) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
+
+            cy.fixture('images/blank_getmap.png').then((image) => {
+                expect(image, 'expect townhalls_EPSG2154 map being displayed as not blank').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/filter_layer_data_by_polygon_for_groups/townhalls_EPSG2154_getmap.png').then((image) => {
+                expect(image, 'expect townhalls_EPSG2154 map being displayed').to.not.equal(responseBodyAsBase64)
+            })
+        })
+
+        cy.get('#layer-shop_bakery button').click()
+        cy.wait('@getMap').then((interception) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
+
+            cy.fixture('images/blank_getmap.png').then((image) => {
+                expect(image, 'expect shop_bakery map being displayed as not blank').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/filter_layer_data_by_polygon_for_groups/shop_bakery_getmap.png').then((image) => {
+                expect(image, 'expect shop_bakery map being displayed with all data').to.not.equal(responseBodyAsBase64)
+            })
+        })
+
+        // 2/ popup
+        cy.mapClick(630, 415)
+        cy.wait('@getFeatureInfo')
+
+        cy.get('.lizmapPopupTitle').should('have.length', 2)
+        cy.get('.lizmapPopupTitle').first().should('have.text', 'townhalls_pg')
+        cy.get('.lizmapPopupTitle').last().should('have.text', 'shop_bakery_pg')
+
+        cy.get('.popup-layer-feature-edit').should('have.length', 2)
+
+        cy.mapClick(555, 345) //588,420
+        cy.wait('@getFeatureInfo')
+        cy.get('.popup-layer-feature-edit').should('have.length', 1)
+
+        // 3/ attribute table
+        // only townhalls_pg should return all data, other should be filtered
+        cy.get('#button-attributeLayers').click()
+
+        cy.get('button[value="shop_bakery"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
+        cy.get('#attribute-layer-table-shop_bakery tbody tr').should('have.length', 25)
+
+        cy.get('#nav-tab-attribute-summary').click()
+        cy.get('button[value="townhalls_EPSG2154"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
+        cy.get('#attribute-layer-table-townhalls_EPSG2154 tbody tr').should('have.length', 17)
+
+        cy.get('#nav-tab-attribute-summary').click()
+        cy.get('button[value="shop_bakery_pg"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
+        cy.get('#attribute-layer-table-shop_bakery_pg tbody tr').should('have.length', 17)
+
+        cy.get('#nav-tab-attribute-summary').click()
+        cy.get('button[value="townhalls_pg"].btn-open-attribute-layer').click({ force: true })
+        cy.wait('@getFeature')
+        cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
+
+        // The user can edit all features for the layer townhalls_pg
+        cy.get('#attribute-layer-table-townhalls_pg button:disabled.attribute-layer-feature-edit').should('have.length', 0)
+        cy.get('#attribute-layer-table-townhalls_pg button:not(:disabled).attribute-layer-feature-edit').should('have.length', 16)
     })
 })
