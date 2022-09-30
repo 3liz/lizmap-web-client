@@ -78,7 +78,7 @@
         </tr>
         <tr>
             <th>Py-QGIS-Server</th>
-            <td>{$data['qgis_server_info']['metadata']['py_qgis_server_version']}</td>
+            <td><a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['metadata']['py_qgis_server_version']}" target="_blank">{$data['qgis_server_info']['metadata']['py_qgis_server_version']}</a></td>
         </tr>
         {if $qgisServerNeedsUpdate }
         <tr>
@@ -101,7 +101,18 @@
         {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
         <tr>
             <th style="width:20%;">{$name}</th>
-            <td style="width:20%;">{$version['version']}</td>
+            <td style="width:20%;">
+                {if $version['repository']}
+                    {if $version['commitNumber'] == 1}
+                        {* commitNumber == 1, it means the package is coming from a git tag *}
+                        <a href="{$version['repository']}/releases/tag/{$version['version']}" target="_blank">{$version['version']}</a>
+                    {else}
+                        <a href="{$version['repository']}/commit/{$version['commitSha1']}" target="_blank">{$version['version']} - {$version['commitSha1']|truncate:7:''}</a>
+                    {/if}
+                {else}
+                    {$version['version']}
+                {/if}
+            </td>
             {if $displayPluginActionColumn }
                 {if $name == 'lizmap_server' && $lizmapQgisServerNeedsUpdate}
                     <td style="background-color:lightcoral;"><strong>{$lizmapPluginUpdate}</strong></td>
