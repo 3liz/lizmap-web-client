@@ -18,6 +18,8 @@ import Draw, {
     createBox,
 } from 'ol/interaction/Draw';
 
+import {Circle, Fill, Stroke, Style} from 'ol/style';
+
 import {Vector as VectorSource} from 'ol/source';
 import {Vector as VectorLayer} from 'ol/layer';
 
@@ -42,8 +44,27 @@ export default class Digitizing {
 
         this._drawInteraction;
 
+        this._drawStyleFunction = () => {
+            return new Style({
+                image: new Circle({
+                    fill: new Fill({
+                        color: this._drawColor,
+                    }),
+                    radius: 6,
+                }),
+                fill: new Fill({
+                    color: this._drawColor + '33',
+                }),
+                stroke: new Stroke({
+                    color: this._drawColor,
+                    width: 2
+                }),
+            });
+        }
+
         this._drawLayer = new VectorLayer({
             source: new VectorSource({wrapX: false}),
+            style: this._drawStyleFunction
         });
 
         mainLizmap.map.addLayer(this._drawLayer);
@@ -78,46 +99,35 @@ export default class Digitizing {
             if (this._toolSelected === tool) {
                 this._toolSelected = this._tools[0];
             } else {
+                const drawOptions = {
+                    source: this._drawLayer.getSource(),
+                    style: this._drawStyleFunction
+                };
+
                 switch (tool) {
                     case this._tools[1]:
-                        this._drawInteraction = new Draw({
-                            source: this._drawLayer.getSource(),
-                            type: 'Point'
-                          });
+                        drawOptions.type = 'Point';
                         break;
                     case this._tools[2]:
-                        this._drawInteraction = new Draw({
-                            source: this._drawLayer.getSource(),
-                            type: 'LineString'
-                          });
+                        drawOptions.type = 'LineString';
                         break;
                     case this._tools[3]:
-                        this._drawInteraction = new Draw({
-                            source: this._drawLayer.getSource(),
-                            type: 'Polygon'
-                          });
+                        drawOptions.type = 'Polygon';
                         break;
                     case this._tools[4]:
-                        this._drawInteraction = new Draw({
-                            source: this._drawLayer.getSource(),
-                            type: 'Circle',
-                            geometryFunction: createBox(),
-                          });
+                        drawOptions.type = 'Circle';
+                        drawOptions.geometryFunction = createBox();
                         break;
                     case this._tools[5]:
-                        this._drawInteraction = new Draw({
-                            source: this._drawLayer.getSource(),
-                            type: 'Circle',
-                          });
+                        drawOptions.type = 'Circle';
                         break;
                     case this._tools[6]:
-                        this._drawInteraction = new Draw({
-                            source: this._drawLayer.getSource(),
-                            type: 'Polygon',
-                            freehand: true,
-                          });
+                        drawOptions.type = 'Polygon';
+                        drawOptions.freehand = true;
                         break;
                 }
+
+                this._drawInteraction = new Draw(drawOptions);
 
                 mainLizmap.map.addInteraction(this._drawInteraction);
 
@@ -140,17 +150,8 @@ export default class Digitizing {
     set drawColor(color) {
         this._drawColor = color;
 
-        // Update default and temporary draw styles
-        const drawStyles = this._drawLayer.styleMap.styles;
-
-        drawStyles.default.defaultStyle.fillColor = color;
-        drawStyles.default.defaultStyle.strokeColor = color;
-
-        drawStyles.temporary.defaultStyle.fillColor = color;
-        drawStyles.temporary.defaultStyle.strokeColor = color;
-
-        // Refresh layer
-        this._drawLayer.redraw(true);
+        // Refresh draw layer
+        this._drawLayer.changed();
 
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
