@@ -14,9 +14,18 @@ import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
 import KML from 'ol/format/KML';
 
+import Draw, {
+    createBox,
+} from 'ol/interaction/Draw';
+
+import {Vector as VectorSource} from 'ol/source';
+import {Vector as VectorLayer} from 'ol/layer';
+
 export default class Digitizing {
 
     constructor() {
+
+        mainLizmap.newOlMap = true;
 
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
@@ -31,160 +40,13 @@ export default class Digitizing {
         this._isEdited = false;
         this._isSaved = false;
 
-        // Draw tools style
-        const drawStyle = new OpenLayers.Style({
-            pointRadius: 7,
-            fillColor: this._drawColor,
-            fillOpacity: 0.2,
-            strokeColor: this._drawColor,
-            strokeOpacity: 1,
-            strokeWidth: 3
+        this._drawInteraction;
+
+        this._drawLayer = new VectorLayer({
+            source: new VectorSource({wrapX: false}),
         });
 
-        const drawStyleTemp = new OpenLayers.Style({
-            pointRadius: 7,
-            fillColor: this._drawColor,
-            fillOpacity: 0.3,
-            strokeColor: this._drawColor,
-            strokeOpacity: 1,
-            strokeWidth: 3
-        });
-
-        const drawStyleSelect = new OpenLayers.Style({
-            pointRadius: 7,
-            fillColor: 'blue',
-            fillOpacity: 0.3,
-            strokeColor: 'blue',
-            strokeOpacity: 1,
-            strokeWidth: 3
-        });
-
-        const drawStyleMap = new OpenLayers.StyleMap({
-            'default': drawStyle,
-            'temporary': drawStyleTemp,
-            'select': drawStyleSelect
-        });
-
-        this._drawLayer = new OpenLayers.Layer.Vector(
-            'drawLayer', {
-                styleMap: drawStyleMap
-            }
-        );
-
-        this._drawLayer.events.on({
-            'featureadded': () => {
-                // Save features drawn in localStorage
-                this.saveFeatureDrawn();
-
-                mainEventDispatcher.dispatch('digitizing.featureDrawn');
-            }
-        });
-
-        mainLizmap.lizmap3.map.addLayer(this._drawLayer);
-
-        // Disable getFeatureInfo when drawing with clicks
-        const drawAndGetFeatureInfoMutuallyExclusive = (event) => {
-            if (lizMap.controls.hasOwnProperty('featureInfo') && lizMap.controls.featureInfo) {
-                if (event.type === 'activate' && lizMap.controls.featureInfo.active) {
-                    lizMap.controls.featureInfo.deactivate();
-                } else if (event.type === 'deactivate' && !lizMap.controls.featureInfo.active) {
-                    lizMap.controls.featureInfo.activate();
-                }
-            }
-        };
-
-        /**
-         * Point
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        this._drawPointLayerCtrl = new OpenLayers.Control.DrawFeature(
-            this._drawLayer,
-            OpenLayers.Handler.Point,
-            {
-                styleMap: drawStyleMap,
-                eventListeners: {
-                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
-                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
-                }
-            }
-        );
-
-        /**
-         * Line
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        this._drawLineLayerCtrl = new OpenLayers.Control.DrawFeature(
-            this._drawLayer,
-            OpenLayers.Handler.Path,
-            {
-                styleMap: drawStyleMap,
-                eventListeners: {
-                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
-                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
-                }
-            }
-        );
-
-        /**
-         * Polygon
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        this._drawPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(
-            this._drawLayer,
-            OpenLayers.Handler.Polygon,
-            {
-                styleMap: drawStyleMap,
-                eventListeners: {
-                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
-                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
-                }
-            }
-        );
-
-        /**
-         * Box
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        this._drawBoxLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
-            OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 4, irregular: true } }
-        );
-
-        /**
-         * Circle
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        this._drawCircleLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
-            OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 40 } }
-        );
-
-        /**
-         * Freehand
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
-            OpenLayers.Handler.Polygon, {
-                styleMap: drawStyleMap,
-                handlerOptions: { freehand: true }
-            }
-        );
-
-        this._drawCtrls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
-
-        this._editCtrl = new OpenLayers.Control.ModifyFeature(this._drawLayer,
-            {
-                clickout: false,
-                eventListeners: {
-                    'activate': drawAndGetFeatureInfoMutuallyExclusive,
-                    'deactivate': drawAndGetFeatureInfoMutuallyExclusive
-                }
-            }
-        );
-
-        // Add draw and modification controls to map
-        mainLizmap.lizmap3.map.addControls(this._drawCtrls);
-        mainLizmap.lizmap3.map.addControl(this._editCtrl);
+        mainLizmap.map.addLayer(this._drawLayer);
 
         // Load and display saved feature if any
         this.loadFeatureDrawnToMap();
@@ -210,9 +72,7 @@ export default class Digitizing {
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
-            for (const drawControl of this._drawCtrls) {
-                drawControl.deactivate();
-            }
+            mainLizmap.map.removeInteraction(this._drawInteraction);
 
             // If current selected tool is selected again => unactivate
             if (this._toolSelected === tool) {
@@ -220,24 +80,46 @@ export default class Digitizing {
             } else {
                 switch (tool) {
                     case this._tools[1]:
-                        this._drawPointLayerCtrl.activate();
+                        this._drawInteraction = new Draw({
+                            source: this._drawLayer.getSource(),
+                            type: 'Point'
+                          });
                         break;
                     case this._tools[2]:
-                        this._drawLineLayerCtrl.activate();
+                        this._drawInteraction = new Draw({
+                            source: this._drawLayer.getSource(),
+                            type: 'LineString'
+                          });
                         break;
                     case this._tools[3]:
-                        this._drawPolygonLayerCtrl.activate();
+                        this._drawInteraction = new Draw({
+                            source: this._drawLayer.getSource(),
+                            type: 'Polygon'
+                          });
                         break;
                     case this._tools[4]:
-                        this._drawBoxLayerCtrl.activate();
+                        this._drawInteraction = new Draw({
+                            source: this._drawLayer.getSource(),
+                            type: 'Circle',
+                            geometryFunction: createBox(),
+                          });
                         break;
                     case this._tools[5]:
-                        this._drawCircleLayerCtrl.activate();
+                        this._drawInteraction = new Draw({
+                            source: this._drawLayer.getSource(),
+                            type: 'Circle',
+                          });
                         break;
                     case this._tools[6]:
-                        this._drawFreehandLayerCtrl.activate();
+                        this._drawInteraction = new Draw({
+                            source: this._drawLayer.getSource(),
+                            type: 'Polygon',
+                            freehand: true,
+                          });
                         break;
                 }
+
+                mainLizmap.map.addInteraction(this._drawInteraction);
 
                 this._toolSelected = tool;
             }
@@ -277,9 +159,9 @@ export default class Digitizing {
     }
 
     get featureDrawn() {
-        if (this._drawLayer.features.length) {
-            return this._drawLayer.features;
-        }
+        // if (this._drawLayer.features.length) {
+        //     return this._drawLayer.features;
+        // }
         return null;
     }
 
