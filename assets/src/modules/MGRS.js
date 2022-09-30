@@ -1,7 +1,7 @@
 import Graticule from 'ol/layer/Graticule';
 
 import Point from 'ol/geom/Point.js';
-import Polygon from 'ol/geom/Polygon';
+import LineString from 'ol/geom/LineString';
 import Feature from 'ol/Feature.js';
 
 import {
@@ -33,10 +33,10 @@ class MGRS extends Graticule {
         super(options);
 
         /**
-         * @type {Array<Polygon>}
+         * @type {Array<LineString>}
          * @private
          */
-        this.cells100km_ = [];
+        this.lines_ = [];
     }
 
     latLabelFormatter_ = () => {
@@ -90,19 +90,14 @@ class MGRS extends Graticule {
         return index;
     }
 
-    addCell100km_(leftBottomCoords, rightBottomCoords, rightTopCoords, leftTopCoords, extent, index) {
-        // const cell100km = new Polygon([[[minLat, minLon], [minLat, maxLon], [maxLat, maxLon], [maxLat, minLon], [minLat, minLon]]]);
-        const cell100km = new Polygon([[
-            transform(leftBottomCoords, 'EPSG:4326', this.projection_),
-            transform(rightBottomCoords, 'EPSG:4326', this.projection_),
-            transform(rightTopCoords, 'EPSG:4326', this.projection_),
-            transform(leftTopCoords, 'EPSG:4326', this.projection_),
-            transform(leftBottomCoords, 'EPSG:4326', this.projection_),
-        ]]);
+    addLine_(coords1, coords2, extent, index){
+        const lineString = new LineString([
+            transform(coords1, 'EPSG:4326', this.projection_),
+            transform(coords2, 'EPSG:4326', this.projection_)
+        ]);
 
-
-        if (intersects(cell100km.getExtent(), extent)) {
-            this.cells100km_[index++] = cell100km;
+        if (intersects(lineString.getExtent(), extent)) {
+            this.lines_[index++] = lineString;
         }
         return index;
     }
@@ -155,7 +150,7 @@ class MGRS extends Graticule {
         this.createGraticule_(renderExtent, center, resolution, squaredTolerance);
 
         // first make sure we have enough features in the pool
-        let featureCount = this.meridians_.length + this.parallels_.length + this.cells100km_.length;
+        let featureCount = this.meridians_.length + this.parallels_.length + this.lines_.length;
         if (this.meridiansLabels_) {
             featureCount += this.meridians_.length;
         }
@@ -189,9 +184,9 @@ class MGRS extends Graticule {
         }
 
         // 100km
-        for (i = 0, l = this.cells100km_.length; i < l; ++i) {
+        for (i = 0, l = this.lines_.length; i < l; ++i) {
             feature = this.featurePool_[poolIndex++];
-            feature.setGeometry(this.cells100km_[i]);
+            feature.setGeometry(this.lines_[i]);
             // feature.setStyle(this.lineStyle_);
             featuresColl.push(feature);
         }
@@ -220,7 +215,7 @@ class MGRS extends Graticule {
 
         let idxParallels = 0;
         let idxMeridians = 0;
-        let idxCells100km = 0;
+        let idxLines = 0;
 
         for (lon = this.minLon_; lon <= this.maxLon_; lon += lonInterval) {
             for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
@@ -266,7 +261,7 @@ class MGRS extends Graticule {
                     const leftBottom = forward([lon, lat], 5).substring(0, 4);
                     const rightTop = forward([lon + lonInterval - delta, lat + latInterval - delta], 5).substring(0, 4);
 
-                    let columnLetter = leftBottom.charCodeAt(2);
+                    let columnLetter = leftBottom.charCodeAt(2) - 1;
                     while ((columnLetter += 1) <= rightTop.charCodeAt(2)) {
 
                         // Discard I and O
@@ -308,16 +303,20 @@ class MGRS extends Graticule {
 
                             let leftBottomCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetter));
                             let rightBottomCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetterNext) + String.fromCharCode(rowLetter));
-                            let rightTopCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetterNext) + String.fromCharCode(rowLetterNext));
                             let leftTopCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetterNext));
 
-                            idxCells100km = this.addCell100km_(
+                            idxLines = this.addLine_(
                                 leftBottomCoords,
                                 rightBottomCoords,
-                                rightTopCoords,
+                                extent,
+                                idxLines
+                            );
+
+                            idxLines = this.addLine_(
+                                leftBottomCoords,
                                 leftTopCoords,
                                 extent,
-                                idxCells100km
+                                idxLines
                             );
                         }
                     }
@@ -358,7 +357,7 @@ class MGRS extends Graticule {
             this.meridiansLabels_.length = idxMeridians;
         }
 
-        this.cells100km_.length = idxCells100km;
+        this.lines_.length = idxLines;
     }
 }
 
