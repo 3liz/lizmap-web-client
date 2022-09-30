@@ -56,9 +56,9 @@ describe('Selection tool', function () {
     // TODO : tests other geom operators, unselection...
 })
 
-describe('Selection tool connected as admin', function () {
+describe('Selection tool connected as user a', function () {
     beforeEach(function () {
-        cy.loginAsAdmin()
+        cy.loginAsUserA()
         cy.visit('index.php/view/map/?repository=testsrepository&project=selection')
     })
 
@@ -88,12 +88,147 @@ describe('Selection tool connected as admin', function () {
             .click(400, 380)
             .dblclick(500, 380)
 
-        cy.wait('@new-selection')
-
-        cy.get('@new-selection').should(({ request, response }) => {
+        cy.wait('@new-selection').should(({ request, response }) => {
             const responseBodyAsBase64 = arrayBufferToBase64(response.body)
 
             cy.fixture('images/selection_yellow.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
+            })
+        })
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).to.match(/^1/)
+        })
+    })
+})
+
+describe('Selection tool connected as admin', function () {
+    beforeEach(function () {
+        cy.loginAsAdmin()
+        cy.visit('index.php/view/map/?repository=testsrepository&project=selection')
+    })
+
+    it('selects features intersecting a polygon', function () {
+        cy.get('#button-selectiontool').click()
+
+        // Activate polygon tool
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-polygon').click()
+
+        // Select single layer and intersects geom operator
+        cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection')
+        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('new-selection')
+
+        cy.get('#map')
+            .click(380, 280)
+            .click(400, 380)
+            .dblclick(500, 380)
+
+        cy.wait('@new-selection').should(({ request, response }) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
+
+            cy.fixture('images/selection-admin-0.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect selection in yellow').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/selection-admin-1.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
+            })
+        })
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).to.match(/^1/)
+        })
+
+        // Unselect
+        cy.get('#selectiontool .selectiontool-unselect').click(true)
+        cy.wait('@new-selection').should(({ request, response }) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
+
+            cy.fixture('images/selection-admin-1.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect selection in yellow').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/selection-admin-0.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
+            })
+        })
+
+        // It should select two features
+        cy.get('#map')
+            .click(200, 250)
+            .click(850, 250)
+            .dblclick(550, 650)
+
+        // First wait get the old selection
+        // TO BE FIXED
+        cy.wait('@new-selection').should(({ request, response }) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
+
+            cy.fixture('images/selection-admin-0.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect no selection in yellow').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/selection-admin-2.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect selection in yellow').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/selection-admin-1.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
+            })
+        })
+
+        // UI provides selection results
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).to.match(/^2/)
+        })
+
+        // Second wait no selection
+        // TO BE FIXED
+        cy.wait('@new-selection').should(({ request, response }) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
+
+            cy.fixture('images/selection-admin-0.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect no selection in yellow').to.equal(responseBodyAsBase64)
+            })
+        })
+
+        // Third wait selection
+        // TO BE FIXED
+        cy.wait('@new-selection').should(({ request, response }) => {
+            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
+
+            cy.fixture('images/selection-admin-0.png').then((image) => {
+                // image encoded as base64
+                expect(image, 'expect no selection in yellow').to.not.equal(responseBodyAsBase64)
+            })
+
+            cy.fixture('images/selection-admin-2.png').then((image) => {
                 // image encoded as base64
                 expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
             })
