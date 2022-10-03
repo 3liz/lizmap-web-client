@@ -43,20 +43,24 @@ export default class Digitizing {
             features: this._selectInteraction.getFeatures(),
         });
 
+        this._pointRadius = 6;
+        this._fillOpacity = 0.2;
+        this._strokeWidth = 2;
+
         this._drawStyleFunction = () => {
             return new Style({
                 image: new Circle({
                     fill: new Fill({
                         color: this._drawColor,
                     }),
-                    radius: 6,
+                    radius: this._pointRadius,
                 }),
                 fill: new Fill({
-                    color: this._drawColor + '33',
+                    color: this._drawColor + '33', // Opacity: 0.2
                 }),
                 stroke: new Stroke({
                     color: this._drawColor,
-                    width: 2
+                    width: this._strokeWidth
                 }),
             });
         }
@@ -215,27 +219,27 @@ export default class Digitizing {
     // Get SLD for featureDrawn[index]
     getFeatureDrawnSLD(index) {
         if (this.featureDrawn[index]) {
-            const style = this.featureDrawn[index].layer.styleMap.styles.default.defaultStyle;
+            // const style = this.featureDrawn[index].layer.styleMap.styles.default.defaultStyle;
             let symbolizer = '';
             let strokeAndFill = `<Stroke>
-                                        <SvgParameter name="stroke">${style.strokeColor}</SvgParameter>
-                                        <SvgParameter name="stroke-opacity">${style.strokeOpacity}</SvgParameter>
-                                        <SvgParameter name="stroke-width">${style.strokeWidth}</SvgParameter>
+                                        <SvgParameter name="stroke">${this._drawColor}</SvgParameter>
+                                        <SvgParameter name="stroke-opacity">1</SvgParameter>
+                                        <SvgParameter name="stroke-width">${this._strokeWidth}</SvgParameter>
                                     </Stroke>
                                     <Fill>
-                                        <SvgParameter name="fill">${style.fillColor}</SvgParameter>
-                                        <SvgParameter name="fill-opacity">${style.fillOpacity}</SvgParameter>
+                                        <SvgParameter name="fill">${this._drawColor}</SvgParameter>
+                                        <SvgParameter name="fill-opacity">${this._fillOpacity}</SvgParameter>
                                     </Fill>`;
 
             // We consider LINESTRING and POLYGON together currently
-            if (this.featureDrawn[index].geometry.CLASS_NAME === 'OpenLayers.Geometry.Point') {
+            if (this.featureDrawn[index].getGeometry().getType() === 'Point') {
                 symbolizer = `<PointSymbolizer>
                                 <Graphic>
                                     <Mark>
                                         <WellKnownName>circle</WellKnownName>
                                         ${strokeAndFill}
                                     </Mark>
-                                    <Size>${2 * style.pointRadius}</Size>
+                                    <Size>${2 * this._pointRadius}</Size>
                                 </Graphic>
                             </PointSymbolizer>`;
 
