@@ -14,9 +14,8 @@ import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
 import KML from 'ol/format/KML';
 
-import Draw, {
-    createBox,
-} from 'ol/interaction/Draw';
+import {Draw, Modify, Select} from 'ol/interaction';
+import {createBox} from 'ol/interaction/Draw';
 
 import {Circle, Fill, Stroke, Style} from 'ol/style';
 
@@ -44,6 +43,14 @@ export default class Digitizing {
 
         this._drawInteraction;
 
+        this._selectInteraction = new Select({
+            wrapX: false,
+        });
+          
+        this._modifyInteraction = new Modify({
+            features: this._selectInteraction.getFeatures(),
+        });
+
         this._drawStyleFunction = () => {
             return new Style({
                 image: new Circle({
@@ -62,8 +69,14 @@ export default class Digitizing {
             });
         }
 
+        this._drawSource = new VectorSource({wrapX: false});
+
+        this._drawSource.on('addfeature', () => {
+            mainEventDispatcher.dispatch('digitizing.featureDrawn');
+        });
+
         this._drawLayer = new VectorLayer({
-            source: new VectorSource({wrapX: false}),
+            source: this._drawSource,
             style: this._drawStyleFunction
         });
 
@@ -95,8 +108,8 @@ export default class Digitizing {
             // Disable all tools
             mainLizmap.map.removeInteraction(this._drawInteraction);
 
-            // If current selected tool is selected again => unactivate
-            if (this._toolSelected === tool) {
+            // If tool === 'deactivate' or current selected tool is selected again => deactivate
+            if (tool === this._toolSelected || tool ===  this._tools[0]) {
                 this._toolSelected = this._tools[0];
             } else {
                 const drawOptions = {
@@ -132,10 +145,8 @@ export default class Digitizing {
                 mainLizmap.map.addInteraction(this._drawInteraction);
 
                 this._toolSelected = tool;
-            }
 
-            // Disable edition when tool changes
-            if (this._toolSelected !== this._tools[0]) {
+                // Disable edition when tool changes
                 this.isEdited = false;
             }
 
@@ -160,9 +171,10 @@ export default class Digitizing {
     }
 
     get featureDrawn() {
-        // if (this._drawLayer.features.length) {
-        //     return this._drawLayer.features;
-        // }
+        const features = this._drawLayer.getSource().getFeatures();
+        if (features.length) {
+            return features;
+        }
         return null;
     }
 
@@ -181,18 +193,25 @@ export default class Digitizing {
             if (this._isEdited) {
                 // Automatically edit the feature if unique
                 if (this.featureDrawn.length === 1) {
-                    this._editCtrl.standalone = true;
-                    this._editCtrl.selectFeature(this.featureDrawn[0]);
-                } else {
-                    this._editCtrl.standalone = false;
+                    this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
                 }
-                this._editCtrl.activate();
+
+                mainLizmap.map.removeInteraction(this._drawInteraction);
+
+                mainLizmap.map.addInteraction(this._selectInteraction);
+                mainLizmap.map.addInteraction(this._modifyInteraction);
+                
                 this.toolSelected = 'deactivate';
 
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
-                this._editCtrl.deactivate();
-                this.saveFeatureDrawn();
+                // Clear selection
+                this._selectInteraction.getFeatures().clear();
+                mainLizmap.map.removeInteraction(this._selectInteraction);
+                mainLizmap.map.removeInteraction(this._modifyInteraction);
+
+                // TODO
+                // this.saveFeatureDrawn();
 
                 mainEventDispatcher.dispatch('digitizing.editionEnds');
             }
