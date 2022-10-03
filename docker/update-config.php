@@ -56,11 +56,14 @@ $lizmapConfig->save();
  * localconfig.ini.php
  */
 $localConfig = new \Jelix\IniFile\IniModifier('/www/lizmap/var/config/localconfig.ini.php');
+$mainConfig =  new \Jelix\IniFile\IniModifier('/www/lizmap/app/system/mainconfig.ini.php');
 
 // Let's modify the install configuration of jcommunity, to not create a default
 // admin account (no `defaultusers` parameter). We're relying on
 // lizmap-entrypoint.sh to setup it
-$localConfig->setValue('jcommunity.installparam', 'manualconfig', 'modules');
+$jCommunityInstallParams = $mainConfig->getValue('jcommunity.installparam', 'modules');
+unset($jCommunityInstallParams['defaultusers']);
+$localConfig->setValue('jcommunity.installparam', $jCommunityInstallParams, 'modules');
 
 
 if ($logger_metric !== false) {
