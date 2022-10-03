@@ -188,7 +188,7 @@ class JelixScript {
 }
 
 
-function JelixScriptsErrorHandler($errno, $errmsg, $filename, $linenum, $errcontext){
+function JelixScriptsErrorHandler($errno, $errmsg, $filename, $linenum){
 
     if (error_reporting() == 0)
         return;
