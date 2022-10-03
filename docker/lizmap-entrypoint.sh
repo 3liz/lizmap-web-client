@@ -57,16 +57,20 @@ fi
 echo "Updating configuration"
 update-config.php
 
+echo "Launch installer"
 # Set up Configuration  
-php lizmap/install/installer.php
+php lizmap/install/installer.php -v
 
+echo "Set files rights"
 # Set owner/and group
 sh lizmap/install/set_rights.sh $LIZMAP_USER $LIZMAP_USER
 
+echo "Clean temp"
 # Clean cache files in case we are 
 # Restarting the container
 sh lizmap/install/clean_vartmp.sh
 
+echo "Setup config php-fpm"
 # Create link to lizmap prefix
 mkdir -p $(dirname $LIZMAP_HOME)
 ln -sf /www/lizmap $LIZMAP_HOME
@@ -105,6 +109,7 @@ if [ $1 == "php-fpm" ]; then
     set -- php-fpm8 -F -O "$@"
 fi
 
+echo "Create the account for $LIZMAP_ADMIN_LOGIN"
 source=$LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE
 if [ "$source" == "" ]; then
   source="__default"
