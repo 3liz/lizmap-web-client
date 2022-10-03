@@ -84,7 +84,7 @@ class lizMapCtrl extends jController
                     return $rep;
                 }
                 $project = $lser->defaultProject;
-            } catch (UnknownLizmapProjectException $e) {
+            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
                 jMessage::add('The parameter project is mandatory!', 'error');
 
                 return $rep;
@@ -99,7 +99,7 @@ class lizMapCtrl extends jController
 
                 return $rep;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
             return $rep;

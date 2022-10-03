@@ -81,7 +81,7 @@ class mediaCtrl extends jController
      * @param string $project    project key
      * @param string $path       path to the media relative to the project file
      *
-     * @return binary object The media
+     * @return jResponseBinary|jResponseJson object The media
      */
     public function getMedia()
     {
@@ -105,7 +105,7 @@ class mediaCtrl extends jController
             if (!$lproj) {
                 return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
 
             return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
@@ -204,7 +204,7 @@ class mediaCtrl extends jController
      * @param string $repository repository of the project
      * @param string $project    project key
      *
-     * @return binary object The image for this project
+     * @return jResponseBinary|jResponseJson object The image for this project
      */
     public function illustration()
     {
@@ -232,7 +232,7 @@ class mediaCtrl extends jController
             if (!$lproj) {
                 return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
 
             return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');

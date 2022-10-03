@@ -70,7 +70,7 @@ class lizAjaxCtrl extends jController
      *
      * @param string $repository. Name of the repository.
      *
-     * @return Html fragment with a list of projects
+     * @return jResponseHtml|jResponseHtmlFragment fragment with a list of projects
      */
     public function index()
     {
@@ -101,7 +101,7 @@ class lizAjaxCtrl extends jController
      * @param string $repository. Name of the repository.
      * @param string $project.    Name of the project.
      *
-     * @return Html fragment with a list of projects
+     * @return jResponseHtml|jResponseHtmlFragment fragment with a list of projects
      */
     public function map()
     {
@@ -138,7 +138,7 @@ class lizAjaxCtrl extends jController
                     return $this->error404('The parameter project is mandatory!');
                 }
                 $project = $lser->defaultProject;
-            } catch (UnknownLizmapProjectException $e) {
+            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
                 return $this->error404('The parameter project is mandatory!');
             }
         }
@@ -149,7 +149,7 @@ class lizAjaxCtrl extends jController
             if (!$lproj) {
                 return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
         }
 

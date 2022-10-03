@@ -131,12 +131,12 @@ class wmtsCtrl extends jControllerCmdLine
             $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
             // Project not found
             if (!$project) {
-                $rep->addContent("The project has not be found!\n");
+                $rep->addContent("Unknown repository!\n");
                 $rep->setExitCode(1);
 
                 return $rep;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $rep->addContent("The project has not be found!\n");
             $rep->setExitCode(1);
 
@@ -225,12 +225,12 @@ class wmtsCtrl extends jControllerCmdLine
             $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
             // Project not found
             if (!$project) {
-                $rep->addContent("The project has not be found!\n");
+                $rep->addContent("Unknown repository!\n");
                 $rep->setExitCode(1);
 
                 return $rep;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $rep->addContent("The project has not be found!\n");
             $rep->setExitCode(1);
 
@@ -491,12 +491,12 @@ class wmtsCtrl extends jControllerCmdLine
             $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
             // Project not found
             if (!$project) {
-                $rep->addContent("The project has not be found!\n");
+                $rep->addContent("Unknown repository!\n");
                 $rep->setExitCode(1);
 
                 return $rep;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $rep->addContent("The project has not be found!\n");
             $rep->setExitCode(1);
 

@@ -133,11 +133,7 @@ class Project
                 throw $e;
             }
 
-            try {
-                $this->qgis = new QgisProject($file, $services, $this->appContext);
-            } catch (UnknownLizmapProjectException $e) {
-                throw $e;
-            }
+            $this->qgis = new QgisProject($file, $services, $this->appContext);
             $this->readProject();
 
             // set project data in cache
@@ -180,17 +176,8 @@ class Project
                 $this->cacheHandler->storeProjectData($data);
             }
 
-            try {
-                $this->cfg = new ProjectConfig($data['cfg']);
-            } catch (UnknownLizmapProjectException $e) {
-                throw $e;
-            }
-
-            try {
-                $this->qgis = new QgisProject($file, $services, $appContext, $data['qgis']);
-            } catch (UnknownLizmapProjectException $e) {
-                throw $e;
-            }
+            $this->cfg = new ProjectConfig($data['cfg']);
+            $this->qgis = new QgisProject($file, $services, $appContext, $data['qgis']);
         }
 
         $this->path = $file;
