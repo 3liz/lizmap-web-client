@@ -22,6 +22,8 @@ import {Circle, Fill, Stroke, Style} from 'ol/style';
 import {Vector as VectorSource} from 'ol/source';
 import {Vector as VectorLayer} from 'ol/layer';
 
+import WKT from 'ol/format/WKT';
+
 export default class Digitizing {
 
     constructor() {
@@ -210,8 +212,7 @@ export default class Digitizing {
                 mainLizmap.map.removeInteraction(this._selectInteraction);
                 mainLizmap.map.removeInteraction(this._modifyInteraction);
 
-                // TODO
-                // this.saveFeatureDrawn();
+                this.saveFeatureDrawn();
 
                 mainEventDispatcher.dispatch('digitizing.editionEnds');
             }
@@ -306,22 +307,23 @@ export default class Digitizing {
     }
 
     saveFeatureDrawn() {
-        const formatWKT = new OpenLayers.Format.WKT();
+        const formatWKT = new WKT();
 
         // Save features in WKT format if any and if save mode is on
+        // TODO: WKT does not handle 'Circle' geom type
+        // Convert to a polygon w/ a lot of point or find another format than WKT handling 'Circle'
         if (this.featureDrawn && this._isSaved) {
-            localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.write(this.featureDrawn));
+            localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.writeFeatures(this.featureDrawn));
         }
     }
 
     loadFeatureDrawnToMap() {
-        const formatWKT = new OpenLayers.Format.WKT();
+        const formatWKT = new WKT();
 
         const drawLayerWKT = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
 
         if (drawLayerWKT) {
-            this._drawLayer.addFeatures(formatWKT.read(drawLayerWKT));
-            this._drawLayer.redraw(true);
+            this._drawSource.addFeatures(formatWKT.readFeatures(drawLayerWKT));
         }
     }
 
