@@ -257,13 +257,13 @@ class editionCtrl extends jController
 
             if (!$this->loginFilteredOverride) {
                 // login filter
-                $loginFilteredConfig = $this->project->getLoginFilteredConfig($this->layer->getName());
+                $loginFilteredConfig = $this->project->getLoginFilteredConfig($this->layer->getName(), true);
                 if ($loginFilteredConfig && property_exists($loginFilteredConfig, 'filterAttribute')) {
                     $propertyName[] = $loginFilteredConfig->filterAttribute;
                 }
 
                 // polygon filter
-                $polygonFilter = $this->project->getLayerPolygonFilterConfig($this->layer->getName(), false);
+                $polygonFilter = $this->project->getLayerPolygonFilterConfig($this->layer->getName(), true);
                 if ($polygonFilter && !in_array($polygonFilter['primary_key'], $propertyName)) {
                     $propertyName[] = $polygonFilter['primary_key'];
                 }
@@ -311,42 +311,7 @@ class editionCtrl extends jController
      */
     private function featureIsEditable()
     {
-        // Get filter by login
-        $expByUser = qgisExpressionUtils::getExpressionByUser($this->layer, true);
-        if ($expByUser !== '') {
-            $results = qgisExpressionUtils::evaluateExpressions(
-                $this->layer,
-                array('filterByLogin' => $expByUser),
-                $this->featureData->features[0]
-            );
-
-            if ($results
-                && property_exists($results, 'filterByLogin')
-                && $results->filterByLogin !== 1) {
-                return false;
-            }
-        }
-
-        // Get the Filter by polygon
-        // for the PostgreSQL layer
-        $polygonFilter = $this->layer->getPolygonFilter(true, 5);
-
-        // Check if the feature can be accessed with this filter
-        if ($polygonFilter && !empty($polygonFilter)) {
-            $results = qgisExpressionUtils::evaluateExpressions(
-                $this->layer,
-                array('filterByPolygon' => $polygonFilter),
-                $this->featureData->features[0]
-            );
-
-            if ($results
-                && property_exists($results, 'filterByPolygon')
-                && $results->filterByPolygon !== 1) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->layer->isFeatureEditable($this->featureData->features[0]);
     }
 
     /**
@@ -864,6 +829,15 @@ class editionCtrl extends jController
             jMessage::add(jLocale::get('view~edition.message.error.layer.editable.delete'), 'LayerNotEditable');
 
             return $this->serviceAnswer();
+        }
+
+        if (!$this->loginFilteredOverride) {
+            $is_editable = $this->featureIsEditable();
+            if (!$is_editable) {
+                $this->setErrorMessage(jLocale::get('view~edition.message.error.feature.editable'), 'FeatureNotEditable');
+
+                return $this->serviceAnswer();
+            }
         }
 
         if (!$this->featureId && $this->featureId !== 0 && $this->featureId !== '0') {
