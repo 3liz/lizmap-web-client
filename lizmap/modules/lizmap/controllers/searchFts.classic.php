@@ -64,7 +64,7 @@ class searchFtsCtrl extends jController
 
                 return $rep;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
             jLog::log('The lizmap project '.strtoupper($project).' does not exist !', 'errors');
 

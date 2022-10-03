@@ -41,7 +41,7 @@ class serviceCtrl extends jController
 
                 return $this->error($errors);
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $errors = array(
                 'title' => 'Wrong repository and project !',
                 'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',

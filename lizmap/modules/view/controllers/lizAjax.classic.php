@@ -138,7 +138,7 @@ class lizAjaxCtrl extends jController
                     return $this->error404('The parameter project is mandatory!');
                 }
                 $project = $lser->defaultProject;
-            } catch (UnknownLizmapProjectException $e) {
+            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
                 return $this->error404('The parameter project is mandatory!');
             }
         }
@@ -149,7 +149,7 @@ class lizAjaxCtrl extends jController
             if (!$lproj) {
                 return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
         }
 
