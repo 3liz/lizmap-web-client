@@ -301,7 +301,7 @@ class FirePHP {
    * @param int $errline
    * @param array $errcontext
    */
-  public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
+  public function errorHandler($errno, $errstr, $errfile, $errline)
   {
     // Don't throw exception if error reporting is switched off
     if (error_reporting() == 0) {
