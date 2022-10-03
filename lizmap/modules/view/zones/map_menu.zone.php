@@ -57,7 +57,7 @@ class map_menuZone extends jZone
             $assign['timemanager'] = $lproj->hasTimemanagerLayers();
 
             $assign['attributeLayers'] = $lproj->hasAttributeLayers();
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
         }
 
