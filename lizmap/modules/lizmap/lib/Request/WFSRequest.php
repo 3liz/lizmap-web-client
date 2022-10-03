@@ -50,6 +50,33 @@ class WFSRequest extends OGCRequest
         'create',
     );
 
+    /**
+     * @var bool apply edition context for request
+     */
+    protected $editingContext = false;
+
+    /**
+     * @return bool The edition context for request
+     */
+    public function getEditingContext()
+    {
+        return $this->editingContext;
+    }
+
+    /**
+     * Set the edition context for request.
+     *
+     * @param bool $editingContext The edition context for request
+     *
+     * @return bool The edition context for request
+     */
+    public function setEditingContext($editingContext)
+    {
+        $this->editingContext = $editingContext ? true : false;
+
+        return $this->editingContext;
+    }
+
     public function parameters()
     {
         $params = parent::parameters();
@@ -58,7 +85,7 @@ class WFSRequest extends OGCRequest
         // as configured in the plugin for login filtered layers.
 
         // Filter data by login for request: getfeature
-        if ($this->param('request') !== 'getfeature') {
+        if (strtolower($this->param('request')) !== 'getfeature') {
             return $params;
         }
 
@@ -77,7 +104,7 @@ class WFSRequest extends OGCRequest
         $loginFilters = array();
 
         if (is_array($typenames)) {
-            $loginFilters = $this->project->getLoginFilters($typenames);
+            $loginFilters = $this->project->getLoginFilters($typenames, $this->editingContext);
         }
 
         // login filters array is empty
@@ -360,7 +387,7 @@ class WFSRequest extends OGCRequest
         // In the WFS OGC standard FEATUREID and BBOX parameters cannot be mutually set
         // but in Lizmap, the user can do a selection, based on featureid, and can request
         // a download, a WFS GetFeature request, based on this selection with a restriction
-        // to map extent, sofeatureid and bbox parameter can be set mutually and featureid
+        // to map extent, so featureid and bbox parameter can be set mutually and featureid
         // parameter needs to be transform in an expression filter.
         // The transformation is only available if the QGIS layer has been set.
         if ($this->param('featureid')
@@ -784,7 +811,7 @@ class WFSRequest extends OGCRequest
         $sql .= $expFilterSql;
 
         // Filter by polygon
-        $polygonFilter = $this->qgisLayer->getPolygonFilter(false, 5);
+        $polygonFilter = $this->qgisLayer->getPolygonFilter($this->editingContext, 5);
         if ($polygonFilter) {
             $sql .= ' AND ( '.$polygonFilter.' ) ';
         }

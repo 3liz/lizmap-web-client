@@ -987,6 +987,115 @@ class qgisVectorLayer extends qgisMapLayer
      * when there is a filter by login (or by polygon). This allows to deactivate the editing icon
      * for the non-editable features inside the popup and attribute table.
      *
+     * @param mixed $feature
+     *
+     * @return bool Data containing the status (restricted|unrestricted) and the features if restricted
+     */
+    public function isFeatureEditable($feature)
+    {
+        // Get filter by login
+        $expByUser = qgisExpressionUtils::getExpressionByUser($this, true);
+        if ($expByUser !== '') {
+            $results = qgisExpressionUtils::evaluateExpressions(
+                $this,
+                array('filterByLogin' => $expByUser),
+                $feature
+            );
+
+            if ($results
+                && property_exists($results, 'filterByLogin')
+                && $results->filterByLogin !== 1) {
+                return false;
+            }
+        }
+
+        $project = $this->getProject();
+        $polygonFilterConfig = $project->getLayerPolygonFilterConfig($this->getName(), true);
+        // No filter by polygon available, the feature is editable
+        if ($polygonFilterConfig == null) {
+            return true;
+        }
+
+        // Get layer WFS typename
+        $typename = $this->getWfsTypeName();
+
+        // Get the needed fields to retrieve
+        $dbFieldsInfo = $this->getDbFieldsInfo();
+        $pKeys = $dbFieldsInfo->primaryKeys;
+        $polygonProperties = array();
+        $polygonProperties[] = $polygonFilterConfig['primary_key'];
+        $properties = array_merge($pKeys, $polygonProperties);
+
+        $pkVals = $this->getPrimaryKeyValues($feature);
+        $exp_filters = array();
+        foreach ($pkVals as $key => $val) {
+            $val = (string) $val;
+            $exp = '"'.$key.'" = ';
+            if (ctype_digit($val)) {
+                $exp .= $val;
+            } else {
+                $exp .= "'".addslashes($val)."'";
+            }
+            $exp_filters[] = $exp;
+        }
+
+        $params = array(
+            'MAP' => $project->getPath(),
+            'SERVICE' => 'WFS',
+            'VERSION' => '1.0.0',
+            'REQUEST' => 'GetFeature',
+            'TYPENAME' => $typename,
+            'PROPERTYNAME' => implode(',', $properties),
+            'OUTPUTFORMAT' => 'GeoJSON',
+            'GEOMETRYNAME' => 'none',
+            'EXP_FILTER' => implode(' AND ', $exp_filters),
+        );
+
+        // Perform the request to get the editable features
+        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, lizmap::getServices());
+        // Activate edition context to get filtered layer for edition
+        $wfsRequest->setEditingContext(true);
+        $result = $wfsRequest->process();
+
+        // Check code
+        if (floor($result->code / 100) >= 4) {
+            return true;
+        }
+
+        // Check mime/type
+        if (in_array(strtolower($result->mime), array('text/html', 'text/xml'))) {
+            return true;
+        }
+
+        // Get data
+        if (!property_exists($result, 'data')) {
+            return true;
+        }
+        $wfsData = $result->data;
+        if (property_exists($result, 'file') and $result->file and is_file($result->data)) {
+            $wfsData = \jFile::read($wfsData);
+        }
+
+        // Check data: if there is no data returned by WFS, the user has not access to it
+        if (!$wfsData) {
+            return true;
+        }
+
+        // Get data from layer
+        $wfsData = json_decode($wfsData);
+        if (count($wfsData->features) !== 1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get the layer editable features.
+     * Used client-side (JS) to fetch the features which are editable by the authenticated user
+     * when there is a filter by login (or by polygon). This allows to deactivate the editing icon
+     * for the non-editable features inside the popup and attribute table.
+     *
      * @return array Data containing the status (restricted|unrestricted) and the features if restricted
      */
     public function editableFeatures()
@@ -1011,40 +1120,11 @@ class qgisVectorLayer extends qgisMapLayer
             return $unrestricted_empty_data;
         }
 
-        // We first assume there are some filters
-        // We will then check if there is one for the login filter & for the polygon filter
-        $exp_filters = array();
-        $loginRestricted = true;
-        $polygonRestricted = true;
-
-        // Get and check the filter by login for the layer
-        $loginFilter = $project->getLoginFilter($this->getName(), true);
-        if (empty($loginFilter)) {
-            // login filters array is empty
-            $loginRestricted = false;
-        } else {
-            if (!array_key_exists('filter', $loginFilter)) {
-                // layer not in login filters array
-                $loginRestricted = false;
-            }
-        }
-        if ($loginRestricted) {
-            $exp_filters[] = $loginFilter['filter'];
-        }
-
-        // Get and check the polygon filter configuration for the layer for the editing context
+        // We first check if there is one for the login filter & for the polygon filter
+        $loginFilteredConfig = $project->getLoginFilteredConfig($this->getName(), true);
         $polygonFilterConfig = $project->getLayerPolygonFilterConfig($this->getName(), true);
-        $polygonFilterExpression = '';
-        if (!$polygonFilterConfig) {
-            // polygon filter config array is empty
-            $polygonRestricted = false;
-        } else {
-            // Get the filter
-            $polygonFilterExpression = $this->getPolygonFilter(true, 5);
-            if (!empty($polygonFilterExpression)) {
-                $exp_filters[] = $polygonFilterExpression;
-            }
-        }
+        $loginRestricted = ($loginFilteredConfig != null);
+        $polygonRestricted = ($polygonFilterConfig != null);
 
         // No filter for this layer: return empty data
         if (!$loginRestricted && !$polygonRestricted) {
@@ -1057,15 +1137,6 @@ class qgisVectorLayer extends qgisMapLayer
             'features' => array(),
         );
 
-        // Build the combined filter
-        // We need to add the filters in the EXP_FILTER parameter
-        // login expression filter and the polygon expression filter
-        $exp_filter = implode(' AND ', $exp_filters);
-
-        // But we need to add the needed property for the WFS filter to work
-        // (Some QGIS Server versions could return no data
-        // if the fields used in filter were not added in propertyname parameter)
-
         // Get layer WFS typename
         $typename = $this->getWfsTypeName();
 
@@ -1075,7 +1146,7 @@ class qgisVectorLayer extends qgisMapLayer
         $loginProperties = array();
         $polygonProperties = array();
         if ($loginRestricted) {
-            $loginProperties[] = $loginFilter['filterAttribute'];
+            $loginProperties[] = $loginFilteredConfig->filterAttribute;
         }
         if ($polygonRestricted) {
             $polygonProperties[] = $polygonFilterConfig['primary_key'];
@@ -1091,11 +1162,12 @@ class qgisVectorLayer extends qgisMapLayer
             'PROPERTYNAME' => implode(',', $properties),
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
-            'EXP_FILTER' => $exp_filter,
         );
 
         // Perform the request to get the editable features
         $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, lizmap::getServices());
+        // Activate edition context to get filtered layer for edition
+        $wfsRequest->setEditingContext(true);
         $result = $wfsRequest->process();
 
         // Check code
@@ -1351,7 +1423,7 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         // Do not filter if the layer is not concerned by the filter by polygon filter
-        $polygonFilterConfig = $this->project->getLayerPolygonFilterConfig($this->getName(), true);
+        $polygonFilterConfig = $this->project->getLayerPolygonFilterConfig($this->getName(), $editing_context);
         if (!$polygonFilterConfig) {
             return $no_filter_array;
         }

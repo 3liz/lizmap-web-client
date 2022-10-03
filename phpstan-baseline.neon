@@ -466,16 +466,6 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
-			message: "#^Cannot access property \\$filterByLogin on array\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Cannot access property \\$filterByPolygon on array\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
@@ -552,11 +542,6 @@ parameters:
 
 		-
 			message: "#^Right side of \\|\\| is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Variable \\$polygonFilter in empty\\(\\) always exists and is not falsy\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
