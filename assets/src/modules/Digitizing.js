@@ -288,7 +288,7 @@ export default class Digitizing {
         if (!confirm(lizDict['digitizing.confirme.erase'])) {
             return false;
         }
-        this._drawLayer.destroyFeatures();
+        this._drawSource.clear(true);
 
         localStorage.removeItem(this._repoAndProjectString + '_drawLayer');
 
