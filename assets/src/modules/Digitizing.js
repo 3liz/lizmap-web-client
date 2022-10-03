@@ -275,7 +275,7 @@ export default class Digitizing {
     toggleFeatureDrawnVisibility() {
         this._featureDrawnVisibility = !this._featureDrawnVisibility;
 
-        this._drawLayer.setVisibility(this._featureDrawnVisibility);
+        this._drawLayer.setVisible(this._featureDrawnVisibility);
 
         mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
     }
