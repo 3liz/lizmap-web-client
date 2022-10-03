@@ -169,6 +169,7 @@ describe('WMTS command line', function () {
             .should('contain', '0')
     })
 
+
     it('lizmap~wmts:capabilities failed', function () {
         // Not enough parameters
         cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v', {failOnNonZeroExit: false})
@@ -180,33 +181,44 @@ describe('WMTS command line', function () {
             .should('not.contain', 'Missing parameter "project"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+
         cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v testsrepository', {failOnNonZeroExit: false})
             .its('code').should('eq', 1)
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "repository"')
             .should('contain', 'Missing parameter "project"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+
         // Bad parameters
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v norepository cache', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.stdout).to.contain('Unknown repository!')
+                expect(result.code).to.equal(1)
+            })
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
-            .should('contain', 'Missing parameter "project"')
+            .should('not.contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "project"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:capabilities -v testsrepository unknown', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.stdout).to.contain('The project has not be found!')
+                expect(result.code).to.equal(1)
+            })
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
         .its('stdout')
-        .should('contain', 'Missing parameter "repository"')
-        .should('contain', 'Missing parameter "project"')
-        .should('contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
+        .should('not.contain', 'Missing parameter "repository"')
+        .should('not.contain', 'Missing parameter "project"')
+        .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
         // Clear errors
         cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
@@ -227,12 +239,13 @@ describe('WMTS command line', function () {
             .should('not.contain', 'Missing parameter "TileMatrixMax"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository', {failOnNonZeroExit: false})
             .its('code').should('eq', 1)
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "repository"')
             .should('contain', 'Missing parameter "project"')
             .should('not.contain', 'Missing parameter "layers"')
             .should('not.contain', 'Missing parameter "TileMatrixSet"')
@@ -240,98 +253,125 @@ describe('WMTS command line', function () {
             .should('not.contain', 'Missing parameter "TileMatrixMax"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache', {failOnNonZeroExit: false})
             .its('code').should('eq', 1)
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
-            .should('contain', 'Missing parameter "project"')
+            .should('not.contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "project"')
             .should('contain', 'Missing parameter "layers"')
             .should('not.contain', 'Missing parameter "TileMatrixSet"')
             .should('not.contain', 'Missing parameter "TileMatrixMin"')
             .should('not.contain', 'Missing parameter "TileMatrixMax"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers', {failOnNonZeroExit: false})
             .its('code').should('eq', 1)
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
-            .should('contain', 'Missing parameter "project"')
-            .should('contain', 'Missing parameter "layers"')
+            .should('not.contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "project"')
+            .should('not.contain', 'Missing parameter "layers"')
             .should('contain', 'Missing parameter "TileMatrixSet"')
             .should('not.contain', 'Missing parameter "TileMatrixMin"')
             .should('not.contain', 'Missing parameter "TileMatrixMax"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers EPSG:3857', {failOnNonZeroExit: false})
             .its('code').should('eq', 1)
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
-            .should('contain', 'Missing parameter "project"')
-            .should('contain', 'Missing parameter "layers"')
-            .should('contain', 'Missing parameter "TileMatrixSet"')
+            .should('not.contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "project"')
+            .should('not.contain', 'Missing parameter "layers"')
+            .should('not.contain', 'Missing parameter "TileMatrixSet"')
             .should('contain', 'Missing parameter "TileMatrixMin"')
             .should('not.contain', 'Missing parameter "TileMatrixMax"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers EPSG:3857 10', {failOnNonZeroExit: false})
             .its('code').should('eq', 1)
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
-            .should('contain', 'Missing parameter "project"')
-            .should('contain', 'Missing parameter "layers"')
-            .should('contain', 'Missing parameter "TileMatrixSet"')
-            .should('contain', 'Missing parameter "TileMatrixMin"')
+            .should('not.contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "project"')
+            .should('not.contain', 'Missing parameter "layers"')
+            .should('not.contain', 'Missing parameter "TileMatrixSet"')
+            .should('not.contain', 'Missing parameter "TileMatrixMin"')
             .should('contain', 'Missing parameter "TileMatrixMax"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
         // Bad parameters
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run norepository cache Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.code).to.equal(1)
+                expect(result.stdout).to.contain('Unknown repository!')
+            })
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
-            .should('contain', 'Missing parameter "project"')
-            .should('contain', 'Missing parameter "layers"')
-            .should('contain', 'Missing parameter "TileMatrixSet"')
-            .should('contain', 'Missing parameter "TileMatrixMin"')
-            .should('contain', 'Missing parameter "TileMatrixMax"')
+            .should('not.contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "project"')
+            .should('not.contain', 'Missing parameter "layers"')
+            .should('not.contain', 'Missing parameter "TileMatrixSet"')
+            .should('not.contain', 'Missing parameter "TileMatrixMin"')
+            .should('not.contain', 'Missing parameter "TileMatrixMax"')
             .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository unknown Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.code).to.equal(1)
+                expect(result.stdout).to.contain('The project has not be found!')
+            })
 
         cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log')
             .its('stdout')
-            .should('contain', 'Missing parameter "repository"')
-            .should('contain', 'Missing parameter "project"')
-            .should('contain', 'Missing parameter "layers"')
-            .should('contain', 'Missing parameter "TileMatrixSet"')
-            .should('contain', 'Missing parameter "TileMatrixMin"')
-            .should('contain', 'Missing parameter "TileMatrixMax"')
-            .should('contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
+            .should('not.contain', 'Missing parameter "repository"')
+            .should('not.contain', 'Missing parameter "project"')
+            .should('not.contain', 'Missing parameter "layers"')
+            .should('not.contain', 'Missing parameter "TileMatrixSet"')
+            .should('not.contain', 'Missing parameter "TileMatrixMin"')
+            .should('not.contain', 'Missing parameter "TileMatrixMax"')
+            .should('not.contain', 'The QGIS project /srv/lzm/tests/qgis-projects/tests/unknown.qgs does not exist!')
 
         // Clear errors
         cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
 
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache unknown EPSG:3857 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.code).to.equal(1)
+                expect(result.stdout).to.contain('The layers \'unknown\' have not be found!')
+            })
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run testsrepository cache Quartiers unknown 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.code).to.equal(1)
+                expect(result.stdout).to.contain("The TileMatrixSet 'EPSG:3857'!\nThe TileMatrixSet 'unknown' has not be found!")
+            })
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run -bbox xmin,ymin,xmax,ymax testsrepository cache Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.code).to.equal(1)
+                expect(result.stdout).to.contain("The TileMatrixSet 'EPSG:3857'!\nThe optional bbox has to contain 4 numbers separated by comma!")
+            })
 
+        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
         cy.exec('./../lizmap-ctl script lizmap~wmts:seeding -v -f -dry-run -bbox 417094.94691622,5398163.2080343 testsrepository cache Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
-            .its('code').should('eq', 1)
+            .then((result) => {
+                expect(result.code).to.equal(1)
+                expect(result.stdout).to.contain("The TileMatrixSet 'EPSG:3857'!\nThe optional bbox has to contain 4 numbers separated by comma!")
+            })
     })
 })

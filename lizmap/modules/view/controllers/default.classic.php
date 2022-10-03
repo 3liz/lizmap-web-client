@@ -59,7 +59,7 @@ class defaultCtrl extends jController
                         jMessage::add(jLocale::get('view~default.project.needs.update'), 'error');
                     }
                     jMessage::add('The \'only maps\' option is not well configured!', 'error');
-                } catch (UnknownLizmapProjectException $e) {
+                } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
                     jMessage::add('The \'only maps\' option is not well configured!', 'error');
                     jLog::logEx($e, 'error');
                 }
