@@ -149,7 +149,7 @@ class editionCtrl extends jController
 
                 return false;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $this->setErrorMessage('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return false;
@@ -1062,7 +1062,7 @@ class editionCtrl extends jController
 
                 return $rep;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $rep->data['message'] = 'The lizmap project '.strtoupper($project).' does not exist !';
 
             return $rep;
@@ -1136,7 +1136,7 @@ class editionCtrl extends jController
 
                 return $this->serviceAnswer();
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return $this->serviceAnswer();
@@ -1334,7 +1334,7 @@ class editionCtrl extends jController
 
                 return $this->serviceAnswer();
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return $this->serviceAnswer();

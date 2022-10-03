@@ -30,7 +30,7 @@ class filterConfig
 
                 return false;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $this->errors = array(
                 'title' => 'Invalid Query Parameter',
                 'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
