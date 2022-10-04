@@ -5,23 +5,16 @@ import LineString from 'ol/geom/LineString';
 import Feature from 'ol/Feature.js';
 
 import {
-    applyTransform,
-    containsCoordinate,
-    containsExtent,
-    getWidth,
     equals,
     getCenter,
     isEmpty,
     getIntersection,
     intersects,
-    wrapX as wrapExtentX,
 } from 'ol/extent.js';
 
 import {
-    equivalent as equivalentProjection, transform, transformExtent,
-  } from 'ol/proj.js';
-
-import { clamp } from 'ol/math.js';
+    equivalent as equivalentProjection, transform,
+} from 'ol/proj.js';
 
 import { forward, toPoint } from 'mgrs';
 class MGRS extends Graticule {
@@ -37,15 +30,15 @@ class MGRS extends Graticule {
          * @private
          */
         this.lines_ = [];
+
+        this.latLabelFormatter_ = () => {
+            return '';
+        };
+    
+        this.lonLabelFormatter_ = () => {
+            return '';
+        };
     }
-
-    latLabelFormatter_ = () => {
-        return '';
-    };
-
-    lonLabelFormatter_ = () => {
-        return '';
-    };
 
     /**
      * @param {number} lon Longitude.
@@ -90,7 +83,7 @@ class MGRS extends Graticule {
         return index;
     }
 
-    addLine_(coords1, coords2, extent, index){
+    addLine_(coords1, coords2, extent, index) {
         const lineString = new LineString([
             transform(coords1, 'EPSG:4326', this.projection_),
             transform(coords2, 'EPSG:4326', this.projection_)
@@ -257,34 +250,36 @@ class MGRS extends Graticule {
                 );
 
                 // 100KM grid
-                if (resolution < 2000 && lon == -180 && lat >= 0) {
+                if (resolution < 2000 && lon == 0) {
                     const leftBottom = forward([lon, lat], 5).substring(0, 4);
                     const rightTop = forward([lon + lonInterval - delta, lat + latInterval - delta], 5).substring(0, 4);
 
-                    let columnLetter = leftBottom.charCodeAt(2) - 1;
-                    while ((columnLetter += 1) <= rightTop.charCodeAt(2)) {
+                    let columnLetter = leftBottom.charCodeAt(2);
+                    while (columnLetter != rightTop.charCodeAt(2) + 1) {
 
                         // Discard I and O
                         if (columnLetter === 73 || columnLetter === 79) {
+                            columnLetter++;
                             continue;
                         }
 
-                        let rowLetter = leftBottom.charCodeAt(3) - 1;
-                        while ((rowLetter += 1) != rightTop.charCodeAt(3)) {
-
-                            // Row letter stops at 'V' => after we go back to 'A'
-                            if (rowLetter === 87) {
-                                rowLetter = 65;
-                            }
-
+                        let rowLetter = leftBottom.charCodeAt(3);
+                        while (rowLetter != rightTop.charCodeAt(3)) {
                             // Discard I and O
                             if (rowLetter === 73 || rowLetter === 79) {
+                                rowLetter++;
                                 continue;
                             }
 
                             // Next letters
                             let columnLetterNext = columnLetter + 1;
 
+                            // Column letter stops at 'Z' => after we go back to 'A'
+                            if (columnLetterNext >= 91) {
+                                columnLetterNext = 65;
+                            }
+
+                            // Discard I and O
                             if (columnLetterNext === 73 || columnLetterNext === 79) {
                                 columnLetterNext++;
                             }
@@ -292,7 +287,7 @@ class MGRS extends Graticule {
                             let rowLetterNext = rowLetter + 1;
 
                             // Row letter stops at 'V' => after we go back to 'A'
-                            if (rowLetterNext === 87) {
+                            if (rowLetterNext >= 87) {
                                 rowLetterNext = 65;
                             }
 
@@ -305,6 +300,23 @@ class MGRS extends Graticule {
                             let rightBottomCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetterNext) + String.fromCharCode(rowLetter));
                             let leftTopCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetterNext));
 
+                            // Make lines don't exceed their GZD cell
+                            if(leftBottomCoords[0] < lon){
+                                leftBottomCoords[0] = lon;
+                            }
+
+                            if(leftTopCoords[0] < lon){
+                                leftTopCoords[0] = lon;
+                            }
+
+                            if(leftTopCoords[1] > lat + latInterval){
+                                leftTopCoords[1] = lat + latInterval;
+                            }
+
+                            if(rightBottomCoords[0] > lon + lonInterval){
+                                rightBottomCoords[0] = lon + lonInterval;
+                            }
+
                             idxLines = this.addLine_(
                                 leftBottomCoords,
                                 rightBottomCoords,
@@ -312,12 +324,29 @@ class MGRS extends Graticule {
                                 idxLines
                             );
 
-                            idxLines = this.addLine_(
-                                leftBottomCoords,
-                                leftTopCoords,
-                                extent,
-                                idxLines
-                            );
+                            if(leftBottomCoords[0] != lon){
+                                idxLines = this.addLine_(
+                                    leftBottomCoords,
+                                    leftTopCoords,
+                                    extent,
+                                    idxLines
+                                );
+                            }
+
+                            // Increment rowLetter
+                            rowLetter++;
+
+                            // Row letter stops at 'V' => after we go back to 'A'
+                            if (rowLetter >= 87) {
+                                rowLetter = 65;
+                            }
+                        }
+                        // Increment columnLetter
+                        columnLetter++;
+
+                        // Column letter stops at 'Z' => after we go back to 'A'
+                        if (columnLetter >= 91) {
+                            columnLetter = 65;
                         }
                     }
                 }
