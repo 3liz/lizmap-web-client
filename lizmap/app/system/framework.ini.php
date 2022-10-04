@@ -11,6 +11,7 @@
 [entrypoint:index.php]
 config="index/config.ini.php"
 type=classic
+default=1
 
 [entrypoint:admin.php]
 config="admin/config.ini.php"
