@@ -632,7 +632,7 @@ class mapsCtrl extends jController
             jMessage::add(jLocale::get('admin~admin.cache.layer.removed', array($layer)));
 
             return $rep;
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 

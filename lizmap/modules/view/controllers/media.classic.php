@@ -105,7 +105,7 @@ class mediaCtrl extends jController
             if (!$lproj) {
                 return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
 
             return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
@@ -232,7 +232,7 @@ class mediaCtrl extends jController
             if (!$lproj) {
                 return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
 
             return $this->error404('The lizmap project '.strtoupper($project).' does not exist !');

@@ -49,7 +49,7 @@ class listProjectDatasource extends jFormsDynamicDatasource
                 if ($p) {
                     return (string) $p->getTitle();
                 }
-            } catch (UnknownLizmapProjectException $e) {
+            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
                 jLog::logEx($e, 'error');
 
                 return '';

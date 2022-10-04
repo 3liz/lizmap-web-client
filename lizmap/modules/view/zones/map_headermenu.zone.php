@@ -51,7 +51,7 @@ class map_headermenuZone extends jZone
             if ($externalSearch !== null) {
                 $assign['externalSearch'] = $externalSearch;
             }
-        } catch (UnknownLizmapProjectException $e) {
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
         }
 
