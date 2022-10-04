@@ -153,7 +153,7 @@ server {
 ### Install from composer packages
 
 - Mount `/www/lizmap/my-packages/` at a location on the host or a from a named volume.
-- From inside the container, install your module with the command `lizmap-install-modules <package-name>`
+- From inside the container, install your module with the command `lizmap-install-module <package-name>`
 - Add the module configuration snippet in the appropriate snippets directory (see the module documentation for  the configuration files to modify)
 - Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
 
@@ -167,7 +167,7 @@ server {
 ### Install as bundled modules
 
 You may ship preinstalled modules in your image inherited from lizmap image. Simply
-run the following command in your dockerfile: `lizmap-install-modules <package-name>` 
+run the following command in your dockerfile: `lizmap-install-module <package-name>` 
 
 
 
