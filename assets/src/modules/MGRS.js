@@ -16,7 +16,7 @@ import {
     equivalent as equivalentProjection, transform,
 } from 'ol/proj.js';
 
-import { forward, toPoint } from 'mgrs';
+import { forward, toPoint } from '../dependencies/mgrs';
 class MGRS extends Graticule {
 
     /**
@@ -60,15 +60,8 @@ class MGRS extends Graticule {
         );
         if (intersects(lineString.getExtent(), extent)) {
             if (this.meridiansLabels_) {
-                const mgrsLabel = forward([lon, minLat]);
-                let text;
+                const text = forward([lon, minLat], 0);
 
-                // Handle single digit GZD
-                if (lon <= -132) {
-                    text = mgrsLabel.slice(0, 4);
-                } else {
-                    text = mgrsLabel.slice(0, 5);
-                }
                 if (index in this.meridiansLabels_) {
                     this.meridiansLabels_[index].text = text;
                 } else {
@@ -251,11 +244,11 @@ class MGRS extends Graticule {
 
                 // 100KM grid
                 if (resolution < 2000 && lon == 0) {
-                    const leftBottom = forward([lon, lat], 5).substring(0, 4);
-                    const rightTop = forward([lon + lonInterval - delta, lat + latInterval - delta], 5).substring(0, 4);
+                    const leftBottom = forward([lon, lat], 0);
+                    const rightTop = forward([lon + lonInterval - delta, lat + latInterval - delta], 0);
 
-                    let columnLetter = leftBottom.charCodeAt(2);
-                    while (columnLetter != rightTop.charCodeAt(2) + 1) {
+                    let columnLetter = leftBottom.slice(-2,-1).charCodeAt();
+                    while (columnLetter != rightTop.slice(-2,-1).charCodeAt() + 1) {
 
                         // Discard I and O
                         if (columnLetter === 73 || columnLetter === 79) {
@@ -263,8 +256,8 @@ class MGRS extends Graticule {
                             continue;
                         }
 
-                        let rowLetter = leftBottom.charCodeAt(3);
-                        while (rowLetter != rightTop.charCodeAt(3)) {
+                        let rowLetter = leftBottom.slice(-1).charCodeAt();
+                        while (rowLetter != rightTop.slice(-1).charCodeAt()) {
                             // Discard I and O
                             if (rowLetter === 73 || rowLetter === 79) {
                                 rowLetter++;
@@ -296,9 +289,9 @@ class MGRS extends Graticule {
                                 rowLetterNext++;
                             }
 
-                            let leftBottomCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetter));
-                            let rightBottomCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetterNext) + String.fromCharCode(rowLetter));
-                            let leftTopCoords = toPoint(leftBottom.slice(0, 2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetterNext));
+                            let leftBottomCoords = toPoint(leftBottom.slice(0, -2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetter));
+                            let rightBottomCoords = toPoint(leftBottom.slice(0, -2) + String.fromCharCode(columnLetterNext) + String.fromCharCode(rowLetter));
+                            let leftTopCoords = toPoint(leftBottom.slice(0, -2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetterNext));
 
                             // Make lines don't exceed their GZD cell
                             if(leftBottomCoords[0] < lon){
