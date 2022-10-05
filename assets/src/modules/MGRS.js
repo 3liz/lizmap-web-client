@@ -88,6 +88,34 @@ class MGRS extends Graticule {
         return index;
     }
 
+    calculateIntersection_(p1, p2, p3, p4) {
+
+        var c2x = p3.x - p4.x; // (x3 - x4)
+          var c3x = p1.x - p2.x; // (x1 - x2)
+          var c2y = p3.y - p4.y; // (y3 - y4)
+          var c3y = p1.y - p2.y; // (y1 - y2)
+      
+          // down part of intersection point formula
+          var d  = c3x * c2y - c3y * c2x;
+      
+          if (d == 0) {
+            throw new Error('Number of intersection points is zero or infinity.');
+        }
+      
+          // upper part of intersection point formula
+          var u1 = p1.x * p2.y - p1.y * p2.x; // (x1 * y2 - y1 * x2)
+          var u4 = p3.x * p4.y - p3.y * p4.x; // (x3 * y4 - y3 * x4)
+      
+          // intersection point formula
+          
+          var px = (u1 * c2x - c3x * u4) / d;
+          var py = (u1 * c2y - c3y * u4) / d;
+          
+          var p = { x: px, y: py };
+      
+          return p;
+    }
+
     /**
    * Update geometries in the source based on current view
    * @param {import("../extent").Extent} extent Extent
@@ -243,12 +271,15 @@ class MGRS extends Graticule {
                 );
 
                 // 100KM grid
-                if (resolution < 2000 && lon == 0) {
+                if (resolution < 2000 && lon == 0 && (lat == 40 || lat == 48)) {
                     const leftBottom = forward([lon, lat], 0);
+
+                    const rightColumnLetter = forward([lon + lonInterval - delta, lat], 0).slice(-2,-1).charCodeAt();
+
                     const rightTop = forward([lon + lonInterval - delta, lat + latInterval - delta], 0);
 
                     let columnLetter = leftBottom.slice(-2,-1).charCodeAt();
-                    while (columnLetter != rightTop.slice(-2,-1).charCodeAt() + 1) {
+                    while (columnLetter != rightColumnLetter + 1) {
 
                         // Discard I and O
                         if (columnLetter === 73 || columnLetter === 79) {
@@ -295,7 +326,15 @@ class MGRS extends Graticule {
 
                             // Make lines don't exceed their GZD cell
                             if(leftBottomCoords[0] < lon){
-                                leftBottomCoords[0] = lon;
+                                const intersectionPointWithLon = this.calculateIntersection_(
+                                    {x:lon, y: lat + latInterval}, 
+                                    {x:lon, y: lat - latInterval},
+                                    {x:leftBottomCoords[0], y: leftBottomCoords[1]},
+                                    {x:rightBottomCoords[0], y: rightBottomCoords[1]}
+                                );
+
+                                leftBottomCoords[0] = intersectionPointWithLon.x;
+                                leftBottomCoords[1] = intersectionPointWithLon.y;
                             }
 
                             if(leftTopCoords[0] < lon){
@@ -307,7 +346,16 @@ class MGRS extends Graticule {
                             }
 
                             if(rightBottomCoords[0] > lon + lonInterval){
-                                rightBottomCoords[0] = lon + lonInterval;
+
+                                const intersectionPointWithLon = this.calculateIntersection_(
+                                    {x:lon + lonInterval, y: lat + latInterval}, 
+                                    {x:lon + lonInterval, y: lat - latInterval},
+                                    {x:leftBottomCoords[0], y: leftBottomCoords[1]},
+                                    {x:rightBottomCoords[0], y: rightBottomCoords[1]}
+                                );
+
+                                rightBottomCoords[0] = intersectionPointWithLon.x;
+                                rightBottomCoords[1] = intersectionPointWithLon.y;
                             }
 
                             idxLines = this.addLine_(
