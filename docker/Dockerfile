@@ -46,6 +46,8 @@ RUN mv /www/lizmap/var/config /www/lizmap/var/config.dist \
  && mv /www/lizmap/www /www/lizmap/www.dist \
  && mv /www/lizmap/my-packages/composer.json.dist /my-packages.composer.json.dist
  
+RUN addgroup -g 1000 groupphp; \
+    adduser -u 1000 -H -G groupphp -D userphp ;
 
 COPY factory.manifest /build.manifest
 COPY lizmap-entrypoint.sh update-config.php /bin/

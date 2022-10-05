@@ -15,7 +15,8 @@ The container deploys one Lizmap instance and may run php-fpm on the command lin
 - `LIZMAP_CACHEEXPIRATION`: Lizmap cache expiration time 
 - `LIZMAP_CACHEREDISDB`:  Redis Database index used 
 - `LIZMAP_CACHEREDISKEYPREFIX`: the Redis key prefix to use
-- `LIZMAP_USER`: User used to run Lizmap
+- `LIZMAP_USER_ID`: Id of the user used to run Lizmap
+- `LIZMAP_GROUP_ID`: Id of the group used to run Lizmap
 - `LIZMAP_HOME`: The root path for web files used from the web server
 - `LIZMAP_THEME`: Lizmap theme to use
 - `LIZMAP_ADMIN_LOGIN`: Login of the admin user
@@ -93,7 +94,8 @@ lizmap:
       LIZMAP_WPS_URL: http://wps:8080/ # According to your configuration
       LIZMAP_CACHESTORAGETYPE: redis   
       LIZMAP_CACHEREDISDB: '1'
-      LIZMAP_USER: '1010'
+      LIZMAP_USER_ID: '1010'
+      LIZMAP_GROUP_ID: '1010'
       LIZMAP_WMSSERVERURL: http://map:8080/ows/
       LIZMAP_CACHEREDISHOST: redis
       LIZMAP_HOME: /srv/lizmap/
