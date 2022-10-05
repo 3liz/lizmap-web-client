@@ -3,11 +3,40 @@
 set -e
 #set -x
 
-LIZMAP_USER=${LIZMAP_USER:-9001}
+# use deprecated variable LIZMAP_USER which was the user id
+if [ ! -z "$LIZMAP_USER" ]; then
+    if [ -z "$LIZMAP_USER_ID" ]; then
+      LIZMAP_USER_ID="$LIZMAP_USER"
+      LIZMAP_GROUP_ID="$LIZMAP_USER"
+    fi
+fi
+
+LIZMAP_USER_ID=${LIZMAP_USER_ID:-1000}
+LIZMAP_GROUP_ID=${LIZMAP_GROUP_ID:-1000}
 LIZMAP_ADMIN_LOGIN=${LIZMAP_ADMIN_LOGIN:-admin}
 LIZMAP_ADMIN_EMAIL=${LIZMAP_ADMIN_EMAIL:-root@local.localhost}
 
+LIZMAP_USER=userphp
+LIZMAP_GROUP=groupphp
+
+CURRENT_USER_ID=$(id -u)
+if [ "$CURRENT_USER_ID" == "0" ]; then
+
+  GROUPID=$(getent group $LIZMAP_GROUP | cut -d: -f3)
+  USERID=$(id -u $LIZMAP_USER)
+
+  if [ "$LIZMAP_GROUP_ID" != "$GROUPID" ]; then
+     groupmod -g $APP_GROUP_ID $LIZMAP_GROUP
+  fi
+  if [ "$LIZMAP_USER_ID" != "$USERID" ]; then
+     usermod -u $APP_USER_ID $LIZMAP_USER
+  fi
+fi
+
+export LIZMAP_USER_ID
 export LIZMAP_USER
+export LIZMAP_GROUP_ID
+export LIZMAP_GROUP
 
 # Define default drop-in directories
 LIZMAP_CONFIG_INCLUDE=${LIZMAP_CONFIG_INCLUDE:-/www/lizmap/var/config}
@@ -34,21 +63,21 @@ if [ ! -z "$PHP_INI" ]; then
 fi
 
 # Copy config files to mount point
-cp -aR lizmap/var/config.dist/* lizmap/var/config 
+cp -aR lizmap/var/config.dist/* lizmap/var/config
 
 # Copy configuration file in their initial states if they do no exists
-[ ! -f lizmap/var/config/lizmapConfig.ini.php ] && cp lizmap/var/config/lizmapConfig.ini.php.dist lizmap/var/config/lizmapConfig.ini.php 
-[ ! -f lizmap/var/config/localconfig.ini.php  ] && cp lizmap/var/config/localconfig.ini.php.dist  lizmap/var/config/localconfig.ini.php 
-[ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php 
+[ ! -f lizmap/var/config/lizmapConfig.ini.php ] && cp lizmap/var/config/lizmapConfig.ini.php.dist lizmap/var/config/lizmapConfig.ini.php
+[ ! -f lizmap/var/config/localconfig.ini.php  ] && cp lizmap/var/config/localconfig.ini.php.dist  lizmap/var/config/localconfig.ini.php
+[ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php
 
-chown -R $LIZMAP_USER:$LIZMAP_USER lizmap/var/
+chown -R $LIZMAP_USER:$LIZMAP_GROUP lizmap/var/
 
 # Copy static files
 # Note: static files needs to be resolved by external web server
 # We have to copy them on the host
 if [ -e lizmap/www ]; then
     cp -aR lizmap/www.dist/* lizmap/www/
-    chown -R $LIZMAP_USER:$LIZMAP_USER lizmap/www
+    chown -R $LIZMAP_USER:$LIZMAP_GROUP lizmap/www
 else
     mv lizmap/www.dist lizmap/www
 fi
@@ -63,7 +92,7 @@ php lizmap/install/installer.php -v
 
 echo "Set files rights"
 # Set owner/and group
-sh lizmap/install/set_rights.sh $LIZMAP_USER $LIZMAP_USER
+sh lizmap/install/set_rights.sh $LIZMAP_USER $LIZMAP_GROUP
 
 echo "Clean temp"
 # Clean cache files in case we are 
@@ -77,7 +106,7 @@ ln -sf /www/lizmap $LIZMAP_HOME
 
 # Override php-fpm configuration
 sed -i "/^user =/c\user = ${LIZMAP_USER}"   /etc/php8/php-fpm.d/www.conf
-sed -i "/^group =/c\group = ${LIZMAP_USER}" /etc/php8/php-fpm.d/www.conf
+sed -i "/^group =/c\group = ${LIZMAP_GROUP}" /etc/php8/php-fpm.d/www.conf
 sed -i "/^listen =/c\listen = 9000" /etc/php8/php-fpm.d/www.conf
 
 sed -i "/^pm.max_children =/c\pm.max_children = ${PM_MAX_CHILDREN:-50}"   /etc/php8/php-fpm.d/www.conf
