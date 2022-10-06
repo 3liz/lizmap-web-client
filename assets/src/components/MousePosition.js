@@ -3,6 +3,8 @@ import { html, render } from 'lit-html';
 
 import { transform, get as getProjection } from 'ol/proj';
 
+import { forward } from '../dependencies/mgrs';
+
 export default class MousePosition extends HTMLElement {
     constructor() {
         super();
@@ -28,10 +30,10 @@ export default class MousePosition extends HTMLElement {
     mainTemplate(lon, lat){
         return html`
             <div class="mouse-position">
-                <div class="editable-position ${['dm', 'dms'].includes(this._displayUnit) ? 'hide' : ''}">
+                <div class="editable-position ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? 'hide' : ''}">
                     <input type="number" step="any" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${isNaN(lon) ? 0 : lon}><input type="number" step="any" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${isNaN(lat) ? 0 : lat}>
                 </div>
-                <div class="readonly-position ${['dm', 'dms'].includes(this._displayUnit) ? '' : 'hide'}">
+                <div class="readonly-position ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? '' : 'hide'}">
                     <span>${lon}</span>
                     <span>${lat}</span>
                 </div>
@@ -47,6 +49,7 @@ export default class MousePosition extends HTMLElement {
                     <option value="degrees">${lizDict['mouseposition.units.d']}</option>
                     <option value="dm">${lizDict['mouseposition.units.dm']}</option>
                     <option value="dms">${lizDict['mouseposition.units.dms']}</option>
+                    <option value="mgrs">MGRS</option>
                 </select>
             </div>`;
     }
@@ -112,8 +115,8 @@ export default class MousePosition extends HTMLElement {
     redraw(lon, lat){
         let lonLatToDisplay = [lon, lat];
 
-        // Display in degree, degree minute, degree minute second
-        if (['degrees', 'dm', 'dms'].includes(this._displayUnit)) {
+        // Display in degree, degree minute, degree minute second or MGRS
+        if (['degrees', 'dm', 'dms', 'mgrs'].includes(this._displayUnit)) {
             // If map projection is not yet in degrees => reproject to EPSG:4326
             if (mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees'){
                 lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, 'EPSG:4326');
@@ -122,7 +125,10 @@ export default class MousePosition extends HTMLElement {
             // If in degrees, lon/lat are editable
             if (this._displayUnit === 'degrees'){
                 render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
-
+             }else if (this._displayUnit === 'mgrs') {
+                const mgrsCoords = forward(lonLatToDisplay);
+    
+                render(this.mainTemplate(mgrsCoords, ''), this);
             }else{
                 lonLatToDisplay[0] = this.getFormattedLonLat(lonLatToDisplay[0], 'lon', this._displayUnit);
                 lonLatToDisplay[1] = this.getFormattedLonLat(lonLatToDisplay[1], 'lat', this._displayUnit);
