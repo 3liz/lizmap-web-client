@@ -145,7 +145,9 @@ export default class MousePosition extends HTMLElement {
             if (this._displayUnit === 'degrees'){
                 render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
              }else if (this._displayUnit === 'mgrs') {
-                const mgrsCoords = forward(lonLatToDisplay);
+                let mgrsCoords = forward(lonLatToDisplay);
+
+                mgrsCoords = mgrsCoords.slice(0,-12) + ' ' + mgrsCoords.slice(-12,-10) + ' ' + mgrsCoords.slice(-10,-5) + ' ' + mgrsCoords.slice(-5);
     
                 render(this.mainTemplate(mgrsCoords, ''), this);
             }else{
