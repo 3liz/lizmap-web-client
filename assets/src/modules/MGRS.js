@@ -34,7 +34,7 @@ class MGRS extends Graticule {
         this.latLabelFormatter_ = () => {
             return '';
         };
-    
+
         this.lonLabelFormatter_ = () => {
             return '';
         };
@@ -91,29 +91,29 @@ class MGRS extends Graticule {
     calculateIntersection_(p1, p2, p3, p4) {
 
         var c2x = p3.x - p4.x; // (x3 - x4)
-          var c3x = p1.x - p2.x; // (x1 - x2)
-          var c2y = p3.y - p4.y; // (y3 - y4)
-          var c3y = p1.y - p2.y; // (y1 - y2)
-      
-          // down part of intersection point formula
-          var d  = c3x * c2y - c3y * c2x;
-      
-          if (d == 0) {
+        var c3x = p1.x - p2.x; // (x1 - x2)
+        var c2y = p3.y - p4.y; // (y3 - y4)
+        var c3y = p1.y - p2.y; // (y1 - y2)
+
+        // down part of intersection point formula
+        var d = c3x * c2y - c3y * c2x;
+
+        if (d == 0) {
             throw new Error('Number of intersection points is zero or infinity.');
         }
-      
-          // upper part of intersection point formula
-          var u1 = p1.x * p2.y - p1.y * p2.x; // (x1 * y2 - y1 * x2)
-          var u4 = p3.x * p4.y - p3.y * p4.x; // (x3 * y4 - y3 * x4)
-      
-          // intersection point formula
-          
-          var px = (u1 * c2x - c3x * u4) / d;
-          var py = (u1 * c2y - c3y * u4) / d;
-          
-          var p = { x: px, y: py };
-      
-          return p;
+
+        // upper part of intersection point formula
+        var u1 = p1.x * p2.y - p1.y * p2.x; // (x1 * y2 - y1 * x2)
+        var u4 = p3.x * p4.y - p3.y * p4.x; // (x3 * y4 - y3 * x4)
+
+        // intersection point formula
+
+        var px = (u1 * c2x - c3x * u4) / d;
+        var py = (u1 * c2y - c3y * u4) / d;
+
+        var p = { x: px, y: py };
+
+        return p;
     }
 
     /**
@@ -221,64 +221,105 @@ class MGRS extends Graticule {
 
         let lat, lon;
 
-        // Get code inside grid
-        const delta = 0.01;
-
         const lonInterval = 6;
         let latInterval = 8;
 
         let idxParallels = 0;
         let idxMeridians = 0;
-        let idxLines = 0;
 
-        for (lon = this.minLon_; lon <= this.maxLon_; lon += lonInterval) {
-            for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
+        // GZD grid
+        if (resolution >= 2000) {
+            for (lon = this.minLon_; lon <= this.maxLon_; lon += lonInterval) {
+                for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
 
-                // The northmost latitude band, X, is 12° high
-                if (lat == 72) {
-                    latInterval = 12
-                } else {
-                    latInterval = 8;
+                    // The northmost latitude band, X, is 12° high
+                    if (lat == 72) {
+                        latInterval = 12
+                    } else {
+                        latInterval = 8;
+                    }
+
+                    idxParallels = this.addParallel_(
+                        lat,
+                        lon,
+                        lon + lonInterval,
+                        squaredTolerance,
+                        extent,
+                        idxParallels
+                    );
+
+                    // Special cases
+                    // Norway
+                    if (lat === 56 && lon === 6) {
+                        continue;
+                    }
+
+                    // Svalbard
+                    if (lat === 72 && lon >= 6 && lon <= 36) {
+                        continue;
+                    }
+
+                    idxMeridians = this.addMeridian_(
+                        lon,
+                        lat,
+                        lat + latInterval,
+                        squaredTolerance,
+                        extent,
+                        idxMeridians
+                    );
                 }
+            }
 
-                idxParallels = this.addParallel_(
-                    lat,
-                    lon,
-                    lon + lonInterval,
-                    squaredTolerance,
-                    extent,
-                    idxParallels
-                );
+            // Special cases
+            // Norway
+            idxMeridians = this.addMeridian_(
+                3,
+                56,
+                64,
+                squaredTolerance,
+                extent,
+                idxMeridians
+            );
 
-                // Special cases
-                // Norway
-                if (lat === 56 && lon === 6) {
-                    continue;
-                }
-
-                // Svalbard
-                if (lat === 72 && lon >= 6 && lon <= 36) {
-                    continue;
-                }
-
+            // Svalbard
+            for (const lon of [9, 21, 33]) {
                 idxMeridians = this.addMeridian_(
                     lon,
-                    lat,
-                    lat + latInterval,
+                    72,
+                    84,
                     squaredTolerance,
                     extent,
                     idxMeridians
                 );
+            }
+        }
 
-                // 100KM grid
-                if (resolution < 2000 && lon == 0 && (lat == 40 || lat == 48)) {
+        this.parallels_.length = idxParallels;
+        if (this.parallelsLabels_) {
+            this.parallelsLabels_.length = idxParallels;
+        }
+
+        this.meridians_.length = idxMeridians;
+        if (this.meridiansLabels_) {
+            this.meridiansLabels_.length = idxMeridians;
+        }
+
+
+        // 100KM grid
+        let idxLines = 0;
+        if (resolution < 2000) {
+            // Get code inside grid
+            const delta = 0.01;
+
+            for (lon = this.minLon_; lon < this.maxLon_; lon += lonInterval) {
+                for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
                     const leftBottom = forward([lon, lat], 0);
 
-                    const rightColumnLetter = forward([lon + lonInterval - delta, lat], 0).slice(-2,-1).charCodeAt();
+                    const rightColumnLetter = forward([lon + lonInterval - delta, lat], 0).slice(-2, -1).charCodeAt();
 
                     const rightTop = forward([lon + lonInterval - delta, lat + latInterval - delta], 0);
 
-                    let columnLetter = leftBottom.slice(-2,-1).charCodeAt();
+                    let columnLetter = leftBottom.slice(-2, -1).charCodeAt();
                     while (columnLetter != rightColumnLetter + 1) {
 
                         // Discard I and O
@@ -325,47 +366,47 @@ class MGRS extends Graticule {
                             let leftTopCoords = toPoint(leftBottom.slice(0, -2) + String.fromCharCode(columnLetter) + String.fromCharCode(rowLetterNext));
 
                             // Make lines don't exceed their GZD cell
-                            if(leftBottomCoords[0] < lon){
+                            if (leftBottomCoords[0] < lon) {
                                 const intersectionPointWithLon = this.calculateIntersection_(
-                                    {x:lon, y: lat + latInterval}, 
-                                    {x:lon, y: lat - latInterval},
-                                    {x:leftBottomCoords[0], y: leftBottomCoords[1]},
-                                    {x:rightBottomCoords[0], y: rightBottomCoords[1]}
+                                    { x: lon, y: lat + latInterval },
+                                    { x: lon, y: lat - latInterval },
+                                    { x: leftBottomCoords[0], y: leftBottomCoords[1] },
+                                    { x: rightBottomCoords[0], y: rightBottomCoords[1] }
                                 );
 
                                 leftBottomCoords[0] = intersectionPointWithLon.x;
                                 leftBottomCoords[1] = intersectionPointWithLon.y;
                             }
 
-                            if(leftTopCoords[0] < lon){
+                            if (leftTopCoords[0] < lon) {
                                 leftTopCoords[0] = lon;
                             }
 
-                            if(leftTopCoords[1] > lat + latInterval){
+                            if (leftTopCoords[1] > lat + latInterval) {
                                 leftTopCoords[1] = lat + latInterval;
                             }
 
-                            if(rightBottomCoords[0] > lon + lonInterval){
+                            if (rightBottomCoords[0] > lon + lonInterval) {
 
                                 const intersectionPointWithLon = this.calculateIntersection_(
-                                    {x:lon + lonInterval, y: lat + latInterval}, 
-                                    {x:lon + lonInterval, y: lat - latInterval},
-                                    {x:leftBottomCoords[0], y: leftBottomCoords[1]},
-                                    {x:rightBottomCoords[0], y: rightBottomCoords[1]}
+                                    { x: lon + lonInterval, y: lat + latInterval },
+                                    { x: lon + lonInterval, y: lat - latInterval },
+                                    { x: leftBottomCoords[0], y: leftBottomCoords[1] },
+                                    { x: rightBottomCoords[0], y: rightBottomCoords[1] }
                                 );
 
                                 rightBottomCoords[0] = intersectionPointWithLon.x;
                                 rightBottomCoords[1] = intersectionPointWithLon.y;
                             }
 
-                            idxLines = this.addLine_(
-                                leftBottomCoords,
-                                rightBottomCoords,
-                                extent,
-                                idxLines
-                            );
+                            if (leftBottomCoords[0] <= lon + lonInterval) {
+                                idxLines = this.addLine_(
+                                    leftBottomCoords,
+                                    rightBottomCoords,
+                                    extent,
+                                    idxLines
+                                );
 
-                            if(leftBottomCoords[0] != lon){
                                 idxLines = this.addLine_(
                                     leftBottomCoords,
                                     leftTopCoords,
@@ -386,47 +427,13 @@ class MGRS extends Graticule {
                         columnLetter++;
 
                         // Column letter stops at 'Z' => after we go back to 'A'
-                        if (columnLetter >= 91) {
+                        if (columnLetter >= 91 && columnLetter != rightColumnLetter + 1) {
                             columnLetter = 65;
                         }
                     }
                 }
             }
         }
-
-        // Special cases
-        // Norway
-        idxMeridians = this.addMeridian_(
-            3,
-            56,
-            64,
-            squaredTolerance,
-            extent,
-            idxMeridians
-        );
-
-        // Svalbard
-        for (const lon of [9, 21, 33]) {
-            idxMeridians = this.addMeridian_(
-                lon,
-                72,
-                84,
-                squaredTolerance,
-                extent,
-                idxMeridians
-            );
-        }
-
-        this.parallels_.length = idxParallels;
-        if (this.parallelsLabels_) {
-            this.parallelsLabels_.length = idxParallels;
-        }
-
-        this.meridians_.length = idxMeridians;
-        if (this.meridiansLabels_) {
-            this.meridiansLabels_.length = idxMeridians;
-        }
-
         this.lines_.length = idxLines;
     }
 }
