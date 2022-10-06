@@ -5,6 +5,8 @@ import { transform, get as getProjection } from 'ol/proj';
 
 import { forward } from '../dependencies/mgrs';
 
+import MGRS from '../modules/MGRS.js';
+
 export default class MousePosition extends HTMLElement {
     constructor() {
         super();
@@ -87,6 +89,23 @@ export default class MousePosition extends HTMLElement {
 
         if (this._longitude && this._latitude){
             this.redraw(this._longitude, this._latitude);
+        }
+
+        if(unit === 'mgrs'){
+            if(!this._MGRS){
+                this._MGRS = new MGRS({
+                    showLabels: true,
+                    wrapX: false,
+                });
+            }
+            mainLizmap.map.addLayer(this._MGRS);
+    
+            mainLizmap.newOlMap = true;
+        }else{
+            if(this._MGRS){
+                mainLizmap.map.removeLayer(this._MGRS);
+            }
+            mainLizmap.newOlMap = false;
         }
     }
 
