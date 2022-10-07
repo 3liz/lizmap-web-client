@@ -6,13 +6,13 @@ import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
 import KML from 'ol/format/KML';
 
-import {Draw, Modify, Select} from 'ol/interaction';
-import {createBox} from 'ol/interaction/Draw';
+import { Draw, Modify, Select } from 'ol/interaction';
+import { createBox } from 'ol/interaction/Draw';
 
-import {Circle, Fill, Stroke, Style} from 'ol/style';
+import { Circle, Fill, Stroke, Style } from 'ol/style';
 
-import {Vector as VectorSource} from 'ol/source';
-import {Vector as VectorLayer} from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source';
+import { Vector as VectorLayer } from 'ol/layer';
 
 export default class Digitizing {
 
@@ -26,7 +26,7 @@ export default class Digitizing {
         // Set draw color to value in local storage if any or default (red)
         this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
 
-        this._featureDrawnVisibility = true;
+        this._featureDrawnVisibility = false;
 
         this._isEdited = false;
         this._isSaved = false;
@@ -36,7 +36,7 @@ export default class Digitizing {
         this._selectInteraction = new Select({
             wrapX: false,
         });
-          
+
         this._modifyInteraction = new Modify({
             features: this._selectInteraction.getFeatures(),
         });
@@ -63,13 +63,16 @@ export default class Digitizing {
             });
         }
 
-        this._drawSource = new VectorSource({wrapX: false});
+        this._drawSource = new VectorSource({ wrapX: false });
 
         this._drawSource.on('addfeature', () => {
+            // Save features drawn in localStorage
+            this.saveFeatureDrawn();
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
         });
 
         this._drawLayer = new VectorLayer({
+            visible: false,
             source: this._drawSource,
             style: this._drawStyleFunction
         });
@@ -112,7 +115,7 @@ export default class Digitizing {
             mainLizmap.map.removeInteraction(this._drawInteraction);
 
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
-            if (tool === this._toolSelected || tool ===  this._tools[0]) {
+            if (tool === this._toolSelected || tool === this._tools[0]) {
                 this._toolSelected = this._tools[0];
             } else {
                 const drawOptions = {
@@ -203,7 +206,7 @@ export default class Digitizing {
 
                 mainLizmap.map.addInteraction(this._selectInteraction);
                 mainLizmap.map.addInteraction(this._modifyInteraction);
-                
+
                 this.toolSelected = 'deactivate';
 
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
