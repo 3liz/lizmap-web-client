@@ -29,7 +29,7 @@ describe('Selection tool', function () {
 
 
         // It should select two features
-        cy.get('#map')
+        cy.get('#newOlMap')
             .click(200, 350)
             .click(850, 350)
             .dblclick(550, 650)
@@ -41,7 +41,7 @@ describe('Selection tool', function () {
         })
 
         // It should not select any features
-        cy.get('#map')
+        cy.get('#newOlMap')
             .click(750, 350)
             .click(700, 400)
             .dblclick(700, 350)
@@ -83,7 +83,7 @@ describe('Selection tool connected as user a', function () {
                 })
             }).as('new-selection')
 
-        cy.get('#map')
+        cy.get('#newOlMap')
             .click(380, 280)
             .click(400, 380)
             .dblclick(500, 380)
