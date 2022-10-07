@@ -18,8 +18,6 @@ export default class Digitizing {
 
     constructor() {
 
-        mainLizmap.newOlMap = true;
-
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
@@ -86,6 +84,15 @@ export default class Digitizing {
             minidockopened: (e) => {
                 if (e.id == 'measure') {
                     this.toolSelected = this._tools[0];
+                } else if (e.id == 'draw' || e.id == 'selectiontool') {
+                    mainLizmap.newOlMap = true;
+                    this._drawLayer.setVisible(true);
+                }
+            },
+            minidockclosed: (e) => {
+                if (e.id == 'draw' || e.id == 'selectiontool') {
+                    mainLizmap.newOlMap = false;
+                    this._drawLayer.setVisible(false);
                 }
             }
         });
