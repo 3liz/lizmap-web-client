@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Remove legacy folders about qgis-plugin-manager
 if [ -d /srv/plugins/.cache_qgis_plugin_manager ]; then
   rm -rf /srv/plugins/.cache_qgis_plugin_manager
