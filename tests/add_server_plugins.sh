@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -e
 
 echo "QGIS Server Lizmap plugin"
 
