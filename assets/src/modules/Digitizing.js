@@ -28,8 +28,6 @@ export default class Digitizing {
         // Set draw color to value in local storage if any or default (red)
         this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
 
-        this._featureDrawnVisibility = false;
-
         this._isEdited = false;
         this._isSaved = false;
 
@@ -91,13 +89,13 @@ export default class Digitizing {
                     this.toolSelected = this._tools[0];
                 } else if (e.id == 'draw' || e.id == 'selectiontool') {
                     mainLizmap.newOlMap = true;
-                    this._drawLayer.setVisible(true);
+                    this.toggleFeatureDrawnVisibility(true);
                 }
             },
             minidockclosed: (e) => {
                 if (e.id == 'draw' || e.id == 'selectiontool') {
                     mainLizmap.newOlMap = false;
-                    this._drawLayer.setVisible(false);
+                    this.toggleFeatureDrawnVisibility(false);
                 }
             }
         });
@@ -279,10 +277,16 @@ export default class Digitizing {
         return null;
     }
 
-    toggleFeatureDrawnVisibility() {
-        this._featureDrawnVisibility = !this._featureDrawnVisibility;
+    get visibility(){
+        return this._drawLayer.getVisible();
+    }
 
-        this._drawLayer.setVisible(this._featureDrawnVisibility);
+    /**
+     * Set visibility or toggle if not defined
+     * @param {boolean} visible
+     */
+    toggleFeatureDrawnVisibility(visible = !this._drawLayer.getVisible()) {
+        this._drawLayer.setVisible(visible);
 
         mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
     }
