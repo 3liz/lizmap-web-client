@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.6.0-rc.1 - 2022-10-10
+
 ### Added
 
 * Display the URL to use in the QGIS desktop plugin in the administration panel
@@ -25,10 +27,18 @@
 * Fix an issue with PHP 8 when editing data
 * Fix an issue about group ID when restricting a project to a few groups
 * Fix a regression in form
+* Fix some access control permissions in the editing toolbar (new, remove, edit features)
+* Fix extent synchro between OL2 and OL6
+* Fix a PHP error when displaying the administration panel when a project was removed
+
+### Translations
+
+* Update from Transifex about translated strings
 
 ### Backend
 
 * Upgrade the Jelix framework to 1.8
+* Fix some configurations in the docker image
 
 ### Tests
 
