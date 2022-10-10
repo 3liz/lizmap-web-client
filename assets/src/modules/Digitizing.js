@@ -1,7 +1,6 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 
-import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
 import KML from 'ol/format/KML';
@@ -13,6 +12,9 @@ import { Circle, Fill, Stroke, Style } from 'ol/style';
 
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
+import { Feature } from 'ol';
+
+import { Point, LineString, Polygon, Circle as CircleGeom } from 'ol/geom';
 
 export default class Digitizing {
 
@@ -310,24 +312,56 @@ export default class Digitizing {
         mainEventDispatcher.dispatch('digitizing.save');
     }
 
+    /**
+     * Save all drawn features in local storage
+     */
     saveFeatureDrawn() {
-        const formatWKT = new WKT();
-
-        // Save features in WKT format if any and if save mode is on
-        // TODO: WKT does not handle 'Circle' geom type
-        // Convert to a polygon w/ a lot of point or find another format than WKT handling 'Circle'
         if (this.featureDrawn && this._isSaved) {
-            localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.writeFeatures(this.featureDrawn));
+            const savedFeatures = [];
+            for(const feature of this.featureDrawn){
+                const geomType = feature.getGeometry().getType();
+
+                if( geomType === 'Circle'){
+                    savedFeatures.push({
+                        type: geomType,
+                        center: feature.getGeometry().getCenter(),
+                        radius: feature.getGeometry().getRadius()
+                    });
+                } else {
+                    savedFeatures.push({
+                        type: geomType,
+                        coords: feature.getGeometry().getCoordinates()
+                    });
+                }
+            }
+            localStorage.setItem(this._repoAndProjectString + '_drawLayer', JSON.stringify(savedFeatures));
         }
     }
 
+    /**
+     * Load all drawn features from local storage
+     */
     loadFeatureDrawnToMap() {
-        const formatWKT = new WKT();
+        const savedGeomJSON = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
 
-        const drawLayerWKT = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
-
-        if (drawLayerWKT) {
-            this._drawSource.addFeatures(formatWKT.readFeatures(drawLayerWKT));
+        if (savedGeomJSON) {
+            const savedFeatures = JSON.parse(savedGeomJSON);
+            for(const feature of savedFeatures){
+                let loadedGeom;
+                if(feature.type === 'Point'){
+                    loadedGeom = new Point(feature.coords);
+                } else if(feature.type === 'LineString'){
+                    loadedGeom = new LineString(feature.coords);
+                } else if(feature.type === 'Polygon'){
+                    loadedGeom = new Polygon(feature.coords);
+                } else if(feature.type === 'Circle'){
+                    loadedGeom = new CircleGeom(feature.center, feature.radius);
+                }
+                
+                if(loadedGeom){
+                    this._drawSource.addFeature(new Feature(loadedGeom));
+                }
+            }
         }
     }
 
