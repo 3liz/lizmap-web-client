@@ -59,7 +59,7 @@ class server_informationCtrl extends jController
         $tpl = new jTpl();
         $assign = array(
             'data' => $data,
-            'baseUrlApplication' => \jServer::getServerURI().'/'.\jApp::urlBasePath(),
+            'baseUrlApplication' => \jServer::getServerURI().\jApp::urlBasePath(),
             'linkDocumentation' => $linkDocumentation,
             'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
             'updateQgisServer' => $updateQgisServer,
