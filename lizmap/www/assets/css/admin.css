@@ -152,3 +152,14 @@ dd#dd_qgis_logs_value {
 {
     padding: 1em 0 1em 2em;
 }
+
+.copy-to-clipboard {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0px;
+}
+
+.copy-to-clipboard svg {
+    pointer-events: none;
+}
