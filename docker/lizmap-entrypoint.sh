@@ -70,8 +70,6 @@ cp -aR lizmap/var/config.dist/* lizmap/var/config
 [ ! -f lizmap/var/config/localconfig.ini.php  ] && cp lizmap/var/config/localconfig.ini.php.dist  lizmap/var/config/localconfig.ini.php
 [ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php
 
-chown -R $LIZMAP_USER:$LIZMAP_GROUP lizmap/var/
-
 # Copy static files
 # Note: static files needs to be resolved by external web server
 # We have to copy them on the host
@@ -86,13 +84,13 @@ fi
 echo "Updating configuration"
 update-config.php
 
-echo "Launch installer"
-# Set up Configuration  
-php lizmap/install/installer.php -v
-
 echo "Set files rights"
 # Set owner/and group
 sh lizmap/install/set_rights.sh $LIZMAP_USER $LIZMAP_GROUP
+
+echo "Launch installer"
+# Set up Configuration  
+su -c "php lizmap/install/installer.php -v" $LIZMAP_USER
 
 echo "Clean temp"
 # Clean cache files in case we are 
@@ -144,14 +142,14 @@ if [ "$source" == "" ]; then
   source="__default"
 fi
 if [ "$source" == "__random" ]; then
-    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL
+    su -c "php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL" $LIZMAP_USER
 elif [ "$source" == "__reset" ]; then
-    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL
+    su -c "php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL" $LIZMAP_USER
 elif [ "$source" == "__default" ]; then
-    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL admin
+    su -c "php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin --reset $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL admin" $LIZMAP_USER
 elif [ -f $source ]; then
     pass=$(cat $source)
-    php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL $pass
+    su -c "php lizmap/scripts/script.php jcommunity~user:create -v --no-error-if-exists --admin $LIZMAP_ADMIN_LOGIN $LIZMAP_ADMIN_EMAIL $pass" $LIZMAP_USER
 else
     echo '[ERROR] Invalid LIZMAP_ADMIN_DEFAULT_SOURCE'
     exit 1
