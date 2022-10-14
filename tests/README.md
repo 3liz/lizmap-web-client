@@ -230,6 +230,7 @@ You can also use GNU Parallel to parallelize Cypress tests execution on 8 cores 
 Output colors can be kept with `--tty` parameter but it won't work with `--group` which is useful to not mix outputs from different tests.
 
 ### Playwright
+You have to install the browsers with `npx playwright install` (only the first time or after an update)
 You can then :
 - execute `npx playwright test` to execute all tests
 - other command line : https://playwright.dev/docs/intro#command-line
