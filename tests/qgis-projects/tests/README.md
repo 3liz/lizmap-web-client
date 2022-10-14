@@ -4,7 +4,7 @@
 
 In this directory for every test you will find :
 
-* a QGIS project (*.qgs)
+* a QGIS project (*.qgs) saved with the [qgis_trackable_project_files plugin](https://github.com/opengisch/qgis_trackable_project_files)
 * a Lizmap configuration (*.qgs.cfg)
 * an optional markdown describing the manual tests scenarios (*.md)
 
