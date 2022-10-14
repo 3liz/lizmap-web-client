@@ -16,6 +16,10 @@ import { Feature } from 'ol';
 
 import { Point, LineString, Polygon, Circle as CircleGeom } from 'ol/geom';
 
+import { getArea, getLength } from 'ol/sphere';
+import Overlay from 'ol/Overlay';
+import { unByKey } from 'ol/Observable';
+
 export default class Digitizing {
 
     constructor() {
@@ -32,6 +36,9 @@ export default class Digitizing {
         this._isSaved = false;
 
         this._drawInteraction;
+
+        this._measureTooltipElement;
+        this._measureTooltips = [];
 
         this._selectInteraction = new Select({
             wrapX: false,
@@ -99,6 +106,8 @@ export default class Digitizing {
                 }
             }
         });
+
+        this.createMeasureTooltip();
     }
 
     get drawLayer() {
@@ -147,6 +156,38 @@ export default class Digitizing {
                 }
 
                 this._drawInteraction = new Draw(drawOptions);
+
+                this._drawInteraction.on('drawstart', evt => {
+                    // set sketch
+                    this._sketch = evt.feature;
+
+                    let tooltipCoord = evt.coordinate;
+
+                    this._listener = this._sketch.getGeometry().on('change', evt => {
+                        const geom = evt.target;
+                        let output;
+                        if (geom instanceof Polygon) {
+                            output = this.formatArea(geom);
+                            tooltipCoord = geom.getInteriorPoint().getCoordinates();
+                        } else if (geom instanceof LineString) {
+                            output = this.formatLength(geom);
+                            tooltipCoord = geom.getLastCoordinate();
+                        }
+                        this._measureTooltipElement.innerHTML = output;
+                        this._measureTooltips[this._measureTooltips.length - 1].setPosition(tooltipCoord);
+                    });
+                });
+
+                this._drawInteraction.on('drawend', () => {
+                    this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+                    this._measureTooltips[this._measureTooltips.length - 1].setOffset([0, -7]);
+                    // unset sketch
+                    this._sketch = null;
+                    // unset tooltip so that a new one can be created
+                    this._measureTooltipElement = null;
+                    this.createMeasureTooltip();
+                    unByKey(this._listener);
+                });
 
                 mainLizmap.map.addInteraction(this._drawInteraction);
 
@@ -224,6 +265,60 @@ export default class Digitizing {
     }
     get isSaved() {
         return this._isSaved;
+    }
+
+    /**
+     * Format length output.
+     * @param {LineString} line The line.
+     * @return {string} The formatted length.
+     */
+    formatLength(line) {
+        const length = getLength(line);
+        let output;
+        if (length > 100) {
+            output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
+        } else {
+            output = Math.round(length * 100) / 100 + ' ' + 'm';
+        }
+        return output;
+    }
+
+    /**
+     * Format area output.
+     * @param {Polygon} polygon The polygon.
+     * @return {string} Formatted area.
+     */
+    formatArea(polygon) {
+        const area = getArea(polygon);
+        let output;
+        if (area > 10000) {
+            output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km<sup>2</sup>';
+        } else {
+            output = Math.round(area * 100) / 100 + ' ' + 'm<sup>2</sup>';
+        }
+        return output;
+    }
+
+    /**
+     * Creates a new measure tooltip
+     */
+    createMeasureTooltip() {
+        if (this._measureTooltipElement) {
+            this._measureTooltipElement.parentNode.removeChild(this._measureTooltipElement);
+        }
+        this._measureTooltipElement = document.createElement('div');
+        this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+
+        const overlay = new Overlay({
+            element: this._measureTooltipElement,
+            offset: [0, -15],
+            positioning: 'bottom-center',
+            stopEvent: false,
+            insertFirst: false,
+        });
+
+        this._measureTooltips.push(overlay);
+        mainLizmap.map.addOverlay(overlay);
     }
 
     // Get SLD for featureDrawn[index]
@@ -304,6 +399,13 @@ export default class Digitizing {
         localStorage.removeItem(this._repoAndProjectString + '_drawLayer');
 
         this.isEdited = false;
+
+        // Remove overlays
+        for (const overlay of this._measureTooltips) {
+            mainLizmap.map.removeOverlay(overlay);
+        }
+
+        this.createMeasureTooltip();
 
         mainEventDispatcher.dispatch('digitizing.erase');
     }
