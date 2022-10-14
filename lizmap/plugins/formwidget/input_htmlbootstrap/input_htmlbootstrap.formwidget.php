@@ -14,7 +14,7 @@ class input_htmlbootstrapFormWidget extends input_htmlFormWidget {
     use \Lizmap\Form\WidgetTrait;
 
     public function outputControl() {
-        // same code as input_htmlFormWidget 
+        // same code as input_htmlFormWidget
         $attr = $this->getControlAttributes();
 
         if ($this->ctrl->size != 0) {
@@ -26,11 +26,25 @@ class input_htmlbootstrapFormWidget extends input_htmlFormWidget {
         }
         $attr['value'] = $this->getValue();
         // new code : check datatype to provide a better input type
-        if ( $this->ctrl->datatype instanceof jDatatypeInteger) {
+        if ($this->ctrl->datatype instanceof jDatatypeInteger || $this->ctrl->datatype instanceof jDatatypeDecimal) {
             $attr['type'] = 'number';
+            // min, max and step attributes supported with input type number
+            $minValue = $this->ctrl->datatype->getFacet('minValue');
+            if ($minValue !== null) {
+                $attr['min'] = $minValue;
+            }
+            $maxValue = $this->ctrl->datatype->getFacet('maxValue');
+            if ($maxValue !== null) {
+                $attr['max'] = $maxValue;
+            }
+            $stepValue = $this->ctrl->getAttribute('stepValue');
+            if ($stepValue !== null) {
+                $attr['step'] = $stepValue;
+            }
         } else {
             $attr['type'] = 'text';
         }
+
         echo '<input';
         $this->_outputAttr($attr);
         echo "/>\n";
