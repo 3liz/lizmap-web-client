@@ -211,46 +211,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
 
 		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$body$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$content$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$key$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$login$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$project$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$subject$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$user$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
 			message: "#^Property Lizmap\\\\Request\\\\OGCRequest\\:\\:\\$project \\(Lizmap\\\\Project\\\\Project\\) does not accept lizmapProject\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/lizmapOGCRequest.class.php
