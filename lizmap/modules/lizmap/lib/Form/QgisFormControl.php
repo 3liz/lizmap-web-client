@@ -251,6 +251,11 @@ class QgisFormControl
                     if ($max !== null) {
                         $this->ctrl->datatype->addFacet('maxValue', $max);
                     }
+                    // step cast as integer, use only if datatype is integer
+                    $step = $this->getEditAttribute('Step');
+                    if ($step !== null && $this->fieldDataType == 'integer') {
+                        $this->ctrl->setAttribute('stepValue', $step);
+                    }
                 }
 
                 break;
