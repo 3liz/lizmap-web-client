@@ -13,6 +13,8 @@ import {extend} from 'ol/extent';
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 
+import WKT from 'ol/format/WKT';
+
 window.lizMap = function() {
   /**
    * PRIVATE Property: config
@@ -4099,22 +4101,21 @@ window.lizMap = function() {
         printParams['SELECTIONTOKEN'] = selection.join(';');
       }
 
-      // if user has made a visible draw, print it with redlining
-      const formatWKT = new OpenLayers.Format.WKT();
+      // If user has made a visible draw, print it with redlining
+      const formatWKT = new WKT();
       const highlightGeom = [];
       const highlightSymbol = [];
       if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
         for (let index = 0; index < lizMap.mainLizmap.digitizing.featureDrawn.length; index++) {
-          var draw_feature = lizMap.mainLizmap.digitizing.featureDrawn[index];
+          const featureDrawn = lizMap.mainLizmap.digitizing.featureDrawn[index];
           if (printInProjectProjection
             && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
           ) {
             // If we print in the QGIS project projection
-            draw_feature.geometry.transform(map.projection, project_projection);
+            featureDrawn.geometry.transform(map.projection, project_projection);
           }
-          highlightGeom.push(formatWKT.write(draw_feature));
+          highlightGeom.push(formatWKT.writeFeature(featureDrawn));
           highlightSymbol.push(lizMap.mainLizmap.digitizing.getFeatureDrawnSLD(index));
-
         }
       }
 

@@ -1,8 +1,26 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
-import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
-import GeoJSONWriter from 'jsts/org/locationtech/jts/io/GeoJSONWriter.js';
 import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
+import OLparser from 'jsts/org/locationtech/jts/io/OL3Parser.js';
+
+import {
+    LinearRing,
+    LineString,
+    MultiLineString,
+    MultiPoint,
+    MultiPolygon,
+    Point,
+    Polygon,
+} from 'ol/geom';
+
+import GML3 from 'ol/format/GML3';
+import GeoJSON from 'ol/format/GeoJSON';
+
+import WFS from '../modules/WFS.js';
+
+import {Vector as VectorSource} from 'ol/source';
+import {Vector as VectorLayer} from 'ol/layer';
+import { Feature } from 'ol';
 
 export default class SelectionTool {
 
@@ -13,19 +31,11 @@ export default class SelectionTool {
 
         this._bufferValue = 0;
 
-        this._bufferLayer = new OpenLayers.Layer.Vector(
-            'selectionBufferLayer', {
-                styleMap: new OpenLayers.StyleMap({
-                    fillColor: 'white',
-                    fillOpacity: 0,
-                    strokeColor: 'blue',
-                    strokeOpacity: 1,
-                    strokeWidth: 2,
-                    strokeDashstyle: 'longdash'
-                })
-            });
+        this._bufferLayer = new VectorLayer({
+            source: new VectorSource({wrapX: false}),
+        });
 
-        mainLizmap.lizmap3.map.addLayer(this._bufferLayer);
+        mainLizmap.map.addLayer(this._bufferLayer);
 
         this._geomOperator = 'intersects';
 
@@ -83,39 +93,108 @@ export default class SelectionTool {
                 if(this.isActive && mainLizmap.digitizing.featureDrawn){
                     // We only handle a single drawn feature currently
                     if (mainLizmap.digitizing.featureDrawn.length > 1){
-                        mainLizmap.digitizing.drawLayer.destroyFeatures(mainLizmap.digitizing.drawLayer.features.shift());
+                        const lastFeature = mainLizmap.digitizing.featureDrawn[1];
+                        mainLizmap.digitizing.drawLayer.getSource().clear();
+                        mainLizmap.digitizing.drawLayer.getSource().addFeature(lastFeature);
 
                         mainLizmap.digitizing.saveFeatureDrawn();
+
+                        // addFeature will provoke a new call of this callack
+                        // so we return to avoid two calls
+                        return;
                     }
 
-                    const selectionFeature = mainLizmap.digitizing.featureDrawn[0];
+                    let selectionFeature = mainLizmap.digitizing.featureDrawn[0];
 
                     if (selectionFeature) {
                         // Handle buffer if any
-                        this._bufferLayer.destroyFeatures();
+                        this._bufferLayer.getSource().clear();
                         if (this._bufferValue > 0) {
-                            // Reproject to project projection
-                            selectionFeature.geometry.transform(mainLizmap.projection, mainLizmap.qgisProjectProjection);
+                            const parser = new OLparser();
+                            parser.inject(
+                                Point,
+                                LineString,
+                                LinearRing,
+                                Polygon,
+                                MultiPoint,
+                                MultiLineString,
+                                MultiPolygon
+                            );
 
-                            const geoJSONParser = new OpenLayers.Format.GeoJSON();
-                            const jstsGeoJSONReader = new GeoJSONReader();
-                            const jstsGeoJSONWriter = new GeoJSONWriter();
+                            // Convert the OpenLayers geometry to a JSTS geometry
+                            const jstsGeom = parser.read(selectionFeature.getGeometry());
 
-                            // Use JSTS to get buffered geom
-                            const jstsGeom = jstsGeoJSONReader.read(geoJSONParser.write(selectionFeature.geometry));
+                            // Create a buffer
                             const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
-                            const bufferedFeature = (geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom)))[0];
 
-                            // Reproject back to map projection
-                            bufferedFeature.geometry.transform(mainLizmap.qgisProjectProjection, mainLizmap.projection);
+                            const bufferedFeature = new Feature();
+                            bufferedFeature.setGeometry(parser.write(jstsbBufferedGeom));
 
-                            // Draw buffer
-                            this._bufferLayer.addFeatures(bufferedFeature);
-                            this._bufferLayer.redraw(true);
+                            this._bufferLayer.getSource().addFeature(bufferedFeature);
+
+                            selectionFeature = this.featureDrawnBuffered;
                         }
 
                         for (const featureType of this.allFeatureTypeSelected) {
-                            mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, this.featureDrawnBuffered || selectionFeature, this._geomOperator);
+                            const gml = new GML3({srsName: mainLizmap.qgisProjectProjection});
+
+                            // TODO create a geometry collection from the selection draw?
+                            const gmlNode = gml.writeGeometryNode(selectionFeature.getGeometry());
+
+                            const serializer = new XMLSerializer();
+
+                            let spatialFilter = this._geomOperator + `($geometry, geom_from_gml('${serializer.serializeToString(gmlNode.firstChild)}'))`;
+
+                            const lConfig = mainLizmap.config.layers[featureType];
+
+                            let rFilter = lConfig?.request_params?.filter;
+                            if( rFilter ){
+                                rFilter = rFilter.replace( featureType + ':', '');
+                                spatialFilter = rFilter + ' AND ' + spatialFilter;
+                            }
+
+                            // Add exp_filter, for example if set by another tool( filter module )
+                            // Often 'filter' is not set because filtertoken is set instead
+                            // But in this case, exp_filter must also been set and must be added
+                            let eFilter = lConfig?.request_params?.exp_filter;
+                            if( eFilter ){
+                                spatialFilter = eFilter +' AND '+ spatialFilter;
+                            }
+
+                            // TODO: useful?
+                            // let limitDataToBbox = config.options.limitDataToBbox === 'True';
+
+                            const wfs = new WFS();
+                            const wfsParams = {
+                                TYPENAME: featureType,
+                                EXP_FILTER: spatialFilter
+                            };
+                  
+                            wfs.getFeature(wfsParams).then(response => {
+                                const features = (new GeoJSON()).readFeatures(response);
+
+                                // Array of feature ids matching geometry condition
+                                let featureIds = features.map(feature => feature.getId().split('.')[1]);
+
+                                if (this.newAddRemoveSelected === 'add' ) { // Add to selection
+                                    featureIds = config.layers[featureType]['selectedFeatures'].concat(featureIds);
+                                    // Remove duplicates
+                                    featureIds = [...new Set(featureIds)];
+                                }else if (this.newAddRemoveSelected === 'remove' ) { // Remove from selection
+                                    const toRemove = new Set(featureIds);
+                                    featureIds = config.layers[featureType]['selectedFeatures'].filter( x => !toRemove.has(x) );
+                                }
+
+                                mainLizmap.config.layers[featureType]['selectedFeatures'] = featureIds;
+                                lizMap.events.triggerEvent("layerSelectionChanged",
+                                    {
+                                        'featureType': featureType,
+                                        'featureIds': mainLizmap.config.layers[featureType]['selectedFeatures'],
+                                        'updateDrawing': true
+                                    }
+                                );
+
+                            });
                         }
                     }
                 }
@@ -126,7 +205,7 @@ export default class SelectionTool {
         // Change buffer visibility on digitizing.featureDrawnVisibility event
         mainEventDispatcher.addListener(
             () => {
-                this._bufferLayer.setVisibility(mainLizmap.digitizing.featureDrawnVisibility);
+                this._bufferLayer.setVisible(mainLizmap.digitizing.featureDrawnVisibility);
             },
             ['digitizing.featureDrawnVisibility']
         );
@@ -134,7 +213,7 @@ export default class SelectionTool {
         // Erase buffer on digitizing.erase event
         mainEventDispatcher.addListener(
             () => {
-                this._bufferLayer.destroyFeatures();
+                this._bufferLayer.getSource().clear();
             },
             ['digitizing.erase']
         );
@@ -179,8 +258,9 @@ export default class SelectionTool {
     }
 
     get featureDrawnBuffered() {
-        if (this._bufferLayer.features.length) {
-            return this._bufferLayer.features[0];
+        const features = this._bufferLayer.getSource().getFeatures();
+        if (features.length) {
+            return features[0];
         }
         return null;
     }
@@ -289,8 +369,8 @@ export default class SelectionTool {
                 {'featureType': featureType, 'updateDrawing': true}
             );
         }
-        mainLizmap.digitizing.drawLayer.destroyFeatures();
-        this._bufferLayer.destroyFeatures();
+        mainLizmap.digitizing.drawLayer.getSource().clear();
+        this._bufferLayer.getSource().clear();
     }
 
     filter() {
@@ -341,7 +421,7 @@ export default class SelectionTool {
                     mainLizmap.lizmap3.events.triggerEvent('layerSelectionChanged',
                         {
                             'featureType': featureType,
-                            'featureIds': '40',
+                            'featureIds': mainLizmap.config.layers[featureType]['selectedFeatures'],
                             'updateDrawing': true
                         }
                     );
