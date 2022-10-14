@@ -132,7 +132,7 @@ describe('Selection tool connected as admin', function () {
                 })
             }).as('new-selection')
 
-        cy.get('#map')
+        cy.get('#newOlMap')
             .click(380, 280)
             .click(400, 380)
             .dblclick(500, 380)
@@ -174,7 +174,7 @@ describe('Selection tool connected as admin', function () {
         })
 
         // It should select two features
-        cy.get('#map')
+        cy.get('#newOlMap')
             .click(200, 250)
             .click(850, 250)
             .dblclick(550, 650)
