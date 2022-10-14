@@ -180,7 +180,6 @@ describe('Selection tool connected as admin', function () {
             .dblclick(550, 650)
 
         // First wait get the old selection
-        // TO BE FIXED
         cy.wait('@new-selection').should(({ request, response }) => {
             const responseBodyAsBase64 = arrayBufferToBase64(response.body)
 
@@ -191,12 +190,12 @@ describe('Selection tool connected as admin', function () {
 
             cy.fixture('images/selection-admin-2.png').then((image) => {
                 // image encoded as base64
-                expect(image, 'expect selection in yellow').to.not.equal(responseBodyAsBase64)
+                expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
             })
 
             cy.fixture('images/selection-admin-1.png').then((image) => {
                 // image encoded as base64
-                expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
+                expect(image, 'expect selection in yellow').to.not.equal(responseBodyAsBase64)
             })
         })
 
@@ -205,33 +204,6 @@ describe('Selection tool connected as admin', function () {
             const text = $div.text()
 
             expect(text).to.match(/^2/)
-        })
-
-        // Second wait no selection
-        // TO BE FIXED
-        cy.wait('@new-selection').should(({ request, response }) => {
-            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
-
-            cy.fixture('images/selection-admin-0.png').then((image) => {
-                // image encoded as base64
-                expect(image, 'expect no selection in yellow').to.equal(responseBodyAsBase64)
-            })
-        })
-
-        // Third wait selection
-        // TO BE FIXED
-        cy.wait('@new-selection').should(({ request, response }) => {
-            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
-
-            cy.fixture('images/selection-admin-0.png').then((image) => {
-                // image encoded as base64
-                expect(image, 'expect no selection in yellow').to.not.equal(responseBodyAsBase64)
-            })
-
-            cy.fixture('images/selection-admin-2.png').then((image) => {
-                // image encoded as base64
-                expect(image, 'expect selection in yellow').to.equal(responseBodyAsBase64)
-            })
         })
     })
 })
