@@ -22,6 +22,9 @@ test.describe('Startup', () => {
     await page.$eval("*", el => el.style.visibility = 'hidden');
     await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
 
+    // Little wait for image stability
+    await page.waitForTimeout(100);
+
     expect(await page.locator('#map').screenshot()).toMatchSnapshot('zoom-features-extent-display-popup.png');
   });
 
