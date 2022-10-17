@@ -5,6 +5,7 @@
 ### Fixed
 
 * Fix extent synchro between OL2 and OL6 which could cause the center of the map to wrongly move when zooming with mouse
+* Update datatables to 1.12.1. This fixes the bad display of sort images in Firefox
 
 ## 3.5.6 - 2022-09-20
 
