@@ -774,9 +774,9 @@ table.attribute-table-table tr.active:hover td:last-child{
     border-right:2px solid darkgrey;
 }
 
-table.attribute-table-table tr.selected td,
-table.attribute-table-table tr.selected.active td{
-  background-color: yellow !important;
+table.attribute-table-table>tbody>tr.selected>*{
+  box-shadow: inset 0 0 0 9999px yellow !important;
+  color: black !important;
 }
 
 button.attribute-layer-feature-select{
