@@ -161,14 +161,18 @@ export default class SelectionTool {
                                 spatialFilter = eFilter +' AND '+ spatialFilter;
                             }
 
-                            // TODO: useful?
-                            // let limitDataToBbox = config.options.limitDataToBbox === 'True';
-
                             const wfs = new WFS();
                             const wfsParams = {
                                 TYPENAME: featureType,
                                 EXP_FILTER: spatialFilter
                             };
+
+                            // Restrict to current BBOX for performance
+                            // But not with 'disjoint' to get features outside of BBOX
+                            if (this._geomOperator !== 'disjoint' || mainLizmap.config?.limitDataToBbox === 'True') {
+                                wfsParams['BBOX'] = mainLizmap.map.getView().calculateExtent();
+                                wfsParams['SRSNAME'] = mainLizmap.map.getView().getProjection().getCode();
+                            }
                   
                             wfs.getFeature(wfsParams).then(response => {
                                 const features = (new GeoJSON()).readFeatures(response);
