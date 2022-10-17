@@ -10,7 +10,7 @@ wget https://packages.3liz.org/pub/lizmap_server-qgis-plugin/unstable/lizmap_ser
 
 # Latest release
 # VERSION=1.1.1
-# wget https://github.com/3liz/qgis-lizmap-server-plugin/releases/latest/download/lizmap_server.${VERSION}.zip -O lizmap_server.master.zip
+# wget https://github.com/3liz/qgis-lizmap-server-plugin/releases/download/${VERSION}/lizmap_server.${VERSION}.zip -O lizmap_server.master.zip
 
 unzip -o lizmap_server.master.zip -d qgis-server-plugins/
 rm lizmap_server.master.zip
@@ -22,12 +22,12 @@ fi
 
 # AtlasPrint
 VERSION=3.3.1
-wget https://github.com/3liz/qgis-atlasprint/releases/latest/download/atlasprint.${VERSION}.zip -O atlasprint.zip
+wget https://github.com/3liz/qgis-atlasprint/releases/download/${VERSION}/atlasprint.${VERSION}.zip -O atlasprint.zip
 unzip -o atlasprint.zip -d qgis-server-plugins/
 rm atlasprint.zip
 
 # WfsOutputExtension
-VERSION=1.7.0
-wget https://github.com/3liz/qgis-wfsOutputExtension/releases/latest/download/wfsOutputExtension.${VERSION}.zip -O wfsoutputextension.zip
+VERSION=1.7.1
+wget https://github.com/3liz/qgis-wfsOutputExtension/releases/download/${VERSION}/wfsOutputExtension.${VERSION}.zip -O wfsoutputextension.zip
 unzip -o wfsoutputextension.zip -d qgis-server-plugins/
 rm wfsoutputextension.zip
