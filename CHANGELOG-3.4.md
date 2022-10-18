@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.4.14 - 2022-10-18
+
 ### Fixed
 
 * Fix wrong host URL when the WMS is used in another GIS client such as QGIS
