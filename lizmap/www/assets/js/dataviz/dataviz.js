@@ -262,16 +262,8 @@ var lizDataviz = function() {
         }
     }
 
-    function resizePlot(id){
-       // Plotly.d3.select causes an error if the selector parameter is not a correct CSS one
-       try {
-           var gd = Plotly.d3.select('#' + id)
-               .style({
-                   width: '100%',
-                   margin: '0px'
-               });
-           Plotly.Plots.resize(gd.node());
-       } catch (e) {}
+    function resizePlot(){
+        window.dispatchEvent(new Event('resize'));
     }
 
     function getPlotIdByContainerId(id){
@@ -352,65 +344,55 @@ var lizDataviz = function() {
 
         }
 
-
-
-
         // Add events to resize plot when needed
         lizMap.events.on({
-            dockopened: function(e) {
+            dockopened: e => {
                 if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
-                    resizePlot(id);
+                    resizePlot();
                 }
                 if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+                    resizePlot();
                 }
             },
-            rightdockopened: function(e) {
+            rightdockopened: e => {
                 if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
-                    resizePlot(id);
+                    resizePlot();
                 }
                 if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+                    resizePlot();
                 }
             },
-            bottomdockopened: function(e) {
+            bottomdockopened: e => {
                 if ( e.id == 'dataviz' ) {
-                    resizePlot(id);
+                    resizePlot();
                 }
             },
-            bottomdocksizechanged: function(e) {
+            bottomdocksizechanged: () => {
                 if($('#mapmenu li.dataviz').hasClass('active')  || $('#mapmenu li.popup').hasClass('active')){
-                    resizePlot(id);
+                    resizePlot();
                 }
             },
-            dockclosed: function(e) {
+            dockclosed: () => {
                 if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+                    resizePlot();
                 }
             },
-            rightdockclosed: function(e) {
+            rightdockclosed: () => {
                 if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+                    resizePlot();
                 }
             },
-            lizmapswitcheritemselected: function(e){
+            lizmapswitcheritemselected: () => {
                 if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+                    resizePlot();
                 }
-            }
-
-        });
-
-        window.addEventListener('resize', function () {
-            if ($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')) {
-                resizePlot(id);
             }
         });
 
         // Add event to hide/show plots if needed
         // We use the id variable for the plot: we are in the buildPlot function
         lizMap.events.on({
-            'lizmaplayerchangevisibility': function(e) {
+            'lizmaplayerchangevisibility': e => {
                 if (e.config !== undefined && 'datavizLayers' in lizMap.config ){
                     // Get layer info
                     var config = e.config;
