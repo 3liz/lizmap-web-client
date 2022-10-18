@@ -255,10 +255,14 @@ class QgisFormControl
                     if ($max !== null) {
                         $this->ctrl->datatype->addFacet('maxValue', $max);
                     }
-                    // step cast as integer, use only if datatype is integer
                     $step = $this->getEditAttribute('Step');
+                    $precision = $this->getEditAttribute('Precision');
+                    // step cast as integer, use only if datatype is integer
                     if ($step !== null && $this->fieldDataType == 'integer') {
                         $this->ctrl->setAttribute('stepValue', $step);
+                    } elseif ($this->fieldDataType == 'decimal' && $precision !== null) {
+                        // use precision as stepValue (will override untrustable step Value)
+                        $this->ctrl->setAttribute('stepValue', pow(10, -intval($precision)));
                     }
                 }
 

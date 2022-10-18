@@ -42,6 +42,9 @@ class input_htmlbootstrapFormWidget extends input_htmlFormWidget
             $stepValue = $this->ctrl->getAttribute('stepValue');
             if ($stepValue !== null) {
                 $attr['step'] = $stepValue;
+            } else {
+                // undefined step value : 'any'  will allow users to use decimal
+                $attr['step'] = 'any';
             }
         } else {
             $attr['type'] = 'text';
