@@ -2,10 +2,21 @@
 
 ## Unreleased
 
+## 3.5.7 - 2022-10-18
+
 ### Fixed
 
+* Fix wrong host URL when the WMS is used in another GIS client such as QGIS
 * Fix extent synchro between OL2 and OL6 which could cause the center of the map to wrongly move when zooming with mouse
 * Update datatables to 1.12.1. This fixes the bad display of sort images in Firefox
+
+### Tests
+
+* Improve some automatic testing with Cypress
+
+### Translations
+
+* Update from Transifex about translated strings
 
 ## 3.5.6 - 2022-09-20
 
