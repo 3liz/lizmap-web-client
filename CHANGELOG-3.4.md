@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Fixed
+
+* Fix wrong host URL when the WMS is used in another GIS client such as QGIS
+
+### Backend
+
+* Upgrade Jelix to version 1.6.39
+
 ## 3.4.13 - 2022-09-20
 
 ### Fixed
