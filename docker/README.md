@@ -26,7 +26,9 @@ The container deploys one Lizmap instance and may run php-fpm on the command lin
 - `LIZMAP_DATABASE_CHECK_RETRIES`: Number of retries to connect to the postgresql database
    during the startup of the container (default is 10). Used only if Lizmap is configured to
    use a Postgresql database (see [profiles.ini.php](https://docs.lizmap.com/3.5/en/install/linux.html#postgresql)).
-   The startup script waits 2 secondes before retries.
+   The startup script waits 2 seconds before retries (see `LIZMAP_DATABASE_CHECK_WAIT_BEFORE_RETRY`).
+- `LIZMAP_DATABASE_CHECK_WAIT_BEFORE_RETRY`: the amount of time in seconds, between
+   two retries of connecting to Postgresql during the startup. Default is 2 seconds.
 
 **Important**: `LIZMAP_HOME` is the prefix of the path towards Lizmap web files (`lizmap/www`). This prefix
 must be identical to the one given in the nginx *root* directive, ex:
