@@ -365,7 +365,7 @@ class lizmap
      */
     public static function getProject($key)
     {
-        $match = preg_match('/(?P<rep>\w+)~(?P<proj>[\w-]+)/', $key, $matches);
+        $match = preg_match('/(?P<rep>\w+)~(?P<proj>[-\.\s\w]+)/', $key, $matches);
         if ($match != 1) {
             return null;
         }
