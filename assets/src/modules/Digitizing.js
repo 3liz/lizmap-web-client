@@ -8,7 +8,7 @@ import KML from 'ol/format/KML';
 import { Draw, Modify, Select } from 'ol/interaction';
 import { createBox } from 'ol/interaction/Draw';
 
-import { Circle, Fill, Stroke, Style } from 'ol/style';
+import { Circle, Fill, Stroke, RegularShape, Style } from 'ol/style';
 
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -91,7 +91,25 @@ export default class Digitizing {
 
         // Constraint layer
         this._constraintLayer = new VectorLayer({
-            source: new VectorSource({ wrapX: false })
+            source: new VectorSource({ wrapX: false }),
+            style: new Style({
+                image: new RegularShape({
+                    fill: new Fill({
+                        color: 'black',
+                    }),
+                    stroke: new Stroke({
+                        color: 'black',
+                    }),
+                    points: 4,
+                    radius: 10,
+                    radius2: 0,
+                    angle: 0,
+                }),
+                stroke: new Stroke({
+                    color: 'black',
+                    lineDash: [10]
+                }),
+            })
         });
         mainLizmap.map.addLayer(this._constraintLayer);
 
