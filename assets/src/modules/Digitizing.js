@@ -15,10 +15,13 @@ import { Vector as VectorLayer } from 'ol/layer';
 import { Feature } from 'ol';
 
 import { Point, LineString, Polygon, Circle as CircleGeom } from 'ol/geom';
+import { circular } from 'ol/geom/Polygon';
 
 import { getArea, getLength } from 'ol/sphere';
 import Overlay from 'ol/Overlay';
 import { unByKey } from 'ol/Observable';
+
+import { transform } from 'ol/proj';
 
 export default class Digitizing {
 
@@ -86,6 +89,14 @@ export default class Digitizing {
 
         mainLizmap.map.addLayer(this._drawLayer);
 
+        // Constraint layer
+        this._constraintLayer = new VectorLayer({
+            source: new VectorSource({ wrapX: false })
+        });
+        mainLizmap.map.addLayer(this._constraintLayer);
+
+        this._hasDistanceConstraint = true;
+
         // Load and display saved feature if any
         this.loadFeatureDrawnToMap();
 
@@ -138,6 +149,56 @@ export default class Digitizing {
                         break;
                     case this._tools[2]:
                         drawOptions.type = 'LineString';
+
+                        drawOptions.geometryFunction = (coords, geom) => {
+
+                            // Create geom if undefined
+                            if (!geom) {
+                                geom = new LineString(coords);
+                                this._constraintLayer.setVisible(true);
+                            }
+
+                            if (this._hasDistanceConstraint) {
+                                const lengthConstraint = 2_000;
+
+                                // Last point drawn on click
+                                const lastDrawnPointCoords = coords[coords.length - 2];
+                                // Point under cursor
+                                const cursorPointCoords = coords[coords.length - 1];
+
+                                // Clear previous visual constraint features
+                                this._constraintLayer.getSource().clear()
+
+                                // Draw circle with lengthConstraint as radius
+                                const circle = circular(
+                                    transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
+                                    lengthConstraint,
+                                    128
+                                );
+
+                                // Draw where point will be drawn on click
+                                const constrainedPointcoords = transform(circle.getClosestPoint(transform(cursorPointCoords, 'EPSG:3857', 'EPSG:4326')), 'EPSG:4326', 'EPSG:3857');
+
+                                // Draw visual constraint features
+                                this._constraintLayer.getSource().addFeatures([
+                                    new Feature({
+                                        geometry: circle.transform('EPSG:4326', 'EPSG:3857')
+                                    }),
+                                    new Feature({
+                                        geometry: new Point(constrainedPointcoords)
+                                    })
+                                ]);
+
+                                coords[coords.length - 1] = constrainedPointcoords;
+                            }
+
+                            geom.setCoordinates(coords);
+
+                            this._measureTooltipElement.innerHTML = this.formatLength(geom);
+                            this._measureTooltips[this._measureTooltips.length - 1].setPosition(geom.getLastCoordinate());
+
+                            return geom;
+                        };
                         break;
                     case this._tools[3]:
                         drawOptions.type = 'Polygon';
@@ -157,32 +218,10 @@ export default class Digitizing {
 
                 this._drawInteraction = new Draw(drawOptions);
 
-                this._drawInteraction.on('drawstart', evt => {
-                    // set sketch
-                    this._sketch = evt.feature;
-
-                    let tooltipCoord = evt.coordinate;
-
-                    this._listener = this._sketch.getGeometry().on('change', evt => {
-                        const geom = evt.target;
-                        let output;
-                        if (geom instanceof Polygon) {
-                            output = this.formatArea(geom);
-                            tooltipCoord = geom.getInteriorPoint().getCoordinates();
-                        } else if (geom instanceof LineString) {
-                            output = this.formatLength(geom);
-                            tooltipCoord = geom.getLastCoordinate();
-                        }
-                        this._measureTooltipElement.innerHTML = output;
-                        this._measureTooltips[this._measureTooltips.length - 1].setPosition(tooltipCoord);
-                    });
-                });
-
                 this._drawInteraction.on('drawend', () => {
+                    this._constraintLayer.setVisible(false);
                     this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
                     this._measureTooltips[this._measureTooltips.length - 1].setOffset([0, -7]);
-                    // unset sketch
-                    this._sketch = null;
                     // unset tooltip so that a new one can be created
                     this._measureTooltipElement = null;
                     this.createMeasureTooltip();
