@@ -92,7 +92,7 @@ function pgSqlConnect ($profile)
  * @return bool
  * @throws Exception
  */
-function checkAndWaitPostgresql($profilesConfig, $profileName, $nbRetries=10)
+function checkAndWaitPostgresql($profilesConfig, $profileName, $nbRetries=10, $wait=2)
 {
     $origProfileName = $profileName;
     $profileAlias = $profilesConfig->getValue($profileName, 'jdb');
@@ -117,7 +117,7 @@ function checkAndWaitPostgresql($profilesConfig, $profileName, $nbRetries=10)
         // if there is nothing on the host/port, pg_connect fails immediately,
         // it doesn't take account on timeout. So we're waiting a bit before retrying.
         echo "  Cannot connect yet, wait a bit before retrying...\n";
-        sleep(2);
+        sleep($wait);
         echo "  Retry...\n";
     }
     echo "Error: cannot connect to the Postgresql database.\n";
@@ -244,15 +244,20 @@ if ($retries == 0) {
     $retries = 10;
 }
 
+$waits = intval(getenv('LIZMAP_DATABASE_CHECK_WAIT_BEFORE_RETRY'));
+if ($waits == 0) {
+    $waits = 2;
+}
+
 // Try to connect to the postgresql database, and retries if it does not ready yet
 // we should wait after Postgresql to be sure the Lizmap installer could create
 // its table and so on.
 // Try with the default profile
-if (!checkAndWaitPostgresql($profilesConfig, 'default', $retries)) {
+if (!checkAndWaitPostgresql($profilesConfig, 'default', $retries, $waits)) {
     exit (1);
 }
 // try with the lizlog profile, it may be a different database.
-if (!checkAndWaitPostgresql($profilesConfig, 'lizlog', $retries)) {
+if (!checkAndWaitPostgresql($profilesConfig, 'lizlog', $retries, $waits)) {
     exit (1);
 }
 
