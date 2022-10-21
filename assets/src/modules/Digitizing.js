@@ -113,7 +113,8 @@ export default class Digitizing {
         });
         mainLizmap.map.addLayer(this._constraintLayer);
 
-        this._hasDistanceConstraint = true;
+        this._hasDistanceConstraint = false;
+        this._hasAngleConstraint = true;
 
         // Load and display saved feature if any
         this.loadFeatureDrawnToMap();
@@ -173,41 +174,61 @@ export default class Digitizing {
                             // Create geom if undefined
                             if (!geom) {
                                 geom = new LineString(coords);
-                                this._constraintLayer.setVisible(true);
                             }
-
-                            if (this._hasDistanceConstraint) {
-                                const lengthConstraint = 2_000;
+                            
+                            if (this._hasDistanceConstraint || this._hasAngleConstraint) {
+                                // Clear previous visual constraint features
+                                this._constraintLayer.getSource().clear();
+                                // Display constraint layer
+                                this._constraintLayer.setVisible(true);
 
                                 // Last point drawn on click
                                 const lastDrawnPointCoords = coords[coords.length - 2];
                                 // Point under cursor
                                 const cursorPointCoords = coords[coords.length - 1];
 
-                                // Clear previous visual constraint features
-                                this._constraintLayer.getSource().clear()
-
-                                // Draw circle with lengthConstraint as radius
-                                const circle = circular(
-                                    transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
-                                    lengthConstraint,
-                                    128
-                                );
-
                                 // Draw where point will be drawn on click
-                                const constrainedPointcoords = transform(circle.getClosestPoint(transform(cursorPointCoords, 'EPSG:3857', 'EPSG:4326')), 'EPSG:4326', 'EPSG:3857');
+                                let constrainedPointCoords = cursorPointCoords;
 
-                                // Draw visual constraint features
-                                this._constraintLayer.getSource().addFeatures([
-                                    new Feature({
-                                        geometry: circle.transform('EPSG:4326', 'EPSG:3857')
-                                    }),
-                                    new Feature({
-                                        geometry: new Point(constrainedPointcoords)
-                                    })
-                                ]);
+                                if(this._hasDistanceConstraint){
+                                    const lengthConstraint = 2_000;
 
-                                coords[coords.length - 1] = constrainedPointcoords;
+                                    // Draw circle with lengthConstraint as radius
+                                    const circle = circular(
+                                        transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
+                                        lengthConstraint,
+                                        128
+                                    );
+
+                                    constrainedPointCoords = transform(circle.getClosestPoint(transform(cursorPointCoords, 'EPSG:3857', 'EPSG:4326')), 'EPSG:4326', 'EPSG:3857');
+
+                                    // Draw visual constraint features
+                                    this._constraintLayer.getSource().addFeatures([
+                                        new Feature({
+                                            geometry: circle.transform('EPSG:4326', 'EPSG:3857')
+                                        }),
+                                        new Feature({
+                                            geometry: new Point(constrainedPointCoords)
+                                        })
+                                    ]);
+
+                                }
+
+                                if (this._hasAngleConstraint && coords.length > 2) {
+                                    const angleConstraint = -Math.PI / 2;
+
+                                    const constrainedAngleLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
+                                    constrainedAngleLineString.rotate(angleConstraint, lastDrawnPointCoords);
+                                    constrainedAngleLineString.scale(100); // stretch line
+
+                                    this._constraintLayer.getSource().addFeature(new Feature({
+                                        geometry: constrainedAngleLineString
+                                    }));
+
+                                    constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
+                                }
+
+                                coords[coords.length - 1] = constrainedPointCoords;
                             }
 
                             geom.setCoordinates(coords);
