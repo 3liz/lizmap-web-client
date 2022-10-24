@@ -10,7 +10,6 @@ const requiredProperties = {
 };
 
 const optionalProperties = {
-    'fieldAlias': {type: 'string', default: ''},
 };
 
 export class LocateLayerConfig extends BaseLayerConfig {
@@ -29,15 +28,6 @@ export class LocateLayerConfig extends BaseLayerConfig {
      **/
     get fieldName() {
         return this._fieldName;
-    }
-
-    /**
-     * The field alias used to identify feature to locate
-     *
-     * @type {String}
-     **/
-    get fieldAlias() {
-        return this._fieldAlias;
     }
 
     /**

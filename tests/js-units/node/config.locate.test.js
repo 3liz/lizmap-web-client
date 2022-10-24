@@ -11,13 +11,11 @@ describe('LocateLayerConfig', function () {
             "displayGeom":"True",
             "minLength":0,
             "filterOnLocate":"False",
-            "order":0,
-            "fieldAlias":"Cat name"
+            "order":0
         });
         expect(layer.id).to.be.eq('v_cat20180426181713938')
         expect(layer.name).to.be.eq('v_cat')
         expect(layer.fieldName).to.be.eq('cat_name')
-        expect(layer.fieldAlias).to.be.eq('Cat name')
         expect(layer.minLength).to.be.eq(0)
         expect(layer.displayGeom).to.be.eq(true)
         expect(layer.filterOnLocate).to.be.eq(false)
@@ -92,7 +90,6 @@ describe('LocateByLayerConfig', function () {
         expect(layer.id).to.be.eq('SousQuartiers20160121124316563')
         expect(layer.name).to.be.eq('SousQuartiers')
         expect(layer.fieldName).to.be.eq('LIBSQUART')
-        expect(layer.fieldAlias).to.be.eq('')
         expect(layer.minLength).to.be.eq(0)
         expect(layer.displayGeom).to.be.eq(true)
         expect(layer.filterOnLocate).to.be.eq(false)
@@ -127,17 +124,10 @@ describe('LocateByLayerConfig', function () {
 
         const disorderConfigLayerNames = disorderConfig.layerNames;
         expect(disorderConfigLayerNames.length).to.be.eq(3)
-        expect(disorderConfigLayerNames).deep.to.eq([
-            "Quartiers",
-            "SousQuartiers",
-            "tramway"
-        ])
+        expect(disorderConfigLayerNames).deep.to.eq(configLayerNames)
+
         const disorderConfigLayerIds = disorderConfig.layerIds;
         expect(disorderConfigLayerIds.length).to.be.eq(3)
-        expect(disorderConfigLayerIds).deep.to.eq([
-            "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
-            "SousQuartiers20160121124316563",
-            "tramway20150328114206278"
-        ])
+        expect(disorderConfigLayerIds).deep.to.eq(configLayerIds)
     })
 })

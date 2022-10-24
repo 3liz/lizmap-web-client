@@ -2,6 +2,10 @@ import { ValidationError } from './Errors.js';
 import { deepFreeze } from './config/Tools.js';
 import { MetadataConfig } from './config/Metadata.js';
 import { OptionsConfig } from './config/Options.js';
+import { LocateByLayerConfig } from './config/Locate.js';
+import { AttributeLayersConfig } from './config/AttributeTable.js';
+import { TooltipLayersConfig } from './config/Tooltip.js';
+import { EditionLayersConfig } from './config/Edition.js';
 
 export class Config {
 
@@ -27,6 +31,7 @@ export class Config {
         this._hasRelations = true;
         this._hasPrintTemplates = true;
         this._hasTooltipLayers = true;
+        this._hasEditionLayers = true;
         this._hasFormFilterLayers = true;
         this._hasLoginFilteredLayers = true;
         this._hasDatavizConfig = true;
@@ -46,7 +51,6 @@ export class Config {
         }
 
         this._theConfig = theConfig;
-        this._options = new OptionsConfig(this._theConfig.options);
 
         const optionalConfigProperties = [
             'metadata',
@@ -56,6 +60,7 @@ export class Config {
             'relations',
             'printTemplates',
             'tooltipLayers',
+            'editionLayers',
             'formFilterLayers',
             'loginFilteredLayers'
         ];
@@ -115,12 +120,42 @@ export class Config {
     }
 
     /**
+     * Config locateByLayer
+     *
+     * @type {LocateByLayerConfig}
+     **/
+    get locateByLayer() {
+        if (this._locateByLayer != null) {
+            return this._locateByLayer;
+        }
+        if (this._hasLocateByLayer) {
+            this._locateByLayer = new LocateByLayerConfig(this._theConfig.locateByLayer);
+        }
+        return this._locateByLayer;
+    }
+
+    /**
      * Attribute layers config is defined
      *
      * @type {Boolean}
      **/
     get hasAttributeLayers() {
         return this._hasAttributeLayers;
+    }
+
+    /**
+     * Config attribueLayers
+     *
+     * @type {AttributeLayersConfig}
+     **/
+    get attributeLayers() {
+        if (this._attributeLayers != null) {
+            return this._attributeLayers;
+        }
+        if (this._hasAttributeLayers) {
+            this._attributeLayers = new AttributeLayersConfig(this._theConfig.attributeLayers);
+        }
+        return this._attributeLayers;
     }
 
     /**
@@ -157,6 +192,45 @@ export class Config {
      **/
     get hasTooltipLayers() {
         return this._hasTooltipLayers;
+    }
+
+    /**
+     * Config tooltipLayers
+     *
+     * @type {TooltipLayersConfig}
+     **/
+    get tooltipLayers() {
+        if (this._tooltipLayers != null) {
+            return this._tooltipLayers;
+        }
+        if (this._hasTooltipLayers) {
+            this._tooltipLayers = new TooltipLayersConfig(this._theConfig.tooltipLayers);
+        }
+        return this._tooltipLayers;
+    }
+
+    /**
+     * Edition layers config is defined
+     *
+     * @type {Boolean}
+     **/
+    get hasEditionLayers() {
+        return this._hasEditionLayers;
+    }
+
+    /**
+     * Config editionLayers
+     *
+     * @type {EditionLayersConfig}
+     **/
+    get editionLayers() {
+        if (this._editionLayers != null) {
+            return this._editionLayers;
+        }
+        if (this._hasEditionLayers) {
+            this._editionLayers = new EditionLayersConfig(this._theConfig.editionLayers);
+        }
+        return this._editionLayers;
     }
 
     /**
