@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { ValidationError, ConversionError } from '../../../assets/src/modules/Errors.js';
 import { Extent } from '../../../assets/src/modules/config/Tools.js';
-import { BaseObjectConfig } from '../../../assets/src/modules/config/Base.js';
+import { BaseObjectConfig, BaseLayerConfig, BaseLayersConfig } from '../../../assets/src/modules/config/Base.js';
 
 describe('BaseObjectConfig', function () {
     it('Valid', function () {
@@ -107,5 +107,114 @@ describe('BaseObjectConfig', function () {
             expect(error.message).to.be.eq('`abcd` is not a number!')
             expect(error).to.be.instanceOf(ConversionError)
         }
+    })
+})
+
+describe('BaseLayerConfig', function () {
+    it('Valid', function () {
+        const layer = new BaseLayerConfig("v_cat", {
+            "layerId":"v_cat20180426181713938",
+            "order": 3
+        });
+        expect(layer.id).to.be.eq('v_cat20180426181713938')
+        expect(layer.name).to.be.eq('v_cat')
+        expect(layer.order).to.be.eq(3)
+
+        const layerNoOrder = new BaseLayerConfig("v_cat", {
+            "layerId":"v_cat20180426181713938"
+        });
+        expect(layerNoOrder.id).to.be.eq('v_cat20180426181713938')
+        expect(layerNoOrder.name).to.be.eq('v_cat')
+        expect(layerNoOrder.order).to.be.eq(-1)
+    })
+
+    it('ValidationError', function () {
+        try {
+            new BaseLayerConfig()
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The layerName parameter is mandatory!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+
+        try {
+            new BaseLayerConfig('v_cat')
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The cfg parameter is not an Object!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+
+        try {
+            new BaseLayerConfig('v_cat', {})
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: \n- The required properties: layerId')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+    })
+})
+
+describe('BaseLayersConfig', function () {
+    it('Valid', function () {
+        const config = new BaseLayersConfig(BaseLayerConfig, {
+            "v_cat": {
+                "layerId":"v_cat20180426181713938",
+                "order": 3
+            },
+            "tramstop": {
+                "layerId": "tramstop20150328114203878",
+                "order": 0
+            },
+            "tram_stop_work": {
+                "layerId": "tram_stop_work20150416102656130",
+                "order": 2
+            },
+            "tramway_pivot": {
+                "layerId": "jointure_tram_stop20150328114216806",
+                "order": 1
+            }
+        });
+
+        const configLayerNames = config.layerNames;
+        expect(configLayerNames.length).to.be.eq(4)
+        expect(configLayerNames).deep.to.eq([
+            "tramstop",
+            "tramway_pivot",
+            "tram_stop_work",
+            "v_cat"
+        ])
+        const configLayerIds = config.layerIds;
+        expect(configLayerIds.length).to.be.eq(4)
+        expect(configLayerIds).deep.to.eq([
+            "tramstop20150328114203878",
+            "jointure_tram_stop20150328114216806",
+            "tram_stop_work20150416102656130",
+            "v_cat20180426181713938"
+        ])
+
+        const tramstop = config.layerConfigs[0];
+        expect(tramstop.id).to.be.eq("tramstop20150328114203878")
+        expect(tramstop.name).to.be.eq("tramstop")
+        expect(tramstop.order).to.be.eq(0)
+        expect(config.layerIds[0]).to.be.eq(tramstop.id)
+        expect(config.layerNames[0]).to.be.eq(tramstop.name)
+        expect(config.getLayerConfigByLayerName('tramstop')).to.be.eq(tramstop)
+        expect(config.getLayerConfigByLayerId('tramstop20150328114203878')).to.be.eq(tramstop)
+
+        const tram_stop_work = config.layerConfigs[2];
+        expect(tram_stop_work.id).to.be.eq("tram_stop_work20150416102656130")
+        expect(tram_stop_work.name).to.be.eq("tram_stop_work")
+        expect(tram_stop_work.order).to.be.eq(2)
+        expect(config.layerIds[2]).to.be.eq(tram_stop_work.id)
+        expect(config.layerNames[2]).to.be.eq(tram_stop_work.name)
+        expect(config.getLayerConfigByLayerName('tram_stop_work')).to.be.eq(tram_stop_work)
+        expect(config.getLayerConfigByLayerId('tram_stop_work20150416102656130')).to.be.eq(tram_stop_work)
+
+        const configGetLayerConfigs = config.getLayerConfigs()
+        expect(configGetLayerConfigs.next().value).to.be.eq(tramstop)
+        expect(configGetLayerConfigs.next().value).to.be.instanceOf(BaseLayerConfig)
+        expect(configGetLayerConfigs.next().value).to.be.eq(tram_stop_work)
+        expect(configGetLayerConfigs.next().value).to.be.instanceOf(BaseLayerConfig)
     })
 })
