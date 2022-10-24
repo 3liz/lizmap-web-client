@@ -6,6 +6,9 @@ import { LocateByLayerConfig } from './config/Locate.js';
 import { AttributeLayersConfig } from './config/AttributeTable.js';
 import { TooltipLayersConfig } from './config/Tooltip.js';
 import { EditionLayersConfig } from './config/Edition.js';
+import { TimeManagerLayersConfig } from './config/TimeManager.js';
+import { FormFilterConfig } from './config/FormFilter.js';
+import { DatavizOptionsConfig, DatavizLayersConfig } from './config/Dataviz.js';
 
 export class Config {
 
@@ -168,6 +171,21 @@ export class Config {
     }
 
     /**
+     * Config timemanagerLayers
+     *
+     * @type {AttributeLayersConfig}
+     **/
+    get timemanagerLayers() {
+        if (this._timemanagerLayers != null) {
+            return this._timemanagerLayers;
+        }
+        if (this._hasTimemanagerLayers) {
+            this._timemanagerLayers = new TimeManagerLayersConfig(this._theConfig.timemanagerLayers);
+        }
+        return this._timemanagerLayers;
+    }
+
+    /**
      * Relations config is defined
      *
      * @type {Boolean}
@@ -243,12 +261,36 @@ export class Config {
     }
 
     /**
+     * Config formFilterLayers
+     *
+     * @type {FormFilterConfig}
+     **/
+    get formFilterLayers() {
+        if (this._formFilterLayers != null) {
+            return this._formFilterLayers;
+        }
+        if (this.hasFormFilterLayers) {
+            this._formFilterLayers = new FormFilterConfig(this._theConfig.formFilterLayers);
+        }
+        return this._formFilterLayers;
+    }
+
+    /**
      * Login filtered layers config is defined
      *
      * @type {Boolean}
      **/
     get hasLoginFilteredLayers() {
         return this._hasLoginFilteredLayers;
+    }
+
+    /**
+     * Dataviz locale
+     *
+     * @type {String}
+     **/
+    get datavizLocale() {
+        return this._theConfig.datavizLayers.locale;
     }
 
     /**
@@ -261,11 +303,32 @@ export class Config {
     }
 
     /**
-     * Dataviz locale
+     * Config datavizLayers
      *
-     * @type {String}
+     * @type {DatavizLayersConfig}
      **/
-    get datavizLocale() {
-        return this._theConfig.datavizLayers.locale;
+    get datavizLayers() {
+        if (this._datavizLayers != null) {
+            return this._datavizLayers;
+        }
+        if (this._hasDatavizConfig) {
+            this._datavizLayers = new DatavizLayersConfig(this._theConfig.datavizLayers.layers);
+        }
+        return this._datavizLayers;
+    }
+
+    /**
+     * Config datavizOptions
+     *
+     * @type {DatavizOptionsConfig}
+     **/
+    get datavizOptions() {
+        if (this._datavizOptions != null) {
+            return this._datavizOptions;
+        }
+        if (this._hasDatavizConfig) {
+            this._datavizOptions = new DatavizOptionsConfig(this._theConfig.datavizLayers.dataviz);
+        }
+        return this._datavizOptions;
     }
 }
