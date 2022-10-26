@@ -78,7 +78,7 @@ class lizmapLogListener extends jEventListener
 
             // Add IP if needed
             if ($logItem->getData('logIp')) {
-                $data['ip'] = $_SERVER['REMOTE_ADDR'];
+                $data['ip'] = jApp::coord()->request->getIP();
             }
 
             // Insert log
