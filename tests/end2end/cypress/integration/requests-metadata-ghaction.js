@@ -8,7 +8,6 @@ describe('Request JSON metadata', function () {
         }).then((response) => {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
-            expect(response.body.qgis_server.test).to.eq("OK")
             expect(response.body.qgis_server_info.error).to.eq("NO_ACCESS")
         });
     })
@@ -25,7 +24,6 @@ describe('Request JSON metadata', function () {
         }).then((response) => {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
-            expect(response.body.qgis_server.test).to.eq("OK")
 
             expect(response.body.qgis_server_info.metadata.py_qgis_server).to.eq(true)
             expect(response.body.qgis_server_info.metadata.py_qgis_server_version).to.contain('.')
@@ -43,7 +41,6 @@ describe('Request JSON metadata', function () {
         }).then((response) => {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
-            expect(response.body.qgis_server.test).to.eq("OK")
 
             expect(response.body.qgis_server_info.metadata.py_qgis_server).to.eq(true)
             expect(response.body.qgis_server_info.metadata.py_qgis_server_version).to.contain('.')
@@ -61,7 +58,6 @@ describe('Request JSON metadata', function () {
         }).then((response) => {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
-            expect(response.body.qgis_server.test).to.eq("OK")
             expect(response.body.qgis_server_info.error).to.eq("NO_ACCESS")
         });
     })
