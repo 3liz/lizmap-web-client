@@ -27,6 +27,12 @@ class Server
         $lizmap_data = $this->getLizmapMetadata();
         $lizmap_data['qgis_server_info'] = $this->getQgisServerMetadata();
 
+        // The lizmap plugin is not installed or not well configured
+        // We try QGIS Server with a WMS GetCapabilities without map parameter
+        if (array_key_exists('error', $lizmap_data['qgis_server_info'])) {
+            $data['qgis_server'] = $this->tryQgisServer();
+        }
+
         $this->metadata = $lizmap_data;
     }
 
@@ -113,33 +119,8 @@ class Server
             ),
         );
 
-        // Get Lizmap services
-        $services = \lizmap::getServices();
-
-        // Try a request to QGIS Server
-        $data['qgis_server'] = array();
-        $params = array(
-            'service' => 'WMS',
-            'request' => 'GetCapabilities',
-        );
-        $url = \Lizmap\Request\Proxy::constructUrl($params, $services);
-        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
-        if (preg_match('#ServerException#i', $resp)
-            || preg_match('#ServiceExceptionReport#i', $resp)
-            || preg_match('#WMS_Capabilities#i', $resp)) {
-            $data['qgis_server']['test'] = 'OK';
-        } else {
-            $data['qgis_server']['test'] = 'ERROR';
-        }
-        $data['qgis_server']['mime_type'] = $mime;
-        $isAdmin = \jAcl2::check('lizmap.admin.access');
-        if ($isAdmin) {
-            $data['qgis_server']['http_code'] = $code;
-            $data['qgis_server']['response'] = $resp;
-
-            if (isset(\jApp::config()->lizmap['hosting'])) {
-                $data['hosting'] = \jApp::config()->lizmap['hosting'];
-            }
+        if (\jAcl2::check('lizmap.admin.access') && isset(\jApp::config()->lizmap['hosting'])) {
+            $data['hosting'] = \jApp::config()->lizmap['hosting'];
         }
 
         return $data;
@@ -177,6 +158,40 @@ class Server
             }
         } else {
             $data = array('error' => 'HTTP_ERROR', 'error_http_code' => $code, 'error_message' => $resp);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Try QGIS Server with a WMS GetCapabilities without MAP parameter.
+     *
+     * @return array Array containing try information
+     */
+    private function tryQgisServer()
+    {
+        // Get Lizmap services
+        $services = \lizmap::getServices();
+
+        // Try a request to QGIS Server
+        $data = array();
+        $params = array(
+            'service' => 'WMS',
+            'request' => 'GetCapabilities',
+        );
+        $url = \Lizmap\Request\Proxy::constructUrl($params, $services);
+        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
+        if (preg_match('#ServerException#i', $resp)
+            || preg_match('#ServiceExceptionReport#i', $resp)
+            || preg_match('#WMS_Capabilities#i', $resp)) {
+            $data['test'] = 'OK';
+        } else {
+            $data['test'] = 'ERROR';
+        }
+        $data['mime_type'] = $mime;
+        if (\jAcl2::check('lizmap.admin.access')) {
+            $data['http_code'] = $code;
+            $data['response'] = $resp;
         }
 
         return $data;

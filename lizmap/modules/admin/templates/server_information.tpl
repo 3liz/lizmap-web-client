@@ -32,6 +32,8 @@
     <h3>{@admin.server.information.qgis.label@}</h3>
 
     {if array_key_exists('qgis_server', $data) && array_key_exists('test', $data['qgis_server'])}
+      {* The lizmap plugin is not installed or not well configured *}
+      {* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
       {if $data['qgis_server']['test'] == 'OK'}
           <p>{@admin.server.information.qgis.test.ok@}</p>
       {else}
