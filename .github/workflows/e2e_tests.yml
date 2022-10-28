@@ -1,4 +1,4 @@
-name: "🎳 Cypress"
+name: "🎳 End2end"
 on:
   pull_request:
     types: [ labeled, opened, synchronize, reopened ]
@@ -11,14 +11,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  cypress:
+  end2end:
     # The first condition is triggered when we set the new label
     # The second one when we update the PR with new commits without changing labels
     # The third one when it's a cron job
     # The fourth one is for the manual button
     if: |
-      github.event.label.name == 'run cypress' ||
-      contains(github.event.pull_request.labels.*.name, 'run cypress') ||
+      github.event.label.name == 'run end2end' ||
+      contains(github.event.pull_request.labels.*.name, 'run end2end') ||
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch'
     name: "End-to-end"
