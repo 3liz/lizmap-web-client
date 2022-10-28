@@ -68,7 +68,11 @@
     <table class="table table-condensed table-striped table-bordered table-server-info">
         <tr>
             <th>{@admin.server.information.qgis.version@}</th>
-            <td>{$data['qgis_server_info']['metadata']['version']}</td>
+            <td>
+                <a href="https://github.com/qgis/QGIS/releases/tag/{$data['qgis_server_info']['metadata']['tag']}" target="_blank">
+                    {$data['qgis_server_info']['metadata']['version']}
+                </a>
+            </td>
         </tr>
         <tr>
             <th>{@admin.server.information.qgis.name@}</th>
@@ -80,7 +84,21 @@
         </tr>
         <tr>
             <th>Py-QGIS-Server</th>
-            <td><a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['metadata']['py_qgis_server_version']}" target="_blank">{$data['qgis_server_info']['metadata']['py_qgis_server_version']}</a></td>
+            <td>
+                {if $data['qgis_server_info']['py_qgis_server']['found']}
+                    {if $data['qgis_server_info']['py_qgis_server']['stable']}
+                    <a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['py_qgis_server']['version']}" target="_blank">
+                        {$data['qgis_server_info']['py_qgis_server']['version']}
+                    </a>
+                    {else}
+                    <a href="https://github.com/3liz/py-qgis-server/commit/{$data['qgis_server_info']['py_qgis_server']['commit_id']}" target="_blank">
+                        {$data['qgis_server_info']['py_qgis_server']['version']} - {$data['qgis_server_info']['py_qgis_server']['commit_id']}
+                    </a>
+                    {/if}
+                {else}
+                    {$data['qgis_server_info']['py_qgis_server']['version']}
+                {/if}
+            </td>
         </tr>
         {if $qgisServerNeedsUpdate }
         <tr>
