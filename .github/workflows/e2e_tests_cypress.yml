@@ -77,13 +77,23 @@ jobs:
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
 
-      - name: Display Lizmap errors.log and fail if not empty
-        run: |
-          if [ -s "lizmap/var/log/errors.log" ]; then
-            echo "errors.log not empty!";
-            cat lizmap/var/log/errors.log;
-            exit -1;
-          fi
+      # Playwright
+      - name: Install dependencies
+        run: cd end2end && npm ci
+
+      - name: Install Playwright
+        run: cd end2end && npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: cd end2end && npx playwright test --project=chromium
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report
+
 #  debug:
 #    name: "Debug"
 #    runs-on: ubuntu-latest
