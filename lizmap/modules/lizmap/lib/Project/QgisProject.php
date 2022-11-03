@@ -2177,11 +2177,15 @@ class QgisProject
                 $fieldEditType = 'LineEdit';
                 $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'];
             } else {
-                $useHtml = 0;
+                $useHtml = false;
                 if (array_key_exists('UseHtml', $editAttributes)) {
                     $useHtml = $editAttributes['UseHtml'];
                 }
-                $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][$useHtml];
+                if ($useHtml) {
+                    $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][1];
+                } else {
+                    $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][0];
+                }
             }
         } elseif ($fieldEditType === 5) {
             $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][0];
