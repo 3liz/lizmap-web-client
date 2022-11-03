@@ -23,7 +23,7 @@ export default class Map extends olMap {
                 new DoubleClickZoom({ duration: 0 })
             ]),
             view: new View({
-                resolutions: mainLizmap.lizmap3.map.baseLayer.resolutions,
+                resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
                 center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
                 projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection,
