@@ -255,7 +255,6 @@ class QgisFormControl
                 break;
 
             case 'time':
-                // $this->ctrl = new \jFormsControlDatetime($this->ref);
                 $this->ctrl = new \jFormsControlInput($this->ref);
 
                 break;
@@ -269,13 +268,17 @@ class QgisFormControl
                 $this->ctrl = new \jFormsControlCheckbox($this->ref);
                 $this->fillCheckboxValues();
 
-                break;
+               break;
+
+            case 'htmleditor':
+                $this->ctrl = new \jFormsControlHtmlEditor($this->ref);
+
+               break;
 
             case 'menulist':
             case 'hidden':
             case 'checkboxes':
             case 'textarea':
-            case 'htmlEditor':
             case 'date':
             case 'datetime':
                 $class = '\jFormsControl'.ucfirst($markup);
