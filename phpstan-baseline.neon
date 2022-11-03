@@ -947,21 +947,6 @@ parameters:
 			path: lizmap/modules/view/classes/lizmapMapDockItem.class.php
 
 		-
-			message: "#^Cannot access property \\$id on array\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
-			message: "#^Cannot access property \\$parentId on array\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
-			message: "#^Cannot access property \\$url on array\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
 			count: 1
 			path: lizmap/modules/view/controllers/default.classic.php
@@ -985,33 +970,3 @@ parameters:
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
 			count: 1
 			path: lizmap/modules/view/controllers/lizMap.classic.php
-
-		-
-			message: "#^Cannot access property \\$id on array\\.$#"
-			count: 5
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$img on array\\.$#"
-			count: 4
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$parentId on array\\.$#"
-			count: 7
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$url on array\\.$#"
-			count: 3
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$id on array\\.$#"
-			count: 5
-			path: lizmap/modules/view/zones/main_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$parentId on array\\.$#"
-			count: 9
-			path: lizmap/modules/view/zones/main_view.zone.php
