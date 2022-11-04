@@ -103,6 +103,33 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertTrue($properties->isEditable());
     }
 
+    function testGetEditAttribute() {
+
+        $properties = new QgisFormControlProperties(
+            'risque',
+            'RelationReference',
+            'menulist',
+            array(
+                'AllowNULL' => true,
+                'OrderByValue' => false,
+                'Relation' => 'tab_demand_risque_risque_66c_risque',
+                'MapIdentification' => false,
+                'ReferencedLayerName' => 'risque',
+                'ReferencedLayerId' => 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3',
+            )
+        );
+
+        $this->assertTrue($properties->getEditAttribute('AllowNULL'));
+        $this->assertTrue($properties->getEditAttribute('AllowNull'));
+        $this->assertTrue($properties->getEditAttribute('allowNull'));
+        $this->assertTrue($properties->getEditAttribute('allownull'));
+
+        $this->assertEquals($properties->getEditAttribute('ReferencedLayerId'), 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
+        $this->assertEquals($properties->getEditAttribute('referencedLayerId'), 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
+        $this->assertEquals($properties->getEditAttribute('referencedLayerid'), 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
+        $this->assertEquals($properties->getEditAttribute('referencedlayerid'), 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
+    }
+
     function testGetValueRelationData() {
 
         $properties = new QgisFormControlProperties(
@@ -148,6 +175,36 @@ class QgisFormControlPropertiesTest extends TestCase
                 'MapIdentification' => false,
                 'ReferencedLayerName' => 'risque',
                 'ReferencedLayerId' => 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3',
+            )
+        );
+
+        $relationReferenceData = $properties->getRelationReference();
+        $this->assertTrue(is_array($relationReferenceData));
+        $this->assertTrue($relationReferenceData['allowNull']);
+        $this->assertFalse($relationReferenceData['orderByValue']);
+        $this->assertEquals($relationReferenceData['relation'], 'tab_demand_risque_risque_66c_risque');
+        $this->assertFalse($relationReferenceData['mapIdentification']);
+        $this->assertTrue(is_array($relationReferenceData['filters']));
+        $this->assertCount(0, $relationReferenceData['filters']);
+        $this->assertEquals($relationReferenceData['filterExpression'], Null);
+        $this->assertFalse($relationReferenceData['chainFilters']);
+        $this->assertEquals($relationReferenceData['referencedLayerName'], 'risque');
+        $this->assertEquals($relationReferenceData['referencedLayerId'], 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
+
+        # AllowNULL / not AllowNull
+        # referencedLayerName / not ReferencedLayerName
+        # referencedLayerId / not ReferencedLayerId
+        $properties = new QgisFormControlProperties(
+            'risque',
+            'RelationReference',
+            'menulist',
+            array(
+                'AllowNULL' => true,
+                'OrderByValue' => false,
+                'Relation' => 'tab_demand_risque_risque_66c_risque',
+                'MapIdentification' => false,
+                'referencedLayerName' => 'risque',
+                'referencedLayerId' => 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3',
             )
         );
 
