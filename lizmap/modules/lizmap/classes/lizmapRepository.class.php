@@ -105,7 +105,7 @@ class lizmapRepository
 
     public function getPropertiesOptions()
     {
-        return $this->repo->getPropertiesOptions();
+        return $this->repo::getPropertiesOptions();
     }
 
     public function getData($key)
@@ -157,5 +157,17 @@ class lizmapRepository
     public function getProjectsMetadata()
     {
         return $this->repo->getProjectsMetadata();
+    }
+
+    /**
+     * Return the value of the Access-Control-Allow-Origin HTTP header.
+     *
+     * @param $referer
+     *
+     * @return string the value of the ACAO header. If empty, the header should not be set.
+     */
+    public function getACAOHeaderValue($referer)
+    {
+        return $this->repo->getACAOHeaderValue($referer);
     }
 }
