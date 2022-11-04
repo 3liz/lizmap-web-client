@@ -4,7 +4,7 @@
 [![Unit tests 🎳](https://github.com/3liz/lizmap-web-client/actions/workflows/tests.yml/badge.svg)](https://github.com/3liz/lizmap-web-client/actions/workflows/tests.yml)
 [![Lint](https://github.com/3liz/lizmap-web-client/actions/workflows/lint.yml/badge.svg)](https://github.com/3liz/lizmap-web-client/actions/workflows/lint.yml)
 [![PHPStan](https://github.com/3liz/lizmap-web-client/actions/workflows/php-stan.yml/badge.svg)](https://github.com/3liz/lizmap-web-client/actions/workflows/php-stan.yml)
-[![Cypress 🎳](https://github.com/3liz/lizmap-web-client/actions/workflows/e2e_tests_cypress.yml/badge.svg)](https://github.com/3liz/lizmap-web-client/actions/workflows/e2e_tests_cypress.yml)
+[![End2end tests 🎳](https://github.com/3liz/lizmap-web-client/actions/workflows/e2e_tests.yml/badge.svg)](https://github.com/3liz/lizmap-web-client/actions/workflows/e2e_tests.yml)
 
 Lizmap web application, by 3LIZ.
 
