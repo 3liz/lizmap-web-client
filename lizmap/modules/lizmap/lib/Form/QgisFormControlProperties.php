@@ -36,6 +36,11 @@ class QgisFormControlProperties
     protected $attributes = array();
 
     /**
+     * @var array
+     */
+    protected $attributeLowerNames = array();
+
+    /**
      * @var bool
      */
     protected $editable = true;
@@ -93,6 +98,10 @@ class QgisFormControlProperties
         }
 
         $this->attributes = $attributes;
+
+        foreach (array_keys($attributes) as $name) {
+            $this->attributeLowerNames[strtolower($name)] = $name;
+        }
     }
 
     /**
@@ -127,6 +136,11 @@ class QgisFormControlProperties
     {
         if (isset($this->attributes[$attrName])) {
             return $this->attributes[$attrName];
+        }
+
+        $lowerName = strtolower($attrName);
+        if (isset($this->attributeLowerNames[$lowerName])) {
+            return $this->attributes[$this->attributeLowerNames[$lowerName]];
         }
 
         return null;
