@@ -57,13 +57,30 @@ jobs:
       - name: Load SQL data
         run: cd tests/qgis-projects/tests && ./load_sql.sh
 
+      # Playwright
+      - uses: actions/setup-node@v3
+      - name: Install dependencies
+        run: cd end2end && npm ci
+
+      - name: Install Playwright
+        run: cd end2end && npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: cd end2end && npx playwright test --project=chromium
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: playwright-report
+          path: playwright-report
+
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
         uses: cypress-io/github-action@v4.2.0
         with:
           browser: chrome
-          headless: true
           working-directory: tests/end2end
           spec: cypress/integration/*-ghaction.js
           wait-on: http://localhost:8130
@@ -76,23 +93,6 @@ jobs:
           path: |
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
-
-      # Playwright
-      - name: Install dependencies
-        run: cd end2end && npm ci
-
-      - name: Install Playwright
-        run: cd end2end && npx playwright install --with-deps chromium
-
-      - name: Run Playwright tests
-        run: cd end2end && npx playwright test --project=chromium
-
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: playwright-report
-          path: playwright-report
 
 #  debug:
 #    name: "Debug"
