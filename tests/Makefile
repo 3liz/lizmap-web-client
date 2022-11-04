@@ -12,8 +12,8 @@ PREFIX:=lizmap-$(LZMBRANCH)-tests
 
 LIZMAP_USER_ID ?= $(shell id -u)
 LIZMAP_GROUP_ID ?= $(shell id -g)
-LZMPOSTGISVERSION ?= 14-3
-LZMQGSRVVERSION ?= 3.22
+LZMPOSTGISVERSION ?= 11-2.5
+LZMQGSRVVERSION ?= 3.16
 LZMPGPORT ?= 8132
 LZMQGSRVPORT ?= 8131
 LZMWEBPORT ?= 8130
@@ -42,33 +42,7 @@ env:
 
 
 build-plugins:
-	docker run \
-	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
-	    --rm -i \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/tmp/sources-plugin-manager.list \
-	    -e QGIS_PLUGIN_MANAGER_CACHE_DIR=/tmp/cache-plugin-manager \
-	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
-	    -v $(shell pwd)/:/src \
-        --entrypoint /src/add_server_plugins.sh \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
-
-show-qgis-server-versions:
-	docker run \
-	    --rm -i \
-	    --entrypoint qgisserver \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
-	    --version
-	docker run \
-	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
-	    --rm -i \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -e QGIS_PLUGIN_MANAGER_SKIP_SOURCES_FILE=True \
-	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
-	    -v $(shell pwd)/:/src \
-	    --entrypoint qgis-plugin-manager \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
-	    list
+	./add_server_plugins.sh
 
 up: env
 	docker compose up  -V --force-recreate -d
