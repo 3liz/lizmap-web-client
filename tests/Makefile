@@ -42,7 +42,33 @@ env:
 
 
 build-plugins:
-	./add_server_plugins.sh
+	docker run \
+	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
+	    --rm -i \
+	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
+	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/tmp/sources-plugin-manager.list \
+	    -e QGIS_PLUGIN_MANAGER_CACHE_DIR=/tmp/cache-plugin-manager \
+	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
+	    -v $(shell pwd)/:/src \
+        --entrypoint /src/add_server_plugins.sh \
+	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+
+show-qgis-server-versions:
+	docker run \
+	    --rm -i \
+	    --entrypoint qgisserver \
+	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+	    --version
+	docker run \
+	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
+	    --rm -i \
+	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
+	    -e QGIS_PLUGIN_MANAGER_SKIP_SOURCES_FILE=True \
+	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
+	    -v $(shell pwd)/:/src \
+	    --entrypoint qgis-plugin-manager \
+	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+	    list
 
 up: env
 	docker compose up  -V --force-recreate -d
