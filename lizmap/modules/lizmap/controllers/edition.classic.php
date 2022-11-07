@@ -291,7 +291,7 @@ class editionCtrl extends jController
             if (property_exists($wfs_response, 'data')) {
                 $data = $wfs_response->data;
                 if (substr($data, 0, 7) == 'file://' && is_file(substr($data, 7))) {
-                    $data = jFile::read(substr($data, 7));
+                    $data = \jFile::read(substr($data, 7));
                 }
                 $this->featureData = json_decode($data);
                 if (empty($this->featureData)) {
