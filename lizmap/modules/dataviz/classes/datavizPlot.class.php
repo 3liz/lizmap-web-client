@@ -492,16 +492,17 @@ class datavizPlot
             $featureData = null;
             if (property_exists($wfsresponse, 'data')) {
                 $data = $wfsresponse->data;
-                if (property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data)) {
-                    $data = jFile::read($data);
+
+                // is the data a file ?
+                if (substr($data, 0, 7) == 'file://' && is_file(substr($data, 7))) {
+                    $data = \jFile::read(substr($data, 7));
                 }
+
+                // decode features
                 $featureData = json_decode($data);
-                if (empty($featureData)) {
+
+                if (empty($featureData) || empty($featureData->features)) {
                     $featureData = null;
-                } else {
-                    if (empty($featureData->features)) {
-                        $featureData = null;
-                    }
                 }
             }
             if (!$featureData) {
