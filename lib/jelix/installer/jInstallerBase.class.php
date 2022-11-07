@@ -157,23 +157,16 @@ abstract class jInstallerBase {
 
     /**
      * use the given database profile. check if this is an alias and use the
-     * real db profiel if this is the case.
+     * real db profile if this is the case.
      * @param string $dbProfile the profile name
      */
     protected function useDbProfile($dbProfile) {
 
-        if ($dbProfile == '')
+        if ($dbProfile == '') {
             $dbProfile = 'default';
-
-        $this->dbProfile = $dbProfile;
-
-        // we check if it is an alias
-        if (file_exists(jApp::configPath('profiles.ini.php'))) {
-            $dbprofiles = parse_ini_file(jApp::configPath('profiles.ini.php'), true);
-            if (isset($dbprofiles['jdb'][$dbProfile]))
-                $this->dbProfile = $dbprofiles['jdb'][$dbProfile];
         }
 
+        $this->dbProfile = $dbProfile;
         $this->_dbConn = null; // we force to retrieve a db connection
     }
 
@@ -404,7 +397,7 @@ abstract class jInstallerBase {
             else if ($force) {
                 // existing section, and no content provided : we erase the section
                 // and add an alias
-                $profiles->removeValue('', 'jdb:'.$name);
+                $profiles->removeSection('jdb:'.$name);
             }
             else {
                 return false;
@@ -445,7 +438,7 @@ abstract class jInstallerBase {
 
     /**
      * declare a plugins directory
-     * @param string $path a path. it could contains aliases like 'app:', 'lib:' or 'module:'
+     * @param string $path a path. it could contain aliases like 'app:', 'lib:' or 'module:'
      * @since 1.4
      */
     function declarePluginsPath($path) {
