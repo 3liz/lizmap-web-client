@@ -22,6 +22,12 @@ The container deploys one Lizmap instance and may run php-fpm on the command lin
 - `LIZMAP_ADMIN_EMAIL`: Email address of the admin user
 - `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password to set for the admin user. See [Admin Setup Section](#admin-setup)
 - `LIZMAP_CONFIG_INCLUDE`: Base directory where to find configurations snippets directories. Default to `/www/lizmap/var/config`.
+- `LIZMAP_DATABASE_CHECK_RETRIES`: Number of retries to connect to the PostgreSQL database
+   during the startup of the container (default is 10). Used only if Lizmap is configured to
+   use a PostgreSQL database (see [profiles.ini.php](https://docs.lizmap.com/3.5/en/install/linux.html#postgresql)).
+   The startup script waits for 2 seconds before retries (see `LIZMAP_DATABASE_CHECK_WAIT_BEFORE_RETRY`).
+- `LIZMAP_DATABASE_CHECK_WAIT_BEFORE_RETRY`: the amount of time in seconds, between
+   two retries of connecting to the PostgreSQL database during the startup. Default is 2 seconds.
 
 **Important**: `LIZMAP_HOME` is the prefix of the path towards Lizmap web files (`lizmap/www`). This prefix
 must be identical to the one given in the nginx *root* directive, ex:
