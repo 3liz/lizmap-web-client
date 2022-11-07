@@ -148,6 +148,14 @@ class serviceCtrl extends jController
         }
 
         $fd = $dplot->fetchData('wfs', $exp_filter);
+        if (!$fd) {
+            return $this->error(
+                array(
+                    'title' => 'Fetching plot data failed',
+                    'detail' => 'No data could be fetched for this request',
+                )
+            );
+        }
         $plot = array(
             'title' => $dplot->title,
             'data' => $dplot->getData(),
