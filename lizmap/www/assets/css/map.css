@@ -2620,6 +2620,11 @@ input[type="color"].digitizing-color{
   transform: rotate(270deg);
 }
 
+.digitizing-import-export{
+  display: inline;
+  margin-left: 10px;
+}
+
 .digitizing-import{
   display: inline-block;
 }
@@ -2630,6 +2635,14 @@ input[type="color"].digitizing-color{
   display: inline-block;
   word-break: break-word;
   vertical-align: middle;
+}
+
+.digitizing-constraints input{
+  width: 6em;
+}
+
+.digitizing-constraints .angle ~ .add-on{
+  font-size: x-large;
 }
 
 .ol-tooltip {

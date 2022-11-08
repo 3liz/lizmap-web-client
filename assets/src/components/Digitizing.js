@@ -106,7 +106,7 @@ export default class Digitizing extends HTMLElement {
                     <use xlink:href="#save" />
                 </svg>
             </button>
-            <div class="${this.hasAttribute('import-export') ? '' : 'hide'}">
+            <div class="digitizing-import-export ${this.hasAttribute('import-export') ? '' : 'hide'}">
                 <div class="btn-group digitizing-export">
                     <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown" data-original-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                         <svg>
@@ -142,6 +142,16 @@ export default class Digitizing extends HTMLElement {
                         }>
                     </label>
                     <span class="file-name"></span>
+                </div>
+            </div>
+            <div class="digitizing-constraints">
+                <div class="input-append">
+                    <input type="number" placeholder="${lizDict['digitizing.constraint.distance']}" class="distance" min="0" @input=${(event)=> mainLizmap.digitizing.distanceConstraint = event.target.value}>
+                    <span class="add-on">m</span>
+                </div>
+                <div class="input-append">
+                    <input type="number" placeholder="${lizDict['digitizing.constraint.angle']}" class="angle" @input=${(event)=> mainLizmap.digitizing.angleConstraint = event.target.value}>
+                    <span class="add-on">°</span>
                 </div>
             </div>
         </div>`;
