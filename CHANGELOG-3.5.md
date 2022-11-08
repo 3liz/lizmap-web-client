@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+### Fixed
+
+* Editing - Fix the HTML form widget must use a WYSIWYG editor
+* IP into the logs was not the real IP when a reverse proxy was used
+* Fix an issue when reading a QGIS project with different capitalization in some values in the QGS files :
+  `allownull` in the RelationReference widget for instance
+* Scales displayed according to the base layer which is used, ticket https://github.com/3liz/lizmap-web-client/issues/2978
+
+### Backend
+
+* Upgrade Jelix, improve configuration of SMTP with no TLS
+* Fix some issues when deployed with Docker
+
+### Tests
+
+* Upgrade Cypress to 4.2.0
+
 ## 3.5.7 - 2022-10-18
 
 ### Fixed
