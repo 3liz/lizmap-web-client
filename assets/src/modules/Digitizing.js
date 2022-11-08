@@ -113,7 +113,8 @@ export default class Digitizing {
         });
         mainLizmap.map.addLayer(this._constraintLayer);
 
-        this._hasDistanceConstraint = false;
+        // TODO: get values from UI
+        this._hasDistanceConstraint = true;
         this._hasAngleConstraint = true;
 
         // Load and display saved feature if any
@@ -190,33 +191,37 @@ export default class Digitizing {
                                 // Draw where point will be drawn on click
                                 let constrainedPointCoords = cursorPointCoords;
 
-                                if(this._hasDistanceConstraint){
-                                    const lengthConstraint = 2_000;
+                                // TODO: get constraint values from UI
+                                const angleConstraint = -Math.PI / 4;
+                                const distanceConstraint = 2_000;
 
-                                    // Draw circle with lengthConstraint as radius
+                                if(this._hasDistanceConstraint){
+                                    // Draw circle with distanceConstraint as radius
                                     const circle = circular(
                                         transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
-                                        lengthConstraint,
+                                        distanceConstraint,
                                         128
                                     );
 
                                     constrainedPointCoords = transform(circle.getClosestPoint(transform(cursorPointCoords, 'EPSG:3857', 'EPSG:4326')), 'EPSG:4326', 'EPSG:3857');
 
                                     // Draw visual constraint features
-                                    this._constraintLayer.getSource().addFeatures([
+                                    this._constraintLayer.getSource().addFeature(
                                         new Feature({
                                             geometry: circle.transform('EPSG:4326', 'EPSG:3857')
-                                        }),
-                                        new Feature({
-                                            geometry: new Point(constrainedPointCoords)
                                         })
-                                    ]);
+                                    );
 
+                                    if(!this._hasAngleConstraint){
+                                        this._constraintLayer.getSource().addFeature(
+                                            new Feature({
+                                                geometry: new Point(constrainedPointCoords)
+                                            })
+                                        );
+                                    }
                                 }
 
                                 if (this._hasAngleConstraint && coords.length > 2) {
-                                    const angleConstraint = -Math.PI / 2;
-
                                     const constrainedAngleLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
                                     constrainedAngleLineString.rotate(angleConstraint, lastDrawnPointCoords);
                                     constrainedAngleLineString.scale(100); // stretch line
@@ -226,6 +231,19 @@ export default class Digitizing {
                                     }));
 
                                     constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
+                                }
+
+                                if(this._hasDistanceConstraint && this._hasAngleConstraint && coords.length > 2){
+                                    const constrainedAngleDistanceLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
+                                    constrainedAngleDistanceLineString.rotate(angleConstraint, lastDrawnPointCoords);
+                                    const ratio = distanceConstraint / getLength(constrainedAngleDistanceLineString);
+                                    constrainedAngleDistanceLineString.scale(ratio, ratio, constrainedAngleDistanceLineString.getLastCoordinate());
+
+                                    this._constraintLayer.getSource().addFeature(new Feature({
+                                        geometry: constrainedAngleDistanceLineString
+                                    }));
+
+                                    constrainedPointCoords = constrainedAngleDistanceLineString.getFirstCoordinate();
                                 }
 
                                 coords[coords.length - 1] = constrainedPointCoords;
