@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+### Fixed
+
+* Fix the button to copy to clip board in the administration interface
+* Avoid a request to QGIS Server without a `MAP` parameter when the Lizmap server response is OK
+* Editing - Fix the HTML form widget must use a WYSIWYG editor
+* IP into the logs was not the real IP when a reverse proxy was used
+* Fix an issue when reading a QGIS project with different capitalization in some values in the QGS files :
+  `allownull` in the RelationReference widget for instance
+* Scales displayed according to the base layer which is used, ticket https://github.com/3liz/lizmap-web-client/issues/2978
+* Dataviz: fix fetching WFS data from file
+
+### Changed
+
+* Display links to QGIS and Py-QGIS-Server releases
+* Update to DataTables 1.12.1, jQuery, jQueryUI, CKEditor etc
+
+### Backend
+
+* Fix some issues when deployed with Docker
+
+### Tests
+
+* Upgrade Cypress to 4.2.0
+
 ## 3.6.0-rc.1 - 2022-10-10
 
 ### Added
