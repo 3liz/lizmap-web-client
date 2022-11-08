@@ -113,9 +113,9 @@ export default class Digitizing {
         });
         mainLizmap.map.addLayer(this._constraintLayer);
 
-        // TODO: get values from UI
-        this._hasDistanceConstraint = true;
-        this._hasAngleConstraint = true;
+        // Constraints values
+        this._distanceConstraint = 0;
+        this._angleConstraint = 0;
 
         // Load and display saved feature if any
         this.loadFeatureDrawnToMap();
@@ -177,7 +177,7 @@ export default class Digitizing {
                                 geom = new LineString(coords);
                             }
                             
-                            if (this._hasDistanceConstraint || this._hasAngleConstraint) {
+                            if (this._distanceConstraint || this._angleConstraint) {
                                 // Clear previous visual constraint features
                                 this._constraintLayer.getSource().clear();
                                 // Display constraint layer
@@ -191,15 +191,11 @@ export default class Digitizing {
                                 // Draw where point will be drawn on click
                                 let constrainedPointCoords = cursorPointCoords;
 
-                                // TODO: get constraint values from UI
-                                const angleConstraint = -Math.PI / 4;
-                                const distanceConstraint = 2_000;
-
-                                if(this._hasDistanceConstraint){
+                                if(this._distanceConstraint){
                                     // Draw circle with distanceConstraint as radius
                                     const circle = circular(
                                         transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
-                                        distanceConstraint,
+                                        this._distanceConstraint,
                                         128
                                     );
 
@@ -212,7 +208,7 @@ export default class Digitizing {
                                         })
                                     );
 
-                                    if(!this._hasAngleConstraint){
+                                    if(!this._angleConstraint){
                                         this._constraintLayer.getSource().addFeature(
                                             new Feature({
                                                 geometry: new Point(constrainedPointCoords)
@@ -221,9 +217,10 @@ export default class Digitizing {
                                     }
                                 }
 
-                                if (this._hasAngleConstraint && coords.length > 2) {
+                                if (this._angleConstraint && coords.length > 2) {
                                     const constrainedAngleLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
-                                    constrainedAngleLineString.rotate(angleConstraint, lastDrawnPointCoords);
+                                    // Rotate clockwise
+                                    constrainedAngleLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
                                     constrainedAngleLineString.scale(100); // stretch line
 
                                     this._constraintLayer.getSource().addFeature(new Feature({
@@ -233,10 +230,11 @@ export default class Digitizing {
                                     constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
                                 }
 
-                                if(this._hasDistanceConstraint && this._hasAngleConstraint && coords.length > 2){
+                                if(this._distanceConstraint && this._angleConstraint && coords.length > 2){
                                     const constrainedAngleDistanceLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
-                                    constrainedAngleDistanceLineString.rotate(angleConstraint, lastDrawnPointCoords);
-                                    const ratio = distanceConstraint / getLength(constrainedAngleDistanceLineString);
+                                    // Rotate clockwise
+                                    constrainedAngleDistanceLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
+                                    const ratio = this._distanceConstraint / getLength(constrainedAngleDistanceLineString);
                                     constrainedAngleDistanceLineString.scale(ratio, ratio, constrainedAngleDistanceLineString.getLastCoordinate());
 
                                     this._constraintLayer.getSource().addFeature(new Feature({
@@ -361,6 +359,14 @@ export default class Digitizing {
     }
     get isSaved() {
         return this._isSaved;
+    }
+
+    set distanceConstraint(distanceConstraint){
+        this._distanceConstraint = parseInt(distanceConstraint)
+    }
+
+    set angleConstraint(angleConstraint){
+        this._angleConstraint = parseInt(angleConstraint)
     }
 
     /**
