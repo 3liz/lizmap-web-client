@@ -1,0 +1,49 @@
+name: "🐘 PHPStan"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - release_3_*
+  pull_request:
+    branches:
+      - master
+      - release_3_*
+
+defaults:
+  run:
+    working-directory: ./lizmap
+
+jobs:
+  phpstan:
+    name: "Analyze"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get composer cache directory
+        id: get-composer-cache-dir
+        run: echo "name=dir::$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: phpstan
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.get-composer-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: PHPStan version
+        run: phpstan -V
+
+      - name: Run PHPStan
+        run: phpstan analyse -c ../phpstan.neon
