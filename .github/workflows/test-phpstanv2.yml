@@ -1,4 +1,4 @@
-name: "🐘 PHPStan"
+name: "🐘 PHPStan fixed"
 
 on:
   workflow_dispatch:
