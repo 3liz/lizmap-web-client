@@ -169,94 +169,11 @@ export default class Digitizing {
                         break;
                     case this._tools[2]:
                         drawOptions.type = 'LineString';
-
-                        drawOptions.geometryFunction = (coords, geom) => {
-
-                            // Create geom if undefined
-                            if (!geom) {
-                                geom = new LineString(coords);
-                            }
-                            
-                            if (this._distanceConstraint || this._angleConstraint) {
-                                // Clear previous visual constraint features
-                                this._constraintLayer.getSource().clear();
-                                // Display constraint layer
-                                this._constraintLayer.setVisible(true);
-
-                                // Last point drawn on click
-                                const lastDrawnPointCoords = coords[coords.length - 2];
-                                // Point under cursor
-                                const cursorPointCoords = coords[coords.length - 1];
-
-                                // Draw where point will be drawn on click
-                                let constrainedPointCoords = cursorPointCoords;
-
-                                if(this._distanceConstraint){
-                                    // Draw circle with distanceConstraint as radius
-                                    const circle = circular(
-                                        transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
-                                        this._distanceConstraint,
-                                        128
-                                    );
-
-                                    constrainedPointCoords = transform(circle.getClosestPoint(transform(cursorPointCoords, 'EPSG:3857', 'EPSG:4326')), 'EPSG:4326', 'EPSG:3857');
-
-                                    // Draw visual constraint features
-                                    this._constraintLayer.getSource().addFeature(
-                                        new Feature({
-                                            geometry: circle.transform('EPSG:4326', 'EPSG:3857')
-                                        })
-                                    );
-
-                                    if(!this._angleConstraint){
-                                        this._constraintLayer.getSource().addFeature(
-                                            new Feature({
-                                                geometry: new Point(constrainedPointCoords)
-                                            })
-                                        );
-                                    }
-                                }
-
-                                if (this._angleConstraint && coords.length > 2) {
-                                    const constrainedAngleLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
-                                    // Rotate clockwise
-                                    constrainedAngleLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
-                                    constrainedAngleLineString.scale(100); // stretch line
-
-                                    this._constraintLayer.getSource().addFeature(new Feature({
-                                        geometry: constrainedAngleLineString
-                                    }));
-
-                                    constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
-                                }
-
-                                if(this._distanceConstraint && this._angleConstraint && coords.length > 2){
-                                    const constrainedAngleDistanceLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
-                                    // Rotate clockwise
-                                    constrainedAngleDistanceLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
-                                    const ratio = this._distanceConstraint / getLength(constrainedAngleDistanceLineString);
-                                    constrainedAngleDistanceLineString.scale(ratio, ratio, constrainedAngleDistanceLineString.getLastCoordinate());
-
-                                    this._constraintLayer.getSource().addFeature(new Feature({
-                                        geometry: constrainedAngleDistanceLineString
-                                    }));
-
-                                    constrainedPointCoords = constrainedAngleDistanceLineString.getFirstCoordinate();
-                                }
-
-                                coords[coords.length - 1] = constrainedPointCoords;
-                            }
-
-                            geom.setCoordinates(coords);
-
-                            this._measureTooltipElement.innerHTML = this.formatLength(geom);
-                            this._measureTooltips[this._measureTooltips.length - 1].setPosition(geom.getLastCoordinate());
-
-                            return geom;
-                        };
+                        drawOptions.geometryFunction = (coords, geom) => this._contraintsHandler(coords, geom, drawOptions.type);
                         break;
                     case this._tools[3]:
                         drawOptions.type = 'Polygon';
+                        drawOptions.geometryFunction = (coords, geom) => this._contraintsHandler(coords, geom, drawOptions.type);
                         break;
                     case this._tools[4]:
                         drawOptions.type = 'Circle';
@@ -369,13 +286,125 @@ export default class Digitizing {
         this._angleConstraint = parseInt(angleConstraint)
     }
 
+    _contraintsHandler(coords, geom, geomType) {
+        // Create geom if undefined
+        if (!geom) {
+            if (geomType === 'Polygon') {
+                geom = new Polygon(coords);
+            } else {
+                geom = new LineString(coords);
+            }
+        }
+
+        if (this._distanceConstraint || this._angleConstraint) {
+            // Handle first linearRing in polygon
+            // TODO: Polygons with holes are not handled yet
+            if (geomType === 'Polygon') {
+                coords = coords[0];
+            }
+
+            // Clear previous visual constraint features
+            this._constraintLayer.getSource().clear();
+            // Display constraint layer
+            this._constraintLayer.setVisible(true);
+
+            // Last point drawn on click
+            const lastDrawnPointCoords = coords[coords.length - 2];
+            // Point under cursor
+            const cursorPointCoords = coords[coords.length - 1];
+
+            // Contraint where point will be drawn on click
+            let constrainedPointCoords = cursorPointCoords;
+
+            if (this._distanceConstraint) {
+                // Draw circle with distanceConstraint as radius
+                const circle = circular(
+                    transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
+                    this._distanceConstraint,
+                    128
+                );
+
+                constrainedPointCoords = transform(circle.getClosestPoint(transform(cursorPointCoords, 'EPSG:3857', 'EPSG:4326')), 'EPSG:4326', 'EPSG:3857');
+
+                // Draw visual constraint features
+                this._constraintLayer.getSource().addFeature(
+                    new Feature({
+                        geometry: circle.transform('EPSG:4326', 'EPSG:3857')
+                    })
+                );
+
+                if (!this._angleConstraint) {
+                    this._constraintLayer.getSource().addFeature(
+                        new Feature({
+                            geometry: new Point(constrainedPointCoords)
+                        })
+                    );
+                }
+            }
+
+            if (this._angleConstraint && coords.length > 2) {
+                const constrainedAngleLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
+                // Rotate clockwise
+                constrainedAngleLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
+                constrainedAngleLineString.scale(100); // stretch line
+
+                this._constraintLayer.getSource().addFeature(new Feature({
+                    geometry: constrainedAngleLineString
+                }));
+
+                constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
+            }
+
+            if (this._distanceConstraint && this._angleConstraint && coords.length > 2) {
+                const constrainedAngleDistanceLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
+                // Rotate clockwise
+                constrainedAngleDistanceLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
+                const ratio = this._distanceConstraint / getLength(constrainedAngleDistanceLineString);
+                constrainedAngleDistanceLineString.scale(ratio, ratio, constrainedAngleDistanceLineString.getLastCoordinate());
+
+                this._constraintLayer.getSource().addFeature(new Feature({
+                    geometry: constrainedAngleDistanceLineString
+                }));
+
+                constrainedPointCoords = constrainedAngleDistanceLineString.getFirstCoordinate();
+            }
+
+            coords[coords.length - 1] = constrainedPointCoords;
+
+            if (geomType === 'Polygon') {
+                coords = [coords];
+            }
+        }
+
+        geom.setCoordinates(coords);
+
+        // Display draw measures in tooltip
+        let tooltipContent = '';
+
+        // Display perimeter and area for Polygons,
+        // total length for LineStrings
+        if (geomType === 'Polygon' && coords[0].length > 2) {
+            const perimeterCoords = Array.from(coords[0]);
+            perimeterCoords.push(Array.from(coords[0][0]));
+            tooltipContent = this.formatLength(new Polygon([perimeterCoords]));
+            tooltipContent += '<br>' + this.formatArea(geom);
+        } else {
+            tooltipContent = this.formatLength(geom);
+        }
+
+        this._measureTooltipElement.innerHTML = tooltipContent;
+        this._measureTooltips[this._measureTooltips.length - 1].setPosition(geom.getLastCoordinate());
+
+        return geom;
+    }
+
     /**
      * Format length output.
-     * @param {LineString} line The line.
+     * @param {Geometry} geom The geom.
      * @return {string} The formatted length.
      */
-    formatLength(line) {
-        const length = getLength(line);
+    formatLength(geom) {
+        const length = getLength(geom);
         let output;
         if (length > 100) {
             output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
