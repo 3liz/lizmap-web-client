@@ -45,6 +45,9 @@ Configuration snippets are  searched in the following directories:
 * `$LIZMAP_CONFIG_INCLUDE/localconfig.d`: all `*.ini.php` files in this directory will be imported to `localConfig.ini.php`.
 * `LIZMAP_PROFILES_INCLUDE`: Override for `$LIZMAP_CONFIG_INCLUDE/profiles.d`: all `*.ini.php` files in this directory will be imported to `profiles.ini.php`.
 
+Into these ini files, if you want to remove a section from the target file,
+declare the section with a value `__drop_in_delete=true`.
+
 Each directory location may be overridden with the following variables:
 
 - `LIZMAP_LIZMAPCONFIG_INCLUDE`: Override location for `lizmapConfig.ini.php` snippets.
