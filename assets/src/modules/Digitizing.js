@@ -296,22 +296,26 @@ export default class Digitizing {
             }
         }
 
-        if (this._distanceConstraint || this._angleConstraint) {
+        let _coords;
+
+        if (geomType === 'Polygon') {
             // Handle first linearRing in polygon
             // TODO: Polygons with holes are not handled yet
-            if (geomType === 'Polygon') {
-                coords = coords[0];
-            }
+            _coords = coords[0];
+        } else {
+            _coords = coords;
+        }
 
+        if (this._distanceConstraint || this._angleConstraint) {
             // Clear previous visual constraint features
             this._constraintLayer.getSource().clear();
             // Display constraint layer
             this._constraintLayer.setVisible(true);
 
             // Last point drawn on click
-            const lastDrawnPointCoords = coords[coords.length - 2];
+            const lastDrawnPointCoords = _coords[_coords.length - 2];
             // Point under cursor
-            const cursorPointCoords = coords[coords.length - 1];
+            const cursorPointCoords = _coords[_coords.length - 1];
 
             // Contraint where point will be drawn on click
             let constrainedPointCoords = cursorPointCoords;
@@ -342,8 +346,8 @@ export default class Digitizing {
                 }
             }
 
-            if (this._angleConstraint && coords.length > 2) {
-                const constrainedAngleLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
+            if (this._angleConstraint && _coords.length > 2) {
+                const constrainedAngleLineString = new LineString([_coords[_coords.length - 3], lastDrawnPointCoords]);
                 // Rotate clockwise
                 constrainedAngleLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
                 constrainedAngleLineString.scale(100); // stretch line
@@ -355,8 +359,8 @@ export default class Digitizing {
                 constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
             }
 
-            if (this._distanceConstraint && this._angleConstraint && coords.length > 2) {
-                const constrainedAngleDistanceLineString = new LineString([coords[coords.length - 3], lastDrawnPointCoords]);
+            if (this._distanceConstraint && this._angleConstraint && _coords.length > 2) {
+                const constrainedAngleDistanceLineString = new LineString([_coords[_coords.length - 3], lastDrawnPointCoords]);
                 // Rotate clockwise
                 constrainedAngleDistanceLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
                 const ratio = this._distanceConstraint / getLength(constrainedAngleDistanceLineString);
@@ -369,27 +373,31 @@ export default class Digitizing {
                 constrainedPointCoords = constrainedAngleDistanceLineString.getFirstCoordinate();
             }
 
-            coords[coords.length - 1] = constrainedPointCoords;
-
-            if (geomType === 'Polygon') {
-                coords = [coords];
-            }
+            _coords[_coords.length - 1] = constrainedPointCoords;
         }
 
-        geom.setCoordinates(coords);
+        if (geomType === 'Polygon') {
+            geom.setCoordinates([_coords]);
+        } else {
+            geom.setCoordinates(_coords);
+        }
 
         // Display draw measures in tooltip
-        let tooltipContent = '';
 
-        // Display perimeter and area for Polygons,
-        // total length for LineStrings
-        if (geomType === 'Polygon' && coords[0].length > 2) {
-            const perimeterCoords = Array.from(coords[0]);
-            perimeterCoords.push(Array.from(coords[0][0]));
-            tooltipContent = this.formatLength(new Polygon([perimeterCoords]));
+        // Current segment length
+        let tooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));;
+
+        // Total length for LineStrings
+        // Perimeter and area for Polygons
+        if (geomType === 'Polygon' && _coords.length > 2) {
+            // Close LinearRing to get its perimeter
+            const perimeterCoords = Array.from(_coords);
+            perimeterCoords.push(Array.from(_coords[0]));
+            tooltipContent += '<br>' + this.formatLength(new Polygon([perimeterCoords]));
             tooltipContent += '<br>' + this.formatArea(geom);
         } else {
-            tooltipContent = this.formatLength(geom);
+            tooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));
+            tooltipContent += '<br>' + this.formatLength(geom);
         }
 
         this._measureTooltipElement.innerHTML = tooltipContent;
