@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.6.0-rc.2 - 2022-11-10
+
 ### Fixed
 
 * Fix the button to copy to clip board in the administration interface
@@ -12,11 +14,16 @@
   `allownull` in the RelationReference widget for instance
 * Scales displayed according to the base layer which is used, ticket https://github.com/3liz/lizmap-web-client/issues/2978
 * Dataviz: fix fetching WFS data from file
+* QGIS project filename can now have multiple dots and spaces in its name
 
 ### Changed
 
 * Display links to QGIS and Py-QGIS-Server releases
 * Update to DataTables 1.12.1, jQuery, jQueryUI, CKEditor etc
+
+### Translations
+
+* Update from Transifex about translated strings
 
 ### Backend
 
