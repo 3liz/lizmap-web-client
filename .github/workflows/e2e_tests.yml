@@ -60,23 +60,23 @@ jobs:
       - name: Load SQL data
         run: cd qgis-projects/tests && ./load_sql.sh
 
-      # Playwright
-      - uses: actions/setup-node@v3
-      - name: Install dependencies
-        run: cd end2end && npm ci
-
-      - name: Install Playwright
-        run: cd end2end && npx playwright install --with-deps chromium
-
-      - name: Run Playwright tests
-        run: cd end2end && npx playwright test --project=chromium
-
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v3.1.1
-        with:
-          name: playwright-report
-          path: playwright-report
+#      # Playwright
+#      - uses: actions/setup-node@v3
+#      - name: Install dependencies
+#        run: cd end2end && npm ci
+#
+#      - name: Install Playwright
+#        run: cd end2end && npx playwright install --with-deps chromium
+#
+#      - name: Run Playwright tests
+#        run: cd end2end && npx playwright test --project=chromium
+#
+#      - name: Upload test results
+#        if: failure()
+#        uses: actions/upload-artifact@v3.1.1
+#        with:
+#          name: playwright-report
+#          path: playwright-report
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
