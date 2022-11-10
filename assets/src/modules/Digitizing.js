@@ -400,6 +400,23 @@ export default class Digitizing {
                 tooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));
                 tooltipContent += '<br>' + this.formatLength(geom);
             }
+
+            // Display angle ABC between three points. B is center
+            const A = _coords[_coords.length - 1];
+            const B = _coords[_coords.length - 2];
+            const C = _coords[_coords.length - 3];
+
+            const AB = Math.sqrt(Math.pow(B[0] - A[0], 2) + Math.pow(B[1] - A[1], 2));
+            const BC = Math.sqrt(Math.pow(B[0] - C[0], 2) + Math.pow(B[1] - C[1], 2));
+            const AC = Math.sqrt(Math.pow(C[0] - A[0], 2) + Math.pow(C[1] - A[1], 2));
+
+            let angleInDegrees = (Math.acos((BC * BC + AB * AB - AC * AC) / (2 * BC * AB)) * 180) / Math.PI;
+            angleInDegrees = Math.round(angleInDegrees * 100) / 100;
+            if (isNaN(angleInDegrees)) {
+                angleInDegrees = 0;
+              }
+
+            tooltipContent += '<br>' + angleInDegrees + '°';
         }
 
         this._measureTooltipElement.innerHTML = tooltipContent;
