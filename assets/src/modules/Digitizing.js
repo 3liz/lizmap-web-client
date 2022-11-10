@@ -389,15 +389,17 @@ export default class Digitizing {
 
         // Total length for LineStrings
         // Perimeter and area for Polygons
-        if (geomType === 'Polygon' && _coords.length > 2) {
-            // Close LinearRing to get its perimeter
-            const perimeterCoords = Array.from(_coords);
-            perimeterCoords.push(Array.from(_coords[0]));
-            tooltipContent += '<br>' + this.formatLength(new Polygon([perimeterCoords]));
-            tooltipContent += '<br>' + this.formatArea(geom);
-        } else {
-            tooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));
-            tooltipContent += '<br>' + this.formatLength(geom);
+        if(_coords.length > 2){
+            if (geomType === 'Polygon') {
+                // Close LinearRing to get its perimeter
+                const perimeterCoords = Array.from(_coords);
+                perimeterCoords.push(Array.from(_coords[0]));
+                tooltipContent += '<br>' + this.formatLength(new Polygon([perimeterCoords]));
+                tooltipContent += '<br>' + this.formatArea(geom);
+            } else {
+                tooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));
+                tooltipContent += '<br>' + this.formatLength(geom);
+            }
         }
 
         this._measureTooltipElement.innerHTML = tooltipContent;
