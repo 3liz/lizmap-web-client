@@ -3,6 +3,11 @@
 require('/www/lizmap/vendor/autoload.php');
 use \Jelix\IniFile\IniModifier;
 
+/**
+ * @param $varname
+ * @param IniModifier $iniFileModifier
+ * @return void
+ */
 function load_include_config($varname, $iniFileModifier)
 {
     $includeConfigDir = getenv($varname);
@@ -13,8 +18,15 @@ function load_include_config($varname, $iniFileModifier)
             $includeConfig = new IniModifier($includeFile);
             $iniFileModifier->import($includeConfig);
         }  
-    }  
-} 
+    }
+
+    // remove sections marked as deleted
+    foreach ($iniFileModifier->getSectionList() as $section) {
+        if ($iniFileModifier->getValue('__drop_in_delete', $section)) {
+            $iniFileModifier->removeSection($section);
+        }
+    }
+}
 
 /**
  * connect to Postgresql with the given profile
