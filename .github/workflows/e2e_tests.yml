@@ -5,21 +5,20 @@ on:
     branches:
       - master
       - release_3_*
-  schedule:
-    # Run every monday at 3:00
-    - cron:  '0 3 * * 1'
   workflow_dispatch:
+  repository_dispatch:
+    types: [ run-e2e-branches ]
 
 jobs:
   end2end:
     # The first condition is triggered when we set the new label
     # The second one when we update the PR with new commits without changing labels
-    # The third one when it's a cron job
+    # The third one when external workflow
     # The fourth one is for the manual button
     if: |
       github.event.label.name == 'run end2end' ||
       contains(github.event.pull_request.labels.*.name, 'run end2end') ||
-      github.event_name == 'schedule' ||
+      github.event_name == 'repository_dispatch' ||
       github.event_name == 'workflow_dispatch'
     name: "End-to-end"
     runs-on: ubuntu-latest
@@ -29,8 +28,25 @@ jobs:
     env:
       CYPRESS_CI: TRUE
     steps:
+
+      - name: Define branch name
+        working-directory: .
+        run: |
+          if ${{ github.event_name == 'repository_dispatch' }}
+          then
+            echo "Set branch from manual input: ${{ github.event.client_payload.branch }}"
+            BRANCH="${{ github.event.client_payload.branch }}"
+          else
+            echo "Set branch from default value : ${{ github.head_ref || github.ref_name }} "
+            BRANCH="${{ github.head_ref || github.ref_name }} "
+          fi
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${BRANCH}
+          token: ${{ secrets.BOT_HUB_TOKEN }}  # Important to launch CI on a commit from a bot
 
       - name: Branch name
         run: echo running on branch ${GITHUB_REF##*/} with ${CYPRESS_CI}
