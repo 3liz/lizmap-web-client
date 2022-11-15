@@ -1,0 +1,29 @@
+name: "⏰ End2end"
+on:
+  workflow_dispatch:
+  schedule:
+    # Run every monday at 3:00
+    - cron:  '0 3 * * 1'
+
+jobs:
+  cron-e2e:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Branch master
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: run-e2e-branches
+          client-payload: '{"branch": "master"}'
+
+      - name: Branch 3.6
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: run-e2e-branches
+          client-payload: '{"branch": "release_3_6"}'
+
+      - name: Branch 3.5
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: run-e2e-branches
+          client-payload: '{"branch": "release_3_5"}'
