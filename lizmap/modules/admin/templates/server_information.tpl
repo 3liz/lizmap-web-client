@@ -120,7 +120,7 @@
         <tr/>
         {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
         <tr>
-            <th style="width:20%;">{$name}</th>
+            <th style="width:20%;">{$version['name']}</th>
             <td style="width:20%;">
                 {if $version['repository']}
                     {if $version['commitNumber'] == 1}
