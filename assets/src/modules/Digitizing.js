@@ -40,7 +40,12 @@ export default class Digitizing {
 
         this._drawInteraction;
 
-        this._measureTooltipElement;
+        this._segmentMeasureTooltipElement;
+        this._totalMeasureTooltipElement;
+
+        // Array with pair of tooltips
+        // First is for current segment measure
+        // Second is for total geom measure
         this._measureTooltips = [];
 
         this._selectInteraction = new Select({
@@ -138,7 +143,7 @@ export default class Digitizing {
             }
         });
 
-        this.createMeasureTooltip();
+        this.createMeasureTooltips();
     }
 
     get drawLayer() {
@@ -192,11 +197,15 @@ export default class Digitizing {
 
                 this._drawInteraction.on('drawend', () => {
                     this._constraintLayer.setVisible(false);
-                    this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
-                    this._measureTooltips[this._measureTooltips.length - 1].setOffset([0, -7]);
-                    // unset tooltip so that a new one can be created
-                    this._measureTooltipElement = null;
-                    this.createMeasureTooltip();
+
+                    // Remove segment measure and change total measure tooltip style
+                    this._segmentMeasureTooltipElement.remove();
+                    this._totalMeasureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+
+                    // unset tooltips so that new ones can be created
+                    this._segmentMeasureTooltipElement = null;
+                    this._totalMeasureTooltipElement = null;
+                    this.createMeasureTooltips();
                     unByKey(this._listener);
                 });
 
@@ -385,7 +394,7 @@ export default class Digitizing {
         // Display draw measures in tooltip
 
         // Current segment length
-        let tooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));;
+        let segmentTooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));
 
         // Total length for LineStrings
         // Perimeter and area for Polygons
@@ -394,11 +403,14 @@ export default class Digitizing {
                 // Close LinearRing to get its perimeter
                 const perimeterCoords = Array.from(_coords);
                 perimeterCoords.push(Array.from(_coords[0]));
-                tooltipContent += '<br>' + this.formatLength(new Polygon([perimeterCoords]));
-                tooltipContent += '<br>' + this.formatArea(geom);
+                let totalTooltipContent = this.formatLength(new Polygon([perimeterCoords]));
+                totalTooltipContent += '<br>' + this.formatArea(geom);
+
+                this._totalMeasureTooltipElement.innerHTML = totalTooltipContent;
+                this._measureTooltips[this._measureTooltips.length - 1][1].setPosition(geom.getInteriorPoint().getCoordinates());
             } else {
-                tooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));
-                tooltipContent += '<br>' + this.formatLength(geom);
+                this._totalMeasureTooltipElement.innerHTML = this.formatLength(geom);
+                this._measureTooltips[this._measureTooltips.length - 1][1].setPosition(geom.getCoordinateAt(0.5));
             }
 
             // Display angle ABC between three points. B is center
@@ -416,11 +428,11 @@ export default class Digitizing {
                 angleInDegrees = 0;
               }
 
-            tooltipContent += '<br>' + angleInDegrees + '°';
+            segmentTooltipContent += '<br>' + angleInDegrees + '°';
         }
 
-        this._measureTooltipElement.innerHTML = tooltipContent;
-        this._measureTooltips[this._measureTooltips.length - 1].setPosition(geom.getLastCoordinate());
+        this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
+        this._measureTooltips[this._measureTooltips.length - 1][0].setPosition(geom.getLastCoordinate());
 
         return geom;
     }
@@ -458,25 +470,40 @@ export default class Digitizing {
     }
 
     /**
-     * Creates a new measure tooltip
+     * Creates measure tooltips
      */
-    createMeasureTooltip() {
-        if (this._measureTooltipElement) {
-            this._measureTooltipElement.parentNode.removeChild(this._measureTooltipElement);
+    createMeasureTooltips() {
+        if (this._segmentMeasureTooltipElement) {
+            this._segmentMeasureTooltipElement.parentNode.removeChild(this._segmentMeasureTooltipElement);
         }
-        this._measureTooltipElement = document.createElement('div');
-        this._measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+        this._segmentMeasureTooltipElement = document.createElement('div');
+        this._segmentMeasureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
 
-        const overlay = new Overlay({
-            element: this._measureTooltipElement,
+        const segmentOverlay = new Overlay({
+            element: this._segmentMeasureTooltipElement,
             offset: [0, -15],
             positioning: 'bottom-center',
             stopEvent: false,
             insertFirst: false,
         });
 
-        this._measureTooltips.push(overlay);
-        mainLizmap.map.addOverlay(overlay);
+        if (this._totalMeasureTooltipElement) {
+            this._totalMeasureTooltipElement.parentNode.removeChild(this._totalMeasureTooltipElement);
+        }
+        this._totalMeasureTooltipElement = document.createElement('div');
+        this._totalMeasureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+
+        const totalOverlay = new Overlay({
+            element: this._totalMeasureTooltipElement,
+            offset: [0, -15],
+            positioning: 'bottom-center',
+            stopEvent: false,
+            insertFirst: false,
+        });
+
+        this._measureTooltips.push([segmentOverlay, totalOverlay]);
+        mainLizmap.map.addOverlay(segmentOverlay);
+        mainLizmap.map.addOverlay(totalOverlay);
     }
 
     // Get SLD for featureDrawn[index]
@@ -559,11 +586,12 @@ export default class Digitizing {
         this.isEdited = false;
 
         // Remove overlays
-        for (const overlay of this._measureTooltips) {
-            mainLizmap.map.removeOverlay(overlay);
+        for (const overlays of this._measureTooltips) {
+            mainLizmap.map.removeOverlay(overlays[0]);
+            mainLizmap.map.removeOverlay(overlays[1]);
         }
 
-        this.createMeasureTooltip();
+        this.createMeasureTooltips();
 
         mainEventDispatcher.dispatch('digitizing.erase');
     }
