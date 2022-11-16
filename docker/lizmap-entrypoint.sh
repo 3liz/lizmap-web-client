@@ -35,6 +35,7 @@ fi
 
 # Copy config files to mount point
 cp -aR lizmap/var/config.dist/* lizmap/var/config 
+cp -aR lizmap/var/themes.dist/* lizmap/var/themes
 
 # Copy configuration file in their initial states if they do no exists
 [ ! -f lizmap/var/config/lizmapConfig.ini.php ] && cp lizmap/var/config/lizmapConfig.ini.php.dist lizmap/var/config/lizmapConfig.ini.php 
@@ -42,6 +43,7 @@ cp -aR lizmap/var/config.dist/* lizmap/var/config
 [ ! -f lizmap/var/config/profiles.ini.php     ] && cp lizmap/var/config/profiles.ini.php.dist     lizmap/var/config/profiles.ini.php 
 
 chown -R $LIZMAP_USER:$LIZMAP_USER lizmap/var/
+chmod 775 lizmap/var/
 
 # Copy static files
 # Note: static files needs to be resolved by external web server

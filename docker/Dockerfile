@@ -42,6 +42,7 @@ COPY --from=build /lizmap_web_client /www
 ## Backup lizmap/my-packages/composer.json.dist so it may be reinstalled
 ## in mounted volume
 RUN mv /www/lizmap/var/config /www/lizmap/var/config.dist \
+ && mv /www/lizmap/var/themes /www/lizmap/var/themes.dist \
  && mv /www/lizmap/www /www/lizmap/www.dist \
  && mv /www/lizmap/my-packages/composer.json.dist /my-packages.composer.json.dist
  
