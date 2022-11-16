@@ -925,7 +925,7 @@ class QgisProject
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
             $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
-            if (count($xmlLayer) == 0) {
+            if (is_null($xmlLayer) || count($xmlLayer) == 0) {
                 continue;
             }
             $xmlLayerZero = $xmlLayer[0];
@@ -983,7 +983,7 @@ class QgisProject
 
             // Read layer property from QGIS project XML
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml) || count($layerXml) == 0) {
                 continue;
             }
             $layerXmlZero = $layerXml[0];
@@ -1003,7 +1003,7 @@ class QgisProject
     {
         foreach ($editionLayers as $key => $obj) {
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml) || count($layerXml) == 0) {
                 continue;
             }
             $layerXmlZero = $layerXml[0];
@@ -1029,7 +1029,7 @@ class QgisProject
         $layersLabeledFieldsConfig = array();
         foreach ($layerIds as $layerId) {
             $layerXml = $this->getXmlLayer2($this->xml, $layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml) || count($layerXml) == 0) {
                 continue;
             }
             $layerXmlZero = $layerXml[0];
@@ -1096,7 +1096,7 @@ class QgisProject
 
             // Read layer property from QGIS project XML
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml) || count($layerXml) == 0) {
                 continue;
             }
             $layerXmlZero = $layerXml[0];
