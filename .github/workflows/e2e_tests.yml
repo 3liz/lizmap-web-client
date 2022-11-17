@@ -47,8 +47,8 @@ jobs:
           elif ${{ github.event_name == 'workflow_dispatch' }}
           then
             # workflow_dispatch is the the button in UI
-            echo "Set branch from default value: ${{ github.head_ref }}"
-            BRANCH="${{ github.head_ref }}"
+            echo "Set branch from default value: ${{ github.ref }}"
+            BRANCH="${{ github.ref }}"
           else
             # From a PR
             echo "Set branch from default value : ${{ github.event.pull_request.head.sha }} "
