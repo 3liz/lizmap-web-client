@@ -29,16 +29,30 @@ jobs:
       CYPRESS_CI: TRUE
     steps:
 
+#      - name: Debug
+#        working-directory: .
+#        run: |
+#            echo ${{ github.event.pull_request.head.sha }}
+#            echo ${{ github.head_ref }}
+#            echo ${{ github.ref_name }}
+
       - name: Define branch name
         working-directory: .
         run: |
           if ${{ github.event_name == 'repository_dispatch' }}
           then
+            # repository_dispatch is from an external workflow
             echo "Set branch from manual input: ${{ github.event.client_payload.branch }}"
             BRANCH="${{ github.event.client_payload.branch }}"
+          elif ${{ github.event_name == 'workflow_dispatch' }}
+          then
+            # workflow_dispatch is the the button in UI
+            echo "Set branch from default value: ${{ github.head_ref }}"
+            BRANCH="${{ github.head_ref }}"
           else
-            echo "Set branch from default value : ${{ github.head_ref || github.ref_name }} "
-            BRANCH="${{ github.head_ref || github.ref_name }}"
+            # From a PR
+            echo "Set branch from default value : ${{ github.event.pull_request.head.sha }} "
+            BRANCH="${{ github.event.pull_request.head.sha }}"
           fi
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
 
