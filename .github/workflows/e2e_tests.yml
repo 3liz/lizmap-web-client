@@ -29,9 +29,6 @@ jobs:
       CYPRESS_CI: TRUE
     steps:
 
-      - name: Debug
-        run:
-
       - name: Define branch name
         working-directory: .
         run: |
