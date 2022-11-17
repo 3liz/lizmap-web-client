@@ -29,6 +29,9 @@ jobs:
       CYPRESS_CI: TRUE
     steps:
 
+      - name: Debug
+        run:
+
       - name: Define branch name
         working-directory: .
         run: |
@@ -38,14 +41,14 @@ jobs:
             BRANCH="${{ github.event.client_payload.branch }}"
           else
             echo "Set branch from default value : ${{ github.head_ref || github.ref_name }} "
-            BRANCH="${{ github.head_ref || github.ref_name }} "
+            BRANCH="${{ github.head_ref || github.ref_name }}"
           fi
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${BRANCH}
+          ref: ${{ env.BRANCH }}
           token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
 
       - name: Branch name
