@@ -40,4 +40,12 @@ test.describe('Startup', () => {
      
     await expect( page.locator('#layer-quartiers')).toHaveClass(/liz-layer/);
   });
+
+  test('Projects with embed layer can load', async ({page}) => {
+    const proj_url = '/index.php/view/map/?repository=testsrepository&project=embed_layer';
+    await page.goto(proj_url, { waitUntil: 'networkidle' });
+    await expect( page.locator('#map')).toBeVisible();
+
+
+  });
 });
