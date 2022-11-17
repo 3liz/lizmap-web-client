@@ -195,7 +195,21 @@ export default class Digitizing {
 
                 this._drawInteraction = new Draw(drawOptions);
 
-                this._drawInteraction.on('drawend', () => {
+                this._drawInteraction.on('drawend', (event) => {
+
+                    // Attach total overlay to its geom to update
+                    // content when the geom is modified
+                    const geom = event.feature.getGeometry();
+                    geom.set('totalOverlay', this._measureTooltips[this._measureTooltips.length - 1][1], true);
+                    geom.on('change', (e) => {
+                        const geom = e.target;
+                        if(geom instanceof Polygon){
+                            this._updateTotalMeasureTooltip(geom.getCoordinates()[0], geom, 'Polygon', geom.get('totalOverlay'));
+                        }else{
+                            this._updateTotalMeasureTooltip(geom.getCoordinates(), geom, 'Linestring', geom.get('totalOverlay'));
+                        }
+                    });
+
                     this._constraintLayer.setVisible(false);
 
                     // Remove segment measure and change total measure tooltip style
@@ -391,32 +405,25 @@ export default class Digitizing {
             geom.setCoordinates(_coords);
         }
 
-        // Display draw measures in tooltip
+        // Display draw measures in tooltips
+        this._updateTooltips(_coords, geom, geomType);
 
+        return geom;
+    }
+
+    _updateTooltips(coords, geom, geomType) {
         // Current segment length
-        let segmentTooltipContent = this.formatLength(new LineString([_coords[_coords.length - 1], _coords[_coords.length - 2]]));
+        let segmentTooltipContent = this.formatLength(new LineString([coords[coords.length - 1], coords[coords.length - 2]]));
 
         // Total length for LineStrings
         // Perimeter and area for Polygons
-        if(_coords.length > 2){
-            if (geomType === 'Polygon') {
-                // Close LinearRing to get its perimeter
-                const perimeterCoords = Array.from(_coords);
-                perimeterCoords.push(Array.from(_coords[0]));
-                let totalTooltipContent = this.formatLength(new Polygon([perimeterCoords]));
-                totalTooltipContent += '<br>' + this.formatArea(geom);
-
-                this._totalMeasureTooltipElement.innerHTML = totalTooltipContent;
-                this._measureTooltips[this._measureTooltips.length - 1][1].setPosition(geom.getInteriorPoint().getCoordinates());
-            } else {
-                this._totalMeasureTooltipElement.innerHTML = this.formatLength(geom);
-                this._measureTooltips[this._measureTooltips.length - 1][1].setPosition(geom.getCoordinateAt(0.5));
-            }
+        if (coords.length > 2) {
+            this._updateTotalMeasureTooltip(coords, geom, geomType, this._measureTooltips[this._measureTooltips.length - 1][1]);
 
             // Display angle ABC between three points. B is center
-            const A = _coords[_coords.length - 1];
-            const B = _coords[_coords.length - 2];
-            const C = _coords[_coords.length - 3];
+            const A = coords[coords.length - 1];
+            const B = coords[coords.length - 2];
+            const C = coords[coords.length - 3];
 
             const AB = Math.sqrt(Math.pow(B[0] - A[0], 2) + Math.pow(B[1] - A[1], 2));
             const BC = Math.sqrt(Math.pow(B[0] - C[0], 2) + Math.pow(B[1] - C[1], 2));
@@ -433,8 +440,22 @@ export default class Digitizing {
 
         this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
         this._measureTooltips[this._measureTooltips.length - 1][0].setPosition(geom.getLastCoordinate());
+    }
 
-        return geom;
+    _updateTotalMeasureTooltip(coords, geom, geomType, overlay) {
+        if (geomType === 'Polygon') {
+            // Close LinearRing to get its perimeter
+            const perimeterCoords = Array.from(coords);
+            perimeterCoords.push(Array.from(coords[0]));
+            let totalTooltipContent = this.formatLength(new Polygon([perimeterCoords]));
+            totalTooltipContent += '<br>' + this.formatArea(geom);
+
+            overlay.getElement().innerHTML = totalTooltipContent;
+            overlay.setPosition(geom.getInteriorPoint().getCoordinates());
+        } else {
+            overlay.getElement().innerHTML = this.formatLength(geom);
+            overlay.setPosition(geom.getCoordinateAt(0.5));
+        }
     }
 
     /**
