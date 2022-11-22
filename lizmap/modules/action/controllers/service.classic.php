@@ -71,44 +71,28 @@ class serviceCtrl extends jController
 
         // Check action config
         jClasses::inc('action~actionConfig');
-        $dv = new actionConfig($repository, $project);
-        if (!$dv->getStatus()) {
-            return $this->error($dv->getErrors());
+        $actionConfig = new actionConfig($repository, $project);
+        if (!$actionConfig->getStatus()) {
+            return $this->error($actionConfig->getErrors());
         }
-        $config = $dv->getConfig();
+        $config = $actionConfig->getConfig();
         if (empty($config)) {
-            return $this->error($dv->getErrors());
+            return $this->error($actionConfig->getErrors());
         }
 
         // Check if configuration exists for this layer and name
-        $name = $this->param('name');
-        if (!property_exists($config, $layerId)) {
-            $errors = array(
-                'title' => 'Layer id unknown',
-                'detail' => 'The layer id '.$layerId.' does not exist in the config file !',
-            );
-
-            return $this->error($errors);
-        }
-        $layerConf = $config->{$layerId};
-        $action = null;
-        foreach ($layerConf as $layer_action) {
-            if ($name == $layer_action->name) {
-                $action = $layer_action;
-
-                break;
-            }
-        }
+        $actionName = trim($this->param('name'));
+        $action = $actionConfig->getAction($layerId, $actionName);
         if (!$action) {
             $errors = array(
                 'title' => 'Action unknown',
-                'detail' => 'The action named '.$name.' does not exist in the config file for this layer !',
+                'detail' => 'The action named '.$actionName.' does not exist in the config file for this layer: '.$layerId .' !',
             );
 
             return $this->error($errors);
         }
 
-        // Check layer in project
+        // Check the layer does exists in the given project
         $p = lizmap::getProject($repository.'~'.$project);
         $qgisLayer = $p->getLayer($layerId);
         if ($qgisLayer) {
@@ -125,19 +109,22 @@ class serviceCtrl extends jController
         // Get data
         $data = array();
         $layerName = $qgisLayer->getName();
-        $lp = $qgisLayer->getDatasourceParameters();
+        $layerDatasource = $qgisLayer->getDatasourceParameters();
         $action_params = array(
             'layer_name' => str_replace("'", "''", $layerName),
-            'layer_schema' => $lp->schema,
-            'layer_table' => $lp->tablename,
+            'layer_schema' => $layerDatasource->schema,
+            'layer_table' => $layerDatasource->tablename,
             'feature_id' => $featureId,
-            'action_name' => $name,
+            'action_name' => $actionName,
         );
+
+        // Get the additional options from the JSON config file
+        // Not for any requests parameters !
         foreach ($action->options as $k => $v) {
             $action_params[$k] = $v;
         }
 
-        // Run action
+        // Run the action
         $sql = "SELECT lizmap_get_data('";
         $sql .= json_encode($action_params);
         $sql .= "') AS data";
