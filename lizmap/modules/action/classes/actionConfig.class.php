@@ -1,4 +1,8 @@
 <?php
+
+use phpDocumentor\Reflection\PseudoTypes\False_;
+use phpDocumentor\Reflection\Types\Null_;
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -20,11 +24,11 @@ class actionConfig
         $this->status = false;
 
         try {
-            $lproj = lizmap::getProject($repository.'~'.$project);
+            $lproj = lizmap::getProject($repository . '~' . $project);
             if (!$lproj) {
                 $this->errors = array(
                     'title' => 'Invalid Query Parameter',
-                    'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                    'detail' => 'The lizmap project ' . strtoupper($project) . ' does not exist !',
                 );
 
                 return;
@@ -32,7 +36,7 @@ class actionConfig
         } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $this->errors = array(
                 'title' => 'Invalid Query Parameter',
-                'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                'detail' => 'The lizmap project ' . strtoupper($project) . ' does not exist !',
             );
 
             return;
@@ -49,7 +53,7 @@ class actionConfig
         }
 
         // Test if action file is found
-        $action_path = $lproj->getQgisPath().'.action';
+        $action_path = $lproj->getQgisPath() . '.action';
         if (!file_exists($action_path)) {
             return;
         }
@@ -57,17 +61,71 @@ class actionConfig
         // Parse config
         $config = jFile::read($action_path);
         $this->config = json_decode($config);
+
         if ($this->config === null) {
             return;
+        }
+
+        // Convert old configuration (generated for LWC < 3.7)
+        if (is_object($this->config)) {
+            $this->convertOldConfig();
+        } else {
+            // New configuration format
         }
 
         // Get config
         $this->status = true;
     }
 
+    /**
+     * Convert an old "action" configuration (generated for LWC < 3.7)
+     * into the new format (array of actions instead of array of layers)
+     *
+     * @return array The new configuration
+     */
+    function convertOldConfig()
+    {
+        $config = $this->config;
+        $newConfig = [];
+        foreach ($config as $layerId => $actions) {
+            foreach($actions as $action) {
+
+                $action->scope = 'feature';
+                $action->layers = array($layerId);
+                $newConfig[] = $action;
+            }
+        }
+        $this->config = $newConfig;
+
+        return $newConfig;
+    }
+
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * Get an action configuration
+     * for the given layer ID and action name
+     *
+     * @param string $layerId The Layer ID
+     * @param string $actionName The action short name
+     *
+     * @return object|null The action for this layer
+     */
+    public function getAction($layerId, $actionName)
+    {
+        foreach ($this->config as $action) {
+            if ($action->name != $actionName) {
+                continue;
+            }
+            if (in_array($layerId, $action->layers)) {
+                return $action;
+            }
+        }
+
+        return null;
     }
 
     public function getStatus()
