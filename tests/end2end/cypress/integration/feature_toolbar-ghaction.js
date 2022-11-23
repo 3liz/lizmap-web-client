@@ -168,7 +168,7 @@ describe('Feature Toolbar', function () {
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
-        cy.get('.popupButtonBar .popup-action').click()
+        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1.buffer_500"]').click()
 
         // Test feature is selected on popup
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
@@ -179,7 +179,7 @@ describe('Feature Toolbar', function () {
         cy.get('#message #lizmap-action-message p').should('have.text', 'The buffer 500m has been displayed in the map')
 
         // End action
-        cy.get('.popupButtonBar .popup-action').click()
+        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1.buffer_500"]').click()
         cy.get('#message').should('be.empty')
     })
 

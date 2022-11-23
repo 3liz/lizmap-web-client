@@ -61,7 +61,6 @@ class actionConfig
         // Parse config
         $config = jFile::read($action_path);
         $this->config = json_decode($config);
-
         if ($this->config === null) {
             return;
         }
@@ -69,8 +68,6 @@ class actionConfig
         // Convert old configuration (generated for LWC < 3.7)
         if (is_object($this->config)) {
             $this->convertOldConfig();
-        } else {
-            // New configuration format
         }
 
         // Get config
