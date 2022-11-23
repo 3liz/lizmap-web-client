@@ -52,10 +52,12 @@ Then:
 
 Then, in your browser, go to `http://localhost:8130/`. (see below to change the port)
 
-Optionally, you can set `lizmap.local` into your `/etc/hosts`:
+Optionally, you can set `lizmap.local` into your `/etc/hosts`, as well as `othersite.local`
+for some tests:
 
 ```bash
 127.0.0.1 lizmap.local
+127.0.0.1 othersite.local
 ```
 
 Then, in your browser, go to `http://lizmap.local:8130/`. (see below to change the port)
@@ -256,6 +258,10 @@ In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` 
 Put your projects into `tests/qgis-projects/tests/` (replace `tests` by the name
 of your choice), and then you can declare `tests` projects into
 the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
+
+To test CORS, you can load `http://othersite.local:8130`, click on the buttons,
+and check the JS console for errors.
+
 
 ## Using LDAP
 
