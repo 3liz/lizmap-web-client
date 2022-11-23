@@ -88,7 +88,8 @@ multiauth.installparam[noconfigfile]=on
 multiauth.installparam[localconfig]=on
 ldapdao.installparam=noconfigfile
 ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
-saml.installparam="localconfig"
+saml.installparam[localconfig]=on
+saml.installparam[authep]=admin
 
 [coordplugins]
 ;name = file_ini_name or 1
