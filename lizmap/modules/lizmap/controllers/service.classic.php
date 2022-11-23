@@ -241,6 +241,12 @@ class serviceCtrl extends jController
             $resp->addHttpHeader('Access-Control-Allow-Origin', $header);
             $resp->addHttpHeader('Vary', 'origin');
             $resp->addHttpHeader('Access-Control-Allow-Credentials', 'true');
+            $resp->addHttpHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+
+            $requestHeaders = $this->request->header('Access-Control-Request-Headers');
+            if ($requestHeaders) {
+                $resp->addHttpHeader('Access-Control-Allow-Headers', $requestHeaders);
+            }
         }
     }
 
@@ -510,6 +516,8 @@ class serviceCtrl extends jController
         $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
         $etag = sha1($etag);
         if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            $this->setACAOHeader($rep);
+
             return $rep;
         }
 
@@ -754,7 +762,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseJson|jResponseXml JSON configuration file for the specified project or Service Exception
+     * @return jResponseJson|jResponseText|jResponseXml JSON configuration file for the specified project or Service Exception
      */
     public function getProjectConfig()
     {
@@ -783,6 +791,8 @@ class serviceCtrl extends jController
         $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
         $etag = sha1($etag);
         if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            $this->setACAOHeader($rep);
+
             return $rep;
         }
 
@@ -800,7 +810,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseJson|jResponseXml key/value JSON configuration file for the specified project or Service Exception
+     * @return jResponseJson|jResponseText|jResponseXml key/value JSON configuration file for the specified project or Service Exception
      */
     public function getKeyValueConfig()
     {
@@ -1058,13 +1068,11 @@ class serviceCtrl extends jController
         $token = md5($repository.$project.$typename.$filter);
 
         $data = jCache::get($token);
-        $incache = true;
         if (!$data) {
             $data = array();
             $data['token'] = $token;
             $data['typename'] = $typename;
             $data['filter'] = $filter;
-            $incache = false;
             jCache::set($token, json_encode($data), 3600);
         } else {
             $data = json_decode($data, true);
