@@ -25,6 +25,9 @@ RUN apk update && apk upgrade && \
     php8-mbstring \
     php8-opcache \
     php8-openssl \
+    php8-pdo \
+    php8-pdo_sqlite \
+    php8-pdo_pgsql \
     php8-pgsql \
     php8-phar \
     php8-redis \
