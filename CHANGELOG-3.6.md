@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+* Docker: some PHP extensions (PDO) were missing
+
+
 ## 3.6.0-rc.2 - 2022-11-10
 
 ### Fixed
