@@ -11,6 +11,7 @@
 * Scales displayed according to the base layer which is used, ticket https://github.com/3liz/lizmap-web-client/issues/2978
 * Fix loading of projects having a space or several dot in there filename.
 * Docker: the var/themes content was lost when mounting a volume on this directory   
+* Docker: some PHP extensions (PDO) were missing
 
 ### Backend
 

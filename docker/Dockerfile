@@ -21,6 +21,9 @@ RUN apk --no-cache add git fcgi php7 php7-fpm \
     php7-curl \
     php7-json \
     php7-redis \
+    php7-pdo \
+    php7-pdo_pgsql \
+    php7-pdo_sqlite \
     php7-pgsql \
     php7-sqlite3 \
     php7-gd \
