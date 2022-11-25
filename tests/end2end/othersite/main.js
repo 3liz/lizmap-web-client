@@ -25,7 +25,8 @@ window.addEventListener('load', function() {
         var request = new XMLHttpRequest();
         request.open("GET", unauthorizedUrl);
         request.onload = function(oEvent) {
-            window.alert('We have a response, this is not expected');
+            document.getElementById('status_bad').textContent = request.status?request.status:'no code';
+            document.getElementById('response_bad').value = request.responseText;
         };
         request.send();
     })
