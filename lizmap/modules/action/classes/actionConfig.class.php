@@ -85,7 +85,7 @@ class actionConfig
         $config = $this->config;
         $newConfig = [];
         foreach ($config as $layerId => $actions) {
-            foreach($actions as $action) {
+            foreach ($actions as $action) {
 
                 $action->scope = 'feature';
                 $action->layers = array($layerId);
@@ -103,21 +103,28 @@ class actionConfig
     }
 
     /**
-     * Get an action configuration
-     * for the given layer ID and action name
+     * Get an action from the configuration.
      *
-     * @param string $layerId The Layer ID
      * @param string $actionName The action short name
+     * @param string $layerId The Layer ID (optional)
      *
      * @return object|null The action for this layer
      */
-    public function getAction($layerId, $actionName)
+    public function getAction($actionName, $layerId = null)
     {
         foreach ($this->config as $action) {
+            // Skip the actions with another name
             if ($action->name != $actionName) {
                 continue;
             }
-            if (in_array($layerId, $action->layers)) {
+
+            // Return the action if no layer ID is given
+            if (empty($layerId)) {
+                return $action;
+            }
+
+            // Return the action corresponding to the given layer ID
+            if (property_exists($action, 'layers') && in_array($layerId, $action->layers)) {
                 return $action;
             }
         }

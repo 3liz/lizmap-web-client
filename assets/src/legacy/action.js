@@ -19,9 +19,10 @@ window.lizAction = function () {
     }
 
     /**
-     * @string Unique ID of an action object for a layer and a feature
+     * @string Unique ID of an action object
+     * We allow only one active action at a time
      */
-    let actionObjectUniqueId = null;
+    let ACTIVE_LIZMAP_ACTION = null;
 
     /**
      * Create the OpenLayers layer to display the action geometries.
@@ -29,7 +30,7 @@ window.lizAction = function () {
      */
     function createActionMapLayer() {
         // Create the OL layer
-        let action_layer = new OpenLayers.Layer.Vector('actionLayer', {
+        let actionLayer = new OpenLayers.Layer.Vector('actionLayer', {
             styleMap: new OpenLayers.StyleMap({
                 graphicName: 'circle',
                 pointRadius: 6,
@@ -44,8 +45,8 @@ window.lizAction = function () {
         });
 
         // Add the layer inside Lizmap objects
-        lizMap.map.addLayer(action_layer);
-        lizMap.layers['actionLayer'] = action_layer;
+        lizMap.map.addLayer(actionLayer);
+        lizMap.layers['actionLayer'] = actionLayer;
     }
 
     /**
@@ -94,13 +95,13 @@ window.lizAction = function () {
 
 
     /**
-     * Run the action callbacks as defined in the action configuration
+     * Run the callbacks as defined in the action configuration
      *
      * @param {object} action - The action
-     * @param {object} features - The OpenLayers features created by the action from the response
+     * @param {array} features - The OpenLayers features created by the action from the response
      *
      */
-    function runLizmapActionCallbacks(action, features = null) {
+    function runCallbacks(action, features = null) {
 
         for (let c in action.callbacks) {
             // Get the callback item
@@ -141,7 +142,7 @@ window.lizAction = function () {
                 }
 
                 // Select items in the layer which intersect the returned geometry
-                if (callback['method'] == CallbackMethods.Select) {
+                if (callback['method'] == CallbackMethods.Select && features.length) {
                     // Select features in the given layer
                     let feat = features[0];
                     let f = feat.clone()
@@ -154,23 +155,83 @@ window.lizAction = function () {
     }
 
     /**
+     * Build the unique ID of an action
+     * based on its scope
+     *
+     * @param {string} actionName - The action name
+     * @param {string} scope - The action scope
+     * @param {string} layerId - The layer ID
+     * @param {string} featureId - The feature ID
+     *
+     * @return {string} uniqueId - The action unique ID.
+     */
+    function buildActionInstanceUniqueId(actionName, scope, layerId, featureId) {
+        // The default name is the action name
+        let actionUniqueId = actionName;
+
+        // For the project scope, return
+        if (scope == Scopes.Project) {
+            return actionUniqueId;
+        }
+
+        // For the layer and feature scopes, we add the layer ID
+        actionUniqueId += '.' + layerId;
+
+        // For the feature scope, we add the feature ID
+        if (scope == Scopes.Feature) {
+            actionUniqueId += '.' + featureId;
+        }
+
+        return actionUniqueId;
+    }
+
+    /**
+     * Explode the action unique ID into its components
+     * action name, layer ID, feature ID
+     *
+     * @param {string} uniqueId - The instance object unique ID
+     *
+     * @return {array} components - The components [actionName, layerId, featureId]
+     */
+    function explodeActionInstanceUniqueId(uniqueId) {
+
+        let vals = uniqueId.split('.');
+        let actionName = vals[0];
+        let layerId = (vals.length > 1) ? vals[1] : null;
+        let featureId = (vals.length > 2) ? vals[2] : null;
+
+        return [actionName, layerId, featureId];
+    }
+
+    /**
      * Run a Lizmap action.
      *
-     * @param {string} name - The action name
+     * @param {string} actionName - The action name
      * @param {Scopes} scope - The action scope
      * @param {string} layerId - The optional layer ID
      * @param {string} featureId - The optional feature ID
+     * @param {string} wkt - An optional geometry in WKT format and project EPSG:4326
      */
-    async function runLizmapAction(name, scope = Scopes.Feature, layerId = null, featureId = null) {
+    async function runLizmapAction(actionName, scope = Scopes.Feature, layerId = null, featureId = null, wkt = null) {
 
         // Get the action
-        let action = getActionItemByName(name, Scopes.Feature, layerId);
-        let actionButtonValue = `${layerId}.${featureId}.${action.name}`;
+        let action = getActionItemByName(actionName, scope, layerId);
+        if (!action) {
+            console.warn('No corresponding action found in the configuration !');
+            return false;
+        }
 
+        // Reset the other actions
+        // We allow only one active action at a time
+        // We do not remove the active status of the button (btn-primary)
+        resetLizmapAction(true, true, true, false);
+
+        // Set the request parameters
         let options = {
             "layerId": layerId,
             "featureId": featureId,
-            "name": name
+            "name": actionName,
+            "wkt": wkt
         };
 
         // Request action and get data
@@ -189,14 +250,12 @@ window.lizAction = function () {
 
             // Report errors
             if ('errors' in data) {
+                // Reset the action
+                resetLizmapAction(true, true, true, true);
+
                 // Display the errors
                 lizMap.addMessage(data.errors.title + '\n' + data.errors.detail, 'error', true).attr('id', 'lizmap-action-message');
-                console.log(data.errors);
-
-                // Reset the action
-                actionObjectUniqueId = null;
-                let button = document.querySelector(`button.popup-action[value="${actionButtonValue}"]`);
-                if (button) button.classList.remove('btn-primary');
+                console.warn(data.errors);
 
                 return false;
             }
@@ -227,7 +286,7 @@ window.lizAction = function () {
 
             // Callbacks
             if (features.length > 0 && 'callbacks' in action && action.callbacks.length > 0) {
-                runLizmapActionCallbacks(action, features);
+                runCallbacks(action, features);
             }
 
             // Lizmap event to allow other scripts to process the data if needed
@@ -240,19 +299,53 @@ window.lizAction = function () {
                 }
             );
 
+            // Set the action as active
+            ACTIVE_LIZMAP_ACTION = buildActionInstanceUniqueId(action.name, scope, layerId, featureId);
+
         } catch (error) {
             // Display the error
             console.warn(error);
 
             // Reset the action
-            actionObjectUniqueId = null;
-            let button = document.querySelector(`button.popup-action[value="${actionButtonValue}"]`);
-            if (button) button.classList.remove('btn-primary');
+            resetLizmapAction(true, true, true, true);
+
+        }
+    }
+
+    /**
+     * Reset action
+     *
+     * @param {boolean} destroyFeatures - If we must remove the geometries in the map.
+     * @param {boolean} removeMessage - If we must remove the message displayed at the top.
+     * @param {boolean} resetGlobalVariable - If we must empty the global variable ACTIVE_LIZMAP_ACTION
+     * @param {boolean} resetActiveInterfaceElements - If we must remove the "active" interface for the buttons
+     */
+    function resetLizmapAction(destroyFeatures = true, removeMessage = true, resetGlobalVariable = true, resetActiveInterfaceElements = true) {
+
+        // Remove the objects in the map
+        if (destroyFeatures) {
+            let actionLayer = lizMap.layers['actionLayer'];
+            actionLayer.destroyFeatures();
         }
 
-        // Set the action as active
-        actionObjectUniqueId = layerId + '.' + featureId + '.' + name;
+        // Clear the previous Lizmap message
+        if (removeMessage) {
+            let previousMessage = document.getElementById('lizmap-action-message');
+            if (previousMessage) previousMessage.remove();
+        }
 
+        // Remove all btn-primary classes in the target objects
+        if (resetActiveInterfaceElements) {
+            let selector = '.popup-action.btn-primary';
+            Array.from(document.querySelectorAll(selector)).map(element => {
+                element.classList.remove('btn-primary');
+            });
+        }
+
+        // Reset the global variable
+        if (resetGlobalVariable) {
+            ACTIVE_LIZMAP_ACTION = null;
+        }
     }
 
     /**
@@ -267,12 +360,7 @@ window.lizAction = function () {
     function addFeaturesFromActionResponse(data, style = null) {
 
         // Get action result layer
-        let layer = lizMap.layers['actionLayer'];
-
-        // Change the layer style
-        if (style) {
-            layer.styleMap.styles.default.defaultStyle = style;
-        }
+        let actionLayer = lizMap.layers['actionLayer'];
 
         // Get the layer projection
         let layerProjectionName = 'EPSG:4326';
@@ -283,11 +371,16 @@ window.lizAction = function () {
             internalProjection: lizMap.map.getProjection()
         });
 
+        // Change the layer style
+        if (style) {
+            actionLayer.styleMap.styles.default.defaultStyle = style;
+        }
+
         // Convert the action GeoJSON data into OpenLayers features
         let features = gFormat.read(data);
 
         // Add them to the action layer
-        layer.addFeatures(features);
+        actionLayer.addFeatures(features);
 
         return features;
     }
@@ -307,32 +400,26 @@ window.lizAction = function () {
         // Get the button which triggered the click event
         let button = target;
 
-        // Clear the previous message
-        let previousMessage = document.getElementById('lizmap-action-message');
-        if (previousMessage) previousMessage.remove();
-
-        // Empty the OpenLayers action layer
-        let layer = lizMap.layers['actionLayer'];
-        layer.destroyFeatures();
-
         // Get the layerId, featureId and action for this button
         let val = button.value;
-        let vals = val.split('.');
-        let layerId = vals[0];
-        let featureId = vals[1];
-        let actionName = vals[2];
+        let [actionName, layerId, featureId] = explodeActionInstanceUniqueId(val);
 
-        // Do nothing more if the action was already active
-        // We have already destroyed the features in the map
-        // and removed the message
-        if (actionObjectUniqueId) {
-            // deactivate if the current action was this one
-            if (actionObjectUniqueId == layerId + '.' + featureId + '.' + actionName) {
+        // Get the action item data
+        let popupAction = getActionItemByName(actionName, Scopes.Feature, layerId);
+        if (!popupAction) {
+            console.warn('No corresponding action found in the configuration !');
+
+            return false;
+        }
+
+        // We allow only one active action at a time.
+        // If the action is already active for the clicked button
+        // we need to deactivate it completely
+        if (ACTIVE_LIZMAP_ACTION) {
+            let actionUniqueId = buildActionInstanceUniqueId(actionName, Scopes.Feature, layerId, featureId);
+            if (ACTIVE_LIZMAP_ACTION == actionUniqueId) {
                 // Reset the action
-                actionObjectUniqueId = null;
-
-                // Remove the btn-primary class
-                button.classList.remove('btn-primary');
+                resetLizmapAction(true, true, true, true);
 
                 // Return
                 return true;
@@ -340,10 +427,9 @@ window.lizAction = function () {
         }
 
         // The action was not active, we can run it
-        actionObjectUniqueId = null;
-
-        // Get the action item data
-        let popupAction = getActionItemByName(actionName, Scopes.Feature, layerId);
+        // This will override the previous actions and replace them
+        // with this one
+        ACTIVE_LIZMAP_ACTION = null;
 
         // Display a confirm question if needed
         if ('confirm' in popupAction && popupAction.confirm.trim() != '') {
@@ -354,11 +440,14 @@ window.lizAction = function () {
             }
         }
 
+        // Reset
+        resetLizmapAction(true, true, true, true);
+
         // Add the button btn-primary class
         button.classList.add('btn-primary');
 
         // Run the Lizmap action for this feature
-        // It will set the global variable actionObjectUniqueId
+        // It will set the global variable ACTIVE_LIZMAP_ACTION
         runLizmapAction(actionName, Scopes.Feature, layerId, featureId);
 
         return false;
@@ -376,11 +465,11 @@ window.lizAction = function () {
     function addPopupActionButton(action, layerId, featureId, popupContainerId) {
 
         // Value of the action button for this layer and this feature
-        let actionButtonValue = `${layerId}.${featureId}.${action.name}`;
+        let actionUniqueId = buildActionInstanceUniqueId(action.name, Scopes.Feature, layerId, featureId);
 
         // Build the HTML button
         let actionButtonHtml = `
-        <button class="btn btn-mini popup-action" value="${actionButtonValue}" type="button" data-original-title="${action.title}" title="${action.title}">
+        <button class="btn btn-mini popup-action" value="${actionUniqueId}" type="button" data-original-title="${action.title}" title="${action.title}">
             <i class="${action.icon}"></i>
         &nbsp;</button>
         `;
@@ -394,18 +483,18 @@ window.lizAction = function () {
         let featureToolbarDiv = featureToolbar.querySelector('div.feature-toolbar');
 
         // Get the button if it already exists
-        let existingButton = featureToolbarDiv.querySelector(`button.popup-action[value="${actionButtonValue}"]`);
+        let existingButton = featureToolbarDiv.querySelector(`button.popup-action[value="${actionUniqueId}"]`);
         if (existingButton) {
             return false;
         }
 
         // Append the button to the toolbar
         featureToolbarDiv.insertAdjacentHTML('beforeend', actionButtonHtml);
-        let actionButton = featureToolbarDiv.querySelector(`button.popup-action[value="${actionButtonValue}"]`);
+        let actionButton = featureToolbarDiv.querySelector(`button.popup-action[value="${actionUniqueId}"]`);
 
         // If the action is already active for this feature,
         // add the btn-primary class
-        if (actionButton.value == actionObjectUniqueId) {
+        if (actionButton.value == ACTIVE_LIZMAP_ACTION) {
             actionButton.classList.add('btn-primary');
         }
 
@@ -477,10 +566,14 @@ window.lizAction = function () {
 
     // Public functions and objects
     var obj = {
-        actionObjectUniqueId: actionObjectUniqueId,
+        ACTIVE_LIZMAP_ACTION: ACTIVE_LIZMAP_ACTION,
 
-        runLizmapAction: function (name, scope, layerId, featureId) {
-            return runLizmapAction(name, scope, layerId, featureId);
+        runLizmapAction: function (name, scope, layerId = null, featureId = null, wkt = null) {
+            return runLizmapAction(name, scope, layerId, featureId, wkt);
+        },
+
+        resetLizmapAction: function (destroyFeatures = true, removeMessage = true, resetGlobalVariable = true, resetActiveInterfaceElements = true) {
+            return resetLizmapAction(destroyFeatures, removeMessage, resetGlobalVariable, resetActiveInterfaceElements);
         }
     };
 
