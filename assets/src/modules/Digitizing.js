@@ -195,8 +195,18 @@ export default class Digitizing {
 
                 this._drawInteraction = new Draw(drawOptions);
 
-                this._drawInteraction.on('drawend', (event) => {
+                this._drawInteraction.on('drawstart', event => {
+                    this._listener = event.feature.getGeometry().on('change', evt => {
+                        const geom = evt.target;
+                        if (geom instanceof Polygon) {
+                            this._updateTooltips(geom.getCoordinates()[0], geom, 'Polygon');
+                        }else if (geom instanceof LineString){
+                            this._updateTooltips(geom.getCoordinates(), geom, 'LineString');
+                        }
+                    });
+                  });
 
+                this._drawInteraction.on('drawend', event => {
                     // Attach total overlay to its geom to update
                     // content when the geom is modified
                     const geom = event.feature.getGeometry();
@@ -405,12 +415,10 @@ export default class Digitizing {
             geom.setCoordinates(_coords);
         }
 
-        // Display draw measures in tooltips
-        this._updateTooltips(_coords, geom, geomType);
-
         return geom;
     }
 
+    // Display draw measures in tooltips
     _updateTooltips(coords, geom, geomType) {
         // Current segment length
         let segmentTooltipContent = this.formatLength(new LineString([coords[coords.length - 1], coords[coords.length - 2]]));
