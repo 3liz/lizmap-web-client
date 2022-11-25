@@ -3,7 +3,7 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012-2020 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      https://3liz.com
  *
@@ -20,17 +20,20 @@ class lizmapRepository
      * services properties.
      *
      * @deprecated
+     * @see \Lizmap\Project\Repository::$properties
      */
     public static $properties = array(
         'label',
         'path',
         'allowUserDefinedThemes',
+        'accessControlAllowOrigin',
     );
 
     /**
      * services properties options.
      *
      * @deprecated
+     * @see \Lizmap\Project\Repository::$propertiesOptions
      */
     public static $propertiesOptions = array(
         'label' => array(
@@ -43,6 +46,10 @@ class lizmapRepository
         ),
         'allowUserDefinedThemes' => array(
             'fieldType' => 'checkbox',
+            'required' => false,
+        ),
+        'accessControlAllowOrigin' => array(
+            'fieldType' => 'text',
             'required' => false,
         ),
     );
