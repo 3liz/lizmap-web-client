@@ -470,9 +470,21 @@ window.lizAction = function () {
         // Build the HTML button
         let actionButtonHtml = `
         <button class="btn btn-mini popup-action" value="${actionUniqueId}" type="button" data-original-title="${action.title}" title="${action.title}">
-            <i class="${action.icon}"></i>
-        &nbsp;</button>
         `;
+        // The icon can be an old bootstrap 2 icon, or a SVG in the media file
+        if (action.icon.startsWith('icon-')) {
+            actionButtonHtml += `<i class="${action.icon}"></i>`;
+        }
+        let regex = new RegExp('^(\.{1,2})?(/)?media/');
+        if (action.icon.match(regex)) {
+            let mediaLink = OpenLayers.Util.urlAppend(
+                lizUrls.media,
+                OpenLayers.Util.getParameterString(lizUrls.params)
+            )
+            let imageUrl = `${mediaLink}&path=${action.icon}`;
+            actionButtonHtml += `<img style="width: 20px; height: 20px;" src="${imageUrl}">`;
+        }
+        actionButtonHtml += '&nbsp;</button>';
 
         // Find Lizmap popup toolbar
         let popupContainer = document.getElementById(popupContainerId);
