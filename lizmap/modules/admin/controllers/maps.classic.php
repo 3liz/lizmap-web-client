@@ -3,7 +3,7 @@
  * Lizmap administration.
  *
  * @author    3liz
- * @copyright 2012-2019 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      http://3liz.com
  *
@@ -255,7 +255,7 @@ class mapsCtrl extends jController
     public function modifySection()
     {
 
-    // initialise data
+        // initialise data
         $repository = $this->param('repository');
         // Get the corresponding repository
         $lrep = lizmap::getRepository($repository);
@@ -438,6 +438,39 @@ class mapsCtrl extends jController
                     jLog::log('rootRepositories == '.$rootRepositories.', new repository path == '.$fullPath, 'error');
                     $ok = false;
                 }
+            }
+        }
+
+        // checks list of domains for CORS
+        $domainListStr = $form->getData('accessControlAllowOrigin');
+        if ($domainListStr) {
+            $domainList = preg_split('/\s*,\s*/', $domainListStr);
+            $okDomain = true;
+            $newDomainList = array();
+            foreach ($domainList as $domain) {
+                if ($domain == '') {
+                    continue;
+                }
+                if (!preg_match('!^(https?://)!', $domain)) {
+                    $domain = 'https://'.$domain;
+                }
+                $urlParts = parse_url($domain);
+                if ($urlParts === false) {
+                    $form->setErrorOn('accessControlAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.accessControlAllowOrigin.bad.domain'));
+                    $ok = $okDomain = false;
+
+                    break;
+                }
+
+                // we clean the url
+                $newDomain = $urlParts['scheme'].'://'.$urlParts['host'];
+                if (isset($urlParts['port']) && $urlParts['port']) {
+                    $newDomain .= ':'.$urlParts['port'];
+                }
+                $newDomainList[] = $newDomain;
+            }
+            if ($okDomain) {
+                $form->setData('accessControlAllowOrigin', implode(',', $newDomainList));
             }
         }
 

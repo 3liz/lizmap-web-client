@@ -3,7 +3,7 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      http://3liz.com
  *
@@ -223,6 +223,9 @@ class lizmap
             }
             $ctrl->required = $propertiesOptions[$k]['required'];
             $ctrl->label = jLocale::get('admin~admin.form.admin_section.repository.'.$k.'.label');
+            if ($k == 'accessControlAllowOrigin') {
+                $ctrl->help = jLocale::get('admin~admin.form.admin_section.repository.accessControlAllowOrigin.help');
+            }
             $ctrl->size = 100;
             $form->addControl($ctrl);
         }
