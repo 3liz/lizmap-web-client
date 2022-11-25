@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 13.7 (Ubuntu 13.7-1.pgdg20.04+1)
+-- Dumped from database version 14.6 (Debian 14.6-1.pgdg110+1)
+-- Dumped by pg_dump version 14.6 (Ubuntu 14.6-1.pgdg22.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,122 +23,9 @@ SET row_security = off;
 CREATE SCHEMA tests_projects;
 
 
---
--- Name: lizmap_get_data(json); Type: FUNCTION; Schema: tests_projects; Owner: -
---
-
-CREATE FUNCTION tests_projects.lizmap_get_data(parameters json) RETURNS json
-    LANGUAGE plpgsql IMMUTABLE STRICT
-    AS $_$
-DECLARE
-    feature_id integer;
-    layer_name text;
-    layer_table text;
-    layer_schema text;
-    action_name text;
-    sqltext text;
-    datasource text;
-    ajson json;
-BEGIN
-
-    action_name:= parameters->>'action_name';
-    feature_id:= (parameters->>'feature_id')::integer;
-    layer_name:= parameters->>'layer_name';
-    layer_schema:= parameters->>'layer_schema';
-    layer_table:= parameters->>'layer_table';
-
-    -- Action buffer_500
-    -- Written here as an example
-    -- Performs a buffer on the geometry
-    IF action_name = 'buffer_500' THEN
-        datasource:= format('
-            SELECT
-            %1$s AS id,
-            ''The buffer '' || %4$s || ''m has been displayed in the map'' AS message,
-            ST_Buffer(geom, %4$s) AS geom
-            FROM "%2$s"."%3$s"
-            WHERE id = %1$s
-        ',
-        feature_id,
-        layer_schema,
-        layer_table,
-        parameters->>'buffer_size'
-        );
-    ELSE
-    -- Default : return geometry
-        datasource:= format('
-            SELECT
-            %1$s AS id,
-            ''The geometry of the object have been displayed in the map'' AS message
-            geom
-            FROM "%2$s"."%3$s"
-            WHERE id = %1$s
-        ',
-        feature_id,
-        layer_schema,
-        layer_table
-        );
-
-    END IF;
-
-    SELECT query_to_geojson(datasource)
-    INTO ajson
-    ;
-    RETURN ajson;
-END;
-$_$;
-
-
---
--- Name: FUNCTION lizmap_get_data(parameters json); Type: COMMENT; Schema: tests_projects; Owner: -
---
-
-COMMENT ON FUNCTION tests_projects.lizmap_get_data(parameters json) IS 'Generate a valid GeoJSON from an action described by a name, PostgreSQL schema and table name of the source data, a QGIS layer name, a feature id and additional options.';
-
-
---
--- Name: query_to_geojson(text); Type: FUNCTION; Schema: tests_projects; Owner: -
---
-
-CREATE FUNCTION tests_projects.query_to_geojson(datasource text) RETURNS json
-    LANGUAGE plpgsql IMMUTABLE STRICT
-    AS $$
-DECLARE
-    sqltext text;
-    ajson json;
-BEGIN
-    sqltext:= format('
-        SELECT jsonb_build_object(
-            ''type'',  ''FeatureCollection'',
-            ''features'', jsonb_agg(features.feature)
-        )::json
-        FROM (
-          SELECT jsonb_build_object(
-            ''type'',       ''Feature'',
-            ''id'',         id,
-            ''geometry'',   ST_AsGeoJSON(ST_Transform(geom, 4326))::jsonb,
-            ''properties'', to_jsonb(inputs) - ''geom''
-          ) AS feature
-          FROM (
-              SELECT * FROM (%s) foo
-          ) AS inputs
-        ) AS features
-    ', datasource);
-    RAISE NOTICE 'SQL = %s', sqltext;
-    EXECUTE sqltext INTO ajson;
-    RETURN ajson;
-END;
-$$;
-
-
---
--- Name: FUNCTION query_to_geojson(datasource text); Type: COMMENT; Schema: tests_projects; Owner: -
---
-
-COMMENT ON FUNCTION tests_projects.query_to_geojson(datasource text) IS 'Generate a valid GEOJSON from a given SQL text query.';
-
-
 SET default_tablespace = '';
+
+SET default_table_access_method = heap;
 
 --
 -- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: -
@@ -2200,6 +2087,14 @@ COPY tests_projects.form_filter_child_bus_stops (id, label, id_parent, geom) FRO
 
 
 --
+-- Data for Name: layer_legend_categorized; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.layer_legend_categorized (id, geom, category) FROM stdin;
+\.
+
+
+--
 -- Data for Name: layer_legend_single_symbol; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -3216,3 +3111,4 @@ ALTER TABLE ONLY tests_projects.tramway_pivot
 --
 -- PostgreSQL database dump complete
 --
+
