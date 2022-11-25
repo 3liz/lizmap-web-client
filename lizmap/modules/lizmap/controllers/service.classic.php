@@ -8,7 +8,7 @@ use Lizmap\Request\WMTSRequest;
  * Php proxy to access map services.
  *
  * @author    3liz
- * @copyright 2011-2019 3liz
+ * @copyright 2011-2022 3liz
  *
  * @see      http://3liz.com
  *
