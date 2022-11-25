@@ -11,6 +11,7 @@
 ### Updated
 
 * New drawing toolbar, migration from OpenLayers 2 to OpenLayers 6
+* Update Plotly.js to 2.16.3
 
 ### Backend
 
