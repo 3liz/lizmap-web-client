@@ -36,6 +36,7 @@ export default class Digitizing {
         this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
 
         this._isEdited = false;
+        this._hasMeasureVisible = false;
         this._isSaved = false;
 
         this._drawInteraction;
@@ -225,6 +226,7 @@ export default class Digitizing {
                     // Remove segment measure and change total measure tooltip style
                     this._segmentMeasureTooltipElement.remove();
                     this._totalMeasureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+                    this._totalMeasureTooltipElement.classList.toggle('hide', !this._hasMeasureVisible);
 
                     // unset tooltips so that new ones can be created
                     this._segmentMeasureTooltipElement = null;
@@ -307,6 +309,20 @@ export default class Digitizing {
             }
         }
     }
+
+    get hasMeasureVisible() {
+        return this._hasMeasureVisible;
+    }
+
+    set hasMeasureVisible(visible) {
+        this._hasMeasureVisible = visible;
+        for (const overlays of this._measureTooltips) {
+            overlays[0].getElement().classList.toggle('hide', !visible);
+            overlays[1].getElement().classList.toggle('hide', !visible);
+        }
+        mainEventDispatcher.dispatch('digitizing.measure');
+    }
+
     get isSaved() {
         return this._isSaved;
     }
@@ -441,7 +457,7 @@ export default class Digitizing {
             angleInDegrees = Math.round(angleInDegrees * 100) / 100;
             if (isNaN(angleInDegrees)) {
                 angleInDegrees = 0;
-              }
+            }
 
             segmentTooltipContent += '<br>' + angleInDegrees + '°';
         }
@@ -507,6 +523,7 @@ export default class Digitizing {
         }
         this._segmentMeasureTooltipElement = document.createElement('div');
         this._segmentMeasureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+        this._segmentMeasureTooltipElement.classList.toggle('hide', !this._hasMeasureVisible);
 
         const segmentOverlay = new Overlay({
             element: this._segmentMeasureTooltipElement,
@@ -521,6 +538,7 @@ export default class Digitizing {
         }
         this._totalMeasureTooltipElement = document.createElement('div');
         this._totalMeasureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+        this._totalMeasureTooltipElement.classList.toggle('hide', !this._hasMeasureVisible);
 
         const totalOverlay = new Overlay({
             element: this._totalMeasureTooltipElement,
@@ -596,12 +614,20 @@ export default class Digitizing {
      */
     toggleFeatureDrawnVisibility(visible = !this._drawLayer.getVisible()) {
         this._drawLayer.setVisible(visible);
+        for (const overlays of this._measureTooltips) {
+            overlays[0].getElement().classList.toggle('hide', !(this._hasMeasureVisible && visible));
+            overlays[1].getElement().classList.toggle('hide', !(this._hasMeasureVisible && visible));
+        }
 
         mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
     }
 
     toggleEdit() {
         this.isEdited = !this.isEdited;
+    }
+
+    toggleMeasure() {
+        this.hasMeasureVisible = !this.hasMeasureVisible;
     }
 
     erase() {
