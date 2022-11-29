@@ -30,7 +30,6 @@ class serviceCtrl extends jController
         $project = $this->param('project');
         $layerId = trim($this->param('layerId', ''));
         $featureId = $this->intParam('featureId', -1);
-        $wkt = trim($this->param('wkt', ''));
 
         // Check the project, repository and the access rights
         try {
@@ -138,18 +137,25 @@ class serviceCtrl extends jController
         }
 
         // Check the given WKT (optional parameter, but must be valid)
-        if ($wkt && \lizmapWkt::check($wkt)) {
-            $geom = \lizmapWkt::parse($wkt);
-            if ($geom === null) {
-                $errors = array(
-                    'title' => 'This given WKT parameter is invalid !',
-                    'detail' => 'Please check the value of the wkt parameter is either empty or valid.',
-                );
+        // Check also the map center and extent (must be valid WKT)
+        $wktParameters = array('wkt', 'mapCenter', 'mapExtent');
+        foreach($wktParameters as $paramName) {
+            $value = trim($this->param($paramName, ''));
+            ${$paramName} = $value;
+            if (!empty($value) && \lizmapWkt::check($value)) {
+                $geom = \lizmapWkt::parse($value);
+                if ($geom === null) {
+                    ${$paramName} = '';
+                    $errors = array(
+                        'title' => 'This given parameter ' . $value . ' is invalid !',
+                        'detail' => 'Please check the value of the ' . $value . ' parameter is either empty or valid.',
+                    );
 
-                return $this->error($errors);
+                    return $this->error($errors);
+                }
+            } else {
+                ${$paramName} = '';
             }
-        } else {
-            $wkt = '';
         }
 
         // Compute the parameters to pass to the PostgreSQL action function
@@ -164,6 +170,8 @@ class serviceCtrl extends jController
             'layer_schema' => null,
             'layer_table' => null,
             'feature_id' => null,
+            'map_center' => $mapCenter,
+            'map_extent' => $mapExtent,
             'wkt' => $wkt,
         );
 

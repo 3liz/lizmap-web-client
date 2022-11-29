@@ -39,11 +39,14 @@
         ]
     },
     {
-        "name": "project_wkt_buffer_500",
-        "title": "Get the buffer 500 of the given WKT geometry",
+        "name": "project_map_center_buffer",
+        "title": "Get the buffer of the curent map center point",
+        "description": "This is an example action which returns a circle at the center of the map",
         "scope": "project",
         "icon": "icon-star",
-        "options": {},
+        "options": {
+            "buffer_size": 2000
+        },
         "style": {
             "graphicName": "circle",
             "pointRadius": 6,

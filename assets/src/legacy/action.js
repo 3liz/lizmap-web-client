@@ -93,6 +93,28 @@ window.lizAction = function () {
         return null;
     }
 
+    /**
+     * Get a list of actions for a optionally given scope
+     *
+     * @param {string} scope - Scope of the actions to filter
+     *
+     * @return {array} actions - Array of the actions
+     */
+    function getActions(scope = null) {
+
+        let actions = [];
+        // Loop through the actions
+        for (let i in actionConfig) {
+            let action = actionConfig[i];
+            if (scope && action.scope != scope) {
+                continue;
+            }
+            actions.push(action);
+        }
+
+        return actions;
+    }
+
 
     /**
      * Run the callbacks as defined in the action configuration
@@ -233,6 +255,15 @@ window.lizAction = function () {
             "name": actionName,
             "wkt": wkt
         };
+
+        // We add the map extent and center
+        // as WKT geometries
+        let extent = lizMap.map.getExtent().clone();
+        extent = extent.transform( lizMap.map.getProjection(), 'EPSG:4326' );
+        options['mapExtent'] = extent.toGeometry().toString();
+        let center = lizMap.map.getCenter().clone();
+        center = center.transform( lizMap.map.getProjection(), 'EPSG:4326' );
+        options['mapCenter'] = `POINT(${center['lon']} ${center['lat']})`;
 
         // Request action and get data
         let url = actionConfigData.url;
@@ -471,7 +502,9 @@ window.lizAction = function () {
         let actionButtonHtml = `
         <button class="btn btn-mini popup-action" value="${actionUniqueId}" type="button" data-original-title="${action.title}" title="${action.title}">
         `;
-        // The icon can be an old bootstrap 2 icon, or a SVG in the media file
+        // The icon can be
+        // * an old bootstrap 2 icon, e.g. 'icon-star'
+        // * a SVG in the media file, e.g. 'media/icon/my-icon.svg'
         if (action.icon.startsWith('icon-')) {
             actionButtonHtml += `<i class="${action.icon}"></i>`;
         }
@@ -514,27 +547,39 @@ window.lizAction = function () {
         actionButton.addEventListener('click', popupActionButtonClickHandler);
     }
 
-
     lizMap.events.on({
 
         'uicreated': function () {
             // Add an OpenLayers layer to show & use the geometries returned by an action
             createActionMapLayer();
 
-            // Add dock if there is any action with the "project" scope
-            let hasProjectActions = false;
+            // Get the list of used scopes
+            let usedScopes = [];
             for (let i in actionConfig) {
                 let item = actionConfig[i];
-                if (item['scope'] == Scopes.Project) {
-                    hasProjectActions = true;
-                    break;
+                if (!usedScopes.includes(item['scope'])) {
+                    usedScopes.push(item['scope']);
                 }
             }
-            if (hasProjectActions) {
-                // Add Lizmap action dock
-                // lizMap.addDock();
+
+            // Hide the action dock if no action has the projet scope
+            if (!usedScopes.includes(Scopes.Project)) {
+                let actionMenu = document.querySelector('#mapmenu li.action');
+                if (actionMenu) {
+                    actionMenu.style.display = "none";
+                }
             }
 
+            // Close the windows via the action-close button
+            let closeDockButton = document.getElementById('action-close');
+            if (closeDockButton) {
+                closeDockButton.addEventListener('click', event => {
+                    let actionMenu = document.querySelector('#mapmenu li.action.active a');
+                    if (actionMenu) {
+                        actionMenu.click();
+                    }
+                });
+            }
         },
 
         'lizmappopupdisplayed': function (popup, containerId) {
@@ -579,6 +624,10 @@ window.lizAction = function () {
     // Public functions and objects
     var obj = {
         ACTIVE_LIZMAP_ACTION: ACTIVE_LIZMAP_ACTION,
+
+        getActions: function(scope = null) {
+            return getActions(scope);
+        },
 
         runLizmapAction: function (name, scope, layerId = null, featureId = null, wkt = null) {
             return runLizmapAction(name, scope, layerId, featureId, wkt);

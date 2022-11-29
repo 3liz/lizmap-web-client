@@ -141,4 +141,23 @@ class actionConfig
     {
         return $this->errors;
     }
+
+    /**
+     * Get the project actions
+     * corresponding to the given scope.
+     *
+     * @param string $scope - The scope of the action: project, layer or feature
+     *
+     * @return object $actions - The corresponding actions
+     */
+    public function getActionsByScope($scope = 'project') {
+        $actions = array();
+        foreach ($this->config as $action) {
+            if ($action->scope == $scope) {
+                $actions[] = $action;
+            }
+        }
+
+        return $actions;
+    }
 }
