@@ -51,6 +51,8 @@ DECLARE
     feature_id integer;
     layer_srid integer;
     wkt text;
+    map_center text;
+    map_extent text;
     sqltext text;
     datasource text;
     ajson json;
@@ -63,6 +65,8 @@ BEGIN
     layer_name:= parameters->>'layer_name';
     layer_schema:= parameters->>'layer_schema';
     layer_table:= parameters->>'layer_table';
+    map_center:= parameters->>'map_center';
+    map_extent:= parameters->>'map_extent';
     layer_srid:= 0;
     feature_id:= (parameters->>'feature_id')::integer;
     wkt:= parameters->>'wkt';
@@ -93,21 +97,22 @@ BEGIN
     -- selects an action in the list, then click on the button
     IF action_scope = 'project' THEN
 
-        -- Return the buffer 500m of the WKT passed in the parameters
-        IF action_name = 'project_wkt_buffer_500' AND trim(wkt) != '' THEN
+        -- Return the buffer 500m of map center point
+        IF action_name = 'project_map_center_buffer' AND trim(map_center) != '' THEN
             datasource:= format(
-                '
-                SELECT
-                1 AS id,
-                ''%1$s'' AS project,
-                ''The displayed geometry represents the buffer 500m of the given WKT'' AS message,
-                ST_Buffer(
-                    ST_GeomFromText(''%2$s'', 4326)::geography,
-                    500
-                )::geometry(POLYGON, 4326) AS geom
-                ',
+                $$
+                    SELECT
+                    1 AS id,
+                    '%1$s' AS project,
+                    ST_Buffer(
+                        ST_GeomFromText('%2$s', 4326)::geography,
+                        %3$s
+                    )::geometry(POLYGON, 4326) AS geom,
+                    'The displayed geometry represents the buffer %3$s m of the current map center' AS message
+                $$,
                 lizmap_project,
-                wkt
+                map_center,
+                parameters->>'buffer_size'
             );
         END IF;
 
@@ -119,18 +124,18 @@ BEGIN
         -- Returns the contour of all the features of the given project layer
         IF action_name = 'layer_spatial_extent' AND layer_srid != 0 THEN
         datasource:= format(
-            '
-            SELECT
-            1 AS id,
-            ''The displayed geometry represents the contour of all the layer features'' AS message,
-            ST_Buffer(ST_ConvexHull(ST_Collect(geom)), 100)::geometry(POLYGON, %1$s) AS geom,
-            ''%1$s'' AS layer_name,
-            count(*) AS feature_count
-            FROM "%2$s"."%3$s"
-            ',
+            $$
+                SELECT
+                1 AS id,
+                ST_Buffer(ST_ConvexHull(ST_Collect(geom)), 100)::geometry(POLYGON, %1$s) AS geom,
+                'The displayed geometry represents the contour of all the layer features' AS message,
+                '%4$s' AS layer_name,
+                count(*) AS feature_count
+                FROM %2$s.%3$s
+            $$,
             layer_srid,
-            layer_schema,
-            layer_table,
+            quote_ident(layer_schema),
+            quote_ident(layer_table),
             layer_name
         );
         END IF;
@@ -143,17 +148,17 @@ BEGIN
         -- Returns the buffer 500m of the given feature for the given layer
         IF action_name = 'buffer_500' THEN
         datasource:= format(
-            '
-            SELECT
-            %1$s AS id,
-            ''The buffer '' || %4$s || ''m has been displayed in the map'' AS message,
-            ST_Buffer(geom, %4$s) AS geom
-            FROM "%2$s"."%3$s"
-            WHERE id = %1$s
-            ',
+            $$
+                SELECT
+                %1$s AS id,
+                'The buffer %4$s m has been displayed in the map' AS message,
+                ST_Buffer(geom, %4$s) AS geom
+                FROM %2$s.%3$s
+                WHERE id = %1$s
+            $$,
             feature_id,
-            layer_schema,
-            layer_table,
+            quote_ident(layer_schema),
+            quote_ident(layer_table),
             parameters->>'buffer_size'
         );
         END IF;

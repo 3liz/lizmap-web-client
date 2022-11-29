@@ -13,6 +13,7 @@ import FeatureToolbar from './components/FeatureToolbar.js';
 import ReverseGeom from './components/edition/ReverseGeom.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
+import ActionSelector from './components/ActionSelector.js';
 
 lizMap.events.on({
     uicreated: () => {
@@ -32,6 +33,8 @@ lizMap.events.on({
         window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
 
         window.customElements.define('lizmap-reverse-geom', ReverseGeom);
+
+        window.customElements.define('lizmap-action-selector', ActionSelector);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
