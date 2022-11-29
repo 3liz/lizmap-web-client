@@ -208,9 +208,19 @@ export default class Digitizing {
                   });
 
                 this._drawInteraction.on('drawend', event => {
+                    const geom = event.feature.getGeometry();
+
+                    // Close linear ring if needed
+                    if (geom instanceof Polygon) {
+                        const coordsLinearRing = geom.getCoordinates()[0];
+                        if (coordsLinearRing[0] !== coordsLinearRing[coordsLinearRing.length - 1]) {
+                            coordsLinearRing.push(coordsLinearRing[0]);
+                            geom.setCoordinates([coordsLinearRing]);
+                        }
+                    }
+
                     // Attach total overlay to its geom to update
                     // content when the geom is modified
-                    const geom = event.feature.getGeometry();
                     geom.set('totalOverlay', this._measureTooltips[this._measureTooltips.length - 1][1], true);
                     geom.on('change', (e) => {
                         const geom = e.target;
