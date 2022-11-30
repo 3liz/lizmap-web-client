@@ -12,7 +12,6 @@ module.exports = {
         timemanager: './src/legacy/timemanager.js',
         search: './src/legacy/search.js',
         view: './src/legacy/view.js',
-        action: './src/legacy/action.js',
         'bottom-dock': './src/legacy/bottom-dock.js',
         popupQgisAtlas: './src/legacy/popupQgisAtlas.js',
     },

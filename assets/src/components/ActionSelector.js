@@ -1,9 +1,6 @@
+import {mainLizmap} from '../modules/Globals.js';
 
 export default class ActionSelector extends HTMLElement {
-    scope = null;
-    layerId = null;
-    noSelectionWarning = null;
-    actions = [];
 
     constructor() {
         super();
@@ -14,7 +11,7 @@ export default class ActionSelector extends HTMLElement {
         this.noSelectionWarning = this.getAttribute('no-selection-warning');
 
         // Get actions related to the element scope
-        this.actions = lizAction.getActions(this.scope);
+        this.actions = mainLizmap.action.getActions(this.scope);
     }
 
     connectedCallback() {
@@ -99,18 +96,15 @@ export default class ActionSelector extends HTMLElement {
         const actionName = select.value;
 
         if (actionName) {
-            lizAction.runLizmapAction(actionName, host.scope, host.layerId, null, null);
+            mainLizmap.action.runLizmapAction(actionName, host.scope, host.layerId, null, null);
         } else {
             lizMap.addMessage(host.noSelectionWarning, 'warning', true).attr('id', 'lizmap-action-message');
         }
     }
 
     onActionDeactivateClick(event) {
-        // Get the host component
-        let host = event.target.closest("lizmap-action-selector");
-
         // Deactivate the current active action
-        lizAction.resetLizmapAction();
+        mainLizmap.action.resetLizmapAction();
     }
 
     disconnectedCallback() {
