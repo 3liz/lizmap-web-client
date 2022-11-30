@@ -11,7 +11,7 @@ export default class ActionSelector extends HTMLElement {
         this.noSelectionWarning = this.getAttribute('no-selection-warning');
 
         // Get actions related to the element scope
-        this.actions = mainLizmap.action.getActions(this.scope);
+        this.actions = mainLizmap.action.getActions(this.scope, this.layerId);
     }
 
     connectedCallback() {

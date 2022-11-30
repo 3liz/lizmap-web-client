@@ -148,7 +148,7 @@ class actionConfig
      *
      * @param string $scope - The scope of the action: project, layer or feature
      *
-     * @return object $actions - The corresponding actions
+     * @return array $actions - The corresponding actions
      */
     public function getActionsByScope($scope = 'project') {
         $actions = array();

@@ -184,21 +184,24 @@ export default class Action {
     }
 
     /**
-     * Get a list of actions for a optionally given scope
+     * Get the list of actions
+     *
+     * A scope and/or a layer ID can be given to filter the actions
      *
      * @param {string} scope - Scope of the actions to filter
+     * @param {string} layerId - Layer ID of the actions to filter
      *
      * @return {array} actions - Array of the actions
      */
-    getActions(scope = null) {
+    getActions(scope = null, layerId = null) {
 
         let actions = [];
         // Loop through the actions
         for (let i in actionConfig) {
             let action = actionConfig[i];
-            if (scope && action.scope != scope) {
-                continue;
-            }
+            if (scope && action.scope != scope) continue;
+            if (layerId && !('layers' in action)) continue;
+            if (layerId && !action.layers.includes(layerId)) continue;
             actions.push(action);
         }
 

@@ -12,8 +12,11 @@
 #mapmenu li.action.active a .icon {
     filter: invert(1);
 }
-#project-action-selector-container {
+#project-action-selector-container,
+.layer-action-selector-container {
+    min-height: 100px;
     max-height: 500px !important;
+    padding-bottom: 10px;
 }
 div.action-selector-container {
     padding: 5px;
