@@ -63,6 +63,7 @@
     {
         "name": "layer_spatial_extent",
         "title": "Get the contour of all the layer features",
+        "description": "This action will draw a polygon which represent the contour of all the features",
         "scope": "layer",
         "layers": [
             "parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111"

@@ -109,7 +109,7 @@ class serviceCtrl extends jController
         // with the one retrieved from the layer data source
         $qgisLayer = null;
         if (in_array($scope, array('layer', 'feature'))) {
-            /** @var qgisVectorLayer $qgisLayer */
+            /** @var null|qgisVectorLayer $qgisLayer */
             $qgisLayer = $lizmapProject->getLayer($layerId);
             if ($qgisLayer) {
                 $cnx = $qgisLayer->getDatasourceConnection();
@@ -139,6 +139,7 @@ class serviceCtrl extends jController
         // Check the given WKT (optional parameter, but must be valid)
         // Check also the map center and extent (must be valid WKT)
         $wktParameters = array('wkt', 'mapCenter', 'mapExtent');
+        $wkt = $mapCenter = $mapExtent = '';
         foreach($wktParameters as $paramName) {
             $value = trim($this->param($paramName, ''));
             ${$paramName} = $value;
