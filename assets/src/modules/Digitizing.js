@@ -201,8 +201,10 @@ export default class Digitizing {
                         const geom = evt.target;
                         if (geom instanceof Polygon) {
                             this._updateTooltips(geom.getCoordinates()[0], geom, 'Polygon');
-                        }else if (geom instanceof LineString){
+                        } else if (geom instanceof LineString) {
                             this._updateTooltips(geom.getCoordinates(), geom, 'LineString');
+                        } else if (geom instanceof CircleGeom) {
+                            this._updateTooltips([geom.getFirstCoordinate(), geom.getLastCoordinate()], geom, 'Circle');
                         }
                     });
                   });
@@ -224,9 +226,9 @@ export default class Digitizing {
                     geom.set('totalOverlay', this._measureTooltips[this._measureTooltips.length - 1][1], true);
                     geom.on('change', (e) => {
                         const geom = e.target;
-                        if(geom instanceof Polygon){
+                        if (geom instanceof Polygon) {
                             this._updateTotalMeasureTooltip(geom.getCoordinates()[0], geom, 'Polygon', geom.get('totalOverlay'));
-                        }else{
+                        } else if (geom instanceof LineString) {
                             this._updateTotalMeasureTooltip(geom.getCoordinates(), geom, 'Linestring', geom.get('totalOverlay'));
                         }
                     });
@@ -468,8 +470,8 @@ export default class Digitizing {
             segmentTooltipContent += '<br>' + angleInDegrees + '°';
         }
 
-        // Display current segment measure only when drawing lines or polygons
-        if (['line', 'polygon'].includes(this.toolSelected)) {
+        // Display current segment measure only when drawing lines, polygons or circles
+        if (['line', 'polygon', 'circle'].includes(this.toolSelected)) {
         this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
         this._measureTooltips[this._measureTooltips.length - 1][0].setPosition(geom.getLastCoordinate());
         }
@@ -565,7 +567,6 @@ export default class Digitizing {
     // Get SLD for featureDrawn[index]
     getFeatureDrawnSLD(index) {
         if (this.featureDrawn[index]) {
-            // const style = this.featureDrawn[index].layer.styleMap.styles.default.defaultStyle;
             let symbolizer = '';
             let strokeAndFill = `<Stroke>
                                         <SvgParameter name="stroke">${this._drawColor}</SvgParameter>
