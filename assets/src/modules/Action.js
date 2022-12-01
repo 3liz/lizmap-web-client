@@ -21,6 +21,11 @@ export default class Action {
     }
 
     /**
+     * @boolean If the project has actions
+     */
+    hasActions = false;
+
+    /**
      * @string Unique ID of an action object
      * We allow only one active action at a time
      */
@@ -36,81 +41,90 @@ export default class Action {
      */
     constructor() {
 
-        // Add an OpenLayers layer to show & use the geometries returned by an action
-        this.createActionMapLayer();
-
-        // Get the list of used scopes
-        let usedScopes = [];
-        for (let i in actionConfig) {
-            let item = actionConfig[i];
-            if (!usedScopes.includes(item['scope'])) {
-                usedScopes.push(item['scope']);
-            }
+        this.hasActions = true;
+        if (typeof actionConfig === 'undefined') {
+            this.hasActions = false;
         }
 
-        // Hide the action dock if no action has the projet scope
-        if (!usedScopes.includes(this.Scopes.Project)) {
-            let actionMenu = document.querySelector('#mapmenu li.action');
-            if (actionMenu) {
-                actionMenu.style.display = "none";
-            }
-        }
+        if (this.hasActions) {
 
-        // Close the windows via the action-close button
-        let closeDockButton = document.getElementById('action-close');
-        if (closeDockButton) {
-            closeDockButton.addEventListener('click', event => {
-                let actionMenu = document.querySelector('#mapmenu li.action.active a');
+            // Add an OpenLayers layer to show & use the geometries returned by an action
+            this.createActionMapLayer();
+
+            // Get the list of used scopes
+            let usedScopes = [];
+            for (let i in actionConfig) {
+                let item = actionConfig[i];
+                if (!usedScopes.includes(item['scope'])) {
+                    usedScopes.push(item['scope']);
+                }
+            }
+
+            // Hide the action dock if no action has the projet scope
+            if (!usedScopes.includes(this.Scopes.Project)) {
+                let actionMenu = document.querySelector('#mapmenu li.action');
                 if (actionMenu) {
-                    actionMenu.click();
+                    actionMenu.style.display = "none";
+                }
+            }
+
+            // Close the windows via the action-close button
+            let closeDockButton = document.getElementById('action-close');
+            if (closeDockButton) {
+                closeDockButton.addEventListener('click', event => {
+                    let actionMenu = document.querySelector('#mapmenu li.action.active a');
+                    if (actionMenu) {
+                        actionMenu.click();
+                    }
+                });
+            }
+
+            // React on the main Lizmap events
+            mainLizmap.lizmap3.events.on({
+
+                // The popup has been displayed
+                // We need to add the buttons for the action with a 'feature' scope
+                // corresponding to the popup feature layer
+                lizmappopupdisplayed: function (popup, containerId) {
+                    // Add action buttons if needed
+                    let popupContainerId = popup.containerId;
+                    let popupContainer = document.getElementById(popupContainerId);
+                    if (!popupContainer) return false;
+                    let featureIdInputSelector = 'div.lizmapPopupContent input.lizmap-popup-layer-feature-id';
+                    Array.from(popupContainer.querySelectorAll(featureIdInputSelector)).map(element => {
+
+                        // Get layer id and feature id
+                        let val = element.value;
+                        let featureId = val.split('.').pop();
+                        let layerId = val.replace('.' + featureId, '');
+
+                        // Get layer lizmap config
+                        let getLayerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
+                        if (!getLayerConfig) {
+                            return true;
+                        }
+
+                        // Do nothing if popup feature layer is not found in action config
+                        // and a list of layers related to the action
+                        for (let i in actionConfig) {
+                            let action = actionConfig[i];
+
+                            // Only add action in Popup for the scope "feature"
+                            if (!('scope' in action) || action['scope'] != mainLizmap.action.Scopes.Feature) {
+                                continue;
+                            }
+
+                            // Only add action if the layer is in the list
+                            if (action['layers'].includes(layerId)) {
+                                mainLizmap.action.addPopupActionButton(action, layerId, featureId, popupContainerId);
+                            }
+                        }
+
+                    });
                 }
             });
         }
 
-        // React on the main Lizmap events
-        mainLizmap.lizmap3.events.on({
-
-            // The popup has been displayed
-            // We need to add the buttons for the action with a 'feature' scope
-            // corresponding to the popup feature layer
-            lizmappopupdisplayed: function (popup, containerId) {
-                // Add action buttons if needed
-                let popupContainerId = popup.containerId;
-                let popupContainer = document.getElementById(popupContainerId);
-                if (!popupContainer) return false;
-                let featureIdInputSelector = 'div.lizmapPopupContent input.lizmap-popup-layer-feature-id';
-                Array.from(popupContainer.querySelectorAll(featureIdInputSelector)).map(element => {
-
-                    // Get layer id and feature id
-                    let val = element.value;
-                    let featureId = val.split('.').pop();
-                    let layerId = val.replace('.' + featureId, '');
-
-                    // Get layer lizmap config
-                    let getLayerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
-                    if (!getLayerConfig) {
-                        return true;
-                    }
-
-                    // Do nothing if popup feature layer is not found in action config
-                    // and a list of layers related to the action
-                    for (let i in actionConfig) {
-                        let action = actionConfig[i];
-
-                        // Only add action in Popup for the scope "feature"
-                        if (!('scope' in action) || action['scope'] != mainLizmap.action.Scopes.Feature) {
-                            continue;
-                        }
-
-                        // Only add action if the layer is in the list
-                        if (action['layers'].includes(layerId)) {
-                            mainLizmap.action.addPopupActionButton(action, layerId, featureId, popupContainerId);
-                        }
-                    }
-
-                });
-            }
-        });
     }
 
     /**
@@ -155,6 +169,10 @@ export default class Action {
      */
     getActionItemByName(name, scope = this.Scopes.Feature, layerId = null) {
 
+        if (!this.hasActions) {
+            return null;
+        }
+
         // Loop through the actions
         for (let i in actionConfig) {
             // Current action
@@ -196,6 +214,9 @@ export default class Action {
     getActions(scope = null, layerId = null) {
 
         let actions = [];
+        if (!this.hasActions) {
+            return actions;
+        }
         // Loop through the actions
         for (let i in actionConfig) {
             let action = actionConfig[i];
@@ -328,6 +349,9 @@ export default class Action {
      * @param {string} wkt - An optional geometry in WKT format and project EPSG:4326
      */
     async runLizmapAction(actionName, scope = this.Scopes.Feature, layerId = null, featureId = null, wkt = null) {
+        if (!this.hasActions) {
+            return false;
+        }
 
         // Get the action
         let action = this.getActionItemByName(actionName, scope, layerId);

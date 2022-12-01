@@ -213,7 +213,7 @@ var lizLayerActionButtons = function() {
                 html+= '        <dt>'+lizDict['action.title']+'</dt>';
                 html += `
                 <div class="layer-action-selector-container">
-                    <lizmap-action-selector title="${lizDict['action.form.select.help']}"
+                    <lizmap-action-selector id="lizmap-layer-action-${layerConfig.id}" title="${lizDict['action.form.select.help']}"
                         no-selection-warning="${lizDict['action.form.select.warning']}"
                         action-scope="layer" action-layer-id="${layerConfig.id}"
                     ></lizmap-action-selector>
