@@ -7,7 +7,7 @@
         "maintained": false,
         "status": "feature_freeze",
         "qgis_max_version_recommended": 39900,
-        "qgis_min_version_recommended": 30000
+        "qgis_min_version_recommended": 31000
     },
     {
         "branch": "3.5",
@@ -17,7 +17,7 @@
         "maintained": true,
         "status": "stable",
         "qgis_max_version_recommended": 39900,
-        "qgis_min_version_recommended": 30000
+        "qgis_min_version_recommended": 31000
     },
     {
         "branch": "3.4",
