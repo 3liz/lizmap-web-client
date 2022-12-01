@@ -143,8 +143,6 @@ export default class Digitizing {
                 }
             }
         });
-
-        this.createMeasureTooltips();
     }
 
     get drawLayer() {
@@ -197,6 +195,7 @@ export default class Digitizing {
                 this._drawInteraction = new Draw(drawOptions);
 
                 this._drawInteraction.on('drawstart', event => {
+                    this.createMeasureTooltips();
                     this._listener = event.feature.getGeometry().on('change', evt => {
                         const geom = evt.target;
                         if (geom instanceof Polygon) {
@@ -243,7 +242,6 @@ export default class Digitizing {
                     // unset tooltips so that new ones can be created
                     this._segmentMeasureTooltipElement = null;
                     this._totalMeasureTooltipElement = null;
-                    this.createMeasureTooltips();
                     unByKey(this._listener);
                 });
 
@@ -656,8 +654,7 @@ export default class Digitizing {
             mainLizmap.map.removeOverlay(overlays[1]);
         }
 
-        this.createMeasureTooltips();
-
+        this._measureTooltips = [];
         mainEventDispatcher.dispatch('digitizing.erase');
     }
 
