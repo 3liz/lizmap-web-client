@@ -25,8 +25,10 @@ This file must be edited manually when :
     "qgis_min_version_recommended": 20000, # Minimum recommended, inclusive, usually even major version
     "qgis_max_version_recommended": 31500, # Maximum recommended, exclusive, usually odd major version
     "maintained": true                     # If the branch is maintained for production. The dev version is not maintained yet
+    "status": "dev"                        # The status of the branch
 }
 ```
 
 * The latest branch is **not** maintained, because not released yet.
+* `maintained` is legacy. Prefer the `status` which can be `dev`, `feature_freeze`, `stable` and `retired`
 * QGIS Desktop will check `qgis_min <= Qgis.QGIS_VERSION_INT < qgis_max`

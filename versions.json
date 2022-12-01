@@ -5,6 +5,7 @@
         "latest_release_date": "",
         "latest_release_version": "3.6.0",
         "maintained": false,
+        "status": "feature_freeze",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 30000
     },
@@ -14,6 +15,7 @@
         "latest_release_date": "2022-10-18",
         "latest_release_version": "3.5.7",
         "maintained": true,
+        "status": "stable",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 30000
     },
@@ -23,6 +25,7 @@
         "latest_release_date": "2022-10-18",
         "latest_release_version": "3.4.14",
         "maintained": true,
+        "status": "stable",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 30000
     },
@@ -32,6 +35,7 @@
         "latest_release_date": "2021-06-17",
         "latest_release_version": "3.3.16",
         "maintained": false,
+        "status": "retired",
         "qgis_max_version_recommended": 31500,
         "qgis_min_version_recommended": 20000
     },
@@ -41,6 +45,7 @@
         "latest_release_date": "2020-12-07",
         "latest_release_version": "3.2.18",
         "maintained": false,
+        "status": "retired",
         "qgis_max_version_recommended": 21900,
         "qgis_min_version_recommended": 20000
     },
@@ -50,6 +55,7 @@
         "latest_release_date": "2019-05-19",
         "latest_release_version": "3.1.21",
         "maintained": false,
+        "status": "retired",
         "qgis_max_version_recommended": 21900,
         "qgis_min_version_recommended": 20000
     }
