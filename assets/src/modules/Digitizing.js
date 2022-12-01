@@ -133,13 +133,13 @@ export default class Digitizing {
                     this.toolSelected = this._tools[0];
                 } else if (e.id == 'draw' || e.id == 'selectiontool') {
                     mainLizmap.newOlMap = true;
-                    this.toggleFeatureDrawnVisibility(true);
+                    this.toggleVisibility(true);
                 }
             },
             minidockclosed: (e) => {
                 if (e.id == 'draw' || e.id == 'selectiontool') {
                     mainLizmap.newOlMap = false;
-                    this.toggleFeatureDrawnVisibility(false);
+                    this.toggleVisibility(false);
                 }
             }
         });
@@ -279,10 +279,6 @@ export default class Digitizing {
             return features;
         }
         return null;
-    }
-
-    get featureDrawnVisibility() {
-        return this._featureDrawnVisibility;
     }
 
     get isEdited() {
@@ -622,14 +618,14 @@ export default class Digitizing {
      * Set visibility or toggle if not defined
      * @param {boolean} visible
      */
-    toggleFeatureDrawnVisibility(visible = !this._drawLayer.getVisible()) {
+    toggleVisibility(visible = !this.visibility) {
         this._drawLayer.setVisible(visible);
         for (const overlays of this._measureTooltips) {
             overlays[0].getElement().classList.toggle('hide', !(this._hasMeasureVisible && visible));
             overlays[1].getElement().classList.toggle('hide', !(this._hasMeasureVisible && visible));
         }
 
-        mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
+        mainEventDispatcher.dispatch('digitizing.visibility');
     }
 
     toggleEdit() {
