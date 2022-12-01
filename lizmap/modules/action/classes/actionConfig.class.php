@@ -18,6 +18,7 @@ class actionConfig
     private $status = false;
     private $errors = array();
     private $config;
+    public $oldConfigConversionDone = false;
 
     public function __construct($repository, $project)
     {
@@ -68,6 +69,7 @@ class actionConfig
         // Convert old configuration (generated for LWC < 3.7)
         if (is_object($this->config)) {
             $this->convertOldConfig();
+            $this->oldConfigConversionDone = true;
         }
 
         // Get config

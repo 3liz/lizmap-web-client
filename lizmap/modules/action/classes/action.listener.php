@@ -4,42 +4,61 @@ class actionListener extends jEventListener
 {
     public function ongetMapAdditions($event)
     {
-        $bp = jApp::config()->urlengine['basePath'];
+        $basePath = jApp::config()->urlengine['basePath'];
 
         // Add JS and CSS for module
         $js = array();
-        $jscode = array();
+        $jsCode = array();
         $css = array();
 
         // Check config
         jClasses::inc('action~actionConfig');
-        $dv = new actionConfig($event->repository, $event->project);
-        if ($dv->getStatus()) {
+        $actionConfigInstance = new actionConfig($event->repository, $event->project);
+        if ($actionConfigInstance->getStatus()) {
             $js = array(
-                $bp.'assets/js/action.js',
+                $basePath.'assets/js/action.js',
             );
-            $actionConfig = $dv->getConfig();
+            $actionConfig = $actionConfigInstance->getConfig();
             $actionConfigData = array(
                 'url' => jUrl::get(
                     'action~service:index',
                     array(
                         'repository' => $event->repository,
-                        'project' => $event->project, )
+                        'project' => $event->project,
+                    )
                 ),
             );
 
-            $jscode = array(
+            $jsCode = array(
                 'var actionConfig = '.json_encode($actionConfig),
                 'var actionConfigData = '.json_encode($actionConfigData),
             );
             $css = array(
-                $bp.'assets/css/action.css',
+                $basePath.'assets/css/action.css',
             );
         }
+
+        // Warn the administrator that the action JSON configuration
+        // is written in the old type
+        if (\jAcl2::check('lizmap.admin.access') && $actionConfigInstance->oldConfigConversionDone) {
+            $url = 'https://docs.lizmap.com/current/en/publish/configuration/action_popup.html';
+            $message = \jLocale::get('action~action.warning.converted.from.old.configuration',array($url));
+            $jsCode[] = "
+            lizMap.events.on(
+                {
+                    'uicreated':function(evt){
+                        lizMap.addMessage('$message','info',true).attr('id','lizmap-action-message');
+                    }
+                }
+            );
+            ";
+            \jLog::log("$event->repository/$event->project : action module - " . strip_tags($message));
+        }
+
         $event->add(
             array(
                 'js' => $js,
-                'jscode' => $jscode,
+                'jscode' => $jsCode,
                 'css' => $css,
             )
         );
