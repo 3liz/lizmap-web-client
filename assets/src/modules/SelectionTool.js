@@ -206,12 +206,12 @@ export default class SelectionTool {
             ['digitizing.featureDrawn', 'digitizing.editionEnds']
         );
 
-        // Change buffer visibility on digitizing.featureDrawnVisibility event
+        // Change buffer visibility on digitizing.visibility event
         mainEventDispatcher.addListener(
             () => {
-                this._bufferLayer.setVisible(mainLizmap.digitizing.featureDrawnVisibility);
+                this._bufferLayer.setVisible(mainLizmap.digitizing.visibility);
             },
-            ['digitizing.featureDrawnVisibility']
+            ['digitizing.visibility']
         );
 
         // Erase buffer on digitizing.erase event
