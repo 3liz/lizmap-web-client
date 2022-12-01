@@ -468,8 +468,11 @@ export default class Digitizing {
             segmentTooltipContent += '<br>' + angleInDegrees + '°';
         }
 
+        // Display current segment measure only when drawing lines or polygons
+        if (['line', 'polygon'].includes(this.toolSelected)) {
         this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
         this._measureTooltips[this._measureTooltips.length - 1][0].setPosition(geom.getLastCoordinate());
+        }
     }
 
     _updateTotalMeasureTooltip(coords, geom, geomType, overlay) {
