@@ -928,19 +928,18 @@ class QgisProject
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
             $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
-            if (is_null($xmlLayer) || count($xmlLayer) == 0) {
+            if (is_null($xmlLayer)) {
                 continue;
             }
-            $xmlLayerZero = $xmlLayer[0];
             // aliases
-            $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
+            $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->fieldName."']");
             if ($alias && is_array($alias)) {
                 $alias = $alias[0];
                 $v->fieldAlias = (string) $alias['name'];
                 $locateByLayer->{$k} = $v;
             }
             if (property_exists($v, 'filterFieldName')) {
-                $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
+                $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->filterFieldName."']");
                 if ($alias && is_array($alias)) {
                     $alias = $alias[0];
                     $v->filterFieldAlias = (string) $alias['name'];
@@ -948,7 +947,7 @@ class QgisProject
                 }
             }
             // vectorjoins
-            $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
+            $vectorjoins = $xmlLayer->xpath('vectorjoins/join');
             if ($vectorjoins && is_array($vectorjoins)) {
                 if (!property_exists($v, 'vectorjoins')) {
                     $v->vectorjoins = array();
@@ -986,11 +985,10 @@ class QgisProject
 
             // Read layer property from QGIS project XML
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (is_null($layerXml) || count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $provider = $layerXmlZero->xpath('provider');
+            $provider = $layerXml->xpath('provider');
             $provider = (string) $provider[0];
             if ($provider == 'spatialite') {
                 unset($editionLayers->{$key});
@@ -1006,11 +1004,10 @@ class QgisProject
     {
         foreach ($editionLayers as $key => $obj) {
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (is_null($layerXml) || count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $formControls = $this->readFormControls($layerXmlZero, $obj->layerId, $proj);
+            $formControls = $this->readFormControls($layerXml, $obj->layerId, $proj);
             $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
         }
     }
@@ -1032,11 +1029,10 @@ class QgisProject
         $layersLabeledFieldsConfig = array();
         foreach ($layerIds as $layerId) {
             $layerXml = $this->getXmlLayer2($this->xml, $layerId);
-            if (is_null($layerXml) || count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $formControls = $this->readFormControls($layerXmlZero, $layerId, $proj);
+            $formControls = $this->readFormControls($layerXml, $layerId, $proj);
             $getLayer = $this->getLayer($layerId, $proj);
             $layerName = $getLayer->getName();
             $fields_config = array();
@@ -1099,11 +1095,10 @@ class QgisProject
 
             // Read layer property from QGIS project XML
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (is_null($layerXml) || count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $attributetableconfigXml = $layerXmlZero->xpath('attributetableconfig');
+            $attributetableconfigXml = $layerXml->xpath('attributetableconfig');
             if (count($attributetableconfigXml) == 0) {
                 continue;
             }
