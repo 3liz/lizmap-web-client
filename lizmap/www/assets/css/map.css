@@ -461,13 +461,11 @@ SubDock
   right:60px;
   top:10px;
   max-width:30%;
-  max-height:50%;
   z-index:1010;
-  overflow:auto;
   background-color:#4A4A4A !important;
   background-color:rgba(0,0,0,0.7) !important;
-
 }
+
 #content.mobile #mini-dock{
   max-width:100%;
   top:auto;
@@ -476,6 +474,10 @@ SubDock
   left:30px;
 }
 
+#mini-dock div.menu-content{
+  overflow: auto;
+  max-height: 45vh;
+}
 
 #mini-dock-tabs {
   display:none;

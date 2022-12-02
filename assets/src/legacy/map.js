@@ -462,28 +462,6 @@ window.lizMap = function() {
     map.updateSize();
     map.setCenter(center);
     map.baseLayer.redraw();
-
-    updateMiniDockSize();
-  }
-
-  /**
-   * PRIVATE function: updateMiniDockSize
-   * update the minidock size
-   */
-  function updateMiniDockSize() {
-      if ( $('#mini-dock .tab-pane:visible').length == 0 )
-        return 0;
-      // the mini-dock menu-content visible
-      var mdmcv = $('#mini-dock .tab-pane:visible h3 ~ .menu-content:first');
-      mdmcv.css( 'max-height', '100%' )
-      var h = $('#mini-dock').height();
-      h -= $('#mini-dock .tab-pane:visible h3').height();
-      h -= (parseInt(mdmcv.css('margin-top')) ? parseInt(mdmcv.css('margin-top')) : 0 ) ;
-      h -= (parseInt(mdmcv.css('margin-bottom')) ? parseInt(mdmcv.css('margin-bottom')) : 0 ) ;
-      h -= (parseInt(mdmcv.css('padding-top')) ? parseInt(mdmcv.css('padding-top')) : 0 ) ;
-      h -= (parseInt(mdmcv.css('padding-bottom')) ? parseInt(mdmcv.css('padding-bottom')) : 0 ) ;
-
-      mdmcv.css( 'max-height', h ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
   }
 
   /**
@@ -1695,7 +1673,6 @@ window.lizMap = function() {
         // add place holder to the filter combobox input
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
-        updateMiniDockSize();
       }
 
       // create combobox for the layer
@@ -2611,10 +2588,6 @@ window.lizMap = function() {
       ){
           $('#button-popupcontent').click();
       }
-      // Resize minidock if displayed
-      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
-          updateMiniDockSize();
-
     }
     else{
       if (!text || text == null || text == '')
@@ -2722,11 +2695,6 @@ window.lizMap = function() {
     });
 
     bindGeobookmarkEvents();
-
-    $('#permalink-box ul.permalink-tabs a[data-toggle="tab"]').on('shown', function(e){
-        if($(e.target).attr('href') == '#tab-embed-permalink')
-            updateMiniDockSize();
-    });
 
     $('#geobookmark-form').submit(function(){
       var bname = $('#geobookmark-form input[name="bname"]').val();
@@ -3868,7 +3836,6 @@ window.lizMap = function() {
         $('#print .print-labels').html('');
         $('#print .print-labels').hide();
       }
-      updateMiniDockSize();
       if (dragCtrl.active) {
         dragCtrl.deactivate();
         dragCtrl.layout = layout;
@@ -5738,19 +5705,11 @@ window.lizMap = function() {
     },
 
     /**
-     * Method: updateMiniDockSize
-     */
-    updateMiniDockSize: function() {
-      return updateMiniDockSize();
-    },
-
-    /**
      * Method: transformBounds
      */
     loadProjDefinition: function( aCRS, aCallback ) {
       return loadProjDefinition( aCRS, aCallback );
     },
-
 
     /**
      * Method: updateContentSize
@@ -6370,7 +6329,6 @@ window.lizMap = function() {
             tab.children('a').first().click();
             parent.addClass('active');
             lizMap.events.triggerEvent("minidockopened", { 'id': id });
-            updateMiniDockSize();
           }
           self.blur();
 
