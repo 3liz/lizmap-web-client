@@ -206,7 +206,7 @@ export default class Digitizing {
                             this._updateTooltips([geom.getFirstCoordinate(), geom.getLastCoordinate()], geom, 'Circle');
                         }
                     });
-                  });
+                });
 
                 this._drawInteraction.on('drawend', event => {
                     const geom = event.feature.getGeometry();
@@ -402,32 +402,49 @@ export default class Digitizing {
             }
 
             if (this._angleConstraint && _coords.length > 2) {
-                const constrainedAngleLineString = new LineString([_coords[_coords.length - 3], lastDrawnPointCoords]);
+                const constrainedAngleClockwise = new LineString([_coords[_coords.length - 3], lastDrawnPointCoords]);
+                const constrainedAngleAntiClockwise = constrainedAngleClockwise.clone();
                 // Rotate clockwise
-                constrainedAngleLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
-                constrainedAngleLineString.scale(100); // stretch line
+                constrainedAngleClockwise.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
+                const closestClockwise = constrainedAngleClockwise.getClosestPoint(cursorPointCoords);
+                // Rotate anticlockwise
+                constrainedAngleAntiClockwise.rotate(this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
+                const closestAntiClockwise = constrainedAngleAntiClockwise.getClosestPoint(cursorPointCoords);
 
-                this._constraintLayer.getSource().addFeature(new Feature({
-                    geometry: constrainedAngleLineString
-                }));
+                // Stretch lines
+                const scaleFactor = 50;
+                constrainedAngleClockwise.scale(scaleFactor, scaleFactor, lastDrawnPointCoords);
+                constrainedAngleAntiClockwise.scale(scaleFactor, scaleFactor, lastDrawnPointCoords);
 
-                constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
+                this._constraintLayer.getSource().addFeatures([
+                    new Feature({
+                        geometry: constrainedAngleClockwise
+                    }),
+                    new Feature({
+                        geometry: constrainedAngleAntiClockwise
+                    })
+                ]);
+
+                let constrainedAngleLineString;
+
+                // Display clockwise or anticlockwise angle
+                // Closest from cursor is displayed
+                if (getLength(new LineString([closestClockwise, cursorPointCoords])) < getLength(new LineString([closestAntiClockwise, cursorPointCoords]))) {
+                    constrainedAngleLineString = constrainedAngleClockwise.clone();
+                } else {
+                    constrainedAngleLineString = constrainedAngleAntiClockwise.clone();
+                }
+
+                if (this._distanceConstraint) {
+                    const ratio = this._distanceConstraint / getLength(constrainedAngleLineString);
+                    constrainedAngleLineString.scale(ratio, ratio, constrainedAngleLineString.getLastCoordinate());
+
+                    constrainedPointCoords = constrainedAngleLineString.getFirstCoordinate();
+                } else {
+                    constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
+                }
+
             }
-
-            if (this._distanceConstraint && this._angleConstraint && _coords.length > 2) {
-                const constrainedAngleDistanceLineString = new LineString([_coords[_coords.length - 3], lastDrawnPointCoords]);
-                // Rotate clockwise
-                constrainedAngleDistanceLineString.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
-                const ratio = this._distanceConstraint / getLength(constrainedAngleDistanceLineString);
-                constrainedAngleDistanceLineString.scale(ratio, ratio, constrainedAngleDistanceLineString.getLastCoordinate());
-
-                this._constraintLayer.getSource().addFeature(new Feature({
-                    geometry: constrainedAngleDistanceLineString
-                }));
-
-                constrainedPointCoords = constrainedAngleDistanceLineString.getFirstCoordinate();
-            }
-
             _coords[_coords.length - 1] = constrainedPointCoords;
         }
 
@@ -470,8 +487,8 @@ export default class Digitizing {
 
         // Display current segment measure only when drawing lines, polygons or circles
         if (['line', 'polygon', 'circle'].includes(this.toolSelected)) {
-        this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
-        this._measureTooltips[this._measureTooltips.length - 1][0].setPosition(geom.getLastCoordinate());
+            this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
+            this._measureTooltips[this._measureTooltips.length - 1][0].setPosition(geom.getLastCoordinate());
         }
     }
 
