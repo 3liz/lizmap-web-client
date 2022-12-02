@@ -3173,13 +3173,14 @@ window.lizMap = function() {
                   const rConfigLayer = rGetLayerConfig[1];
                   let clname = rConfigLayer?.shortname || rConfigLayer.cleanname;
                   if ( clname === undefined ) {
-                      clname = cleanName(configLayer.name);
+                      clname = cleanName(rConfigLayer.name);
                       rConfigLayer.cleanname = clname;
                   }
                   if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
+                      let wmsName = rConfigLayer?.shortname || rConfigLayer.name;
                       const wmsOptions = {
-                            'LAYERS': clname
-                          ,'QUERY_LAYERS': clname
+                            'LAYERS': wmsName
+                          ,'QUERY_LAYERS': wmsName
                           ,'STYLES': ''
                           ,'SERVICE': 'WMS'
                           ,'VERSION': '1.3.0'
@@ -3243,7 +3244,7 @@ window.lizMap = function() {
                   configLayer.cleanname = clname;
                 }
 
-                const resizeTablesButtons = 
+                const resizeTablesButtons =
                   '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
                   '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 
