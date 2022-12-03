@@ -57,3 +57,4 @@ proxyHttpBackend=curl
 label="Tests repository"
 path="/srv/lzm/tests/qgis-projects/tests/"
 allowUserDefinedThemes=0
+accessControlAllowOrigin="http://othersite.local:8130"
