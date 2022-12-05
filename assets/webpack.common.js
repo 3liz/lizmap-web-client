@@ -15,11 +15,13 @@ module.exports = {
         action: './src/legacy/action.js',
         'bottom-dock': './src/legacy/bottom-dock.js',
         popupQgisAtlas: './src/legacy/popupQgisAtlas.js',
+        //jspdf: './node_modules/jspdf/dist/jspdf.es.min.js'
     },
     output: {
-        filename: '../../lizmap/www/assets/js/[name].js',
-        chunkFilename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        publicPath: '/assets/js/',
+        filename: '[name].js',
+        chunkFilename: '[name].js',
+        path: path.resolve(__dirname, 'dist/../../lizmap/www/assets/js')
     },
     module: {
         rules: [

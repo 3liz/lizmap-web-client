@@ -51,6 +51,8 @@ export default class FeatureToolbar extends HTMLElement {
                 : ''
             }
 
+            <button type="button" class="btn btn-mini feature-pdf" @click=${() => this.pdf()}><i class="icon-download"></i></button>
+
         </div>`;
 
         render(this._mainTemplate(), this);
@@ -364,6 +366,45 @@ export default class FeatureToolbar extends HTMLElement {
                     Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', this._featureType + '.kml');
                 }
             }
+        });
+    }
+
+    async pdf(){
+
+        // const url = lizUrls.basepath + 'assets/js/jspdf.es.min.js';
+        // const url = lizUrls.basepath + 'assets/js/jspdf.js';
+
+        // const {
+        //     default: myDefault,
+        //     foo,
+        //     bar,
+        //   } = await import(/* webpackIgnore: true */ url);
+
+        //   console.log(myDefault);
+
+        import( 'jspdf' ).then(({ default: jsPDF }) => {
+            // const doc = new jsPDF();
+
+            // doc.text("Hello world!", 10, 10);
+            // doc.save("a4.pdf");
+
+            const doc = new jsPDF({
+                orientation: 'l',
+            });
+
+            const element = document.querySelector('.lizmapPopupSingleFeature .lizmapPopupTable');
+    
+            doc.html(element, {
+                callback: function (doc) {
+                    doc.save();
+                },
+                html2canvas: {
+                    logging: true,
+                    scale: 0.5
+                },
+                x: 10,
+                y: 10
+            });
         });
     }
 }

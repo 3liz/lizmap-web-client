@@ -22,5 +22,8 @@
     "webpack-merge": "^5.8.0"
   },
   "author": "3Liz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "jspdf": "^2.5.1"
+  }
 }
