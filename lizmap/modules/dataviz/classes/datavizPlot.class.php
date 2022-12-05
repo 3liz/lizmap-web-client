@@ -800,17 +800,24 @@ class datavizPlot
 
                 // add aggregation property if aggregation is done client side via dataplotly
                 // Not available for pie, histogram and histogram2d, we have done it manually beforehand in php
+                // Careful : for horizontal bar plots, we need to reverse the groups and target values
                 if ($this->aggregation
                     and !in_array($this->type, array('pie', 'histogram', 'histogram2d', 'html', 'sunburst'))
                 ) {
+                    // Revert x and y for horizontal bar plot
+                    $transformGroupsName = $this->x_property_name;
+                    $transformTargetName = $this->y_property_name;
+                    if (array_key_exists('orientation', $trace) and $trace['orientation'] == 'h') {
+                        $transformGroupsName = $this->y_property_name;
+                        $transformTargetName = $this->x_property_name;
+                    }
                     $trace['transforms'] = array(
                         array(
                             'type' => 'aggregate',
-                            'groups' => $this->x_property_name,
-                            // 'groups' => 'x',
+                            'groups' => $transformGroupsName,
                             'aggregations' => array(
                                 array(
-                                    'target' => $this->y_property_name,
+                                    'target' => $transformTargetName,
                                     'func' => $this->aggregation,
                                     'enabled' => true,
                                 ),
@@ -818,7 +825,6 @@ class datavizPlot
                         ),
                     );
                 }
-
                 $traces[] = $trace;
             }
 
