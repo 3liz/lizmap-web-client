@@ -39,6 +39,7 @@ jobs:
         run: make build-plugins
 
       - name: Show Lizmap environment and versions
+        if: ${{ env.BRANCH != 'release_3_5' }}
         run: make show-qgis-server-versions && make env && cat .env
 
       - name: Pull docker images
@@ -60,28 +61,32 @@ jobs:
       - name: Load SQL data
         run: cd qgis-projects/tests && ./load_sql.sh
 
-#      # Playwright
-#      - uses: actions/setup-node@v3
-#      - name: Install dependencies
-#        run: cd end2end && npm ci
-#
-#      - name: Install Playwright
-#        run: cd end2end && npx playwright install --with-deps chromium
-#
-#      - name: Run Playwright tests
-#        run: cd end2end && npx playwright test --project=chromium
-#
-#      - name: Upload test results
-#        if: failure()
-#        uses: actions/upload-artifact@v3.1.1
-#        with:
-#          name: playwright-report
-#          path: playwright-report
+      - name: Add hosts to /etc/hosts
+        run: |
+            sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
+
+      # Playwright
+      - uses: actions/setup-node@v3
+      - name: Install dependencies
+        run: cd end2end && npm ci
+
+      - name: Install Playwright
+        run: cd end2end && npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: cd end2end && npx playwright test --project=chromium
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: playwright-report
+          path: playwright-report
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        uses: cypress-io/github-action@v4.2.0
+        uses: cypress-io/github-action@v5.0.0
         with:
           browser: chrome
           working-directory: tests/end2end
