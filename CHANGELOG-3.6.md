@@ -2,10 +2,25 @@
 
 ## Unreleased
 
+### Added
+
+* New configuration for CORS headers per Lizmap repository
+
 ### Fixed
 
+* Fix some GetFeatureInfo requests when it is in parent popup
+* Dataviz - Fix wrong display for the horizontal bar charts
+* Overview has to use projection and not QGIS Project projection
 * Docker: some PHP extensions (PDO) were missing
+* Some graphical user interface in the administration panel
 
+### Translations
+
+* Update translated strings from Transifex
+
+### Backend
+
+* Upgrade the Jelix framework to 1.8.x
 
 ## 3.6.0-rc.2 - 2022-11-10
 
