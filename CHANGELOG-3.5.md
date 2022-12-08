@@ -4,6 +4,10 @@
 
 ### Fixed
 
+## 3.5.8 - 2022-12-08
+
+### Fixed
+
 * Editing - Fix the HTML form widget must use a WYSIWYG editor
 * IP into the logs was not the real IP when a reverse proxy was used
 * Fix an issue when reading a QGIS project with different capitalization in some values in the QGS files :
