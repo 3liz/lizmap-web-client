@@ -62,6 +62,7 @@ services:
       default:
         aliases:
           - lizmap.local
+#          - othersite.local
     ports:
       - ${LZMWEBPORT}:80
     depends_on:
