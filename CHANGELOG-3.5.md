@@ -7,11 +7,14 @@
 * Editing - Fix the HTML form widget must use a WYSIWYG editor
 * IP into the logs was not the real IP when a reverse proxy was used
 * Fix an issue when reading a QGIS project with different capitalization in some values in the QGS files :
-  `allownull` in the RelationReference widget for instance
+  `allownull` in the **RelationReference** widget for instance
 * Scales displayed according to the base layer which is used, ticket https://github.com/3liz/lizmap-web-client/issues/2978
-* Fix loading of projects having a space or several dot in there filename.
-* Docker: the var/themes content was lost when mounting a volume on this directory   
+* Fix loading of projects having a space or several dot in their filename
+* Docker: the `var/themes` content was lost when mounting a volume on this directory
 * Docker: some PHP extensions (PDO) were missing
+* Fix some GetFeatureInfo requests when it is in parent popup
+* Dataviz - Fix wrong display for the horizontal bar charts
+* Overview has to use projection and not QGIS Project projection
 
 ### Backend
 
