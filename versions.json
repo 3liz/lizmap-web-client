@@ -1,5 +1,15 @@
 [
     {
+        "branch": "3.7",
+        "first_release_date": "",
+        "latest_release_date": "",
+        "latest_release_version": "3.7.0",
+        "maintained": false,
+        "status": "dev",
+        "qgis_max_version_recommended": 39900,
+        "qgis_min_version_recommended": 31000
+    },
+    {
         "branch": "3.6",
         "first_release_date": "",
         "latest_release_date": "",
