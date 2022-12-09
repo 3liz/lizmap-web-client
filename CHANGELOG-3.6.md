@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.6.0 - 2022-12-09
+
 ### Added
 
 * **Base maps**: New https://opentopomap.org as basemap, it's available in the QGIS desktop plugin
