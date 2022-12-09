@@ -13,7 +13,7 @@
   in order to zoom directly to the defined features and to display popups
 * **Maps**: When an error appeared during the load of a project, the user interface
   has been improved to show a better message, instead of the unreadable "SERVICE NON DISPONIBLE" error message.
-  * Note that a error in a custom Javascript script will raise this new error message as well now
+  * Note that an error in a custom Javascript script will raise this new error message as well now
 * **Form filter**: If the filtered layer is related to other layers with a "one to many" relations, the child
   features of the related layers will also be filtered when the parent layer is filtered with the form
   (cascading filter). The parent filtered layer and the related layers should be added
