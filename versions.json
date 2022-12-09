@@ -12,7 +12,7 @@
     {
         "branch": "3.6",
         "first_release_date": "",
-        "latest_release_date": "",
+        "latest_release_date": "2022-12-09",
         "latest_release_version": "3.6.0",
         "maintained": false,
         "qgis_max_version_recommended": 39900,
