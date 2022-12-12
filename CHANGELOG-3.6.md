@@ -24,9 +24,10 @@
 * **Edition**: New button to restart drawing geometry - Provide the capability to update geometry with GPS and form coordinates
 * **Before opening a QGIS project**, Lizmap is now checking that :
   * Lizmap QGIS server plugin is running with a minimum required version
-  * QGIS server version is running with at least 3.10
+  * QGIS server version is running with at least **3.10**
   * These two versions are hardcoded in the source code and updated when a new version of Lizmap is released
 * Lizmap Web Client won't display **old CFG** file according to the Lizmap Web Client target version defined in QGIS Desktop
+  * For this release, the minimum version of the CFG file is set to **Lizmap Web Client 3.3 included**.
   * These projects will still be visible in the administration panel to let you know that you need to upgrade them
   * Be careful to the combobox selector in the QGIS plugin.
   * The minimum version required will be raised and advertised for each release of a major version of Lizmap Web Client.
