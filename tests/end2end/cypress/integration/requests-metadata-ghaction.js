@@ -33,21 +33,21 @@ describe('Request JSON metadata', function () {
             // check the repositories
             expect(response.body.repositories.testsrepository.label).to.eq("Tests repository");
             expect(response.body.repositories.testsrepository.path).to.eq("tests/");
-            expect(response.body.repositories.testsrepository.authorized_groups).to.deep.eq(
+            expect(response.body.repositories.testsrepository.authorized_groups.sort()).to.deep.eq(
                 [
                     "__anonymous",
                     "admins",
                     "group_a",
                     "publishers"
-                ]
+                ].sort()
             );
-            expect(response.body.repositories.testsrepository.authorized_groups).to.deep.eq(
+            expect(response.body.repositories.testsrepository.authorized_groups.sort()).to.deep.eq(
                 [
                     "__anonymous",
                     "admins",
                     "group_a",
                     "publishers"
-                ]
+                ].sort()
             );
             expect(response.body.repositories.montpellier.projects).to.deep.eq(
                 {
@@ -134,21 +134,21 @@ describe('Request JSON metadata', function () {
             // check the repositories
             expect(response.body.repositories.testsrepository.label).to.eq("Tests repository");
             expect(response.body.repositories.testsrepository.path).to.eq("tests/");
-            expect(response.body.repositories.testsrepository.authorized_groups).to.deep.eq(
+            expect(response.body.repositories.testsrepository.authorized_groups.sort()).to.deep.eq(
                 [
                     "__anonymous",
                     "admins",
                     "group_a",
                     "publishers"
-                ]
+                ].sort()
             );
-            expect(response.body.repositories.testsrepository.authorized_groups).to.deep.eq(
+            expect(response.body.repositories.testsrepository.authorized_groups.sort()).to.deep.eq(
                 [
                     "__anonymous",
                     "admins",
                     "group_a",
                     "publishers"
-                ]
+                ].sort()
             );
             expect(response.body.repositories.testsrepository.projects.events.title).to.eq('Touristic events around Montpellier, France');
 

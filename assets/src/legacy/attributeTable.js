@@ -1015,9 +1015,16 @@ var lizAttributeTable = function() {
                             }
 
                             if( canCreateChild ){
-                                // Button to create a new child : Useful for both 1:n and n:m relation
-                                childCreateButtonItems.push( '<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-createFeature-attributeTable">' + childLayerConfig.title +'</a></li>' );
-                                layerLinkButtonItems.push( '<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
+                                // Add a button to create a new feature for this child layer
+                                let childButtonItem = `
+                                    <button class="btn btn-mini btn-createFeature-attributeTable" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                                    ➕ ${childLayerConfig.title}
+                                    </button>
+                                `;
+                                childCreateButtonItems.push(childButtonItem);
+
+                                // Link parent with the selected features of the child
+                                layerLinkButtonItems.push('<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
                             }
                         }
                     }
@@ -1025,18 +1032,12 @@ var lizAttributeTable = function() {
                 }
                 if( childLi.length ){
                     if( childCreateButtonItems.length > 0 ){
-                        childCreateButton+= '&nbsp;<div class="btn-group" role="group" >';
-                        childCreateButton+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
-                        childCreateButton+= lizDict['attributeLayers.toolbar.btn.data.createChildFeature.title'];
-                        childCreateButton+= '      <span class="caret"></span>';
-                        childCreateButton+= '    </button>';
-                        childCreateButton+= '    <ul class="dropdown-menu" role="menu">';
+                        childCreateButton+= '&nbsp;<span class="edition-children-add-buttons">';
                         for( var i in  childCreateButtonItems){
-                            var li = childCreateButtonItems[i];
-                            childCreateButton+= li;
+                            const childButton = childCreateButtonItems[i];
+                            childCreateButton+= childButton;
                         }
-                        childCreateButton+= '    </ul>';
-                        childCreateButton+= '</div>';
+                        childCreateButton+= '</span>';
                     }
                     if( layerLinkButtonItems.length > 0 ){
                         layerLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
@@ -3010,6 +3011,14 @@ var lizAttributeTable = function() {
                             // and pass the parent ID
                             $('#edition-children-container button.btn-createFeature-attributeTable')
                             .click(function(){
+                                // Ask if we should really create a child
+                                // This is important, as the modified data in the parent form
+                                // will be losed if the user has not saved it
+                                let confirm_msg = lizDict['edition.confirm.launch.child.creation'];
+                                let confirmChildCreation = confirm(confirm_msg);
+                                if (!confirmChildCreation) {
+                                    return false;
+                                }
                                 var parentLayerId = layerId;
                                 var aName = attributeLayersDic[ $(this).val() ];
                                 lizMap.getLayerFeature(featureType, fid, function(parentFeat) {
@@ -3085,7 +3094,7 @@ var lizAttributeTable = function() {
                                 let children_tab_content = $('div#edition-children-container div.tabbable.edition-children-content div.tab-content');
                                 if (children_tab_content.find('div.attribute-layer-child-content').length == 0) {
                                     // Hide the button
-                                    $('#edition-children-container').hide();
+                                    $('#edition-children-container div.tabbable.edition-children-content').hide();
                                 }
 
                             });
