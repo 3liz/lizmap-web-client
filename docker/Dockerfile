@@ -39,7 +39,8 @@ RUN apk update && apk upgrade && \
     php8-xmlreader \
     php8-xmlwriter \
     php8-zip \
-    composer
+    composer \
+    shadow
 
 COPY --from=build /lizmap_web_client /www
 ## Rename original config files so that they wont be overriden at startup
