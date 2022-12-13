@@ -26,10 +26,10 @@ if [ "$CURRENT_USER_ID" == "0" ]; then
   USERID=$(id -u $LIZMAP_USER)
 
   if [ "$LIZMAP_GROUP_ID" != "$GROUPID" ]; then
-     groupmod -g $APP_GROUP_ID $LIZMAP_GROUP
+     groupmod -g $LIZMAP_GROUP_ID $LIZMAP_GROUP
   fi
   if [ "$LIZMAP_USER_ID" != "$USERID" ]; then
-     usermod -u $APP_USER_ID $LIZMAP_USER
+     usermod -u $LIZMAP_USER_ID $LIZMAP_USER
   fi
 fi
 
