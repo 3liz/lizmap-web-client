@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -91,6 +92,109 @@ class Server
     }
 
     /**
+     * Get the list of groups having the given right
+     * for the given repository.
+     *
+     * It helps to list all the groups which can edit
+     * or view the projects for a repository
+     *
+     * @param string $repositoryKey The repository key
+     * @param string $rightSubject The right subject key
+     * @return array The list of groups
+     */
+    private function getRepositoryAuthorizedGroupsForRight($repositoryKey, $rightSubject)
+    {
+        $daoRight = \jDao::get('jacl2db~jacl2rights', 'jacl2_profile');
+        $conditions = \jDao::createConditions();
+        $conditions->addCondition('id_aclsbj', '=', $rightSubject);
+        $conditions->addCondition('id_aclres', '=', $repositoryKey);
+        $res = $daoRight->findBy($conditions);
+        $groups = array();
+        foreach ($res as $rec) {
+            $groups[] = $rec->id_aclgrp;
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Get the data on Lizmap repositories
+     *
+     * Fetch the key, label and relative path
+     *
+     * @return array List of Lizmap repositories
+     */
+    private function getLizmapRepositories()
+    {
+        $repositories = array();
+        $services = \lizmap::getServices();
+        $rootRepositories = $services->getRootRepositories();
+        foreach (\lizmap::getRepositoryList() as $repositoryKey) {
+            // Get the repository instance
+            $lizmapRepository = \lizmap::getRepository($repositoryKey);
+            if (!$lizmapRepository) {
+                continue;
+            }
+
+            // Do not add repository if the connected user cannot access it
+            if (!\jAcl2::check('lizmap.repositories.view', $repositoryKey)) {
+                continue;
+            }
+
+            // Prepare the repository data to return
+            $repositories[$repositoryKey] = array(
+                "label" => $lizmapRepository->getLabel(),
+                "path" => $lizmapRepository->getPath(),
+            );
+
+            // Compute the relative repository path
+            $path = $lizmapRepository->getPath();
+            if (substr($path, 0, strlen($rootRepositories)) === $rootRepositories) {
+                $relativePath = str_replace($rootRepositories, '', $path);
+                $repositories[$repositoryKey]['path'] = $relativePath;
+            }
+
+            // Add the authorized groups
+            $authorizedGroups = $this->getRepositoryAuthorizedGroupsForRight(
+                $repositoryKey,
+                'lizmap.repositories.view'
+            );
+            $repositories[$repositoryKey]['authorized_groups'] = $authorizedGroups;
+
+            // Add the editing authorized groups
+            $editingAuthorizedGroups = $this->getRepositoryAuthorizedGroupsForRight(
+                $repositoryKey,
+                'lizmap.tools.edition.use'
+            );
+            $repositories[$repositoryKey]['editing_authorized_groups'] = $editingAuthorizedGroups;
+        }
+
+        return $repositories;
+    }
+
+    /**
+     * Get the data on Lizmap groups of users.
+     *
+     * Fetch the key and label of the user groups
+     *
+     * @return array List of groups of users
+     */
+    private function getAclGroups()
+    {
+        $groups = array();
+        // Get all the groups
+        $aclGroupList = \jAcl2DbUserGroup::getGroupList();
+        foreach ($aclGroupList as $group) {
+            $groups[$group->id_aclgrp] = array(
+                "label" => $group->name,
+                // "default" => ($group->grouptype == \jAcl2DbUserGroup::GROUPTYPE_PRIVATE)
+            );
+        }
+
+        return $groups;
+    }
+
+    /**
      * Get Lizmap Web Client metadata.
      *
      * @return array Array containing the Lizmap Web Client installation metadata
@@ -132,6 +236,19 @@ class Server
             ),
         );
 
+        // Add the list of repositories
+        if (\jAcl2::check('lizmap.admin.access')) {
+            $data['repositories'] = $this->getLizmapRepositories();
+        }
+
+        // Add the list of user groups
+        if (\jAcl2::check('lizmap.admin.access')) {
+            $data['acl'] = array(
+                'groups' => $this->getAclGroups()
+            );
+        }
+
+
         return $data;
     }
 
@@ -150,10 +267,10 @@ class Server
         // Get the data from the QGIS Server Lizmap plugin
         if (empty($services->lizmapPluginAPIURL)) {
             // When the Lizmap API URL is not set, we use the WMS server URL only
-            $lizmap_url = rtrim($services->wmsServerURL, '/').'/lizmap/server.json';
+            $lizmap_url = rtrim($services->wmsServerURL, '/') . '/lizmap/server.json';
         } else {
             // When the Lizmap API URL is set
-            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/').'/server.json';
+            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/') . '/server.json';
         }
 
         list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($lizmap_url);
@@ -190,9 +307,11 @@ class Server
         );
         $url = \Lizmap\Request\Proxy::constructUrl($params, $services);
         list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
-        if (preg_match('#ServerException#i', $resp)
+        if (
+            preg_match('#ServerException#i', $resp)
             || preg_match('#ServiceExceptionReport#i', $resp)
-            || preg_match('#WMS_Capabilities#i', $resp)) {
+            || preg_match('#WMS_Capabilities#i', $resp)
+        ) {
             $data['test'] = 'OK';
         } else {
             $data['test'] = 'ERROR';
