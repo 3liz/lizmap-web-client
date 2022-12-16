@@ -7,7 +7,7 @@ class QgisProjectForTests extends QgisProject
     public function __construct($data = null)
     {
         if ($data) {
-            parent::__construct(null, new lizmapServices(null, null, false, '', ''), new ContextForTests(), $data);
+            parent::__construct(null, new lizmapServices(null, (object) array(), false, '', ''), new ContextForTests(), $data);
         }
     }
 
