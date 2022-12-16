@@ -84,7 +84,7 @@ class ProjectTest extends TestCase
             array('services' =>
                       array('relativeWMSPath' => $relative,
                             'rootRepositories' => $root)
-            ), null, false, null, null);
+            ), (object) array(), false, null, null);
         $proj = new ProjectForTests();
         $proj->setRepo(new Project\Repository(null, array('path' => ''), null, null, null));
         $proj->setServices($services);

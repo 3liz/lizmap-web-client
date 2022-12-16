@@ -253,7 +253,7 @@ class lizmapServicesTest extends TestCase
      */
     public function testModifyLocal($localConfig, $newConfig, $changedProperty, $changedValue, $expectedReturnValue)
     {
-        $testLizmapServices = new LizmapServices($localConfig, null, false, '', null);
+        $testLizmapServices = new LizmapServices($localConfig, (object) array(), false, '', null);
         $this->assertEquals($expectedReturnValue, $testLizmapServices->modify($newConfig));
         if (isset($changedProperty)) {
             $this->assertEquals($changedValue, $testLizmapServices->{$changedProperty});
@@ -327,7 +327,8 @@ class lizmapServicesTest extends TestCase
             array('hideSensitiveServicesProperties' => $hide),
             (object) array(
                 'lizmap' => [
-                    'setAdminContactEmailAsReplyTo' => false
+                    'setAdminContactEmailAsReplyTo' => false,
+                    'version' => 'unit-test-3'
                 ]
             ),
             false, '', null);
@@ -445,8 +446,8 @@ class lizmapServicesTest extends TestCase
     public function testGetMetricsEnabled($testValue, $expectedValue)
     {
         $ini_tab = array('hideSensitiveServicesProperties' => '0',
-                         'services' => array(
-                             'appName' => 'Lizmap' ),
+            'services' => array(
+                'appName' => 'Lizmap', ),
         );
 
         if ($testValue !== null) {
