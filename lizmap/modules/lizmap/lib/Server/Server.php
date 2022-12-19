@@ -123,6 +123,15 @@ class Server
             $data['hosting'] = \jApp::config()->lizmap['hosting'];
         }
 
+        // Add information about available APIs
+        $data['api'] = array(
+            'dataviz' => array(
+                // Version of the dataviz API
+                // (allowing to get a plot data by posting the configuration)
+                'version' => '1.0.0',
+            ),
+        );
+
         return $data;
     }
 
