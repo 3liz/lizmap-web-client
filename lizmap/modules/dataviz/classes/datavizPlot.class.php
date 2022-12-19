@@ -83,7 +83,9 @@ class datavizPlot
         // Get main dataviz config
         $dv = new datavizConfig($repository, $project);
         $config = $dv->getConfig();
-        $this->theme = $config['dataviz']['theme'];
+        if ($config && array_key_exists('theme', $config)) {
+            $this->theme = $config['dataviz']['theme'];
+        }
 
         // Parse plot config
         $this->parsePlotConfig($plotConfig);
@@ -169,7 +171,7 @@ class datavizPlot
             }
         }
 
-        // Optionnal layout additionnal options (legacy code)
+        // Optional layout additional options (legacy code)
         if (array_key_exists('layout_config', $plotConfig['plot'])) {
             $this->layout = $plotConfig['plot']['layout_config'];
         }
