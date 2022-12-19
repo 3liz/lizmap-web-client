@@ -254,4 +254,98 @@ describe('Dataviz tests', function () {
         })
     })
 
+    it('Test the dataviz API as admin with basic auth to create a new plot', function () {
+        let json_body = {
+            "repository": "testsrepository",
+            "project": "dataviz",
+            "plot_config": {
+                "type": "bar",
+                "title": "Bakeries by district",
+                "layerId": "bakeries_1dbdac14_931c_4568_ad56_3a947a77d810",
+                "x_field": "polygons_name",
+                "aggregation": "count",
+                "traces": [
+                    {
+                        "color": "cyan",
+                        "colorfield": "",
+                        "y_field": "id",
+                        "z_field": ""
+                    }
+                ],
+                "popup_display_child_plot": "False",
+                "stacked": "False",
+                "horizontal": "False",
+                "only_show_child": "False",
+                "display_legend": "True",
+                "display_when_layer_visible": "False",
+                "order": 5
+            }
+        };
+
+        cy.request({
+            method: 'POST',
+            url: '/index.php/dataviz/service?',
+            headers:{
+                authorization:'Basic YWRtaW46YWRtaW4=',
+            },
+            json: true,
+            body: json_body
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/json')
+            expect(resp.body).to.have.property('title', 'Bakeries by district')
+            expect(resp.body).to.have.property('data')
+            expect(resp.body.data).to.have.length(1)
+            expect(resp.body.data[0]).to.have.property('type', 'bar')
+            expect(resp.body.data[0].marker).to.have.property('color', 'cyan')
+            expect(resp.body.data[0].transforms[0].aggregations[0]).to.have.property('func', 'count')
+        })
+    })
+
+    it('Test the dataviz API as admin with a wrong layer id', function () {
+        let json_body = {
+            "repository": "testsrepository",
+            "project": "dataviz",
+            "plot_config": {
+                "type": "bar",
+                "title": "Bakeries by district",
+                "layerId": "bakeries_1dbdac14_931c_4568_ad56_3a947a77d810_WRONG_LAYER_ID",
+                "x_field": "polygons_name",
+                "aggregation": "count",
+                "traces": [
+                    {
+                        "color": "cyan",
+                        "colorfield": "",
+                        "y_field": "id",
+                        "z_field": ""
+                    }
+                ],
+                "popup_display_child_plot": "False",
+                "stacked": "False",
+                "horizontal": "False",
+                "only_show_child": "False",
+                "display_legend": "True",
+                "display_when_layer_visible": "False",
+                "order": 5
+            }
+        };
+
+        cy.request({
+            method: 'POST',
+            url: '/index.php/dataviz/service?',
+            headers:{
+                authorization:'Basic YWRtaW46YWRtaW4=',
+            },
+            json: true,
+            body: json_body,
+            failOnStatusCode: false
+        }).then((resp) => {
+            expect(resp.status).to.eq(404)
+            expect(resp.headers['content-type']).to.contain('application/json')
+            expect(resp.body).to.have.property('errors')
+            expect(resp.body.errors).to.have.property('code', 404)
+            expect(resp.body.errors).to.have.property('error_code', 'layer_not_found')
+        })
+    })
+
 })
