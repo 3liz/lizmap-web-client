@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -939,7 +940,7 @@ class Project
             // groups list intersects
             $editionGroups = preg_split('/\\s*,\\s*/', $eLayer->acl);
             if ($isAdmin || ($editionGroups
-                             && array_intersect($editionGroups, $userGroups))) {
+                && array_intersect($editionGroups, $userGroups))) {
                 // User group(s) correspond to the groups given for this edition layer
                 // or user is admin: we take the layer.
                 unset($eLayer->acl);
@@ -1303,6 +1304,113 @@ class Project
         return json_decode(json_encode($obj), true);
     }
 
+    public function parseDatavizPlotConfig($config)
+    {
+        if (!property_exists($config, 'layerId')) {
+            if ($this->services->debugMode == '1') {
+                \jLog::log('Dataviz - layerId not found ! No plot configuration found.');
+            }
+
+            return null;
+        }
+        $layer = $this->cfg->findLayerByAnyName($config->layerId);
+        if (!$layer) {
+            if ($this->services->debugMode == '1') {
+                \jLog::log('Dataviz - layer not found, id   = '.$config->layerId);
+            }
+
+            return null;
+        }
+        $title = $layer->title;
+        if (!empty($config->title)) {
+            $title = trim($config->title);
+        }
+        $type = 'bar';
+        $allowedTypes = array(
+            'bar', 'pie', 'scatter', 'box',
+            'histogram', 'histogram2d',
+            'polar', 'sunburst', 'html',
+        );
+        if (in_array($config->type, $allowedTypes)) {
+            $type = $config->type;
+        }
+        $plotConfig = array(
+            'plot_id' => (int) $config->order,
+            'layer_id' => $layer->id,
+            'title' => $title,
+            'plot' => array(
+                'type' => $type,
+            ),
+        );
+
+        $properties = array(
+            'y_field',
+            'z_field',
+            'x_field',
+            'y2_field',
+            'color',
+            'color2',
+            'colorfield',
+            'colorfield2',
+            'aggregation',
+            'html_template',
+            'display_when_layer_visible',
+            'traces',
+            'layout',
+        );
+        foreach ($properties as $prop) {
+            if (property_exists($config, $prop)) {
+                $plotConfig['plot'][$prop] = $config->{$prop};
+            }
+        }
+
+        if (property_exists($config, 'popup_display_child_plot')) {
+            $plotConfig['popup_display_child_plot'] = $config->popup_display_child_plot;
+        }
+        if (property_exists($config, 'only_show_child')) {
+            $plotConfig['only_show_child'] = $config->only_show_child;
+        }
+
+        $abstract = $layer->abstract;
+        if (property_exists($config, 'description')) {
+            $abstract = trim($config->description);
+        }
+        $plotConfig['abstract'] = trim($abstract);
+
+        $props = array(
+            'display_legend' => true,
+            'stacked' => false,
+            'horizontal' => false,
+        );
+        foreach ($props as $prop => $default) {
+            $value = $default;
+            if (property_exists($config, $prop)) {
+                $value = $this->optionToBoolean($config->{$prop});
+            }
+            $plotConfig['plot'][$prop] = $value;
+        }
+
+        // Add more layout config, written like:
+        // layout_config=barmode:stack,bargap:0.5
+        if (!empty($config->layout_config)) {
+            $layout_config = array();
+            $a = array_map('trim', explode(',', $config->layout_config));
+            foreach ($a as $i) {
+                $b = array_map('trim', explode(':', $i));
+                if (is_array($b) and count($b) == 2) {
+                    $c = $b[1];
+                    $c = $this->optionToBoolean($c);
+                    $layout_config[$b[0]] = $c;
+                }
+            }
+            if (count($layout_config) > 0) {
+                $plotConfig['plot']['layout_config'] = $layout_config;
+            }
+        }
+
+        return $plotConfig;
+    }
+
     /**
      * @return array the dataviz layers config extended with locale
      */
@@ -1323,94 +1431,13 @@ class Project
 
         $countPlotOnlyChild = 0;
         foreach ($datavizLayers as $order => $lc) {
-            if (!property_exists($lc, 'layerId')) {
-                continue;
-            }
-            $layer = $this->cfg->findLayerByAnyName($lc->layerId);
-            if (!$layer) {
-                continue;
-            }
-            $title = $layer->title;
-            if (!empty($lc->title)) {
-                $title = $lc->title;
-            }
-            $plotConf = array(
-                'plot_id' => $lc->order,
-                'layer_id' => $layer->id,
-                'title' => $title,
-                'plot' => array(
-                    'type' => $lc->type,
-                ),
-            );
-
-            $properties = array(
-                'y_field',
-                'z_field',
-                'x_field',
-                'y2_field',
-                'color',
-                'color2',
-                'colorfield',
-                'colorfield2',
-                'aggregation',
-                'html_template',
-                'display_when_layer_visible',
-                'traces',
-                'layout',
-            );
-            foreach ($properties as $prop) {
-                if (property_exists($lc, $prop)) {
-                    $plotConf['plot'][$prop] = $lc->{$prop};
-                }
-            }
-
-            if (property_exists($lc, 'popup_display_child_plot')) {
-                $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
-            }
-            if (property_exists($lc, 'only_show_child')) {
-                $plotConf['only_show_child'] = $lc->only_show_child;
-                if (strtolower($plotConf['only_show_child']) == 'true') {
+            $plotConfig = $this->parseDatavizPlotConfig($lc);
+            if ($plotConfig) {
+                $config['layers'][$order] = $plotConfig;
+                if (array_key_exists('only_show_child', $plotConfig) && strtolower($plotConfig['only_show_child']) == 'true') {
                     ++$countPlotOnlyChild;
                 }
             }
-
-            $abstract = $layer->abstract;
-            if (property_exists($lc, 'description')) {
-                $abstract = $lc->description;
-            }
-            $plotConf['abstract'] = $abstract;
-
-            $props = array(
-                'display_legend' => true,
-                'stacked' => false,
-                'horizontal' => false,
-            );
-            foreach ($props as $prop => $default) {
-                $value = $default;
-                if (property_exists($lc, $prop)) {
-                    $value = $this->optionToBoolean($lc->{$prop});
-                }
-                $plotConf['plot'][$prop] = $value;
-            }
-
-            // Add more layout config, written like:
-            // layout_config=barmode:stack,bargap:0.5
-            if (!empty($lc->layout_config)) {
-                $layout_config = array();
-                $a = array_map('trim', explode(',', $lc->layout_config));
-                foreach ($a as $i) {
-                    $b = array_map('trim', explode(':', $i));
-                    if (is_array($b) and count($b) == 2) {
-                        $c = $b[1];
-                        $c = $this->optionToBoolean($c);
-                        $layout_config[$b[0]] = $c;
-                    }
-                }
-                if (count($layout_config) > 0) {
-                    $plotConf['plot']['layout_config'] = $layout_config;
-                }
-            }
-            $config['layers'][$order] = $plotConf;
         }
 
         if (empty($config['layers'])) {
