@@ -10,6 +10,8 @@
         "login_admin": "admin",
         "password_admin": "admin",
         "login_user_a": "user_in_group_a",
-        "password_user_a": "admin"
+        "password_user_a": "admin",
+        "login_publisher": "publisher",
+        "password_publisher": "admin"
     }
 }

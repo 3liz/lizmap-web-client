@@ -4,10 +4,17 @@ class configListener extends jEventListener
 {
     public function onmasteradminGetMenuContent($event)
     {
-        if (jAcl2::check('lizmap.admin.access')) {
-            // Create the "lizmap" parent menu item
+        // Create the "lizmap" parent menu item
+        if (
+            jAcl2::check('lizmap.admin.services.view')
+            || jAcl2::check('lizmap.admin.repositories.view')
+            || jAcl2::check('lizmap.admin.project.list.view')
+            || jAcl2::check('lizmap.admin.home.page.update')
+            || jAcl2::check('lizmap.admin.theme.update')
+        ) {
             $bloc = new masterAdminMenuItem('lizmap', 'LizMap', '', 50);
 
+            // Access the Lizmap service configuration (admins)
             if (jAcl2::check('lizmap.admin.services.view')) {
                 $bloc->childItems[] = new masterAdminMenuItem(
                     'lizmap_configuration',
@@ -18,6 +25,7 @@ class configListener extends jEventListener
                 );
             }
 
+            // Access the list of Lizmap repositories
             if (jAcl2::check('lizmap.admin.repositories.view')) {
                 $bloc->childItems[] = new masterAdminMenuItem(
                     'lizmap_maps',
@@ -28,58 +36,73 @@ class configListener extends jEventListener
                 );
             }
 
-            // Project list menu
-            $bloc->childItems[] = new masterAdminMenuItem(
-                'lizmap_project_list',
-                jLocale::get('admin~admin.menu.lizmap.project.list.label'),
-                jUrl::get('admin~qgis_projects:index'),
-                112,
-                'lizmap'
-            );
+            // Access the list of Lizmap projects
+            if (jAcl2::check('lizmap.admin.project.list.view')) {
+                $bloc->childItems[] = new masterAdminMenuItem(
+                    'lizmap_project_list',
+                    jLocale::get('admin~admin.menu.lizmap.project.list.label'),
+                    jUrl::get('admin~qgis_projects:index'),
+                    112,
+                    'lizmap'
+                );
+            }
 
-            // Child for the configuration of lizmap landing page content
-            $bloc->childItems[] = new masterAdminMenuItem(
-                'lizmap_landing_page_content',
-                jLocale::get('admin~admin.menu.lizmap.landingPageContent.label'),
-                jUrl::get('admin~landing_page_content:index'),
-                115,
-                'lizmap'
-            );
+            // Configure the landing page content
+            if (jAcl2::check('lizmap.admin.home.page.update')) {
+                $bloc->childItems[] = new masterAdminMenuItem(
+                    'lizmap_landing_page_content',
+                    jLocale::get('admin~admin.menu.lizmap.landingPageContent.label'),
+                    jUrl::get('admin~landing_page_content:index'),
+                    115,
+                    'lizmap'
+                );
+            }
 
-            // Child for lizmap theme
-            $bloc->childItems[] = new masterAdminMenuItem(
-                'lizmap_theme',
-                jLocale::get('admin~admin.menu.lizmap.theme.label'),
-                jUrl::get('admin~theme:index'),
-                120,
-                'lizmap'
-            );
+            // Configure the theme
+            if (jAcl2::check('lizmap.admin.theme.update')) {
+                $bloc->childItems[] = new masterAdminMenuItem(
+                    'lizmap_theme',
+                    jLocale::get('admin~admin.menu.lizmap.theme.label'),
+                    jUrl::get('admin~theme:index'),
+                    120,
+                    'lizmap'
+                );
+            }
 
             // Add the bloc
             $event->add($bloc);
 
-            // Server bloc
+        }
 
-            // Create the "lizmap" parent menu item
+        // Server menu item
+        if (
+            jAcl2::check('lizmap.admin.server.information.view')
+            || jAcl2::check('lizmap.admin.lizmap.log.view')
+        ) {
+
             $bloc = new masterAdminMenuItem('server', jLocale::get('admin~admin.menu.server.label'), '', 60);
 
             // Information taken from QGIS Server with the help of Lizmap plugin
-            $bloc->childItems[] = new masterAdminMenuItem(
-                'lizmap_server_information',
-                jLocale::get('admin~admin.menu.server.information.label'),
-                jUrl::get('admin~server_information:index'),
-                110,
-                'server'
-            );
+            if (jAcl2::check('lizmap.admin.server.information.view')) {
+                $bloc->childItems[] = new masterAdminMenuItem(
+                    'lizmap_server_information',
+                    jLocale::get('admin~admin.menu.server.information.label'),
+                    jUrl::get('admin~server_information:index'),
+                    110,
+                    'server'
+                );
+            }
 
             // Child for lizmap logs
-            $bloc->childItems[] = new masterAdminMenuItem(
-                'lizmap_logs',
-                jLocale::get('admin~admin.menu.lizmap.logs.label'),
-                jUrl::get('admin~logs:index'),
-                125,
-                'server'
-            );
+            if (jAcl2::check('lizmap.admin.lizmap.log.view')) {
+                $bloc->childItems[] = new masterAdminMenuItem(
+                    'lizmap_logs',
+                    jLocale::get('admin~admin.menu.lizmap.logs.label'),
+                    jUrl::get('admin~logs:index'),
+                    125,
+                    'server'
+                );
+            }
 
             // Add the bloc
             $event->add($bloc);
@@ -88,7 +111,7 @@ class configListener extends jEventListener
 
     public function onjauthdbAdminGetViewInfo(jEvent $event)
     {
-        if (/* !$event->himself && */ jAcl2::check('acl.user.view')) {
+        if (/* !$event->himself && */jAcl2::check('acl.user.view')) {
             $user = $event->tpl->get('id');
 
             $groups = jAcl2DbUserGroup::getGroupList($user);
