@@ -58,6 +58,13 @@ Cypress.Commands.add(
 )
 
 Cypress.Commands.add(
+    'loginAsPublisher',() => {
+        cy._login(Cypress.env('login_publisher'), Cypress.env('password_publisher'))
+    }
+)
+
+
+Cypress.Commands.add(
     'mapClick', (x, y) => {
         // Make a click on the map when we have absolute coordinates from the whole web-browser canvas.
         // We need to remove some pixels to focus only on the map

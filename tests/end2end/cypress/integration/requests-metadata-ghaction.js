@@ -30,7 +30,7 @@ describe('Request JSON metadata', function () {
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
             expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\.|master|dev)/i)
 
-            // check repositories
+            // check the repositories
             expect(response.body.repositories.testsrepository).to.deep.eq(
                 {
                     "label": "Tests repository",
@@ -38,17 +38,19 @@ describe('Request JSON metadata', function () {
                     "authorized_groups": [
                         "__anonymous",
                         "admins",
-                        "group_a"
+                        "group_a",
+                        "publishers"
                     ],
                     "editing_authorized_groups": [
                         "__anonymous",
                         "admins",
-                        "group_a"
+                        "group_a",
+                        "publishers"
                     ]
                 }
             )
 
-            // check groups of users
+            // check the groups of users
             expect(response.body.acl.groups).to.deep.eq(
                 {
                     "admins": {
@@ -62,6 +64,9 @@ describe('Request JSON metadata', function () {
                     },
                     "lizadmins": {
                         "label": "lizadmins"
+                    },
+                    "publishers": {
+                        "label": "Publishers"
                     },
                     "users": {
                         "label": "users"
@@ -99,5 +104,64 @@ describe('Request JSON metadata', function () {
             expect(response.headers['content-type']).to.eq('application/json');
             expect(response.body.qgis_server_info.error).to.eq("NO_ACCESS")
         });
+    })
+
+
+
+    it('As publisher user using UI', function () {
+        cy.loginAsPublisher()
+
+        var request = cy.request({
+            url: 'index.php/view/app/metadata',
+            failOnStatusCode: false,
+        }).then((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.headers['content-type']).to.eq('application/json');
+            expect(response.body.qgis_server_info.error).to.eq("NO_ACCESS")
+        });
+
+        // check the repositories
+        expect(response.body.repositories.testsrepository).to.deep.eq(
+            {
+                "label": "Tests repository",
+                "path": "tests/",
+                "authorized_groups": [
+                    "__anonymous",
+                    "admins",
+                    "group_a",
+                    "publishers"
+                ],
+                "editing_authorized_groups": [
+                    "__anonymous",
+                    "admins",
+                    "group_a",
+                    "publishers"
+                ]
+            }
+        )
+
+        // check the groups of users
+        expect(response.body.acl.groups).to.deep.eq(
+            {
+                "admins": {
+                    "label": "admins"
+                },
+                "group_a": {
+                    "label": "group_a"
+                },
+                "intranet": {
+                    "label": "Intranet demos group"
+                },
+                "lizadmins": {
+                    "label": "lizadmins"
+                },
+                "publishers": {
+                    "label": "Publishers"
+                },
+                "users": {
+                    "label": "users"
+                }
+            }
+        )
     })
 })

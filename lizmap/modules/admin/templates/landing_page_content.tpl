@@ -1,4 +1,4 @@
-  {ifacl2 'lizmap.admin.access'}
+  {ifacl2 'lizmap.admin.home.page.update'}
   <!--Services-->
   <div>
     <h2>{@admin.menu.lizmap.landingPageContent.label@}</h2>
@@ -12,4 +12,3 @@
 
   </div>
   {/ifacl2}
-

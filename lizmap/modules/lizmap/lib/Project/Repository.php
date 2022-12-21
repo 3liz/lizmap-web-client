@@ -386,8 +386,9 @@ class Repository
                             // Get project
                             $keepReference = false;
                             $proj = $this->getProject(substr($qgsFile, 0, -4), $keepReference);
-                            if ($proj != null) {
-                                // Get project metadata and add it to the returned object
+                            // Get the project metadata and add it to the returned object
+                            // only if the authenticated user can access the project
+                            if ($proj != null && $proj->checkAcl()) {
                                 $data[] = $proj->getMetadata();
                             }
                         } catch (UnknownLizmapProjectException $e) {
