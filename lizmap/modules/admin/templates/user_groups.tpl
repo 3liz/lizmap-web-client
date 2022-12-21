@@ -1,5 +1,6 @@
 <h3>{@admin~user.acl.form.title@}</h3>
 
+{ifacl2 'lizmap.admin.access'}
 {if count($usergroups)}
 <table class="records-list table table-hover table-condensed">
     <tr>
@@ -34,3 +35,5 @@
     <br/><input type="submit" value="{@admin~user.acl.form.add@}" />
 </form>
 {/if}
+
+{/ifacl2}

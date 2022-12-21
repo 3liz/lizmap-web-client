@@ -13,7 +13,7 @@ class qgis_projectsCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.access'),
+        '*' => array('jacl2.right' => 'lizmap.admin.project.list.view'),
     );
 
     /**

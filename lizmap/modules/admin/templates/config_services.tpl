@@ -1,6 +1,9 @@
 {meta_html js $j_basepath.'assets/js/services_configuration.js'}
 
 {jmessage_bootstrap}
+
+{ifacl2 'lizmap.admin.access'}
+
 <h1>{@admin~admin.form.admin_services.h1@}</h1>
 {form $form, 'admin~config:saveServices', array(), 'htmlbootstrap'}
     <div>
@@ -113,3 +116,5 @@
 </div>
 
 {/form}
+
+{/ifacl2}
