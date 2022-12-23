@@ -1934,44 +1934,42 @@ class Project
         }
 
         // Permalink
-        if (true) {
-            // Get geobookmark if user is connected
-            $gbCount = false;
-            $gbList = null;
-            if ($this->appContext->userIsConnected()) {
-                $jUser = $this->appContext->getUserSession();
-                $usrLogin = $jUser->login;
-                $daoGb = \jDao::get('lizmap~geobookmark');
-                $conditions = \jDao::createConditions();
-                $conditions->addCondition('login', '=', $usrLogin);
-                $conditions->addCondition(
-                    'map',
-                    '=',
-                    $this->repository->getKey().':'.$this->getKey()
-                );
-                $gbList = $daoGb->findBy($conditions);
-                $gbCount = $daoGb->countBy($conditions);
-            }
-            $tpl = new \jTpl();
-            $tpl->assign('gbCount', $gbCount);
-            $tpl->assign('gbList', $gbList);
-            $gbContent = null;
-            if ($gbList) {
-                $gbContent = $tpl->fetch('view~map_geobookmark');
-            }
-            $tpl = new \jTpl();
-            $tpl->assign(array(
-                'repository' => $this->repository->getKey(),
-                'project' => $this->getKey(),
-                'gbContent' => $gbContent,
-            ));
-            $dockable[] = new \lizmapMapDockItem(
-                'permaLink',
-                $this->appContext->getLocale('view~map.permalink.navbar.title'),
-                $tpl->fetch('view~map_permalink'),
-                8
+        // Get geobookmark if user is connected
+        $gbCount = false;
+        $gbList = null;
+        if ($this->appContext->userIsConnected()) {
+            $jUser = $this->appContext->getUserSession();
+            $usrLogin = $jUser->login;
+            $daoGb = \jDao::get('lizmap~geobookmark');
+            $conditions = \jDao::createConditions();
+            $conditions->addCondition('login', '=', $usrLogin);
+            $conditions->addCondition(
+                'map',
+                '=',
+                $this->repository->getKey().':'.$this->getKey()
             );
+            $gbList = $daoGb->findBy($conditions);
+            $gbCount = $daoGb->countBy($conditions);
         }
+        $tpl = new \jTpl();
+        $tpl->assign('gbCount', $gbCount);
+        $tpl->assign('gbList', $gbList);
+        $gbContent = null;
+        if ($gbList) {
+            $gbContent = $tpl->fetch('view~map_geobookmark');
+        }
+        $tpl = new \jTpl();
+        $tpl->assign(array(
+            'repository' => $this->repository->getKey(),
+            'project' => $this->getKey(),
+            'gbContent' => $gbContent,
+        ));
+        $dockable[] = new \lizmapMapDockItem(
+            'permaLink',
+            $this->appContext->getLocale('view~map.permalink.navbar.title'),
+            $tpl->fetch('view~map_permalink'),
+            8
+        );
 
         if ($this->cfg->getBooleanOption('draw')) {
             $tpl = new \jTpl();
@@ -2093,18 +2091,17 @@ class Project
         } catch (\Exception $e) {
             $spatial = false;
         }
-        // Try with libspatialite
-        if (!$spatial) {
-            try {
-                $db = new \SQLite3(':memory:');
-                $this->spatialiteExt = 'libspatialite.so';
-                $spatial = @$db->loadExtension($this->spatialiteExt); // loading SpatiaLite as an extension
-                if ($spatial) {
-                    return $this->spatialiteExt;
-                }
-            } catch (\Exception $e) {
+
+        try {
+            $db = new \SQLite3(':memory:');
+            $this->spatialiteExt = 'libspatialite.so';
+            $spatial = @$db->loadExtension($this->spatialiteExt); // loading SpatiaLite as an extension
+            if ($spatial) {
+                return $this->spatialiteExt;
             }
+        } catch (\Exception $e) {
         }
+
         $this->spatialiteExt = '';
 
         return '';
