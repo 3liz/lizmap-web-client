@@ -37,7 +37,7 @@ class Project
     protected $appContext;
 
     /**
-     * @var \LizmapServices The lizmapServices instance
+     * @var \lizmapServices The lizmapServices instance
      */
     protected $services;
 
@@ -101,7 +101,7 @@ class Project
      * @param Repository              $rep        the repository
      * @param App\AppContextInterface $appContext context
      */
-    public function __construct($key, Repository $rep, App\AppContextInterface $appContext, \LizmapServices $services)
+    public function __construct($key, Repository $rep, App\AppContextInterface $appContext, \lizmapServices $services)
     {
         $this->key = $key;
         $this->repository = $rep;
