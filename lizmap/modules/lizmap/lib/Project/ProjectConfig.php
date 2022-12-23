@@ -171,7 +171,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getAttributeLayers()
     {
@@ -179,7 +179,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getLocateByLayer()
     {
@@ -449,7 +449,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getAtlas()
     {
@@ -457,7 +457,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getTooltipLayers()
     {
@@ -465,7 +465,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getLoginFilteredLayers()
     {
@@ -482,7 +482,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getDatavizLayers()
     {
