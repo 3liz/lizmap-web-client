@@ -1,0 +1,16 @@
+body.print_popup {
+    padding: 0 !important;
+}
+
+body.print_popup * {
+    display: none;
+}
+
+body.print_popup .print,
+body.print_popup .print * {
+    display: revert;
+}
+
+body.print_popup .print lizmap-feature-toolbar {
+    display: none;
+}
