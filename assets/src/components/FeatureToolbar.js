@@ -391,6 +391,6 @@ export default class FeatureToolbar extends HTMLElement {
         });
 
         // Launch print box
-        print();
+        window.print();
     }
 }
