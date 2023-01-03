@@ -162,13 +162,13 @@ describe('Feature Toolbar', function () {
         cy.get('#message .jelix-msg-item-success').should('have.text', 'Selected features have been correctly linked.')
     })
 
-    it('should display working custom action', function () {
+    it('should display working custom action for the popup feature', function () {
 
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
-        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1.buffer_500"]').click()
+        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="buffer_500.parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"]').click()
 
         // Test feature is selected on popup
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
@@ -176,11 +176,62 @@ describe('Feature Toolbar', function () {
         cy.on('window:confirm', () => true);
 
         // Confirmation message should be displayed
-        cy.get('#message #lizmap-action-message p').should('have.text', 'The buffer 500m has been displayed in the map')
+        cy.get('#message #lizmap-action-message p').should('have.text', 'The buffer 500 m has been displayed in the map')
 
         // End action
-        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1.buffer_500"]').click()
+        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="buffer_500.parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"]').click()
         cy.get('#message').should('be.empty')
+
+    })
+
+    it('should display working project action selector', function () {
+
+        // Get the project action
+        // Check the dock is visible
+        cy.get('a#button-action').should('have.length', 1)
+
+        // Open the project action dock
+        cy.get('a#button-action').click()
+
+        // Select an action
+        cy.get('#lizmap-project-actions select.action-select').select('project_map_center_buffer')
+
+        // Run the project action
+        cy.get('#lizmap-project-actions button.action-run-button').click()
+
+        // Check result
+        cy.get('#message #lizmap-action-message p').should('have.text', 'The displayed geometry represents the buffer 2000 m of the current map center')
+
+        // Deactivate
+        cy.get('#lizmap-project-actions button.action-run-button').click()
+
+        // Check
+        cy.get('#message').should('be.empty')
+
+    })
+
+    it('should display working layer action selector', function () {
+        // Select the layer in the legend tree
+        cy.get('tr#layer-parent_layer td span.label').click()
+
+        // Check the action selector is present
+        cy.get('#sub-dock div.layer-action-selector-container').should('have.length', 1);
+
+        // Select an action
+        cy.get('#sub-dock div.layer-action-selector-container select.action-select').select('layer_spatial_extent')
+
+        // Run the project action
+        cy.get('#sub-dock div.layer-action-selector-container button.action-run-button').click()
+
+        // Check result
+        cy.get('#message #lizmap-action-message p').should('have.text', 'The displayed geometry represents the contour of all the layer features')
+
+        // Deactivate
+        cy.get('#sub-dock div.layer-action-selector-container button.action-run-button').click()
+
+        // Check
+        cy.get('#message').should('be.empty')
+
     })
 
     it('should start child edition linked to a parent feature', function () {
