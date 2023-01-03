@@ -9,7 +9,7 @@
  * @subpackage  utils
  * @author      Laurent Jouanneau
  * @contributor Kévin Lepeltier, GeekBay, Julien Issler
- * @copyright   2006-2020 Laurent Jouanneau
+ * @copyright   2006-2022 Laurent Jouanneau
  * @copyright   2008 Kévin Lepeltier, 2009 Geekbay
  * @copyright   2010-2015 Julien Issler
  * @link        http://jelix.org
@@ -27,7 +27,7 @@ require(LIB_PATH.'phpMailer/class.pop3.php');
  * @subpackage  utils
  * @author Laurent Jouanneau
  * @contributor Kévin Lepeltier
- * @copyright   2006-2008 Laurent Jouanneau
+ * @copyright   2006-2022 Laurent Jouanneau
  * @copyright   2008 Kévin Lepeltier
  * @since 1.0b1
  * @see PHPMailer
@@ -136,7 +136,7 @@ class jMailer extends PHPMailer {
                 $smtp = array_merge(array(
                     'host' => 'localhost',
                     'port' => 25,
-                    'secure_protocol' => '', // or "ssl", "tls"
+                    'secure_protocol' => '', // or "unencrypted", "ssl", "tls". Empty means automatic TLS when it is possible
                     'helo' => '',
                     'auth_enabled' => false,
                     'username' => '',
@@ -147,7 +147,13 @@ class jMailer extends PHPMailer {
                 $this->Port = $smtp['port'];
                 $this->Helo = $smtp['helo'];
                 $this->SMTPAuth = $smtp['auth_enabled'];
-                $this->SMTPSecure = $smtp['secure_protocol'];
+                if ($smtp['secure_protocol'] == 'unencrypted') {
+                    $this->SMTPSecure = '';
+                    $this->SMTPAutoTLS = false;
+                }
+                else {
+                    $this->SMTPSecure = $smtp['secure_protocol'];
+                }
                 $this->Username = $smtp['username'];
                 $this->Password = $smtp['password'];
                 $this->Timeout = $smtp['timeout'];
