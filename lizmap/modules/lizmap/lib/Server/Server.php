@@ -99,7 +99,8 @@ class Server
      * or view the projects for a repository
      *
      * @param string $repositoryKey The repository key
-     * @param string $rightSubject The right subject key
+     * @param string $rightSubject  The right subject key
+     *
      * @return array The list of groups
      */
     private function getRepositoryAuthorizedGroupsForRight($repositoryKey, $rightSubject)
@@ -118,7 +119,7 @@ class Server
     }
 
     /**
-     * Get the data on Lizmap repositories
+     * Get the data on Lizmap repositories.
      *
      * Fetch the key, label and relative path
      *
@@ -136,15 +137,15 @@ class Server
                 continue;
             }
 
-            // Do not add repository if the connected user cannot access it
+            // Do not add the repository if the connected user cannot access it
             if (!\jAcl2::check('lizmap.repositories.view', $repositoryKey)) {
                 continue;
             }
 
             // Prepare the repository data to return
             $repositories[$repositoryKey] = array(
-                "label" => $lizmapRepository->getLabel(),
-                "path" => $lizmapRepository->getPath(),
+                'label' => $lizmapRepository->getLabel(),
+                'path' => $lizmapRepository->getPath(),
             );
 
             // Compute the relative repository path
@@ -167,6 +168,19 @@ class Server
                 'lizmap.tools.edition.use'
             );
             $repositories[$repositoryKey]['editing_authorized_groups'] = $editingAuthorizedGroups;
+
+            // Add the projects
+            $repositoryProjects = $lizmapRepository->getProjectsMetadata();
+            $projects = array();
+            foreach ($repositoryProjects as $project) {
+                if (!$project->getAcl()) {
+                    continue;
+                }
+                $projects[$project->getId()] = array(
+                    'title' => $project->getTitle(),
+                );
+            }
+            $repositories[$repositoryKey]['projects'] = $projects;
         }
 
         return $repositories;
@@ -186,7 +200,7 @@ class Server
         $aclGroupList = \jAcl2DbUserGroup::getGroupList();
         foreach ($aclGroupList as $group) {
             $groups[$group->id_aclgrp] = array(
-                "label" => $group->name,
+                'label' => $group->name,
                 // "default" => ($group->grouptype == \jAcl2DbUserGroup::GROUPTYPE_PRIVATE)
             );
         }
@@ -223,7 +237,7 @@ class Server
             ),
         );
 
-        if (\jAcl2::check('lizmap.admin.access') && isset(\jApp::config()->lizmap['hosting'])) {
+        if (\jAcl2::check('lizmap.admin.server.information.view') && isset(\jApp::config()->lizmap['hosting'])) {
             $data['hosting'] = \jApp::config()->lizmap['hosting'];
         }
 
@@ -237,17 +251,16 @@ class Server
         );
 
         // Add the list of repositories
-        if (\jAcl2::check('lizmap.admin.access')) {
+        if (\jAcl2::check('lizmap.admin.server.information.view')) {
             $data['repositories'] = $this->getLizmapRepositories();
         }
 
         // Add the list of user groups
-        if (\jAcl2::check('lizmap.admin.access')) {
+        if (\jAcl2::check('lizmap.admin.server.information.view')) {
             $data['acl'] = array(
-                'groups' => $this->getAclGroups()
+                'groups' => $this->getAclGroups(),
             );
         }
-
 
         return $data;
     }
@@ -267,10 +280,10 @@ class Server
         // Get the data from the QGIS Server Lizmap plugin
         if (empty($services->lizmapPluginAPIURL)) {
             // When the Lizmap API URL is not set, we use the WMS server URL only
-            $lizmap_url = rtrim($services->wmsServerURL, '/') . '/lizmap/server.json';
+            $lizmap_url = rtrim($services->wmsServerURL, '/').'/lizmap/server.json';
         } else {
             // When the Lizmap API URL is set
-            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/') . '/server.json';
+            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/').'/server.json';
         }
 
         list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($lizmap_url);
@@ -317,7 +330,7 @@ class Server
             $data['test'] = 'ERROR';
         }
         $data['mime_type'] = $mime;
-        if (\jAcl2::check('lizmap.admin.access')) {
+        if (\jAcl2::check('lizmap.admin.server.information.view')) {
             $data['http_code'] = $code;
             $data['response'] = $resp;
         }

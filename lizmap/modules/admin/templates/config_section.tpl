@@ -1,6 +1,5 @@
 {jmessage_bootstrap}
 
-{ifacl2 'lizmap.admin.access'}
 {if $form->getData('new') == 1}
 <h1>{@admin~admin.form.admin_section.h1.create@}</h1>
 {else}
@@ -11,4 +10,3 @@
 <div>
   <a class="btn" href="{jurl 'admin~maps:index'}">{@admin~admin.configuration.button.back.label@}</a>
 </div>
-{/ifacl2}

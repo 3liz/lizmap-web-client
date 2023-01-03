@@ -14,6 +14,11 @@ class themeCtrl extends jController
     // Configure access via jacl2 rights management
     public $pluginParams = array(
         '*' => array('jacl2.right' => 'lizmap.admin.theme.view'),
+        'modify' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'edit' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'save' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'validate' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'removeThemeImage' => array('jacl2.right' => 'lizmap.admin.theme.update'),
     );
 
     /**
@@ -100,17 +105,18 @@ class themeCtrl extends jController
      */
     public function edit()
     {
-        /** @var jResponseHtml $rep */
-        $rep = $this->getResponse('html');
-
         // Redirect to the theme home page if the user has not enough rights
         if (!\jAcl2::check('lizmap.admin.theme.update')) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             jMessage::add(jLocale::get('admin~admin.theme.error.no.access'));
             $rep->action = 'theme:index';
 
             return $rep;
         }
+
+        /** @var jResponseHtml $rep */
+        $rep = $this->getResponse('html');
 
         /** @var null|jFormsBase $form */
         $form = jForms::get('theme');
@@ -144,6 +150,7 @@ class themeCtrl extends jController
     {
         // Redirect to the theme home page if the user has not enough rights
         if (!\jAcl2::check('lizmap.admin.theme.update')) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             jMessage::add(jLocale::get('admin~admin.theme.error.no.access'));
             $rep->action = 'theme:index';
@@ -222,8 +229,8 @@ class themeCtrl extends jController
         }
 
         // Modify class properties
-        $modifytheme = $theme->update($data);
-        if ($modifytheme) {
+        $modifyTheme = $theme->update($data);
+        if ($modifyTheme) {
             jMessage::add(jLocale::get('admin~admin.form.admin_theme.message.data.saved'));
         }
 
@@ -262,9 +269,9 @@ class themeCtrl extends jController
      */
     public function removeThemeImage()
     {
-
         // Redirect to the theme home page if the user has not enough rights
         if (!\jAcl2::check('lizmap.admin.theme.update')) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             jMessage::add(jLocale::get('admin~admin.theme.error.no.access'));
             $rep->action = 'theme:index';
@@ -292,7 +299,7 @@ class themeCtrl extends jController
         }
 
         // update theme
-        $modifytheme = $theme->update($data);
+        $theme->update($data);
 
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');

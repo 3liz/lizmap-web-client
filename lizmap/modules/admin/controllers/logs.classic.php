@@ -14,6 +14,15 @@ class logsCtrl extends jController
     // Configure access via jacl2 rights management
     public $pluginParams = array(
         '*' => array('jacl2.right' => 'lizmap.admin.lizmap.log.view'),
+        'emptyCounter' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
+        'emptyDetail' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
+        'eraseError' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
     );
 
     /**
@@ -101,16 +110,12 @@ class logsCtrl extends jController
         $rep = $this->getResponse('redirect');
 
         // Get counter
-        if (\jAcl2::check('lizmap.admin.lizmap.log.delete')) {
-            try {
-                $cnx = jDb::getConnection('lizlog');
-                $cnx->exec('DELETE FROM log_counter;');
-                jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_counter')));
-            } catch (Exception $e) {
-                jLog::log('Error while emptying table log_counter ');
-            }
-        } else {
-            jMessage::add(jLocale::get('admin~admin.logs.error.no.delete.right'));
+        try {
+            $cnx = jDb::getConnection('lizlog');
+            $cnx->exec('DELETE FROM log_counter;');
+            jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_counter')));
+        } catch (Exception $e) {
+            jLog::log('Error while emptying table log_counter ');
         }
 
         $rep->action = 'admin~logs:index';
@@ -231,16 +236,12 @@ class logsCtrl extends jController
         $rep = $this->getResponse('redirect');
 
         // Get counter
-        if (\jAcl2::check('lizmap.admin.lizmap.log.delete')) {
-            try {
-                $cnx = jDb::getConnection('lizlog');
-                $cnx->exec('DELETE FROM log_detail;');
-                jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_detail')));
-            } catch (Exception $e) {
-                jLog::log('Error while emptying table log_detail ');
-            }
-        } else {
-            jMessage::add(jLocale::get('admin~admin.logs.error.no.delete.right'));
+        try {
+            $cnx = jDb::getConnection('lizlog');
+            $cnx->exec('DELETE FROM log_detail;');
+            jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_detail')));
+        } catch (Exception $e) {
+            jLog::log('Error while emptying table log_detail ');
         }
 
         $rep->action = 'admin~logs:index';
@@ -258,16 +259,12 @@ class logsCtrl extends jController
         $rep = $this->getResponse('redirect');
 
         // Erase the log file
-        if (\jAcl2::check('lizmap.admin.lizmap.log.delete')) {
-            try {
-                $logPath = jApp::varPath('log/errors.log');
-                jFile::write($logPath, '');
-                jMessage::add(jLocale::get('admin~admin.logs.error.file.erase.ok', array('log_detail')));
-            } catch (Exception $e) {
-                jLog::log('Error while emptying the error log file');
-            }
-        } else {
-            jMessage::add(jLocale::get('admin~admin.logs.error.no.delete.right'));
+        try {
+            $logPath = jApp::varPath('log/errors.log');
+            jFile::write($logPath, '');
+            jMessage::add(jLocale::get('admin~admin.logs.error.file.erase.ok', array('log_detail')));
+        } catch (Exception $e) {
+            jLog::log('Error while emptying the error log file');
         }
 
         $rep->action = 'admin~logs:index';
