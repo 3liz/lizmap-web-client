@@ -1,4 +1,3 @@
-{ifacl2 'lizmap.admin.lizmap.log.view'}
 <div>
     <h2>{@admin~admin.logs.detail.title@}</h2>
 
@@ -42,5 +41,3 @@
   <div class="form-actions">
     <a class="btn" href="{jurl 'admin~logs:index'}">{@admin~admin.configuration.button.back.label@}</a>
   </div>
-
-{/ifacl2}
