@@ -2,7 +2,6 @@
 
   <h1>{@admin~admin.menu.lizmap.logs.label@}</h1>
 
-{ifacl2 'lizmap.admin.lizmap.log.view'}
   <div>
     <h2>{@admin~admin.logs.counter.title@}</h2>
 
@@ -51,4 +50,3 @@
     </div>
     {/ifacl2}
   </div>
-{/ifacl2}

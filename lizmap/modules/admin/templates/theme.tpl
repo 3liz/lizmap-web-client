@@ -1,30 +1,28 @@
 {jmessage_bootstrap}
 
-{ifacl2 'lizmap.admin.theme.view'}
-  <!--Services-->
-  <div>
-    <h2>{@admin.theme.detail.title@}</h2>
-    <table class="table">
-      {formcontrols $themeForm}
-      <tr>
-        <th>{ctrl_label}</th>
-        <td>
-            {ctrl_value}
-        </td>
-      </tr>
-      {/formcontrols}
-    </table>
+<!--Services-->
+<div>
+  <h2>{@admin.theme.detail.title@}</h2>
+  <table class="table">
+    {formcontrols $themeForm}
+    <tr>
+      <th>{ctrl_label}</th>
+      <td>
+          {ctrl_value}
+      </td>
+    </tr>
+    {/formcontrols}
+  </table>
 
-    <!-- Modify -->
-    {ifacl2 'lizmap.admin.theme.update'}
-    <div class="form-actions">
-    <a class="btn" href="{jurl 'admin~theme:modify'}">
-      {@admin~admin.configuration.button.modify.theme.label@}
-    </a>
-    </div>
-    {/ifacl2}
+  <!-- Modify -->
+  {ifacl2 'lizmap.admin.theme.update'}
+  <div class="form-actions">
+  <a class="btn" href="{jurl 'admin~theme:modify'}">
+    {@admin~admin.configuration.button.modify.theme.label@}
+  </a>
   </div>
   {/ifacl2}
+</div>
 
 <script>
     {literal}
