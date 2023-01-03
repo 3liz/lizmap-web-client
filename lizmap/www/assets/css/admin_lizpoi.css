@@ -84,12 +84,6 @@
 #content button,
 #content input[type="submit"] {
     background-color: #9acd32;
-    background-image: -khtml-gradient(top , #a9d848, #9acd32);
-    background-image: -moz-linear-gradient(top , #a9d848, #9acd32);
-    background-image: -ms-linear-gradient(top , #a9d848, #a9d848 25%, #9acd32);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#a9d848), color-stop(25%, #a9d848), to(#9acd32));
-    background-image: -webkit-linear-gradient(top , #a9d848, #a9d848 25%, #9acd32);
-    background-image: -o-linear-gradient(top , #a9d848, #a9d848 25%, #9acd32);
     background-image: linear-gradient(to bottom , #a9d848, #a9d848 25%, #9acd32);
     background-repeat: repeat-x;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
