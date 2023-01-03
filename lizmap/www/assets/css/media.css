@@ -17,8 +17,6 @@
   #search-query{
     padding-left: 8px;
     padding-right: 8px;
-    -webkit-transition: all .5s;
-    -moz-transition: all .5s;
     transition: all .5s;
   }
 
@@ -75,9 +73,6 @@
 
 /* #### Retina screen (iphone4, samsung note, etc.) Portrait or Landscape #### */
 @media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
 only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx),
