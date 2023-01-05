@@ -4,6 +4,8 @@
 
 ### Fixed
 
+* Projects page: display projects title and buttons at bottom whatever the thumbnail's image size is
+
 ## 3.5.8 - 2022-12-08
 
 ### Fixed

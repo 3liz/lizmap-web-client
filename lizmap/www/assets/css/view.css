@@ -5,6 +5,7 @@
   position:relative;
   text-align:center;
   cursor: pointer;
+  flex-grow: 1;
 }
 .liz-project-img {
   width : 250px;
@@ -56,6 +57,8 @@
   background-color: white;
   height: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 #headermenu .input-prepend {
