@@ -25,6 +25,10 @@
   * A WKT in `EPSG:4326` can also be sent as an **additional parameter**. This is only possible when running the action with JavaScript. This allows to **send a geometry** to be used by the PostgreSQL action (for example to get data from another table with geometries intersecting this passed WKT geometry)
   * The **JavaScript and HTML code** has been **modernized** (no more jQuery calls, usage of web components, etc.)
 
+### Changed
+
+* Avoid downloading default project image multiple times. This improves first load of projects page
+
 ### Updated
 
 * New drawing toolbar, migration from OpenLayers 2 to OpenLayers 6
