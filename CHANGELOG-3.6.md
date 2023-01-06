@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* Webp and AVIF file formats can be used for the default image of a project. It speeds up first page load by reducing bandwidth
+
 ## 3.6.0 - 2022-12-09
 
 ### Added
