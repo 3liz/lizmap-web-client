@@ -70,14 +70,6 @@ class themeCtrl extends jController
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
-        // Redirect to the theme home page if the user has not enough rights
-        if (!\jAcl2::check('lizmap.admin.theme.update')) {
-            jMessage::add(jLocale::get('admin~admin.theme.error.no.access'));
-            $rep->action = 'theme:index';
-
-            return $rep;
-        }
-
         // Get the data
         $theme = lizmap::getTheme();
 
@@ -105,16 +97,6 @@ class themeCtrl extends jController
      */
     public function edit()
     {
-        // Redirect to the theme home page if the user has not enough rights
-        if (!\jAcl2::check('lizmap.admin.theme.update')) {
-            /** @var jResponseRedirect $rep */
-            $rep = $this->getResponse('redirect');
-            jMessage::add(jLocale::get('admin~admin.theme.error.no.access'));
-            $rep->action = 'theme:index';
-
-            return $rep;
-        }
-
         /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
@@ -148,16 +130,6 @@ class themeCtrl extends jController
      */
     public function save()
     {
-        // Redirect to the theme home page if the user has not enough rights
-        if (!\jAcl2::check('lizmap.admin.theme.update')) {
-            /** @var jResponseRedirect $rep */
-            $rep = $this->getResponse('redirect');
-            jMessage::add(jLocale::get('admin~admin.theme.error.no.access'));
-            $rep->action = 'theme:index';
-
-            return $rep;
-        }
-
         // If the section does exists in the ini file : get the data
         $theme = lizmap::getTheme();
 
@@ -229,8 +201,7 @@ class themeCtrl extends jController
         }
 
         // Modify class properties
-        $modifyTheme = $theme->update($data);
-        if ($modifyTheme) {
+        if ($theme->update($data)) {
             jMessage::add(jLocale::get('admin~admin.form.admin_theme.message.data.saved'));
         }
 
@@ -269,16 +240,6 @@ class themeCtrl extends jController
      */
     public function removeThemeImage()
     {
-        // Redirect to the theme home page if the user has not enough rights
-        if (!\jAcl2::check('lizmap.admin.theme.update')) {
-            /** @var jResponseRedirect $rep */
-            $rep = $this->getResponse('redirect');
-            jMessage::add(jLocale::get('admin~admin.theme.error.no.access'));
-            $rep->action = 'theme:index';
-
-            return $rep;
-        }
-
         $theme = lizmap::getTheme();
         $prop = $this->param('key', 'headerLogo');
         if ($prop != 'headerLogo' and $prop != 'headerBackgroundImage') {
