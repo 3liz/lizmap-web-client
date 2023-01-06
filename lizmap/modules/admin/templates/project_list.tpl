@@ -1,4 +1,4 @@
-{ifacl2 'lizmap.admin.access'}
+{ifacl2 'lizmap.admin.project.list.view'}
 
 <h2>{@admin.menu.lizmap.project.list.label@}</h2>
 

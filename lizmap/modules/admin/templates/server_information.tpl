@@ -1,7 +1,7 @@
 
 {meta_html js $j_basepath.'assets/js/admin/copy_to_clipboard.js'}
 
-{ifacl2 'lizmap.admin.access'}
+{ifacl2 'lizmap.admin.server.information.view'}
   <!--Services-->
   <div id="lizmap_server_information">
     <h2>{@admin.menu.server.information.label@}</h2>

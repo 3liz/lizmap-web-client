@@ -13,7 +13,16 @@ class logsCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.access'),
+        '*' => array('jacl2.right' => 'lizmap.admin.lizmap.log.view'),
+        'emptyCounter' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
+        'emptyDetail' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
+        'eraseError' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
     );
 
     /**
@@ -101,9 +110,8 @@ class logsCtrl extends jController
         $rep = $this->getResponse('redirect');
 
         // Get counter
-        $cnx = jDb::getConnection('lizlog');
-
         try {
+            $cnx = jDb::getConnection('lizlog');
             $cnx->exec('DELETE FROM log_counter;');
             jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_counter')));
         } catch (Exception $e) {
@@ -228,9 +236,8 @@ class logsCtrl extends jController
         $rep = $this->getResponse('redirect');
 
         // Get counter
-        $cnx = jDb::getConnection('lizlog');
-
         try {
+            $cnx = jDb::getConnection('lizlog');
             $cnx->exec('DELETE FROM log_detail;');
             jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_detail')));
         } catch (Exception $e) {
