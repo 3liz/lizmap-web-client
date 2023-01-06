@@ -1,4 +1,5 @@
 {jmessage_bootstrap}
+
 {if $form->getData('new') == 1}
 <h1>{@admin~admin.form.admin_section.h1.create@}</h1>
 {else}
