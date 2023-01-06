@@ -6,11 +6,9 @@ class configListener extends jEventListener
     {
         // Create the "lizmap" parent menu item
         $bloc = new masterAdminMenuItem('lizmap', 'LizMap', '', 50);
-        $hasChildren = false;
 
         // Access the Lizmap service configuration (admins)
         if (jAcl2::check('lizmap.admin.services.view')) {
-            $hasChildren = true;
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_configuration',
                 jLocale::get('admin~admin.menu.configuration.main.label'),
@@ -22,7 +20,6 @@ class configListener extends jEventListener
 
         // Access the list of Lizmap repositories
         if (jAcl2::check('lizmap.admin.repositories.view')) {
-            $hasChildren = true;
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_maps',
                 jLocale::get('admin~admin.menu.lizmap.repositories.label'),
@@ -34,7 +31,6 @@ class configListener extends jEventListener
 
         // Access the list of Lizmap projects
         if (jAcl2::check('lizmap.admin.project.list.view')) {
-            $hasChildren = true;
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_project_list',
                 jLocale::get('admin~admin.menu.lizmap.project.list.label'),
@@ -46,7 +42,6 @@ class configListener extends jEventListener
 
         // Configure the landing page content
         if (jAcl2::check('lizmap.admin.home.page.update')) {
-            $hasChildren = true;
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_landing_page_content',
                 jLocale::get('admin~admin.menu.lizmap.landingPageContent.label'),
@@ -58,7 +53,6 @@ class configListener extends jEventListener
 
         // Configure the theme
         if (jAcl2::check('lizmap.admin.theme.update')) {
-            $hasChildren = true;
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_theme',
                 jLocale::get('admin~admin.menu.lizmap.theme.label'),
@@ -68,18 +62,16 @@ class configListener extends jEventListener
             );
         }
 
-        if ($hasChildren) {
+        if (count($bloc->childItems)) {
             // Add the bloc
             $event->add($bloc);
         }
 
         // Server menu item
         $bloc = new masterAdminMenuItem('server', jLocale::get('admin~admin.menu.server.label'), '', 60);
-        $hasChildren = false;
 
         // Information taken from QGIS Server with the help of Lizmap plugin
         if (jAcl2::check('lizmap.admin.server.information.view')) {
-            $hasChildren = true;
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_server_information',
                 jLocale::get('admin~admin.menu.server.information.label'),
@@ -91,7 +83,6 @@ class configListener extends jEventListener
 
         // Child for lizmap logs
         if (jAcl2::check('lizmap.admin.lizmap.log.view')) {
-            $hasChildren = true;
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_logs',
                 jLocale::get('admin~admin.menu.lizmap.logs.label'),
@@ -101,7 +92,7 @@ class configListener extends jEventListener
             );
         }
 
-        if ($hasChildren) {
+        if (count($bloc->childItems)) {
             // Add the bloc
             $event->add($bloc);
         }
