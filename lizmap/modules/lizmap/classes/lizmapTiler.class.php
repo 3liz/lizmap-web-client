@@ -283,15 +283,15 @@ class lizmapTiler
                 $tileMatrixSet->tileMatrixList = $tileMatrixList;
                 $tileMatrixSetList[] = $tileMatrixSet;
             } elseif ($CRS == $projection->ref) {
-                $proj4 = new Proj4php();
-                Proj4php::$defs[$CRS] = $projection->proj4;
-                $sourceProj = new Proj4phpProj('EPSG:4326', $proj4);
-                $destProj = new Proj4phpProj($projection->ref, $proj4);
+                $proj4 = new \proj4php\Proj4php();
+                $proj4->addDef($CRS, $projection->proj4);
+                $sourceProj = new \proj4php\Proj('EPSG:4326', $proj4);
+                $destProj = new \proj4php\Proj($projection->ref, $proj4);
 
-                $sourceMinPt = new proj4phpPoint($rootExtent[0], $rootExtent[1]);
+                $sourceMinPt = new \proj4php\Point($rootExtent[0], $rootExtent[1]);
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
 
-                $sourceMaxPt = new proj4phpPoint($rootExtent[2], $rootExtent[3]);
+                $sourceMaxPt = new \proj4php\Point($rootExtent[2], $rootExtent[3]);
                 $destMaxPt = $proj4->transform($sourceProj, $destProj, $sourceMaxPt);
 
                 $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
@@ -492,33 +492,34 @@ class lizmapTiler
         );
 
         $projection = $project->getOption('projection');
-        $proj4 = new Proj4php();
-        Proj4php::$defs[$projection->ref] = $projection->proj4;
-        $sourceProj = new Proj4phpProj('EPSG:4326', $proj4);
+        $proj4 = new \proj4php\Proj4php();
+
+        $proj4->addDef($projection->ref, $projection->proj4);
+        $sourceProj = new \proj4php\Proj('EPSG:4326', $proj4);
 
         $tileMatrixSetLinkList = array();
         foreach ($tileMatrixSetList as $tileMatrixSet) {
-            $destProj = new Proj4phpProj($tileMatrixSet->ref, $proj4);
+            $destProj = new \proj4php\Proj($tileMatrixSet->ref, $proj4);
             $destMaxExtent = $tileMatrixSet->extent;
 
-            $sourceMinPt = new proj4phpPoint($layerExtent[0], $layerExtent[1]);
-            $destMinPt = new proj4phpPoint($destMaxExtent[0], $destMaxExtent[1]);
+            $sourceMinPt = new \proj4php\Point($layerExtent[0], $layerExtent[1]);
+            $destMinPt = new \proj4php\Point($destMaxExtent[0], $destMaxExtent[1]);
 
-            $sourceMaxPt = new proj4phpPoint($layerExtent[2], $layerExtent[3]);
-            $destMaxPt = new proj4phpPoint($destMaxExtent[2], $destMaxExtent[3]);
+            $sourceMaxPt = new \proj4php\Point($layerExtent[2], $layerExtent[3]);
+            $destMaxPt = new \proj4php\Point($destMaxExtent[2], $destMaxExtent[3]);
 
             try {
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
-                $destMinPt = new proj4phpPoint($destMaxExtent[0], $destMaxExtent[1]);
+                $destMinPt = new \proj4php\Point($destMaxExtent[0], $destMaxExtent[1]);
             }
 
             try {
                 $destMaxPt = $proj4->transform($sourceProj, $destProj, $sourceMaxPt);
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
-                $destMaxPt = new proj4phpPoint($destMaxExtent[2], $destMaxExtent[3]);
+                $destMaxPt = new \proj4php\Point($destMaxExtent[2], $destMaxExtent[3]);
             }
 
             $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
