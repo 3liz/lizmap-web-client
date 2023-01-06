@@ -34,10 +34,18 @@ class project_listZone extends jZone
         // Loop for each repository and find projects
         $hasInspectionData = false;
         foreach ($repositories as $r) {
-            $lrep = lizmap::getRepository($r);
-            $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
-            $metadata = $lrep->getProjectsMetadata();
+            $lizmapRepository = lizmap::getRepository($r);
+            if (!jAcl2::check('lizmap.repositories.view', $r)) {
+                continue;
+            }
+            $lizmapViewItem = new lizmapMainViewItem($r, $lizmapRepository->getLabel());
+            $metadata = $lizmapRepository->getProjectsMetadata();
             foreach ($metadata as $projectMetadata) {
+                // Do not add the project if the authenticated user
+                // has no access to it
+                if (!$projectMetadata->getAcl()) {
+                    continue;
+                }
 
                 // Get the projects data needed for the administration list table
                 /** @var Lizmap\Project\ProjectMetadata $projectItem */
@@ -48,9 +56,9 @@ class project_listZone extends jZone
                     $hasInspectionData = true;
                 }
 
-                $mrep->childItems[] = $projectItem;
+                $lizmapViewItem->childItems[] = $projectItem;
             }
-            $maps[$r] = $mrep;
+            $maps[$r] = $lizmapViewItem;
         }
         $this->_tpl->assign('mapItems', $maps);
         $this->_tpl->assign('hasInspectionData', $hasInspectionData);
