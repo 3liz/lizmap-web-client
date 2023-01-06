@@ -14,7 +14,7 @@
     <a name="link-projet-{$idm}"></a>
     <div class="thumbnail">
       <div class="liz-project">
-        <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="liz-project-img">
+        <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="liz-project-img liz-project-img-placeholder" style="background-image:url('{$p->imgPlaceholder}')">
         <p class="liz-project-desc" style="display:none;">
           <b class="title">{$p->title}</b>
           <br/>
@@ -42,7 +42,7 @@
       <div class="modal-body">
         <dl class="dl-horizontal">
           <dt>{@view~map.metadata.h2.illustration@}</dt>
-          <dd><img src="{$p->img}" alt="project image" width="150" height="150"></dd>
+          <dd><img src="{$p->img}" alt="project image" loading="lazy" class="liz-project-img-placeholder" width="150" height="150" style="background-image:url('{$p->imgPlaceholder}')"></dd>
           <dt>{@default.project.title.label@}</dt>
           <dd>{$p->title}&nbsp;</dd>
           <dt>{@default.project.abstract.label@}</dt>
