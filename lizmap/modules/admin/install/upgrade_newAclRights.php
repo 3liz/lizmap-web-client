@@ -4,8 +4,9 @@ class lizmapModuleUpgrader_newSubjectsAndRights extends jInstallerModule
 {
     public $targetVersions = array(
         '3.6.1-beta.1',
-        '3.6.1',
+        '3.7.0-alpha.1',
     );
+
     public $date = '2023-01-06';
 
     public function install()
