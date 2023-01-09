@@ -107,7 +107,7 @@
             <td>{if !empty(trim($p['qgis_log']))}🔴{/if}</td>
 
             <!-- Hidden QGIS logs -->
-            <td>{$p['qgis_log']|nl2br|strip_tags|eschtml:ENT_QUOTES}</td>
+            <td>{$p['qgis_log']|strip_tags|eschtml:ENT_QUOTES|nl2br}</td>
 
             <!-- loading time -->
             {assign $style = ''}
