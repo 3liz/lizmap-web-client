@@ -94,8 +94,7 @@ class main_viewZone extends jZone
                         $r,
                         'map',
                         $wmsGetCapabilitiesUrl,
-                        $wmtsGetCapabilitiesUrl,
-                        jApp::urlBasePath().'themes/'.jApp::config()->theme.'/css/img/250x250_mappemonde.jpg'
+                        $wmtsGetCapabilitiesUrl
                     );
                     /*} else {
                         $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
