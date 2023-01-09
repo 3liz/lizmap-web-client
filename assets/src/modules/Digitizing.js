@@ -17,6 +17,10 @@ export default class Digitizing {
 
     constructor() {
 
+        // defined a context to separate drawn features
+        this._context = 'draw';
+        this._contextFeatures = {};
+
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
@@ -193,6 +197,8 @@ export default class Digitizing {
             minidockopened: (e) => {
                 if (e.id == 'measure') {
                     this.toolSelected = this._tools[0];
+                } else if (e.id == 'draw' || e.id == 'selectiontool') {
+                    this.context = e.id;
                 }
             }
         });
@@ -200,6 +206,30 @@ export default class Digitizing {
 
     get drawLayer() {
         return this._drawLayer;
+    }
+
+    get context() {
+        return this._context;
+    }
+
+    set context(aContext) {
+        if (this.featureDrawn) {
+            this._contextFeatures[this._context] = (new GeoJSON()).writeFeatures(this.featureDrawn);
+        } else {
+            this._contextFeatures[this._context] = null;
+        }
+        this._isSaved = false;
+        this._drawLayer.getSource().clear();
+        this._context = aContext;
+        if (this._contextFeatures[this._context]) {
+            const OL6features = (new GeoJSON()).readFeatures(this._contextFeatures[this._context]);
+            if (OL6features) {
+                // Add imported features to map and zoom to their extent
+                this._drawSource.addFeatures(OL6features);
+            }
+        } else {
+            this.loadFeatureDrawnToMap();
+        }
     }
 
     get toolSelected() {
@@ -407,14 +437,15 @@ export default class Digitizing {
 
         // Save features in WKT format if any and if save mode is on
         if (this.featureDrawn && this._isSaved) {
-            localStorage.setItem(this._repoAndProjectString + '_drawLayer', formatWKT.write(this.featureDrawn));
+            localStorage.setItem(this._repoAndProjectString + '_' + this._context + '_drawLayer', formatWKT.write(this.featureDrawn));
         }
     }
 
     loadFeatureDrawnToMap() {
         const formatWKT = new OpenLayers.Format.WKT();
 
-        const drawLayerWKT = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
+        const oldDrawLayerWKT = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
+        const drawLayerWKT = oldDrawLayerWKT !== null ? oldDrawLayerWKT : localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
 
         if (drawLayerWKT) {
             this._drawLayer.addFeatures(formatWKT.read(drawLayerWKT));
@@ -562,7 +593,7 @@ export default class Digitizing {
                             for (const coordinate of importedGeomCoordinates) {
                                 pointsCoords.push(new OpenLayers.Geometry.Point(coordinate[0], coordinate[1]));
                             }
-                            
+
                             geomToDraw = new OpenLayers.Geometry.MultiPoint(pointsCoords);
                         } else if (importedGeomType === 'LineString') {
                             for (const coordinate of importedGeomCoordinates) {
