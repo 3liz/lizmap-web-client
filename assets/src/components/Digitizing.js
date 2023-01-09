@@ -101,7 +101,7 @@ export default class Digitizing extends HTMLElement {
             <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
-            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''}" @click=${()=> mainLizmap.digitizing.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
+            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''} ${this.hasAttribute('save') ? '' : 'hide'}" @click=${()=> mainLizmap.digitizing.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
                 <svg>
                     <use xlink:href="#save" />
                 </svg>
@@ -132,7 +132,7 @@ export default class Digitizing extends HTMLElement {
                             <use xlink:href="#file-upload"></use>
                         </svg>
                         <input class="hide" type="file" accept=".kml, .geojson, .json, .gpx" @change=${
-                            (event) => 
+                            (event) =>
                                     {
                                         if (event.target.files.length > 0){
                                             event.target.parentElement.parentElement.querySelector('.file-name').textContent = event.target.files[0].name;
