@@ -17,13 +17,6 @@
   position:relative;
   max-width:100%;
 }
-
-.liz-project-img-placeholder{
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-}
-
 .liz-project-desc {
   color: white;
   font-size: 0.8em;
