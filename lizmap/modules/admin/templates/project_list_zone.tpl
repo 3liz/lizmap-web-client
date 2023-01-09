@@ -43,18 +43,18 @@
         {foreach $mi->childItems as $p}
         <tr>
             <!-- repository -->
-            <td title="{$mi->title}">
+            <td title="{$mi->title|strip_tags|eschtml:ENT_QUOTES}">
                 {$mi->id}
             </td>
 
             <!-- project- KEEP the line break after the title to improve the tooltip readability-->
-            <td title="{$p['title']}
-{$p['abstract']|strip_tags|truncate:150}">
+            <td title="{$p['title']|strip_tags|eschtml:ENT_QUOTES}
+{$p['abstract']|strip_tags|eschtml:ENT_QUOTES|truncate:150}">
                 <a target="_blank" href="{$p['url']}">{$p['id']}</a>
             </td>
 
             <!-- Hidden QGIS project abstract -->
-            <td>{$p['abstract']}</td>
+            <td>{$p['abstract']|strip_tags|eschtml:ENT_QUOTES}</td>
 
             <!-- Hidden QGIS project image -->
             <td>{$p['image']}</td>
@@ -92,7 +92,7 @@
             <td>
                 <ul>
                 {foreach $p['invalid_layers'] as $id=>$properties}
-                    <li style="cursor: help;" title="{$properties['source']}">
+                    <li style="cursor: help;" title="{$properties['source']|strip_tags|escxml:ENT_QUOTES}">
                         {$properties['name']}
                     </li>
                 {/foreach}
@@ -107,7 +107,7 @@
             <td>{if !empty(trim($p['qgis_log']))}🔴{/if}</td>
 
             <!-- Hidden QGIS logs -->
-            <td>{$p['qgis_log']|nl2br}</td>
+            <td>{$p['qgis_log']|nl2br|strip_tags|eschtml:ENT_QUOTES}</td>
 
             <!-- loading time -->
             {assign $style = ''}
@@ -157,7 +157,7 @@
             </td>
 
             <!-- Version of Lizmap plugin for QGIS Desktop -->
-            <td title="">
+            <td>
                 {$p['lizmap_plugin_version']}
             </td>
 
@@ -177,12 +177,12 @@
             </td>
 
             <!-- Authorized groups -->
-            <td title="">
-                {$p['acl_groups']}
+            <td>
+                {$p['acl_groups']|strip_tags|eschtml:ENT_QUOTES}
             </td>
 
             <!-- Project hidden -->
-            <td title="">
+            <td>
                 {if $p['hidden_project']}
                     {@admin.project.list.column.hidden.project.yes.label@}
                 {else}
@@ -191,7 +191,7 @@
             </td>
 
             <!-- File time -->
-            <td title="">
+            <td>
                 {$p['file_time']|jdatetime:'timestamp':'Y-m-d H:i:s'}
             </td>
 
@@ -203,7 +203,7 @@
                 {assign $title = @admin.project.list.column.crs.user.warning.label@}
             {/if}
             <td title="{$title}" style="{$style}">
-                {$p['projection']}
+                {$p['projection']|strip_tags|eschtml:ENT_QUOTES}
             </td>
 
         </tr>
