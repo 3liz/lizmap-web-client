@@ -1,6 +1,6 @@
 <?php
 
-class lizmapModuleUpgrader_newAclRights extends jInstallerModule
+class adminModuleUpgrader_newAclRights extends jInstallerModule
 {
     public $targetVersions = array(
         '3.6.1-beta.1',
