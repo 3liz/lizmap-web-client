@@ -7,6 +7,7 @@
 * Webp and AVIF file formats can be used for the default image of a project. It speeds up first page load by reducing bandwidth
 * New API to fetch the dataviz configuration for a given plot, useful in the QGIS Desktop plugin to have a preview
 * New API to access a lot of metadata from the Lizmap Web Client server such as groups, directories etc. It's useful in the QGIS Desktop plugin as well.
+* A lot of new rights in the administration panel have been added to have a **publisher** group. It allows you to better distinguish between administrators and QGIS publishers.
 
 ### Fixed
 
