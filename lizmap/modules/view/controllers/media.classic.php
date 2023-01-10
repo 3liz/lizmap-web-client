@@ -205,7 +205,7 @@ class mediaCtrl extends jController
     /**
      * Get illustration image for a specified project.
      *
-     * @return jResponseBinary|jResponseJson object The image for this project
+     * @return jResponseBinary object The image for this project
      */
     public function illustration()
     {
@@ -245,28 +245,24 @@ class mediaCtrl extends jController
             return $this->error403(jLocale::get('view~default.repository.access.denied'));
         }
 
-        // Get the project
-        $project = $this->param('project');
-        // default illustration
-        $themePath = jApp::wwwPath().'themes/'.jApp::config()->theme.'/';
-        $rep->fileName = $themePath.'css/img/250x250_mappemonde.jpg';
-        $rep->outputFileName = 'lizmap_mappemonde.jpg';
-        $rep->mimeType = 'image/jpeg';
+        // Get image type
+        $type = $this->param('type');
 
-        // get project illustration if exists
-        if ($project) {
-            $imageTypes = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'avif');
-            $imageTypes = array_merge($imageTypes, array_map('strtoupper', $imageTypes));
-            foreach ($imageTypes as $type) {
-                if (!file_exists($lrep->getPath().$project.'.qgs.'.$type)) {
-                    continue;
-                }
+        $imageTypes = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'avif');
+        $imageTypes = array_merge($imageTypes, array_map('strtoupper', $imageTypes));
 
-                $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
-                $rep->outputFileName = $repository.'_'.$project.'.'.$type;
-                $rep->mimeType = 'image/'.$type;
-            }
+        if (!in_array($type, $imageTypes)) {
+            return $this->error404('Image type is not correct.');
         }
+
+        // Get project illustration if existing
+        if (!file_exists($lrep->getPath().$project.'.qgs.'.$type)) {
+            return $this->error404('Image does not exist.');
+        }
+
+        $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
+        $rep->outputFileName = $repository.'_'.$project.'.'.$type;
+        $rep->mimeType = 'image/'.$type;
 
         // Get the mime type
         $mime = File::getMimeType($rep->fileName);
@@ -276,6 +272,28 @@ class mediaCtrl extends jController
         $rep->mimeType = $mime;
 
         $rep->setExpires('+1 days');
+
+        return $rep;
+    }
+
+    /**
+     * Get default illustration image for the Lizmap instance.
+     *
+     * @return jResponseBinary object The image for this project
+     */
+    public function defaultIllustration()
+    {
+        /** @var jResponseBinary $rep */
+        $rep = $this->getResponse('binary');
+        $rep->doDownload = false;
+
+        // default illustration
+        $themePath = jApp::wwwPath().'themes/'.jApp::config()->theme.'/';
+        $rep->fileName = $themePath.'css/img/250x250_mappemonde.jpg';
+        $rep->outputFileName = 'lizmap_mappemonde.jpg';
+        $rep->mimeType = 'image/jpeg';
+
+        $rep->setExpires('+7 days');
 
         return $rep;
     }
