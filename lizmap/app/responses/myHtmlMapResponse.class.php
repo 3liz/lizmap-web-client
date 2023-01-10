@@ -30,6 +30,8 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
 
         $this->addHeadContent('<meta name="Revisit-After" content="10 days" />');
 
+        $this->addCSSLink($bp.'assets/css/print_popup.css', array('media' => 'print'));
+
         $this->addAssets('jquery_ui');
         $this->addAssets('bootstrap');
         $this->addAssets('datatables');

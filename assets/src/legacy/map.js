@@ -369,6 +369,10 @@ window.lizMap = function() {
    */
   function updateContentSize(){
 
+    if (document.querySelector('body').classList.contains('print_popup')) {
+      return;
+    }
+
     updateMobile();
 
     // calculate height height
