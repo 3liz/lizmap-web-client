@@ -1015,9 +1015,16 @@ var lizAttributeTable = function() {
                             }
 
                             if( canCreateChild ){
-                                // Button to create a new child : Useful for both 1:n and n:m relation
-                                childCreateButtonItems.push( '<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-createFeature-attributeTable">' + childLayerConfig.title +'</a></li>' );
-                                layerLinkButtonItems.push( '<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
+                                // Add a button to create a new feature for this child layer
+                                let childButtonItem = `
+                                    <button class="btn btn-mini btn-createFeature-attributeTable" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                                    ➕ ${childLayerConfig.title}
+                                    </button>
+                                `;
+                                childCreateButtonItems.push(childButtonItem);
+
+                                // Link parent with the selected features of the child
+                                layerLinkButtonItems.push('<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
                             }
                         }
                     }
@@ -1025,18 +1032,12 @@ var lizAttributeTable = function() {
                 }
                 if( childLi.length ){
                     if( childCreateButtonItems.length > 0 ){
-                        childCreateButton+= '&nbsp;<div class="btn-group" role="group" >';
-                        childCreateButton+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
-                        childCreateButton+= lizDict['attributeLayers.toolbar.btn.data.createChildFeature.title'];
-                        childCreateButton+= '      <span class="caret"></span>';
-                        childCreateButton+= '    </button>';
-                        childCreateButton+= '    <ul class="dropdown-menu" role="menu">';
+                        childCreateButton+= '&nbsp;<span class="edition-children-add-buttons">';
                         for( var i in  childCreateButtonItems){
-                            var li = childCreateButtonItems[i];
-                            childCreateButton+= li;
+                            const childButton = childCreateButtonItems[i];
+                            childCreateButton+= childButton;
                         }
-                        childCreateButton+= '    </ul>';
-                        childCreateButton+= '</div>';
+                        childCreateButton+= '</span>';
                     }
                     if( layerLinkButtonItems.length > 0 ){
                         layerLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
@@ -2924,25 +2925,35 @@ var lizAttributeTable = function() {
                     );
                 },
 
+                // If there are some relations for the edited layer
+                // We add the children tables below or inside the form
                 lizmapeditionformdisplayed: function(e) {
                     $('#edition-children-container').hide().html('');
 
                     var fid =  e.featureId;
-                    // Do not disply child if it's a creation
+
+                    // Do not display children tables (from QGIS relations)
+                    // if the form concerns a feature creation
                     if ( !fid || fid == '' )
                         return;
 
+                    // Get the edited layer ID
                     var layerId = e.layerId;
                     var getLayerConfig = lizMap.getLayerConfigById( layerId );
 
+                    // Check for relations
                     if( getLayerConfig && 'relations' in lizMap.config && layerId in lizMap.config.relations ) {
                         var relations = lizMap.config.relations[layerId];
                         var featureType = getLayerConfig[0];
                         var featureId = featureType + '.' + fid;
                         if ( relations.length > 0 ) {
+
+                            // Build the HTML container for the children tables
+                            // which will be displayed under the form
                             var childHtml = getChildrenHtmlContent( featureType );
                             var html = '';
-                            // Add children content
+
+                            // Add children content container
                             if( childHtml ){
                                 // Add buttons to create new children
                                 if( childHtml['childCreateButton'] ) {
@@ -2951,17 +2962,19 @@ var lizAttributeTable = function() {
                                     html+= childHtml['childCreateButton'];
                                     html+= '</div>';
                                 }
+
                                 // Add children content : one tab per childlayer
                                 html+= '<div class="tabbable edition-children-content">';
-                                // Ul content
+                                // UL content: the tabs title
                                 html+= '    <ul class="nav nav-tabs">';
                                 for( var i in childHtml['tab-li'] ){
                                     var cLi = childHtml['tab-li'][i];
                                     html+= cLi;
                                 }
                                 html+= '    </ul>';
-                                html+= '    <div class="tab-content">';
+
                                 // Tab content
+                                html+= '    <div class="tab-content">';
                                 for( var i in childHtml['tab-content'] ){
                                     var cDiv = childHtml['tab-content'][i];
                                     html+= cDiv;
@@ -2969,10 +2982,17 @@ var lizAttributeTable = function() {
                                 html+= '    </div>'; // tab-content
                                 html+= '</div>'; // tabbable
                             }
+
+                            // Add the child container content HTML and show it
                             $('#edition-children-container').show().append(html);
+
+                            // Add a hidden input containing the parent feature id
                             $('#edition-children-container div.tabbable div.tab-pane input.attribute-table-hidden-parent-layer').after(
                                 '<input class="attribute-table-hidden-parent-feature-id" value="'+fid+'" type="hidden">'
                             );
+
+                            // Replace the id & href attributes of the children tabs
+                            // to distinguish them from the main attribute table menu ("Data")
                             $('#edition-children-container div.tabbable ul.nav-tabs li').each(function() {
                                 $(this).attr('id', $(this).attr('id').replace(/nav-tab-attribute-child-tab-/g, 'nav-tab-edition-child-tab-'));
                             });
@@ -2987,13 +3007,23 @@ var lizAttributeTable = function() {
                             });
 
                             // Bind click on createFeature button
+                            // When clicked, we launch the edition of the child feature
+                            // and pass the parent ID
                             $('#edition-children-container button.btn-createFeature-attributeTable')
                             .click(function(){
+                                // Ask if we should really create a child
+                                // This is important, as the modified data in the parent form
+                                // will be losed if the user has not saved it
+                                let confirm_msg = lizDict['edition.confirm.launch.child.creation'];
+                                let confirmChildCreation = confirm(confirm_msg);
+                                if (!confirmChildCreation) {
+                                    return false;
+                                }
                                 var parentLayerId = layerId;
                                 var aName = attributeLayersDic[ $(this).val() ];
                                 lizMap.getLayerFeature(featureType, fid, function(parentFeat) {
                                     var lid = config.layers[aName]['id'];
-                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat});
+                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId, feature:parentFeat});
                                 });
                                 return false;
                             })
@@ -3019,6 +3049,8 @@ var lizAttributeTable = function() {
                                 function(){ $(this).addClass('btn-primary'); },
                                 function(){ $(this).removeClass('btn-primary'); }
                             );
+
+                            // Fill the child attribute table with data from the layer with WFS
                             lizMap.getLayerFeature(featureType, fid, function(feat) {
                                 var fp = feat.properties;
                                 for ( var i=0, len=relations.length; i<len; i++ ){
@@ -3030,14 +3062,41 @@ var lizAttributeTable = function() {
                                         var rConfigLayer = rGetLayerConfig[1];
                                         filter = '"' + r.referencingField + '" = ' + "'" + fp[r.referencedField] + "'";
                                         // Get child table id
-                                        var childTable = '#edition-table-' + lizMap.cleanName(featureType) + '-' + lizMap.cleanName(rLayerName);
+                                        var parent_and_child = lizMap.cleanName(featureType) + '-' + lizMap.cleanName(rLayerName);
+                                        var childTable = '#edition-table-' + parent_and_child;
 
                                         // Fill in attribute table for child
                                         if( rLayerName in config.attributeLayers ) {
                                             getEditionChildData( rLayerName, filter, childTable );
                                         }
+
+                                        // Try to move the tables inside the parent form
+                                        // if we find dedicated containers coming from the "drag&drop" mode
+                                        // Get child attribute table id
+                                        var child_table_container = 'edition-child-tab-' + parent_and_child;
+                                        var target_div_selector = '#edition-form-container div.lizmap-form-relation[data-relation-id="';
+                                        target_div_selector += r.relationId + '"]';
+                                        var target_div = $(target_div_selector);
+                                        $('#' + child_table_container).appendTo(target_div);
+
+                                        // Hide the tab in the UL of the bottom container
+                                        $('#nav-tab-edition-child-tab-' + parent_and_child).hide();
+
+                                        // Replace the label by the relation name if the relation widget label is empty
+                                        if (target_div.find('legend:first').text().trim() == '') {
+                                            target_div.find('legend:first').text(r.relationName);
+                                        }
                                     }
                                 }
+
+                                // Hide the bottom tab container if its empty
+                                // (child tables have all been moved inside the form)
+                                let children_tab_content = $('div#edition-children-container div.tabbable.edition-children-content div.tab-content');
+                                if (children_tab_content.find('div.attribute-layer-child-content').length == 0) {
+                                    // Hide the button
+                                    $('#edition-children-container div.tabbable.edition-children-content').hide();
+                                }
+
                             });
                         }
                     }
