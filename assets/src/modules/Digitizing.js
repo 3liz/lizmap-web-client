@@ -27,6 +27,10 @@ export default class Digitizing {
 
     constructor() {
 
+        // defined a context to separate drawn features
+        this._context = 'draw';
+        this._contextFeatures = {};
+
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
@@ -132,6 +136,7 @@ export default class Digitizing {
                 if (e.id == 'measure') {
                     this.toolSelected = this._tools[0];
                 } else if (e.id == 'draw' || e.id == 'selectiontool') {
+                    this.context = e.id;
                     mainLizmap.newOlMap = true;
                     this.toggleVisibility(true);
                 }
@@ -147,6 +152,30 @@ export default class Digitizing {
 
     get drawLayer() {
         return this._drawLayer;
+    }
+
+    get context() {
+        return this._context;
+    }
+
+    set context(aContext) {
+        if (this.featureDrawn) {
+            this._contextFeatures[this._context] = (new GeoJSON()).writeFeatures(this.featureDrawn);
+        } else {
+            this._contextFeatures[this._context] = null;
+        }
+        this._isSaved = false;
+        this._drawLayer.getSource().clear();
+        this._context = aContext;
+        if (this._contextFeatures[this._context]) {
+            const OL6features = (new GeoJSON()).readFeatures(this._contextFeatures[this._context]);
+            if (OL6features) {
+                // Add imported features to map and zoom to their extent
+                this._drawSource.addFeatures(OL6features);
+            }
+        } else {
+            this.loadFeatureDrawnToMap();
+        }
     }
 
     get toolSelected() {
@@ -705,7 +734,7 @@ export default class Digitizing {
                     });
                 }
             }
-            localStorage.setItem(this._repoAndProjectString + '_drawLayer', JSON.stringify(savedFeatures));
+            localStorage.setItem(this._repoAndProjectString + '_' + this._context + '_drawLayer', JSON.stringify(savedFeatures));
         }
     }
 
@@ -713,7 +742,9 @@ export default class Digitizing {
      * Load all drawn features from local storage
      */
     loadFeatureDrawnToMap() {
-        const savedGeomJSON = localStorage.getItem(this._repoAndProjectString + '_drawLayer');
+        // get saved data without context for draw
+        const oldSavedGeomJSON = this._context === 'draw' ? localStorage.getItem(this._repoAndProjectString + '_drawLayer') : null;
+        const savedGeomJSON = oldSavedGeomJSON !== null ? oldSavedGeomJSON : localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
 
         if (savedGeomJSON) {
             const savedFeatures = JSON.parse(savedGeomJSON);
@@ -728,7 +759,7 @@ export default class Digitizing {
                 } else if(feature.type === 'Circle'){
                     loadedGeom = new CircleGeom(feature.center, feature.radius);
                 }
-                
+
                 if(loadedGeom){
                     this._drawSource.addFeature(new Feature(loadedGeom));
                 }
