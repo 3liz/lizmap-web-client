@@ -57,9 +57,11 @@ class main_viewZone extends jZone
             );
             $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
 
+            // Get all files name in the repository directory to look for thumbnails
+            $repFiles = scandir($lrep->getPath());
+
             $metadata = $lrep->getProjectsMetadata();
             foreach ($metadata as $meta) {
-
                 // Avoid project which needs an update
                 if ($meta->needsUpdateError()) {
                     continue;
@@ -80,7 +82,24 @@ class main_viewZone extends jZone
                     $wmsGetCapabilitiesUrl = $meta->getWMSGetCapabilitiesUrl();
                     $wmtsGetCapabilitiesUrl = $meta->getWMTSGetCapabilitiesUrl();
                 }
+
+                // Allowed image types lower or upper case
+                $imageTypes = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'avif');
+                $imageTypes = array_merge($imageTypes, array_map('strtoupper', $imageTypes));
+
                 if ($lrep->getKey().'~'.$meta->getId() != $excludedProject) {
+                    $imgPath = jUrl::get('view~media:defaultIllustration');
+                    foreach ($imageTypes as $type) {
+                        if (in_array($meta->getId().'.qgs.'.$type, $repFiles)) {
+                            $imgPath = jUrl::get(
+                                'view~media:illustration',
+                                array('repository' => $lrep->getKey(), 'project' => $meta->getId(), 'type' => $type)
+                            );
+
+                            break;
+                        }
+                    }
+
                     $mrep->childItems[] = new lizmapMainViewItem(
                         $meta->getId(),
                         $meta->getTitle(),
@@ -89,20 +108,13 @@ class main_viewZone extends jZone
                         $meta->getProj(),
                         $meta->getBbox(),
                         jUrl::get('view~map:index', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
-                        jUrl::get('view~media:illustration', array('repository' => $meta->getRepository(), 'project' => $meta->getId())),
+                        $imgPath,
                         0,
                         $r,
                         'map',
                         $wmsGetCapabilitiesUrl,
                         $wmtsGetCapabilitiesUrl
                     );
-                    /*} else {
-                        $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
-                        array(
-                            "repository"=>$lrep->getKey(),
-                            "project"=>$meta->getId(),
-                        )
-                        ) );*/
                 }
             }
             if (count($mrep->childItems) != 0) {
