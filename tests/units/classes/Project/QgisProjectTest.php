@@ -196,6 +196,9 @@ class QgisProjectTest extends TestCase
                     'referencedField' => 'QUARTMNO',
                     'referencingField' => 'QUARTMNO',
                     'previewField' => 'LIBQUART',
+                    'relationName' => 'Subdistricts by district',
+                    'relationId' => 'SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO',
+
                 ),
             ),
             'tramstop20150328114203878' => array(
@@ -203,6 +206,9 @@ class QgisProjectTest extends TestCase
                     'referencedField' => 'osm_id',
                     'referencingField' => 'stop_id',
                     'previewField' => 'unique_name',
+                    'relationName' => 'Tram stop -> pivot tram stop/tram line',
+                    'relationId' => 'jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id',
+
                 ),
             ),
             'pivot' => array(),

@@ -14,10 +14,12 @@ class qgisAttributeEditorElement
     protected $parentId;
 
     protected $htmlId = '';
+    protected $label = '';
 
     protected $_isContainer = false;
     protected $_isGroupBox = false;
     protected $_isTabPanel = false;
+    protected $_isRelationWidget = false;
 
     protected $_isVisibilityExpressionEnabled = false;
     protected $_visibilityExpression = '';
@@ -47,10 +49,26 @@ class qgisAttributeEditorElement
         }
 
         $name = $node->getName();
-        $this->_isContainer = ($name != 'attributeEditorField');
+
+        // Label
+        $getLabel = $this->getAttribute('label');
+        if ($getLabel !== null) {
+            $this->label = $getLabel;
+        }
+
+        $this->_isContainer = ($name != 'attributeEditorField' && $name != 'attributeEditorRelation');
         if (!$this->_isContainer) {
+            // Field
             $this->htmlId = $parentId.'-'.$idx;
+
+            // Relation table
+            if ($name == 'attributeEditorRelation') {
+                // Get the relation detail (referencingLayer, referencedLayer, etc.)
+                $this->htmlId = $parentId.'-relation'.$idx;
+                $this->_isRelationWidget = true;
+            }
         } else {
+            // Manage containers: form, group or tab
             if ($name == 'attributeEditorForm') {
                 $this->htmlId = $parentId;
             } else {
@@ -68,6 +86,7 @@ class qgisAttributeEditorElement
                 }
             }
 
+            // Check if the visibility of the object depends on QGIS expressions
             if ($this->getAttribute('visibilityExpressionEnabled') === '1') {
                 $this->_isVisibilityExpressionEnabled = true;
                 $this->_visibilityExpression = $this->getAttribute('visibilityExpression');
@@ -79,6 +98,7 @@ class qgisAttributeEditorElement
                 if ($name != 'attributeEditorContainer'
                     && $name != 'attributeEditorForm'
                     && $name != 'attributeEditorField'
+                    && $name != 'attributeEditorRelation'
                 ) {
                     ++$childIdx;
 
@@ -87,7 +107,8 @@ class qgisAttributeEditorElement
                 $child = new qgisAttributeEditorElement($formControls, $child, $this->htmlId, $childIdx, $depth + 1);
 
                 if (!$child->isContainer()) {
-                    if ($child->getCtrlRef() !== null) {
+                    // Child is a Field input OR a relation widget
+                    if ($child->getCtrlRef() !== null || $child->isRelationWidget()) {
                         if (count($this->tabChildren)) {
                             $this->childrenAfterTab[] = $child;
                         } else {
@@ -113,6 +134,11 @@ class qgisAttributeEditorElement
     public function getName()
     {
         return $this->getAttribute('name');
+    }
+
+    public function getLabel()
+    {
+        return $this->getAttribute('label');
     }
 
     public function getHtmlId()
@@ -152,6 +178,11 @@ class qgisAttributeEditorElement
     public function isTabPanel()
     {
         return $this->_isTabPanel;
+    }
+
+    public function isRelationWidget()
+    {
+        return $this->_isRelationWidget;
     }
 
     public function isVisibilityExpressionEnabled()
