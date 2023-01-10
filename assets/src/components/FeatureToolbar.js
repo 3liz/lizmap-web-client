@@ -51,6 +51,8 @@ export default class FeatureToolbar extends HTMLElement {
                 : ''
             }
 
+            <button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>
+
         </div>`;
 
         render(this._mainTemplate(), this);
@@ -365,5 +367,30 @@ export default class FeatureToolbar extends HTMLElement {
                 }
             }
         });
+    }
+
+    /**
+     * Launch browser's print box with print_popup.css applied
+     * to print current popup content
+     */
+    print() {
+        // Clone popup and insert at begin of <body>
+        const clonedPopup = document.querySelector('.lizmapPopupContent').cloneNode(true);
+        clonedPopup.classList.add('print', 'hide');
+        document.querySelector('body').insertAdjacentElement('afterbegin', clonedPopup);
+
+        // Add special class to body to activate CSS in print_popup.css
+        document.querySelector('body').classList.add('print_popup');
+
+        // On afterprint event, delete clonedPopup + remove special class
+        window.addEventListener('afterprint', () => {
+            clonedPopup.remove();
+            document.querySelector('body').classList.remove('print_popup');
+        }, {
+            once: true
+        });
+
+        // Launch print box
+        window.print();
     }
 }
