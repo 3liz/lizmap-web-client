@@ -221,7 +221,7 @@ export default class Digitizing {
             this._contextFeatures[this._context] = null;
         }
         this._isSaved = false;
-        this._drawLayer.getSource().clear();
+        this._drawLayer.destroyFeatures();
         this._context = aContext;
         if (this._contextFeatures[this._context]) {
             this._drawLayer.addFeatures(formatWKT.read(this._contextFeatures[this._context]));
