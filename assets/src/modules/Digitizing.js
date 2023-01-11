@@ -214,8 +214,9 @@ export default class Digitizing {
     }
 
     set context(aContext) {
+        const formatWKT = new OpenLayers.Format.WKT();
         if (this.featureDrawn) {
-            this._contextFeatures[this._context] = (new GeoJSON()).writeFeatures(this.featureDrawn);
+            this._contextFeatures[this._context] = formatWKT.write(this.featureDrawn);
         } else {
             this._contextFeatures[this._context] = null;
         }
@@ -223,11 +224,8 @@ export default class Digitizing {
         this._drawLayer.getSource().clear();
         this._context = aContext;
         if (this._contextFeatures[this._context]) {
-            const OL6features = (new GeoJSON()).readFeatures(this._contextFeatures[this._context]);
-            if (OL6features) {
-                // Add imported features to map and zoom to their extent
-                this._drawSource.addFeatures(OL6features);
-            }
+            this._drawLayer.addFeatures(formatWKT.read(this._contextFeatures[this._context]));
+            this._drawLayer.redraw(true);
         } else {
             this.loadFeatureDrawnToMap();
         }
