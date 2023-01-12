@@ -31,18 +31,14 @@ export default class Print extends HTMLElement {
                 <input type="text" class="print-label"><br>
                 <textarea class="print-label"></textarea>
             </div>
-            <div class="row-fluid">
-                <div class="span4">
-                    <select id="print-format" title="${lizDict['print.toolbar.format']}" class="btn-print-format">
+            <div class="flex">
+                <select id="print-format" title="${lizDict['print.toolbar.format']}" class="btn-print-format">
                     <option value="pdf">PDF</option>
                     <option value="jpg">JPG</option>
                     <option value="png">PNG</option>
                     <option value="svg">SVG</option>
-                    </select>
-                </div>
-                <div class="span8">
-                    <button id="print-launch" class="btn-print-launch btn btn-small btn-primary btn-block"><span class="icon"></span>&nbsp;${lizDict['print.toolbar.title']}</button>
-                </div>
+                </select>
+                <button id="print-launch" class="btn-print-launch btn btn-primary flex-grow-1"><span class="icon"></span>&nbsp;${lizDict['print.toolbar.title']}</button>
             </div>`;
 
         render(template(), this);
