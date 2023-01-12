@@ -36,5 +36,6 @@
         <button id="print-launch" class="btn-print-launch btn btn-small btn-primary btn-block"><span class="icon"></span>&nbsp;{@view~map.print.toolbar.title@}</button>
       </div>
     </div>
+    <lizmap-print></lizmap-print>
   </div>
 </div>
