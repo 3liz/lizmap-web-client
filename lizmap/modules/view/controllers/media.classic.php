@@ -251,6 +251,24 @@ class mediaCtrl extends jController
         $imageTypes = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'avif');
         $imageTypes = array_merge($imageTypes, array_map('strtoupper', $imageTypes));
 
+        // If no 'type' param, look for illustration in directory
+        if (!$type) {
+            $imageFound = false;
+            foreach ($imageTypes as $imageType) {
+                if (file_exists($lrep->getPath().$project.'.qgs.'.$imageType)) {
+                    $type = $imageType;
+                    $imageFound = true;
+
+                    break;
+                }
+            }
+
+            // return default illustration if none has been found
+            if (!$imageFound) {
+                return $this->defaultIllustration();
+            }
+        }
+
         if (!in_array($type, $imageTypes)) {
             return $this->error404('Image type is not correct.');
         }
