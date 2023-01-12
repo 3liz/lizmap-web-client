@@ -46,7 +46,7 @@ tests:
 package:
   stage: package
   script:
-    - make clean ci_package saas_package
+    - make clean ci_package
   environment:
     name: snap
   dependencies:

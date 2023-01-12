@@ -48,10 +48,6 @@ GENERIC_DIR_NAME=lizmap_web_client
 GENERIC_PACKAGE_DIR=$(STAGE)/$(GENERIC_DIR_NAME)
 GENERIC_PACKAGE_ZIP=$(GENERIC_DIR_NAME).zip
 GENERIC_PACKAGE_PATH=$(STAGE)/$(GENERIC_PACKAGE_ZIP)
-SAAS_PACKAGE_NAME=lizmap-web-client-$(SAAS_LIZMAP_VERSION)
-SAAS_PACKAGE_DIR=$(STAGE)/$(SAAS_PACKAGE_NAME)
-SAAS_PACKAGE_ZIP=$(SAAS_PACKAGE_NAME).zip
-SAAS_PACKAGE_PATH=$(STAGE)/$(SAAS_PACKAGE_ZIP)
 
 #-------- Docker
 DOCKER_NAME=lizmap-web-client
@@ -95,10 +91,6 @@ ifdef DOCKER_MANIFEST_RELEASE_TAG
 endif
 	@echo "SAAS_LIZMAP_VERSION="$(SAAS_LIZMAP_VERSION)
 	@echo "PACKAGE_NAME="$(PACKAGE_NAME)
-	@echo "SAAS_PACKAGE_NAME="$(SAAS_PACKAGE_NAME)
-	@echo "SAAS_PACKAGE_DIR="$(SAAS_PACKAGE_DIR)
-	@echo "SAAS_PACKAGE_ZIP="$(SAAS_PACKAGE_ZIP)
-	@echo "SAAS_PACKAGE_PATH="$(SAAS_PACKAGE_PATH)
 	@echo "GENERIC_PACKAGE_PATH="$(GENERIC_PACKAGE_PATH)
 	@echo "BRANCH="$(BRANCH)
 	@echo "BUILDID="$(BUILDID)
@@ -148,19 +140,11 @@ $(GENERIC_PACKAGE_DIR): $(DIST)
 	mkdir -p $(GENERIC_PACKAGE_DIR)
 	cp -a $(DIST)/* $(GENERIC_PACKAGE_DIR)
 
-$(SAAS_PACKAGE_DIR): $(DIST)
-	mkdir -p $(SAAS_PACKAGE_DIR)
-	cp -a $(DIST)/* $(SAAS_PACKAGE_DIR)
-	echo $(SAAS_LIZMAP_VERSION) > $(SAAS_PACKAGE_DIR)/VERSION
-
 $(ZIP_PACKAGE): $(DIST)
 	cd $(STAGE) && zip -rq $(PACKAGE_NAME).zip  $(PACKAGE_NAME)/
 
 $(GENERIC_PACKAGE_PATH): $(GENERIC_PACKAGE_DIR)
 	cd $(STAGE) && zip -rq $(GENERIC_PACKAGE_ZIP) $(GENERIC_DIR_NAME)/
-
-$(SAAS_PACKAGE_PATH): $(SAAS_PACKAGE_DIR)
-	cd $(STAGE) && zip -rq $(SAAS_PACKAGE_ZIP) $(SAAS_PACKAGE_NAME)/
 
 $(ZIP_DEMO_PACKAGE): $(STAGE)/lizmapdemo
 	cd $(STAGE) && zip -rq $(DEMO_PACKAGE_NAME).zip  lizmapdemo/
@@ -207,13 +191,11 @@ deploy_download_stable:
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 	upload_to_packages_server $(ZIP_DEMO_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 
-saas_package: $(SAAS_PACKAGE_PATH)
-
 saas_deploy_snap:
-	saas_release_lizmap snap $(SAAS_LIZMAP_VERSION) $(SAAS_PACKAGE_PATH)
+	saas_release_lizmap snap $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
 saas_release: check-release
-	saas_release_lizmap release $(SAAS_LIZMAP_VERSION) $(SAAS_PACKAGE_PATH)
+	saas_release_lizmap release $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
 docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
 
