@@ -28,6 +28,7 @@
 ### Changed
 
 * Avoid downloading default project image multiple times. This improves first load of projects page
+* Update landing page title
 
 ### Updated
 

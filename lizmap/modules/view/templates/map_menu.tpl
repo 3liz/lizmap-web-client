@@ -2,8 +2,8 @@
     <ul class="nav nav-list">
       {if $display_home}
       <li class="home">
-        <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.home.title@}" data-placement="right" data-container="#content">
-          <span class="icon"></span><span class="menu-title">{@view~default.home.title@}</span>
+        <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.home.menu@}" data-placement="right" data-container="#content">
+          <span class="icon"></span><span class="menu-title">{@view~default.home.menu@}</span>
         </a>
       </li>
       {/if}
