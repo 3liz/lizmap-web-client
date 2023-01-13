@@ -5,7 +5,8 @@
   <div id="logo">
   </div>
   <div id="title">
-    <h1>{$repositoryLabel}</h1>
+    <h1>{$title}</h1>
+    <h2>{$subTitle}</h2>
   </div>
 
   <div id="headermenu" class="navbar navbar-fixed-top">
