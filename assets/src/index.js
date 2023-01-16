@@ -37,6 +37,8 @@ lizMap.events.on({
 
         window.customElements.define('lizmap-action-selector', ActionSelector);
 
+        window.customElements.define('lizmap-print', Print);
+
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
     }
