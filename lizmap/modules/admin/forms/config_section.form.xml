@@ -2,11 +2,12 @@
 <form xmlns="http://jelix.org/ns/forms/1.1">
 
 <hidden ref="new"/>
- 
+
 <input ref="repository" type="string" required="true" pattern="/^[a-z0-9]+$/">
 	<label locale="admin~admin.form.admin_section.repository.label"/>
+	<help locale="admin~admin.form.admin_section.repository.help"/>
 </input>
- 
+
 <submit ref="_submit">
 	<label locale="admin~admin.form.admin_section.submit.label"/>
 </submit>
