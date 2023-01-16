@@ -33,11 +33,11 @@ class lizmapRepository
      * @deprecated
      */
     public static $propertiesOptions = array(
-        'label' => array(
+        'path' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
-        'path' => array(
+        'label' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
