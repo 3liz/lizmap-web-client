@@ -1,12 +1,28 @@
 import { mainLizmap } from '../modules/Globals.js';
 import {html, render} from 'lit-html';
 
+import MaskLayer from '../modules/Mask';
+
 export default class Print extends HTMLElement {
     constructor() {
         super();
     }
 
     connectedCallback() {
+        this._templates = mainLizmap.config?.printTemplates?.filter(template => template?.atlas?.enabled === '0');
+
+        this._maskWidth = 0;
+        this._maskHeight = 0;
+
+        mainLizmap.newOlMap = true;
+
+        this.printTemplate = 0;
+
+        // Create a mask layer to display the extent for the main map
+        this._maskLayer = new MaskLayer();
+        this._maskLayer.getSize = () => [this._maskWidth, this._maskHeight];
+        this._maskLayer.getScale = (frameState) => 100000;
+        mainLizmap.map.addLayer(this._maskLayer);
 
         const template = () => html`
             <table id="print-parameters" class="table table-condensed">
@@ -16,7 +32,11 @@ export default class Print extends HTMLElement {
                     <td>${lizDict['print.toolbar.dpi']}</td>
                 </tr>
                 <tr>
-                    <td><select id="print-template" class="btn-print-templates"></select></td>
+                    <td>
+                        <select id="print-template" @change=${(event) => { this.printTemplate = event.target.value }}>
+                            ${this._templates.map((template, index) => html`<option value="${index}">${template.title}</option>`)}
+                        </select>
+                    </td>
                     <td><select id="print-scale" class="btn-print-scales"></select></td>
                     <td>
                     <select id="print-dpi" class="btn-print-dpis">
@@ -49,6 +69,19 @@ export default class Print extends HTMLElement {
 
     }
 
-}
+    /**
+     * @param {string | number} index
+     */
+    set printTemplate(index){
+        // Change mask size
+        // Width/height are in mm by default. Convert to pixels
+        const INCHES_PER_METER = 39.37;
+        const DOTS_PER_INCH = 72;
 
-window.customElements.define('lizmap-print', Print);
+        this._maskWidth = this._templates?.[index]?.maps?.[0]?.width / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
+        this._maskHeight = this._templates?.[index]?.maps?.[0]?.height / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
+
+        mainLizmap.map.getView().changed();
+    }
+
+}
