@@ -1310,10 +1310,13 @@ window.lizMap = function() {
 
     var scales = [];
     var resolutions = [];
-    if ('resolutions' in config.options)
-      resolutions = config.options.resolutions;
-    else if ('mapScales' in config.options)
-      scales = config.options.mapScales;
+    if ('resolutions' in config.options){
+      resolutions = Array.from(config.options.resolutions);
+    }
+    else if ('mapScales' in config.options){
+      scales = Array.from(config.options.mapScales);
+    }
+
     scales.sort(function(a, b) {
       return Number(b) - Number(a);
     });
@@ -3683,8 +3686,10 @@ window.lizMap = function() {
     var ptTomm = 0.35277; //conversion pt to mm
 
     var scales = map.scales;
-    if ( config.options.mapScales.length > 2 )
-      scales = config.options.mapScales;
+    if ( config.options.mapScales.length > 2 ){
+      scales = Array.from(config.options.mapScales);
+    }
+
     if ( scales == null && map.resolutions != null ) {
       scales = [];
       for( var i=0, len=map.resolutions.length; i<len; i++ ){
@@ -3731,6 +3736,8 @@ window.lizMap = function() {
       }
       if ( pMap == null )
         continue;
+
+      // Convert width/height from mm to pt
       var mapWidth = Number(pMap.width) / ptTomm;
       var mapHeight = Number(pMap.height) / ptTomm;
       //for some strange reason we need to provide a "map" and a "size" object with identical content
