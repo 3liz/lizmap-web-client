@@ -559,10 +559,10 @@
             <config>
               <Option type="Map">
                 <Option type="bool" name="AllowNull" value="true"/>
-                <Option type="int" name="Max" value="2147483647"/>
-                <Option type="int" name="Min" value="-2147483648"/>
+                <Option type="int" name="Max" value="200"/>
+                <Option type="int" name="Min" value="-200"/>
                 <Option type="int" name="Precision" value="0"/>
-                <Option type="int" name="Step" value="1"/>
+                <Option type="int" name="Step" value="5"/>
                 <Option type="QString" name="Style" value="SpinBox"/>
               </Option>
             </config>
