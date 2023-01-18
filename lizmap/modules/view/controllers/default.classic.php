@@ -81,15 +81,17 @@ class defaultCtrl extends jController
             }
         }
 
-        $title = jLocale::get('view~default.repository.list.title').' - '.$services->appName;
+        $title = $services->appName;
+        $subTitle = jLocale::get('view~default.home.title');
 
         if ($repository) {
             $lrep = lizmap::getRepository($repository);
-            $title = $lrep->getLabel().' - '.$title;
+            $subTitle = $lrep->getLabel().' - '.jLocale::get('view~default.repository.list.title');
         }
-        $rep->title = $title;
+        $rep->title = $subTitle.' - '.$title;
 
-        $rep->body->assign('repositoryLabel', $title);
+        $rep->body->assign('title', $title);
+        $rep->body->assign('subTitle', $subTitle);
 
         $auth_url_return = jUrl::get('view~default:index');
         if ($repository) {
