@@ -21,4 +21,4 @@ jobs:
           As a friendly reminder: the best way to see this issue, or any other, fixed is to open a Pull Request.
           Thanks for being a part of the Lizmap community! 🦎
         stale-issue-label: 'stale'
-        exempt-issue-labels: 'bug,enhancement,doc-needed,new feature'
+        exempt-issue-labels: 'bug,enhancement,doc-needed,new feature,Feature request'
