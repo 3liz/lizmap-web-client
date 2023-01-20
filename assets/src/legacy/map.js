@@ -13,6 +13,8 @@ import {extend} from 'ol/extent';
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 
+import Utils from '../modules/Utils.js';
+
 import WKT from 'ol/format/WKT';
 
 window.lizMap = function() {
@@ -4107,7 +4109,7 @@ window.lizMap = function() {
       $("#message .print a").click();
       mAddMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
 
-      downloadFile(url, printParams, () => {
+      Utils.downloadFile(url, printParams, () => {
         const printLaunch = document.getElementById('print-launch');
         printLaunch.disabled = false;
         printLaunch.classList.remove('spinner');
@@ -4722,81 +4724,6 @@ window.lizMap = function() {
   }
 
   /**
-   * PRIVATE function: downloadFile
-   * Send an ajax POST request to download a file
-   *
-   * @param {String} url
-   * @param {Array} parameters
-   * @param {Function} callback optionnal callback executed when download ends
-   *
-   */
-   function downloadFile( url, parameters, callback ) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', url, true);
-      xhr.responseType = 'arraybuffer';
-      xhr.onload = function () {
-          if (this.status === 200) {
-              var filename = "";
-              var disposition = xhr.getResponseHeader('Content-Disposition');
-              if (disposition && disposition.indexOf('attachment') !== -1) {
-                  var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                  var matches = filenameRegex.exec(disposition);
-                  if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-              }
-
-              let type = xhr.getResponseHeader('Content-Type');
-
-              // Firefox >= 98 opens blob in its pdf viewer
-              // This is a hack to force download as in Chrome
-              if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && type == 'application/pdf'){
-                type = 'application/octet-stream';
-              }
-              const blob = new File([this.response], filename, { type: type });
-              const downloadUrl = URL.createObjectURL(blob);
-
-              if (filename) {
-                // use HTML5 a[download] attribute to specify filename
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = filename;
-                a.dispatchEvent(new MouseEvent('click'));
-              } else {
-                window.open(downloadUrl);
-              }
-
-              setTimeout(() => URL.revokeObjectURL(downloadUrl), 100); // cleanup
-          }
-
-          // Note 31/01/2022
-          // REMOVE WHEN THE QGIS SERVER BUG HAS BEEN FIXED
-          // Related PR for QGIS Master https://github.com/qgis/QGIS/pull/47051
-          // It should be fixed for 3.24.1 and 3.22.5
-          if (this.status == 400) {
-            // Check for parenthesis inside the layer name
-            // There is a bug to be fixed in QGIS Server WFS request for this context
-            var typeName = parameters['TYPENAME'];
-            const parenthesis_regex = /[\(\)]/g;
-            const has_parenthesis = typeName.match(parenthesis_regex);
-            if (has_parenthesis) {
-              var error_message = 'The selected features cannot be exported due to a known bug in QGIS Server.';
-              error_message += '<br/>Please ask the map editor to remove the parenthesis in the layer name.';
-            } else {
-              var error_message = lizDict['layer.export.unknown.export.error'];
-            };
-
-            mAddMessage(error_message, 'error', true);
-            return false;
-          }
-          // Execute callback if any
-          if (typeof callback === 'function'){
-            callback();
-          }
-      };
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.send($.param(parameters, true));
-   }
-
-  /**
    * PRIVATE function: exportVectorLayer
    *
    */
@@ -4867,7 +4794,7 @@ window.lizMap = function() {
       getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
 
       // Download file
-      downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
+      Utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
 
       return false;
   }
