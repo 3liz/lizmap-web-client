@@ -36,11 +36,11 @@ class lizmapRepository
      * @see \Lizmap\Project\Repository::$propertiesOptions
      */
     public static $propertiesOptions = array(
-        'label' => array(
+        'path' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
-        'path' => array(
+        'label' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
