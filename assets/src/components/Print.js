@@ -3,34 +3,62 @@ import {html, render} from 'lit-html';
 
 import MaskLayer from '../modules/Mask';
 
+const INCHES_PER_METER = 39.37;
+const DOTS_PER_INCH = 72;
+
 export default class Print extends HTMLElement {
     constructor() {
         super();
     }
 
     connectedCallback() {
-        this._printTemplates = mainLizmap.config?.printTemplates?.filter(template => template?.atlas?.enabled === '0');
 
-        this._maskWidth = 0;
-        this._maskHeight = 0;
+        lizMap.events.on({
+            minidockopened: (e) => {
+                if ( e.id == 'print' ) {
+                    mainLizmap.newOlMap = true;
 
-        mainLizmap.newOlMap = true;
+                    this._printTemplates = mainLizmap.config?.printTemplates?.filter(template => template?.atlas?.enabled === '0');
 
-        this.printTemplate = 0;
+                    this._printScales = Array.from(mainLizmap.config.options.mapScales);
+                    this._printScales.reverse();
+                    this._printScale = 50_000;
 
-        // Create a mask layer to display the extent for the main map
-        this._maskLayer = new MaskLayer();
-        this._maskLayer.getSize = () => [this._maskWidth, this._maskHeight];
-        this._maskLayer.getScale = (frameState) => 100000;
-        mainLizmap.map.addLayer(this._maskLayer);
+                    this._updateScaleFromResolution();
+            
+                    this._maskWidth = 0;
+                    this._maskHeight = 0;
+            
+                    this.printTemplate = 0;
+            
+                    // Create a mask layer to display the extent for the main map
+                    this._maskLayer = new MaskLayer();
+                    this._maskLayer.getSize = () => [this._maskWidth, this._maskHeight];
+                    this._maskLayer.getScale = () => {
+                        return this._printScale
+                    };
+            
+                    mainLizmap.map.addLayer(this._maskLayer);
 
-        render(this._template(), this);
-
+                    mainLizmap.map.getView().on('change:resolution', () => {
+                        const scaleIndex = mainLizmap.map.getView().getResolutions().indexOf(mainLizmap.map.getView().getResolution())
+                        this._printScale = this._printScales[scaleIndex];
+                        render(this._template(), this);
+                    });
+            
+                    render(this._template(), this);
+                }
+            },
+            minidockclosed: (e) => {
+                if ( e.id == 'print' ) {
+                    mainLizmap.newOlMap = false;
+                    mainLizmap.map.removeLayer(this._maskLayer);
+                }
+            }
+        });
     }
 
-    disconnectedCallback() {
-
-    }
+    disconnectedCallback() {}
 
     _template() {
         return html`
@@ -46,7 +74,11 @@ export default class Print extends HTMLElement {
                             ${this._printTemplates.map((template, index) => html`<option value="${index}">${template.title}</option>`)}
                         </select>
                     </td>
-                    <td><select id="print-scale" class="btn-print-scales"></select></td>
+                    <td>
+                        <select id="print-scale" class="btn-print-scales" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }}>
+                            ${this._printScales.map( scale => html`<option .selected=${scale === this._printScale} value="${scale}">${scale.toLocaleString()}</option>`)}
+                        </select>
+                    </td>
                     <td>
                     <select id="print-dpi" class="btn-print-dpis">
                         <option>100</option>
@@ -76,8 +108,18 @@ export default class Print extends HTMLElement {
                     <option value="png">PNG</option>
                     <option value="svg">SVG</option>
                 </select>
-                <button id="print-launch" class="btn-print-launch btn btn-primary flex-grow-1"><span class="icon"></span>&nbsp;${lizDict['print.toolbar.title']}</button>
+                <button id="print-launch" class="btn-print-launch btn btn-primary flex-grow-1"><span class="icon"></span>${lizDict['print.toolbar.title']}</button>
             </div>`;
+    }
+
+    _updateScaleFromResolution(){
+        mainLizmap.map.getControls().forEach((control) => {
+            if( control.constructor.name === 'ScaleLine'){
+                const currentScale = control.getScaleForResolution();
+                // Get closest scale
+                this._printScale = this._printScales.reduce((prev, curr) => Math.abs(curr - currentScale) < Math.abs(prev - currentScale) ? curr : prev);
+            }
+        });
     }
 
     get printTemplate() {
@@ -93,9 +135,6 @@ export default class Print extends HTMLElement {
 
         // Change mask size
         // Width/height are in mm by default. Convert to pixels
-        const INCHES_PER_METER = 39.37;
-        const DOTS_PER_INCH = 72;
-
         this._maskWidth = this._printTemplates?.[index]?.maps?.[0]?.width / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
         this._maskHeight = this._printTemplates?.[index]?.maps?.[0]?.height / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
 
@@ -104,4 +143,8 @@ export default class Print extends HTMLElement {
         render(this._template(), this);
     }
 
+    set printScale(scale){
+        this._printScale = scale;
+        mainLizmap.map.getView().changed();
+    }
 }
