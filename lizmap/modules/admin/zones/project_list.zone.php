@@ -33,6 +33,7 @@ class project_listZone extends jZone
 
         // Loop for each repository and find projects
         $hasInspectionData = false;
+        $hasSomeProjectsNotDisplayed = false;
         foreach ($repositories as $r) {
             $lizmapRepository = lizmap::getRepository($r);
             if (!jAcl2::check('lizmap.repositories.view', $r)) {
@@ -56,12 +57,22 @@ class project_listZone extends jZone
                     $hasInspectionData = true;
                 }
 
+                if ($projectItem['needs_update_error']) {
+                    $hasSomeProjectsNotDisplayed = true;
+                }
+
                 $lizmapViewItem->childItems[] = $projectItem;
             }
             $maps[$r] = $lizmapViewItem;
         }
+        $lizmapTargetVersionInt = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
+        $humanLizmapTargetVersion = substr($lizmapTargetVersionInt, 0, 1);
+        $humanLizmapTargetVersion .= '.'.ltrim(substr($lizmapTargetVersionInt, 2, 1), '');
+
         $this->_tpl->assign('mapItems', $maps);
         $this->_tpl->assign('hasInspectionData', $hasInspectionData);
+        $this->_tpl->assign('minimumLizmapTargetVersionRequired', $humanLizmapTargetVersion);
+        $this->_tpl->assign('hasSomeProjectsNotDisplayed', $hasSomeProjectsNotDisplayed);
 
         // Get the server metadata
         $server = new \Lizmap\Server\Server();
