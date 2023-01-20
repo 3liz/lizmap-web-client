@@ -6,6 +6,16 @@
 {if $hasInspectionData}
     {assign $tableClass='has_inspection_data'}
 {/if}
+
+{if $hasSomeProjectsNotDisplayed}
+<div>
+    {@admin.project.not.displayed@}
+    <ul>
+        <li>{jlocale "admin.project.minimum.target.version.required", array($minimumLizmapTargetVersionRequired)}</li>
+    </ul>
+</div>
+{/if}
+
 <table class="lizmap_project_list table table-condensed table-bordered {$tableClass}" style="width:100%">
     <thead>
         <tr>
@@ -47,7 +57,7 @@
                 {$mi->id}
             </td>
 
-            <!-- project- KEEP the line break after the title to improve the tooltip readability-->
+            <!-- project - KEEP the line break after the title to improve the tooltip readability-->
             <td title="{$p['title']|strip_tags|eschtml:ENT_QUOTES}
 {$p['abstract']|strip_tags|eschtml:ENT_QUOTES|truncate:150}">
                 <a target="_blank" href="{$p['url']}">{$p['id']}</a>
