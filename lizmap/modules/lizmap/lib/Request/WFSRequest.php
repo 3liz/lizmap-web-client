@@ -634,6 +634,21 @@ class WFSRequest extends OGCRequest
             }
         }
 
+        $srid = $this->qgisLayer->getSrid();
+        if (array_key_exists('srsname', $params)) {
+            $srsname = $params['srsname'];
+            if (!empty($srsname)) {
+                // SRSNAME parameter is not empty
+                // extracting srid
+                $srsname_id = array_pop(explode(':', $srsname));
+                if (ctype_digit($srsname_id)) {
+                    $srid = intval($srsname_id);
+                } else {
+                    return '';
+                }
+            }
+        }
+
         // Build the SQL
         $xmin = trim($bboxitem[0]);
         $ymin = trim($bboxitem[1]);
@@ -641,7 +656,7 @@ class WFSRequest extends OGCRequest
         $ymax = trim($bboxitem[3]);
         $sql = ' AND ST_Intersects("';
         $sql .= $this->datasource->geocol;
-        $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+        $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$srid.'))';
 
         return $sql;
     }
