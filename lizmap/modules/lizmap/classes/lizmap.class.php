@@ -223,6 +223,9 @@ class lizmap
             }
             $ctrl->required = $propertiesOptions[$k]['required'];
             $ctrl->label = jLocale::get('admin~admin.form.admin_section.repository.'.$k.'.label');
+            if ($k != 'allowUserDefinedThemes') {
+                $ctrl->help = jLocale::get('admin~admin.form.admin_section.repository.'.$k.'.help');
+            }
             $ctrl->size = 100;
             $form->addControl($ctrl);
         }
