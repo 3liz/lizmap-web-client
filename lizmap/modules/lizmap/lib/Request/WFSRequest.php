@@ -647,7 +647,8 @@ class WFSRequest extends OGCRequest
             if (!empty($srsname)) {
                 // SRSNAME parameter is not empty
                 // extracting srid
-                $srsname_id = array_pop(explode(':', $srsname));
+                $exp_srsname = explode(':', $srsname);
+                $srsname_id = end($exp_srsname);
                 if (ctype_digit($srsname_id)) {
                     $srid = intval($srsname_id);
                 } else {
