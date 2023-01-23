@@ -3502,14 +3502,34 @@ window.lizMap = function() {
      }
      lizMap.events.on({
         "layerFilterParamChanged": function( evt ) {
+            // Continue only if there is a popup displayed
+            // This would avoid useless GETFILTERTOKEN requests
+            let nbPopupDisplayed = document.querySelectorAll('input.lizmap-popup-layer-feature-id').length;
+            if (nbPopupDisplayed == 0) {
+              return;
+            }
             var filter = [];
             for ( var  lName in config.layers ) {
                 var lConfig = config.layers[lName];
+
+                // Do not request if the layer has no popup
                 if ( lConfig.popup != 'True' )
                     continue;
+
+                // Do not request if the layer has no request parameters
                 if ( !('request_params' in lConfig)
                   || lConfig['request_params'] == null )
                     continue;
+
+                // Do not get the filter token if the popup is not displayed
+                nbPopupDisplayed = document.querySelectorAll(
+                  `input.lizmap-popup-layer-feature-id[value^=${lConfig.id}]`
+                ).length;
+                if (nbPopupDisplayed == 0) {
+                  continue;
+                }
+
+                // Get the filter token only if there is a request_params filter
                 var requestParams = lConfig['request_params'];
                 if ( ('filter' in lConfig['request_params'])
                   && lConfig['request_params']['filter'] != null
