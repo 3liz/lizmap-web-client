@@ -4,6 +4,7 @@
 
 ### Added
 
+* Editing - Better user experience with 1-n relations
 * New display for measurements on the map when drawing
 * Better management of **QGIS projects** about versions (desktop, plugin versions, etc.)
 * **Form filter**: Allow to use a second field for the numeric type like it is already possible for dates.
@@ -24,11 +25,13 @@
     ```
   * A WKT in `EPSG:4326` can also be sent as an **additional parameter**. This is only possible when running the action with JavaScript. This allows to **send a geometry** to be used by the PostgreSQL action (for example to get data from another table with geometries intersecting this passed WKT geometry)
   * The **JavaScript and HTML code** has been **modernized** (no more jQuery calls, usage of web components, etc.)
+* New print configurations
+* New display of print options
 
 ### Changed
 
 * Avoid downloading default project image multiple times. This improves first load of projects page
-* Update landing page title
+* Update home page title configuration
 
 ### Updated
 
@@ -36,12 +39,17 @@
 * Update Plotly.js to 2.16.3
 * Update proj4 library
 
+### Translations
+
+* Update translated strings from the Transifex website
+
 ### Backend
 
 * Update some JavaScript dependencies
 * Remove some old code about QGIS Server 2
 * Update the OpenLayers library to version 7.1
 * Fix some issues when deployed with Docker
+* Bump minimum version Lizmap QGIS server plugin to 1.2.2
 
 ### Funders
 
