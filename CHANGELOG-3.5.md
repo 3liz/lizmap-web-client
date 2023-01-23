@@ -2,13 +2,24 @@
 
 ## Unreleased
 
+### Changed
+
+* Improve the user experience when creating a new repository in the administration interface
+
 ### Fixed
 
 * Projects page: display projects title and buttons at bottom whatever the thumbnail's image size is
+* Improve performance in the dataviz panel to avoid too many requests to the server
+* Change some CSS about the digitizing toolbar
+* No PostGIS features were returned if the map projection was different from the layer projection
 
 ### Backend
 
-* Upgrade Jelix
+* Upgrade Jelix to version 1.6.39 to avoid an exception during installation
+
+### Translations
+
+* Update translated strings from the Transifex website
 
 ## 3.5.8 - 2022-12-08
 
