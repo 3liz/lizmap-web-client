@@ -9,12 +9,31 @@
 * New API to access a lot of metadata from the Lizmap Web Client server such as groups, directories etc. It's useful in the QGIS Desktop plugin as well.
 * A lot of new rights in the administration panel have been added to have a **publisher** group. It allows you to better distinguish between administrators and QGIS publishers.
 
+### Changed
+
+* Improve the user experience when creating a new repository in the administration interface
+
 ### Fixed
 
 * Projects page: display projects title and buttons at bottom whatever the thumbnail's image size is
+* Improve performance in the dataviz panel to avoid too many requests to the server
+* Change some CSS about the digitizing toolbar
+* No PostGIS features were returned if the map projection was different from the layer projection
+* Form filter - Add a max height with a scroll for the unique values checkboxes container
 * Fix some deployments with Docker, contribution from @u-cav
 * Fix an error about postgresql connection closing when 2 identical pgsql profile are set into profiles.ini.php
 * Fix various internal issues
+
+### Backend
+
+* Upgrade Jelix to version 1.8.0 to avoid errors
+  * during installation
+  * if 2 identical pgsql profiles set in `profiles.ini.php`
+* Bump minimum version Lizmap QGIS server plugin to 1.2.2
+
+### Translations
+
+* Update translated strings from the Transifex website
 
 ## 3.6.0 - 2022-12-09
 
