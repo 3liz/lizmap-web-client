@@ -234,7 +234,9 @@ Output colors can be kept with `--tty` parameter but it won't work with `--group
 ### Playwright
 You have to install the browsers with `npx playwright install` (only the first time or after an update)
 You can then :
-- execute `npx playwright test` to execute all tests
+- execute `npx playwright test` to execute all tests with all browsers
+- execute `npx playwright test --project=chromium` to execute all tests with the chromium browser
+- execute `npx playwright test mytest.spec.js --project=chromium` to execute one test with the chromium browser
 - other command line : https://playwright.dev/docs/intro#command-line
 
 You can also install the handy Visual Studio Code extension : https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
