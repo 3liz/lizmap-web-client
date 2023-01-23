@@ -287,9 +287,6 @@ useCollection=common
 jquery.js[]="assets/js/jquery/jquery-3.5.1.min.js"
 jquery.js[]="assets/js/jquery/jquery-migrate-3.3.1.min.js"
 
-jquery_ui.js[]="assets/js/jquery/ui/jquery-ui.min.js"
-jquery_ui.css[]="assets/js/jquery/ui/jquery-ui.min.css"
-
 jforms_htmleditor_default.js[]="$jelix/ckeditor5/ckeditor.js"
 jforms_htmleditor_default.js[]="$jelix/ckeditor5/translations/$lang.js"
 jforms_htmleditor_default.js[]="assets/js/ckeditor5/ckeditor_lizmap.js"
