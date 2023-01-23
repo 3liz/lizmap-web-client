@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Capabilities version="1.0.0" xmlns="http://www.opengis.net/wmts/1.0"
                 xmlns:gml="http://www.opengis.net/gml" xmlns:ows="http://www.opengis.net/ows/1.1"
                 xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
