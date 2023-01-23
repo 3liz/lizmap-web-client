@@ -13,6 +13,8 @@
 
 * Projects page: display projects title and buttons at bottom whatever the thumbnail's image size is
 * Fix some deployments with Docker, contribution from @u-cav
+* Fix an error about postgresql connection closing when 2 identical pgsql profile are set into profiles.ini.php
+* Fix various internal issues
 
 ## 3.6.0 - 2022-12-09
 
