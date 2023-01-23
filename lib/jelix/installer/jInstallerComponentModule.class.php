@@ -189,11 +189,12 @@ class jInstallerComponentModule extends jInstallerComponentBase {
 
 
         if ($this->moduleMainUpgrader === null) {
-            // script name for Jelix 1.6 in modules compatibles with both Jelix 1.7 and 1.6
+
+            // script name for modules compatible with Jelix <=1.6
             if (file_exists($this->path . 'install/upgrade_1_6.php')) {
                 $file = $this->path . 'install/upgrade_1_6.php';
             }
-            // script name for modules compatible with Jelix <=1.6
+            // script name for modules compatibles with both Jelix 1.7 and 1.6
             else if (file_exists($this->path . 'install/upgrade.php')) {
                 $file = $this->path . 'install/upgrade.php';
             }
@@ -240,7 +241,7 @@ class jInstallerComponentModule extends jInstallerComponentBase {
                         if (preg_match('/^upgrade_to_([^_]+)_([^\.]+)\.php$/', $f, $m)) {
                             $fileList[] = array($f, $m[1], $m[2]);
                         }
-                        else if (preg_match('/^upgrade_([^\.]+)\.php$/', $f, $m)){
+                        else if (preg_match('/^upgrade_([^\.]+)\.php$/', $f, $m) && $f != 'upgrade_1_6.php'){
                             $fileList[] = array($f, '', $m[1]);
                         }
                     }
