@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.9 - 2023-01-23
+
 ### Changed
 
 * Improve the user experience when creating a new repository in the administration interface
