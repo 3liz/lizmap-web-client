@@ -1335,6 +1335,10 @@ lizmap-print .print-advanced summary {
   cursor: pointer;
 }
 
+lizmap-print .print-dpi{
+  margin-bottom: 10px;
+}
+
 lizmap-print .flex {
   gap: 10px;
 }
