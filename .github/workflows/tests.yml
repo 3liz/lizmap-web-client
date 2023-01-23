@@ -23,7 +23,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          tools: php-cs-fixer, phpunit
+          # PHP unit 9.5.28 is using enum_exists from PHP 8
+          tools: php-cs-fixer, phpunit:9.5.27
 
       - name: Running tests
         run: make tests
