@@ -85,8 +85,16 @@ export default class Print extends HTMLElement {
             </table>
             <details class='print-advanced'>
                 <summary>${lizDict['print.advanced']}</summary>
-            ${this._printTemplates?.[this.printTemplate]?.labels?.length
-                ? html`
+                <div class="print-dpi">
+                    <span>${lizDict['print.toolbar.dpi']}</span>
+                    <select class="btn-print-dpis" @change=${(event) => { this._printDPI = event.target.value }}>
+                        <option>100</option>
+                        <option>200</option>
+                        <option>300</option>
+                    </select>
+                </div>
+                ${this._printTemplates?.[this.printTemplate]?.labels?.length
+                    ? html`
                     <div class="print-labels">
                         <p>${lizDict['print.labels']}</p>
 
@@ -97,12 +105,13 @@ export default class Print extends HTMLElement {
                             )}
                     </div>`
                 : ''}
-                <span>${lizDict['print.toolbar.dpi']}</span>
-                <select id="print-dpi" class="btn-print-dpis" @change=${(event) => { this._printDPI = event.target.value }}>
-                        <option>100</option>
-                        <option>200</option>
-                        <option>300</option>
-                    </select>
+                <div class='print-grid'>
+                    <span>${lizDict['print.gridIntervals']}</span>
+                    <div>
+                        <input type="number" class="input-small" name="gridx" min="0" placeholder="X" @change=${(event) => { this._gridX = parseInt(event.target.value) }}>
+                        <input type="number" class="input-small" name="gridy" min="0" placeholder="Y" @change=${(event) => { this._gridY = parseInt(event.target.value) }}>
+                    </div>
+                </div>
             </details>
 
             <div class="flex">
@@ -191,6 +200,14 @@ export default class Print extends HTMLElement {
         wmsParams.LAYERS = printLayers.join(',');
         wmsParams.STYLES = styleLayers.join(',');
         wmsParams.OPACITIES = opacityLayers.join(',');
+
+        // Grid
+        if(this._gridX){
+            wmsParams['map0:GRID_INTERVAL_X'] = this._gridX;
+        }
+        if(this._gridY){
+            wmsParams['map0:GRID_INTERVAL_Y'] = this._gridY;
+        }
 
         Utils.downloadFile(mainLizmap.serviceURL, wmsParams);
     }
