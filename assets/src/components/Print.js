@@ -69,7 +69,6 @@ export default class Print extends HTMLElement {
                 <tr>
                     <td>${lizDict['print.toolbar.template']}</td>
                     <td>${lizDict['print.toolbar.scale']}</td>
-                    <td>${lizDict['print.toolbar.dpi']}</td>
                 </tr>
                 <tr>
                     <td>
@@ -82,15 +81,10 @@ export default class Print extends HTMLElement {
                             ${this._printScales.map( scale => html`<option .selected=${scale === this._printScale} value="${scale}">${scale.toLocaleString()}</option>`)}
                         </select>
                     </td>
-                    <td>
-                    <select id="print-dpi" class="btn-print-dpis" @change=${(event) => { this._printDPI = event.target.value }}>
-                        <option>100</option>
-                        <option>200</option>
-                        <option>300</option>
-                    </select>
-                    </td>
                 </tr>
             </table>
+            <details class='print-advanced'>
+                <summary>${lizDict['print.advanced']}</summary>
             ${this._printTemplates?.[this.printTemplate]?.labels?.length
                 ? html`
                     <div class="print-labels">
@@ -102,8 +96,15 @@ export default class Print extends HTMLElement {
                             : html`<input  name="${label.id}" class="print-label" placeholder="${label.text}" value="${label.text}" type="text"><br>`
                             )}
                     </div>`
-                : ''
-            }
+                : ''}
+                <span>${lizDict['print.toolbar.dpi']}</span>
+                <select id="print-dpi" class="btn-print-dpis" @change=${(event) => { this._printDPI = event.target.value }}>
+                        <option>100</option>
+                        <option>200</option>
+                        <option>300</option>
+                    </select>
+            </details>
+
             <div class="flex">
                 <select id="print-format" title="${lizDict['print.toolbar.format']}" class="btn-print-format" @change=${(event) => { this._printFormat = event.target.value }}>
                     <option value="pdf">PDF</option>
