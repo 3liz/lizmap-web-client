@@ -30,7 +30,7 @@ fallbackLocale=en_US
 ; Versions on the server, for the system administrator
 ; The minimum version required about external software to make Lizmap Web Client happy
 qgisServer="3.10"
-lizmapServerPlugin="1.2.1"
+lizmapServerPlugin="1.2.2"
 
 ; Versions written in QGIS projects, for the GIS administrator
 ; QGIS project with a lower version are not displayed in the landing page, but displayed in the administration panel
@@ -286,6 +286,9 @@ useCollection=common
 [webassets_common]
 jquery.js[]="assets/js/jquery/jquery-3.5.1.min.js"
 jquery.js[]="assets/js/jquery/jquery-migrate-3.3.1.min.js"
+
+jquery_ui.js[]="assets/js/jquery/ui/jquery-ui.min.js"
+jquery_ui.css[]="assets/js/jquery/ui/jquery-ui.min.css"
 
 jforms_htmleditor_default.js[]="$jelix/ckeditor5/ckeditor.js"
 jforms_htmleditor_default.js[]="$jelix/ckeditor5/translations/$lang.js"
