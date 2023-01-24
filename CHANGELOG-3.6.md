@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* Add XML header in the GetCapabilities request to avoid a message in the web browser console
+
 ## 3.6.1 - 2022-01-23
 
 ### Added
