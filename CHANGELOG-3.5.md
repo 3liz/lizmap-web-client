@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+* Add XML header in the GetCapabilities request to avoid a message in the web browser console
+* Fix an error during the upgrade
+
 ## 3.5.9 - 2023-01-23
 
 ### Changed
@@ -78,6 +83,7 @@
 * Fix some minor issues when reading the JSON file about editing capabilities
 * Improve the settings about the mail server
 * Improve the error message when the Lizmap server plugin is not found
+* Fix button to toggle compact/explode table view in popups. Also each button only toggle its own children popup group
 * Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
 * Fix one issue with PHP8
 
@@ -217,6 +223,7 @@
 
 ### Added
 
+- Add new Ukrainian and Romanian languages
 - A new panel in the administration interface can display QGIS Server information such version and plugins.
   - This information can be retrieved as well in the QGIS Desktop plugin if the administrator login is provided
 
@@ -233,13 +240,15 @@
 - Fix the backup script about third-party modules such as MapBuilder and AltiProfil
 - Fix a regression during the init of relation references into forms
 - Fix a regression during the loading of embedded projects
+- Fix editing when a geom can be created on an existing feature without a geometry on update only
+- Fix wrong file storage path for images with the `media` folder
 - Fix the landing page using modern CSS - Remove JS resizing project thumbnails and use CSS Grid
 - Fix the mime type for SVG files. It should be `image/svg+xml`
 - Fix the layer export when :
   - a selection or a filter is active
   - the layer is not spatial
   - the layer has parenthesis inside its name
-- Update Lizmap locales about missing languages in the package like Romanian and others
+- Update Lizmap locales
 
 ## 3.5.0 - 2021-12-15
 
@@ -289,11 +298,11 @@
   by removing the additionnal double-quotes that QGIS sometimes adds in the array of values
   (ex: `{"one_value", "second_value"}`)
   - Lizmap user and groups was not forwarded to the QGIS Server backend. It's now possible to use
-  `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form.
+   `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form.
 - Selection: improve the export tool to allow bigger selections
   - use the selection token instead of a list of feature identifiers
   - internally use POST instead of GET requests to query data from QGIS Server
-- Before the button export to ODS was always visible. The button is now show only if available
+- Before the button export to ODS was always visible. The button is now shown only if available
 
 ### New JS events
 
