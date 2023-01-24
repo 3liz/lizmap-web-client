@@ -455,6 +455,7 @@ class QgisFormControl
         $this->ctrl->valueOnCheck = $checked;
         $this->ctrl->valueOnUncheck = $unchecked;
         $this->required = false; // As there is only a value, even if the checkbox is unchecked
+        $this->ctrl->defaultValue = $unchecked; // defined a default value to one of the possible value
     }
 
     /*
