@@ -108,9 +108,13 @@ export default class Print extends HTMLElement {
                 <div class='print-grid'>
                     <span>${lizDict['print.gridIntervals']}</span>
                     <div>
-                        <input type="number" class="input-small" name="gridx" min="0" placeholder="X" @change=${(event) => { this._gridX = parseInt(event.target.value) }}>
-                        <input type="number" class="input-small" name="gridy" min="0" placeholder="Y" @change=${(event) => { this._gridY = parseInt(event.target.value) }}>
+                        <input type="number" class="input-small" min="0" placeholder="X" @change=${(event) => { this._gridX = parseInt(event.target.value) }}>
+                        <input type="number" class="input-small" min="0" placeholder="Y" @change=${(event) => { this._gridY = parseInt(event.target.value) }}>
                     </div>
+                </div>
+                <div class='print-rotation'>
+                    <span>${lizDict['print.rotation']}</span>
+                    <input type="number" class="input-small" @change=${(event) => { this._rotation = parseInt(event.target.value) }}>
                 </div>
             </details>
 
@@ -208,6 +212,12 @@ export default class Print extends HTMLElement {
         if(this._gridY){
             wmsParams['map0:GRID_INTERVAL_Y'] = this._gridY;
         }
+
+        // Rotation
+        if(this._rotation){
+            wmsParams['map0:ROTATION'] = this._rotation;
+        }
+
 
         Utils.downloadFile(mainLizmap.serviceURL, wmsParams);
     }
