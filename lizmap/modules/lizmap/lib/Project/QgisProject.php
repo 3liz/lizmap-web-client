@@ -763,17 +763,6 @@ class QgisProject
                     }
                 }
 
-                // get composer attribute tables
-                $cTables = $composer->xpath('.//ComposerAttributeTableV2');
-                if ($cTables && is_array($cTables)) {
-                    foreach ($cTables as $cTable) {
-                        $printTemplate['tables'][] = array(
-                            'composerMap' => (int) $cTable['composerMap'],
-                            'vectorLayer' => (string) $cTable['vectorLayer'],
-                        );
-                    }
-                }
-
                 // Atlas
                 $Atlas = $composer->xpath('Atlas');
                 if ($Atlas) {
@@ -871,27 +860,6 @@ class QgisProject
                             'id' => (string) $lLabel['id'],
                             'htmlState' => (int) $lLabel['htmlState'],
                             'text' => (string) $lLabel['labelText'],
-                        );
-                    }
-                }
-
-                // get layout attribute tables
-                $lTables = $layout->xpath('LayoutMultiFrame[@type="65649"]');
-                if ($lTables && is_array($lTables)) {
-                    foreach ($lTables as $lTable) {
-                        $composerMap = -1;
-                        if (isset($lTable['mapUuid'])) {
-                            $mapUuid = (string) $lTable['mapUuid'];
-                            if (!array_key_exists($mapUuid, $mapUuidId)) {
-                                $mapId = $mapUuidId[$mapUuid];
-                                $composerMap = (string) str_replace('map', '', $mapId);
-                            }
-                        }
-
-                        $printTemplate['tables'][] = array(
-                            'composerMap' => $composerMap,
-                            'vectorLayer' => (string) $lTable['vectorLayer'],
-                            'vectorLayerName' => (string) $lTable['vectorLayerName'],
                         );
                     }
                 }
