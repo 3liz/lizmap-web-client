@@ -167,6 +167,22 @@ export default class Print extends HTMLElement {
         const styleLayers = [];
         const opacityLayers = [];
 
+        // Get active baselayer, and add the corresponding QGIS layer if needed
+        const activeBaseLayerName = mainLizmap._lizmap3.map.baseLayer.name;
+        const externalBaselayersReplacement = mainLizmap._lizmap3.getExternalBaselayersReplacement();
+        const exbl = externalBaselayersReplacement?.[activeBaseLayerName];
+        if (mainLizmap.config.layers?.[exbl]) {
+            const activeBaseLayerConfig = mainLizmap.config.layers[exbl];
+            if (activeBaseLayerConfig?.id && mainLizmap.config.options?.useLayerIDs == 'True') {
+                printLayers.push(activeBaseLayerConfig.id);
+            } else {
+                printLayers.push(exbl);
+            }
+            styleLayers.push('');
+            // TODO: handle baselayers opacity
+            opacityLayers.push(255);
+        }
+
         for (const layer of mainLizmap._lizmap3.map.layers) {
             if (((layer instanceof OpenLayers.Layer.WMS) || (layer instanceof OpenLayers.Layer.WMTS))
                 && layer.getVisibility() && layer?.params?.LAYERS) {
