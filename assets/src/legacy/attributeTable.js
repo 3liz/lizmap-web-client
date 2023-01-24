@@ -305,16 +305,18 @@ var lizAttributeTable = function() {
                         // Use an integer as a placeholder for coming fetched key/values
                         allColumnsKeyValues[fieldName] = responseOrder;
                         responseOrder++;
-
+                        // Get the layer typename based on its id
+                        let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
+                        if( !getSourceLayer || getSourceLayer.length != 2) continue;
+                        let source_typename = getSourceLayer[1].typename;
                         fetchRequests.push(lizMap.mainLizmap.wfs.getFeature({
-                            TYPENAME: fieldConf.source_layer,
+                            TYPENAME: source_typename,
                             PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
                             // we must not use null for exp_filter but '' if no filter is active
                             EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
                         }));
                     }
                 }
-
 
                 document.body.style.cursor = 'progress';
                 Promise.all(fetchRequests).then(responses => {
