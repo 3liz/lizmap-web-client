@@ -210,7 +210,7 @@ class jInstallerComponentModule extends jInstallerComponentBase {
 
                 $cname = $this->name.'ModuleUpgrader';
                 if (!class_exists($cname)) {
-                    throw new jException("module.upgrader.class.not.found", array($cname, $this->name));
+                    throw new jInstallerException("module.upgrader.class.not.found", array($cname, $this->name));
                 }
 
                 $this->moduleMainUpgrader = new $cname($this->name,
