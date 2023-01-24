@@ -23,6 +23,8 @@
 * No PostGIS features were returned if the map projection was different from the layer projection
 * Form filter - Add a max height with a scroll for the unique values checkboxes container
 * Fix some deployments with Docker, contribution from @u-cav
+* Fix an error about postgresql connection closing when 2 identical pgsql profile are set into profiles.ini.php
+* Fix various internal issues
 
 ### Backend
 
