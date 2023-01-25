@@ -4,8 +4,17 @@
 
 ### Fixed
 
+* Fix a bug about a hidden checkbox in a form
 * Add XML header in the GetCapabilities request to avoid a message in the web browser console
 * Fix an error during the upgrade
+
+### Backend
+
+* Update the minimum Lizmap server plugin to version 1.3.0
+
+### Translations
+
+* Update translated strings from the Transifex website
 
 ## 3.5.9 - 2023-01-23
 
