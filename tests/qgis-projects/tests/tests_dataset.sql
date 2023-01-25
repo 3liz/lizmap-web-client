@@ -493,6 +493,7 @@ CREATE TABLE tests_projects.form_edition_all_fields_types (
     integer_field integer,
     boolean_nullable boolean,
     boolean_notnull_for_checkbox boolean NOT NULL,
+    boolean_readonly boolean,
     integer_array integer[],
     text text,
     uids text,
