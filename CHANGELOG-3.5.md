@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.10 - 2023-01-25
+
 ### Fixed
 
 * Fix a bug about a hidden checkbox in a form
