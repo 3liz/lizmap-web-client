@@ -711,6 +711,39 @@ class Project
         return false;
     }
 
+    /** 
+     * Lizmap < 3.7: return true:
+     * - if print checkbox is checked and
+     * - if there is at least one print layout which is not an atlas
+     * Lizmap >= 3.7: return true:
+     * - if there is at least one print layout enabled which is not an atlas
+     * @return boolean
+     */
+    public function hasPrintEnabled()
+    {
+        // Lizmap < 3.7
+        if($this->cfg->getBooleanOption('print')){
+            foreach ($this->printCapabilities as $printCfg) {
+                if(array_key_exists('atlas', $printCfg) 
+                && array_key_exists('enabled', $printCfg['atlas']) && $printCfg['atlas']['enabled'] == "0") {
+                    return true;
+                }
+            }
+        }
+
+        // Lizmap >= 3.7
+        $layouts = $this->cfg->getLayouts();
+        if (property_exists($layouts, 'list')) {
+            foreach ($layouts->list as $layout) {
+                if (property_exists($layout, 'enabled') && $layout->enabled) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function hasFormFilterLayers()
     {
         $form = $this->cfg->getFormFilterLayers();
@@ -1507,12 +1540,7 @@ class Project
 
     protected function readPrintCapabilities(QgisProject $qgsLoad)
     {
-        $printTemplates = array();
-        if ($this->cfg->getBooleanOption('print')) {
-            $printTemplates = $qgsLoad->getPrintTemplates();
-        }
-
-        return $printTemplates;
+        return $qgsLoad->getPrintTemplates();
     }
 
     protected function readLocateByLayer(QgisProject $xml, ProjectConfig $cfg)
@@ -2023,7 +2051,7 @@ class Project
             );
         }
 
-        if ($this->cfg->getBooleanOption('print')) {
+        if ($this->hasPrintEnabled()) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
                 'print',
