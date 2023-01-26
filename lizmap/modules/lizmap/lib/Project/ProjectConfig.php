@@ -51,6 +51,11 @@ class ProjectConfig
     /**
      * @var object
      */
+    protected $layouts;
+
+    /**
+     * @var object
+     */
     protected $loginFilteredLayers;
 
     /**
@@ -83,6 +88,7 @@ class ProjectConfig
         'timemanagerLayers',
         'atlas',
         'tooltipLayers',
+        'layouts',
         'loginFilteredLayers',
         'filter_by_polygon',
         'datavizLayers',
@@ -462,6 +468,15 @@ class ProjectConfig
     public function getTooltipLayers()
     {
         return $this->tooltipLayers;
+    }
+
+    /**
+     * Print layouts since Lizmap 3.7
+     * @return null|object
+     */
+    public function getLayouts()
+    {
+        return $this->layouts;
     }
 
     /**
