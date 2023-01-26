@@ -19,19 +19,21 @@ export default class Print extends HTMLElement {
                 if ( e.id == 'print' ) {
                     mainLizmap.newOlMap = true;
 
+                    // Lizmap >= 3.7
+                    this._layouts = mainLizmap.config?.layouts;
+
                     this._printTemplates = [];
 
                     mainLizmap.config?.printTemplates.map((template, index) => {
                         if (template?.atlas?.enabled === '0'){
                             // Lizmap >= 3.7
-                            const layouts = mainLizmap.config?.layouts;
-                            if (layouts) {
-                                if(layouts.list?.[index]?.enabled){
-                                    this._printTemplates.push(template);
+                            if (this._layouts) {
+                                if(this._layouts.list?.[index]?.enabled){
+                                    this._printTemplates[index] = template;
                                 }
                                 // Lizmap < 3.7
                             } else {
-                                this._printTemplates.push(template);
+                                this._printTemplates[index] = template;
                             }
                         }
                     });
@@ -135,10 +137,7 @@ export default class Print extends HTMLElement {
 
             <div class="flex">
                 <select id="print-format" title="${lizDict['print.toolbar.format']}" class="btn-print-format" @change=${(event) => { this._printFormat = event.target.value }}>
-                    <option value="pdf">PDF</option>
-                    <option value="jpg">JPG</option>
-                    <option value="png">PNG</option>
-                    <option value="svg">SVG</option>
+                    ${this.printFormats.map( format => html`<option value="${format}">${format.toUpperCase()}</option>`)}
                 </select>
                 <button id="print-launch" class="btn-print-launch btn btn-primary flex-grow-1" @click=${() => { this._launch() }}><span class="icon"></span>${lizDict['print.toolbar.title']}</button>
             </div>`;
@@ -259,6 +258,11 @@ export default class Print extends HTMLElement {
 
     get printTemplate() {
         return this._printTemplate;
+    }
+
+    get printFormats() {
+        const formats = this._layouts?.list?.[this._printTemplate]?.formats_available;
+        return formats || ['pdf', 'jpg', 'png', 'svg'];
     }
 
     /**
