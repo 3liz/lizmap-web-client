@@ -19,7 +19,22 @@ export default class Print extends HTMLElement {
                 if ( e.id == 'print' ) {
                     mainLizmap.newOlMap = true;
 
-                    this._printTemplates = mainLizmap.config?.printTemplates?.filter(template => template?.atlas?.enabled === '0');
+                    this._printTemplates = [];
+
+                    mainLizmap.config?.printTemplates.map((template, index) => {
+                        if (template?.atlas?.enabled === '0'){
+                            // Lizmap >= 3.7
+                            const layouts = mainLizmap.config?.layouts;
+                            if (layouts) {
+                                if(layouts.list?.[index]?.enabled){
+                                    this._printTemplates.push(template);
+                                }
+                                // Lizmap < 3.7
+                            } else {
+                                this._printTemplates.push(template);
+                            }
+                        }
+                    });
 
                     this._printScales = Array.from(mainLizmap.config.options.mapScales);
                     this._printScales.reverse();
