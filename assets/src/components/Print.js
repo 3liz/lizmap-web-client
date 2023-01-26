@@ -98,7 +98,7 @@ export default class Print extends HTMLElement {
                     <div class="print-labels">
                         <p>${lizDict['print.labels']}</p>
 
-                        ${this._printTemplates[this.printTemplate].labels.map((label) => 
+                        ${this._printTemplates[this.printTemplate].labels.slice().reverse().map((label) => 
                         label?.htmlState ?
                             html`<textarea name="${label.id}" class="print-label" placeholder="${label.text}" .value=${label.text}></textarea><br>`
                             : html`<input  name="${label.id}" class="print-label" placeholder="${label.text}" value="${label.text}" type="text"><br>`
@@ -234,6 +234,10 @@ export default class Print extends HTMLElement {
             wmsParams['map0:ROTATION'] = this._rotation;
         }
 
+        // Custom labels
+        this.querySelectorAll('.print-label').forEach(label => {
+            wmsParams[label.name] = label.value;
+        });
 
         Utils.downloadFile(mainLizmap.serviceURL, wmsParams);
     }
