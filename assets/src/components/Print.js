@@ -104,10 +104,8 @@ export default class Print extends HTMLElement {
                 <summary>${lizDict['print.advanced']}</summary>
                 <div class="print-dpi">
                     <span>${lizDict['print.toolbar.dpi']}</span>
-                    <select class="btn-print-dpis" @change=${(event) => { this._printDPI = event.target.value }}>
-                        <option>100</option>
-                        <option>200</option>
-                        <option>300</option>
+                    <select class="btn-print-dpis" .value="${this.defaultDPI}" @change=${(event) => { this._printDPI = event.target.value }}>
+                        ${this.printDPIs.map( dpi => html`<option ?selected="${dpi === this.defaultDPI}" value="${dpi}">${dpi}</option>`)}
                     </select>
                 </div>
                 ${this._printTemplates?.[this.printTemplate]?.labels?.length
@@ -271,6 +269,16 @@ export default class Print extends HTMLElement {
         }
 
         return formats || ['pdf', 'jpg', 'png', 'svg'];
+    }
+
+    get printDPIs() {
+        let DPIs = this._layouts?.list?.[this._printTemplate]?.dpi_available;
+        return DPIs || ['100', '200', '300'];
+    }
+
+    get defaultDPI() {
+        const defaultDPI = this._layouts?.list?.[this._printTemplate]?.default_dpi;
+        return defaultDPI || '100';
     }
 
     /**
