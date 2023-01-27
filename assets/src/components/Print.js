@@ -261,7 +261,15 @@ export default class Print extends HTMLElement {
     }
 
     get printFormats() {
-        const formats = this._layouts?.list?.[this._printTemplate]?.formats_available;
+        let formats = this._layouts?.list?.[this._printTemplate]?.formats_available;
+        const defaultFormat = this._layouts?.list?.[this._printTemplate]?.default_format;
+
+        // Put default format on top
+        if (formats && defaultFormat) {
+            formats = formats.filter(item => item !== defaultFormat);
+            formats.unshift(defaultFormat);
+        }
+
         return formats || ['pdf', 'jpg', 'png', 'svg'];
     }
 
