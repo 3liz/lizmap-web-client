@@ -233,6 +233,26 @@ export default class Print extends HTMLElement {
         wmsParams.STYLES = styleLayers.join(',');
         wmsParams.OPACITIES = opacityLayers.join(',');
 
+        // Selection and filter
+        const filter = [];
+        const selection = [];
+        for (const layerConfig of Object.values(mainLizmap.config.layers)) {
+            const filtertoken = layerConfig?.request_params?.filtertoken;
+            const selectiontoken = layerConfig?.request_params?.selectiontoken;
+            if (filtertoken) {
+                filter.push(filtertoken);
+            }
+            if (selectiontoken) {
+                selection.push(selectiontoken);
+            }
+        }
+        if (filter.length) {
+            wmsParams.FILTERTOKEN = filter.join(';');
+        }
+        if (selection.length) {
+            wmsParams.SELECTIONTOKEN = selection.join(';');
+        }
+
         // Grid
         if(this._gridX){
             wmsParams['map0:GRID_INTERVAL_X'] = this._gridX;
