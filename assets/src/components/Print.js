@@ -4,6 +4,8 @@ import {html, render} from 'lit-html';
 import MaskLayer from '../modules/Mask';
 import Utils from '../modules/Utils.js';
 
+import WKT from 'ol/format/WKT';
+
 const INCHES_PER_METER = 39.37;
 const DOTS_PER_INCH = 72;
 
@@ -251,6 +253,21 @@ export default class Print extends HTMLElement {
         }
         if (selection.length) {
             wmsParams.SELECTIONTOKEN = selection.join(';');
+        }
+
+        // If user has made a draw, print it with redlining
+        const formatWKT = new WKT();
+        const highlightGeom = [];
+        const highlightSymbol = [];
+
+        mainLizmap.digitizing.featureDrawn?.map((featureDrawn, index) => {
+            highlightGeom.push(formatWKT.writeFeature(featureDrawn));
+            highlightSymbol.push(mainLizmap.digitizing.getFeatureDrawnSLD(index));
+        });
+
+        if (highlightGeom.length && highlightSymbol.length) {
+            wmsParams['map0:HIGHLIGHT_GEOM'] = highlightGeom.join(';');
+            wmsParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
         }
 
         // Grid
