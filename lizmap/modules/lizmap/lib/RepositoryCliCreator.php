@@ -62,15 +62,11 @@ class RepositoryCliCreator
             }
         }
 
-        if (empty($data)) {
-            // Error message
-            throw new \Exception('The data is empty !');
-        }
-
         $lrep = \lizmap::createRepository($key, $data);
         if (!$lrep) {
             throw new \Exception("repository can't be created !");
         }
+
         return true;
     }
 }

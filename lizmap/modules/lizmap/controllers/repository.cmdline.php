@@ -51,19 +51,19 @@ class repositoryCtrl extends jControllerCmdLine
     public function create()
     {
         $rep = $this->getResponse(); // cmdline response by default
- 
 
         try {
             $cli = new \Lizmap\RepositoryCliCreator();
-            $cli->create($this->param('key'), $this->param('label'), $this->param('path'), $this->param('allowUserDefinedThemes') );
+            $cli->create($this->param('key'), $this->param('label'), $this->param('path'), $this->param('allowUserDefinedThemes'));
         } catch (\Exception $e) {
             $rep->addContent("The repository can't be created ! : \n");
             $rep->addContent($e->getMessage()."\n");
-           
             $rep->setExitCode(1);
+
             return $rep;
         }
         $rep->addContent("The repository has been created!\n");
+
         return $rep;
     }
 }
