@@ -50,8 +50,8 @@ export default class Print extends HTMLElement {
                     this._maskHeight = 0;
             
                     this.printTemplate = 0;
-                    this._printFormat = 'pdf';
-                    this._printDPI = 100;
+                    this._printFormat = this.defaultFormat;
+                    this._printDPI = this.defaultDPI;
             
                     // Create a mask layer to display the extent for the main map
                     this._maskLayer = new MaskLayer();
