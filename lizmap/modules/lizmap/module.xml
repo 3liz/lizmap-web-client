@@ -34,5 +34,6 @@
         <class name="lizmapProxy" file="classes/lizmapProxy.class.php"/>
         <class name="lizmapOGCRequest" file="classes/lizmapOGCRequest.class.php"/>
         <namespacePathMap name="Lizmap" dir="lib"/>
+        <psr4 name="\LizmapCommand" dir="lib/Commands"/>
     </autoload>
 </module>
