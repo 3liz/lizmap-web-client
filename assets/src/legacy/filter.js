@@ -411,19 +411,24 @@ var lizLayerFilterTool = function () {
 
                 const layerName = lizMap.getLayerConfigById(field_item.layerId)[0];
                 const fieldConf = lizMap.keyValueConfig[layerName]?.[field_item.field];
-
                 if (fieldConf) {
                     if (fieldConf.type == 'ValueMap') {
                         keyValues = fieldConf.data;
                     } else {
-                        fetchRequests.push(
-                            lizMap.mainLizmap.wfs.getFeature({
-                                TYPENAME: fieldConf.source_layer,
-                                PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
-                                // we must not use null for exp_filter but '' if no filter is active
-                                EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
-                            })
-                        );
+                        // Get source layer typename from it ID
+                        let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
+                        if( getSourceLayer && getSourceLayer.length == 2) {
+                            let source_typename = getSourceLayer[1].typename;
+                            fetchRequests.push(
+                                lizMap.mainLizmap.wfs.getFeature({
+                                    TYPENAME: source_typename,
+                                    PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
+                                    // we must not use null for exp_filter but '' if no filter is active
+                                    EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
+                                })
+                            );
+                        }
+
                     }
                 }
 
