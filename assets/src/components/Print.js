@@ -154,7 +154,6 @@ export default class Print extends HTMLElement {
     }
 
     _launch(){
-
         const center = mainLizmap.map.getView().getCenter();
 
         const deltaX = (this._maskWidth * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH;
@@ -288,7 +287,20 @@ export default class Print extends HTMLElement {
             wmsParams[label.name] = label.value;
         });
 
-        Utils.downloadFile(mainLizmap.serviceURL, wmsParams);
+        // Display spinner and message while waiting for print
+        const printLaunch = this.querySelector('#print-launch');
+        printLaunch.disabled = true;
+        printLaunch.classList.add('spinner');
+
+        mainLizmap._lizmap3.addMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
+
+        Utils.downloadFile(mainLizmap.serviceURL, wmsParams, () => {
+            const printLaunch = this.querySelector('#print-launch');
+            printLaunch.disabled = false;
+            printLaunch.classList.remove('spinner');
+
+            document.querySelector('#message .print-in-progress a').click();
+        });
     }
 
     get printTemplate() {
