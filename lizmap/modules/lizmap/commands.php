@@ -1,5 +1,5 @@
 <?php
 
 if (isset($application)) {
-    $application->add(new \LizmapCommand\CreateRepository());
+    $application->add(new \Lizmap\Commands\CreateRepository());
 }
