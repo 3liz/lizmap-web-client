@@ -784,16 +784,20 @@ class WFSRequest extends OGCRequest
         $cnx = $this->qgisLayer->getDatasourceConnection();
         // Get datasource
         $this->datasource = $this->qgisLayer->getDatasourceParameters();
-
-        // Get fields
-        $wfsFields = $this->qgisLayer->getWfsFields();
-
         // Get Db fields
         try {
             $dbFields = $this->qgisLayer->getDbFieldList();
         } catch (\Exception $e) {
             return $this->getfeatureQgis();
         }
+
+        // Verifying that the datasource key is a db fields
+        if (!array_key_exists($this->datasource->key, $dbFields)) {
+            return $this->getfeatureQgis();
+        }
+
+        // Get WFS fields
+        $wfsFields = $this->qgisLayer->getWfsFields();
 
         // Verifying that every wfs fields are db fields
         // if not return getfeatureQgis
