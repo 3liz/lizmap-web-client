@@ -120,6 +120,13 @@ table.lizmap_project_list tr {
 table.lizmap_project_list tr.selected {
     background-color: lightskyblue;
 }
+table.lizmap_project_list tr.active a,
+table.lizmap_project_list tr.active a:hover,
+table.lizmap_project_list tr.selected a,
+table.lizmap_project_list tr.selected a:hover{
+  color: white;
+  text-decoration: underline dotted;
+}
 
 #lizmap_project_list_sidebar dt {
     margin-top: 5px;
