@@ -24,7 +24,7 @@ class CreateRepository extends \Jelix\Scripts\ModuleCommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $cli = new \Lizmap\RepositoryCliCreator();
+            $cli = new \Lizmap\Cli\RepositoryCliCreator();
             $cli->create($input->getArgument('key'), $input->getArgument('label'), $input->getArgument('path'), $input->getArgument('allowUserDefinedThemes'));
         } catch (\Exception $e) {
             $output->writeln("The repository can't be created ! : ");
