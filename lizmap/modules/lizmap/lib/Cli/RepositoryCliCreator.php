@@ -1,6 +1,6 @@
 <?php
 
-namespace Lizmap;
+namespace Lizmap\Cli;
 
 class RepositoryCliCreator
 {
