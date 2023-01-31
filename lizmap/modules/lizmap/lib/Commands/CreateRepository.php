@@ -1,6 +1,6 @@
 <?php
 
-namespace LizmapCommand;
+namespace Lizmap\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
