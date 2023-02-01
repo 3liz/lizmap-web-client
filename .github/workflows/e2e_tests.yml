@@ -122,7 +122,7 @@ jobs:
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        uses: cypress-io/github-action@v5.0.2
+        uses: cypress-io/github-action@v5.0.7
         with:
           browser: chrome
           working-directory: tests/end2end
