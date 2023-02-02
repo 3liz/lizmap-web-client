@@ -711,21 +711,22 @@ class Project
         return false;
     }
 
-    /** 
+    /**
      * Lizmap < 3.7: return true:
      * - if print checkbox is checked and
      * - if there is at least one print layout which is not an atlas
      * Lizmap >= 3.7: return true:
-     * - if there is at least one print layout enabled which is not an atlas
-     * @return boolean
+     * - if there is at least one print layout enabled which is not an atlas.
+     *
+     * @return bool
      */
     public function hasPrintEnabled()
     {
         // Lizmap < 3.7
-        if($this->cfg->getBooleanOption('print')){
+        if ($this->cfg->getBooleanOption('print')) {
             foreach ($this->printCapabilities as $printCfg) {
-                if(array_key_exists('atlas', $printCfg) 
-                && array_key_exists('enabled', $printCfg['atlas']) && $printCfg['atlas']['enabled'] == "0") {
+                if (array_key_exists('atlas', $printCfg)
+                && array_key_exists('enabled', $printCfg['atlas']) && $printCfg['atlas']['enabled'] == '0') {
                     return true;
                 }
             }
