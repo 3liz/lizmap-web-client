@@ -15,6 +15,9 @@ export default class Print extends HTMLElement {
     }
 
     connectedCallback() {
+        document.querySelector('.btn-print-clear').addEventListener('click', 
+            () => document.querySelector('#button-print').click()
+        );
 
         lizMap.events.on({
             minidockopened: (e) => {
