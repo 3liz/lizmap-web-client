@@ -48,6 +48,9 @@ export default class Print extends HTMLElement {
                     this._printScale = 50_000;
 
                     this._updateScaleFromResolution();
+
+                    this._mainMapID = 'map0';
+                    this._overviewMapId;
             
                     this._maskWidth = 0;
                     this._maskHeight = 0;
@@ -168,23 +171,6 @@ export default class Print extends HTMLElement {
         const xmax = center[0] + deltaX;
         const ymax = center[1] + deltaY;
 
-        // Get maps id
-        let mainMapID = 'map0';
-        let overviewMapId;
-
-        // Currently we only support one main map with an optional overview map
-        const templateMaps = this._printTemplates[this._printTemplate].maps;
-        if(templateMaps.length === 2){
-            if(templateMaps[0]?.overviewMap){
-                mainMapID = templateMaps[1].id;
-                overviewMapId = templateMaps[0].id;
-            }
-            if(templateMaps[1]?.overviewMap){
-                mainMapID = templateMaps[0].id;
-                overviewMapId = templateMaps[1].id;
-            }
-        }
-
         const wmsParams = {
             SERVICE: 'WMS',
             REQUEST: 'GetPrint',
@@ -196,8 +182,8 @@ export default class Print extends HTMLElement {
             TEMPLATE: this._printTemplates[this._printTemplate].title
         };
 
-        wmsParams[mainMapID + ':EXTENT'] = xmin + ',' + ymin + ',' + xmax + ',' + ymax;
-        wmsParams[mainMapID + ':SCALE'] = this._printScale;
+        wmsParams[this._mainMapID + ':EXTENT'] = xmin + ',' + ymin + ',' + xmax + ',' + ymax;
+        wmsParams[this._mainMapID + ':SCALE'] = this._printScale;
 
         const printLayers = [];
         const styleLayers = [];
@@ -254,9 +240,9 @@ export default class Print extends HTMLElement {
             }
         }
 
-        wmsParams[mainMapID + ':LAYERS'] = printLayers.join(',');
-        wmsParams[mainMapID + ':STYLES'] = styleLayers.join(',');
-        wmsParams[mainMapID + ':OPACITIES'] = opacityLayers.join(',');
+        wmsParams[this._mainMapID + ':LAYERS'] = printLayers.join(',');
+        wmsParams[this._mainMapID + ':STYLES'] = styleLayers.join(',');
+        wmsParams[this._mainMapID + ':OPACITIES'] = opacityLayers.join(',');
 
         // Selection and filter
         const filter = [];
@@ -289,21 +275,21 @@ export default class Print extends HTMLElement {
         });
 
         if (highlightGeom.length && highlightSymbol.length) {
-            wmsParams[mainMapID + ':HIGHLIGHT_GEOM'] = highlightGeom.join(';');
-            wmsParams[mainMapID + ':HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_GEOM'] = highlightGeom.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
         }
 
         // Grid
         if(this._gridX){
-            wmsParams[mainMapID + ':GRID_INTERVAL_X'] = this._gridX;
+            wmsParams[this._mainMapID + ':GRID_INTERVAL_X'] = this._gridX;
         }
         if(this._gridY){
-            wmsParams[mainMapID + ':GRID_INTERVAL_Y'] = this._gridY;
+            wmsParams[this._mainMapID + ':GRID_INTERVAL_Y'] = this._gridY;
         }
 
         // Rotation
         if(this._rotation){
-            wmsParams[mainMapID + ':ROTATION'] = this._rotation;
+            wmsParams[this._mainMapID + ':ROTATION'] = this._rotation;
         }
 
         // Custom labels
@@ -312,10 +298,10 @@ export default class Print extends HTMLElement {
         });
 
         // Overview map
-        if (mainLizmap.config.options.hasOverview && overviewMapId) {
-            wmsParams[overviewMapId + ':EXTENT'] = mainLizmap.config.options.bbox.join(',');
-            wmsParams[overviewMapId + ':LAYERS'] = 'Overview';
-            wmsParams[overviewMapId + ':STYLES'] = '';
+        if (mainLizmap.config.options.hasOverview && this._overviewMapId) {
+            wmsParams[this._overviewMapId + ':EXTENT'] = mainLizmap.config.options.bbox.join(',');
+            wmsParams[this._overviewMapId + ':LAYERS'] = 'Overview';
+            wmsParams[this._overviewMapId + ':STYLES'] = '';
         }
 
         // Display spinner and message while waiting for print
@@ -373,10 +359,27 @@ export default class Print extends HTMLElement {
 
         this._printTemplate = index;
 
-        // Change mask size
+        this._mainMapID = 'map0';
+        this._overviewMapId = undefined;
+
+        // Get maps id
+        // Currently we only support one main map with an optional overview map
+        const templateMaps = this._printTemplates[index].maps;
+        if(templateMaps.length === 2){
+            if(templateMaps[0]?.overviewMap){
+                this._mainMapID = templateMaps[1].id;
+                this._overviewMapId = templateMaps[0].id;
+            }
+            if(templateMaps[1]?.overviewMap){
+                this._mainMapID = templateMaps[0].id;
+                this._overviewMapId = templateMaps[1].id;
+            }
+        }
+
+        // Change mask size. Only main map mask is shown
         // Width/height are in mm by default. Convert to pixels
-        this._maskWidth = this._printTemplates?.[index]?.maps?.[0]?.width / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
-        this._maskHeight = this._printTemplates?.[index]?.maps?.[0]?.height / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
+        this._maskWidth = templateMaps.filter(map => map.id == this._mainMapID)?.[0]?.width / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
+        this._maskHeight = templateMaps.filter(map => map.id == this._mainMapID)?.[0]?.height / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
 
         mainLizmap.map.getView().changed();
 
