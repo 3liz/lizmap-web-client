@@ -1,10 +1,11 @@
 import { mainLizmap } from '../modules/Globals.js';
-import {html, render} from 'lit-html';
+import { html, render } from 'lit-html';
 
 import MaskLayer from '../modules/Mask';
 import Utils from '../modules/Utils.js';
 
 import WKT from 'ol/format/WKT';
+import { transformExtent } from 'ol/proj';
 
 const INCHES_PER_METER = 39.37;
 const DOTS_PER_INCH = 72;
@@ -32,7 +33,7 @@ export default class Print extends HTMLElement {
                     mainLizmap.config?.printTemplates.map((template, index) => {
                         if (template?.atlas?.enabled === '0'){
                             // Lizmap >= 3.7
-                            if (this._layouts) {
+                            if (this._layouts?.list) {
                                 if(this._layouts.list?.[index]?.enabled){
                                     this._printTemplates[index] = template;
                                 }
@@ -166,10 +167,13 @@ export default class Print extends HTMLElement {
 
         const deltaX = (this._maskWidth * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH;
         const deltaY = (this._maskHeight * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH;
-        const xmin = center[0] - deltaX;
-        const ymin = center[1] - deltaY;
-        const xmax = center[0] + deltaX;
-        const ymax = center[1] + deltaY;
+        let extent = [center[0] - deltaX, center[1] - deltaY, center[0] + deltaX, center[1] + deltaY];
+        const mapProjection = mainLizmap.config.options.projection.ref;
+        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref;
+
+        if(projectProjection != mapProjection){
+            extent = transformExtent(extent, mapProjection, projectProjection);
+        }
 
         const wmsParams = {
             SERVICE: 'WMS',
@@ -177,12 +181,12 @@ export default class Print extends HTMLElement {
             VERSION: '1.3.0',
             FORMAT: this._printFormat,
             TRANSPARENT: true,
-            SRS: 'EPSG:2154',
+            SRS: projectProjection,
             DPI: this._printDPI,
             TEMPLATE: this._printTemplates[this._printTemplate].title
         };
 
-        wmsParams[this._mainMapID + ':EXTENT'] = xmin + ',' + ymin + ',' + xmax + ',' + ymax;
+        wmsParams[this._mainMapID + ':EXTENT'] = extent.join(',');
         wmsParams[this._mainMapID + ':SCALE'] = this._printScale;
 
         const printLayers = [];
@@ -299,7 +303,12 @@ export default class Print extends HTMLElement {
 
         // Overview map
         if (mainLizmap.config.options.hasOverview && this._overviewMapId) {
-            wmsParams[this._overviewMapId + ':EXTENT'] = mainLizmap.config.options.bbox.join(',');
+            let extent = mainLizmap.config.options.bbox;
+
+            if(projectProjection != mapProjection){
+                extent = transformExtent(extent, mapProjection, projectProjection);
+            }
+            wmsParams[this._overviewMapId + ':EXTENT'] = extent.join(',');
             wmsParams[this._overviewMapId + ':LAYERS'] = 'Overview';
             wmsParams[this._overviewMapId + ':STYLES'] = '';
         }
