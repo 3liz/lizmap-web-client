@@ -163,6 +163,23 @@ export default class Print extends HTMLElement {
         const xmax = center[0] + deltaX;
         const ymax = center[1] + deltaY;
 
+        // Get maps id
+        let mainMapID = 'map0';
+        let overviewMapId;
+
+        // Currently we only support one main map with an optional overview map
+        const templateMaps = this._printTemplates[this._printTemplate].maps;
+        if(templateMaps.length === 2){
+            if(templateMaps[0]?.overviewMap){
+                mainMapID = templateMaps[1].id;
+                overviewMapId = templateMaps[0].id;
+            }
+            if(templateMaps[1]?.overviewMap){
+                mainMapID = templateMaps[0].id;
+                overviewMapId = templateMaps[1].id;
+            }
+        }
+
         const wmsParams = {
             SERVICE: 'WMS',
             REQUEST: 'GetPrint',
@@ -171,10 +188,11 @@ export default class Print extends HTMLElement {
             TRANSPARENT: true,
             SRS: 'EPSG:2154',
             DPI: this._printDPI,
-            TEMPLATE: this._printTemplates[this._printTemplate].title,
-            'map0:EXTENT':  xmin + ',' + ymin + ',' + xmax + ',' + ymax,
-            'map0:SCALE':  this._printScale
+            TEMPLATE: this._printTemplates[this._printTemplate].title
         };
+
+        wmsParams[mainMapID + ':EXTENT'] = xmin + ',' + ymin + ',' + xmax + ',' + ymax;
+        wmsParams[mainMapID + ':SCALE'] = this._printScale;
 
         const printLayers = [];
         const styleLayers = [];
@@ -196,6 +214,7 @@ export default class Print extends HTMLElement {
             opacityLayers.push(255);
         }
 
+        // Add visible layers
         for (const layer of mainLizmap._lizmap3.map.layers) {
             if (((layer instanceof OpenLayers.Layer.WMS) || (layer instanceof OpenLayers.Layer.WMTS))
                 && layer.getVisibility() && layer?.params?.LAYERS) {
@@ -230,9 +249,9 @@ export default class Print extends HTMLElement {
             }
         }
 
-        wmsParams.LAYERS = printLayers.join(',');
-        wmsParams.STYLES = styleLayers.join(',');
-        wmsParams.OPACITIES = opacityLayers.join(',');
+        wmsParams[mainMapID + ':LAYERS'] = printLayers.join(',');
+        wmsParams[mainMapID + ':STYLES'] = styleLayers.join(',');
+        wmsParams[mainMapID + ':OPACITIES'] = opacityLayers.join(',');
 
         // Selection and filter
         const filter = [];
@@ -265,27 +284,34 @@ export default class Print extends HTMLElement {
         });
 
         if (highlightGeom.length && highlightSymbol.length) {
-            wmsParams['map0:HIGHLIGHT_GEOM'] = highlightGeom.join(';');
-            wmsParams['map0:HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
+            wmsParams[mainMapID + ':HIGHLIGHT_GEOM'] = highlightGeom.join(';');
+            wmsParams[mainMapID + ':HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
         }
 
         // Grid
         if(this._gridX){
-            wmsParams['map0:GRID_INTERVAL_X'] = this._gridX;
+            wmsParams[mainMapID + ':GRID_INTERVAL_X'] = this._gridX;
         }
         if(this._gridY){
-            wmsParams['map0:GRID_INTERVAL_Y'] = this._gridY;
+            wmsParams[mainMapID + ':GRID_INTERVAL_Y'] = this._gridY;
         }
 
         // Rotation
         if(this._rotation){
-            wmsParams['map0:ROTATION'] = this._rotation;
+            wmsParams[mainMapID + ':ROTATION'] = this._rotation;
         }
 
         // Custom labels
         this.querySelectorAll('.print-label').forEach(label => {
             wmsParams[label.name] = label.value;
         });
+
+        // Overview map
+        if (mainLizmap.config.options.hasOverview && overviewMapId) {
+            wmsParams[overviewMapId + ':EXTENT'] = mainLizmap.config.options.bbox.join(',');
+            wmsParams[overviewMapId + ':LAYERS'] = 'Overview';
+            wmsParams[overviewMapId + ':STYLES'] = '';
+        }
 
         // Display spinner and message while waiting for print
         const printLaunch = this.querySelector('#print-launch');
@@ -318,6 +344,11 @@ export default class Print extends HTMLElement {
         }
 
         return formats || ['pdf', 'jpg', 'png', 'svg'];
+    }
+
+    get defaultFormat() {
+        const defaultFormat = this._layouts?.list?.[this._printTemplate]?.default_format;
+        return defaultFormat || 'pdf';
     }
 
     get printDPIs() {
