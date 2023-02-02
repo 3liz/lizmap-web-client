@@ -471,7 +471,8 @@ class ProjectConfig
     }
 
     /**
-     * Print layouts since Lizmap 3.7
+     * Print layouts since Lizmap 3.7.
+     *
      * @return null|object
      */
     public function getLayouts()
