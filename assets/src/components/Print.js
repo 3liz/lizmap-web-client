@@ -102,6 +102,18 @@ export default class Print extends HTMLElement {
                     </td>
                 </tr>
             </table>
+            ${this._printTemplates?.[this.printTemplate]?.labels?.length
+                ? html`
+                <div class="print-labels">
+                    <p>${lizDict['print.labels']}</p>
+
+                    ${this._printTemplates[this.printTemplate].labels.slice().reverse().map((label) => 
+                    label?.htmlState ?
+                        html`<textarea name="${label.id}" class="print-label" placeholder="${label.text}" .value=${label.text}></textarea><br>`
+                        : html`<input  name="${label.id}" class="print-label" placeholder="${label.text}" value="${label.text}" type="text"><br>`
+                        )}
+                </div>`
+            : ''}
             <details class='print-advanced'>
                 <summary>${lizDict['print.advanced']}</summary>
                 <div class="print-dpi">
@@ -110,18 +122,6 @@ export default class Print extends HTMLElement {
                         ${this.printDPIs.map( dpi => html`<option ?selected="${dpi === this.defaultDPI}" value="${dpi}">${dpi}</option>`)}
                     </select>
                 </div>
-                ${this._printTemplates?.[this.printTemplate]?.labels?.length
-                    ? html`
-                    <div class="print-labels">
-                        <p>${lizDict['print.labels']}</p>
-
-                        ${this._printTemplates[this.printTemplate].labels.slice().reverse().map((label) => 
-                        label?.htmlState ?
-                            html`<textarea name="${label.id}" class="print-label" placeholder="${label.text}" .value=${label.text}></textarea><br>`
-                            : html`<input  name="${label.id}" class="print-label" placeholder="${label.text}" value="${label.text}" type="text"><br>`
-                            )}
-                    </div>`
-                : ''}
                 <div class='print-grid'>
                     <span>${lizDict['print.gridIntervals']}</span>
                     <div>
