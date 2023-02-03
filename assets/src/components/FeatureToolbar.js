@@ -1,4 +1,4 @@
-import { mainEventDispatcher } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import { html, render } from 'lit-html';
 
@@ -7,6 +7,8 @@ import { getCenter } from 'ol/extent';
 import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
 import KML from 'ol/format/KML';
+
+import '../images/svg/map-print.svg';
 
 export default class FeatureToolbar extends HTMLElement {
     constructor() {
@@ -53,6 +55,16 @@ export default class FeatureToolbar extends HTMLElement {
 
             <button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>
 
+            ${this.atlasLayouts.map( layout => html`
+                <button type="button" class="btn btn-mini feature-atlas" title="${layout.title}">
+                    ${layout.icon
+                    ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
+                    : html`<svg>
+                                <use xlink:href="#map-print"></use>
+                            </svg>`
+                }  
+                </button>
+            `)}
         </div>`;
 
         render(this._mainTemplate(), this);
@@ -188,6 +200,34 @@ export default class FeatureToolbar extends HTMLElement {
                 Object.entries(lizMap.config.layers).some(
                     ([ ,value]) => value?.typename == this._featureType && value?.popup_allow_download
                 );
+    }
+
+    get atlasLayouts() {
+        const atlasLayouts = [];
+
+        // Lizmap >= 3.7
+        this._layouts = mainLizmap.config?.layouts;
+
+        mainLizmap.config?.printTemplates.map((template, index) => {
+            if (template?.atlas?.enabled === '1') {
+                // Lizmap >= 3.7
+                if (mainLizmap.config?.layouts?.list) {
+                    if (mainLizmap.config?.layouts?.list?.[index]?.enabled) {
+                        atlasLayouts.push({
+                            title: mainLizmap.config?.layouts?.list?.[index]?.layout,
+                            icon: mainLizmap.config?.layouts?.list?.[index]?.icon
+                        });
+                    }
+                    // Lizmap < 3.7
+                } else {
+                    atlasLayouts.push({
+                        title: template?.title
+                    });
+                }
+            }
+        });
+
+        return atlasLayouts;
     }
 
     updateIsFeatureEditable(editableFeatures) {
