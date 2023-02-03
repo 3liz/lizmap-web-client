@@ -2917,8 +2917,19 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
 /* In attribute table, don't display filter, export or print buttons */
 #attribute-table-container lizmap-feature-toolbar .feature-filter,
 #attribute-table-container lizmap-feature-toolbar .feature-export,
-#attribute-table-container lizmap-feature-toolbar .feature-print{
+#attribute-table-container lizmap-feature-toolbar .feature-print,
+#attribute-table-container lizmap-feature-toolbar .feature-atlas{
   display: none;
+}
+
+.feature-atlas svg{
+  display: block;
+    width: 16px;
+    height: 20px;
+}
+
+.feature-atlas:hover > * {
+  filter: invert(1);
 }
 
 /* Form filter */
