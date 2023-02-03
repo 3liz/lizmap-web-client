@@ -1,8 +1,8 @@
 <?php
 
-namespace Lizmap\Cli;
+namespace Lizmap\CliHelpers;
 
-class RepositoryCliCreator
+class RepositoryCreator
 {
     public function create($key, $label, $path, $allowUserDefinedThemes = null)
     {
@@ -14,7 +14,10 @@ class RepositoryCliCreator
         }
 
         // Repository data
-        $data = array('label' => $label, 'path' => $path, 'allowUserDefinedThemes' => $allowUserDefinedThemes);
+        $data = array('label' => $label,
+            'path' => $path,
+            'allowUserDefinedThemes' => $allowUserDefinedThemes,
+        );
         foreach (\Lizmap\Project\Repository::getProperties() as $prop) {
             // Check paths
             if ($prop == 'path') {
