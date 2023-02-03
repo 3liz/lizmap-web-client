@@ -3,6 +3,15 @@ body {
   padding-left:0;
   padding-right:0;
 }
+
+.flex {
+  display: flex;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
 #title {
   margin-top : 5px;
 }
@@ -1308,9 +1317,30 @@ transform: none !important;
 
 #print-template{max-width: 125px;}
 
+#print-parameters {
+  margin-bottom: 10px;
+}
+
 #print-parameters td, #print-parameters td select{
   padding-left: 1px;
   padding-right: 1px;
+}
+
+lizmap-print .print-advanced {
+  padding-bottom: 10px;
+}
+
+lizmap-print .print-advanced summary {
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+lizmap-print .print-dpi{
+  margin-bottom: 10px;
+}
+
+lizmap-print .flex {
+  gap: 10px;
 }
 
 #baselayer-menu div.baselayer-select,

@@ -676,116 +676,7 @@ class QgisProject
             }
         }
 
-        $services = $this->services;
         $printTemplates = array();
-        // get composer qg project version < 3
-        $composers = $this->xml->xpath('//Composer');
-        if ($composers && is_array($composers)) {
-            foreach ($composers as $composer) {
-                // test restriction
-                if (in_array((string) $composer['title'], $rComposers)) {
-                    continue;
-                }
-                // get composition element
-                $composition = $composer->xpath('Composition');
-                if (!$composition) {
-                    continue;
-                }
-                $composition = $composition[0];
-
-                // init print template element
-                $printTemplate = array(
-                    'title' => (string) $composer['title'],
-                    'width' => (int) $composition['paperWidth'],
-                    'height' => (int) $composition['paperHeight'],
-                    'maps' => array(),
-                    'labels' => array(),
-                );
-
-                // get composer maps
-                $cMaps = $composer->xpath('.//ComposerMap');
-                if ($cMaps && is_array($cMaps)) {
-                    foreach ($cMaps as $cMap) {
-                        $cMapItem = $cMap->xpath('ComposerItem');
-                        if (!$cMapItem) {
-                            continue;
-                        }
-                        $cMapItem = $cMapItem[0];
-                        $ptMap = array(
-                            'id' => 'map'.(string) $cMap['id'],
-                            'width' => (int) $cMapItem['width'],
-                            'height' => (int) $cMapItem['height'],
-                        );
-
-                        // Before 2.6
-                        if (property_exists($cMap->attributes(), 'overviewFrameMap') and (string) $cMap['overviewFrameMap'] != '-1') {
-                            $ptMap['overviewMap'] = 'map'.(string) $cMap['overviewFrameMap'];
-                        }
-                        // >= 2.6
-                        $cMapOverviews = $cMap->xpath('ComposerMapOverview');
-                        foreach ($cMapOverviews as $cMapOverview) {
-                            if ($cMapOverview && (string) $cMapOverview->attributes()->frameMap != '-1') {
-                                $ptMap['overviewMap'] = 'map'.(string) $cMapOverview->attributes()->frameMap;
-                            }
-                        }
-                        // Grid
-                        $cMapGrids = $cMap->xpath('ComposerMapGrid');
-                        foreach ($cMapGrids as $cMapGrid) {
-                            if ($cMapGrid && (string) $cMapGrid->attributes()->show != '0') {
-                                $ptMap['grid'] = 'True';
-                            }
-                        }
-                        // In QGIS 3.*
-                        // Layout maps now use a string UUID as "id", let's assume that the first map
-                        // has id 0 and so on ...
-                        $ptMap['id'] = 'map'.(string) count($printTemplate['maps']);
-                        $printTemplate['maps'][] = $ptMap;
-                    }
-                }
-
-                // get composer labels
-                $cLabels = $composer->xpath('.//ComposerLabel');
-                if ($cLabels && is_array($cLabels)) {
-                    foreach ($cLabels as $cLabel) {
-                        $cLabelItem = $cLabel->xpath('ComposerItem');
-                        if (!$cLabelItem) {
-                            continue;
-                        }
-                        $cLabelItem = $cLabelItem[0];
-                        if ((string) $cLabelItem['id'] == '') {
-                            continue;
-                        }
-                        $printTemplate['labels'][] = array(
-                            'id' => (string) $cLabelItem['id'],
-                            'htmlState' => (int) $cLabel['htmlState'],
-                            'text' => (string) $cLabel['labelText'],
-                        );
-                    }
-                }
-
-                // get composer attribute tables
-                $cTables = $composer->xpath('.//ComposerAttributeTableV2');
-                if ($cTables && is_array($cTables)) {
-                    foreach ($cTables as $cTable) {
-                        $printTemplate['tables'][] = array(
-                            'composerMap' => (int) $cTable['composerMap'],
-                            'vectorLayer' => (string) $cTable['vectorLayer'],
-                        );
-                    }
-                }
-
-                // Atlas
-                $Atlas = $composer->xpath('Atlas');
-                if ($Atlas) {
-                    $Atlas = $Atlas[0];
-                    $printTemplate['atlas'] = array(
-                        'enabled' => (string) $Atlas['enabled'],
-                        'coverageLayer' => (string) $Atlas['coverageLayer'],
-                    );
-                }
-                $printTemplates[] = $printTemplate;
-            }
-        }
         // get layout qgs project version >= 3
         $layouts = $this->xml->xpath('//Layout');
         if ($layouts && is_array($layouts)) {
@@ -871,27 +762,6 @@ class QgisProject
                             'id' => (string) $lLabel['id'],
                             'htmlState' => (int) $lLabel['htmlState'],
                             'text' => (string) $lLabel['labelText'],
-                        );
-                    }
-                }
-
-                // get layout attribute tables
-                $lTables = $layout->xpath('LayoutMultiFrame[@type="65649"]');
-                if ($lTables && is_array($lTables)) {
-                    foreach ($lTables as $lTable) {
-                        $composerMap = -1;
-                        if (isset($lTable['mapUuid'])) {
-                            $mapUuid = (string) $lTable['mapUuid'];
-                            if (!array_key_exists($mapUuid, $mapUuidId)) {
-                                $mapId = $mapUuidId[$mapUuid];
-                                $composerMap = (string) str_replace('map', '', $mapId);
-                            }
-                        }
-
-                        $printTemplate['tables'][] = array(
-                            'composerMap' => $composerMap,
-                            'vectorLayer' => (string) $lTable['vectorLayer'],
-                            'vectorLayerName' => (string) $lTable['vectorLayerName'],
                         );
                     }
                 }

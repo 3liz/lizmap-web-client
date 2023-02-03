@@ -14,6 +14,7 @@ import ReverseGeom from './components/edition/ReverseGeom.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import ActionSelector from './components/ActionSelector.js';
+import Print from './components/Print.js';
 
 lizMap.events.on({
     uicreated: () => {
@@ -35,6 +36,8 @@ lizMap.events.on({
         window.customElements.define('lizmap-reverse-geom', ReverseGeom);
 
         window.customElements.define('lizmap-action-selector', ActionSelector);
+
+        window.customElements.define('lizmap-print', Print);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
