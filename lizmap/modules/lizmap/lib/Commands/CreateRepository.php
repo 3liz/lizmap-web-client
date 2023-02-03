@@ -14,18 +14,39 @@ class CreateRepository extends \Jelix\Scripts\ModuleCommandAbstract
             ->setName('repository:create')
             ->setDescription('Create repository with provided params')
             ->setHelp('')
-            ->addArgument('key', InputArgument::REQUIRED, 'the repository Id ')
-            ->addArgument('label', InputArgument::REQUIRED, 'the repository label')
-            ->addArgument('path', InputArgument::REQUIRED, 'the repository path (absolute or relative to root repositories path)')
-            ->addArgument('allowUserDefinedThemes', InputArgument::OPTIONAL, 'boolean to activate the theme capabilities directly in repository')
+            ->addArgument(
+                'key',
+                InputArgument::REQUIRED,
+                'the repository Id '
+            )
+            ->addArgument(
+                'label',
+                InputArgument::REQUIRED,
+                'the repository label'
+            )
+            ->addArgument(
+                'path',
+                InputArgument::REQUIRED,
+                'the repository path (absolute or relative to root repositories path)'
+            )
+            ->addArgument(
+                'allowUserDefinedThemes',
+                InputArgument::OPTIONAL,
+                'boolean to activate the theme capabilities directly in repository'
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $cli = new \Lizmap\Cli\RepositoryCliCreator();
-            $cli->create($input->getArgument('key'), $input->getArgument('label'), $input->getArgument('path'), $input->getArgument('allowUserDefinedThemes'));
+            $cli = new \Lizmap\CliHelpers\RepositoryCreator();
+            $cli->create(
+                $input->getArgument('key'),
+                $input->getArgument('label'),
+                $input->getArgument('path'),
+                $input->getArgument('allowUserDefinedThemes')
+            );
         } catch (\Exception $e) {
             $output->writeln("The repository can't be created ! : ");
             $output->writeln($e->getMessage());
