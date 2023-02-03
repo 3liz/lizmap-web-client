@@ -7,12 +7,17 @@
     {assign $tableClass='has_inspection_data'}
 {/if}
 
+{if $qgisServerOk == false}
+{*The best would be to not display this table at all until QGIS server is OK.*}
+{*So we can assume later in the code we have a QGIS server int version*}
+<div>
+    {@admin.server.information.error@}
+</div>
+{/if}
+
 {if $hasSomeProjectsNotDisplayed}
 <div>
     {@admin.project.not.displayed@}
-    <ul>
-        <li>{jlocale "admin.project.minimum.target.version.required", array($minimumLizmapTargetVersionRequired)}</li>
-    </ul>
 </div>
 {/if}
 
@@ -47,6 +52,13 @@
 
     <!-- colors for warnings and errors -->
     {assign $colors = array('warning'=>'lightyellow', 'error'=>'lightcoral')}
+    {assign $warningLayerCount = 100}
+    {assign $errorLayerCount = 200}
+    {assign $warningLoadingTime = 30.0}
+    {assign $errorLoadingTime = 60.0}
+    {assign $warningMemory = 100}
+    {assign $errorMemory = 250}
+    {assign $oldQgisVersion = 6}
 
     {foreach $mapItems as $mi}
     {if $mi->type == 'rep'}
@@ -72,11 +84,11 @@
             <!-- Layer count -->
             {assign $style = ''}
             {assign $title = ''}
-            {if $p['layer_count'] > 100}
+            {if $p['layer_count'] > $warningLayerCount}
                 {assign $style = 'background-color: '.$colors['warning'].';'}
                 {assign $title = @admin.project.list.column.layers.count.warning.label@}
             {/if}
-            {if $p['layer_count'] > 200}
+            {if $p['layer_count'] > $errorLayerCount}
                 {assign $style = 'background-color: '.$colors['error'].';'}
                 {assign $title = @admin.project.list.column.layers.count.error.label@}
             {/if}
@@ -122,11 +134,11 @@
             <!-- loading time -->
             {assign $style = ''}
             {assign $title = ''}
-            {if $p['loading_time'] > 30.0}
+            {if $p['loading_time'] > $warningLoadingTime}
                 {assign $style = 'background-color: '.$colors['warning'].';'}
                 {assign $title = @admin.project.list.column.loading.time.warning.label@}
             {/if}
-            {if $p['loading_time'] > 90.0}
+            {if $p['loading_time'] > $errorLoadingTime}
                 {assign $style = 'background-color: '.$colors['error'].';'}
                 {assign $title = @admin.project.list.column.loading.time.error.label@}
             {/if}
@@ -137,11 +149,11 @@
             <!-- Memory usage -->
             {assign $style = ''}
             {assign $title = ''}
-            {if $p['memory_usage'] > 100.0}
+            {if $p['memory_usage'] > $warningMemory }
                 {assign $style = 'background-color: '.$colors['warning'].';'}
                 {assign $title = @admin.project.list.column.memory.usage.warning.label@}
             {/if}
-            {if $p['memory_usage'] > 250.0}
+            {if $p['memory_usage'] > $errorMemory }
                 {assign $style = 'background-color: '.$colors['error'].';'}
                 {assign $title = @admin.project.list.column.memory.usage.error.label@}
             {/if}
@@ -154,7 +166,7 @@
             <!-- QGIS project version -->
             {assign $style = ''}
             {assign $title = ''}
-            {if $serverVersions['qgis_server_version_int'] && $serverVersions['qgis_server_version_int'] - $p['qgis_version_int'] > 6 }
+            {if $serverVersions['qgis_server_version_int'] && $serverVersions['qgis_server_version_int'] - $p['qgis_version_int'] > $oldQgisVersion }
                 {assign $style = 'background-color: '.$colors['warning'].';'}
                 {assign $title = @admin.project.list.column.qgis.desktop.version.too.old@.' ('.@admin.form.admin_services.qgisServerVersion.label@.': '.$serverVersions['qgis_server_version'].')'}
             {/if}
@@ -222,3 +234,55 @@
     {/foreach}
     </tbody>
 </table>
+
+<div>
+    <br>
+    <b>{@admin.project.rules.list.introduction@}</b>
+    <ul>
+        <li>{@admin.project.rules.list.warnings@}</li>
+        <ul>
+            <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
+            <ul>
+                <li>{@admin.project.rules.list.qgis.version.current@}<strong> {$serverVersions['qgis_server_version_int']}</strong>.</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow", array($serverVersions['qgis_server_version_int'] - $oldQgisVersion)}</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral", array($serverVersions['qgis_server_version_int'] + 1)}</li>
+            </ul>
+            <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
+            <ul>
+                <li>{jlocale "admin.project.rules.list.target.version", array($minimumLizmapTargetVersionRequired)}</li>
+            </ul>
+            <li>{@admin.project.list.column.layers.count.label.longer@}</li>
+            <ul>
+                <li>{jlocale "admin.project.rules.list.important.count.layers", array($warningLayerCount)}</li>
+                <li>{jlocale "admin.project.rules.list.very.important.count.layers", array($errorLayerCount)}</li>
+            </ul>
+            <li>{@admin.project.list.column.crs.label@}</li>
+            <ul>
+                <li>{@admin.project.rules.list.custom.projection@}</li>
+            </ul>
+
+            {if $hasInspectionData}
+            <li>{@project.list.column.invalid.layers.count.label@}</li>
+            <ul>
+                <li>{@project.rules.list.invalid.datasource@}</li>
+            </ul>
+            <li>{@project.list.column.loading.time.label.alt@}</li>
+            <ul>
+                <li>{jlocale "admin.project.rules.list.warning.loading", array($warningLoadingTime)}</li>
+                <li>{jlocale "admin.project.rules.list.error.loading", array($errorLoadingTime)}</li>
+            </ul>
+            <li>{@project.list.column.memory.usage.label.alt@}</li>
+            <ul>
+                <li>{jlocale "admin.project.rules.list.warning.memory", array($warningMemory)}</li>
+                <li>{jlocale "admin.project.rules.list.error.memory", array($errorMemory)}</li>
+            </ul>
+            {/if}
+
+        </ul>
+    <li>{@admin.project.rules.list.blocking@}</li>
+        <ul>
+            <li>{@admin.project.rules.list.blocking.description@}</li>
+            <li>{jlocale "admin.project.rules.list.blocking.target", array($minimumLizmapTargetVersionRequired - 0.1)}</li>
+        </ul>
+    </ul>
+</div>

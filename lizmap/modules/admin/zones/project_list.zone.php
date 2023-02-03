@@ -97,6 +97,20 @@ class project_listZone extends jZone
         }
         $this->_tpl->assign('serverVersions', $serverVersions);
 
+        // Check QGIS server status
+        $statusQgisServer = true;
+        $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
+        if ($server->versionCompare($server->getQgisServerVersion(), $requiredQgisVersion)) {
+            $statusQgisServer = false;
+        }
+        // Check Lizmap server status
+        $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+        $currentLizmapVersion = $server->getLizmapPluginServerVersion();
+        if ($server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
+            $statusQgisServer = false;
+        }
+        $this->_tpl->assign('qgisServerOk', $statusQgisServer);
+
         // Add the application base path to let the template load the CSS and JS assets
         $basePath = jApp::urlBasePath();
         $this->_tpl->assign('basePath', $basePath);
