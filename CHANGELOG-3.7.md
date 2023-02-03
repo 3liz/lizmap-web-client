@@ -25,8 +25,18 @@
     ```
   * A WKT in `EPSG:4326` can also be sent as an **additional parameter**. This is only possible when running the action with JavaScript. This allows to **send a geometry** to be used by the PostgreSQL action (for example to get data from another table with geometries intersecting this passed WKT geometry)
   * The **JavaScript and HTML code** has been **modernized** (no more jQuery calls, usage of web components, etc.)
-* New print configurations
+* New print configurations. For each layout, you can:
+  * enable/disable it
+  * set allowed groups
+  * set formats and default one
+  * set DPIs and default one
+  * for atlas, choose an icon used for the button launching print in the feature's popup
 * New display of print options
+  * print area is now display as a [mask on the map](https://user-images.githubusercontent.com/2145040/216579235-8b438ea5-7ea3-4549-95fa-398dea1450e8.png)
+  * an advanced panel allows you to:
+    * set X/Y parameters for the grid
+    * set main map rotation
+    * set DPI
 
 ### Changed
 
