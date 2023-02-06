@@ -50,7 +50,12 @@ class repositoryCtrl extends jControllerCmdLine
 
     public function create()
     {
+        /**
+         * @var jResponseCmdline $rep
+         */
         $rep = $this->getResponse(); // cmdline response by default
+        $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
+In lizmap folder, use 'php console.php repository:create <key> <label> <path>'\n\n");
 
         try {
             $cli = new \Lizmap\CliHelpers\RepositoryCreator();
