@@ -111,6 +111,9 @@ class project_listZone extends jZone
         }
         $this->_tpl->assign('qgisServerOk', $statusQgisServer);
 
+        $lizmapInfo = \Jelix\Core\Infos\AppInfos::load();
+        $this->_tpl->assign('lizmapVersion', $lizmapInfo->version);
+
         // Add the application base path to let the template load the CSS and JS assets
         $basePath = jApp::urlBasePath();
         $this->_tpl->assign('basePath', $basePath);
