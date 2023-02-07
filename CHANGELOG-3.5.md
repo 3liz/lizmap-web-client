@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
+
 ## 3.5.10 - 2023-01-25
 
 ### Fixed
