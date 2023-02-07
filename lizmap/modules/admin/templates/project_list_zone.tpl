@@ -243,9 +243,9 @@
         <ul>
             <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
             <ul>
-                <li>{@admin.project.rules.list.qgis.version.current@}<strong> {$serverVersions['qgis_server_version_int']}</strong>.</li>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array($serverVersions['qgis_server_version_int'] - $oldQgisVersion)}</li>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral.html", array($serverVersions['qgis_server_version_int'] + 1)}</li>
+                <li>{@admin.project.rules.list.qgis.version.current@}<strong> {$serverVersions['qgis_server_version_int']|qgis_majmin_human_version}</strong>.</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array(jtpl_modifier_common_qgis_majmin_human_version($serverVersions['qgis_server_version_int'] - $oldQgisVersion))}</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral.html", array(jtpl_modifier_common_qgis_majmin_human_version($serverVersions['qgis_server_version_int'] + 1 ))}</li>
             </ul>
             <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
             <ul>
@@ -254,7 +254,7 @@
             <li>{@admin.project.list.column.layers.count.label.longer@}</li>
             <ul>
                 <li>{jlocale "admin.project.rules.list.important.count.layers.html", array($warningLayerCount)}</li>
-                <li>{jlocale "admin.project.rules.list.very.important.count.layers.html", array(jtpl_modifier_common_qgis_majmin_human_version($errorLayerCount))}</li>
+                <li>{jlocale "admin.project.rules.list.very.important.count.layers.html", array(($errorLayerCount))}</li>
             </ul>
             <li>{@admin.project.list.column.crs.label@}</li>
             <ul>
