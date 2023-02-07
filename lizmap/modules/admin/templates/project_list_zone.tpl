@@ -244,17 +244,17 @@
             <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
             <ul>
                 <li>{@admin.project.rules.list.qgis.version.current@}<strong> {$serverVersions['qgis_server_version_int']}</strong>.</li>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow", array($serverVersions['qgis_server_version_int'] - $oldQgisVersion)}</li>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral", array($serverVersions['qgis_server_version_int'] + 1)}</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array($serverVersions['qgis_server_version_int'] - $oldQgisVersion)}</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral.html", array($serverVersions['qgis_server_version_int'] + 1)}</li>
             </ul>
             <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
             <ul>
-                <li>{jlocale "admin.project.rules.list.target.version", array($minimumLizmapTargetVersionRequired)}</li>
+                <li>{jlocale "admin.project.rules.list.target.version.html", array($minimumLizmapTargetVersionRequired)}</li>
             </ul>
             <li>{@admin.project.list.column.layers.count.label.longer@}</li>
             <ul>
-                <li>{jlocale "admin.project.rules.list.important.count.layers", array($warningLayerCount)}</li>
-                <li>{jlocale "admin.project.rules.list.very.important.count.layers", array($errorLayerCount)}</li>
+                <li>{jlocale "admin.project.rules.list.important.count.layers.html", array($warningLayerCount)}</li>
+                <li>{jlocale "admin.project.rules.list.very.important.count.layers.html", array(jtpl_modifier_common_qgis_majmin_human_version($errorLayerCount))}</li>
             </ul>
             <li>{@admin.project.list.column.crs.label@}</li>
             <ul>
@@ -268,13 +268,13 @@
             </ul>
             <li>{@project.list.column.loading.time.label.alt@}</li>
             <ul>
-                <li>{jlocale "admin.project.rules.list.warning.loading", array($warningLoadingTime)}</li>
-                <li>{jlocale "admin.project.rules.list.error.loading", array($errorLoadingTime)}</li>
+                <li>{jlocale "admin.project.rules.list.warning.loading.html", array($warningLoadingTime)}</li>
+                <li>{jlocale "admin.project.rules.list.error.loading.html", array($errorLoadingTime)}</li>
             </ul>
             <li>{@project.list.column.memory.usage.label.alt@}</li>
             <ul>
-                <li>{jlocale "admin.project.rules.list.warning.memory", array($warningMemory)}</li>
-                <li>{jlocale "admin.project.rules.list.error.memory", array($errorMemory)}</li>
+                <li>{jlocale "admin.project.rules.list.warning.memory.html", array($warningMemory)}</li>
+                <li>{jlocale "admin.project.rules.list.error.memory.html", array($errorMemory)}</li>
             </ul>
             {/if}
 
@@ -282,7 +282,7 @@
     <li>{@admin.project.rules.list.blocking@}</li>
         <ul>
             <li>{@admin.project.rules.list.blocking.description@}</li>
-            <li>{jlocale "admin.project.rules.list.blocking.target", array($minimumLizmapTargetVersionRequired - 0.1)}</li>
+            <li>{jlocale "admin.project.rules.list.blocking.target.html", array($minimumLizmapTargetVersionRequired - 0.1)}</li>
         </ul>
     </ul>
 </div>
