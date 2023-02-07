@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+### Added
+
+* Add some explanations about the rules and colours in the administration project page
+
+### Fixed
+
+* Fix no display of table with value relation fields when there is no layer name
+* Fix a bug about a hidden checkbox in a form
+* In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
+* Add XML header in the GetCapabilities request to avoid a message in the web browser console
+* Change the color if the highlighted selected line in the project table
+
+### Backend
+
+* Bump the Lizmap QGIS server plugin to version 1.3.0 minimum
+
 ## 3.6.1 - 2022-01-23
 
 ### Added
