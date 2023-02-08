@@ -36,7 +36,7 @@ jobs:
 #            echo ${{ github.head_ref }}
 #            echo ${{ github.ref_name }}
 
-      - name: Define branch name
+      - name: Define branch name from env for the checkout
         working-directory: .
         run: |
           if ${{ github.event_name == 'repository_dispatch' }}
@@ -63,7 +63,7 @@ jobs:
           token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
 
       - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/} with ${CYPRESS_CI}
+        run: echo running on branch ${GITHUB_REF##*/} with CYPRESS = ${CYPRESS_CI}
 
       - name: Install Lizmap as a QGIS Server plugin
         run: make build-plugins
