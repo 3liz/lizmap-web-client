@@ -6,6 +6,10 @@
 
 * In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
 
+### Backend
+
+* Update the minimum Lizmap server plugin to version 1.3.1
+
 ## 3.5.10 - 2023-01-25
 
 ### Fixed

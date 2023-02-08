@@ -24,7 +24,7 @@ fallbackLocale=en_US
 [minimumRequiredVersion]
 ; The minimum version required about external software to make Lizmap Web Client happy
 qgisServer="3.10"
-lizmapServerPlugin="1.3.0"
+lizmapServerPlugin="1.3.1"
 
 [coordplugins]
 ;name = file_ini_name or 1
