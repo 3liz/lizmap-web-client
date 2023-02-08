@@ -15,7 +15,7 @@
 // * [ ] Launch the print by clicking on the blue button
 // * [ ] Open the exported PNG and see that `A test` is printed upper, `A test{enter}with a line break` is printed at bottom
 
-import {arrayBufferToBase64} from '../support/function.js'
+import {arrayBufferToBase64, serverMetadata} from '../support/function.js'
 
 describe('Print', function () {
     beforeEach(function () {
@@ -50,7 +50,13 @@ describe('Print', function () {
                 const { width, height } = img1;
 
                 // Check pixel match
-                expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print default values in the title labels').to.equal(0)
+                serverMetadata().then(metadataResponse => {
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                        expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print default values in the title labels').to.equal(0)
+                    } else {
+                        expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print default values in the title labels').to.equal(308)
+                    }
+                });
 
                 // Check content length > 17000 and < 20000
                 expect(parseInt(response.headers['content-length']))
@@ -85,7 +91,13 @@ describe('Print', function () {
                 const { width, height } = img1;
 
                 // Check pixel match
-                expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print changed values in the title labels').to.equal(0)
+                serverMetadata().then(metadataResponse => {
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                        expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print changed values in the title labels').to.equal(0)
+                    } else {
+                        expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect print changed values in the title labels').to.equal(132)
+                    }
+                });
 
                 // Check content length > 20000
                 expect(parseInt(response.headers['content-length'])).to.be.greaterThan(20000)
@@ -132,12 +144,18 @@ describe('Print', function () {
             expect(response.headers['content-type']).to.contain('image/svg+xml')
             expect(response.headers['content-disposition']).to.contain('attachment; filename=')
 
-            expect(response.body).to.contain('Change title')
+            // With QGIS ⩾ 3.28, the text is converted to a vector polygon
+            serverMetadata().then(metadataResponse => {
+                if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                    expect(response.body).to.contain('Change title')
+                }
+            });
 
-            // Check content length > 24000 and < 33000
+            // Check content length > 24000 and < 33500
+            // QGIS 3.28 ⩾ 33252 because the text is rendered a vector polygon
             expect(parseInt(response.headers['content-length']))
                 .to.be.greaterThan(24000)
-                .to.be.lessThan(32000)
+                .to.be.lessThan(33500)
             const contentLength = parseInt(response.headers['content-length'])
 
             // Check file exists in downloads folder and
@@ -158,7 +176,11 @@ describe('Print', function () {
             expect(response.headers['content-type']).to.contain('image/svg+xml')
             expect(response.headers['content-disposition']).to.contain('attachment; filename=')
 
-            expect(response.body).to.contain('A test')
+            serverMetadata().then(metadataResponse => {
+                if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                    expect(response.body).to.contain('A test')
+                }
+            });
 
             // Check content length > 32000
             expect(parseInt(response.headers['content-length'])).to.be.greaterThan(32000)
