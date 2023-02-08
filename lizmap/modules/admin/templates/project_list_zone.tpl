@@ -29,14 +29,14 @@
             <th>{@admin.project.list.column.project.abstract.label@}</th>
             <th>{@admin.menu.lizmap.project.image.label@}</th>
             <th>{@admin.project.list.column.layers.count.label@}</th>
-        {if $hasInspectionData}
-            <th>{@admin.project.list.column.invalid.layers.count.label@}</th>
-            <th>{@admin.project.list.column.invalid.layers.list.label@}</th>
-            <th>{@admin.project.list.column.project.has.log.label@}</th>
-            <th>{@admin.project.list.column.project.qgis.log.label@}</th>
-            <th>{@admin.project.list.column.loading.time.label@}</th>
-            <th>{@admin.project.list.column.memory.usage.label@}</th>
-        {/if}
+            {if $hasInspectionData}
+                <th>{@admin.project.list.column.invalid.layers.count.label@}</th>
+                <th>{@admin.project.list.column.invalid.layers.list.label@}</th>
+                <th>{@admin.project.list.column.project.has.log.label@}</th>
+                <th>{@admin.project.list.column.project.qgis.log.label@}</th>
+                <th>{@admin.project.list.column.loading.time.label@}</th>
+                <th>{@admin.project.list.column.memory.usage.label@}</th>
+            {/if}
             <th>{@admin.project.list.column.qgis.desktop.version.label@}</th>
             <th>{@admin.project.list.column.lizmap.plugin.version.label@}</th>
             <th>{@admin.project.list.column.target.lizmap.version.label@}</th>
@@ -58,7 +58,6 @@
     {assign $errorLoadingTime = 60.0}
     {assign $warningMemory = 100}
     {assign $errorMemory = 250}
-    {assign $oldQgisVersion = 6}
 
     {foreach $mapItems as $mi}
     {if $mi->type == 'rep'}
@@ -166,7 +165,7 @@
             <!-- QGIS project version -->
             {assign $style = ''}
             {assign $title = ''}
-            {if $serverVersions['qgis_server_version_int'] && $serverVersions['qgis_server_version_int'] - $p['qgis_version_int'] > $oldQgisVersion }
+            {if $serverVersions['qgis_server_version_int'] && $serverVersions['qgis_server_version_int'] - $p['qgis_version_int'] > $oldQgisVersionDiff }
                 {assign $style = 'background-color: '.$colors['warning'].';'}
                 {assign $title = @admin.project.list.column.qgis.desktop.version.too.old@.' ('.@admin.form.admin_services.qgisServerVersion.label@.': '.$serverVersions['qgis_server_version'].')'}
             {/if}
@@ -237,19 +236,17 @@
 
 <div>
     <br>
-    <b>{@admin.project.rules.list.introduction@}</b>
+    <strong>{@admin.project.rules.list.introduction@}</strong>
     <p>
-        {*Do not remove the line after, it's needed to have the function jtpl_modifier_common_qgis_majmin_human_version loaded for later*}
-<!--    <li>{$serverVersions['qgis_server_version_int']|qgis_majmin_human_version}</li>-->
-        {jlocale "admin.project.rules.list.description.html", array($lizmapVersion, jtpl_modifier_common_qgis_majmin_human_version($serverVersions['qgis_server_version_int']))}
+        {jlocale "admin.project.rules.list.description.html", array($lizmapVersion, ($serverVersions['qgis_server_version_human_readable']))}
     </p>
     <ul>
         <li>{@admin.project.rules.list.warnings.html@}</li>
         <ul>
             <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
             <ul>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array(jtpl_modifier_common_qgis_majmin_human_version($serverVersions['qgis_server_version_int'] - $oldQgisVersion))}</li>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral.html", array(jtpl_modifier_common_qgis_majmin_human_version($serverVersions['qgis_server_version_int'] + 1 ))}</li>
+                <li>{$serverVersions['qgis_server_version_old']}{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array($serverVersions['qgis_server_version_old'])}</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral.html", array( $serverVersions['qgis_server_version_next'])}</li>
             </ul>
             <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
             <ul>
