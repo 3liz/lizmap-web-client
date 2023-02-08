@@ -16,7 +16,7 @@
 
 ### Backend
 
-* Bump the Lizmap QGIS server plugin to version 1.3.0 minimum
+* Bump the Lizmap QGIS server plugin to version 1.3.1 minimum
 
 ## 3.6.1 - 2022-01-23
 
