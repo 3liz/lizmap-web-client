@@ -212,6 +212,8 @@ describe('Print', function () {
 
 
     it('should get atlas print', function () {
+        // Testing the atlas, we must close the print dialog first
+        cy.get('.btn-print-clear').click()
         cy.get('#layer-quartiers button.btn.checkbox').click()
         // Click quartier
         cy.mapClick(480,340)
