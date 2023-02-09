@@ -16,26 +16,24 @@ describe('Legend tests', function () {
             cy.wait('@legend').then((interception) => {
                 expect(interception.response.headers['content-type'], 'expect mime type to be image/png').to.equal('image/png')
 
-                const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
+                serverMetadata().then(metadataResponse => {
+                    const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
 
-                // Default image for QGIS 3.22
-                let expected_path = 'images/treeview/' + check +'.png'
+                    // Default image for QGIS 3.22
+                    let expected_path = 'images/treeview/' + check +'.png'
 
-                if (check == 'layer_legend_categorized') {
-                    serverMetadata().then(metadataResponse => {
-                        if (metadataResponse.body.qgis_server_info.metadata.version_int <= 31600) {
-                            // previous image of the legend which was working for QGIS 3.16
-                            expected_path = 'images/treeview/' + check +'_316.png';
-                        }
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 31700 && check == 'layer_legend_categorized') {
+                        // previous image of the legend which was working for QGIS 3.16
+                        expected_path = 'images/treeview/layer_legend_categorized_316.png';
+                    }
 
-                        // With QGIS 3.28, not tested anymore : https://github.com/qgis/QGIS/pull/50256
-                        if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
-                            cy.fixture(expected_path).then((image) => {
-                                expect(image, 'expect legend to be displayed').to.equal(responseBodyAsBase64)
-                            })
-                        }
-                    });
-                }
+                    // With QGIS 3.28, we do not test anymore : https://github.com/qgis/QGIS/pull/50256
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                        cy.fixture(expected_path).then((image) => {
+                            expect(image, 'expect legend to be compared with ' + expected_path).to.equal(responseBodyAsBase64)
+                        })
+                    }
+                })
             })
         }
     })
