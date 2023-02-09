@@ -16,10 +16,7 @@
  * @type {Cypress.PluginConfig}
  */
 
-require('dotenv').config({path: '../.env'})
-
 module.exports = (on, config) => {
-  let qgis_server = process.env.LZMQGSRVVERSION
-  config.env.QGIS_SERVER_INT = parseInt(qgis_server.replace('.', '') + 0 + 0)
-  return config
+  // `on` is used to hook into various events Cypress emits
+  // `config` is the resolved Cypress config
 }
