@@ -1,4 +1,4 @@
-import {arrayBufferToBase64} from '../support/function.js'
+import {arrayBufferToBase64, serverMetadata} from '../support/function.js'
 
 describe('Legend tests', function () {
 
@@ -33,14 +33,24 @@ describe('Legend tests', function () {
 
                 const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
 
+                // Default image for QGIS 3.22
                 let expected_path = 'images/treeview/' + check +'.png'
-                if (Cypress.env('QGIS_SERVER_INT') <= 31600 && check == 'layer_legend_categorized'){
-                    expected_path = 'images/treeview/' + check +'_316.png'
-                }
 
-                cy.fixture(expected_path).then((image) => {
-                    expect(image, 'expect legend to be displayed').to.equal(responseBodyAsBase64)
-                })
+                if (check == 'layer_legend_categorized') {
+                    serverMetadata().then(metadataResponse => {
+                        if (metadataResponse.body.qgis_server_info.metadata.version_int <= 31600) {
+                            // previous image of the legend which was working for QGIS 3.16
+                            expected_path = 'images/treeview/' + check +'_316.png';
+                        }
+
+                        // With QGIS 3.28, not tested anymore : https://github.com/qgis/QGIS/pull/50256
+                        if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                            cy.fixture(expected_path).then((image) => {
+                                expect(image, 'expect legend to be displayed').to.equal(responseBodyAsBase64)
+                            })
+                        }
+                    });
+                }
             })
         }
     })
