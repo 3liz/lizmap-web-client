@@ -83,20 +83,41 @@ class project_listZone extends jZone
             'lizmap_plugin_server_version' => null,
             'lizmap_plugin_server_version_int' => null,
         );
+        $oldQgisVersionDelta = 6;
         if (!array_key_exists('error', $data['qgis_server_info'])) {
             // QGIS server
             $qgisServerVersion = $data['qgis_server_info']['metadata']['version'];
             $serverVersions['qgis_server_version'] = $qgisServerVersion;
             $explode = explode('.', $qgisServerVersion);
             // Keep only major and minor version
-            $serverVersions['qgis_server_version_int'] = (int) $explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT);
-
+            $qgisServerVersionInt = intval($explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT));
+            $serverVersions['qgis_server_version_int'] = $qgisServerVersionInt;
+            $serverVersions['qgis_server_version_human_readable'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt);
+            $serverVersions['qgis_server_version_old'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta);
+            $serverVersions['qgis_server_version_next'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt + 1);
             // Lizmap server plugin
             $lizmapVersion = $data['info']['version'];
             $serverVersions['lizmap_plugin_server_version'] = $lizmapVersion;
         }
         $this->_tpl->assign('serverVersions', $serverVersions);
 
+        // Check QGIS server status
+        $statusQgisServer = true;
+        $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
+        if ($server->versionCompare($server->getQgisServerVersion(), $requiredQgisVersion)) {
+            $statusQgisServer = false;
+        }
+        // Check Lizmap server status
+        $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+        $currentLizmapVersion = $server->getLizmapPluginServerVersion();
+        if ($server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
+            $statusQgisServer = false;
+        }
+        $this->_tpl->assign('qgisServerOk', $statusQgisServer);
+
+        $lizmapInfo = \Jelix\Core\Infos\AppInfos::load();
+        $this->_tpl->assign('lizmapVersion', $lizmapInfo->version);
+        $this->_tpl->assign('oldQgisVersionDiff', $oldQgisVersionDelta);
         // Add the application base path to let the template load the CSS and JS assets
         $basePath = jApp::urlBasePath();
         $this->_tpl->assign('basePath', $basePath);
@@ -278,5 +299,11 @@ class project_listZone extends jZone
         }
 
         return $majorVersion.'.'.$minorVersion.'.'.$patchVersion;
+    }
+
+    private function qgisMajMinHumanVersion($qgisIntVersion): string
+    {
+        // NOTE Will work as long a Major version is on 1 Digit
+        return substr($qgisIntVersion, 0, 1).'.'.substr($qgisIntVersion, -2);
     }
 }
