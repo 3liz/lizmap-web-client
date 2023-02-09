@@ -6,4 +6,15 @@ export function arrayBufferToBase64(buffer) {
         binary += String.fromCharCode(bytes[i]);
     }
     return window.btoa(binary);
+};
+
+export function serverMetadata() {
+
+     return cy.request ({
+        url: 'index.php/view/app/metadata',
+        headers: {
+            authorization: 'Basic YWRtaW46YWRtaW4=',
+        },
+        failOnStatusCode: false,
+    })
 }
