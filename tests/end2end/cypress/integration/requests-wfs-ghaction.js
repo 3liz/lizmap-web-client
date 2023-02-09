@@ -180,6 +180,177 @@ describe('Request service', function () {
         })
     })
 
+    it('WFS GetFeature TYPENAME && BBOX && SRSNAME', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'BBOX': '160786,900949,186133,925344',
+                'SRSNAME': 'EPSG:2154',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'BBOX': '-72399,-13474,-46812,14094',
+                'SRSNAME': 'EPSG:3857',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+    })
+
+
+    it('WFS GetFeature TYPENAME && BBOX && SRSNAME && FORCE_QGIS', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'BBOX': '160786,900949,186133,925344',
+                'SRSNAME': 'EPSG:2154',
+                'OUTPUTFORMAT': 'GeoJSON',
+                'FORCE_QGIS': '1',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'BBOX': '-72399,-13474,-46812,14094',
+                'SRSNAME': 'EPSG:3857',
+                'OUTPUTFORMAT': 'GeoJSON',
+                'FORCE_QGIS': '1',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+    })
+
     it('WFS GetFeature TYPENAME && EXP_FILTER', function () {
         cy.request({
             method: 'POST',
@@ -309,6 +480,92 @@ describe('Request service', function () {
         })
     })
 
+    it('WFS GetFeature TYPENAME && EXP_FILTER && BBOX && SRSNAME', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'EXP_FILTER': '$id IN (1)',
+                'BBOX': '160786,900949,186133,925344',
+                'SRSNAME': 'EPSG:2154',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'EXP_FILTER': '$id IN (1)',
+                'BBOX': '-72399,-13474,-46812,14094',
+                'SRSNAME': 'EPSG:3857',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+    })
+
     it('WFS GetFeature FEATUREID', function () {
         cy.request({
             method: 'POST',
@@ -402,6 +659,90 @@ describe('Request service', function () {
                 'REQUEST': 'GetFeature',
                 'FEATUREID': 'selection_polygon.1',
                 'BBOX': '160786,900949,186133,925344',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+    })
+
+    it('WFS GetFeature FEATUREID && BBOX && SRSNAME', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'FEATUREID': 'selection_polygon.1',
+                'BBOX': '160786,900949,186133,925344',
+                'SRSNAME': 'EPSG:2154',
+                'OUTPUTFORMAT': 'GeoJSON',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.geo+json')
+            expect(resp.body).to.have.property('type', 'FeatureCollection')
+            expect(resp.body).to.have.property('features')
+            expect(resp.body.features).to.have.length(1)
+            const feature = resp.body.features[0]
+            expect(feature).to.have.property('id')
+            expect(feature.id).to.equal('selection_polygon.1')
+            expect(feature).to.have.property('bbox')
+            expect(feature.bbox).to.have.length(4)
+            assert.isNumber(feature.bbox[0], 'BBox xmin is number')
+            assert.isNumber(feature.bbox[1], 'BBox ymin is number')
+            assert.isNumber(feature.bbox[2], 'BBox xmax is number')
+            assert.isNumber(feature.bbox[3], 'BBox ymax is number')
+            expect(feature).to.have.property('properties')
+            expect(feature.properties).to.have.property('id', 1)
+            expect(feature).to.have.property('geometry')
+            expect(feature.geometry).to.have.property('type', 'Polygon')
+            expect(feature.geometry).to.have.property('coordinates')
+            expect(feature.geometry.coordinates).to.have.length(1)
+            expect(feature.geometry.coordinates[0]).to.have.length(5)
+            expect(feature.geometry.coordinates[0][0]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][1]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][2]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][3]).to.have.length(2)
+            expect(feature.geometry.coordinates[0][4]).to.have.length(2)
+        })
+
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'FEATUREID': 'selection_polygon.1',
+                'BBOX': '-72399,-13474,-46812,14094',
+                'SRSNAME': 'EPSG:3857',
                 'OUTPUTFORMAT': 'GeoJSON',
             },
         }).then((resp) => {
