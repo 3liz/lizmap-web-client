@@ -1,7 +1,9 @@
 <?php
 
+use GuzzleHttp\Psr7;
 use Lizmap\Request\WFSRequest;
 use Lizmap\Request\WMSRequest;
+
 use Lizmap\Request\WMTSRequest;
 
 /**
@@ -317,7 +319,9 @@ class serviceCtrl extends jController
     {
         $rep->setHttpStatus($ogcResult->code, \Lizmap\Request\Proxy::getHttpStatusMsg($ogcResult->code));
         $rep->mimeType = $ogcResult->mime;
-        $rep->content = $ogcResult->data;
+        if (is_string($ogcResult->data) || is_callable($ogcResult->data)) {
+            $rep->content = $ogcResult->data;
+        }
         $rep->doDownload = false;
         $rep->outputFileName = $filename;
         if ($eTag !== '' && $ogcResult->code < 400) {
@@ -839,7 +843,7 @@ class serviceCtrl extends jController
      *
      * @param mixed $wfsRequest
      *
-     * @return jResponseBinary image rendered by the Map Server
+     * @return jResponseBinary WFS GetFeature response
      */
     protected function GetFeature($wfsRequest)
     {
@@ -850,20 +854,11 @@ class serviceCtrl extends jController
         $this->setupBinaryResponse($rep, $result, 'qgis_server_wfs');
 
         if ($result->code >= 400) {
-            $rep->content = $result->data;
-
             return $rep;
         }
 
-        if (substr($result->data, 0, 7) == 'file://' && is_file(substr($result->data, 7))) {
-            $rep->fileName = substr($result->data, 7);
-            $rep->deleteFileAfterSending = true;
-            $rep->content = null;
-        } else {
-            $rep->content = $result->data; // causes memory_limit for big content
-        }
-
         // Define file name
+        $outputFileName = 'qgis_server_wfs';
         $typenames = implode('_', array_map('trim', explode(',', $wfsRequest->requestedTypename())));
         $zipped_files = array('shp', 'mif', 'tab');
         $outputformat = 'gml2';
@@ -871,28 +866,32 @@ class serviceCtrl extends jController
             $outputformat = strtolower($this->params['outputformat']);
         }
         if (in_array($outputformat, $zipped_files)) {
-            $rep->outputFileName = $typenames.'.zip';
+            $outputFileName = $typenames.'.zip';
         } else {
-            $rep->outputFileName = $typenames.'.'.$outputformat;
+            $outputFileName = $typenames.'.'.$outputformat;
         }
 
         // Export
+        $doDownload = false;
         $dl = $this->param('dl');
         if ($dl) {
             // force download
-            $rep->doDownload = true;
+            $doDownload = true;
 
-            if ($rep->fileName == '' && $rep->content != '') {
-                // debug 1st line blank from QGIS Server
-                $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
-            }
             // Change file name
             if (in_array($outputformat, $zipped_files)) {
-                $rep->outputFileName = 'export_'.$this->params['typename'].'.zip';
+                $outputFileName = 'export_'.$this->params['typename'].'.zip';
             } else {
-                $rep->outputFileName = 'export_'.$this->params['typename'].'.'.$outputformat;
+                $outputFileName = 'export_'.$this->params['typename'].'.'.$outputformat;
             }
         }
+        $rep->outputFileName = $outputFileName;
+        $rep->doDownload = $doDownload;
+
+        $rep->setContentCallback(function () use ($result) {
+            $output = Psr7\Utils::streamFor(fopen('php://output', 'w+'));
+            Psr7\Utils::copyToStream($result->getBodyAsStream(), $output);
+        });
 
         return $rep;
     }
