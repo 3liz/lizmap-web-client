@@ -188,12 +188,13 @@ abstract class OGCRequest
     /**
      * Request QGIS Server.
      *
-     * @param bool $post Force to use POST request
+     * @param bool $post   Force to use POST request
+     * @param bool $stream Get data as stream
      *
      * @return OGCResponse The request result with HTTP code, response mime-type and response data
      *                     (properties $code, $mime, $data)
      */
-    protected function request($post = false)
+    protected function request($post = false, $stream = false)
     {
         $querystring = $this->constructUrl();
 
@@ -210,6 +211,12 @@ abstract class OGCRequest
 
         // Add login filtered override info
         $options['loginFilteredOverride'] = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
+
+        if ($stream) {
+            $response = \Lizmap\Request\Proxy::getRemoteDataAsStream($querystring, $options);
+
+            return new OGCResponse($response->getCode(), $response->getMime(), $response->getBodyAsStream());
+        }
 
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
 
