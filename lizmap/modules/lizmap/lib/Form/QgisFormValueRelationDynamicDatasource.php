@@ -103,11 +103,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                 $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices());
                 $wfsResult = $wfsRequest->process();
 
-                $data = $wfsResult->data;
-                if (substr($data, 0, 7) == 'file://' && is_file(substr($data, 7))) {
-                    $data = \jFile::read(substr($data, 7));
-                }
-                $mime = $wfsResult->mime;
+                $data = $wfsResult->getBodyAsString();
+                $mime = $wfsResult->getMime();
 
                 if ($data && (strpos($mime, 'text/json') === 0
                             || strpos($mime, 'application/json') === 0
