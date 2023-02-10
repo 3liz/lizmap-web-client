@@ -315,7 +315,7 @@ class WFSRequest extends OGCRequest
         // add outputformat if not provided
         $output = $this->param('outputformat');
         if (!$output) {
-            $this->params['outputformat'] = 'GML2';
+            $output = $this->params['outputformat'] = 'GML2';
         }
 
         // Get Lizmap layer config
