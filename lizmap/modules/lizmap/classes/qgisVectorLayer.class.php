@@ -1058,20 +1058,17 @@ class qgisVectorLayer extends qgisMapLayer
         $result = $wfsRequest->process();
 
         // Check code
-        if (floor($result->code / 100) >= 4) {
+        if (floor($result->getCode() / 100) >= 4) {
             return true;
         }
 
         // Check mime/type
-        if (in_array(strtolower($result->mime), array('text/html', 'text/xml'))) {
+        if (in_array(strtolower($result->getMime()), array('text/html', 'text/xml'))) {
             return true;
         }
 
         // Get data
-        $wfsData = $result->data;
-        if (substr($wfsData, 0, 7) == 'file://' && is_file(substr($wfsData, 7))) {
-            $wfsData = \jFile::read(substr($wfsData, 7));
-        }
+        $wfsData = $result->getBodyAsString();
 
         // Check data: if there is no data returned by WFS, the user has not access to it
         if (!$wfsData) {
@@ -1168,20 +1165,17 @@ class qgisVectorLayer extends qgisMapLayer
         $result = $wfsRequest->process();
 
         // Check code
-        if (floor($result->code / 100) >= 4) {
+        if (floor($result->getCode() / 100) >= 4) {
             return $restricted_empty_data;
         }
 
         // Check mime/type
-        if (in_array(strtolower($result->mime), array('text/html', 'text/xml'))) {
+        if (in_array(strtolower($result->getMime()), array('text/html', 'text/xml'))) {
             return $restricted_empty_data;
         }
 
         // Get data
-        $wfsData = $result->data;
-        if (substr($wfsData, 0, 7) == 'file://' && is_file(substr($wfsData, 7))) {
-            $wfsData = \jFile::read(substr($wfsData, 7));
-        }
+        $wfsData = $result->getBodyAsString();
 
         // Check data: if there is no data returned by WFS, the user has not access to it
         if (!$wfsData) {
