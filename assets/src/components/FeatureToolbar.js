@@ -56,14 +56,30 @@ export default class FeatureToolbar extends HTMLElement {
             <button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>
 
             ${this.atlasLayouts.map( layout => html`
-                <button type="button" class="btn btn-mini feature-atlas" title="${layout.title}" @click=${() => this.printAtlas(layout.title)}>
-                    ${layout.icon
-                    ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
-                    : html`<svg>
-                                <use xlink:href="#map-print"></use>
-                            </svg>`
-                }  
-                </button>
+                <div class="feature-atlas">
+                    <button type="button" class="btn btn-mini" title="${layout.title}" @click=${ 
+                        event => layout.labels.length 
+                        ? event.currentTarget.parentElement.querySelector('.custom-labels').classList.toggle('hide')
+                        : this.printAtlas(layout.title)}>
+                        ${layout.icon
+                        ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
+                        : html`<svg>
+                                    <use xlink:href="#map-print"></use>
+                                </svg>`
+                        }
+                    </button>
+                    ${layout.labels.length
+                        ? html`<div class="custom-labels hide">
+                            ${layout.labels.filter( label => !["lizmap_user", "lizmap_user_groups"].includes(label.id)).slice().reverse().map( label => 
+                                label.htmlState
+                                    ? html`<textarea class="input-medium custom-label" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}">${label.text}</textarea>`
+                                    : html`<input class="input-medium custom-label" type="text" size="15" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`
+                                )}
+                                <button class="btn btn-primary" @click=${() => { this.printAtlas(layout.title) }}><span class="icon"></span>${lizDict['print.launch']}</button>
+                            </div>`
+                        : ''
+                    }
+                </div>
             `)}
         </div>`;
 
@@ -215,13 +231,15 @@ export default class FeatureToolbar extends HTMLElement {
                     if (mainLizmap.config?.layouts?.list?.[index]?.enabled) {
                         atlasLayouts.push({
                             title: mainLizmap.config?.layouts?.list?.[index]?.layout,
-                            icon: mainLizmap.config?.layouts?.list?.[index]?.icon
+                            icon: mainLizmap.config?.layouts?.list?.[index]?.icon,
+                            labels: template?.labels
                         });
                     }
                     // Lizmap < 3.7
                 } else {
                     atlasLayouts.push({
-                        title: template?.title
+                        title: template?.title,
+                        labels: template?.labels
                     });
                 }
             }
@@ -467,6 +485,9 @@ export default class FeatureToolbar extends HTMLElement {
         layers.push(this._featureType);
 
         wmsParams['LAYERS'] = layers.join(',');
+
+        // Custom labels
+        this.querySelectorAll('.custom-labels:not(.hide) .custom-label').forEach(field => wmsParams[field.dataset.labelid] = encodeURIComponent(field.value));
 
         // Disable buttons and display message while waiting for print
         this.querySelectorAll('.feature-atlas').forEach(element => element.disabled = true);
