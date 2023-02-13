@@ -56,7 +56,7 @@ export default class FeatureToolbar extends HTMLElement {
             <button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>
 
             ${this.atlasLayouts.map( layout => html`
-                <button type="button" class="btn btn-mini feature-atlas" title="${layout.title}">
+                <button type="button" class="btn btn-mini feature-atlas" title="${layout.title}" @click=${() => this.printAtlas(layout.title)}>
                     ${layout.icon
                     ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
                     : html`<svg>
@@ -432,5 +432,51 @@ export default class FeatureToolbar extends HTMLElement {
 
         // Launch print box
         window.print();
+    }
+
+    printAtlas(templateName) {
+        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref;
+        const wmsParams = {
+            SERVICE: 'WMS',
+            REQUEST: 'GetPrint',
+            VERSION: '1.3.0',
+            FORMAT: 'pdf',
+            TRANSPARENT: true,
+            SRS: projectProjection,
+            DPI: 100,
+            TEMPLATE: templateName,
+            ATLAS_PK: this._fid
+        };
+
+        // Add layers
+        const layers = [];
+
+        // Get active baselayer, and add the corresponding QGIS layer if needed
+        const activeBaseLayerName = mainLizmap._lizmap3.map.baseLayer.name;
+        const externalBaselayersReplacement = mainLizmap._lizmap3.getExternalBaselayersReplacement();
+        const exbl = externalBaselayersReplacement?.[activeBaseLayerName];
+        if (mainLizmap.config.layers?.[exbl]) {
+            const activeBaseLayerConfig = mainLizmap.config.layers[exbl];
+            if (activeBaseLayerConfig?.id && mainLizmap.config.options?.useLayerIDs == 'True') {
+                layers.push(activeBaseLayerConfig.id);
+            } else {
+                layers.push(exbl);
+            }
+        }
+
+        layers.push(this._featureType);
+
+        wmsParams['LAYERS'] = layers.join(',');
+
+        // Disable buttons and display message while waiting for print
+        this.querySelectorAll('.feature-atlas').forEach(element => element.disabled = true);
+
+        mainLizmap._lizmap3.addMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
+
+        Utils.downloadFile(mainLizmap.serviceURL, wmsParams, () => {
+            this.querySelectorAll('.feature-atlas').forEach(element => element.disabled = false);
+
+            document.querySelector('#message .print-in-progress a').click();
+        });
     }
 }
