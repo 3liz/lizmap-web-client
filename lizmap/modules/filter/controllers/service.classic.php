@@ -207,7 +207,7 @@ class serviceCtrl extends jController
             /**
              * @var jResponseBinary $response
              */
-            $response = $this->getResponse('streamed');
+            $response = $this->getResponse('binary');
             $response->mimeType = 'application/json';
             $encoder = (new BufferJsonEncoder($streamedData))
                 ->setOptions(JSON_PRETTY_PRINT)
