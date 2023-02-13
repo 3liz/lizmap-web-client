@@ -199,13 +199,13 @@ class serviceCtrl extends jController
      *
      * @param mixed $streamedData
      *
-     * @return jResponseJson|jResponseStreamed response
+     * @return jResponseJson|jResponseBinary response
      */
     protected function streamResponse($streamedData)
     {
         if (is_iterable($streamedData)) {
             /**
-             * @var jResponseStreamed $response
+             * @var jResponseBinary $response
              */
             $response = $this->getResponse('streamed');
             $response->mimeType = 'application/json';
@@ -215,7 +215,7 @@ class serviceCtrl extends jController
 
             $stream = new JsonStream($encoder);
 
-            $response->setGenerator((function () use ($stream) {
+            $response->setContentGenerator((function () use ($stream) {
                 while (!$stream->eof()) {
                     yield $stream->read(1024 * 8);
                 }
