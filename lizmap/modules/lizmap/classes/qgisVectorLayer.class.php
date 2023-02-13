@@ -3,12 +3,15 @@
  * Give access to qgis mapLayer configuration.
  *
  * @author    3liz
- * @copyright 2013-2019 3liz
+ * @copyright 2013-2023 3liz
  *
  * @see      http://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use GuzzleHttp\Psr7;
+
 class qgisVectorLayer extends qgisMapLayer
 {
     // layer type
@@ -1124,7 +1127,7 @@ class qgisVectorLayer extends qgisMapLayer
         $result = $wfsRequest->process();
 
         // Check code
-        if (floor($result->getCode() / 100) >= 4) {
+        if ($result->getCode() >= 400) {
             return true;
         }
 
@@ -1133,17 +1136,9 @@ class qgisVectorLayer extends qgisMapLayer
             return true;
         }
 
-        // Get data
-        $wfsData = $result->getBodyAsString();
-
-        // Check data: if there is no data returned by WFS, the user has not access to it
-        if (!$wfsData) {
-            return true;
-        }
-
-        // Get data from layer
-        $wfsData = json_decode($wfsData);
-        if (count($wfsData->features) !== 1) {
+        $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
+        $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+        if (iterator_count($features) !== 1) {
             return false;
         }
 
