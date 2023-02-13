@@ -98,16 +98,19 @@ class filterDatasource
 
         return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
     }
-
+    
+    /**
+     * return data as jDbResultSet or errors as array 
+     *
+     * @param  mixed $sql
+     * @return jDbResultSet|array
+     */
     protected function getData($sql)
     {
         $data = array();
 
         try {
             $q = $this->cnx->query($sql);
-            foreach ($q as $d) {
-                $data[] = $d;
-            }
         } catch (Exception $e) {
             jLog::log($e->getMessage(), 'error');
 
@@ -120,7 +123,7 @@ class filterDatasource
             return $this->errors;
         }
 
-        return $data;
+        return $q;
     }
 
     public function getFeatureCount($filter = null)
