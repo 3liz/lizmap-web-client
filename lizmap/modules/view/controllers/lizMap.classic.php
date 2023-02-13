@@ -272,9 +272,6 @@ class lizMapCtrl extends jController
             $rep->addHeadContent($css);
         }
 
-        // Add qgis popup atlas JS
-        $rep->addJSLink($bp.'assets/js/popupQgisAtlas.js');
-
         // Assign variables to template
         $assign = array_merge(array(
             'repositoryLabel' => $lrep->getLabel(),
