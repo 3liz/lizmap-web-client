@@ -487,7 +487,7 @@ export default class FeatureToolbar extends HTMLElement {
         wmsParams['LAYERS'] = layers.join(',');
 
         // Custom labels
-        this.querySelectorAll('.custom-labels:not(.hide) .custom-label').forEach(field => wmsParams[field.dataset.labelid] = encodeURIComponent(field.value));
+        this.querySelectorAll('.custom-labels:not(.hide) .custom-label').forEach(field => wmsParams[field.dataset.labelid] = field.value);
 
         // Disable buttons and display message while waiting for print
         this.querySelectorAll('.feature-atlas').forEach(element => element.disabled = true);
