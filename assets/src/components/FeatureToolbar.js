@@ -75,7 +75,7 @@ export default class FeatureToolbar extends HTMLElement {
                                     ? html`<textarea class="input-medium custom-label" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}">${label.text}</textarea>`
                                     : html`<input class="input-medium custom-label" type="text" size="15" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`
                                 )}
-                                <button class="btn btn-primary" @click=${() => { this.printAtlas(layout.title) }}><span class="icon"></span>${lizDict['print.launch']}</button>
+                                <button class="btn btn-primary btn-print-launch" @click=${() => { this.printAtlas(layout.title) }}>${lizDict['print.launch']}</button>
                             </div>`
                         : ''
                     }
@@ -490,12 +490,22 @@ export default class FeatureToolbar extends HTMLElement {
         this.querySelectorAll('.custom-labels:not(.hide) .custom-label').forEach(field => wmsParams[field.dataset.labelid] = field.value);
 
         // Disable buttons and display message while waiting for print
-        this.querySelectorAll('.feature-atlas').forEach(element => element.disabled = true);
+        this.querySelectorAll('.feature-atlas button').forEach(element => {
+            element.disabled = true;
+            if (element.classList.contains('btn-print-launch')) {
+                element.classList.add('spinner');
+            }
+        });
 
         mainLizmap._lizmap3.addMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
 
         Utils.downloadFile(mainLizmap.serviceURL, wmsParams, () => {
-            this.querySelectorAll('.feature-atlas').forEach(element => element.disabled = false);
+            this.querySelectorAll('.feature-atlas button').forEach(element => {
+                element.disabled = false;
+                if (element.classList.contains('btn-print-launch')) {
+                    element.classList.remove('spinner');
+                }
+            });
 
             document.querySelector('#message .print-in-progress a').click();
         });

@@ -2894,11 +2894,11 @@ lizmap-reverse-geom svg{
   height: 21px;
 }
 
-#print-launch{
-  position: relative;;
+.btn-print-launch {
+  position: relative;
 }
 
-#print-launch.spinner::after{
+.btn-print-launch.spinner::after {
   right: 5px;
 }
 /* lizmap-feature-toolbar */
