@@ -1,12 +1,13 @@
 <?php
 /**
  * @author    3liz
- * @copyright 2017 3liz
+ * @copyright 2017-2023 3liz
  *
  * @see      http://3liz.com
  *
  * @license    Mozilla Public License
  */
+
 class datavizPlot
 {
     /**
