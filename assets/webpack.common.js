@@ -13,7 +13,6 @@ module.exports = {
         search: './src/legacy/search.js',
         view: './src/legacy/view.js',
         'bottom-dock': './src/legacy/bottom-dock.js',
-        popupQgisAtlas: './src/legacy/popupQgisAtlas.js',
     },
     output: {
         filename: '../../lizmap/www/assets/js/[name].js',

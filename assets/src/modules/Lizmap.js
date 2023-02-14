@@ -97,6 +97,10 @@ export default class Lizmap {
         return lizUrls.wms + '?' + (new URLSearchParams(lizUrls.params).toString());
     }
 
+    get mediaURL() {
+        return lizUrls.media + '?' + (new URLSearchParams(lizUrls.params).toString());
+    }
+
     get hasOverview() {
         return this._lizmap3.config.layers.hasOwnProperty('Overview');
     }
