@@ -5442,7 +5442,16 @@ window.lizMap = function() {
           // add BBox to restrict to geom bbox but not with some geometry operator
           if (geomOperator !== 'disjoint'){
             var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(), aProj).getBounds();
+            if (geomBounds.getWidth() == 0 || geomBounds.getHeight() == 0) {
+              geomBounds.extend(new OpenLayers.Bounds(
+                  geomBounds.left - 0.000001,
+                  geomBounds.bottom - 0.000001,
+                  geomBounds.right + 0.000001,
+                  geomBounds.top + 0.000001
+              ));
+            }
             getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+            getFeatureUrlData['options']['SRSNAME'] = lConfig.crs;
           }
 
           // get features
@@ -6130,7 +6139,7 @@ window.lizMap = function() {
         }
 
         getFeatureInfo = responses[6];
-        
+
         const domparser = new DOMParser();
 
         config.options.hasOverview = false;
@@ -6153,7 +6162,7 @@ window.lizMap = function() {
         // Parse WMS capabilities
         const wmsFormat =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
         capabilities = wmsFormat.read(wmsCapaData);
-    
+
         if (!capabilities.capability) {
           throw 'WMS Capabilities error';
         }
@@ -6546,7 +6555,7 @@ window.lizMap = function() {
 
         // Display getFeatureInfo if requested
         if(getFeatureInfo){
-          displayGetFeatureInfo(getFeatureInfo, 
+          displayGetFeatureInfo(getFeatureInfo,
             {
               x: map.size.w / 2,
               y: map.size.h / 2
