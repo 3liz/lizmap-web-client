@@ -13,6 +13,7 @@ import {
     Polygon,
 } from 'ol/geom.js';
 
+import * as olExtent from 'ol/extent.js';
 import GML3 from 'ol/format/GML3.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 
@@ -142,16 +143,27 @@ export default class SelectionTool {
                         }
 
                         for (const featureType of this.allFeatureTypeSelected) {
-                            const gml = new GML3({srsName: mainLizmap.qgisProjectProjection});
+                            const lConfig = mainLizmap.config.layers[featureType];
+
+                            // Yo avoid applying reverseAxis (not supported by QGIS GML Parser)
+                            // Choose a srsName without reverseAxis
+                            let srsName = lConfig.crs;
+                            if (srsName == 'EPSG:4326') {
+                                srsName = 'CRS:84';
+                            }
+                            const gml = new GML3({srsName:srsName});
+
+                            // Get the geometry in the layer projection
+                            let geom = selectionFeature.getGeometry().clone();
+                            geom.transform(mainLizmap.map.getView().getProjection().getCode(), lConfig.crs);
 
                             // TODO create a geometry collection from the selection draw?
-                            const gmlNode = gml.writeGeometryNode(selectionFeature.getGeometry());
+                            const gmlNode = gml.writeGeometryNode(geom);
 
                             const serializer = new XMLSerializer();
 
                             let spatialFilter = this._geomOperator + `($geometry, geom_from_gml('${serializer.serializeToString(gmlNode.firstChild)}'))`;
 
-                            const lConfig = mainLizmap.config.layers[featureType];
 
                             let rFilter = lConfig?.request_params?.filter;
                             if( rFilter ){
@@ -173,11 +185,21 @@ export default class SelectionTool {
                                 EXP_FILTER: spatialFilter
                             };
 
-                            // Restrict to current BBOX for performance
-                            // But not with 'disjoint' to get features outside of BBOX
-                            if (this._geomOperator !== 'disjoint' || mainLizmap.config?.limitDataToBbox === 'True') {
+                            // Apply limit to bounding box config
+                            if (mainLizmap.config?.limitDataToBbox === 'True') {
                                 wfsParams['BBOX'] = mainLizmap.map.getView().calculateExtent();
                                 wfsParams['SRSNAME'] = mainLizmap.map.getView().getProjection().getCode();
+                            }
+
+                            // Restrict to current geometry extent for performance
+                            // But not with 'disjoint' to get features
+                            if (this._geomOperator !== 'disjoint') {
+                                let geomExtent = geom.getExtent();
+                                if (olExtent.getArea(geomExtent) == 0) {
+                                    geomExtent = olExtent.buffer(geomExtent, 0.000001);
+                                }
+                                wfsParams['BBOX'] = geomExtent;
+                                wfsParams['SRSNAME'] = lConfig.crs;
                             }
 
                             wfs.getFeature(wfsParams).then(response => {
@@ -190,7 +212,7 @@ export default class SelectionTool {
                                     featureIds = config.layers[featureType]['selectedFeatures'].concat(featureIds);
                                     // Remove duplicates
                                     featureIds = [...new Set(featureIds)];
-                                }else if (this.newAddRemoveSelected === 'remove' ) { // Remove from selection
+                                } else if (this.newAddRemoveSelected === 'remove' ) { // Remove from selection
                                     const toRemove = new Set(featureIds);
                                     featureIds = config.layers[featureType]['selectedFeatures'].filter( x => !toRemove.has(x) );
                                 }
