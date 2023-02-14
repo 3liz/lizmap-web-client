@@ -2894,11 +2894,11 @@ lizmap-reverse-geom svg{
   height: 21px;
 }
 
-#print-launch{
-  position: relative;;
+.btn-print-launch {
+  position: relative;
 }
 
-#print-launch.spinner::after{
+.btn-print-launch.spinner::after {
   right: 5px;
 }
 /* lizmap-feature-toolbar */
@@ -2914,11 +2914,39 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
   background-image: url(images/glyphicons-halflings-white.png);
 }
 
+.feature-atlas {
+  display: inline-block;
+  position: relative;
+}
+
+.feature-atlas .custom-labels {
+  position: absolute;
+  right: 0px;
+  background: white;
+  padding: 5px;
+  border: black solid 1px;
+}
+
+.feature-atlas .custom-labels button {
+  width: 100%;
+}
+
 /* In attribute table, don't display filter, export or print buttons */
 #attribute-table-container lizmap-feature-toolbar .feature-filter,
 #attribute-table-container lizmap-feature-toolbar .feature-export,
-#attribute-table-container lizmap-feature-toolbar .feature-print{
+#attribute-table-container lizmap-feature-toolbar .feature-print,
+#attribute-table-container lizmap-feature-toolbar .feature-atlas{
   display: none;
+}
+
+.feature-atlas button svg {
+  display: block;
+  width: 16px;
+  height: 20px;
+}
+
+.feature-atlas button:hover > * {
+  filter: invert(1);
 }
 
 /* Form filter */
