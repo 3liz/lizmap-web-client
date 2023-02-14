@@ -225,7 +225,7 @@ export default class FeatureToolbar extends HTMLElement {
         this._layouts = mainLizmap.config?.layouts;
 
         mainLizmap.config?.printTemplates.map((template, index) => {
-            if (template?.atlas?.enabled === '1') {
+            if (this._layerId === template?.atlas?.coverageLayer && template?.atlas?.enabled === '1') {
                 // Lizmap >= 3.7
                 if (mainLizmap.config?.layouts?.list) {
                     if (mainLizmap.config?.layouts?.list?.[index]?.enabled) {
