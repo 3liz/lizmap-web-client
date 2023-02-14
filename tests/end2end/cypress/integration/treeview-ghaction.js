@@ -31,8 +31,9 @@ describe('Treeview', () => {
             cy.fixture('images/treeview/glg_feature_count.png').then((image) => {
                 // image encoded as base64
                 serverMetadata().then(metadataResponse => {
-                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32215) {
                         // With QGIS 3.28 : https://github.com/qgis/QGIS/pull/50256
+                        // Which has been backported in 3.22.15
                         expect(image, 'expect legend with feature count').to.equal(responseBodyAsBase64)
                     }
                 });
