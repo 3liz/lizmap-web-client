@@ -27,8 +27,9 @@ describe('Legend tests', function () {
                         expected_path = 'images/treeview/layer_legend_categorized_316.png';
                     }
 
-                    // With QGIS 3.28, we do not test anymore : https://github.com/qgis/QGIS/pull/50256
-                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32800) {
+                    // With QGIS 3.28 or 3.22.15, we do not test anymore : https://github.com/qgis/QGIS/pull/50256
+                    // Which has been backported in 3.22.15
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32215) {
                         cy.fixture(expected_path).then((image) => {
                             expect(image, 'expect legend to be compared with ' + expected_path).to.equal(responseBodyAsBase64)
                         })
