@@ -242,11 +242,6 @@ class project_listZone extends jZone
         return $inspectionData;
     }
 
-    private function qgisMajMinHumanVersion($qgisIntVersion): string
-    {
-        // NOTE Will work as long a Major version is on 1 Digit
-        return substr($qgisIntVersion, 0, 1).'.'.substr($qgisIntVersion, -2);
-    }
     /**
      * Transform int formatted version (from 5 or 6 integer) to sortable string .
      *
