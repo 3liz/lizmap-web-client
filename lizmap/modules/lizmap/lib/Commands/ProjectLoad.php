@@ -2,7 +2,6 @@
 
 namespace Lizmap\Commands;
 
-
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,6 +30,7 @@ class ProjectLoad extends \Jelix\Scripts\ModuleCommandAbstract
         $nb = $input->getArgument('nb');
         if ((!filter_var($nb, FILTER_VALIDATE_INT)) || $nb <= 0) {
             $output->writeln('<error>nb must be a number > 0 </error>'.$nb);
+
             return 1;
         }
         $checker = new \Lizmap\CliHelpers\RepositoryWMSChecker();
