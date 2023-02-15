@@ -1,6 +1,0 @@
-Sprite generation website : https://instantsprite.com/
-Distance of separation between 2 pictures : 5px
-Afterwards you need to replace the sprite in 2 folders : /home/colin/Projets/lizmap-web-client/lizmap/www/css/images
-                                                        /home/colin/Projets/lizmap-web-client/lizmap/www/themes/default/css/images
-                                                        
-Lastly, you will need to adapt the css to your modification.
