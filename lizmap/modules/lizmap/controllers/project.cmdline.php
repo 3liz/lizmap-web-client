@@ -44,6 +44,7 @@ class projectCtrl extends jControllerCmdLine
 
     public function load()
     {
+        /** @var jResponseCmdline $rep */
         $rep = $this->getResponse(); // cmdline response by default
         $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
         In lizmap folder, use 'php console.php project:load'\n\n");
