@@ -335,6 +335,7 @@ var lizAttributeTable = function() {
                         allColumnsKeyValues[columnName] = keyValue;
 
                     }
+                    lizMap.config.layers[layerName]['featureCrs'] = 'EPSG:4326';
                     lizMap.config.layers[layerName]['columns'] = responses[1].columns;
                     buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, responses[1].aliases, responses[1].types, allColumnsKeyValues, callBack);
 
