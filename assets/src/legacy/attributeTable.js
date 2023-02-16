@@ -268,7 +268,8 @@ var lizAttributeTable = function() {
 
             function getDataAndFillAttributeTable(layerName, filter, tableSelector, callBack){
 
-                const typeName = lizMap.config.layers[layerName].typename;
+                let layerConfig = lizMap.config.layers[layerName];
+                const typeName = layerConfig.typename;
 
                 const wfsParams = {
                     TYPENAME: typeName,
@@ -287,16 +288,23 @@ var lizAttributeTable = function() {
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
-                const describeFeatureTypeRequest = lizMap.mainLizmap.wfs.describeFeatureType({
-                    TYPENAME: typeName
-                });
+                let fetchRequests = [getFeatureRequest];
+                let namedRequests = {'getFeature': fetchRequests.length-1};
 
-                const fetchRequests = [getFeatureRequest, describeFeatureTypeRequest];
+
+                if (!(layerConfig?.['alias'] && layerConfig?.['types'])) {
+                    const describeFeatureTypeRequest = lizMap.mainLizmap.wfs.describeFeatureType({
+                        TYPENAME: typeName
+                    });
+                    fetchRequests.push(describeFeatureTypeRequest);
+                    namedRequests['describeFeatureType'] = fetchRequests.length-1;
+                }
 
                 const allColumnsKeyValues = {};
 
                 // Indexes 0 and 1 are use for getFeature and describeFeature requests
-                let responseOrder = 2;
+                namedRequests['keyValues'] = fetchRequests.length+0;
+                let responseOrder = fetchRequests.length+0;
                 for (const fieldName in lizMap.keyValueConfig?.[layerName]) {
                     const fieldConf = lizMap.keyValueConfig[layerName][fieldName];
                     if (fieldConf.type == 'ValueMap') {
@@ -322,7 +330,7 @@ var lizAttributeTable = function() {
                 Promise.all(fetchRequests).then(responses => {
 
                     // Get every key/value from relation layers
-                    for (let index = 2; index < responses.length; index++) {
+                    for (let index = namedRequests['keyValues']; index < responses.length; index++) {
                         // Get column name using order placeholder defined before
                         const columnName = Object.keys(allColumnsKeyValues).find(key => allColumnsKeyValues[key] === index);
                         const keyField = lizMap.keyValueConfig[layerName][columnName].code_field;
@@ -335,9 +343,14 @@ var lizAttributeTable = function() {
                         allColumnsKeyValues[columnName] = keyValue;
 
                     }
-                    lizMap.config.layers[layerName]['featureCrs'] = 'EPSG:4326';
-                    lizMap.config.layers[layerName]['columns'] = responses[1].columns;
-                    buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, responses[1].aliases, responses[1].types, allColumnsKeyValues, callBack);
+                    layerConfig['featureCrs'] = 'EPSG:4326';
+                    if (namedRequests?.['describeFeatureType']) {
+                        const describeFeatureTypeResponse = responses[namedRequests['describeFeatureType']];
+                        layerConfig['aliases'] = describeFeatureTypeResponse.aliases;
+                        layerConfig['types'] = describeFeatureTypeResponse.types;
+                        layerConfig['columns'] = describeFeatureTypeResponse.columns;
+                    }
+                    buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
 
                     document.body.style.cursor = 'default';
                 }).catch(() => {
