@@ -541,16 +541,6 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/osm.classic.php
 
 		-
-			message: "#^Call to an undefined method jResponse\\:\\:addContent\\(\\)\\.$#"
-			count: 6
-			path: lizmap/modules/lizmap/controllers/project.cmdline.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:setExitCode\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/project.cmdline.php
-
-		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/search.classic.php
