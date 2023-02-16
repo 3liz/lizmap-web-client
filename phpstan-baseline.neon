@@ -266,11 +266,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
 
 		-
-			message: "#^Access to an undefined property jDbFieldProperties\\:\\:\\$unifiedType\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisLayerDbFieldsInfo.class.php
-
-		-
 			message: "#^Cannot access property \\$geomtype on bool\\|object\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
@@ -364,11 +359,6 @@ parameters:
 			message: "#^Method defaultCtrl\\:\\:index\\(\\) should return jResponseRedirect but returns jResponse\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/default.classic.php
-
-		-
-			message: "#^Access to an undefined property jDbFieldProperties\\:\\:\\$unifiedType\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
 			message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
