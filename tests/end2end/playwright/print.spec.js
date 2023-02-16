@@ -54,3 +54,48 @@ test.describe('Print', () => {
         await page.locator('#print-launch').click();
     });
 });
+
+test.describe('Atlas print', () => {
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=print';
+        await page.goto(url, { waitUntil: 'networkidle' });
+        await page.locator('#map').click({ position: { x: 513, y: 219 } });
+
+    });
+
+    test('Atlas print in popup UI', async ({ page }) => {
+        // "quartiers" layer has one atlas (name "atlas_quartiers") button configured with a custom icon
+        const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
+        await expect(featureAtlasQuartiers).toHaveCount(1);
+        await expect(featureAtlasQuartiers.locator('button')).toHaveAttribute('data-original-title', 'atlas_quartiers');
+        await expect(featureAtlasQuartiers.locator('img')).toHaveAttribute('src', '/index.php/view/media/getMedia?repository=testsrepository&project=print&path=media/svg/tree-fill.svg');
+
+        // "sousquartiers" layer has one atlas (name "atlas_sousquartiers") button configured with the default icon
+        const featureAtlasSousQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="sousquartiers_e27e6af0_dcc5_4700_9730_361437f69862.2"] .feature-atlas');
+        await expect(featureAtlasSousQuartiers).toHaveCount(1);
+        await expect(featureAtlasSousQuartiers.locator('button')).toHaveAttribute('data-original-title', 'atlas_sousquartiers');
+        await expect(featureAtlasSousQuartiers.locator('svg use')).toHaveAttribute('xlink:href', '#map-print');
+    });
+
+    test('Atlas print in popup requests', async ({ page }) => {
+        // Test `atlas_quartiers` print atlas request
+        const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
+
+        page.on('request', request => {
+            if(request.method() === "POST"){
+                expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=pdf&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=100&TEMPLATE=atlas_quartiers&ATLAS_PK=1&LAYERS=quartiers');
+            }
+        });
+
+        await featureAtlasQuartiers.locator('button').click();
+
+        // Test `atlas_quartiers` print atlas response
+        const responsePromise = page.waitForResponse(response => response.status() === 200);
+        const response = await responsePromise;
+
+        expect(response.headers()['content-type']).toBe('application/pdf');
+        expect(response.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
+
+    });
+
+});
