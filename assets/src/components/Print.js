@@ -368,6 +368,9 @@ export default class Print extends HTMLElement {
 
         this._printTemplate = index;
 
+        this._printFormat = this.defaultFormat;
+        this._printDPI = this.defaultDPI;
+
         this._mainMapID = 'map0';
         this._overviewMapId = undefined;
 

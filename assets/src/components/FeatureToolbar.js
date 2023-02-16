@@ -53,8 +53,11 @@ export default class FeatureToolbar extends HTMLElement {
                 : ''
             }
 
-            <button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>
-
+            ${this.hasDefaultPopupPrint 
+            ? html`<button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>`
+            : ''
+            }
+            
             ${this.atlasLayouts.map( layout => html`
                 <div class="feature-atlas">
                     <button type="button" class="btn btn-mini" title="${layout.title}" @click=${ 
@@ -218,6 +221,10 @@ export default class FeatureToolbar extends HTMLElement {
                 );
     }
 
+    get hasDefaultPopupPrint(){
+        return mainLizmap.config?.layouts?.config?.default_popup_print;
+    }
+
     get atlasLayouts() {
         const atlasLayouts = [];
 
@@ -225,7 +232,7 @@ export default class FeatureToolbar extends HTMLElement {
         this._layouts = mainLizmap.config?.layouts;
 
         mainLizmap.config?.printTemplates.map((template, index) => {
-            if (template?.atlas?.enabled === '1') {
+            if (this._layerId === template?.atlas?.coverageLayer && template?.atlas?.enabled === '1') {
                 // Lizmap >= 3.7
                 if (mainLizmap.config?.layouts?.list) {
                     if (mainLizmap.config?.layouts?.list?.[index]?.enabled) {
