@@ -55,12 +55,20 @@ test.describe('Print', () => {
     });
 });
 
-test.describe('Atlas print', () => {
+test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.locator('#map').click({ position: { x: 513, y: 219 } });
 
+    });
+
+    test('Popup content print', async ({ page }) => {
+        const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-print');
+        await expect(featureAtlasQuartiers).toHaveCount(1);
+
+        const featureAtlasSousQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="sousquartiers_e27e6af0_dcc5_4700_9730_361437f69862.2"] .feature-print');
+        await expect(featureAtlasSousQuartiers).toHaveCount(1);
     });
 
     test('Atlas print in popup UI', async ({ page }) => {

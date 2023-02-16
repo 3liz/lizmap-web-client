@@ -53,8 +53,11 @@ export default class FeatureToolbar extends HTMLElement {
                 : ''
             }
 
-            <button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>
-
+            ${this.hasDefaultPopupPrint 
+            ? html`<button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>`
+            : ''
+            }
+            
             ${this.atlasLayouts.map( layout => html`
                 <div class="feature-atlas">
                     <button type="button" class="btn btn-mini" title="${layout.title}" @click=${ 
@@ -216,6 +219,10 @@ export default class FeatureToolbar extends HTMLElement {
                 Object.entries(lizMap.config.layers).some(
                     ([ ,value]) => value?.typename == this._featureType && value?.popup_allow_download
                 );
+    }
+
+    get hasDefaultPopupPrint(){
+        return mainLizmap.config?.layouts?.config?.default_popup_print;
     }
 
     get atlasLayouts() {
