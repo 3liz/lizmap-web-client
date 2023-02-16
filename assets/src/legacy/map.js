@@ -5182,10 +5182,10 @@ window.lizMap = function() {
   function zoomToFeature( featureType, fid, zoomAction ){
       zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
 
-      var proj = new OpenLayers.Projection(config.layers[featureType].crs);
-      if( config.layers[featureType].featureCrs )
-          proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
       getLayerFeature(featureType, fid, function(feat) {
+        var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+        if( config.layers[featureType].featureCrs )
+            proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
           zoomToOlFeature( feat, proj, zoomAction );
       });
   }
