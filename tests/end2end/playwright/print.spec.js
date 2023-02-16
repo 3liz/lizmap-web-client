@@ -8,6 +8,8 @@ test.describe('Print', () => {
         await page.goto(url, { waitUntil: 'networkidle' });
 
         await page.locator('#button-print').click();
+
+        await page.locator('#print-scale').selectOption('100000');
     });
 
     test('Print UI', async ({ page }) => {
