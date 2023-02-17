@@ -611,52 +611,54 @@ export default class Digitizing {
 
     // Get SLD for featureDrawn[index]
     getFeatureDrawnSLD(index) {
-        if (this.featureDrawn[index]) {
-            let symbolizer = '';
-            let strokeAndFill = `<Stroke>
-                                        <SvgParameter name="stroke">${this._drawColor}</SvgParameter>
-                                        <SvgParameter name="stroke-opacity">1</SvgParameter>
-                                        <SvgParameter name="stroke-width">${this._strokeWidth}</SvgParameter>
-                                    </Stroke>
-                                    <Fill>
-                                        <SvgParameter name="fill">${this._drawColor}</SvgParameter>
-                                        <SvgParameter name="fill-opacity">${this._fillOpacity}</SvgParameter>
-                                    </Fill>`;
-
-            // We consider LINESTRING and POLYGON together currently
-            if (this.featureDrawn[index].getGeometry().getType() === 'Point') {
-                symbolizer = `<PointSymbolizer>
-                                <Graphic>
-                                    <Mark>
-                                        <WellKnownName>circle</WellKnownName>
-                                        ${strokeAndFill}
-                                    </Mark>
-                                    <Size>${2 * this._pointRadius}</Size>
-                                </Graphic>
-                            </PointSymbolizer>`;
-
-            } else {
-                symbolizer = `<PolygonSymbolizer>
-                                    ${strokeAndFill}
-                                </PolygonSymbolizer>`;
-
-            }
-            return `<?xml version="1.0" encoding="UTF-8"?>
-                    <StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
-                        xmlns:ogc="http://www.opengis.net/ogc"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd"
-                        xmlns:se="http://www.opengis.net/se">
-                        <UserStyle>
-                            <FeatureTypeStyle>
-                                <Rule>
-                                    ${symbolizer}
-                                </Rule>
-                            </FeatureTypeStyle>
-                        </UserStyle>
-                    </StyledLayerDescriptor>`;
+        if (!this.featureDrawn[index]) {
+            return null;
         }
-        return null;
+        let symbolizer = '';
+        let strokeAndFill = 
+        `<Stroke>
+            <SvgParameter name="stroke">${this._drawColor}</SvgParameter>
+            <SvgParameter name="stroke-opacity">1</SvgParameter>
+            <SvgParameter name="stroke-width">${this._strokeWidth}</SvgParameter>
+        </Stroke>
+        <Fill>
+            <SvgParameter name="fill">${this._drawColor}</SvgParameter>
+            <SvgParameter name="fill-opacity">${this._fillOpacity}</SvgParameter>
+        </Fill>`;
+
+        // We consider LINESTRING and POLYGON together currently
+        if (this.featureDrawn[index].getGeometry().getType() === 'Point') {
+            symbolizer = 
+            `<PointSymbolizer>
+                <Graphic>
+                    <Mark>
+                        <WellKnownName>circle</WellKnownName>
+                        ${strokeAndFill}
+                    </Mark>
+                    <Size>${2 * this._pointRadius}</Size>
+                </Graphic>
+            </PointSymbolizer>`;
+        } else {
+            symbolizer = 
+            `<PolygonSymbolizer>
+                ${strokeAndFill}
+            </PolygonSymbolizer>`;
+        }
+
+        const sld = 
+        `<?xml version="1.0" encoding="UTF-8"?>
+        <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" xmlns:se="http://www.opengis.net/se">
+            <UserStyle>
+                <FeatureTypeStyle>
+                    <Rule>
+                        ${symbolizer}
+                    </Rule>
+                </FeatureTypeStyle>
+            </UserStyle>
+        </StyledLayerDescriptor>`;
+
+        // Remove indentation to avoid big queries full of unecessary spaces
+        return sld.replace('    ', '');
     }
 
     get visibility(){
