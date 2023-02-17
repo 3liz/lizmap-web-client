@@ -274,7 +274,23 @@ export default class Print extends HTMLElement {
         const highlightSymbol = [];
 
         mainLizmap.digitizing.featureDrawn?.map((featureDrawn, index) => {
-            highlightGeom.push(formatWKT.writeFeature(featureDrawn));
+
+            // Translate circle coords to WKT
+            if (featureDrawn.getGeometry().getType() === 'Circle') {
+                const center = featureDrawn.getGeometry().getCenter()
+                const radius = featureDrawn.getGeometry().getRadius()
+                const circleString = `CIRCULARSTRING(
+                    ${center[0] - radius} ${center[1]},
+                    ${center[0]} ${center[1] + radius},
+                    ${center[0] + radius} ${center[1]},
+                    ${center[0]} ${center[1] - radius},
+                    ${center[0] - radius} ${center[1]})`;
+
+                highlightGeom.push(circleString);
+            } else {
+                highlightGeom.push(formatWKT.writeFeature(featureDrawn));
+            }
+
             highlightSymbol.push(mainLizmap.digitizing.getFeatureDrawnSLD(index));
         });
 
