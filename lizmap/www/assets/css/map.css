@@ -2568,10 +2568,6 @@ div.tooltip {
   vertical-align: text-bottom;
 }
 
-#selectiontool .digitizing-circle{
-  display: none;
-}
-
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;

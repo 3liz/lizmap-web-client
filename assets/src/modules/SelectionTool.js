@@ -14,6 +14,7 @@ import {
 } from 'ol/geom';
 
 import GML3 from 'ol/format/GML3';
+import WKT from 'ol/format/WKT';
 import GeoJSON from 'ol/format/GeoJSON';
 
 import WFS from '../modules/WFS.js';
@@ -140,14 +141,23 @@ export default class SelectionTool {
                         }
 
                         for (const featureType of this.allFeatureTypeSelected) {
-                            const gml = new GML3({srsName: mainLizmap.qgisProjectProjection});
+                            const formatWKT = new WKT();
+                            let featureWKT = '';
+                            // Translate circle coords to WKT
+                            if (selectionFeature.getGeometry().getType() === 'Circle') {
+                                const center = selectionFeature.getGeometry().getCenter()
+                                const radius = selectionFeature.getGeometry().getRadius()
+                                featureWKT = `CIRCULARSTRING(
+                                    ${center[0] - radius} ${center[1]},
+                                    ${center[0]} ${center[1] + radius},
+                                    ${center[0] + radius} ${center[1]},
+                                    ${center[0]} ${center[1] - radius},
+                                    ${center[0] - radius} ${center[1]})`;
+                            } else {
+                                featureWKT = formatWKT.writeFeature(selectionFeature);
+                            }
 
-                            // TODO create a geometry collection from the selection draw?
-                            const gmlNode = gml.writeGeometryNode(selectionFeature.getGeometry());
-
-                            const serializer = new XMLSerializer();
-
-                            let spatialFilter = this._geomOperator + `($geometry, geom_from_gml('${serializer.serializeToString(gmlNode.firstChild)}'))`;
+                            let spatialFilter = this._geomOperator + `($geometry, geom_from_wkt('${featureWKT}'))`;
 
                             const lConfig = mainLizmap.config.layers[featureType];
 
