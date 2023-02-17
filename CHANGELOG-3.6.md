@@ -13,6 +13,17 @@
 * In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
 * Add XML header in the GetCapabilities request to avoid a message in the web browser console
 * Change the color if the highlighted selected line in the project table
+* In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
+* When you click on the zoom to feature button, from the attribute table tool, the zoom/pan could be broken
+
+### Changed
+
+* Use streamed response to improve performance on the server
+* Update some command line utilities
+
+### Translations
+
+* Update translated strings from the Transifex website
 
 ### Backend
 
