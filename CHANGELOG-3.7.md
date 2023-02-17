@@ -59,8 +59,10 @@
 * Remove some old code about QGIS Server 2
 * Update the OpenLayers library to version 7.1
 * Fix some issues when deployed with Docker
-* Bump minimum version Lizmap QGIS server plugin to 1.3.0
+* Bump minimum version Lizmap QGIS server plugin to 1.3.1
 * Switch to PHP 8.1 in the docker image
+* Upgrade QGIS server minimum version to 3.16
+* Upgrade Lizmap Web Client target minimum version to 3.4
 
 ### Funders
 
