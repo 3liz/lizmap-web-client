@@ -78,6 +78,7 @@ test.describe('Print', () => {
         });
 
         await page.locator('#button-print').click();
+        await page.locator('#print-scale').selectOption('100000');
         await page.locator('#print-launch').click();
 
     });
