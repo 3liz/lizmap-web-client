@@ -39,15 +39,8 @@ class server_informationCtrl extends jController
         $assign = array(
             'data' => $data,
             'linkDocumentation' => $linkDocumentation,
-            'errorQgisPlugin' => jLocale::get(
-                'admin.server.information.qgis.error.fetching.information.detail',
-                array(
-                    $qgisMinimumVersionRequired,
-                    $lizmapPluginMinimumVersionRequired,
-                    $qgisMinimumVersionRequired,
-                    $lizmapPluginMinimumVersionRequired,
-                )
-            ),
+            'minimumQgisVersion' => $qgisMinimumVersionRequired,
+            'minimumLizmapServer' => $lizmapPluginMinimumVersionRequired,
         );
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('server_information'));

@@ -34,7 +34,13 @@
         {if $data['qgis_server_info']['error'] == 'NO_ACCESS'}
             <i>{@admin.server.information.qgis.error.fetching.information.detail.NO_ACCESS@}</i><br>
         {else}
-            <i>{$errorQgisPlugin}</i>
+            <p>{@admin.server.information.qgis.error.fetching.information.description@}</p>
+            <ul>
+                <li>{jlocale "admin.server.information.qgis.error.fetching.information.qgis.version.html", array($minimumQgisVersion)}</li>
+                <li>{jlocale "admin.server.information.qgis.error.fetching.information.plugin.version.html", array($minimumLizmapServer)}</li>
+                <li>{@admin.server.information.qgis.error.fetching.information.environment.variable@}</li>
+                <li>{@admin.server.information.qgis.error.fetching.information.help@}</li>
+            </ul>
             <br>
             <a href="{$linkDocumentation}" target="_blank">{$linkDocumentation}</a>
             <br>
