@@ -5,6 +5,16 @@
 ### Fixed
 
 * In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
+* In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
+* When you click on the zoom to feature button, from the attribute table tool, the zoom/pan could be broken
+
+### Backend
+
+* Update the minimum Lizmap server plugin to version 1.3.1
+
+### Translations
+
+* Update translated strings from the Transifex website
 
 ## 3.5.10 - 2023-01-25
 
