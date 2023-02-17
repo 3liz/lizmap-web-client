@@ -200,6 +200,19 @@ abstract class OGCRequest
         $headers = array(
             'X-Qgis-Service-Url' => $this->project->getOgcServiceUrl(),
         );
+        // If the OGC request is provided from command line the request is null
+        if ($this->appContext->getCoord()->request) {
+            $host = $this->appContext->getCoord()->request->getDomainName();
+            $proto = $this->appContext->getCoord()->request->getProtocol();
+            $headers = array_merge(
+                $headers,
+                array(
+                    'X-Forwarded-Host' => $host,
+                    'X-Forwarded-Proto' => $proto,
+                    'Forwarded' => 'host='.$host.';proto='.$proto,
+                ),
+            );
+        }
 
         $options = array();
         if ($this->requestXml !== null) {
