@@ -52,7 +52,12 @@ class configCtrl extends jController
             foreach ($services->getSensitiveProperties() as $ser) {
                 /** @var null|jFormsControl $ctrl */
                 $ctrl = $form->getControl($ser);
-                if ($ctrl) {
+                if (!$ctrl) {
+                    continue;
+                }
+                if ($ser == 'adminSenderEmail') {
+                    $form->setReadOnly($ser, true);
+                } else {
                     $form->deactivate($ser);
                 }
             }
@@ -147,9 +152,12 @@ class configCtrl extends jController
             ) {
                 $form->getControl('adminSenderEmail')->required = true;
             }
-            if (lizmap::getServices()->hideSensitiveProperties() && !$hasSenderEmail) {
-                $form->getControl('allowUserAccountRequests')->setReadOnly();
-                $form->getControl('allowUserAccountRequests')->help = jLocale::get('admin~admin.config.services.allowUserAccountRequest.noemail');
+            if (lizmap::getServices()->hideSensitiveProperties()) {
+                if (!$hasSenderEmail) {
+                    $form->getControl('allowUserAccountRequests')->setReadOnly();
+                    $form->getControl('allowUserAccountRequests')->help = jLocale::get('admin~admin.config.services.allowUserAccountRequest.noemail');
+                }
+                $form->getControl('adminSenderEmail')->help = jLocale::get('admin~admin.form.admin_services.adminSenderEmail.readonly.help');
             }
 
             $qgisMinimumVersionRequired = jApp::config()->minimumRequiredVersion['qgisServer'];
