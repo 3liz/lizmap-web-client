@@ -278,6 +278,72 @@ describe('Feature Toolbar in popup', function () {
     })
 })
 
+describe('Feature Toolbar in attribute table', function () {
+
+    beforeEach(function () {
+        // Runs before each tests in the block
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
+
+            cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
+
+        cy.wait('@getMap')
+
+    })
+
+    it('Zoom and center', function () {
+        // Open parent_layer in attribute table
+        cy.get('#button-attributeLayers').click()
+        cy.get('button[value="parent_layer"].btn-open-attribute-layer').click({ force: true })
+
+        // Check table lines
+        cy.get('#attribute-layer-table-parent_layer tbody tr').should('have.length', 2)
+
+        // Zoom to feature 1
+        cy.get('#attribute-layer-table-parent_layer tr[id="1"] lizmap-feature-toolbar .feature-zoom').click({ force: true })
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
+        })
+
+        // Move to feature 2
+        cy.get('#attribute-layer-table-parent_layer tr[id="2"] lizmap-feature-toolbar .feature-center').click({ force: true })
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(781610.0,781611.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278991.0,6278992.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(783277.0,783278.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279964.0,6279965.0)
+        })
+    })
+})
+
 describe('Export data', function () {
 
     beforeEach(function () {
