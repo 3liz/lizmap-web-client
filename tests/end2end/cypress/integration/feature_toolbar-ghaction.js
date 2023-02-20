@@ -1,13 +1,9 @@
 import {arrayBufferToBase64} from '../support/function.js'
 
-describe('Feature Toolbar', function () {
+describe('Feature Toolbar in popup', function () {
 
     beforeEach(function () {
         // Runs before each tests in the block
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
-
-        cy.wait(300)
-
         cy.intercept('*REQUEST=GetFeatureInfo*',
             { middleware: true },
             (req) => {
@@ -17,6 +13,25 @@ describe('Feature Toolbar', function () {
                     res.headers['cache-control'] = 'no-store'
                 })
             }).as('getFeatureInfo')
+
+        cy.intercept('POST','*service*').as('postToService')
+
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
+
+        // Go to the web map
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
+
+        // Wait for map displayed
+        cy.wait('@getMap')
+
     })
 
     it('should select', function () {
@@ -35,21 +50,85 @@ describe('Feature Toolbar', function () {
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
-        cy.intercept('*REQUEST=GetMap*',
-            { middleware: true },
-            (req) => {
-                req.on('before:response', (res) => {
-                    // force all API responses to not be cached
-                    // It is needed when launching tests multiple time in headed mode
-                    res.headers['cache-control'] = 'no-store'
-                })
-            }).as('getMap')
-
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').click()
 
-        cy.wait('@getMap')
+        // WFS GetFeature request
+        cy.wait('@postToService').as('postToService1')
 
-        // Test feature is selected on map
+        // WFS DescribeFeatureType request
+        cy.wait('@postToService').as('postToService2')
+
+        // WMS GetSelectionToken request
+        cy.wait('@postToService').as('postToService3')
+
+        // Check WFS GetFeature request
+        cy.get('@postToService1').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WFS')
+                .to.contain('REQUEST=GetFeature')
+                .to.contain('TYPENAME=parent_layer')
+                .to.contain('FEATUREID=parent_layer.1')
+        })
+
+        // Check WFS DescribeFeatureType request
+        // Check WMS GetSelectionToken request
+        // and store the selection token
+        let selectiontoken = ''
+        cy.get('@postToService2').then((interception) => {
+            if ( interception.request.body.includes('SERVICE=WFS') ) {
+                expect(interception.request.body)
+                    .to.contain('SERVICE=WFS')
+                    .to.contain('REQUEST=DescribeFeatureType')
+                    .to.contain('TYPENAME=parent_layer')
+            } else {
+                expect(interception.request.body)
+                    .to.contain('service=WMS')
+                    .to.contain('request=GETSELECTIONTOKEN')
+                    .to.contain('typename=parent_layer')
+                    .to.contain('ids=1')
+                expect(interception.response.body)
+                    .to.have.property('token')
+                selectiontoken = interception.response.body.token
+            }
+        })
+
+        cy.get('@postToService3').then((interception) => {
+            if ( interception.request.body.includes('service=WMS') ) {
+                expect(interception.request.body)
+                    .to.contain('service=WMS')
+                    .to.contain('request=GETSELECTIONTOKEN')
+                    .to.contain('typename=parent_layer')
+                    .to.contain('ids=1')
+                expect(interception.response.body)
+                    .to.have.property('token')
+                selectiontoken = interception.response.body.token
+            } else {
+                expect(interception.request.body)
+                    .to.contain('SERVICE=WFS')
+                    .to.contain('REQUEST=DescribeFeatureType')
+                    .to.contain('TYPENAME=parent_layer')
+            }
+        })
+
+        // Check that GetMap is requested with the selection token
+        // The events could reload the map before updated the request
+        cy.wait('@getMap').then((first_interception) => {
+            // Check that the selection token has been set
+            expect(selectiontoken).to.not.be.eq('')
+            // Verify if we need to wait for a second getMap
+            const first_req_url = new URL(first_interception.request.url)
+            if ( !first_req_url.searchParams.has('SELECTIONTOKEN') ) {
+                cy.wait('@getMap').then((second_interception) => {
+                    const second_req_url = new URL(second_interception.request.url)
+                    expect(second_req_url.searchParams.has('SELECTIONTOKEN')).to.be.true
+                    expect(second_req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
+                })
+            } else {
+                expect(second_req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
+            }
+        })
+
+        // Test feature is selected on last map
         cy.get('@getMap').should(({ request, response }) => {
             const responseBodyAsBase64 = arrayBufferToBase64(response.body)
 
