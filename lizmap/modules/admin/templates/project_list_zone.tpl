@@ -23,7 +23,7 @@
             <th>{@admin.project.list.column.memory.usage.label@}</th>
         {/if}
             <th>{@admin.project.list.column.qgis.desktop.version.label@}</th>
-            <th>{@admin.project.list.column.lizmap.plugin.version.label@}</th>
+            <th class='lzmplugv'>{@admin.project.list.column.lizmap.plugin.version.label@}</th>
             <th>{@admin.project.list.column.target.lizmap.version.label@}</th>
             <th>{@admin.project.list.column.authorized.groups.label@}</th>
             <th>{@admin.project.list.column.hidden.project.label@}</th>

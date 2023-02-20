@@ -118,7 +118,8 @@ class project_listZone extends jZone
                 array('repository' => $projectMetadata->getRepository(), 'project' => $projectMetadata->getId())
             ),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
-            'lizmap_plugin_version' => $projectMetadata->getLizmapPluginVersion(),
+            // convert int to string orderable
+            'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
             'file_time' => $projectMetadata->getFileTime(),
             'layer_count' => $projectMetadata->getLayerCount(),
             'acl_groups' => $projectMetadata->getAclGroups(),
@@ -239,5 +240,32 @@ class project_listZone extends jZone
         }
 
         return $inspectionData;
+    }
+
+    /**
+     * Transform int formatted version (from 5 or 6 integer) to sortable string .
+     *
+     * Transform "10102" into "01.01.02"
+     * Transform "050912" into "05.09.12"
+     *
+     * @param string $intVersion the lizmap QGIS plugin version (not always int !!)
+     *
+     * @return string the version as sortable string
+     */
+    private function pluginIntVersionToSortableString(string $intVersion): string
+    {
+        // in some old plugin the version is already human readable
+        if (strpos($intVersion, '.') != false) {
+            list($majorVersion, $minorVersion, $patchVersion) = explode('.', $intVersion);
+            // add 0 to 1 digit version
+            $majorVersion = (strlen($majorVersion) == 1 ? '0'.$majorVersion : $majorVersion);
+            $minorVersion = (strlen($minorVersion) == 1 ? '0'.$minorVersion : $minorVersion);
+            $patchVersion = (strlen($patchVersion) == 1 ? '0'.$patchVersion : $patchVersion);
+        } else {
+            $intVersion6Digit = (strlen($intVersion) == 6 ? $intVersion : '0'.$intVersion);
+            list($majorVersion, $minorVersion, $patchVersion) = str_split($intVersion6Digit, 2);
+        }
+
+        return $majorVersion.'.'.$minorVersion.'.'.$patchVersion;
     }
 }

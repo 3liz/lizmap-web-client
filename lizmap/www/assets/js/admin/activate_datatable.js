@@ -11,7 +11,15 @@ $(document).ready(function () {
                 "targets": [2, 3],
                 "visible": false,
                 "searchable": false
-            },
+            },{
+                "targets": 'lzmplugv',
+                "render": function ( data, type, row, meta ) {
+                    if (type == 'display') {
+                        return data.replace(/\.0/g,'.').replace(/^0/,'');
+                    }
+                    return data;
+                }
+            }
         ];
         if ($('table.lizmap_project_list').hasClass('has_inspection_data')) {
             columnDefs.push(
