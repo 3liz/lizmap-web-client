@@ -35,11 +35,11 @@ export default class Print extends HTMLElement {
                             // Lizmap >= 3.7
                             if (this._layouts?.list) {
                                 if(this._layouts.list?.[index]?.enabled){
-                                    this._printTemplates[index] = template;
+                                    this._printTemplates.push(template);
                                 }
                                 // Lizmap < 3.7
                             } else {
-                                this._printTemplates[index] = template;
+                                this._printTemplates.push(template);
                             }
                         }
                     });
