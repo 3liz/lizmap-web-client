@@ -53,6 +53,74 @@ describe('Selection tool', function () {
         })
     })
 
+    it('selects features intersecting a line', function () {
+        cy.get('#button-selectiontool').click()
+
+        // Activate polygon tool
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-line').click()
+
+        // Select single layer and intersects geom operator
+        cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection_polygon')
+        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+
+
+        // It should select two features
+        cy.get('#map')
+            .click(200, 350)
+            .dblclick(850, 350)
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).to.match(/^2/)
+        })
+
+        // It should not select any features
+        cy.get('#map')
+            .click(750, 350)
+            .dblclick(700, 400)
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).not.to.match(/^[0-9]/)
+        })
+    })
+
+    it('selects features intersecting a point', function () {
+        cy.get('#button-selectiontool').click()
+
+        // Activate polygon tool
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-point').click()
+
+        // Select single layer and intersects geom operator
+        cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection_polygon')
+        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+
+
+        // It should select one feature
+        cy.get('#map')
+            .click(850, 350)
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).to.match(/^1/)
+        })
+
+        // It should not select any features
+        cy.get('#map')
+            .click(750, 350)
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).not.to.match(/^[0-9]/)
+        })
+    })
+
     // TODO : tests other geom operators, unselection...
 })
 
