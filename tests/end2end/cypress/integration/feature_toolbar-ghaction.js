@@ -34,6 +34,119 @@ describe('Feature Toolbar in popup', function () {
 
     })
 
+    it('should zoom', function () {
+        // Check the started map
+        cy.get('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
+        })
+
+        // Click feature with id=1 on the map
+        cy.mapClick(655, 437)
+        cy.wait('@getFeatureInfo')
+
+        // Click to zoom to feature
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-zoom').click()
+
+        // The map is reloaded
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
+        })
+
+        // The map is zoomed to feature
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
+        })
+
+    })
+
+    it('should center', function () {
+        // Check the started map
+        cy.get('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
+        })
+
+        // Click feature with id=1 on the map
+        cy.mapClick(655, 437)
+        cy.wait('@getFeatureInfo')
+
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+
+        // Click to zoom to feature
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-center').click()
+
+        // The map is centered to feature
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
+        })
+    })
+
     it('should select', function () {
         // There is randomly an error in the console when attribute table is resized
         // This avoid test to fail
