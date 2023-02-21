@@ -15,7 +15,7 @@ describe('Time manager', () => {
                 })
             }).as('getMap')
 
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=time_manager')
+        cy.visit('/index.php/view/map/?repository=jack&project=time_manager')
 
         cy.wait('@getMap').then(interception => {
             cy.log(interception.request.url)
