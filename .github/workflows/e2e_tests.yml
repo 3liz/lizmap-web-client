@@ -41,7 +41,7 @@ jobs:
         run: |
           if ${{ github.event_name == 'repository_dispatch' }}
           then
-            # repository_dispatch is from an external workflow
+            # repository_dispatch is from an external workflow, for instance a cron workflow
             echo "Set branch from manual input: ${{ github.event.client_payload.branch }}"
             BRANCH="${{ github.event.client_payload.branch }}"
           elif ${{ github.event_name == 'workflow_dispatch' }}
@@ -137,6 +137,15 @@ jobs:
           path: |
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
+
+      - name: Notify in case of failure
+        uses: peter-evans/commit-comment@v2
+        # We might need to check if the owner is 3liz as well
+        if: failure() && ${{ github.event_name == 'repository_dispatch' }}
+        with:
+          body: |
+            The latest run of end2end tests failed with this latest commit on the branch ${{ env.BRANCH }} 😣
+            CC @nboisteault @Gustry, please have a look 💪
 
 #  debug:
 #    name: "Debug"
