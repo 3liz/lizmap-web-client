@@ -76,7 +76,7 @@ services:
       QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
       ROUTER_HOST: map
       QGSRV_SERVER_WORKERS: 4
-      QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: 1
+      QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: true
     command: qgisserver -c /srv/etc/pyqgis.conf
     volumes:
       - ./qgis-projects:/srv/projects
