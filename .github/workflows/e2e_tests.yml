@@ -51,6 +51,7 @@ jobs:
             BRANCH="${{ github.ref }}"
           else
             # From a PR
+            echo "Event type ${{ github.event_name }}"
             echo "Set branch from default value : ${{ github.event.pull_request.head.sha }} "
             BRANCH="${{ github.event.pull_request.head.sha }}"
           fi
@@ -108,9 +109,18 @@ jobs:
         run: cd end2end && npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
+        id: test-playwright
         # No Playwright tests in LWC 3.5
         if: ${{ env.BRANCH != 'release_3_5' }}
         run: cd end2end && npx playwright test --project=chromium
+
+      - name: Notify in case of playwright failure, from mainstream branches only
+        uses: peter-evans/commit-comment@v2
+        if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-playwright.outcome != 'success' && github.event_name == 'repository_dispatch'
+        with:
+          body: |
+            The latest run of end2end "playwright" tests failed with this latest commit on the branch ${{ env.BRANCH }} 😣
+            CC @nboisteault and @Gustry, please have a look 💪
 
       - name: Upload test results
         if: failure()
@@ -122,12 +132,21 @@ jobs:
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
+        id: test-cypress
         uses: cypress-io/github-action@v5.0.7
         with:
           browser: chrome
           working-directory: tests/end2end
           spec: cypress/integration/*-ghaction.js
           wait-on: http://localhost:8130
+
+      - name: Notify in case of cypress failure, from mainstream branches only
+        uses: peter-evans/commit-comment@v2
+        if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-cypress.outcome != 'success' && github.event_name == 'repository_dispatch'
+        with:
+          body: |
+            The latest run of end2end "cypress" tests failed with this latest commit on the branch ${{ env.BRANCH }} 😣
+            CC @nboisteault and @Gustry, please have a look 💪
 
       - name: Save screenshots as artifacts if a test fails to ease debug
         uses: actions/upload-artifact@v3.1.2
@@ -137,15 +156,6 @@ jobs:
           path: |
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
-
-      - name: Notify in case of failure
-        uses: peter-evans/commit-comment@v2
-        # We might need to check if the owner is 3liz as well
-        if: failure() && ${{ github.event_name == 'repository_dispatch' }}
-        with:
-          body: |
-            The latest run of end2end tests failed with this latest commit on the branch ${{ env.BRANCH }} 😣
-            CC @nboisteault @Gustry, please have a look 💪
 
 #  debug:
 #    name: "Debug"
