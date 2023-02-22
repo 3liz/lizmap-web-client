@@ -132,7 +132,7 @@ class lizmapWkt
     protected static function parsePoint($str)
     {
         $coords = preg_split(self::$regExes['spaces'], trim($str));
-        if (count($coords) < 2 || !is_numeric($coords[0]) || !is_numeric($coords[0])) {
+        if (count($coords) < 2 || !is_numeric($coords[0]) || !is_numeric($coords[1])) {
             return null;
         }
 
