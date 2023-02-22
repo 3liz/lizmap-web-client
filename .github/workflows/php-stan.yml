@@ -56,5 +56,15 @@ jobs:
         if: failure()
         with:
           body: |
-            The latest run of PHPStan has failed, maybe it's due to a new version version released recently 😣
-            Current version used : ${{ env.PHPSTAN_VERSION }}
+            The latest run of **PHPStan** has **failed**, maybe it's due to a newer version released recently 😣
+            Current version used on CI :
+
+            > ${{ env.PHPSTAN_VERSION }}
+
+            Have a look to **your** current version of PHPStan like :
+
+            ➡ `docker exec CONTAINER_test_php tests/units/vendor/phpstan/phpstan/phpstan -V`
+
+            And update if needed :
+
+            ➡ `./limap-ctl composer-update`

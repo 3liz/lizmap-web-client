@@ -133,6 +133,8 @@ jobs:
       # and run all Cypress tests
       - name: Cypress run
         id: test-cypress
+        # Always run, even if playwright has failed
+        if: always()
         uses: cypress-io/github-action@v5.0.7
         with:
           browser: chrome
