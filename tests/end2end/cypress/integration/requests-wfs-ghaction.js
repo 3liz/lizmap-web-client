@@ -123,6 +123,7 @@ describe('Request service', function () {
             expect(resp.body).to.have.property('aliases')
             expect(resp.body).to.have.property('defaults')
             expect(resp.body).to.have.property('types')
+            expect(resp.body).to.have.property('columns')
             expect(resp.body.types).to.have.property('id', 'int')
             expect(resp.body.types).to.have.property('geometry', 'gml:PolygonPropertyType')
         })
