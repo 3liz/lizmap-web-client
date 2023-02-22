@@ -43,7 +43,17 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: PHPStan version
-        run: phpstan -V
+        run: |
+          phpstan -V
+          echo "PHPSTAN_VERSION=$(phpstan -V)" >> $GITHUB_ENV
 
       - name: Run PHPStan
+        id: test-phpstan
         run: phpstan analyse -c ../phpstan.neon
+
+      - name: Notify in case of failure
+        uses: peter-evans/commit-comment@v2
+        with:
+          body: |
+            The latest run of PHPStan has failed, maybe it's due to a new version version released recently 😣
+            Current version used : ${{ env.PHPSTAN_VERSION }}
