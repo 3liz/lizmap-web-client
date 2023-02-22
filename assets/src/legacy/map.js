@@ -5147,6 +5147,7 @@ window.lizMap = function() {
 
                   aConfig['alias'] = describe.aliases;
                   aConfig['types'] = describe.types;
+                  aConfig['columns'] = describe.columns;
 
                   callFeatureDataCallBacks(poolId, data.features);
 
