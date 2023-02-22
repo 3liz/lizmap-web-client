@@ -33,6 +33,8 @@ class lizmapWktTest extends TestCase {
             'POINT ',
             'POINT()',
             'POINT(A)',
+            'POINT(A 10)',
+            'POINT(30 A)',
         );
         foreach($notWktArray as $wkt) {
             $this->assertFalse(lizmapWkt::check($wkt), 'The '.$wkt.' has been checked!');
