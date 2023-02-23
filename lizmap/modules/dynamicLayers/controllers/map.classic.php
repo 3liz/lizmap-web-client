@@ -18,6 +18,7 @@ class mapCtrl extends jController
     public function index()
     {
 
+        /** @var jResponseRedirect $rep */
         // Set up redirect response
         $rep = $this->getResponse('redirect');
         $rep->action = 'view~map:index';
