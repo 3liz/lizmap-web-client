@@ -20,7 +20,22 @@ describe('Request service', function () {
         }).then((resp) => {
             expect(resp.status).to.eq(200)
             expect(resp.headers['content-type']).to.contain('text/plain')
-            expect(resp.body).to.contain('+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs')
+
+            const projParams = resp.body.split(' ')
+            expect(projParams).to.have.lengthOf(11)
+            expect(projParams).to.include.members([
+                '+proj=lcc',
+                '+lat_1=49',
+                '+lat_2=44',
+                '+lat_0=46.5',
+                '+lon_0=3',
+                '+x_0=700000',
+                '+y_0=6600000',
+                '+ellps=GRS80',
+                '+towgs84=0,0,0,0,0,0,0',
+                '+units=m',
+                '+no_defs',
+            ])
         })
     })
 
