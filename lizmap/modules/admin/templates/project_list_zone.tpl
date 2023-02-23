@@ -245,7 +245,7 @@
         <ul>
             <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
             <ul>
-                <li>{$serverVersions['qgis_server_version_old']}{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array($serverVersions['qgis_server_version_old'])}</li>
+                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array($serverVersions['qgis_server_version_old'])}</li>
                 <li>{jlocale "admin.project.rules.list.qgis.version.light.coral.html", array( $serverVersions['qgis_server_version_next'])}</li>
             </ul>
             <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
