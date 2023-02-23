@@ -409,6 +409,7 @@ class editionCtrl extends jController
         }
 
         // Redirect to the display action
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->params = array(
             'project' => $this->project->getKey(),
@@ -469,6 +470,7 @@ class editionCtrl extends jController
         }
 
         // Redirect to the display action
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->params = array(
             'project' => $this->project->getKey(),
@@ -678,6 +680,7 @@ class editionCtrl extends jController
             $check = false;
         }
 
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->params = array(
             'project' => $this->project->getKey(),

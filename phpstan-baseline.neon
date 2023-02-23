@@ -52,16 +52,6 @@ parameters:
 			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
 
 		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
-			count: 1
-			path: lizmap/modules/dynamicLayers/controllers/map.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$params\\.$#"
-			count: 1
-			path: lizmap/modules/dynamicLayers/controllers/map.classic.php
-
-		-
 			message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
 			count: 3
 			path: lizmap/modules/filter/classes/filterConfig.class.php
@@ -296,30 +286,12 @@ parameters:
 			count: 3
 			path: lizmap/modules/lizmap/controllers/ban.classic.php
 
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/default.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$params\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/default.classic.php
-
-		-
-			message: "#^Method defaultCtrl\\:\\:index\\(\\) should return jResponseRedirect but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/default.classic.php
 
 		-
 			message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
 			count: 2
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
-			count: 7
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
@@ -331,10 +303,6 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$params\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
 			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDbFieldsInfo\\(\\)\\.$#"
@@ -366,21 +334,7 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
-		-
-			message: "#^Method editionCtrl\\:\\:createFeature\\(\\) should return jResponseHtmlFragment\\|jResponseRedirect but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Method editionCtrl\\:\\:modifyFeature\\(\\) should return jResponseHtmlFragment\\|jResponseRedirect but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Method editionCtrl\\:\\:saveFeature\\(\\) should return jResponseHtmlFragment\\|jResponseRedirect but returns jResponse\\.$#"
-			count: 5
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
+	
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 9
