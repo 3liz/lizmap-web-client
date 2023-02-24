@@ -1470,14 +1470,11 @@ class QgisForm implements QgisFormControlsInterface
         // Perform request
         $result = $wfsRequest->process();
 
-        $wfsData = $result->data;
-        if (substr($wfsData, 0, 7) == 'file://' && is_file(substr($wfsData, 7))) {
-            $wfsData = \jFile::read(substr($wfsData, 7));
-        }
-        $mime = $result->mime;
+        $wfsData = $result->getBodyAsString();
+        $mime = $result->getMime();
 
         // Used data
-        if ($wfsData and !in_array(strtolower($mime), array('text/html', 'text/xml'))) {
+        if ($wfsData && !in_array(strtolower($mime), array('text/html', 'text/xml'))) {
             $wfsData = json_decode($wfsData);
             // Get data from layer
             $features = $wfsData->features;

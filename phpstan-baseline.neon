@@ -383,17 +383,7 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 12
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$featureData \\(object\\) does not accept null\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$featureData \\(object\\) in empty\\(\\) is not falsy\\.$#"
-			count: 1
+			count: 9
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
@@ -418,16 +408,6 @@ parameters:
 
 		-
 			message: "#^Property editionCtrl\\:\\:\\$layerXml is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Right side of && is always true\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
