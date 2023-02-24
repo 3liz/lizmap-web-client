@@ -254,33 +254,35 @@ class mapsCtrl extends jController
      */
     public function modifySection()
     {
+        /** @var jResponseRedirect $rep */
+        $rep = $this->getResponse('redirect');
 
         // initialise data
         $repository = $this->param('repository');
         // Get the corresponding repository
-        $lrep = lizmap::getRepository($repository);
+        $lizmapRep = lizmap::getRepository($repository);
 
         // Redirect if no repository with this key
-        if (!$lrep || $lrep->getKey() != $repository) {
-            /** @var jResponseRedirect $rep */
-            $rep = $this->getResponse('redirect');
+        if (!$lizmapRep || $lizmapRep->getKey() != $repository) {
             $rep->action = 'admin~maps:index';
 
             return $rep;
         }
 
+        // Get lizmap repository key to create the right form
+        $lizmapRepKey = $lizmapRep->getKey();
+
         // Create and fill the form
-        $form = jForms::create('admin~config_section');
+        jForms::destroy('admin~config_section', $lizmapRepKey);
+        $form = jForms::create('admin~config_section', $lizmapRepKey);
         $form->setData('new', '0');
-        $form->setData('repository', (string) $lrep->getKey());
+        $form->setData('repository', (string) $lizmapRepKey);
         $form->setReadOnly('repository', true);
         // Create and fill form controls relatives to repository data
-        lizmap::constructRepositoryForm($lrep, $form);
+        lizmap::constructRepositoryForm($lizmapRep, $form);
         // Create and fill the form control relative to rights for each group for this repository
-        $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), 'db');
+        $form = $this->populateRepositoryRightsFormControl($form, $lizmapRepKey, 'db');
 
-        /** @var jResponseRedirect $rep */
-        $rep = $this->getResponse('redirect');
         // redirect to the form display action
         $rep->params['repository'] = $repository;
         $rep->action = 'admin~maps:editSection';
@@ -306,21 +308,25 @@ class mapsCtrl extends jController
         // Get services data
         $services = lizmap::getServices();
         // Get repository data
-        $lrep = lizmap::getRepository($repository);
-        // what to do if it's a new one!
+        $lizmapRep = lizmap::getRepository($repository);
+        // Get lizmap repository key to get the right form
+        $lizmapRepKey = null;
+        if ($lizmapRep) {
+            $lizmapRepKey = $lizmapRep->getKey();
+        }
 
         /** @var null|jFormsBase $form */
-        $form = jForms::get('admin~config_section');
+        $form = jForms::get('admin~config_section', $lizmapRepKey);
         // get the form
 
         if ($form) {
             // Create and fill form controls relatives to repository data
-            lizmap::constructRepositoryForm($lrep, $form);
+            lizmap::constructRepositoryForm($lizmapRep, $form);
             // Create and fill the form control relative to rights for each group for this repository
-            if ($this->intParam('errors') && $lrep) {
-                $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), 'request');
-            } elseif ($lrep) {
-                $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), false);
+            if ($this->intParam('errors') && $lizmapRep) {
+                $form = $this->populateRepositoryRightsFormControl($form, $lizmapRepKey, 'request');
+            } elseif ($lizmapRep) {
+                $form = $this->populateRepositoryRightsFormControl($form, $lizmapRepKey, false);
             }
 
             // Display form
@@ -356,11 +362,15 @@ class mapsCtrl extends jController
         // Get services data
         $services = lizmap::getServices();
         // Repository (first take the default one)
-        $lrep = lizmap::getRepository($repository);
-        // what to do if it's a new one!
+        $lizmapRep = lizmap::getRepository($repository);
+        // Get lizmap repository key to get the right form
+        $lizmapRepKey = null;
+        if ($lizmapRep) {
+            $lizmapRepKey = $lizmapRep->getKey();
+        }
 
         /** @var null|jFormsBase $form */
-        $form = jForms::get('admin~config_section');
+        $form = jForms::get('admin~config_section', $lizmapRepKey);
         // Get the form
 
         // token
@@ -385,9 +395,9 @@ class mapsCtrl extends jController
         }
 
         // Rebuild form fields
-        lizmap::constructRepositoryForm($lrep, $form);
-        if ($lrep) {
-            $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), false);
+        lizmap::constructRepositoryForm($lizmapRep, $form);
+        if ($lizmapRep) {
+            $form = $this->populateRepositoryRightsFormControl($form, $lizmapRepKey, false);
         }
 
         // Set form data from request data
@@ -398,7 +408,7 @@ class mapsCtrl extends jController
         if (!$form->check()) {
             $ok = false;
         }
-        if (!$new && !$lrep) {
+        if (!$new && !$lizmapRep) {
             $form->setErrorOn('repository', jLocale::get('admin~admin.form.admin_section.message.repository.wrong'));
             $ok = false;
         }
@@ -419,16 +429,16 @@ class mapsCtrl extends jController
                     $npath,
                     \Jelix\FileUtilities\Path::NORM_ADD_TRAILING_SLASH
                 );
-                if ($lrep) {
-                    $lrepPath = $lrep->getPath();
-                    if (substr($lrepPath, 0, strlen($rootRepositories)) !== $rootRepositories) {
+                if ($lizmapRep) {
+                    $lizmapRepPath = $lizmapRep->getPath();
+                    if (substr($lizmapRepPath, 0, strlen($rootRepositories)) !== $rootRepositories) {
                         // original path is outside repositories root, so we keep it
-                        $form->setData('path', $lrepPath);
+                        $form->setData('path', $lizmapRepPath);
                     } elseif (substr($fullPath, 0, strlen($rootRepositories)) !== $rootRepositories) {
                         // If the given path is outside the repositories root:
                         // we don't accept it
                         $form->setErrorOn('path', jLocale::get('admin~admin.form.admin_section.message.path.not_authorized'));
-                        jLog::log('rootRepositories == '.$rootRepositories.', repository '.$lrep->getKey().' path == '.$fullPath, 'error');
+                        jLog::log('rootRepositories == '.$rootRepositories.', repository '.$lizmapRepKey.' path == '.$fullPath, 'error');
                         $ok = false;
                     }
                 } elseif (substr($fullPath, 0, strlen($rootRepositories)) !== $rootRepositories) {
@@ -509,10 +519,10 @@ class mapsCtrl extends jController
         }
 
         // Save the data
-        if ($new && !$lrep) {
-            $lrep = lizmap::createRepository($repository, $data);
-        } elseif ($lrep) {
-            $modifySection = lizmap::updateRepository($lrep->getKey(), $data);
+        if ($new && !$lizmapRep) {
+            $lizmapRep = lizmap::createRepository($repository, $data);
+        } elseif ($lizmapRep) {
+            $modifySection = lizmap::updateRepository($lizmapRepKey, $data);
         }
         jMessage::add(jLocale::get('admin~admin.form.admin_section.message.data.saved'));
         // group rights data
@@ -540,11 +550,19 @@ class mapsCtrl extends jController
         $repository = $this->param('repository');
         $new = $this->intParam('new');
 
+        // Repository (first take the default one)
+        $lizmapRep = lizmap::getRepository($repository);
+        // Get lizmap repository key to get the right form
+        $lizmapRepKey = null;
+        if ($lizmapRep) {
+            $lizmapRepKey = $lizmapRep->getKey();
+        }
+
         /** @var null|jFormsBase $form */
-        $form = jForms::get('admin~config_section');
+        $form = jForms::get('admin~config_section', $lizmapRepKey);
         // Destroy the form
         if ($form) {
-            jForms::destroy('admin~config_section');
+            jForms::destroy('admin~config_section', $lizmapRepKey);
         } else {
             /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
@@ -636,8 +654,8 @@ class mapsCtrl extends jController
         $rep->action = 'admin~maps:index';
 
         $repository = $this->param('repository');
-        $lrep = lizmap::getRepository($repository);
-        if (!$lrep) {
+        $lizmapRep = lizmap::getRepository($repository);
+        if (!$lizmapRep) {
             jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'error');
 
             return $rep;
@@ -646,7 +664,7 @@ class mapsCtrl extends jController
         $project = $this->param('project');
 
         try {
-            $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+            $lproj = lizmap::getProject($lizmapRep->getKey().'~'.$project);
             if (!$lproj) {
                 jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
