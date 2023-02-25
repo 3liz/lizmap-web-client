@@ -5,7 +5,7 @@ test.describe('Maps management', () => {
 
   test.beforeEach(async ({ page }) => {
     // Go to admin.php
-    await page.goto('admin.php?lang=en');
+    await page.goto('admin.php');
 
     await expect(page).toHaveURL(/admin.php\/auth\/login/);
 
