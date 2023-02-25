@@ -91,7 +91,6 @@ class lizmapServices
         'cacheRedisDb',
         'cacheRedisKeyPrefix',
         'adminSenderEmail',
-        'adminSenderName',
         'proxyHttpBackend',
     );
 
