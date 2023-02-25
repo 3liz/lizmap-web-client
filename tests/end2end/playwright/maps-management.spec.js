@@ -26,6 +26,8 @@ test.describe('Maps management', () => {
   test('Create and remove a repository', async ({ page }) => {
     // Go to Maps management
     await page.getByRole('link', { name: 'Maps management' }).click();
+    // Check selected admin menu item
+    await expect(page.locator('#menu li.active')).toHaveText('Maps management');
     // Contains 2 buttons Create a repository
     await expect(page.locator('div').filter({ hasText: 'Create a repository' }).getByRole('link', { name: 'Create a repository' })).toHaveCount(2);
 
@@ -34,6 +36,8 @@ test.describe('Maps management', () => {
 
     // Check URL
     await expect(page).toHaveURL(/.*admin.php\/admin\/maps\/editSection/);
+    // Check selected admin menu item
+    await expect(page.locator('#menu li.active')).toHaveText('Maps management');
 
     // Check form
     await expect(page.locator('[id=jforms_admin_config_section_path]')).toHaveValue('');
@@ -99,6 +103,9 @@ test.describe('Maps management', () => {
     await expect(page.locator('div.alert.alert-block')).toHaveClass(/alert-info/);
     await expect(page.locator('div.alert.alert-block.alert-info')).toContainText('The repository data have been saved.');
 
+    // Check selected admin menu item
+    await expect(page.locator('#menu li.active')).toHaveText('Maps management');
+
     // Remove created repository
     page.once('dialog', dialog => {
       console.log(`Dialog message: ${dialog.message()}`);
@@ -110,17 +117,24 @@ test.describe('Maps management', () => {
     await expect(page.locator('div.alert.alert-block.alert-info')).toContainText('The repository has been removed (8 group(s) concerned)');
     // Check URL
     await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
+
+    // Check selected admin menu item
+    await expect(page.locator('#menu li.active')).toHaveText('Maps management');
   });
 
   test('Update a repository', async ({ page }) => {
     // Go to Maps management
     await page.getByRole('link', { name: 'Maps management' }).click();
+    // Check selected admin menu item
+    await expect(page.locator('#menu li.active')).toHaveText('Maps management');
 
     // Go to modify repository
     await page.locator('a[href="/admin.php/admin/maps/modifySection?repository=testsrepository"]').click()
 
     // Check URL
     await expect(page).toHaveURL(/.*admin.php\/admin\/maps\/editSection\?repository=testsrepository/);
+    // Check selected admin menu item
+    await expect(page.locator('#menu li.active')).toHaveText('Maps management');
 
     // Check form
     await expect(page.locator('[id=jforms_admin_config_section_path]')).toHaveValue('/srv/lzm/tests/qgis-projects/tests/');
@@ -175,6 +189,9 @@ test.describe('Maps management', () => {
     await page.getByRole('link', { name: 'Back' }).click();
     // Check URL
     await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
+
+    // Check selected admin menu item
+    await expect(page.locator('#menu li.active')).toHaveText('Maps management');
   });
 
 });
