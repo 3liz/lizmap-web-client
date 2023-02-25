@@ -28,6 +28,9 @@ class mapsCtrl extends jController
     // used to get only non admin subjects
     protected $lizmapClientPrefix = 'lizmap.repositories|lizmap.tools';
 
+    // The selected admin menu item
+    protected $selectedMenuItem = 'lizmap_maps';
+
     /**
      * Display the list of repositories and maps.
      *
@@ -88,7 +91,7 @@ class mapsCtrl extends jController
         $tpl->assign('subjects', $subjects);
         $tpl->assign('labels', $labels);
         $rep->body->assign('MAIN', $tpl->fetch('maps'));
-        $rep->body->assign('selectedMenuItem', 'lizmap_maps');
+        $rep->body->assign('selectedMenuItem', $this->selectedMenuItem);
 
         return $rep;
     }
@@ -355,7 +358,7 @@ class mapsCtrl extends jController
             $tpl = new jTpl();
             $tpl->assign('form', $form);
             $rep->body->assign('MAIN', $tpl->fetch('config_section'));
-            $rep->body->assign('selectedMenuItem', 'lizmap_configuration');
+            $rep->body->assign('selectedMenuItem', $this->selectedMenuItem);
 
             return $rep;
         }
