@@ -14,7 +14,10 @@
 * Add XML header in the GetCapabilities request to avoid a message in the web browser console
 * Change the color if the highlighted selected line in the project table
 * In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
+* When you click on the zoom to feature button, from the popup, the zoom/pan could be broken
 * When you click on the zoom to feature button, from the attribute table tool, the zoom/pan could be broken
+* When you try to do a selection by point, no selection performed
+* Defined default repository rights on creation
 
 ### Changed
 
@@ -28,6 +31,8 @@
 ### Backend
 
 * Bump the Lizmap QGIS server plugin to version 1.3.1 minimum
+* Update the way to check a geometry in a Well Known Text format
+* Update the way to check proj4 string in tests
 
 ## 3.6.1 - 2022-01-23
 
