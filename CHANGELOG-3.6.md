@@ -29,6 +29,7 @@
 
 * Use streamed response to improve performance on the server
 * Update some command line utilities
+* Update OpenLayers to 7.2.2
 
 ### Translations
 
