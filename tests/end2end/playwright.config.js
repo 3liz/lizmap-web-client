@@ -1,18 +1,7 @@
 // @ts-check
-const { devices } = require('@playwright/test');
+const { defineConfig } = require('@playwright/test');
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-
-/**
- * @see https://playwright.dev/docs/test-configuration
- * @type {import('@playwright/test').PlaywrightTestConfig}
- */
-const config = {
+module.exports = defineConfig({
   testDir: './playwright',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
@@ -43,7 +32,8 @@ const config = {
       width: 900,
       height: 650
     },
-
+    screenshot: 'only-on-failure',
+    locale: 'en-US',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
@@ -53,21 +43,21 @@ const config = {
     {
       name: 'chromium',
       use: {
-        ...devices['Desktop Chrome'],
+        browserName: 'chromium',
       },
     },
 
     {
       name: 'firefox',
       use: {
-        ...devices['Desktop Firefox'],
+        browserName: 'firefox',
       },
     },
 
     {
       name: 'webkit',
       use: {
-        ...devices['Desktop Safari'],
+        browserName: 'webkit',
       },
     },
 
@@ -108,6 +98,4 @@ const config = {
   //   command: 'npm run start',
   //   port: 3000,
   // },
-};
-
-module.exports = config;
+});

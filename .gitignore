@@ -97,6 +97,7 @@ tests/units/composer.lock
 tests/units/.phpunit.result.cache
 tests/qgis-projects/*
 !tests/qgis-projects/tests
+!tests/qgis-projects/ProJets 1982*!
 tests/qgis-projects/tests/media
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
