@@ -272,7 +272,9 @@ class lizmapServicesTest extends TestCase
             'appName' => 'Lizmap',
             'uploadedImageMaxWidthHeight' => 1920
         );
-        $ini2 = array();
+        $ini2 = array(
+            'webmasterName' => 'Adrien',
+        );
         $liveIni = array(
             'webmasterEmail' => 'test.test@test.com',
             'webmasterName' => 'Adrien',
@@ -284,7 +286,6 @@ class lizmapServicesTest extends TestCase
         $evalTab2 = array(
             'adminSenderEmail' => 'test.test@test.com',
             'adminSenderName' => 'Adrien',
-            'webmasterName' => 'Adrien',
         );
 
         return array(
