@@ -18,5 +18,5 @@ if (file_exists(jApp::appPath('app/devcommands.php'))) {
     include(jApp::appPath('app/devcommands.php'));
 }
 
-JelixCommands::launch($application);
+exit(JelixCommands::launch($application));
 
