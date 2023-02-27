@@ -237,6 +237,7 @@ You can then :
 - execute `npx playwright test` to execute all tests with all browsers
 - execute `npx playwright test --project=chromium` to execute all tests with the chromium browser
 - execute `npx playwright test mytest.spec.js --project=chromium` to execute one test with the chromium browser
+- execute `npx playwright test mytest.spec.js --project=chromium --debug` to execute one test with the chromium browser in debug mode
 - other command line : https://playwright.dev/docs/intro#command-line
 
 You can also install the handy Visual Studio Code extension : https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
