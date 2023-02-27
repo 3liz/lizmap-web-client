@@ -422,7 +422,7 @@ class QgisProjectTest extends TestCase
         if ($sname) {
             $this->assertEquals($sname, $layer->{$lname}->shortname);
         } else {
-            $this->assertObjectNotHasAttribute('shortname', $layer->{$lname});
+            $this->assertFalse(property_exists($layer->{$lname}, 'shortname'));
         }
     }
 
