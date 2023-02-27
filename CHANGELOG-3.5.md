@@ -6,11 +6,14 @@
 
 * In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
 * In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
-* When you click on the zoom to feature button, from the attribute table tool, the zoom/pan could be broken
+* When you click on the zoom to feature button, from the popup, the zoom/pan could be broken
+* When you try to do a selection by point, no selection performed
 
 ### Backend
 
 * Update the minimum Lizmap server plugin to version 1.3.1
+* Update the way to check a geometry in a Well Known Text format
+* Update the way to check proj4 string in tests
 
 ### Translations
 
@@ -233,7 +236,7 @@
 
 - New method in `AppContext` to get user public groups ID
 - Convert QGis XML Option value based on type attribute
-- Add a revision parameter on assets url for cache 
+- Add a revision parameter on assets url for cache
 
 ### Backend
 
