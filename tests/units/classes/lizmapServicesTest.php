@@ -284,6 +284,7 @@ class lizmapServicesTest extends TestCase
         $evalTab2 = array(
             'adminSenderEmail' => 'test.test@test.com',
             'adminSenderName' => 'Adrien',
+            'webmasterName' => 'Adrien',
         );
 
         return array(
