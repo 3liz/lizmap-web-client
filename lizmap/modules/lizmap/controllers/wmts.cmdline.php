@@ -99,7 +99,7 @@ class wmtsCtrl extends jControllerCmdLine
         layers          the layer name list for which you want to generate the cache
         TileMatrixSet   the TileMatrixSet for which you want to generate the cache. The TileMatrixSet is a CRS
         TileMatrixMin   the min zoom level to generate
-        TileMatrixMax   the min zoom level to generate
+        TileMatrixMax   the max zoom level to generate
     Use:
         php lizmap/scripts/script.php lizmap~wmts:seeding [-v] [-f] [-dry-run] [-bbox xmin,ymin,xmax,ymax] repository project layer TileMatrixSet TileMatrixMin TileMatrixMax
         ',
@@ -120,90 +120,22 @@ class wmtsCtrl extends jControllerCmdLine
     {
         $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
 
-        $verbose = $this->option('-v');
-
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse(); // cmdline response by default
+        $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
+        In lizmap folder, use 'php console.php wmts:capabilities <repository> <project> [layer] [tileMatrix]'\n\n");
 
-        $project = null;
+        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
 
-        try {
-            $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
-            // Project not found
-            if (!$project) {
-                $rep->addContent("Unknown repository!\n");
-                $rep->setExitCode(1);
+        $returnCode = $WMTSCache->capabilities(
+            $this->param('repository'),
+            $this->param('project'),
+            $this->param('layer'),
+            $this->param('TileMatrixSet'),
+            $this->option('-v')
+        );
 
-                return $rep;
-            }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
-            $rep->addContent("The project has not be found!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-        $repository = $project->getRepository();
-
-        $tileCapabilities = null;
-
-        try {
-            $tileCapabilities = lizmapTiler::getTileCapabilities($project);
-        } catch (Exception $e) {
-            // if default profile does not exist, or if there is an
-            // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
-            // Error message
-            $rep->addContent("The cache is not available!\n");
-            $rep->addContent($e->getMessage()."\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        if ($tileCapabilities === null
-             || $tileCapabilities->tileMatrixSetList === null
-             || $tileCapabilities->layerTileInfoList === null
-        ) {
-            // Error message
-            $rep->addContent("The cache is not available!\n");
-            $rep->addContent("The WMTS Service can't be initialized!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        $layerId = $this->param('layer');
-        $TileMatrixSetId = $this->param('TileMatrixSet');
-
-        if (count($tileCapabilities->layerTileInfoList) === 0) {
-            $rep->addContent("No layers configured with cache!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        foreach ($tileCapabilities->layerTileInfoList as $layer) {
-            if ($layerId && $layer->name != $layerId) {
-                continue;
-            }
-            foreach ($layer->tileMatrixSetLinkList as $tileMatrixSetLink) {
-                if ($TileMatrixSetId && $tileMatrixSetLink->ref != $TileMatrixSetId) {
-                    continue;
-                }
-                if ($verbose) {
-                    foreach ($tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit) {
-                        $tmCount = ($tileMatrixLimit->maxRow - $tileMatrixLimit->minRow + 1) * ($tileMatrixLimit->maxCol - $tileMatrixLimit->minCol + 1);
-                        $rep->addContent('For "'.$layer->name.'" and "'.$tileMatrixSetLink->ref.'" the TileMatrix '.$tileMatrixLimit->id.' has '.$tmCount.' tiles'."\n");
-                    }
-                } else {
-                    $tmls = array();
-                    foreach ($tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit) {
-                        $tmls[] = $tileMatrixLimit->id;
-                    }
-                    $rep->addContent('For "'.$layer->name.'" and "'.$tileMatrixSetLink->ref.'" from TileMatrix '.min($tmls).' to '.max($tmls)."\n");
-                }
-            }
-        }
+        $rep->setExitCode($returnCode);
 
         return $rep;
     }
@@ -212,266 +144,35 @@ class wmtsCtrl extends jControllerCmdLine
     {
         $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
 
-        $forced = $this->option('-f');
-        $verbose = $this->option('-v');
-        $dryRun = $this->option('-dry-run');
-
         /** @var jResponseCmdline $rep */
-        $rep = $this->getResponse(); // cmdline response by default
-
-        $project = null;
-
-        try {
-            $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
-            // Project not found
-            if (!$project) {
-                $rep->addContent("Unknown repository!\n");
-                $rep->setExitCode(1);
-
-                return $rep;
-            }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
-            $rep->addContent("The project has not be found!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-        $repository = $project->getRepository();
-
-        $tileCapabilities = null;
-
-        try {
-            $tileCapabilities = lizmapTiler::getCalculatedTileCapabilities($project);
-        } catch (Exception $e) {
-            // if default profile does not exist, or if there is an
-            // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
-            // Error message
-            $rep->addContent("The cache is not available!\n");
-            $rep->addContent($e->getMessage()."\n");
+        $rep = $this->getResponse();
+        $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
+        In lizmap folder, use 'php console.php wmts:cache:seed <repository> <project> <layers> <TileMatrixSet> <TileMatrixMin> <TileMatrixMax>'\n\n");
+        $tileMatrixMin = $this->param('TileMatrixMin');
+        $tileMatrixMax = $this->param('TileMatrixMax');
+        if (!(filter_var($tileMatrixMin, FILTER_VALIDATE_INT) && filter_var($tileMatrixMax, FILTER_VALIDATE_INT))) {
+            $rep->addContent("TileMatrixMin and TileMatrixMax must be of type int\n");
             $rep->setExitCode(1);
 
             return $rep;
         }
 
-        if ($tileCapabilities === null
-             || $tileCapabilities->tileMatrixSetList === null
-             || $tileCapabilities->layerTileInfoList === null) {
-            // Error message
-            $rep->addContent("The cache is not available!\n");
-            $rep->addContent("The WMTS Service has not been initialized!\n");
+        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
 
-            try {
-                $tileCapabilities = lizmapTiler::getTileCapabilities($project);
-            } catch (Exception $e) {
-                // if default profile does not exist, or if there is an
-                // other error about the cache, let's log it
-                jLog::logEx($e, 'error');
-                // Error message
-                $rep->addContent("The cache is not available!\n");
-                $rep->addContent($e->getMessage()."\n");
-                $rep->setExitCode(1);
+        $returnCode = $WMTSCache->seed(
+            $this->param('repository'),
+            $this->param('project'),
+            $this->param('layers'),
+            $this->param('TileMatrixSet'),
+            $tileMatrixMin,
+            $tileMatrixMax,
+            $this->option('bbox'),
+            $this->option('-v'),
+            $this->option('-dry-run'),
+            $this->option('-f')
+        );
 
-                return $rep;
-            }
-
-            if ($tileCapabilities === null
-                 || $tileCapabilities->tileMatrixSetList === null
-                 || $tileCapabilities->layerTileInfoList === null) {
-                // Error message
-                $rep->addContent("The cache is not available!\n");
-                $rep->addContent("The WMTS Service can't be initialized!\n");
-                $rep->setExitCode(1);
-
-                return $rep;
-            }
-            $rep->addContent("The WMTS Service has been initialized!\n");
-        }
-
-        if (count($tileCapabilities->layerTileInfoList) === 0) {
-            $rep->addContent("No layers configured with cache!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        $layerIds = explode(',', $this->param('layers'));
-        $selectedLayers = array();
-        foreach ($tileCapabilities->layerTileInfoList as $l) {
-            if (in_array('*', $layerIds) || in_array($l->name, $layerIds)) {
-                $selectedLayers[] = $l;
-            }
-        }
-        // Layer not found
-        if (count($selectedLayers) === 0) {
-            $rep->addContent("The layers '".implode(',', $layerIds)."' have not be found!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        $TileMatrixSetId = $this->param('TileMatrixSet');
-        $tileMatrixSet = null;
-        foreach ($tileCapabilities->tileMatrixSetList as $tms) {
-            $rep->addContent("The TileMatrixSet '".$tms->ref."'!\n");
-            if ($tms->ref == $TileMatrixSetId) {
-                $tileMatrixSet = $tms;
-
-                break;
-            }
-        }
-
-        // TileMatrixSet not found
-        if (!$tileMatrixSet) {
-            $rep->addContent("The TileMatrixSet '".$TileMatrixSetId."' has not be found!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        $bbox = $this->option('-bbox');
-        if ($bbox) {
-            $bbox = explode(',', $bbox);
-            if (count($bbox) != 4) {
-                $rep->addContent("The optional bbox has to contain 4 numbers separated by comma!\n");
-                $rep->setExitCode(1);
-
-                return $rep;
-            }
-            $nbbox = array();
-            foreach ($bbox as $b) {
-                if (!is_numeric($b)) {
-                    $rep->addContent("The optional bbox has to contain 4 numbers separated by comma!\n");
-                    $rep->setExitCode(1);
-
-                    return $rep;
-                }
-                $nbbox[] = (float) $b;
-            }
-            $bbox = $nbbox;
-        }
-
-        foreach ($selectedLayers as $layer) {
-            $tileMatrixSetLink = null;
-            foreach ($layer->tileMatrixSetLinkList as $tms) {
-                if ($tms->ref == $TileMatrixSetId) {
-                    $tileMatrixSetLink = $tms;
-
-                    break;
-                }
-            }
-
-            $TileMatrixMin = (int) $this->param('TileMatrixMin');
-            $TileMatrixMax = (int) $this->param('TileMatrixMax');
-            // count tiles
-            $tileCount = 0;
-            $tileMatrixLimits = array();
-            foreach ($tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit) {
-                if ($tileMatrixLimit->id >= $TileMatrixMin && $tileMatrixLimit->id <= $TileMatrixMax) {
-                    if ($bbox) {
-                        $width = 256.0;
-                        $height = 256.0;
-                        $tileMatrix = $tileMatrixSet->tileMatrixList[(int) $tileMatrixLimit->id];
-                        $res = $tileMatrix->resolution;
-
-                        $minCol = floor(($bbox[0] - $tileMatrix->left) / ($width * $res));
-                        $maxCol = floor(($bbox[2] - $tileMatrix->left) / ($width * $res));
-                        $minRow = floor(($tileMatrix->top - $bbox[3]) / ($height * $res));
-                        $maxRow = floor(($tileMatrix->top - $bbox[1]) / ($height * $res));
-
-                        $tileMatrix = (object) array(
-                            'id' => $tileMatrixLimit->id,
-                            'minRow' => max($minRow, $tileMatrixLimit->minRow),
-                            'minCol' => max($minCol, $tileMatrixLimit->minCol),
-                            'maxRow' => min($maxRow, $tileMatrixLimit->maxRow),
-                            'maxCol' => min($maxCol, $tileMatrixLimit->maxCol),
-                        );
-
-                        if (($tileMatrix->maxRow < $tileMatrix->minRow) || ($tileMatrix->maxCol < $tileMatrix->minCol)) {
-                            // the BBox is out of tile matrix limit
-                            // do not save tile matrix
-                            continue;
-                        }
-
-                        $tileMatrixLimits[] = $tileMatrix;
-
-                        $tmCount = ($tileMatrix->maxRow - $tileMatrix->minRow + 1) * ($tileMatrix->maxCol - $tileMatrix->minCol + 1);
-                        if ($verbose || $dryRun) {
-                            $rep->addContent($tmCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" "'.$tileMatrixLimit->id.'" "'.implode(',', $bbox).'"'."\n");
-                        }
-                        $tileCount += $tmCount;
-                    } else {
-                        $tileMatrixLimits[] = $tileMatrixLimit;
-
-                        $tmCount = ($tileMatrixLimit->maxRow - $tileMatrixLimit->minRow + 1) * ($tileMatrixLimit->maxCol - $tileMatrixLimit->minCol + 1);
-                        if ($verbose || $dryRun) {
-                            $rep->addContent($tmCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" "'.$tileMatrixLimit->id.'"'."\n");
-                        }
-                        $tileCount += $tmCount;
-                    }
-                }
-            }
-            if ($verbose || $dryRun) {
-                $rep->addContent($tileCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" between "'.$TileMatrixMin.'" and "'.$TileMatrixMax.'"'."\n");
-            }
-            if ($dryRun) {
-                return $rep;
-            }
-
-            // generate tiles
-            $rep->addContent("Start generation\n");
-            $rep->addContent("================\n");
-            $tileProgress = 0;
-            $tileStepHeight = max(5.0, floor(5 * 100 / $tileCount));
-            $tileStep = $tileStepHeight;
-            foreach ($tileMatrixLimits as $tileMatrixLimit) {
-                if ($tileMatrixLimit->id >= $TileMatrixMin && $tileMatrixLimit->id <= $TileMatrixMax) {
-                    $row = (int) $tileMatrixLimit->minRow;
-                    // $rep->addContent( $tileMatrixLimit->id.' '.$tileMatrixLimit->minRow.' '.$tileMatrixLimit->maxRow.' '.$tileMatrixLimit->minCol.' '.$tileMatrixLimit->maxCol."\n");
-                    while ($row <= $tileMatrixLimit->maxRow) {
-                        $col = (int) $tileMatrixLimit->minCol;
-                        while ($col <= $tileMatrixLimit->maxCol) {
-                            $request = new \Lizmap\Request\WMTSRequest(
-                                $project,
-                                array(
-                                    'service' => 'WMTS',
-                                    'version' => '1.0.0',
-                                    'request' => 'GetTile',
-                                    'layer' => $layer->name,
-                                    'format' => $layer->imageFormat,
-                                    'TileMatrixSet' => $TileMatrixSetId,
-                                    'TileMatrix' => $tileMatrixLimit->id,
-                                    'TileRow' => $row,
-                                    'TileCol' => $col,
-                                ),
-                                lizmap::getServices()
-                            );
-                            if ($forced) {
-                                $request->setForceRequest(true);
-                            }
-                            $result = $request->process();
-                            if (!preg_match('/^image/', $result->mime)) {
-                                $rep->addContent('Error for tile: '.$layer->name.' / '.$TileMatrixSetId.' / '.$tileMatrixLimit->id.' / '.$row.' / '.$col."\n");
-                            }
-                            if (!$result->cached) {
-                                $rep->addContent('Error, tile not cached: '.$layer->name.' / '.$TileMatrixSetId.' / '.$tileMatrixLimit->id.' / '.$row.' / '.$col."\n");
-                            }
-                            // $rep->addContent($layer->name.' '.$layer->imageFormat.' '.$TileMatrixSetId.' '.$tileMatrixLimit->id.' '.$row.' '.$col.' '.$result->code."\n");
-                            ++$col;
-                            ++$tileProgress;
-                            if ($verbose && $tileProgress * 100 / $tileCount >= $tileStep) {
-                                $tileStep = floor($tileProgress * 100 / $tileCount);
-                                $rep->addContent('Progression: '.$tileStep.'%, '.$tileProgress.' tiles generated on '.$tileCount.' tiles'."\n");
-                                $tileStep = $tileStep + $tileStepHeight;
-                            }
-                        }
-                        ++$row;
-                    }
-                }
-            }
-            $rep->addContent("================\n");
-            $rep->addContent("End generation\n");
-        }
+        $rep->setExitCode($returnCode);
 
         return $rep;
     }
@@ -480,81 +181,18 @@ class wmtsCtrl extends jControllerCmdLine
     {
         $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
 
-        $verbose = $this->option('-v');
-
         /** @var jResponseCmdline $rep */
-        $rep = $this->getResponse(); // cmdline response by default
+        $rep = $this->getResponse();
+        $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
+        In lizmap folder, use 'php console.php wmts:cache:clean <repository> <project>'\n\n");
 
-        $project = null;
-
-        try {
-            $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
-            // Project not found
-            if (!$project) {
-                $rep->addContent("Unknown repository!\n");
-                $rep->setExitCode(1);
-
-                return $rep;
-            }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
-            $rep->addContent("The project has not be found!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-        $repository = $project->getRepository();
-
-        $tileCapabilities = null;
-
-        try {
-            $tileCapabilities = lizmapTiler::getTileCapabilities($project);
-        } catch (Exception $e) {
-            // if default profile does not exist, or if there is an
-            // other error about the cache, let's log it
-            jLog::logEx($e, 'error');
-            // Error message
-            $rep->addContent("The cache is not available!\n");
-            $rep->addContent($e->getMessage()."\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        if ($tileCapabilities === null
-             || $tileCapabilities->tileMatrixSetList === null
-             || $tileCapabilities->layerTileInfoList === null
-        ) {
-            // Error message
-            $rep->addContent("The cache is not available!\n");
-            $rep->addContent("The WMTS Service can't be initialized!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        $layerId = $this->param('layer');
-
-        if (count($tileCapabilities->layerTileInfoList) === 0) {
-            $rep->addContent("No layers configured with cache!\n");
-            $rep->setExitCode(1);
-
-            return $rep;
-        }
-
-        $rep->addContent("Start cleaning\n");
-        $rep->addContent("================\n");
-        if ($layerId) {
-            $result = \Lizmap\Request\Proxy::clearLayerCache($repository->getKey(), $project->getKey(), $layerId);
-        } else {
-            $result = \Lizmap\Request\Proxy::clearProjectCache($repository->getKey(), $project->getKey());
-        }
-        $rep->addContent("================\n");
-        if (!$result) {
-            $rep->addContent("End cleaning\n");
-        } else {
-            $rep->addContent("Error cleaning\n");
-            $rep->setExitCode(1);
-        }
+        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
+        $returnCode = $WMTSCache->clean(
+            $this->param('repository'),
+            $this->param('project'),
+            $this->param('layer')
+        );
+        $rep->setExitCode($returnCode);
 
         return $rep;
     }
