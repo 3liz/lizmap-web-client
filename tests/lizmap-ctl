@@ -86,6 +86,8 @@ case $COMMAND in
         execInPhp install;;
     script)
         execInPhp script $EXTRA;;
+    console)
+        execInPhp console $EXTRA;;
     rights)
         execInPhp rights;;
     composer-install | composer_install)
