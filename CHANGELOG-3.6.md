@@ -13,6 +13,7 @@
   * Better form with auto-completion
   * Some rights are now already checked by default when creating a new repository
 * Add some explanations about the rules and colours in the administration project page
+* Script to make it easier to migrate from Lizmap Web Client 3.5
 
 ### Fixed
 
@@ -24,12 +25,12 @@
 * In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
 * When you click on the zoom to feature button, from the popup or the attribute table tool, the zoom/pan could be broken
 * When you try to select features with a point, no selection were performed
+* In the administration panel, allow to edit the name for the sender email 
 
 ### Changed
 
 * Use streamed response to improve performance on the server
 * Update some command line utilities
-* Update OpenLayers to 7.2.2
 
 ### Translations
 
@@ -42,6 +43,11 @@
 * Update the way to check the validity about : 
   * a geometry in a Well Known Text format
   * a proj4 string in tests
+* Update OpenLayers to 7.2.2
+
+### Tests
+
+* Add more tests about End2End integration to avoid regressions
 
 ## 3.6.1 - 2022-01-23
 
