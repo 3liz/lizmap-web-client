@@ -2,9 +2,11 @@
 
 ## Unreleased
 
+## 3.5.11 - 2023-02-28
+
 ### Important
 
-* Minimum Lizmap server plugin needed 1.3.1
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 1.3.1
 * Minimum QGIS server needed 3.10
 
 ### Added
@@ -29,7 +31,9 @@
 
 ### Translations
 
-* Update translated strings from the Transifex website
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ### Tests
 
