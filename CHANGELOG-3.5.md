@@ -2,22 +2,38 @@
 
 ## Unreleased
 
+### Important
+
+* Minimum Lizmap server plugin needed 1.3.1
+* Minimum QGIS server needed 3.10
+
+### Added
+
+* Improve the wizard for the repository creation :
+  * Better form with auto-completion
+  * Some rights are now already checked by default when creating a new repository
+
 ### Fixed
 
 * In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
 * In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
 * When you click on the zoom to feature button, from the popup, the zoom/pan could be broken
-* When you try to do a selection by point, no selection performed
+* When you try to select features by point, no selection were performed
+* Improve the error message when QGIS server and the Lizmap QGIS server plugin are not installed correctly
 
 ### Backend
 
-* Update the minimum Lizmap server plugin to version 1.3.1
-* Update the way to check a geometry in a Well Known Text format
-* Update the way to check proj4 string in tests
+* Update the way to check the validity about : 
+  * a geometry in a Well Known Text format
+  * a proj4 string in tests
 
 ### Translations
 
 * Update translated strings from the Transifex website
+
+### Tests
+
+* Add more tests about End2End integration to avoid regressions
 
 ## 3.5.10 - 2023-01-25
 
