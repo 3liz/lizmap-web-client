@@ -2,8 +2,16 @@
 
 ## Unreleased
 
+### Important
+
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 1.3.1
+* Minimum QGIS server needed 3.10
+
 ### Added
 
+* Improve the wizard for the repository creation :
+  * Better form with auto-completion
+  * Some rights are now already checked by default when creating a new repository
 * Add some explanations about the rules and colours in the administration project page
 * Script to make it easier to migrate from Lizmap Web Client 3.5
 
@@ -26,7 +34,9 @@
 
 ### Translations
 
-* Update translated strings from the Transifex website
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ### Backend
 
