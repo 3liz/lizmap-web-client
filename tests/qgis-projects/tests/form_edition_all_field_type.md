@@ -26,8 +26,10 @@ Check that there is a folder `media` aside the `tests` folder, containing a sub-
   * [ ] choose an image file for the field `image_file_mandatory`, for example the file `tests/qgis-projects/demoqgis/montpellier.qgs.png`
   * [ ] choose an image file for the field `image_file_specific_root_folder`, for example the file `tests/qgis-projects/demoqgis/montpellier.qgs.png`
 * [ ] Validate the form with the button **Save**
-* [ ] Check that the image `montpellier.qgs.png` has been stored in the folder `../media/specific_media_folder/`
-* [ ] Go to the **data** menu and click on the button **Detail** next to the layer name `form_edition_upload`
-* [ ] Check that the content of the field `image_file_specific_root_folder` is a working link to the media
-      http://lizmap.local:8130/index.php/view/media/getMedia?repository=testsrepository&project=form_edition_all_field_type&path=../media/specific_media_folder/montpellier.qgs.png
-* [ ] Delete the data line with the **trash** button and check that the file `../media/specific_media_folder/montpellier.qgs.png` has also been deleted.
+* [ ] Go to the **attribute table** panel and open the `form_edition_upload`
+* [ ] Check that the content of the field :
+  * [ ] `text_file_mandatory` is working
+  * [ ] `image_file_mandatory` is working with the `media/` directory
+  * [ ] `image_file_specific_root_folder`, in a **new tab** is working  with the `../media/specific_media_folder/`
+* [ ] Delete the data line with the **trash** button
+* [ ] Refresh the tab showing `image_file_specific_root_folder`, it must return a 404
