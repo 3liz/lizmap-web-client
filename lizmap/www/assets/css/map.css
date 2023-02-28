@@ -2827,3 +2827,21 @@ lizmap-reverse-geom svg{
 #print-launch.spinner::after{
   right: 5px;
 }
+
+lizmap-fullscreen {
+  position: absolute;
+  z-index: 1;
+  bottom: 5px;
+  left: 5px;
+}
+lizmap-fullscreen button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+lizmap-fullscreen button svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+}
