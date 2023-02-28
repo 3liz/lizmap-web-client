@@ -2,8 +2,16 @@
 
 ## Unreleased
 
+### Important
+
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 1.3.1
+* Minimum QGIS server needed 3.10
+
 ### Added
 
+* Improve the wizard for the repository creation :
+  * Better form with auto-completion
+  * Some rights are now already checked by default when creating a new repository
 * Add some explanations about the rules and colours in the administration project page
 
 ### Fixed
@@ -14,10 +22,8 @@
 * Add XML header in the GetCapabilities request to avoid a message in the web browser console
 * Change the color if the highlighted selected line in the project table
 * In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
-* When you click on the zoom to feature button, from the popup, the zoom/pan could be broken
-* When you click on the zoom to feature button, from the attribute table tool, the zoom/pan could be broken
-* When you try to do a selection by point, no selection performed
-* Defined default repository rights on creation
+* When you click on the zoom to feature button, from the popup or the attribute table tool, the zoom/pan could be broken
+* When you try to select features with a point, no selection were performed
 
 ### Changed
 
@@ -26,13 +32,15 @@
 
 ### Translations
 
-* Update translated strings from the Transifex website
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ### Backend
 
-* Bump the Lizmap QGIS server plugin to version 1.3.1 minimum
-* Update the way to check a geometry in a Well Known Text format
-* Update the way to check proj4 string in tests
+* Update the way to check the validity about : 
+  * a geometry in a Well Known Text format
+  * a proj4 string in tests
 
 ## 3.6.1 - 2022-01-23
 
