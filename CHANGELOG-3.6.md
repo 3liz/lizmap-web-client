@@ -13,7 +13,7 @@
   * Better form with auto-completion
   * Some rights are now already checked by default when creating a new repository
 * Add some explanations about the rules and colours in the administration project page
-* Script to make it easier to migrate from Lizmap Web Client 3.5
+* Script `install/migrate_from_3_5.sh` to make it easier to migrate from Lizmap Web Client 3.5
 
 ### Fixed
 
@@ -26,6 +26,7 @@
 * When you click on the zoom to feature button, from the popup or the attribute table tool, the zoom/pan could be broken
 * When you try to select features with a point, no selection were performed
 * In the administration panel, allow to edit the name for the sender email 
+* Fix issues in the installer, when installing external modules
 
 ### Changed
 
@@ -43,7 +44,9 @@
 * Update the way to check the validity about : 
   * a geometry in a Well Known Text format
   * a proj4 string in tests
+* Fix some issues with PHP 8.2
 * Update OpenLayers to 7.2.2
+* Upgrade Jelix to 1.8.0-rc.4
 
 ### Tests
 
