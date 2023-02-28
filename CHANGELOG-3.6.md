@@ -2,10 +2,7 @@
 
 ## Unreleased
 
-### Important
-
-* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 1.3.1
-* Minimum QGIS server needed 3.10
+## 3.6.2 - 2022-02-28
 
 ### Added
 
