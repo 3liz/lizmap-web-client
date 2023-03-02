@@ -1339,6 +1339,10 @@ lizmap-print .print-dpi{
   margin-bottom: 10px;
 }
 
+lizmap-print .print-rotation .add-on {
+  font-weight: bold;
+}
+
 lizmap-print .flex {
   gap: 10px;
 }
