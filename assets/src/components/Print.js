@@ -4,6 +4,7 @@ import { html, render } from 'lit-html';
 import MaskLayer from '../modules/Mask';
 import Utils from '../modules/Utils.js';
 
+import ScaleLine from 'ol/control/ScaleLine';
 import WKT from 'ol/format/WKT';
 import { transformExtent, get as getProjection } from 'ol/proj';
 
@@ -172,7 +173,7 @@ export default class Print extends HTMLElement {
 
     _updateScaleFromResolution(){
         mainLizmap.map.getControls().forEach((control) => {
-            if( control.constructor.name === 'ScaleLine'){
+            if (control instanceof ScaleLine) {
                 const currentScale = control.getScaleForResolution();
                 // Get closest scale
                 this._printScale = this._printScales.reduce((prev, curr) => Math.abs(curr - currentScale) < Math.abs(prev - currentScale) ? curr : prev);
