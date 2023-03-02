@@ -20,6 +20,12 @@ export default class Print extends HTMLElement {
             () => document.querySelector('#button-print').click()
         );
 
+        this._onChangeResolution = () => {
+            const scaleIndex = mainLizmap.map.getView().getResolutions().indexOf(mainLizmap.map.getView().getResolution())
+            this._printScale = this._printScales[scaleIndex];
+            render(this._template(), this);
+        };
+
         lizMap.events.on({
             minidockopened: (e) => {
                 if ( e.id == 'print' ) {
@@ -75,11 +81,7 @@ export default class Print extends HTMLElement {
             
                     mainLizmap.map.addLayer(this._maskLayer);
 
-                    mainLizmap.map.getView().on('change:resolution', () => {
-                        const scaleIndex = mainLizmap.map.getView().getResolutions().indexOf(mainLizmap.map.getView().getResolution())
-                        this._printScale = this._printScales[scaleIndex];
-                        render(this._template(), this);
-                    });
+                    mainLizmap.map.getView().on('change:resolution', this._onChangeResolution);
             
                     render(this._template(), this);
                 }
@@ -88,6 +90,7 @@ export default class Print extends HTMLElement {
                 if ( e.id == 'print' ) {
                     mainLizmap.newOlMap = false;
                     mainLizmap.map.removeLayer(this._maskLayer);
+                    mainLizmap.map.getView().un('change:resolution', this._onChangeResolution);
                 }
             }
         });
