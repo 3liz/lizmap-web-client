@@ -5,7 +5,7 @@ import MaskLayer from '../modules/Mask';
 import Utils from '../modules/Utils.js';
 
 import WKT from 'ol/format/WKT';
-import { transformExtent } from 'ol/proj';
+import { transformExtent, get as getProjection } from 'ol/proj';
 
 const INCHES_PER_METER = 39.37;
 const DOTS_PER_INCH = 72;
@@ -24,6 +24,12 @@ export default class Print extends HTMLElement {
             minidockopened: (e) => {
                 if ( e.id == 'print' ) {
                     mainLizmap.newOlMap = true;
+
+                    this._projectionUnit = getProjection(mainLizmap.qgisProjectProjection).getUnits();
+
+                    if (this._projectionUnit === 'degrees') {
+                        this._projectionUnit = '°';
+                    }
 
                     // Lizmap >= 3.7
                     this._layouts = mainLizmap.config?.layouts;
@@ -133,13 +139,22 @@ export default class Print extends HTMLElement {
                 <div class='print-grid'>
                     <span>${lizDict['print.gridIntervals']}</span>
                     <div>
-                        <input type="number" class="input-small" min="0" placeholder="X" @change=${(event) => { this._gridX = parseInt(event.target.value) }}>
-                        <input type="number" class="input-small" min="0" placeholder="Y" @change=${(event) => { this._gridY = parseInt(event.target.value) }}>
+                        <div class="input-append">
+                            <input type="number" class="input-small" min="0" placeholder="X" @change=${(event) => { this._gridX = parseInt(event.target.value) }}>
+                            <span class="add-on">${this._projectionUnit}</span>
+                        </div>
+                        <div class="input-append">
+                            <input type="number" class="input-small" min="0" placeholder="Y" @change=${(event) => { this._gridY = parseInt(event.target.value) }}>
+                            <span class="add-on">${this._projectionUnit}</span>
+                        </div>
                     </div>
                 </div>
                 <div class='print-rotation'>
                     <span>${lizDict['print.rotation']}</span>
-                    <input type="number" class="input-small" @change=${(event) => { this._rotation = parseInt(event.target.value) }}>
+                    <div class="input-append">
+                        <input type="number" class="input-small" @change=${(event) => { this._rotation = parseInt(event.target.value) }}>
+                        <span class="add-on">°</span>
+                    </div>
                 </div>
             </details>
 
