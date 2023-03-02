@@ -32,8 +32,9 @@ fallbackLocale=en_US
 qgisServer="3.16"
 lizmapServerPlugin="1.3.1"
 
-; Versions written in QGIS projects, for the GIS administrator
-; QGIS project with a lower version are not displayed in the landing page, but displayed in the administration panel
+; Versions written in QGIS/CFG files, for the GIS administrator
+; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
+; Lizmap CFG files with this target version are still displayed in the landing page, but have a warning in the administration panel
 ; 3 versions behind the current version of LWC
 lizmapWebClientTargetVersion=30400
 
