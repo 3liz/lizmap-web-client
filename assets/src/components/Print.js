@@ -99,7 +99,7 @@ export default class Print extends HTMLElement {
         return html`
             <table id="print-parameters" class="table table-condensed">
                 <tr>
-                    <td>${lizDict['print.toolbar.template']}</td>
+                    <td>${lizDict['print.toolbar.layout']}</td>
                     <td>${lizDict['print.toolbar.scale']}</td>
                 </tr>
                 <tr>
