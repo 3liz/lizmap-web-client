@@ -62,6 +62,7 @@ export default class Mask extends Layer {
 
     const INCHES_PER_METER = 39.37;
     const DOTS_PER_INCH = 72;
+    const DOTS_PER_INCH_QGIS = 96;
 
     const cwidth = frameState.size[0];
     this.context_.canvas.width = cwidth;
@@ -84,8 +85,11 @@ export default class Mask extends Layer {
     const scale = this.getScale(frameState);
     const resolution = frameState.viewState.resolution;
 
-    const extentHalfWidth = ((width / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
-    const extentHalfHeight = ((height / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
+    let extentHalfWidth = ((width / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
+    let extentHalfHeight = ((height / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
+
+    extentHalfWidth = extentHalfWidth * DOTS_PER_INCH_QGIS / DOTS_PER_INCH;
+    extentHalfHeight = extentHalfHeight * DOTS_PER_INCH_QGIS / DOTS_PER_INCH;
 
     const rotation = this.getRotation !== undefined ? toRadians(this.getRotation()) : 0;
 
