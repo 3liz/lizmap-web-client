@@ -705,10 +705,12 @@ window.lizMap = function() {
          bbox = extent.toArray();
 
          var scales = [];
-         if ('mapScales' in config.options)
-           scales = config.options.mapScales;
-         if ( scales.length == 0 )
+         if ('mapScales' in config.options){
+           scales = Array.from(config.options.mapScales);
+         }
+         if ( scales.length == 0 ){
            scales = [config.options.maxScale,config.options.minScale];
+         }
 
          config.options.projection = proj;
          config.options.bbox = bbox;
