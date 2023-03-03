@@ -1,10 +1,10 @@
 import { mainLizmap } from '../modules/Globals.js';
+import { ADJUSTED_DPI } from '../utils/Constants';
 import { html, render } from 'lit-html';
 
 import MaskLayer from '../modules/Mask';
 import Utils from '../modules/Utils.js';
 
-import ScaleLine from 'ol/control/ScaleLine';
 import WKT from 'ol/format/WKT';
 import { transformExtent, get as getProjection } from 'ol/proj';
 
@@ -22,8 +22,7 @@ export default class Print extends HTMLElement {
         );
 
         this._onChangeResolution = () => {
-            const scaleIndex = mainLizmap.map.getView().getResolutions().indexOf(mainLizmap.map.getView().getResolution())
-            this._printScale = this._printScales[scaleIndex];
+            this._updateScaleFromResolution();
             render(this._template(), this);
         };
 
@@ -171,14 +170,14 @@ export default class Print extends HTMLElement {
             </div>`;
     }
 
-    _updateScaleFromResolution(){
-        mainLizmap.map.getControls().forEach((control) => {
-            if (control instanceof ScaleLine) {
-                const currentScale = control.getScaleForResolution();
-                // Get closest scale
-                this._printScale = this._printScales.reduce((prev, curr) => Math.abs(curr - currentScale) < Math.abs(prev - currentScale) ? curr : prev);
+    _updateScaleFromResolution() {
+        const mapScale = mainLizmap.map.getView().getResolution() * (1000 / 25.4) * ADJUSTED_DPI;
+        for (const printScale of this._printScales) {
+            if (mapScale > printScale) {
+                this._printScale = printScale;
+                return;
             }
-        });
+        }
     }
 
     _launch(){
