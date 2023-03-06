@@ -3069,7 +3069,7 @@ window.lizMap = function() {
                             rConfigLayer.request_params.filter !== '' )
                           wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
                       else
-                          wmsOptions['FILTER'] = clname+':"'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
+                          wmsOptions['FILTER'] = wmsName+':"'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
 
                     var parentDiv = self.parent();
 
