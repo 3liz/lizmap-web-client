@@ -2953,7 +2953,7 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
   height: 20px;
 }
 
-.feature-atlas button:hover > * {
+.feature-atlas button:hover > img[src$=".svg"] {
   filter: invert(1);
 }
 
