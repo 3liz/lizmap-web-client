@@ -85,7 +85,8 @@ export default class Digitizing {
 
         this._drawSource = new VectorSource({ wrapX: false });
 
-        this._drawSource.on('addfeature', () => {
+        this._drawSource.on('addfeature', (event) => {
+            event.feature.setStyle(this._drawStyleFunction());
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
