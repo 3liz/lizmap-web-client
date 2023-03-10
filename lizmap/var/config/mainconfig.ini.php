@@ -22,9 +22,15 @@ availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it
 fallbackLocale=en_US
 
 [minimumRequiredVersion]
+; Versions on the server, for the system administrator
 ; The minimum version required about external software to make Lizmap Web Client happy
 qgisServer="3.10"
 lizmapServerPlugin="2.7.0"
+
+; Versions written in QGIS projects, for the GIS administrator
+; QGIS project with a lower version are not displayed in the landing page, but displayed in the administration panel
+; 3 versions behind the current version of LWC
+lizmapWebClientTargetVersion=30300
 
 [coordplugins]
 ;name = file_ini_name or 1
