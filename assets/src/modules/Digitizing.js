@@ -126,7 +126,10 @@ export default class Digitizing {
         this._drawSource = new VectorSource({ wrapX: false });
 
         this._drawSource.on('addfeature', (event) => {
-            event.feature.set('color', this._drawColor);
+            // Set main color if feature does not have one
+            if(!event.feature.get('color')){
+                event.feature.set('color', this._drawColor);
+            }
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
@@ -777,12 +780,14 @@ export default class Digitizing {
                 if( geomType === 'Circle'){
                     savedFeatures.push({
                         type: geomType,
+                        color: feature.get('color'),
                         center: feature.getGeometry().getCenter(),
                         radius: feature.getGeometry().getRadius()
                     });
                 } else {
                     savedFeatures.push({
                         type: geomType,
+                        color: feature.get('color'),
                         coords: feature.getGeometry().getCoordinates()
                     });
                 }
@@ -801,6 +806,7 @@ export default class Digitizing {
 
         if (savedGeomJSON) {
             const savedFeatures = JSON.parse(savedGeomJSON);
+            const loadedFeatures = [];
             for(const feature of savedFeatures){
                 let loadedGeom;
                 if(feature.type === 'Point'){
@@ -814,9 +820,12 @@ export default class Digitizing {
                 }
 
                 if(loadedGeom){
-                    this._drawSource.addFeature(new Feature(loadedGeom));
+                    const loadedFeature = new Feature(loadedGeom);
+                    loadedFeature.set('color', feature.color);
+                    loadedFeatures.push(loadedFeature);
                 }
             }
+            this._drawSource.addFeatures(loadedFeatures);
         }
     }
 
