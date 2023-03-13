@@ -87,7 +87,7 @@ export default class Digitizing extends HTMLElement {
                     </li>
                 </ul>
             </div>
-            <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value} data-original-title="${lizDict['digitizing.toolbar.color']}">
+            <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing._userChangedColor(event.target.value)} data-original-title="${lizDict['digitizing.toolbar.color']}">
             <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()} data-original-title="${lizDict['attributeLayers.btn.edit.title']}">
                 <svg>
                     <use xlink:href="#edit"/>

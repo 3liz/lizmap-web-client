@@ -87,6 +87,19 @@ export default class Digitizing {
             }
         });
 
+        // Set draw color from selected feature color
+        this._selectInteraction.on('select', (event) => {
+            if (event.selected.length) {
+                this.drawColor = event.selected[0].get('color');
+            } else {
+                // When a feature is deselected, set the color from the first selected feature if any
+                const selectedFeatures = this._selectInteraction.getFeatures().getArray();
+                if (selectedFeatures.length) {
+                    this.drawColor = selectedFeatures[0].get('color');
+                }
+            }
+        });
+
         this._modifyInteraction = new Modify({
             features: this._selectInteraction.getFeatures(),
         });
@@ -321,13 +334,8 @@ export default class Digitizing {
 
     set drawColor(color) {
         this._drawColor = color;
-
-        // Refresh draw layer
-        this._drawLayer.changed();
-
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
-
         mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
@@ -351,6 +359,7 @@ export default class Digitizing {
                 // Automatically edit the feature if unique
                 if (this.featureDrawn.length === 1) {
                     this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
+                    this.drawColor = this.featureDrawn[0].get('color');
                 }
 
                 mainLizmap.map.removeInteraction(this._drawInteraction);
@@ -397,6 +406,19 @@ export default class Digitizing {
 
     set angleConstraint(angleConstraint){
         this._angleConstraint = parseInt(angleConstraint)
+    }
+
+    _userChangedColor(color) {
+        this._drawColor = color;
+
+        this._selectInteraction.getFeatures().forEach(feature => {
+            feature.set('color', color);
+        });
+
+        // Save color
+        localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
+
+        mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
     _contraintsHandler(coords, geom, geomType) {
