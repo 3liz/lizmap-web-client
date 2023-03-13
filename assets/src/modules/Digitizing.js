@@ -53,40 +53,67 @@ export default class Digitizing {
         // Second is for total geom measure
         this._measureTooltips = [];
 
+        this._pointRadius = 6;
+        this._fillOpacity = 0.2;
+        this._strokeWidth = 2;
+
         this._selectInteraction = new Select({
             wrapX: false,
+            style: (feature) => {
+                const color = feature.get('color') || this._drawColor;
+                return [
+                    new Style({
+                        image: new Circle({
+                            fill: new Fill({
+                                color: color,
+                            }),
+                            radius: this._pointRadius,
+                        }),
+                        fill: new Fill({
+                            color: color + '33', // Opacity: 0.2
+                        }),
+                        stroke: new Stroke({
+                            color: 'rgba(255, 255, 255, 0.4)',
+                            width: this._strokeWidth + 8
+                        }),
+                    }),
+                    new Style({
+                        stroke: new Stroke({
+                            color: color,
+                            width: this._strokeWidth
+                        }),
+                    }),
+                ];
+            }
         });
 
         this._modifyInteraction = new Modify({
             features: this._selectInteraction.getFeatures(),
         });
 
-        this._pointRadius = 6;
-        this._fillOpacity = 0.2;
-        this._strokeWidth = 2;
-
-        this._drawStyleFunction = () => {
+        this._drawStyleFunction = (feature) => {
+            const color = feature.get('color') || this._drawColor;
             return new Style({
                 image: new Circle({
                     fill: new Fill({
-                        color: this._drawColor,
+                        color: color,
                     }),
                     radius: this._pointRadius,
                 }),
                 fill: new Fill({
-                    color: this._drawColor + '33', // Opacity: 0.2
+                    color: color + '33', // Opacity: 0.2
                 }),
                 stroke: new Stroke({
-                    color: this._drawColor,
+                    color: color,
                     width: this._strokeWidth
                 }),
             });
-        }
+        };
 
         this._drawSource = new VectorSource({ wrapX: false });
 
         this._drawSource.on('addfeature', (event) => {
-            event.feature.setStyle(this._drawStyleFunction());
+            event.feature.set('color', this._drawColor);
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
