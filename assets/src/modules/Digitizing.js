@@ -667,15 +667,16 @@ export default class Digitizing {
         if (!this.featureDrawn[index]) {
             return null;
         }
+        const color = this.featureDrawn[index].get('color') || this._drawColor;
         let symbolizer = '';
         let strokeAndFill =
         `<Stroke>
-            <SvgParameter name="stroke">${this._drawColor}</SvgParameter>
+            <SvgParameter name="stroke">${color}</SvgParameter>
             <SvgParameter name="stroke-opacity">1</SvgParameter>
             <SvgParameter name="stroke-width">${this._strokeWidth}</SvgParameter>
         </Stroke>
         <Fill>
-            <SvgParameter name="fill">${this._drawColor}</SvgParameter>
+            <SvgParameter name="fill">${color}</SvgParameter>
             <SvgParameter name="fill-opacity">${this._fillOpacity}</SvgParameter>
         </Fill>`;
 
