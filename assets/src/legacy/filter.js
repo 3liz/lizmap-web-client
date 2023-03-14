@@ -398,14 +398,16 @@ var lizLayerFilterTool = function () {
                         let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
                         if( getSourceLayer && getSourceLayer.length == 2) {
                             let source_typename = getSourceLayer[1].typename;
-                            fetchRequests.push(
-                                lizMap.mainLizmap.wfs.getFeature({
-                                    TYPENAME: source_typename,
-                                    PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
-                                    // we must not use null for exp_filter but '' if no filter is active
-                                    EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
-                                })
-                            );
+                            if (source_typename != undefined) {
+                                fetchRequests.push(
+                                    lizMap.mainLizmap.wfs.getFeature({
+                                        TYPENAME: source_typename,
+                                        PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
+                                        // we must not use null for exp_filter but '' if no filter is active
+                                        EXP_FILTER: fieldConf.exp_filter ? fieldConf.exp_filter : ''
+                                    })
+                                );
+                            }
                         }
 
                     }
