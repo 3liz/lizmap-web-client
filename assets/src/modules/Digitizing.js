@@ -54,7 +54,7 @@ export default class Digitizing {
         // Second is for total geom measure
         this._measureTooltips = new Set();
 
-        this._pointRadius = 6;
+        this._pointRadius = 8;
         this._fillOpacity = 0.2;
         this._strokeWidth = 2;
 
@@ -68,13 +68,17 @@ export default class Digitizing {
                             fill: new Fill({
                                 color: color,
                             }),
+                            stroke: new Stroke({
+                                color: 'rgba(255, 255, 255, 0.5)',
+                                width: this._strokeWidth + 4
+                            }),
                             radius: this._pointRadius,
                         }),
                         fill: new Fill({
                             color: color + '33', // Opacity: 0.2
                         }),
                         stroke: new Stroke({
-                            color: 'rgba(255, 255, 255, 0.4)',
+                            color: 'rgba(255, 255, 255, 0.5)',
                             width: this._strokeWidth + 8
                         }),
                     }),
