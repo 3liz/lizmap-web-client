@@ -310,13 +310,17 @@ var lizAttributeTable = function() {
                     if (fieldConf.type == 'ValueMap') {
                         allColumnsKeyValues[fieldName] = fieldConf.data;
                     } else {
-                        // Use an integer as a placeholder for coming fetched key/values
-                        allColumnsKeyValues[fieldName] = responseOrder;
-                        responseOrder++;
                         // Get the layer typename based on its id
                         let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
                         if( !getSourceLayer || getSourceLayer.length != 2) continue;
                         let source_typename = getSourceLayer[1].typename;
+                        if (source_typename == undefined) {
+                            // The source layer is not published in WFS
+                            continue;
+                        }
+                        // Use an integer as a placeholder for coming fetched key/values
+                        allColumnsKeyValues[fieldName] = responseOrder;
+                        responseOrder++;
                         fetchRequests.push(lizMap.mainLizmap.wfs.getFeature({
                             TYPENAME: source_typename,
                             PROPERTYNAME: fieldConf.code_field + ',' + fieldConf.label_field,
