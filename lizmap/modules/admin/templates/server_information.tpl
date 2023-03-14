@@ -123,8 +123,9 @@
             {if $displayPluginActionColumn }
                 <th>{@admin.server.information.qgis.plugin.action@}</th>
             {/if}
-        <tr/>
+        </tr>
         {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
+        {if $version['name']}
         <tr>
             <th style="width:20%;">{$version['name']}</th>
             <td style="width:20%;">
@@ -147,6 +148,7 @@
                 {/if}
             {/if}
         </tr>
+        {/if}
         {/foreach}
     </table>
     {hook 'QgisServerPlugins', $data['qgis_server_info']['plugins']}
