@@ -51,6 +51,10 @@ class Server
      */
     public function getLizmapPluginServerVersion()
     {
+        if (array_key_exists('error', $this->metadata['qgis_server_info'])) {
+            return '0.0.0';
+        }
+
         return $this->metadata['qgis_server_info']['plugins']['lizmap_server']['version'];
     }
 
@@ -60,6 +64,10 @@ class Server
      */
     public function getQgisServerVersion()
     {
+        if (array_key_exists('error', $this->metadata['qgis_server_info'])) {
+            return '0.0.0';
+        }
+
         return $this->metadata['qgis_server_info']['metadata']['version'];
     }
 
