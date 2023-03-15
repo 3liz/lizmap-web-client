@@ -8,7 +8,7 @@
 
     <h3>{@admin.server.information.lizmap.label@}</h3>
     <h4>{@admin.server.information.lizmap.info@}</h4>
-    <table class="table table-striped table-bordered table-server-info">
+    <table class="table table-striped table-bordered table-server-info table-lizmap-web-client">
         <tr>
             <th>{@admin.server.information.lizmap.info.version@}</th>
             <td>{$data['info']['version']}</td>
@@ -71,7 +71,7 @@
 {else}
 
     <h4>{@admin.server.information.qgis.metadata@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info">
+    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server">
         <tr>
             <th>{@admin.server.information.qgis.version@}</th>
             <td>
@@ -116,7 +116,7 @@
     {hook 'QgisServerVersion', $data['qgis_server_info']['metadata']}
 
     <h4>{@admin.server.information.qgis.plugins@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info">
+    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server-plugins">
         <tr>
             <th style="width:20%;">{@admin.server.information.qgis.plugin@}</th>
             <th style="width:20%;">{@admin.server.information.qgis.plugin.version@}</th>
