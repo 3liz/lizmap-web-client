@@ -42,6 +42,9 @@
     {/if}
 
 {if array_key_exists('error', $data['qgis_server_info'])}
+{* The lizmap plugin is not installed or not well configured *}
+{* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
+{if $data['qgis_server']['test'] == 'OK'}
 
     <p>
         <b>{@admin.server.information.qgis.error.fetching.information@}</b><br/>
@@ -67,7 +70,7 @@
             <i>{@admin.server.information.qgis.error.fetching.information.detail.HTTP_ERROR@} {$errorcode}</i><br>
         {/if}
     </p>
-
+{/if}
 {else}
 
     <h4>{@admin.server.information.qgis.metadata@}</h4>
