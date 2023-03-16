@@ -108,6 +108,28 @@ class defaultCtrl extends jController
             $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
         }
 
+        // Information taken from QGIS Server with the help of Lizmap plugin
+        $checkServerInformation = false;
+        if (jAcl2::check('lizmap.admin.server.information.view')) {
+            // Check server status
+            $server = new \Lizmap\Server\Server();
+
+            // Minimum QGIS server version
+            $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
+            $currentQgisVersion = $server->getQgisServerVersion();
+
+            // lizmap_server plugin version
+            $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+            $currentLizmapVersion = $server->getLizmapPluginServerVersion();
+
+            // Check versions
+            if ($server->versionCompare($currentQgisVersion, $requiredQgisVersion)
+                || $server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
+                $checkServerInformation = true;
+            }
+        }
+        $rep->body->assign('checkServerInformation', $checkServerInformation);
+
         // Add custom HTML content at top of page
         $HTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content.html');
         if (file_exists($HTMLContentFile)) {
