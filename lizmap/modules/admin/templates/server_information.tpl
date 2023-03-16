@@ -8,7 +8,7 @@
 
     <h3>{@admin.server.information.lizmap.label@}</h3>
     <h4>{@admin.server.information.lizmap.info@}</h4>
-    <table class="table table-striped table-bordered table-server-info">
+    <table class="table table-striped table-bordered table-server-info table-lizmap-web-client">
         <tr>
             <th>{@admin.server.information.lizmap.info.version@}</th>
             <td>{$data['info']['version']}</td>
@@ -42,6 +42,9 @@
     {/if}
 
 {if array_key_exists('error', $data['qgis_server_info'])}
+{* The lizmap plugin is not installed or not well configured *}
+{* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
+{if $data['qgis_server']['test'] == 'OK'}
 
     <p>
         <b>{@admin.server.information.qgis.error.fetching.information@}</b><br/>
@@ -67,11 +70,11 @@
             <i>{@admin.server.information.qgis.error.fetching.information.detail.HTTP_ERROR@} {$errorcode}</i><br>
         {/if}
     </p>
-
+{/if}
 {else}
 
     <h4>{@admin.server.information.qgis.metadata@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info">
+    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server">
         <tr>
             <th>{@admin.server.information.qgis.version@}</th>
             <td>
@@ -116,7 +119,7 @@
     {hook 'QgisServerVersion', $data['qgis_server_info']['metadata']}
 
     <h4>{@admin.server.information.qgis.plugins@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info">
+    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server-plugins">
         <tr>
             <th style="width:20%;">{@admin.server.information.qgis.plugin@}</th>
             <th style="width:20%;">{@admin.server.information.qgis.plugin.version@}</th>
@@ -126,7 +129,12 @@
         </tr>
         {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
         <tr>
+            {if $version['name']}
+            {* Fixed in lizmap_server plugin 1.3.2 https://github.com/3liz/qgis-lizmap-server-plugin/commit/eb6a773ba035f877e9fa91db5ef87911a2648ee1 *}
             <th style="width:20%;">{$version['name']}</th>
+            {else}
+            <th style="width:20%;">{$name}</th>
+            {/if}
             <td style="width:20%;">
                 {if $version['repository']}
                     {if $version['commitNumber'] == 1}
