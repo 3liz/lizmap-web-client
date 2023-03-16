@@ -31,7 +31,7 @@ class Server
         // The lizmap plugin is not installed or not well configured
         // We try QGIS Server with a WMS GetCapabilities without map parameter
         if (array_key_exists('error', $lizmap_data['qgis_server_info'])) {
-            $data['qgis_server'] = $this->tryQgisServer();
+            $lizmap_data['qgis_server'] = $this->tryQgisServer();
         }
 
         $this->metadata = $lizmap_data;
