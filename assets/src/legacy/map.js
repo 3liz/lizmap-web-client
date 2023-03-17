@@ -513,10 +513,7 @@ window.lizMap = function() {
                       WIDTH: 150,
                       DPI: 96};
 
-        var legendParamsString = OpenLayers.Util.getParameterString(
-             legendParams
-            );
-        return OpenLayers.Util.urlAppend(externalAccess.url, legendParamsString);
+        return OpenLayers.Util.urlAppend(externalAccess.url, new URLSearchParams(legendParams));
     }
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
@@ -544,10 +541,8 @@ window.lizMap = function() {
     }
     if (withScale)
       legendParams['SCALE'] = map.getScale();
-    var legendParamsString = OpenLayers.Util.getParameterString(
-         legendParams
-        );
-    return OpenLayers.Util.urlAppend(lizUrls.service, legendParamsString);
+
+    return lizUrls.service + '&' + new URLSearchParams(legendParams);
   }
 
   /**
@@ -821,7 +816,7 @@ window.lizMap = function() {
           service.push(
             OpenLayers.Util.urlAppend(
               lizUrls.publicUrlList[j],
-              OpenLayers.Util.getParameterString(lizUrls.params)
+              new URLSearchParams(lizUrls.params)
             )
           );
         }
@@ -2067,9 +2062,7 @@ window.lizMap = function() {
       // Test if the link is internal
       var mediaRegex = /^(\/)?media\//;
       if(mediaRegex.test(windowLink)){
-        var mediaLink = OpenLayers.Util.urlAppend(lizUrls.media
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        )
+        var mediaLink = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
         windowLink = mediaLink+'&path=/'+windowLink;
       }
       // Open link in a new window
@@ -2082,10 +2075,7 @@ window.lizMap = function() {
       var self = $(this);
       if (self.hasClass('disabled'))
         return false;
-      var removeCacheServerUrl = OpenLayers.Util.urlAppend(
-         lizUrls.removeCache
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
+      var removeCacheServerUrl = lizUrls.removeCache + '?' + new URLSearchParams(lizUrls.params);
       var windowLink = removeCacheServerUrl + '&layer=' + self.val();
       // Open link in a new window
       if (confirm(lizDict['tree.button.removeCache'] + ' ?'))
@@ -3392,7 +3382,7 @@ window.lizMap = function() {
           layerUrls.push(
             OpenLayers.Util.urlAppend(
               lizUrls.publicUrlList[j],
-              OpenLayers.Util.getParameterString(lizUrls.params)
+              new URLSearchParams(lizUrls.params)
             )
           );
         }
@@ -5265,7 +5255,7 @@ window.lizMap = function() {
       var self = this;
 
       // Get config
-      const configRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.config, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+      const configRequest = fetch(lizUrls.config + '?' + new URLSearchParams(lizUrls.params)).then(function (response) {
         if (!response.ok) {
           throw 'Config not loaded: ' + response.status + ' ' + response.statusText
         }
@@ -5273,7 +5263,7 @@ window.lizMap = function() {
       });
 
       // Get key/value config
-      const keyValueConfigRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.keyValueConfig, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+      const keyValueConfigRequest = fetch(lizUrls.keyValueConfig + '?' + new URLSearchParams(lizUrls.params)).then(function (response) {
         if (!response.ok) {
           throw 'Key/value config not loaded: ' + response.status + ' ' + response.statusText
         }
@@ -5281,19 +5271,19 @@ window.lizMap = function() {
       });
 
       // Get WMS, WMTS, WFS capabilities
-      const WMSRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.service, OpenLayers.Util.getParameterString({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' }))).then(function (response) {
+      const WMSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' })).then(function (response) {
         if (!response.ok) {
           throw 'WMS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
         return response.text()
       });
-      const WMTSRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.service, OpenLayers.Util.getParameterString({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+      const WMTSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
         if (!response.ok) {
           throw 'WMTS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
         return response.text()
       });
-      const WFSRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.service, OpenLayers.Util.getParameterString({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+      const WFSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
         if (!response.ok) {
           throw 'WFS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
@@ -6343,7 +6333,7 @@ lizMap.events.on({
               externalService.push(
                 OpenLayers.Util.urlAppend(
                   lizUrls.publicUrlList[j],
-                  OpenLayers.Util.getParameterString(lizUrls.params)
+                  new URLSearchParams(lizUrls.params)
                 )
               );
             }

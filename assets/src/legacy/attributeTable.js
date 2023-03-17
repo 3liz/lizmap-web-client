@@ -10,9 +10,7 @@ var lizAttributeTable = function() {
             var attributeLayersActive = false;
             var attributeLayersDic = {};
             var wfsTypenameMap = {};
-            var mediaLinkPrefix = OpenLayers.Util.urlAppend(lizUrls.media
-              ,OpenLayers.Util.getParameterString(lizUrls.params)
-            )
+            var mediaLinkPrefix = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
             var startupFilter = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
                 startupFilter = true;
@@ -867,9 +865,7 @@ var lizAttributeTable = function() {
                     }
 
                     if( doQuery ){
-                        var service = OpenLayers.Util.urlAppend(lizUrls.edition
-                            ,OpenLayers.Util.getParameterString(lizUrls.params)
-                        );
+                        var service = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
                         $.post(service.replace('getFeature','linkFeatures'),{
                           features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
                           features2: p[1]['id'] + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
