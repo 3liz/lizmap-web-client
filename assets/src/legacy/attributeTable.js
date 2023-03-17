@@ -2345,16 +2345,13 @@ var lizAttributeTable = function() {
                 ){
                     if( aFilter ){
                         // Get filter token
-                        var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                            ,OpenLayers.Util.getParameterString(lizUrls.params)
-                        );
                         var sdata = {
                             service: 'WMS',
                             request: 'GETFILTERTOKEN',
                             typename: typeName,
                             filter: lFilter
                         };
-                        $.post(surl, sdata, function(result){
+                        $.post(lizUrls.service, sdata, function(result){
                             layer.params['FILTERTOKEN'] = result.token;
                             delete layer.params['FILTER'];
                             layerConfig['request_params']['filtertoken'] = result.token;
@@ -2533,16 +2530,13 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['request_params']['selection'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
 
                     // Get selection token
-                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
                     var sdata = {
                         service: 'WMS',
                         request: 'GETSELECTIONTOKEN',
                         typename: featureType,
                         ids: config.layers[featureType]['selectedFeatures'].join()
                     };
-                    $.post(surl, sdata, function(result){
+                    $.post(lizUrls.service, sdata, function(result){
                         config.layers[featureType]['request_params']['selectiontoken'] = result.token;
                         if ( layer ) {
                             //layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
@@ -2589,16 +2583,13 @@ var lizAttributeTable = function() {
                     lConfig.request_params['selection'] = featureType + ':' + lConfig.selectedFeatures.join();
 
                     // Get selection token
-                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
                     var sdata = {
                         service: 'WMS',
                         request: 'GETSELECTIONTOKEN',
                         typename: featureType,
                         ids: lConfig.selectedFeatures.join()
                     };
-                    $.post(surl, sdata, function(result){
+                    $.post(lizUrls.service, sdata, function(result){
                         lConfig.request_params['selectiontoken'] = result.token;
                         if ( layer )
                             layer.params['SELECTIONTOKEN'] = result.token;

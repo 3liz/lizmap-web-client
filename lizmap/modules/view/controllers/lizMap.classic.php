@@ -205,6 +205,7 @@ class lizMapCtrl extends jController
             'dataTableLanguage' => $bp.'assets/js/dataTables/'.jApp::config()->locale.'.json',
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
+            'service' => jUrl::get('lizmap~service:index').'?repository='.$repository.'&project='.$project,
         );
 
         // Get optional WMS public url list
