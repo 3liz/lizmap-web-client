@@ -29,9 +29,7 @@ var lizLayerActionButtons = function() {
                 // Test if the link is internal
                 var mediaRegex = /^(\/)?media\//;
                 if(mediaRegex.test(windowLink)){
-                    var mediaLink = OpenLayers.Util.urlAppend(lizUrls.media
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    )
+                    var mediaLink = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
                     windowLink = mediaLink+'&path=/'+windowLink;
                 }
                 // Open link in a new window

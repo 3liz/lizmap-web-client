@@ -627,10 +627,7 @@ export default class Action {
         }
         let regex = new RegExp('^(\.{1,2})?(/)?media/');
         if (action.icon.match(regex)) {
-            let mediaLink = OpenLayers.Util.urlAppend(
-                lizUrls.media,
-                OpenLayers.Util.getParameterString(lizUrls.params)
-            )
+            let mediaLink = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
             let imageUrl = `${mediaLink}&path=${action.icon}`;
             actionButtonHtml += `<img style="width: 20px; height: 20px;" src="${imageUrl}">`;
         }

@@ -10,9 +10,7 @@ var lizAttributeTable = function() {
             var attributeLayersActive = false;
             var attributeLayersDic = {};
             var wfsTypenameMap = {};
-            var mediaLinkPrefix = OpenLayers.Util.urlAppend(lizUrls.media
-              ,OpenLayers.Util.getParameterString(lizUrls.params)
-            )
+            var mediaLinkPrefix = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
             var startupFilter = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
                 startupFilter = true;
@@ -867,9 +865,7 @@ var lizAttributeTable = function() {
                     }
 
                     if( doQuery ){
-                        var service = OpenLayers.Util.urlAppend(lizUrls.edition
-                            ,OpenLayers.Util.getParameterString(lizUrls.params)
-                        );
+                        var service = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
                         $.post(service.replace('getFeature','linkFeatures'),{
                           features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
                           features2: p[1]['id'] + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
@@ -2345,16 +2341,13 @@ var lizAttributeTable = function() {
                 ){
                     if( aFilter ){
                         // Get filter token
-                        var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                            ,OpenLayers.Util.getParameterString(lizUrls.params)
-                        );
                         var sdata = {
                             service: 'WMS',
                             request: 'GETFILTERTOKEN',
                             typename: typeName,
                             filter: lFilter
                         };
-                        $.post(surl, sdata, function(result){
+                        $.post(lizUrls.service, sdata, function(result){
                             layer.params['FILTERTOKEN'] = result.token;
                             delete layer.params['FILTER'];
                             layerConfig['request_params']['filtertoken'] = result.token;
@@ -2533,16 +2526,13 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['request_params']['selection'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
 
                     // Get selection token
-                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
                     var sdata = {
                         service: 'WMS',
                         request: 'GETSELECTIONTOKEN',
                         typename: featureType,
                         ids: config.layers[featureType]['selectedFeatures'].join()
                     };
-                    $.post(surl, sdata, function(result){
+                    $.post(lizUrls.service, sdata, function(result){
                         config.layers[featureType]['request_params']['selectiontoken'] = result.token;
                         if ( layer ) {
                             //layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
@@ -2589,16 +2579,13 @@ var lizAttributeTable = function() {
                     lConfig.request_params['selection'] = featureType + ':' + lConfig.selectedFeatures.join();
 
                     // Get selection token
-                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
                     var sdata = {
                         service: 'WMS',
                         request: 'GETSELECTIONTOKEN',
                         typename: featureType,
                         ids: lConfig.selectedFeatures.join()
                     };
-                    $.post(surl, sdata, function(result){
+                    $.post(lizUrls.service, sdata, function(result){
                         lConfig.request_params['selectiontoken'] = result.token;
                         if ( layer )
                             layer.params['SELECTIONTOKEN'] = result.token;
