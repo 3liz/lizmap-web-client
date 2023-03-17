@@ -15,8 +15,6 @@ import WMS from '../modules/WMS.js';
 
 import Utils from '../modules/Utils.js';
 
-import WKT from 'ol/format/WKT';
-
 window.lizMap = function() {
   /**
    * PRIVATE Property: config
@@ -549,10 +547,7 @@ window.lizMap = function() {
     var legendParamsString = OpenLayers.Util.getParameterString(
          legendParams
         );
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
-    return OpenLayers.Util.urlAppend(service, legendParamsString);
+    return OpenLayers.Util.urlAppend(lizUrls.service, legendParamsString);
   }
 
   /**
@@ -819,9 +814,7 @@ window.lizMap = function() {
   function getLayerTree(nested,pNode) {
     pNode.children = [];
 
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-      ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
+    var service = lizUrls.service;
     if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
         service = [];
         for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
@@ -3204,15 +3197,11 @@ window.lizMap = function() {
                     var parentDiv = self.parent();
 
                     // Fetch queries
-                    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                      , OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
-
                     // Keep `rConfigLayer` in array with same order that fetch queries
                     // for later user when Promise.allSettled resolves
                     rConfigLayerAll.push(rConfigLayer);
                     popupChidrenRequests.push(
-                      fetch(service, {
+                      fetch(lizUrls.service, {
                         "method": "POST",
                         "body": new URLSearchParams(wmsOptions)
                       }).then(function (response) {
@@ -3379,12 +3368,8 @@ window.lizMap = function() {
 
       }
 
-      var fiurl = OpenLayers.Util.urlAppend(
-        lizUrls.wms,
-        OpenLayers.Util.getParameterString(lizUrls.params)
-      )
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: fiurl,
+            url: lizUrls.service,
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
@@ -3532,16 +3517,13 @@ window.lizMap = function() {
                   && lConfig['request_params']['filter'] != "" ) {
 
                     // Get filter token
-                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
                     var sdata = {
                         service: 'WMS',
                         request: 'GETFILTERTOKEN',
                         typename: lName,
                         filter: lConfig['request_params']['filter']
                     };
-                    $.post(surl, sdata, function(result){
+                    $.post(lizUrls.service, sdata, function(result){
                         filter.push(result.token);
                         info.vendorParams['filtertoken'] = filter.join(';');
                         info.vendorParams['filter'] = null;
@@ -4095,10 +4077,7 @@ window.lizMap = function() {
     if ( proj in Proj4js.defs ) {
       aCallback( proj );
     } else {
-      $.get( OpenLayers.Util.urlAppend(
-          lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        ), {
+      $.get( lizUrls.service, {
           'REQUEST':'GetProj4'
          ,'authid': proj
         }, function ( aText ) {
@@ -4341,9 +4320,7 @@ window.lizMap = function() {
           wfsOptions['GEOMETRYNAME'] = geometryName;
       }
 
-      getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
-              ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
+      getFeatureUrlData['url'] = lizUrls.service;
       getFeatureUrlData['options'] = wfsOptions;
 
       return getFeatureUrlData;
@@ -4422,10 +4399,7 @@ window.lizMap = function() {
               callFeatureDataCallBacks(poolId, data.features);
               $('body').css('cursor', 'auto');
           } else {
-              var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                    ,OpenLayers.Util.getParameterString(lizUrls.params)
-              );
-              $.post(service, {
+              $.post(lizUrls.service, {
                   'SERVICE':'WFS'
                  ,'VERSION':'1.0.0'
                  ,'REQUEST':'DescribeFeatureType'
@@ -4605,10 +4579,7 @@ window.lizMap = function() {
       };
 
       // Query the server
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      $.post(service, wmsOptions, function(data) {
+      $.post(lizUrls.service, wmsOptions, function(data) {
           aCallback(data);
       });
 
@@ -4672,12 +4643,9 @@ window.lizMap = function() {
     };
 
     // Query the server
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-      ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
-    $.post(service, wmsOptions, function(data) {
+    $.post(lizUrls.service, wmsOptions, function(data) {
       if(aCallback){
-        aCallback(service, wmsOptions, data);
+        aCallback(lizUrls.service, wmsOptions, data);
       }
     });
   }
@@ -4936,16 +4904,13 @@ window.lizMap = function() {
       config.layers[layername]['request_params']['exp_filter'] = filter;
 
       // Get WMS filter token ( used via GET in GetMap or GetPrint )
-      var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
       var sdata = {
         service: 'WMS',
         request: 'GETFILTERTOKEN',
         typename: layername,
         filter: lfilter
       };
-      $.post(surl, sdata, function(result){
+      $.post(lizUrls.service, sdata, function(result){
         var filtertoken = result.token;
         // Add OpenLayers layer parameter
         delete layer.params['FILTER'];
@@ -5299,10 +5264,6 @@ window.lizMap = function() {
     init: function() {
       var self = this;
 
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        , OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-
       // Get config
       const configRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.config, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
         if (!response.ok) {
@@ -5320,19 +5281,19 @@ window.lizMap = function() {
       });
 
       // Get WMS, WMTS, WFS capabilities
-      const WMSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' }))).then(function (response) {
+      const WMSRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.service, OpenLayers.Util.getParameterString({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' }))).then(function (response) {
         if (!response.ok) {
           throw 'WMS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
         return response.text()
       });
-      const WMTSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+      const WMTSRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.service, OpenLayers.Util.getParameterString({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
         if (!response.ok) {
           throw 'WMTS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
         return response.text()
       });
-      const WFSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+      const WFSRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.service, OpenLayers.Util.getParameterString({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
         if (!response.ok) {
           throw 'WFS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
@@ -6375,9 +6336,7 @@ lizMap.events.on({
 
       if('lizmapExternalBaselayers' in evt.config){
 
-        var externalService = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
+        var externalService = lizUrls.service;
         if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
             externalService = [];
             for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
