@@ -178,7 +178,7 @@ var lizSearch = function() {
             case 'nominatim':
                 if ( 'url' in searchConfig ){
                     service = OpenLayers.Util.urlAppend(searchConfig.url
-                                ,OpenLayers.Util.getParameterString(lizUrls.params)
+                                ,new URLSearchParams(lizUrls.params)
                               );
                 }
                 break;
