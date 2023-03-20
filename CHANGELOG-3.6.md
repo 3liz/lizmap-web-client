@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Fixed
+
+* Add a check for requesting a QGIS server WMS GetFeatureInfo whe the layer name was not the same as in the filter
+* Display the reverse geometry button only for linestrings and polygons, not for points
+* UX - Transform `_` and `-` to a space when creating a repository
+* Improve QGIS server detection and debugging when the Lizmap server plugin is not installed
+
 ## 3.6.2 - 2022-02-28
 
 ### Added
