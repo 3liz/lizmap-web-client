@@ -38,6 +38,10 @@
     * set main map rotation
     * set DPI
 
+### Fixed
+
+* Display the reverse geometry button only for linestrings and polygons, not for points
+
 ### Changed
 
 * Avoid downloading default project image multiple times. This improves first load of projects page
@@ -55,9 +59,10 @@
 
 ### Backend
 
+* Some JavaScript code cleanup
 * Update some JavaScript dependencies
 * Remove some old code about QGIS Server 2
-* Update the OpenLayers library to version 7.1
+* Update the OpenLayers library to version 7.3.0
 * Fix some issues when deployed with Docker
 * Bump minimum version Lizmap QGIS server plugin to 1.3.1
 * Switch to PHP 8.1 in the docker image
