@@ -20,6 +20,7 @@ class projectConfigTest extends TestCase
         $expected->tooltipLayers = new stdClass();
         $expected->loginFilteredLayers = new stdClass();
         $expected->filter_by_polygon = new stdClass();
+        $expected->metadata = new stdClass();
         return array(
             array($json, $expected),
         );

@@ -252,6 +252,22 @@ class Project
         return $this->qgis->getQgisProjectVersion();
     }
 
+    /**
+     * Get the target version of Lizmap Web Client set in the QGIS desktop plugin.
+     *
+     * @return int Target version of Lizmap Web Client. Default to 30200 if the CFG is too old.
+     */
+    public function getLizmapWebClientTargetVersion()
+    {
+        $pluginMetadata = $this->cfg->getPluginMetadata();
+        if (!is_null($pluginMetadata)) {
+            return $pluginMetadata->lizmap_web_client_target_version;
+        }
+        // The CFG is very old, at least older than QGIS plugin 3.2
+        // Same value as in lizmap/www/assets/js/map.js
+        return 30200;
+    }
+
     public function getRelations()
     {
         return $this->qgis->getRelations();
@@ -2008,6 +2024,31 @@ class Project
         }
 
         return $dockable;
+    }
+
+    /**
+     * Check if the project needs an update which lead to an error.
+     *
+     * @return bool true if the project needs to be updated in the QGIS desktop plugin
+     */
+    public function needsUpdateError()
+    {
+        return false;
+    }
+
+    /**
+     * Check if the project needs an update which lead to an warning.
+     *
+     * @return bool true if the project needs to be updated in the QGIS desktop plugin
+     */
+    public function needsUpdateWarning()
+    {
+        $requiredTargetLwcVersion = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
+        if ($this->getLizmapWebClientTargetVersion() < $requiredTargetLwcVersion) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
