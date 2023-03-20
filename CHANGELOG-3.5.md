@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Important
+
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.0
+* Minimum QGIS server needed 3.10
+
+### Fixed
+
+* Add a check for requesting a QGIS server WMS GetFeatureInfo whe the layer name was not the same as in the filter
+* Display the reverse geometry button only for linestrings and polygons, not for points
+* UX - Transform `_` and `-` to a space when creating a repository
+
 ## 3.5.11 - 2023-02-28
 
 ### Important
