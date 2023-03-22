@@ -66,6 +66,10 @@ function launchScript() {
     su $APP_USER -c "php $APPDIR/scripts/script.php $*"
 }
 
+function launchConsole() {
+    su $APP_USER -c "php $APPDIR/console.php $*"
+}
+
 function setRights() {
     USER="$1"
     GROUP="$2"
@@ -213,6 +217,8 @@ case $COMMAND in
         launchInstaller;;
     script)
         launchScript ${*:2};;
+    console)
+        launchConsole ${*:2};;    
     rights)
         setRights;;
     composer_install)
