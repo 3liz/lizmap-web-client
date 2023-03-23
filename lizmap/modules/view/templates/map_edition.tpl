@@ -61,6 +61,7 @@
                         data-original-title="{@view~edition.geomtool.restartdrawing.title@}">
                         <i class="icon-refresh"></i>
                     </button>
+                    <lizmap-paste-geom data-original-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-geom>
                     <form id="edition-point-coord-form" class="form-horizontal">
                         <fieldset>
                             <div id="edition-point-coord-form-group" class="jforms-table-group">
