@@ -537,7 +537,7 @@ class Proxy
 
         $client = new Client(array(
             // You can set any number of default request options.
-            'timeout' => 2.0,
+            'timeout' => max(10.0, floatval(ini_get('max_execution_time')) - 5.0),
         ));
 
         $request = new Request(

@@ -1181,6 +1181,45 @@ describe('Request service', function () {
         })
     })
 
+    it('WFS GetFeature with wfsOutputExtension', function () {
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'OUTPUTFORMAT': 'CSV',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('text/csv')
+            expect(resp.body).to.contain('gml_id')
+            expect(resp.body).to.contain('selection_polygon.1')
+            expect(resp.body).to.contain('selection_polygon.2')
+        })
+
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'OUTPUTFORMAT': 'KML',
+            },
+        }).then((resp) => {
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.contain('application/vnd.google-earth.kml+xml')
+            expect(resp.body).to.contain('Folder')
+            expect(resp.body).to.contain('Placemark')
+            expect(resp.body).to.contain('<SimpleData name="gml_id">selection_polygon.1</SimpleData>')
+            expect(resp.body).to.contain('<SimpleData name="gml_id">selection_polygon.2</SimpleData>')
+        })
+    })
+
     it('Version parameter is mandatory except for GetCapabilities request', function () {
         cy.request({
             method: 'POST',
