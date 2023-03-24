@@ -15,8 +15,8 @@ The container deploys one Lizmap instance and may run php-fpm on the command lin
 - `LIZMAP_CACHEEXPIRATION`: Lizmap cache expiration time 
 - `LIZMAP_CACHEREDISDB`:  Redis Database index used 
 - `LIZMAP_CACHEREDISKEYPREFIX`: the Redis key prefix to use
-- `LIZMAP_USER_ID`: Id of the user used to run Lizmap
-- `LIZMAP_GROUP_ID`: Id of the group used to run Lizmap
+- `LIZMAP_USER_ID`: ID of the user used to run Lizmap
+- `LIZMAP_GROUP_ID`: ID of the group used to run Lizmap
 - `LIZMAP_HOME`: The root path for web files used from the web server
 - `LIZMAP_THEME`: Lizmap theme to use
 - `LIZMAP_ADMIN_LOGIN`: Login of the admin user
@@ -38,7 +38,7 @@ root <LIZMAP_HOME>/www
 
 ### Note about configuration snippets.
 
-Configuration files may be splitted into snippets without tampering with the main configuration files. They must end with `.ini.php` and be valid php ini files.
+Configuration files may be split into snippets without tampering with the main configuration files. They must end with `.ini.php` and be valid php ini files.
 
 Configuration snippets are  searched in the following directories:
 
@@ -157,7 +157,7 @@ server {
 
 - Mount `/www/lizmap/lizmap-modules/` at a location on the host or a from a named volume.
 - Get the archive of the lizmap module and extract it in the `/www/lizmap/lizmap-module/` or 
-  Add the module configuration snippet in the appropriate snippets directory (see the module documentation for  the configuration files to modify)
+  Add the module configuration snippet in the appropriate snippets' directory (see the module documentation for  the configuration files to modify)
 - Follow module documentation on how to activate the module in lizmap.
 - Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
 
@@ -165,13 +165,13 @@ server {
 
 - Mount `/www/lizmap/my-packages/` at a location on the host or a from a named volume.
 - From inside the container, install your module with the command `lizmap-install-module <package-name>`
-- Add the module configuration snippet in the appropriate snippets directory (see the module documentation for  the configuration files to modify)
+- Add the module configuration snippet in the appropriate snippets' directory (see the module documentation for  the configuration files to modify)
 - Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
 
 ### Install for module development
 
 - Mount `/www/lizmap/lizmap-modules/` at the location of your module sources.
-  Add the module configuration snippet in the appropriate snippets directory (see the module documentation for  the configuration files to modify)
+  Add the module configuration snippet in the appropriate snippets' directory (see the module documentation for  the configuration files to modify)
 - Follow module documentation on how to activate the module in lizmap.
 - Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
 
@@ -179,6 +179,3 @@ server {
 
 You may ship preinstalled modules in your image inherited from lizmap image. Simply
 run the following command in your dockerfile: `lizmap-install-module <package-name>` 
-
-
-
