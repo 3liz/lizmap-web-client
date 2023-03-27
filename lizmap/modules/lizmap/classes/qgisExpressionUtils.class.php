@@ -155,40 +155,37 @@ class qgisExpressionUtils
     {
         // Evaluate the expression by qgis
         $project = $layer->getProject();
-        $plugins = $project->getQgisServerPlugins();
-        if (array_key_exists('Lizmap', $plugins)) {
-            $params = array(
-                'service' => 'EXPRESSION',
-                'request' => 'Evaluate',
-                'map' => $project->getRelativeQgisPath(),
-                'layer' => $layer->getName(),
-                'expressions' => json_encode($expressions),
-            );
-            if ($form_feature) {
-                $params['feature'] = json_encode($form_feature);
-                $params['form_scope'] = 'true';
-            }
+        $params = array(
+            'service' => 'EXPRESSION',
+            'request' => 'Evaluate',
+            'map' => $project->getRelativeQgisPath(),
+            'layer' => $layer->getName(),
+            'expressions' => json_encode($expressions),
+        );
+        if ($form_feature) {
+            $params['feature'] = json_encode($form_feature);
+            $params['form_scope'] = 'true';
+        }
 
-            // Request evaluate expression
-            $json = self::request($params, $project);
-            if (!$json) {
-                return null;
-            }
-            if (property_exists($json, 'status')
-                && $json->status == 'success'
-                && property_exists($json, 'results')) {
-                // Get results
-                return $json->results[0];
-            }
-            if (property_exists($json, 'data')) {
-                // TODO parse errors
-                // if (property_exists($json, 'errors')) {
-                // }
-                jLog::log($json->data, 'error');
-            } else {
-                // Data not well formed
-                jLog::log(json_encode($json), 'error');
-            }
+        // Request evaluate expression
+        $json = self::request($params, $project);
+        if (!$json) {
+            return null;
+        }
+        if (property_exists($json, 'status')
+            && $json->status == 'success'
+            && property_exists($json, 'results')) {
+            // Get results
+            return $json->results[0];
+        }
+        if (property_exists($json, 'data')) {
+            // TODO parse errors
+            // if (property_exists($json, 'errors')) {
+            // }
+            jLog::log($json->data, 'error');
+        } else {
+            // Data not well formed
+            jLog::log(json_encode($json), 'error');
         }
 
         return null;
@@ -209,29 +206,24 @@ class qgisExpressionUtils
     public static function getFeatureWithFormScope($layer, $expression, $form_feature, $fields, $edition = false)
     {
         $project = $layer->getProject();
-        $plugins = $project->getQgisServerPlugins();
-        if (array_key_exists('Lizmap', $plugins)) {
-            // build parameters
-            $params = array(
-                'service' => 'EXPRESSION',
-                'request' => 'getFeatureWithFormScope',
-                'map' => $project->getRelativeQgisPath(),
-                'layer' => $layer->getName(),
-                'filter' => self::updateExpressionByUser($layer, $expression, $edition),
-                'form_feature' => json_encode($form_feature),
-                'fields' => implode(',', $fields),
-            );
+        // build parameters
+        $params = array(
+            'service' => 'EXPRESSION',
+            'request' => 'getFeatureWithFormScope',
+            'map' => $project->getRelativeQgisPath(),
+            'layer' => $layer->getName(),
+            'filter' => self::updateExpressionByUser($layer, $expression, $edition),
+            'form_feature' => json_encode($form_feature),
+            'fields' => implode(',', $fields),
+        );
 
-            // Request getFeatureWithFormsScope
-            $json = self::request($params, $project);
-            if (!$json || !property_exists($json, 'features')) {
-                return array();
-            }
-
-            return $json->features;
+        // Request getFeatureWithFormsScope
+        $json = self::request($params, $project);
+        if (!$json || !property_exists($json, 'features')) {
+            return array();
         }
 
-        return array();
+        return $json->features;
     }
 
     /**
