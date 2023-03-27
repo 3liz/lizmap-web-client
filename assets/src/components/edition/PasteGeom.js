@@ -37,13 +37,18 @@ export default class pasteGeom extends HTMLElement {
     connectedCallback() {
         this._template = () => 
         html`
-        <button class='btn btn-small' ?disabled=${!mainLizmap.featureStorage.get().length} @click=${() => this._paste()}>
+        <button class='btn btn-small' data-original-title='${lizDict['edition.geom.paste']}' ?disabled=${!mainLizmap.featureStorage.get().length} @click=${() => this._paste()}>
             <svg>
                 <use xlink:href="#mActionEditPaste"></use>
             </svg>
         </button>`;
 
         render(this._template(), this);
+
+        // Add tooltip on buttons
+        $('button', this).tooltip({
+            placement: 'top'
+        });
 
         mainEventDispatcher.addListener(
             () => {
