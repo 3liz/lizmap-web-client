@@ -9,6 +9,7 @@ import Digitizing from './components/Digitizing.js';
 import OverviewMap from './components/OverviewMap.js';
 import FeatureToolbar from './components/FeatureToolbar.js';
 import ReverseGeom from './components/edition/ReverseGeom.js';
+import PasteGeom from './components/edition/PasteGeom.js';
 import ActionSelector from './components/ActionSelector.js';
 import Print from './components/Print.js';
 import FullScreen from './components/FullScreen.js';
@@ -30,6 +31,7 @@ lizMap.events.on({
         }
         window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
         window.customElements.define('lizmap-reverse-geom', ReverseGeom);
+        window.customElements.define('lizmap-paste-geom', PasteGeom);
         window.customElements.define('lizmap-action-selector', ActionSelector);
         window.customElements.define('lizmap-print', Print);
         window.customElements.define('lizmap-fullscreen', FullScreen);

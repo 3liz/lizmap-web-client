@@ -4104,25 +4104,35 @@ window.lizMap = function() {
    * Returns:
    * {jQuery Object} The message added.
    */
-  function mAddMessage( aMessage, aType, aClose ) {
+  function mAddMessage( aMessage, aType, aClose, aTimeout ) {
     var mType = 'info';
     var mTypeList = ['info', 'error', 'success'];
     var mClose = false;
 
-    if ( $.inArray(aType, mTypeList) != -1 )
+    if ( mTypeList.includes(aType) ){
       mType = aType;
+    }
 
-    if ( aClose )
+    if ( aClose ){
       mClose = true;
+    }
 
     var html = '<div class="alert alert-block alert-'+mType+' fade in" data-alert="alert">';
-    if ( mClose )
+    if ( mClose ){
       html += '<a class="close" data-dismiss="alert" href="#">×</a>';
+    }
     html += '<p>'+aMessage+'</p>';
     html += '</div>';
 
     var elt = $(html);
     $('#message').append(elt);
+
+    if (aTimeout) {
+      window.setTimeout(() => {
+        elt.remove();
+      }, aTimeout)
+    }
+
     return elt;
   }
 
@@ -5025,8 +5035,8 @@ window.lizMap = function() {
     /**
      * Method: addMessage
      */
-    addMessage: function( aMessage, aType, aClose ) {
-      return mAddMessage( aMessage, aType, aClose );
+    addMessage: function( aMessage, aType, aClose, aTimeout ) {
+      return mAddMessage( aMessage, aType, aClose, aTimeout );
     },
 
     /**
