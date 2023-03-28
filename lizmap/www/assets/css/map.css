@@ -2980,3 +2980,14 @@ lizmap-fullscreen button svg {
   height: 20px;
   margin: auto;
 }
+
+lizmap-paste-geom {
+  display: inline-block;
+}
+
+lizmap-paste-geom svg {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: text-top;
+}
