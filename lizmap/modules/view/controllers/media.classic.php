@@ -360,7 +360,6 @@ class mediaCtrl extends jController
         // Prepare the file to return
         $rep = $this->getResponse('binary');
         $rep->doDownload = false;
-        $rep->fileName = $abspath;
 
         // Get the name of the file
         $name = $path_parts['basename'].'.'.$path_parts['extension'];
