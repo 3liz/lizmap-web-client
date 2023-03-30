@@ -1,38 +1,17 @@
-FROM ubuntu:20.04
+ARG php_version=8.1
 
-LABEL Maintainer="3Liz"
+FROM 3liz/liz-php-cli:${php_version}
 
-ARG COMPOSER_VERSION=2.3.7
-ARG PHP_VERSION=8.1
-  
-ENV PHP_VERSION=${PHP_VERSION}
-
-RUN set -eux; \
-    export DEBIAN_FRONTEND=noninteractive && dpkg-divert --local --rename --add /sbin/initctl; \
-    apt-get update; \
-    apt-get upgrade -y; \
-    apt-get -y install apt-transport-https lsb-release ca-certificates curl wget; \
-    apt-get update; \
-    apt-get clean;
+ARG php_version
+ARG DEBIAN_FRONTEND=noninteractive
+ENV PHP_VERSION=${php_version}
 
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y --no-install-recommends \
         make \
         git \
         zip \
-        php${PHP_VERSION}-cli \
-        php${PHP_VERSION}-zip \
-        php${PHP_VERSION}-curl \
-        php${PHP_VERSION}-intl \
-        php${PHP_VERSION}-mbstring \
-        php${PHP_VERSION}-xml \
-    ; sed -i "/^display_errors =/c\display_errors = On" /etc/php/${PHP_VERSION}/cli/php.ini \
     ; apt-get clean
 
 #install nodejs and npm to build js files
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs
-
-## Install Composer
-RUN wget -O /bin/composer https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar \
-    && chmod +x /bin/composer
-
