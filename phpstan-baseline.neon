@@ -1095,7 +1095,7 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$fileName\\.$#"
-			count: 5
+			count: 4
 			path: lizmap/modules/view/controllers/media.classic.php
 
 		-
