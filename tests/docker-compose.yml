@@ -43,6 +43,7 @@ services:
       - LIZMAP_ADMIN_LOGIN
       - LIZMAP_ADMIN_EMAIL
       - LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE
+      - ECHO_OGC_ORIGINAL_REQUEST=on
     volumes:
       - "../:/srv/lzm/"
       - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
