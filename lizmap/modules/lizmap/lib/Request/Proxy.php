@@ -507,6 +507,19 @@ class Proxy
         $options = self::buildOptions($options, $method, $debug);
         list($url, $options) = self::buildHeaders($url, $options);
 
+        if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
+            if (self::hasEchoInBody($options['body'])) {
+                $content = self::getEchoFromRequest($url, $options['body']);
+
+                return array(
+                    $content,
+                    'text/json',
+                    200,
+                );
+            }
+            self::logRequestToEcho($url, $options['body']);
+        }
+
         // Proxy http backend : use curl or file_get_contents
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
@@ -530,6 +543,19 @@ class Proxy
     {
         $options = self::buildOptions($options, 'get', null);
         list($url, $options) = self::buildHeaders($url, $options);
+        if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
+            if (self::hasEchoInBody($options['body'])) {
+                $content = self::getEchoFromRequest($url, $options['body']);
+                $stream = \GuzzleHttp\Psr7\Utils::streamFor($content);
+
+                return new ProxyResponse(
+                    200,
+                    'text/json',
+                    $stream
+                );
+            }
+            self::logRequestToEcho($url, $options['body']);
+        }
 
         if ($options['referer']) {
             $options['headers']['Referer'] = $options['referer'];
@@ -941,6 +967,44 @@ class Proxy
         $appContext->eventNotify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
 
         return true;
+    }
+
+    public static function hasEchoInBody(string $body)
+    {
+        $encodedEchoParam = '%5F%5Fecho%5F%5F=&';
+
+        return strstr($body, $encodedEchoParam);
+    }
+
+    public static function logRequestToEcho(string $url, string $body)
+    {
+        $md5 = md5($url.'|'.$body);
+        \jLog::log($md5."\t".$url.'?'.$body, 'echoproxy');
+    }
+
+    public static function getEchoFromRequest(string $url, string $body): string
+    {
+        $encodedEchoParam = '%5F%5Fecho%5F%5F=&';
+        $md5ToSearch = md5($url.'|'.str_replace($encodedEchoParam, '', $body));
+
+        $logPath = \jApp::varPath('log/echoproxy.log');
+        if (is_file($logPath)) {
+            // Only display content if the file is small to avoid memory issues
+            if (filesize($logPath) > 512000) {
+                return 'toobig';
+            }
+            $nLastLines = array_slice(file($logPath), -50);
+            $md5Assoc = array();
+            foreach ($nLastLines as $line) {
+                $words = explode("\t", $line);
+                $md5Assoc[$words[3]] = $words[4];
+            }
+
+            return $md5Assoc[$md5ToSearch];
+        }
+
+        return 'unfound';
+        // print_r($md5Assoc);
     }
 }
 
