@@ -1,2 +1,2 @@
 <?php require (__DIR__.'/../application.init.php');
-\Jelix\Scripts\Configure::launch();
+exit(\Jelix\Scripts\Configure::launch());

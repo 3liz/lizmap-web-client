@@ -1,4 +1,4 @@
-import {arrayBufferToBase64} from '../support/function.js'
+import {arrayBufferToBase64, serverMetadata} from '../support/function.js'
 
 describe('Legend tests', function () {
 
@@ -31,15 +31,24 @@ describe('Legend tests', function () {
             cy.wait('@legend').then((interception) => {
                 expect(interception.response.headers['content-type'], 'expect mime type to be image/png').to.equal('image/png')
 
-                const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
+                serverMetadata().then(metadataResponse => {
+                    const responseBodyAsBase64 = arrayBufferToBase64(interception.response.body)
 
-                let expected_path = 'images/treeview/' + check +'.png'
-                if (Cypress.env('QGIS_SERVER_INT') <= 31600 && check == 'layer_legend_categorized'){
-                    expected_path = 'images/treeview/' + check +'_316.png'
-                }
+                    // Default image for QGIS 3.22
+                    let expected_path = 'images/treeview/' + check +'.png'
 
-                cy.fixture(expected_path).then((image) => {
-                    expect(image, 'expect legend to be displayed').to.equal(responseBodyAsBase64)
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 31700 && check == 'layer_legend_categorized') {
+                        // previous image of the legend which was working for QGIS 3.16
+                        expected_path = 'images/treeview/layer_legend_categorized_316.png';
+                    }
+
+                    // With QGIS 3.28 or 3.22.15, we do not test anymore : https://github.com/qgis/QGIS/pull/50256
+                    // Which has been backported in 3.22.15
+                    if (metadataResponse.body.qgis_server_info.metadata.version_int < 32215) {
+                        cy.fixture(expected_path).then((image) => {
+                            expect(image, 'expect legend to be compared with ' + expected_path).to.equal(responseBodyAsBase64)
+                        })
+                    }
                 })
             })
         }

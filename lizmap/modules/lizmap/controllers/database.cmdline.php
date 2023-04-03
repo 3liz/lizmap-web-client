@@ -62,6 +62,8 @@ class databaseCtrl extends jControllerCmdLine
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse();
         $logMigrator = new \Lizmap\Logger\MigratorFromSqlite();
+        $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
+        In lizmap folder, use 'php console.php database:migratelog'\n\n");
 
         try {
             $res = $logMigrator->migrateLog('lizlog', $this->option('-resetbefore'));
@@ -103,6 +105,8 @@ class databaseCtrl extends jControllerCmdLine
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse();
         $logMigrator = new \Lizmap\Users\MigratorFromSqlite();
+        $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
+        In lizmap folder, use 'php console.php database:migrateusers'\n\n");
 
         try {
             $res = $logMigrator->migrateUsersAndRights($this->option('-resetbefore'));

@@ -315,7 +315,7 @@ class WFSRequest extends OGCRequest
         // add outputformat if not provided
         $output = $this->param('outputformat');
         if (!$output) {
-            $this->params['outputformat'] = 'GML2';
+            $output = $this->params['outputformat'] = 'GML2';
         }
 
         // Get Lizmap layer config
@@ -406,25 +406,7 @@ class WFSRequest extends OGCRequest
 
         // Else pass query to QGIS Server
         // Get remote data
-        $response = $this->request(true);
-        $code = $response->code;
-        $mime = $response->mime;
-        $data = $response->data;
-
-        if ($mime == 'text/plain' && strtolower($this->param('outputformat')) == 'geojson') {
-            $mime = 'application/vnd.geo+json; charset=utf-8';
-            $layer = $this->project->findLayerByAnyName($this->requestedTypename());
-            if ($layer != null) {
-                /** @var \qgisVectorLayer $layer The QGIS vector layer instance */
-                $layer = $this->project->getLayer($layer->id);
-                $aliases = $layer->getAliasFields();
-                $layer = json_decode($data);
-                $layer->aliases = (object) $aliases;
-                $data = json_encode($layer);
-            }
-        }
-
-        return new OGCResponse($code, $mime, $data);
+        return $this->request(true, true);
     }
 
     /**
@@ -634,14 +616,37 @@ class WFSRequest extends OGCRequest
             }
         }
 
+        $layerSrid = $this->qgisLayer->getSrid();
+        $srid = $this->qgisLayer->getSrid();
+        if (array_key_exists('srsname', $params)) {
+            $srsname = $params['srsname'];
+            if (!empty($srsname)) {
+                // SRSNAME parameter is not empty
+                // extracting srid
+                $exp_srsname = explode(':', $srsname);
+                $srsname_id = end($exp_srsname);
+                if (ctype_digit($srsname_id)) {
+                    $srid = intval($srsname_id);
+                } else {
+                    return '';
+                }
+            }
+        }
+
         // Build the SQL
         $xmin = trim($bboxitem[0]);
         $ymin = trim($bboxitem[1]);
         $xmax = trim($bboxitem[2]);
         $ymax = trim($bboxitem[3]);
+
+        $makeEnvelopeSql = 'ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$srid.')';
+        if ($srid != $layerSrid) {
+            $makeEnvelopeSql = 'ST_Transform('.$makeEnvelopeSql.', '.$layerSrid.')';
+        }
+
         $sql = ' AND ST_Intersects("';
         $sql .= $this->datasource->geocol;
-        $sql .= '", ST_MakeEnvelope('.$xmin.','.$ymin.','.$xmax.','.$ymax.', '.$this->qgisLayer->getSrid().'))';
+        $sql .= '", '.$makeEnvelopeSql.')';
 
         return $sql;
     }
@@ -764,16 +769,20 @@ class WFSRequest extends OGCRequest
         $cnx = $this->qgisLayer->getDatasourceConnection();
         // Get datasource
         $this->datasource = $this->qgisLayer->getDatasourceParameters();
-
-        // Get fields
-        $wfsFields = $this->qgisLayer->getWfsFields();
-
         // Get Db fields
         try {
             $dbFields = $this->qgisLayer->getDbFieldList();
         } catch (\Exception $e) {
             return $this->getfeatureQgis();
         }
+
+        // Verifying that the datasource key is a db fields
+        if (!array_key_exists($this->datasource->key, $dbFields)) {
+            return $this->getfeatureQgis();
+        }
+
+        // Get WFS fields
+        $wfsFields = $this->qgisLayer->getWfsFields();
 
         // Verifying that every wfs fields are db fields
         // if not return getfeatureQgis
@@ -859,36 +868,16 @@ class WFSRequest extends OGCRequest
             return $this->getfeatureQgis();
         }
 
-        // To avoid memory issues, we do not ask PostgreSQL for a unique big line containing the geojson
-        // but asked for a feature in JSON per line
-        // the we store the data into a file
-        $path = tempnam(sys_get_temp_dir(), 'wfs_'.session_id().'_');
-        $fd = fopen($path, 'w');
-        fwrite($fd, '
-{
-  "type": "FeatureCollection",
-  "features": [
-');
-        $virg = '';
-        foreach ($q as $d) {
-            fwrite($fd, $virg.$d->geojson);
-            $virg = ',
-';
-        }
-        fwrite($fd, '
-]}
-');
-        fclose($fd);
+        return new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', (function () use ($q) {
+            yield '{"type": "FeatureCollection", "features": [';
+            $virg = '';
+            foreach ($q as $d) {
+                yield $virg.$d->geojson;
+                $virg = ',';
+            }
 
-        // Return response
-        /*return (object) array(
-            'code' => '200',
-            'mime' => 'application/vnd.geo+json; charset=utf-8',
-            'file' => true, // we use this to inform controler postgres has been used
-            'data' => $path,
-            'cached' => false,
-        );*/
-        return new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', 'file://'.$path);
+            yield ']}';
+        })());
     }
 
     /**

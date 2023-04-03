@@ -66,3 +66,17 @@ Toolbar buttons
 ul.ui-autocomplete.ui-menu {
     z-index: 3000 !important;
 }
+
+
+/*
+form filter: restrict the height of the combo box list filter view
+*/
+div.liz-filter-field-box p {
+  max-height: 25vh;
+  overflow-y: auto;
+  overflow-y: scroll;
+  padding-left: 5px;
+}
+div.liz-filter-field-box p label {
+    font-size: 12px;
+}

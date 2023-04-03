@@ -13,7 +13,7 @@ import {extend} from 'ol/extent';
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 
-import WKT from 'ol/format/WKT';
+import Utils from '../modules/Utils.js';
 
 window.lizMap = function() {
   /**
@@ -61,11 +61,6 @@ window.lizMap = function() {
    * {Object({key:<OpenLayers.Control>})} Dictionary of controls
    */
   var controls = {};
-  /**
-   * PRIVATE Property: printCapabilities
-   * {Object({scales:[Float],layouts:[Object]})} Print capabilities
-   */
-  var printCapabilities = {scales:[],layouts:[]};
   /**
    * PRIVATE Property: tree
    * {object} The layer's tree
@@ -369,6 +364,10 @@ window.lizMap = function() {
    */
   function updateContentSize(){
 
+    if (document.querySelector('body').classList.contains('print_popup')) {
+      return;
+    }
+
     updateMobile();
 
     // calculate height height
@@ -462,28 +461,6 @@ window.lizMap = function() {
     map.updateSize();
     map.setCenter(center);
     map.baseLayer.redraw();
-
-    updateMiniDockSize();
-  }
-
-  /**
-   * PRIVATE function: updateMiniDockSize
-   * update the minidock size
-   */
-  function updateMiniDockSize() {
-      if ( $('#mini-dock .tab-pane:visible').length == 0 )
-        return 0;
-      // the mini-dock menu-content visible
-      var mdmcv = $('#mini-dock .tab-pane:visible h3 ~ .menu-content:first');
-      mdmcv.css( 'max-height', '100%' )
-      var h = $('#mini-dock').height();
-      h -= $('#mini-dock .tab-pane:visible h3').height();
-      h -= (parseInt(mdmcv.css('margin-top')) ? parseInt(mdmcv.css('margin-top')) : 0 ) ;
-      h -= (parseInt(mdmcv.css('margin-bottom')) ? parseInt(mdmcv.css('margin-bottom')) : 0 ) ;
-      h -= (parseInt(mdmcv.css('padding-top')) ? parseInt(mdmcv.css('padding-top')) : 0 ) ;
-      h -= (parseInt(mdmcv.css('padding-bottom')) ? parseInt(mdmcv.css('padding-bottom')) : 0 ) ;
-
-      mdmcv.css( 'max-height', h ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
   }
 
   /**
@@ -536,10 +513,7 @@ window.lizMap = function() {
                       WIDTH: 150,
                       DPI: 96};
 
-        var legendParamsString = OpenLayers.Util.getParameterString(
-             legendParams
-            );
-        return OpenLayers.Util.urlAppend(externalAccess.url, legendParamsString);
+        return OpenLayers.Util.urlAppend(externalAccess.url, new URLSearchParams(legendParams));
     }
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
@@ -567,13 +541,8 @@ window.lizMap = function() {
     }
     if (withScale)
       legendParams['SCALE'] = map.getScale();
-    var legendParamsString = OpenLayers.Util.getParameterString(
-         legendParams
-        );
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
-    return OpenLayers.Util.urlAppend(service, legendParamsString);
+
+    return lizUrls.service + '&' + new URLSearchParams(legendParams);
   }
 
   /**
@@ -726,10 +695,12 @@ window.lizMap = function() {
          bbox = extent.toArray();
 
          var scales = [];
-         if ('mapScales' in config.options)
-           scales = config.options.mapScales;
-         if ( scales.length == 0 )
+         if ('mapScales' in config.options){
+           scales = Array.from(config.options.mapScales);
+         }
+         if ( scales.length == 0 ){
            scales = [config.options.maxScale,config.options.minScale];
+         }
 
          config.options.projection = proj;
          config.options.bbox = bbox;
@@ -838,16 +809,14 @@ window.lizMap = function() {
   function getLayerTree(nested,pNode) {
     pNode.children = [];
 
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-      ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
+    var service = lizUrls.service;
     if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
         service = [];
         for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
           service.push(
             OpenLayers.Util.urlAppend(
               lizUrls.publicUrlList[j],
-              OpenLayers.Util.getParameterString(lizUrls.params)
+              new URLSearchParams(lizUrls.params)
             )
           );
         }
@@ -1332,10 +1301,13 @@ window.lizMap = function() {
 
     var scales = [];
     var resolutions = [];
-    if ('resolutions' in config.options)
-      resolutions = config.options.resolutions;
-    else if ('mapScales' in config.options)
-      scales = config.options.mapScales;
+    if ('resolutions' in config.options){
+      resolutions = Array.from(config.options.resolutions);
+    }
+    else if ('mapScales' in config.options){
+      scales = Array.from(config.options.mapScales);
+    }
+
     scales.sort(function(a, b) {
       return Number(b) - Number(a);
     });
@@ -1695,7 +1667,6 @@ window.lizMap = function() {
         // add place holder to the filter combobox input
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
-        updateMiniDockSize();
       }
 
       // create combobox for the layer
@@ -2091,9 +2062,7 @@ window.lizMap = function() {
       // Test if the link is internal
       var mediaRegex = /^(\/)?media\//;
       if(mediaRegex.test(windowLink)){
-        var mediaLink = OpenLayers.Util.urlAppend(lizUrls.media
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        )
+        var mediaLink = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
         windowLink = mediaLink+'&path=/'+windowLink;
       }
       // Open link in a new window
@@ -2106,10 +2075,7 @@ window.lizMap = function() {
       var self = $(this);
       if (self.hasClass('disabled'))
         return false;
-      var removeCacheServerUrl = OpenLayers.Util.urlAppend(
-         lizUrls.removeCache
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
+      var removeCacheServerUrl = lizUrls.removeCache + '?' + new URLSearchParams(lizUrls.params);
       var windowLink = removeCacheServerUrl + '&layer=' + self.val();
       // Open link in a new window
       if (confirm(lizDict['tree.button.removeCache'] + ' ?'))
@@ -2518,12 +2484,6 @@ window.lizMap = function() {
     var info = addFeatureInfo();
     controls['featureInfo'] = info;
 
-    if ( ('print' in configOptions)
-        && configOptions['print'] == 'True')
-      addPrintControl();
-    else
-      $('#button-print').parent().remove();
-
     if ( config['tooltipLayers'] && config.tooltipLayers.length != 0)
         addTooltipControl();
     else
@@ -2611,10 +2571,6 @@ window.lizMap = function() {
       ){
           $('#button-popupcontent').click();
       }
-      // Resize minidock if displayed
-      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
-          updateMiniDockSize();
-
     }
     else{
       if (!text || text == null || text == '')
@@ -2722,11 +2678,6 @@ window.lizMap = function() {
     });
 
     bindGeobookmarkEvents();
-
-    $('#permalink-box ul.permalink-tabs a[data-toggle="tab"]').on('shown', function(e){
-        if($(e.target).attr('href') == '#tab-embed-permalink')
-            updateMiniDockSize();
-    });
 
     $('#geobookmark-form').submit(function(){
       var bname = $('#geobookmark-form input[name="bname"]').val();
@@ -3205,13 +3156,14 @@ window.lizMap = function() {
                   const rConfigLayer = rGetLayerConfig[1];
                   let clname = rConfigLayer?.shortname || rConfigLayer.cleanname;
                   if ( clname === undefined ) {
-                      clname = cleanName(configLayer.name);
+                      clname = cleanName(rConfigLayer.name);
                       rConfigLayer.cleanname = clname;
                   }
                   if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
+                      let wmsName = rConfigLayer?.shortname || rConfigLayer.name;
                       const wmsOptions = {
-                            'LAYERS': clname
-                          ,'QUERY_LAYERS': clname
+                            'LAYERS': wmsName
+                          ,'QUERY_LAYERS': wmsName
                           ,'STYLES': ''
                           ,'SERVICE': 'WMS'
                           ,'VERSION': '1.3.0'
@@ -3230,20 +3182,16 @@ window.lizMap = function() {
                             rConfigLayer.request_params.filter !== '' )
                           wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
                       else
-                          wmsOptions['FILTER'] = clname+':"'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
+                          wmsOptions['FILTER'] = wmsName+':"'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
 
                     var parentDiv = self.parent();
 
                     // Fetch queries
-                    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                      , OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
-
                     // Keep `rConfigLayer` in array with same order that fetch queries
                     // for later user when Promise.allSettled resolves
                     rConfigLayerAll.push(rConfigLayer);
                     popupChidrenRequests.push(
-                      fetch(service, {
+                      fetch(lizUrls.service, {
                         "method": "POST",
                         "body": new URLSearchParams(wmsOptions)
                       }).then(function (response) {
@@ -3275,7 +3223,7 @@ window.lizMap = function() {
                   configLayer.cleanname = clname;
                 }
 
-                const resizeTablesButtons = 
+                const resizeTablesButtons =
                   '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
                   '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 
@@ -3410,12 +3358,8 @@ window.lizMap = function() {
 
       }
 
-      var fiurl = OpenLayers.Util.urlAppend(
-        lizUrls.wms,
-        OpenLayers.Util.getParameterString(lizUrls.params)
-      )
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: fiurl,
+            url: lizUrls.service,
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
@@ -3438,7 +3382,7 @@ window.lizMap = function() {
           layerUrls.push(
             OpenLayers.Util.urlAppend(
               lizUrls.publicUrlList[j],
-              OpenLayers.Util.getParameterString(lizUrls.params)
+              new URLSearchParams(lizUrls.params)
             )
           );
         }
@@ -3529,30 +3473,47 @@ window.lizMap = function() {
      }
      lizMap.events.on({
         "layerFilterParamChanged": function( evt ) {
+            // Continue only if there is a popup displayed
+            // This would avoid useless GETFILTERTOKEN requests
+            let nbPopupDisplayed = document.querySelectorAll('input.lizmap-popup-layer-feature-id').length;
+            if (nbPopupDisplayed == 0) {
+              return;
+            }
             var filter = [];
             for ( var  lName in config.layers ) {
                 var lConfig = config.layers[lName];
+
+                // Do not request if the layer has no popup
                 if ( lConfig.popup != 'True' )
                     continue;
+
+                // Do not request if the layer has no request parameters
                 if ( !('request_params' in lConfig)
                   || lConfig['request_params'] == null )
                     continue;
+
+                // Do not get the filter token if the popup is not displayed
+                nbPopupDisplayed = document.querySelectorAll(
+                  `input.lizmap-popup-layer-feature-id[value^=${lConfig.id}]`
+                ).length;
+                if (nbPopupDisplayed == 0) {
+                  continue;
+                }
+
+                // Get the filter token only if there is a request_params filter
                 var requestParams = lConfig['request_params'];
                 if ( ('filter' in lConfig['request_params'])
                   && lConfig['request_params']['filter'] != null
                   && lConfig['request_params']['filter'] != "" ) {
 
                     // Get filter token
-                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    );
                     var sdata = {
                         service: 'WMS',
                         request: 'GETFILTERTOKEN',
                         typename: lName,
                         filter: lConfig['request_params']['filter']
                     };
-                    $.post(surl, sdata, function(result){
+                    $.post(lizUrls.service, sdata, function(result){
                         filter.push(result.token);
                         info.vendorParams['filtertoken'] = filter.join(';');
                         info.vendorParams['filter'] = null;
@@ -3588,584 +3549,6 @@ window.lizMap = function() {
      map.addControl(info);
      info.activate();
      return info;
-  }
-
-  function getPrintScale( aScales ) {
-      var newScales = [];
-      for ( var i=0, len = aScales.length; i<len; i++ ) {
-          newScales.push( parseFloat(aScales[i]) );
-      }
-      newScales.sort(function(a,b){return b-a;});
-    var scale = map.getScale();
-  var scaleIdx = $.inArray( scale, newScales );
-    if ( scaleIdx == -1 ) {
-    var s=0, slen=newScales.length;
-    while ( scaleIdx == -1 && s<slen ) {
-      if ( scale > newScales[s] )
-        scaleIdx = s;
-      else
-       s++;
-    }
-    if( s == slen ) {
-      scale = newScales[slen-1];
-    } else {
-      scale = newScales[scaleIdx];
-    }
-    }
-    return scale;
-  }
-
-  function drawPrintBox( aLayout, aLayer, aScale ) {
-    var size = aLayout.size;
-    var units = map.getUnits();
-    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-    var w = size.width / 72 / unitsRatio * aScale / 2;
-    var h = size.height / 72 / unitsRatio * aScale / 2;
-    var printInProjectProjection = true;
-    if ('printInProjectProjection' in lizMap.config.options && lizMap.config.options.printInProjectProjection != 'True') {
-      printInProjectProjection = false;
-    }
-    if (printInProjectProjection
-      && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
-    ) {
-      // If we change the projection, we need to increase a little bit the size of the rectangle
-      var qgis_dpi = 96;
-      w = w * qgis_dpi / 72;
-      h = h * qgis_dpi / 72;
-    }
-    if ( aLayer.features.length == 0 ) {
-        var center = map.getCenter();
-        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-            center.lon + w, center.lat + h);
-        var geom = bounds.toGeometry();
-        aLayer.addFeatures([
-            new OpenLayers.Feature.Vector( geom )
-        ]);
-    } else {
-        var feat = aLayer.features[0];
-        var center = feat.geometry.getBounds().getCenterLonLat();
-        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-            center.lon + w, center.lat + h);
-        var geom = bounds.toGeometry();
-        geom.id = feat.geometry.id;
-        feat.geometry = geom;
-        aLayer.drawFeature(feat);
-    }
-    return true;
-  }
-
-  function getPrintGridInterval( aLayout, aScale, aScales ) {
-    var size = aLayout.size;
-    var units = map.getUnits();
-    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-    var w = size.width / 72 / unitsRatio * aScale;
-    var h = size.height / 72 / unitsRatio * aScale;
-    var printInProjectProjection = true;
-    if ('printInProjectProjection' in lizMap.config.options && lizMap.config.options.printInProjectProjection != 'True') {
-      printInProjectProjection = false;
-    }
-    if (printInProjectProjection
-      && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
-    ) {
-      // If we change the projection, we need to increase a little bit the size of the rectangle
-      var qgis_dpi = 96;
-      w = w * qgis_dpi / 72;
-      h = h * qgis_dpi / 72;
-    }
-
-      var refScale = w > h ? w : h;
-      var newScales = [];
-      for ( var i=0, len = aScales.length; i<len; i++ ) {
-          newScales.push( parseFloat(aScales[i]) );
-      }
-      newScales.sort(function(a,b){return b-a;});
-      var theScale = newScales[0];
-      for ( var i=0, len=newScales.length; i<len; i++ ) {
-          var s = newScales[i];
-          if ( s > refScale )
-            theScale = s;
-          if ( s < refScale )
-            break;
-      }
-      return theScale/10;
-  }
-  function addPrintControl() {
-    if ( !config['printTemplates'] || config.printTemplates.length == 0 ) {
-      $('#button-print').parent().remove();
-      return false;
-    }
-
-    // Filtering print templates by removing atlas ones
-    var pTemplates = [];
-    for( var i=0, len=config.printTemplates.length; i<len; i++ ){
-        var pTemplate = config.printTemplates[i];
-        if('atlas' in pTemplate
-          && 'enabled' in pTemplate.atlas
-          && (pTemplate.atlas.enabled === '1' || pTemplate.atlas.enabled === 'true'))
-            continue;
-        pTemplates.push(pTemplate);
-    }
-    // remove print tool if only atlas print configured
-    if ( pTemplates.length == 0 ) {
-      $('#button-print').parent().remove();
-      return false;
-    }
-
-    var ptTomm = 0.35277; //conversion pt to mm
-
-    var scales = map.scales;
-    if ( config.options.mapScales.length > 2 )
-      scales = config.options.mapScales;
-    if ( scales == null && map.resolutions != null ) {
-      scales = [];
-      for( var i=0, len=map.resolutions.length; i<len; i++ ){
-        var units = map.getUnits();
-        var res = map.resolutions[i];
-        var scale = OpenLayers.Util.getScaleFromResolution(res, units);
-        scales.push(scale);
-      }
-    }
-    if ( scales == null ) {
-      $('#button-print').parent().remove();
-      return false;
-    }
-    if ( scales[0] < scales[scales.length-1] )
-      scales.reverse();
-
-    var scaleOptions = '';
-    for( var i=0, len=scales.length; i<len; i++ ){
-        var scale = scales[i];
-        printCapabilities.scales.push(scale);
-        var scaleText = scale;
-        if (scaleText > 10)
-            scaleText = Math.round(scaleText)
-        else
-            scaleText = Math.round(scaleText*100)/100
-        scaleText = scaleText.toLocaleString()
-        scaleOptions += '<option value="'+scale+'">'+scaleText+'</option>';
-    }
-    $('#print-scale').html(scaleOptions);
-
-    // creating printCapabilities layouts
-    for( var i=0, len=pTemplates.length; i<len; i++ ){
-      var pTemplate = pTemplates[i];
-      var pMap = null;
-      var pMapIdx = 0;
-      var pOverview = null;
-      while( pMap == null && pMapIdx < pTemplate.maps.length) {
-        pMap = pTemplate.maps[pMapIdx];
-        if( pMap['overviewMap'] ) {
-          pOverview = pTemplate.maps[pMapIdx];
-          pMap = null;
-          pMapIdx += 1;
-        }
-      }
-      if ( pMap == null )
-        continue;
-      var mapWidth = Number(pMap.width) / ptTomm;
-      var mapHeight = Number(pMap.height) / ptTomm;
-      //for some strange reason we need to provide a "map" and a "size" object with identical content
-      printCapabilities.layouts.push({
-        "name": pTemplate.title,
-        "map": {
-          "width": mapWidth,
-          "height": mapHeight
-        },
-        "size": {
-          "width": mapWidth,
-          "height": mapHeight
-        },
-        "rotation": false,
-        "template": pTemplate,
-        "mapId": pMap.id,
-        "overviewId": pOverview != null ? pOverview.id : null,
-        "grid": (('grid' in pMap) && pMap.grid == "True")
-      });
-    }
-
-    // if no printCapabilities layouts removed print
-    if( printCapabilities.layouts.length == 0 ) {
-      $('#button-print').parent().remove();
-      return false;
-    }
-
-    // creating the print layer
-    var layer = map.getLayersByName('Print');
-    if ( layer.length == 0 ) {
-      layer = new OpenLayers.Layer.Vector('Print',{
-        styleMap: new OpenLayers.StyleMap({
-          "default": new OpenLayers.Style({
-            fillColor: "#D43B19",
-            fillOpacity: 0.2,
-            strokeColor: "#CE1F2D",
-            strokeWidth: 1
-          })
-        })
-      });
-      map.addLayer(layer);
-      layer.setVisibility(false);
-    } else
-      layer = layer[0];
-
-    // creating print menu
-    for( var i=0, len= printCapabilities.layouts.length; i<len; i++ ){
-      var layout = printCapabilities.layouts[i];
-      $('#print-template').append('<option value="'+i+'">'+layout.name+'</option>');
-    }
-
-    var dragCtrl = new OpenLayers.Control.DragFeature(layer,{
-      geometryTypes: ['OpenLayers.Geometry.Polygon'],
-      type:OpenLayers.Control.TYPE_TOOL,
-      layout: null,
-      eventListeners: {
-        "activate": function(evt) {
-          if (this.layout == null)
-            return false;
-
-          deactivateToolControls(evt);
-
-          var layout = this.layout;
-          // get print scale
-          var scale = getPrintScale( printCapabilities.scales );
-          // update the select
-          $('#print-scale').val(scale);
-          // draw print box
-          drawPrintBox( layout, layer, scale );
-
-          mAddMessage(lizDict['print.activate'],'info',true).addClass('print');
-          layer.setVisibility(true);
-        },
-        "deactivate": function() {
-          layer.setVisibility(false);
-          $('#message .print').remove();
-          this.layout = null;
-          layer.destroyFeatures();
-        }
-      }
-    });
-    map.addControls([dragCtrl]);
-    controls['printDrag'] = dragCtrl;
-
-    // set event listener to button-print
-    $('#print-template').change(function() {
-      var self = $(this);
-      var layout = printCapabilities.layouts[parseInt( self.val() )];
-      if ( layout.template.labels.length != 0 ) {
-        var labels = '';
-        for (var i=0, len=layout.template.labels.length; i<len; i++){
-          var tLabel = layout.template.labels[i];
-          var label = '';
-          if (tLabel.htmlState == 0) {
-            label = '<input type="text" name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" value="'+tLabel.text+'"><br>'
-          } else {
-            label = '<textarea name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'">'+tLabel.text+'</textarea><br>'
-          }
-          labels += label;
-        }
-        $('#print .print-labels').html(labels);
-        $('#print .print-labels').show();
-      } else {
-        $('#print .print-labels').html('');
-        $('#print .print-labels').hide();
-      }
-      updateMiniDockSize();
-      if (dragCtrl.active) {
-        dragCtrl.deactivate();
-        dragCtrl.layout = layout;
-        dragCtrl.activate();
-      } else {
-        dragCtrl.layout = layout;
-        dragCtrl.activate();
-      }
-      return false;
-    });
-
-    $('#print button.btn-print-clear').click(function() {
-      $('#button-print').click();
-      return false;
-    });
-    $('#print-scale').change(function() {
-      if ( dragCtrl.active && layer.getVisibility() ) {
-        var self = $(this);
-        var scale = parseFloat(self.val());
-        // draw print box
-        drawPrintBox( dragCtrl.layout, layer, scale );
-      }
-    });
-    $('#print-launch').click(function() {
-      var pTemplate = dragCtrl.layout.template;
-      var pTableVectorLayers = [];
-      if( 'tables' in pTemplate )
-          pTableVectorLayers = $.map( pTemplate.tables, function( t ){
-              if( t.composerMap == -1 || ('map'+t.composerMap) == dragCtrl.layout.mapId )
-                return t.vectorLayer;
-          });
-      // Print Extent
-      // Clone it to fix transform
-      var extent = new OpenLayers.Bounds(
-          dragCtrl.layer.features[0].geometry.getBounds().toArray()
-      );
-
-      // Projection code and reverseAxisOrder
-      var projCode = map.projection.getCode();
-      var project_projection = null;
-      // We print the map in the QGIS project projection, not in the web map projection
-      // This allow to avoid error of wrong scales when using external baselayers in EPSG:3857
-      // and the project in for example in Lambert 93
-      // Caveat: the map printed does not exactly matches the drawn rectangle
-      var printInProjectProjection = true;
-      if ('printInProjectProjection' in lizMap.config.options && lizMap.config.options.printInProjectProjection != 'True') {
-        printInProjectProjection = false;
-      }
-      if (printInProjectProjection
-        && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
-      ) {
-        // If we print in the QGIS project projection
-        var project_proj = config.options.qgisProjectProjection;
-        if (!(project_proj.ref in Proj4js.defs)) {
-          Proj4js.defs[project_proj.ref]=project_proj.proj4;
-        }
-        project_projection = new OpenLayers.Projection(project_proj.ref);
-        projCode = project_projection.getCode();
-
-        // Reproject extent
-        extent.transform(map.projection, project_projection);
-      }
-
-      var reverseAxisOrder = (OpenLayers.Projection.defaults[projCode] && OpenLayers.Projection.defaults[projCode].yx);
-
-      // Build URL
-      var url = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-          );
-      let printParams = {};
-      printParams['SERVICE'] = 'WMS';
-      printParams['VERSION'] = '1.3.0';
-      printParams['REQUEST'] = 'GetPrint';
-      printParams['FORMAT'] = document.querySelector('#print-format').value;
-      printParams['EXCEPTIONS'] = 'application/vnd.ogc.se_inimage';
-      printParams['TRANSPARENT'] = 'true';
-      printParams['SRS'] = projCode;
-      printParams['DPI'] = document.querySelector('#print-dpi').value;
-      printParams['TEMPLATE'] = pTemplate.title;
-      printParams[dragCtrl.layout.mapId + ':extent'] = extent.toBBOX(null, reverseAxisOrder);
-      printParams[dragCtrl.layout.mapId + ':scale'] = document.querySelector('#print-scale').value;
-
-      if ( 'grid' in dragCtrl.layout && dragCtrl.layout.grid ) {
-        var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
-        printParams[dragCtrl.layout.mapId + ':grid_interval_x='] = gridInterval;
-        printParams[dragCtrl.layout.mapId + ':grid_interval_y='] = gridInterval;
-      }
-
-      var printLayers = [];
-      var styleLayers = [];
-      var opacityLayers = [];
-      $.each(map.layers, function(i, l) {
-        if ( (l instanceof OpenLayers.Layer.WMS) || (l instanceof OpenLayers.Layer.WMTS) ){
-            if( l.getVisibility() && ('params' in l) && ('LAYERS' in l.params)) {
-              // Get config
-              var qgisName = null;
-              if ( l.name in cleanNameMap )
-                  qgisName = getLayerNameByCleanName(l.name);
-              var configLayer = null;
-              if ( qgisName )
-                  configLayer = config.layers[qgisName];
-              if ( !configLayer )
-                  configLayer = config.layers[l.params['LAYERS']];
-              if ( !configLayer )
-                  configLayer = config.layers[l.name];
-
-              // If the layer has no config it is not a QGIS layer
-              if ( !configLayer )
-                return;
-
-              // If the layer has no id it is not a QGIS layer or group
-              if (!('id' in configLayer))
-                return;
-
-              // Add layer to the list of printed layers
-              printLayers.push(l.params['LAYERS']);
-
-              // Optionally add layer style if needed (same order as layers )
-              var lst = '';
-              if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
-                lst = l.params['STYLES'];
-              styleLayers.push( lst );
-
-              // Get qgis layer opacity
-              if ( configLayer && ('opacity' in configLayer) )
-                opacityLayers.push(parseInt(255*l.opacity*configLayer.opacity));
-              else
-                opacityLayers.push(parseInt(255*l.opacity));
-            }
-        }
-      });
-
-      printLayers.reverse();
-      styleLayers.reverse();
-      opacityLayers.reverse();
-
-      // Get active baselayer, and add the corresponding QGIS layer if needed
-      var activeBaseLayerName = map.baseLayer.name;
-      if ( activeBaseLayerName in externalBaselayersReplacement ) {
-        var exbl = externalBaselayersReplacement[activeBaseLayerName];
-        if( exbl in config.layers ) {
-            var activeBaseLayerConfig = config.layers[exbl];
-            if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
-                printLayers.push(activeBaseLayerConfig.id);
-            }
-            else{
-                printLayers.push(exbl);
-            }
-            styleLayers.push('');
-            opacityLayers.push(255);
-        }
-      }
-
-      // Add table vector layer without geom
-      if( pTableVectorLayers.length > 0 ) {
-          $.each( pTableVectorLayers, function( i, layerId ){
-              var aConfig = getLayerConfigById( layerId );
-              if( aConfig ) {
-                  var layerConfig = aConfig[1];
-                  if( ( layerConfig.geometryType == "none" || layerConfig.geometryType == "unknown" || layerConfig.geometryType == "" ) ) {
-                      if ( 'shortname' in layerConfig && layerConfig.shortname != '' )
-                          printLayers.push(layerConfig.shortname);
-                      else
-                          printLayers.push(layerConfig.name);
-                      styleLayers.push('');
-                      opacityLayers.push(255);
-                  }
-              }
-          });
-      }
-
-      printLayers.reverse();
-      styleLayers.reverse();
-      opacityLayers.reverse();
-
-      printParams[dragCtrl.layout.mapId + ':LAYERS'] = printLayers.join(',');
-      printParams[dragCtrl.layout.mapId + ':STYLES'] = styleLayers.join(',');
-
-      if ( dragCtrl.layout.overviewId != null
-          && config.options.hasOverview ) {
-        var bbox = config.options.bbox;
-        var oExtent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-        if (printInProjectProjection
-          && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
-        ) {
-          // If we print in the QGIS project projection
-          oExtent.transform(map.projection, project_projection);
-        }
-        printParams[dragCtrl.layout.overviewId + ':extent'] = oExtent;
-        printParams[dragCtrl.layout.overviewId + ':LAYERS'] = 'Overview';
-
-        printLayers.push('Overview');
-        styleLayers.push('');
-        opacityLayers.push(255);
-      }
-      printParams['LAYERS'] = printLayers.join(',');
-      printParams['STYLES'] = styleLayers.join(',');
-      printParams['OPACITIES'] = opacityLayers.join(',');
-
-      const customPrintLabels = document.querySelectorAll('#print .print-labels .print-label');
-      if (customPrintLabels){
-        for (const label of customPrintLabels) {
-          printParams[label.name] = label.value;
-        }
-      }
-
-      var filter = [];
-      var selection = [];
-      for ( var  lName in config.layers ) {
-          var lConfig = config.layers[lName];
-          var requestParams = lConfig['request_params'];
-          if ( !('request_params' in lConfig)
-            || requestParams == null )
-              continue;
-            if ( ('filtertoken' in requestParams)
-            && requestParams['filtertoken'] != null
-            && requestParams['filtertoken'] != "" ) {
-              filter.push( requestParams['filtertoken'] );
-          }
-          if ( ('selectiontoken' in requestParams)
-            && requestParams['selectiontoken'] != null
-            && requestParams['selectiontoken'] != "" ) {
-              selection.push( requestParams['selectiontoken'] );
-          }
-      }
-      if ( filter.length !=0 ){
-        printParams['FILTERTOKEN'] = filter.join(';');
-      }
-      if ( selection.length !=0 ){
-        printParams['SELECTIONTOKEN'] = selection.join(';');
-      }
-
-      // If user has made a visible draw, print it with redlining
-      const formatWKT = new WKT();
-      const highlightGeom = [];
-      const highlightSymbol = [];
-      if (lizMap.mainLizmap.digitizing.featureDrawn && lizMap.mainLizmap.digitizing.featureDrawnVisibility){
-        for (let index = 0; index < lizMap.mainLizmap.digitizing.featureDrawn.length; index++) {
-          const featureDrawn = lizMap.mainLizmap.digitizing.featureDrawn[index];
-          if (printInProjectProjection
-            && lizMap.config.options.qgisProjectProjection.ref != lizMap.config.options.projection.ref
-          ) {
-            // If we print in the QGIS project projection
-            featureDrawn.geometry.transform(map.projection, project_projection);
-          }
-          highlightGeom.push(formatWKT.writeFeature(featureDrawn));
-          highlightSymbol.push(lizMap.mainLizmap.digitizing.getFeatureDrawnSLD(index));
-        }
-      }
-
-      if (highlightGeom.length > 0) {
-        printParams[dragCtrl.layout.mapId+':HIGHLIGHT_GEOM'] = highlightGeom.join(';');
-        printParams[dragCtrl.layout.mapId+':HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
-      }
-
-      // Display spinner and message while waiting for print
-      const printLaunch = document.getElementById('print-launch');
-      printLaunch.disabled = true;
-      printLaunch.classList.add('spinner');
-
-      $("#message .print a").click();
-      mAddMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
-
-      downloadFile(url, printParams, () => {
-        const printLaunch = document.getElementById('print-launch');
-        printLaunch.disabled = false;
-        printLaunch.classList.remove('spinner');
-
-        $("#message .print-in-progress a").click();
-      });
-
-      return false;
-    });
-    map.events.on({
-      "zoomend": function() {
-        if ( dragCtrl.active && layer.getVisibility() ) {
-            // get scale
-            var scale = getPrintScale( printCapabilities.scales );
-            // update the select
-            $('#print-scale').val(scale);
-            // draw print box
-            drawPrintBox( dragCtrl.layout, layer, scale );
-        }
-      }
-    });
-    lizMap.events.on({
-        minidockopened: function(e) {
-            if ( e.id == 'print' ) {
-                $('#print-template').change();
-            }
-        },
-        minidockclosed: function(e) {
-            if ( e.id == 'print' ) {
-                dragCtrl.deactivate();
-            }
-        }
-    });
   }
 
   function addTooltipControl() {
@@ -4684,10 +4067,7 @@ window.lizMap = function() {
     if ( proj in Proj4js.defs ) {
       aCallback( proj );
     } else {
-      $.get( OpenLayers.Util.urlAppend(
-          lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        ), {
+      $.get( lizUrls.service, {
           'REQUEST':'GetProj4'
          ,'authid': proj
         }, function ( aText ) {
@@ -4724,102 +4104,37 @@ window.lizMap = function() {
    * Returns:
    * {jQuery Object} The message added.
    */
-  function mAddMessage( aMessage, aType, aClose ) {
+  function mAddMessage( aMessage, aType, aClose, aTimeout ) {
     var mType = 'info';
     var mTypeList = ['info', 'error', 'success'];
     var mClose = false;
 
-    if ( $.inArray(aType, mTypeList) != -1 )
+    if ( mTypeList.includes(aType) ){
       mType = aType;
+    }
 
-    if ( aClose )
+    if ( aClose ){
       mClose = true;
+    }
 
     var html = '<div class="alert alert-block alert-'+mType+' fade in" data-alert="alert">';
-    if ( mClose )
+    if ( mClose ){
       html += '<a class="close" data-dismiss="alert" href="#">×</a>';
+    }
     html += '<p>'+aMessage+'</p>';
     html += '</div>';
 
     var elt = $(html);
     $('#message').append(elt);
+
+    if (aTimeout) {
+      window.setTimeout(() => {
+        elt.remove();
+      }, aTimeout)
+    }
+
     return elt;
   }
-
-  /**
-   * PRIVATE function: downloadFile
-   * Send an ajax POST request to download a file
-   *
-   * @param {String} url
-   * @param {Array} parameters
-   * @param {Function} callback optionnal callback executed when download ends
-   *
-   */
-   function downloadFile( url, parameters, callback ) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', url, true);
-      xhr.responseType = 'arraybuffer';
-      xhr.onload = function () {
-          if (this.status === 200) {
-              var filename = "";
-              var disposition = xhr.getResponseHeader('Content-Disposition');
-              if (disposition && disposition.indexOf('attachment') !== -1) {
-                  var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                  var matches = filenameRegex.exec(disposition);
-                  if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-              }
-
-              let type = xhr.getResponseHeader('Content-Type');
-
-              // Firefox >= 98 opens blob in its pdf viewer
-              // This is a hack to force download as in Chrome
-              if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && type == 'application/pdf'){
-                type = 'application/octet-stream';
-              }
-              const blob = new File([this.response], filename, { type: type });
-              const downloadUrl = URL.createObjectURL(blob);
-
-              if (filename) {
-                // use HTML5 a[download] attribute to specify filename
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = filename;
-                a.dispatchEvent(new MouseEvent('click'));
-              } else {
-                window.open(downloadUrl);
-              }
-
-              setTimeout(() => URL.revokeObjectURL(downloadUrl), 100); // cleanup
-          }
-
-          // Note 31/01/2022
-          // REMOVE WHEN THE QGIS SERVER BUG HAS BEEN FIXED
-          // Related PR for QGIS Master https://github.com/qgis/QGIS/pull/47051
-          // It should be fixed for 3.24.1 and 3.22.5
-          if (this.status == 400) {
-            // Check for parenthesis inside the layer name
-            // There is a bug to be fixed in QGIS Server WFS request for this context
-            var typeName = parameters['TYPENAME'];
-            const parenthesis_regex = /[\(\)]/g;
-            const has_parenthesis = typeName.match(parenthesis_regex);
-            if (has_parenthesis) {
-              var error_message = 'The selected features cannot be exported due to a known bug in QGIS Server.';
-              error_message += '<br/>Please ask the map editor to remove the parenthesis in the layer name.';
-            } else {
-              var error_message = lizDict['layer.export.unknown.export.error'];
-            };
-
-            mAddMessage(error_message, 'error', true);
-            return false;
-          }
-          // Execute callback if any
-          if (typeof callback === 'function'){
-            callback();
-          }
-      };
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.send($.param(parameters, true));
-   }
 
   /**
    * PRIVATE function: exportVectorLayer
@@ -4892,7 +4207,7 @@ window.lizMap = function() {
       getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
 
       // Download file
-      downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
+      Utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
 
       return false;
   }
@@ -5005,9 +4320,7 @@ window.lizMap = function() {
           wfsOptions['GEOMETRYNAME'] = geometryName;
       }
 
-      getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
-              ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
+      getFeatureUrlData['url'] = lizUrls.service;
       getFeatureUrlData['options'] = wfsOptions;
 
       return getFeatureUrlData;
@@ -5086,10 +4399,7 @@ window.lizMap = function() {
               callFeatureDataCallBacks(poolId, data.features);
               $('body').css('cursor', 'auto');
           } else {
-              var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                    ,OpenLayers.Util.getParameterString(lizUrls.params)
-              );
-              $.post(service, {
+              $.post(lizUrls.service, {
                   'SERVICE':'WFS'
                  ,'VERSION':'1.0.0'
                  ,'REQUEST':'DescribeFeatureType'
@@ -5099,6 +4409,7 @@ window.lizMap = function() {
 
                   aConfig['alias'] = describe.aliases;
                   aConfig['types'] = describe.types;
+                  aConfig['columns'] = describe.columns;
 
                   callFeatureDataCallBacks(poolId, data.features);
 
@@ -5134,10 +4445,10 @@ window.lizMap = function() {
   function zoomToFeature( featureType, fid, zoomAction ){
       zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
 
-      var proj = new OpenLayers.Projection(config.layers[featureType].crs);
-      if( config.layers[featureType].featureCrs )
-          proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
       getLayerFeature(featureType, fid, function(feat) {
+        var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+        if( config.layers[featureType].featureCrs )
+            proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
           zoomToOlFeature( feat, proj, zoomAction );
       });
   }
@@ -5268,10 +4579,7 @@ window.lizMap = function() {
       };
 
       // Query the server
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      $.post(service, wmsOptions, function(data) {
+      $.post(lizUrls.service, wmsOptions, function(data) {
           aCallback(data);
       });
 
@@ -5335,12 +4643,9 @@ window.lizMap = function() {
     };
 
     // Query the server
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-      ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
-    $.post(service, wmsOptions, function(data) {
+    $.post(lizUrls.service, wmsOptions, function(data) {
       if(aCallback){
-        aCallback(service, wmsOptions, data);
+        aCallback(lizUrls.service, wmsOptions, data);
       }
     });
   }
@@ -5599,16 +4904,13 @@ window.lizMap = function() {
       config.layers[layername]['request_params']['exp_filter'] = filter;
 
       // Get WMS filter token ( used via GET in GetMap or GetPrint )
-      var surl = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
       var sdata = {
         service: 'WMS',
         request: 'GETFILTERTOKEN',
         typename: layername,
         filter: lfilter
       };
-      $.post(surl, sdata, function(result){
+      $.post(lizUrls.service, sdata, function(result){
         var filtertoken = result.token;
         // Add OpenLayers layer parameter
         delete layer.params['FILTER'];
@@ -5733,15 +5035,8 @@ window.lizMap = function() {
     /**
      * Method: addMessage
      */
-    addMessage: function( aMessage, aType, aClose ) {
-      return mAddMessage( aMessage, aType, aClose );
-    },
-
-    /**
-     * Method: updateMiniDockSize
-     */
-    updateMiniDockSize: function() {
-      return updateMiniDockSize();
+    addMessage: function( aMessage, aType, aClose, aTimeout ) {
+      return mAddMessage( aMessage, aType, aClose, aTimeout );
     },
 
     /**
@@ -5750,7 +5045,6 @@ window.lizMap = function() {
     loadProjDefinition: function( aCRS, aCallback ) {
       return loadProjDefinition( aCRS, aCallback );
     },
-
 
     /**
      * Method: updateContentSize
@@ -5793,23 +5087,6 @@ window.lizMap = function() {
     zoomToFeature: function( featureType, fid, zoomAction ) {
       zoomToFeature( featureType, fid, zoomAction );
     },
-
-
-    /**
-     * Method: getPrintGridInterval
-     */
-    getPrintGridInterval: function(aLayout, aScale, aScales) {
-      return getPrintGridInterval(aLayout, aScale, aScales);
-    },
-
-
-    /**
-     * Method: getPrintCapabilities
-     */
-    getPrintCapabilities: function() {
-      return printCapabilities;
-    },
-
 
     /**
      * Method: getExternalBaselayersReplacement
@@ -5987,12 +5264,8 @@ window.lizMap = function() {
     init: function() {
       var self = this;
 
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        , OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-
       // Get config
-      const configRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.config, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+      const configRequest = fetch(lizUrls.config + '?' + new URLSearchParams(lizUrls.params)).then(function (response) {
         if (!response.ok) {
           throw 'Config not loaded: ' + response.status + ' ' + response.statusText
         }
@@ -6000,7 +5273,7 @@ window.lizMap = function() {
       });
 
       // Get key/value config
-      const keyValueConfigRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.keyValueConfig, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+      const keyValueConfigRequest = fetch(lizUrls.keyValueConfig + '?' + new URLSearchParams(lizUrls.params)).then(function (response) {
         if (!response.ok) {
           throw 'Key/value config not loaded: ' + response.status + ' ' + response.statusText
         }
@@ -6008,19 +5281,19 @@ window.lizMap = function() {
       });
 
       // Get WMS, WMTS, WFS capabilities
-      const WMSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' }))).then(function (response) {
+      const WMSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' })).then(function (response) {
         if (!response.ok) {
           throw 'WMS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
         return response.text()
       });
-      const WMTSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+      const WMTSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
         if (!response.ok) {
           throw 'WMTS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
         return response.text()
       });
-      const WFSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+      const WFSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
         if (!response.ok) {
           throw 'WFS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
         }
@@ -6370,7 +5643,6 @@ window.lizMap = function() {
             tab.children('a').first().click();
             parent.addClass('active');
             lizMap.events.triggerEvent("minidockopened", { 'id': id });
-            updateMiniDockSize();
           }
           self.blur();
 
@@ -7064,16 +6336,14 @@ lizMap.events.on({
 
       if('lizmapExternalBaselayers' in evt.config){
 
-        var externalService = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
+        var externalService = lizUrls.service;
         if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
             externalService = [];
             for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
               externalService.push(
                 OpenLayers.Util.urlAppend(
                   lizUrls.publicUrlList[j],
-                  OpenLayers.Util.getParameterString(lizUrls.params)
+                  new URLSearchParams(lizUrls.params)
                 )
               );
             }

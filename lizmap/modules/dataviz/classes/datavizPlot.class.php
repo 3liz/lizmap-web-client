@@ -83,7 +83,9 @@ class datavizPlot
         // Get main dataviz config
         $dv = new datavizConfig($repository, $project);
         $config = $dv->getConfig();
-        $this->theme = $config['dataviz']['theme'];
+        if ($config && array_key_exists('theme', $config)) {
+            $this->theme = $config['dataviz']['theme'];
+        }
 
         // Parse plot config
         $this->parsePlotConfig($plotConfig);
@@ -169,7 +171,7 @@ class datavizPlot
             }
         }
 
-        // Optionnal layout additionnal options (legacy code)
+        // Optional layout additional options (legacy code)
         if (array_key_exists('layout_config', $plotConfig['plot'])) {
             $this->layout = $plotConfig['plot']['layout_config'];
         }
@@ -484,26 +486,26 @@ class datavizPlot
             }
 
             $wfsrequest = new \Lizmap\Request\WFSRequest($this->lproj, $wfsparams, lizmap::getServices());
-            // FIXME no support of the case where $wfsresponse is the content of serviceException?
+
             $wfsresponse = $wfsrequest->process();
             $features = null;
 
-            // Check data
-            $featureData = null;
-            if (property_exists($wfsresponse, 'data')) {
-                $data = $wfsresponse->data;
-                if (property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data)) {
-                    $data = jFile::read($data);
-                }
-                $featureData = json_decode($data);
-                if (empty($featureData)) {
-                    $featureData = null;
-                } else {
-                    if (empty($featureData->features)) {
-                        $featureData = null;
-                    }
-                }
+            // Check code
+            if (floor($wfsresponse->getCode() / 100) >= 4) {
+                return false;
             }
+            // Check mime/type
+            if (in_array(strtolower($wfsresponse->getMime()), array('text/html', 'text/xml'))) {
+                return false;
+            }
+
+            // decode features
+            $featureData = json_decode($wfsresponse->getBodyAsString());
+
+            if (empty($featureData) || empty($featureData->features)) {
+                $featureData = null;
+            }
+
             if (!$featureData) {
                 return false;
             }
@@ -799,17 +801,24 @@ class datavizPlot
 
                 // add aggregation property if aggregation is done client side via dataplotly
                 // Not available for pie, histogram and histogram2d, we have done it manually beforehand in php
+                // Careful : for horizontal bar plots, we need to reverse the groups and target values
                 if ($this->aggregation
                     and !in_array($this->type, array('pie', 'histogram', 'histogram2d', 'html', 'sunburst'))
                 ) {
+                    // Revert x and y for horizontal bar plot
+                    $transformGroupsName = $this->x_property_name;
+                    $transformTargetName = $this->y_property_name;
+                    if (array_key_exists('orientation', $trace) and $trace['orientation'] == 'h') {
+                        $transformGroupsName = $this->y_property_name;
+                        $transformTargetName = $this->x_property_name;
+                    }
                     $trace['transforms'] = array(
                         array(
                             'type' => 'aggregate',
-                            'groups' => $this->x_property_name,
-                            // 'groups' => 'x',
+                            'groups' => $transformGroupsName,
                             'aggregations' => array(
                                 array(
-                                    'target' => $this->y_property_name,
+                                    'target' => $transformTargetName,
                                     'func' => $this->aggregation,
                                     'enabled' => true,
                                 ),
@@ -817,7 +826,6 @@ class datavizPlot
                         ),
                     );
                 }
-
                 $traces[] = $trace;
             }
 

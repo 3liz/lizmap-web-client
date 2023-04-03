@@ -3,7 +3,7 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012-2020 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      https://3liz.com
  *
@@ -20,29 +20,36 @@ class lizmapRepository
      * services properties.
      *
      * @deprecated
+     * @see \Lizmap\Project\Repository::$properties
      */
     public static $properties = array(
         'label',
         'path',
         'allowUserDefinedThemes',
+        'accessControlAllowOrigin',
     );
 
     /**
      * services properties options.
      *
      * @deprecated
+     * @see \Lizmap\Project\Repository::$propertiesOptions
      */
     public static $propertiesOptions = array(
-        'label' => array(
+        'path' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
-        'path' => array(
+        'label' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
         'allowUserDefinedThemes' => array(
             'fieldType' => 'checkbox',
+            'required' => false,
+        ),
+        'accessControlAllowOrigin' => array(
+            'fieldType' => 'text',
             'required' => false,
         ),
     );
@@ -105,7 +112,7 @@ class lizmapRepository
 
     public function getPropertiesOptions()
     {
-        return $this->repo->getPropertiesOptions();
+        return $this->repo::getPropertiesOptions();
     }
 
     public function getData($key)
@@ -157,5 +164,17 @@ class lizmapRepository
     public function getProjectsMetadata()
     {
         return $this->repo->getProjectsMetadata();
+    }
+
+    /**
+     * Return the value of the Access-Control-Allow-Origin HTTP header.
+     *
+     * @param $referer
+     *
+     * @return string the value of the ACAO header. If empty, the header should not be set.
+     */
+    public function getACAOHeaderValue($referer)
+    {
+        return $this->repo->getACAOHeaderValue($referer);
     }
 }

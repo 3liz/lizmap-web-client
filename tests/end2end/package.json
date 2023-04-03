@@ -4,11 +4,9 @@
   "description": "Test Lizmap JavaScript",
   "main": "index.js",
   "devDependencies": {
-    "@playwright/test": "^1.27.1",
+    "@playwright/test": "^1.31.1",
     "cypress": "^9.7.0",
-    "cypress-dotenv": "^2.0.0",
-    "cypress-file-upload": "^5.0.8",
-    "dotenv": "^16.0.1"
+    "cypress-file-upload": "^5.0.8"
   },
   "scripts": {
     "cy:open": "cypress open",

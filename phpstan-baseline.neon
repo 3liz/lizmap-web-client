@@ -1,49 +1,5 @@
 parameters:
 	ignoreErrors:
-		-
-			message: "#^Constructor of class actionDatasource has an unused parameter \\$layerId\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Method actionDatasource\\:\\:__construct\\(\\) with return type void returns mixed but should not return anything\\.$#"
-			count: 2
-			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Property actionDatasource\\:\\:\\$config is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Property actionDatasource\\:\\:\\$data is unused\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Property actionDatasource\\:\\:\\$lproj is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Property actionDatasource\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Property actionDatasource\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/action/classes/actionDatasource.class.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDatasourceConnection\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/action/controllers/service.classic.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDatasourceParameters\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/action/controllers/service.classic.php
 
 		-
 			message: "#^Access to an undefined property jEvent\\:\\:\\$tpl\\.$#"
@@ -94,16 +50,6 @@ parameters:
 			message: "#^Offset float\\|int\\<0, max\\> does not exist on array\\{\\}\\.$#"
 			count: 1
 			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
-			count: 1
-			path: lizmap/modules/dynamicLayers/controllers/map.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$params\\.$#"
-			count: 1
-			path: lizmap/modules/dynamicLayers/controllers/map.classic.php
 
 		-
 			message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
@@ -241,11 +187,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/lizmapServices.class.php
 
 		-
-			message: "#^Class Proj4phpProj constructor invoked with 2 parameters, 1 required\\.$#"
-			count: 4
-			path: lizmap/modules/lizmap/classes/lizmapTiler.class.php
-
-		-
 			message: "#^Result of \\|\\| is always false\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
@@ -264,11 +205,6 @@ parameters:
 			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^Access to an undefined property jDbFieldProperties\\:\\:\\$unifiedType\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisLayerDbFieldsInfo.class.php
 
 		-
 			message: "#^Cannot access property \\$geomtype on bool\\|object\\.$#"
@@ -350,35 +286,12 @@ parameters:
 			count: 3
 			path: lizmap/modules/lizmap/controllers/ban.classic.php
 
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/default.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$params\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/default.classic.php
-
-		-
-			message: "#^Method defaultCtrl\\:\\:index\\(\\) should return jResponseRedirect but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/default.classic.php
-
-		-
-			message: "#^Access to an undefined property jDbFieldProperties\\:\\:\\$unifiedType\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
 			message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
 			count: 2
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$action\\.$#"
-			count: 7
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
@@ -390,10 +303,6 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$params\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
 			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDbFieldsInfo\\(\\)\\.$#"
@@ -425,34 +334,10 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
-		-
-			message: "#^Method editionCtrl\\:\\:createFeature\\(\\) should return jResponseHtmlFragment\\|jResponseRedirect but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Method editionCtrl\\:\\:modifyFeature\\(\\) should return jResponseHtmlFragment\\|jResponseRedirect but returns jResponse\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Method editionCtrl\\:\\:saveFeature\\(\\) should return jResponseHtmlFragment\\|jResponseRedirect but returns jResponse\\.$#"
-			count: 5
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
+	
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 12
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$featureData \\(object\\) does not accept null\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$featureData \\(object\\) in empty\\(\\) is not falsy\\.$#"
-			count: 1
+			count: 9
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
@@ -477,16 +362,6 @@ parameters:
 
 		-
 			message: "#^Property editionCtrl\\:\\:\\$layerXml is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Right side of && is always true\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
@@ -549,26 +424,6 @@ parameters:
 			message: "#^Method osmCtrl\\:\\:nominatim\\(\\) should return jResponseBinary but returns jResponse\\.$#"
 			count: 2
 			path: lizmap/modules/lizmap/controllers/osm.classic.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:addContent\\(\\)\\.$#"
-			count: 6
-			path: lizmap/modules/lizmap/controllers/project.cmdline.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:setExitCode\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/project.cmdline.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:addContent\\(\\)\\.$#"
-			count: 10
-			path: lizmap/modules/lizmap/controllers/repository.cmdline.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:setExitCode\\(\\)\\.$#"
-			count: 5
-			path: lizmap/modules/lizmap/controllers/repository.cmdline.php
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
@@ -837,31 +692,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Project/Project.php
 
 		-
-			message: "#^Class lizmapServices referenced with incorrect case\\: LizmapServices\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 4
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^Negated boolean expression is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
 			message: "#^PHPDoc tag @param for parameter \\$xml with type SimpleXMLElement is incompatible with native type Lizmap\\\\Project\\\\QgisProject\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/lib/Project/Project.php
@@ -947,21 +777,6 @@ parameters:
 			path: lizmap/modules/view/classes/lizmapMapDockItem.class.php
 
 		-
-			message: "#^Cannot access property \\$id on array\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
-			message: "#^Cannot access property \\$parentId on array\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
-			message: "#^Cannot access property \\$url on array\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
 			count: 1
 			path: lizmap/modules/view/controllers/default.classic.php
@@ -985,33 +800,3 @@ parameters:
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
 			count: 1
 			path: lizmap/modules/view/controllers/lizMap.classic.php
-
-		-
-			message: "#^Cannot access property \\$id on array\\.$#"
-			count: 5
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$img on array\\.$#"
-			count: 4
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$parentId on array\\.$#"
-			count: 7
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$url on array\\.$#"
-			count: 3
-			path: lizmap/modules/view/zones/ajax_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$id on array\\.$#"
-			count: 5
-			path: lizmap/modules/view/zones/main_view.zone.php
-
-		-
-			message: "#^Cannot access property \\$parentId on array\\.$#"
-			count: 9
-			path: lizmap/modules/view/zones/main_view.zone.php

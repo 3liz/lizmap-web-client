@@ -1,4 +1,8 @@
 <?php
+
+use Violet\StreamingJsonEncoder\BufferJsonEncoder;
+use Violet\StreamingJsonEncoder\JsonStream;
+
 /**
  * PHP proxy to execute filter request.
  *
@@ -112,9 +116,6 @@ class serviceCtrl extends jController
      */
     public function getFeatureCount()
     {
-        /** @var jResponseJson $rep */
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -124,9 +125,8 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getFeatureCount($filter);
-
-        return $rep;
+        $streamedData = $f->getFeatureCount($filter);
+        return $this->streamResponse($streamedData);
     }
 
     /**
@@ -136,9 +136,6 @@ class serviceCtrl extends jController
      */
     public function getUniqueValues()
     {
-        /** @var jResponseJson $rep */
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -149,9 +146,8 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getUniqueValues($fieldname, $filter);
-
-        return $rep;
+        $streamedData = $f->getUniqueValues($fieldname, $filter);
+        return $this->streamResponse($streamedData);
     }
 
     /**
@@ -161,9 +157,6 @@ class serviceCtrl extends jController
      */
     public function getMinAndMaxValues()
     {
-        /** @var jResponseJson $rep */
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -174,9 +167,8 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getMinAndMaxValues($fieldname, $filter);
-
-        return $rep;
+        $streamedData = $f->getMinAndMaxValues($fieldname, $filter);
+        return $this->streamResponse($streamedData);
     }
 
     /**
@@ -186,9 +178,6 @@ class serviceCtrl extends jController
      */
     public function getExtent()
     {
-        /** @var jResponseJson $rep */
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -199,8 +188,45 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getExtent($crs, $filter);
+        $streamedData = $f->getExtent($crs, $filter);
+        return $this->streamResponse($streamedData);
+    }
 
-        return $rep;
+    /**
+     * stream $streamData in a jResponseStreamed
+     * if data is iterable
+     * otherwise simple jResponseJson.
+     *
+     * @param mixed $streamedData
+     *
+     * @return jResponseJson|jResponseBinary response
+     */
+    protected function streamResponse($streamedData)
+    {
+        if (is_iterable($streamedData)) {
+            /**
+             * @var jResponseBinary $response
+             */
+            $response = $this->getResponse('binary');
+            $response->mimeType = 'application/json';
+            $encoder = (new BufferJsonEncoder($streamedData))
+                ->setOptions(JSON_PRETTY_PRINT)
+            ;
+
+            $stream = new JsonStream($encoder);
+
+            $response->setContentGenerator((function () use ($stream) {
+                while (!$stream->eof()) {
+                    yield $stream->read(1024 * 8);
+                }
+            })());
+        } else {
+            /**
+             * @var jResponseJson $response
+             */
+            $response = $this->getResponse('json');
+            $response->data = $streamedData;
+        }
+        return $response;
     }
 }

@@ -1272,9 +1272,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }
 
         // Get form via web service
-        var service = OpenLayers.Util.urlAppend(lizUrls.edition
-            ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
+        var service = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
         $.get(service.replace('getFeature', editionType),{
             layerId: editionLayer['id'],
             featureId: featureId
@@ -1794,6 +1792,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             sendFormPromise.then(() => {
                 displayEditionForm( formResult );
             });
+
             return false;
         });
     }
@@ -1981,9 +1980,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         if ( !confirm( deleteConfirm ) )
             return false;
 
-        var eService = OpenLayers.Util.urlAppend(lizUrls.edition
-            ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
+        var eService = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
         $.get(eService.replace('getFeature','deleteFeature'),{
             layerId: aLayerId,
             featureId: aFeatureId

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 13.7 (Ubuntu 13.7-1.pgdg20.04+1)
+-- Dumped from database version 14.6 (Debian 14.6-1.pgdg110+1)
+-- Dumped by pg_dump version 14.6 (Ubuntu 14.6-1.pgdg22.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,122 +23,9 @@ SET row_security = off;
 CREATE SCHEMA tests_projects;
 
 
---
--- Name: lizmap_get_data(json); Type: FUNCTION; Schema: tests_projects; Owner: -
---
-
-CREATE FUNCTION tests_projects.lizmap_get_data(parameters json) RETURNS json
-    LANGUAGE plpgsql IMMUTABLE STRICT
-    AS $_$
-DECLARE
-    feature_id integer;
-    layer_name text;
-    layer_table text;
-    layer_schema text;
-    action_name text;
-    sqltext text;
-    datasource text;
-    ajson json;
-BEGIN
-
-    action_name:= parameters->>'action_name';
-    feature_id:= (parameters->>'feature_id')::integer;
-    layer_name:= parameters->>'layer_name';
-    layer_schema:= parameters->>'layer_schema';
-    layer_table:= parameters->>'layer_table';
-
-    -- Action buffer_500
-    -- Written here as an example
-    -- Performs a buffer on the geometry
-    IF action_name = 'buffer_500' THEN
-        datasource:= format('
-            SELECT
-            %1$s AS id,
-            ''The buffer '' || %4$s || ''m has been displayed in the map'' AS message,
-            ST_Buffer(geom, %4$s) AS geom
-            FROM "%2$s"."%3$s"
-            WHERE id = %1$s
-        ',
-        feature_id,
-        layer_schema,
-        layer_table,
-        parameters->>'buffer_size'
-        );
-    ELSE
-    -- Default : return geometry
-        datasource:= format('
-            SELECT
-            %1$s AS id,
-            ''The geometry of the object have been displayed in the map'' AS message
-            geom
-            FROM "%2$s"."%3$s"
-            WHERE id = %1$s
-        ',
-        feature_id,
-        layer_schema,
-        layer_table
-        );
-
-    END IF;
-
-    SELECT query_to_geojson(datasource)
-    INTO ajson
-    ;
-    RETURN ajson;
-END;
-$_$;
-
-
---
--- Name: FUNCTION lizmap_get_data(parameters json); Type: COMMENT; Schema: tests_projects; Owner: -
---
-
-COMMENT ON FUNCTION tests_projects.lizmap_get_data(parameters json) IS 'Generate a valid GeoJSON from an action described by a name, PostgreSQL schema and table name of the source data, a QGIS layer name, a feature id and additional options.';
-
-
---
--- Name: query_to_geojson(text); Type: FUNCTION; Schema: tests_projects; Owner: -
---
-
-CREATE FUNCTION tests_projects.query_to_geojson(datasource text) RETURNS json
-    LANGUAGE plpgsql IMMUTABLE STRICT
-    AS $$
-DECLARE
-    sqltext text;
-    ajson json;
-BEGIN
-    sqltext:= format('
-        SELECT jsonb_build_object(
-            ''type'',  ''FeatureCollection'',
-            ''features'', jsonb_agg(features.feature)
-        )::json
-        FROM (
-          SELECT jsonb_build_object(
-            ''type'',       ''Feature'',
-            ''id'',         id,
-            ''geometry'',   ST_AsGeoJSON(ST_Transform(geom, 4326))::jsonb,
-            ''properties'', to_jsonb(inputs) - ''geom''
-          ) AS feature
-          FROM (
-              SELECT * FROM (%s) foo
-          ) AS inputs
-        ) AS features
-    ', datasource);
-    RAISE NOTICE 'SQL = %s', sqltext;
-    EXECUTE sqltext INTO ajson;
-    RETURN ajson;
-END;
-$$;
-
-
---
--- Name: FUNCTION query_to_geojson(datasource text); Type: COMMENT; Schema: tests_projects; Owner: -
---
-
-COMMENT ON FUNCTION tests_projects.query_to_geojson(datasource text) IS 'Generate a valid GEOJSON from a given SQL text query.';
-
-
 SET default_tablespace = '';
+
+SET default_table_access_method = heap;
 
 --
 -- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: -
@@ -590,10 +477,13 @@ CREATE TABLE tests_projects.form_edition_all_fields_types (
     integer_field integer,
     boolean_nullable boolean,
     boolean_notnull_for_checkbox boolean NOT NULL,
+    boolean_readonly boolean,
     integer_array integer[],
     text text,
     uids text,
-    value_map_integer integer
+    value_map_integer integer,
+    html_text text,
+    multiline_text text
 );
 
 
@@ -2050,7 +1940,7 @@ COPY tests_projects.form_advanced_point (id, geom, has_photo, website, quartier,
 -- Data for Name: form_edition_all_fields_types; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text, uids, value_map_integer) FROM stdin;
+COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text, uids, value_map_integer, html_text, multiline_text) FROM stdin;
 \.
 
 
@@ -2179,7 +2069,7 @@ COPY tests_projects.form_edition_vr_point (id, code_without_exp, code_with_simpl
 --
 
 COPY tests_projects.form_filter (id, label, geom) FROM stdin;
-1	simple label	01010000206A08000000000000007083400000000000207AC0
+1	simple label	01010000206A080000ABDA509923FA8340CA9A3B72843672C0
 2	Œuvres d'art et monuments de l'espace urbain	01010000206A0800000000000000B0844000000000004885C0
 \.
 
@@ -2189,11 +2079,11 @@ COPY tests_projects.form_filter (id, label, geom) FROM stdin;
 --
 
 COPY tests_projects.form_filter_child_bus_stops (id, label, id_parent, geom) FROM stdin;
-1	A	1	01010000206A0800001C5BC7B631F68040A21EAB7E894977C0
-2	B	1	01010000206A0800002D1379C37B518140E28527210ADA7BC0
-3	C	2	01010000206A080000603B8EE959638240BB2C5267D48D87C0
-4	D	2	01010000206A080000AE18084A26198540F50F666C58B287C0
-5	E	2	01010000206A08000098E70BAD34E18740BB2C5267D48D87C0
+1	A	1	01010000206A080000296A14F957AC8040CE7BB4B21BD278C0
+2	B	1	01010000206A0800001309D622BA978640CE7BB4B21BD278C0
+3	C	2	01010000206A0800001302B5B3601F8040F4D9A32B7AC389C0
+4	D	2	01010000206A080000BF5504F67B758440FCA0A7E556F889C0
+5	E	2	01010000206A08000089C562200A9F8940008E53CEF5098AC0
 \.
 
 
@@ -2202,8 +2092,6 @@ COPY tests_projects.form_filter_child_bus_stops (id, label, id_parent, geom) FRO
 --
 
 COPY tests_projects.layer_legend_categorized (id, geom, category) FROM stdin;
-1	01010000206A0800009807EE60CC70274122C96ECAA2F35741	1
-2	01010000206A080000B8DE1479FB71274184ECBB19A1F35741	2
 \.
 
 

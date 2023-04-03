@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -27,6 +28,12 @@ class Server
         $lizmap_data = $this->getLizmapMetadata();
         $lizmap_data['qgis_server_info'] = $this->getQgisServerMetadata();
 
+        // The lizmap plugin is not installed or not well configured
+        // We try QGIS Server with a WMS GetCapabilities without map parameter
+        if (array_key_exists('error', $lizmap_data['qgis_server_info'])) {
+            $lizmap_data['qgis_server'] = $this->tryQgisServer();
+        }
+
         $this->metadata = $lizmap_data;
     }
 
@@ -44,6 +51,10 @@ class Server
      */
     public function getLizmapPluginServerVersion()
     {
+        if (array_key_exists('error', $this->metadata['qgis_server_info'])) {
+            return '0.0.0';
+        }
+
         return $this->metadata['qgis_server_info']['plugins']['lizmap_server']['version'];
     }
 
@@ -53,6 +64,10 @@ class Server
      */
     public function getQgisServerVersion()
     {
+        if (array_key_exists('error', $this->metadata['qgis_server_info'])) {
+            return '0.0.0';
+        }
+
         return $this->metadata['qgis_server_info']['metadata']['version'];
     }
 
@@ -85,6 +100,123 @@ class Server
     }
 
     /**
+     * Get the list of groups having the given right
+     * for the given repository.
+     *
+     * It helps to list all the groups which can edit
+     * or view the projects for a repository
+     *
+     * @param string $repositoryKey The repository key
+     * @param string $rightSubject  The right subject key
+     *
+     * @return array The list of groups
+     */
+    private function getRepositoryAuthorizedGroupsForRight($repositoryKey, $rightSubject)
+    {
+        $daoRight = \jDao::get('jacl2db~jacl2rights', 'jacl2_profile');
+        $conditions = \jDao::createConditions();
+        $conditions->addCondition('id_aclsbj', '=', $rightSubject);
+        $conditions->addCondition('id_aclres', '=', $repositoryKey);
+        $res = $daoRight->findBy($conditions);
+        $groups = array();
+        foreach ($res as $rec) {
+            $groups[] = $rec->id_aclgrp;
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Get the data on Lizmap repositories.
+     *
+     * Fetch the key, label and relative path
+     *
+     * @return array List of Lizmap repositories
+     */
+    private function getLizmapRepositories()
+    {
+        $repositories = array();
+        $services = \lizmap::getServices();
+        $rootRepositories = $services->getRootRepositories();
+        foreach (\lizmap::getRepositoryList() as $repositoryKey) {
+            // Get the repository instance
+            $lizmapRepository = \lizmap::getRepository($repositoryKey);
+            if (!$lizmapRepository) {
+                continue;
+            }
+
+            // Do not add the repository if the connected user cannot access it
+            if (!\jAcl2::check('lizmap.repositories.view', $repositoryKey)) {
+                continue;
+            }
+
+            // Prepare the repository data to return
+            $repositories[$repositoryKey] = array(
+                'label' => $lizmapRepository->getLabel(),
+                'path' => $lizmapRepository->getPath(),
+            );
+
+            // Compute the relative repository path
+            $path = $lizmapRepository->getPath();
+            if (substr($path, 0, strlen($rootRepositories)) === $rootRepositories) {
+                $relativePath = str_replace($rootRepositories, '', $path);
+                $repositories[$repositoryKey]['path'] = $relativePath;
+            }
+
+            // Add the authorized groups
+            $authorizedGroups = $this->getRepositoryAuthorizedGroupsForRight(
+                $repositoryKey,
+                'lizmap.repositories.view'
+            );
+            $repositories[$repositoryKey]['authorized_groups'] = $authorizedGroups;
+
+            // Add the editing authorized groups
+            $editingAuthorizedGroups = $this->getRepositoryAuthorizedGroupsForRight(
+                $repositoryKey,
+                'lizmap.tools.edition.use'
+            );
+            $repositories[$repositoryKey]['editing_authorized_groups'] = $editingAuthorizedGroups;
+
+            // Add the projects
+            $repositoryProjects = $lizmapRepository->getProjectsMetadata();
+            $projects = array();
+            foreach ($repositoryProjects as $project) {
+                if (!$project->getAcl()) {
+                    continue;
+                }
+                $projects[$project->getId()] = array(
+                    'title' => $project->getTitle(),
+                );
+            }
+            $repositories[$repositoryKey]['projects'] = $projects;
+        }
+
+        return $repositories;
+    }
+
+    /**
+     * Get the data on Lizmap groups of users.
+     *
+     * Fetch the key and label of the user groups
+     *
+     * @return array List of groups of users
+     */
+    private function getAclGroups()
+    {
+        $groups = array();
+        // Get all the groups
+        $aclGroupList = \jAcl2DbUserGroup::getGroupList();
+        foreach ($aclGroupList as $group) {
+            $groups[$group->id_aclgrp] = array(
+                'label' => $group->name,
+                // "default" => ($group->grouptype == \jAcl2DbUserGroup::GROUPTYPE_PRIVATE)
+            );
+        }
+
+        return $groups;
+    }
+
+    /**
      * Get Lizmap Web Client metadata.
      *
      * @return array Array containing the Lizmap Web Client installation metadata
@@ -113,33 +245,29 @@ class Server
             ),
         );
 
-        // Get Lizmap services
-        $services = \lizmap::getServices();
-
-        // Try a request to QGIS Server
-        $data['qgis_server'] = array();
-        $params = array(
-            'service' => 'WMS',
-            'request' => 'GetCapabilities',
-        );
-        $url = \Lizmap\Request\Proxy::constructUrl($params, $services);
-        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
-        if (preg_match('#ServerException#i', $resp)
-            || preg_match('#ServiceExceptionReport#i', $resp)
-            || preg_match('#WMS_Capabilities#i', $resp)) {
-            $data['qgis_server']['test'] = 'OK';
-        } else {
-            $data['qgis_server']['test'] = 'ERROR';
+        if (\jAcl2::check('lizmap.admin.server.information.view') && isset(\jApp::config()->lizmap['hosting'])) {
+            $data['hosting'] = \jApp::config()->lizmap['hosting'];
         }
-        $data['qgis_server']['mime_type'] = $mime;
-        $isAdmin = \jAcl2::check('lizmap.admin.access');
-        if ($isAdmin) {
-            $data['qgis_server']['http_code'] = $code;
-            $data['qgis_server']['response'] = $resp;
 
-            if (isset(\jApp::config()->lizmap['hosting'])) {
-                $data['hosting'] = \jApp::config()->lizmap['hosting'];
-            }
+        // Add information about available APIs
+        $data['api'] = array(
+            'dataviz' => array(
+                // Version of the dataviz API
+                // (allowing to get a plot data by posting the configuration)
+                'version' => '1.0.0',
+            ),
+        );
+
+        // Add the list of repositories
+        if (\jAcl2::check('lizmap.admin.server.information.view')) {
+            $data['repositories'] = $this->getLizmapRepositories();
+        }
+
+        // Add the list of user groups
+        if (\jAcl2::check('lizmap.admin.server.information.view')) {
+            $data['acl'] = array(
+                'groups' => $this->getAclGroups(),
+            );
         }
 
         return $data;
@@ -177,6 +305,42 @@ class Server
             }
         } else {
             $data = array('error' => 'HTTP_ERROR', 'error_http_code' => $code, 'error_message' => $resp);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Try QGIS Server with a WMS GetCapabilities without MAP parameter.
+     *
+     * @return array Array containing try information
+     */
+    private function tryQgisServer()
+    {
+        // Get Lizmap services
+        $services = \lizmap::getServices();
+
+        // Try a request to QGIS Server
+        $data = array();
+        $params = array(
+            'service' => 'WMS',
+            'request' => 'GetCapabilities',
+        );
+        $url = \Lizmap\Request\Proxy::constructUrl($params, $services);
+        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
+        if (
+            preg_match('#ServerException#i', $resp)
+            || preg_match('#ServiceExceptionReport#i', $resp)
+            || preg_match('#WMS_Capabilities#i', $resp)
+        ) {
+            $data['test'] = 'OK';
+        } else {
+            $data['test'] = 'ERROR';
+        }
+        $data['mime_type'] = $mime;
+        if (\jAcl2::check('lizmap.admin.server.information.view')) {
+            $data['http_code'] = $code;
+            $data['response'] = $resp;
         }
 
         return $data;

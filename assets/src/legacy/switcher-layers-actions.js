@@ -29,9 +29,7 @@ var lizLayerActionButtons = function() {
                 // Test if the link is internal
                 var mediaRegex = /^(\/)?media\//;
                 if(mediaRegex.test(windowLink)){
-                    var mediaLink = OpenLayers.Util.urlAppend(lizUrls.media
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    )
+                    var mediaLink = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
                     windowLink = mediaLink+'&path=/'+windowLink;
                 }
                 // Open link in a new window
@@ -61,7 +59,8 @@ var lizLayerActionButtons = function() {
             abstract: null,
             link: null,
             styles: null,
-            isBaselayer: false
+            isBaselayer: false,
+            actions: null
         };
         if( aName in lizMap.config.layers ){
             var layerConfig = lizMap.config.layers[aName];
@@ -73,6 +72,11 @@ var lizLayerActionButtons = function() {
                 metadatas.link = layerConfig.link;
             if( layerConfig.styles && layerConfig.styles.length > 1 )
                 metadatas.styles = layerConfig.styles
+
+            // Add actions
+            let layerActions = lizMap.mainLizmap.action.getActions('layer', layerConfig.id);
+            if (layerActions.length) metadatas.actions = layerActions;
+
         }
         if( lizMap.map.baseLayer && lizMap.map.baseLayer.name == aName ){
             metadatas.type = 'layer';
@@ -199,6 +203,20 @@ var lizLayerActionButtons = function() {
             if( metadatas.abstract ){
                 html+= '        <dt>'+lizDict['layer.metadata.layer.abstract']+'</dt>';
                 html+= '        <dd>'+metadatas.abstract+'</dd>';
+            }
+
+
+            // Actions
+            if (metadatas.actions) {
+                html+= '        <dt>'+lizDict['action.title']+'</dt>';
+                html += `
+                <div class="layer-action-selector-container">
+                    <lizmap-action-selector id="lizmap-layer-action-${layerConfig.id}" title="${lizDict['action.form.select.help']}"
+                        no-selection-warning="${lizDict['action.form.select.warning']}"
+                        action-scope="layer" action-layer-id="${layerConfig.id}"
+                    ></lizmap-action-selector>
+                <div>
+                `;
             }
 
             html+= '    </dl>';

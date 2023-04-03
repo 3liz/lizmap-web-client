@@ -1,4 +1,4 @@
-import { mainEventDispatcher } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import { html, render } from 'lit-html';
 
@@ -7,6 +7,8 @@ import { getCenter } from 'ol/extent';
 import GeoJSON from 'ol/format/GeoJSON';
 import GPX from 'ol/format/GPX';
 import KML from 'ol/format/KML';
+
+import '../images/svg/map-print.svg';
 
 export default class FeatureToolbar extends HTMLElement {
     constructor() {
@@ -44,13 +46,44 @@ export default class FeatureToolbar extends HTMLElement {
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right" role="menu">
-                            ${this._downloadFormats.map((format) => 
+                            ${this._downloadFormats.map((format) =>
                                 html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
                         </ul>
                     </div>`
                 : ''
             }
 
+            ${this.hasDefaultPopupPrint 
+            ? html`<button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>`
+            : ''
+            }
+            
+            ${this.atlasLayouts.map( layout => html`
+                <div class="feature-atlas">
+                    <button type="button" class="btn btn-mini" title="${layout.title}" @click=${ 
+                        event => layout.labels.length 
+                        ? event.currentTarget.parentElement.querySelector('.custom-labels').classList.toggle('hide')
+                        : this.printAtlas(layout.title)}>
+                        ${layout.icon
+                        ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
+                        : html`<svg>
+                                    <use xlink:href="#map-print"></use>
+                                </svg>`
+                        }
+                    </button>
+                    ${layout.labels.length
+                        ? html`<div class="custom-labels hide">
+                            ${layout.labels.filter( label => !["lizmap_user", "lizmap_user_groups"].includes(label.id)).slice().reverse().map( label => 
+                                label.htmlState
+                                    ? html`<textarea class="input-medium custom-label" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}">${label.text}</textarea>`
+                                    : html`<input class="input-medium custom-label" type="text" size="15" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`
+                                )}
+                                <button class="btn btn-primary btn-print-launch" @click=${() => { this.printAtlas(layout.title) }}>${lizDict['print.launch']}</button>
+                            </div>`
+                        : ''
+                    }
+                </div>
+            `)}
         </div>`;
 
         render(this._mainTemplate(), this);
@@ -146,13 +179,13 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     get isUnlinkable(){
-        return this.parentLayerId && 
-            (this.isLayerEditable && !this.isLayerPivot) || 
+        return this.parentLayerId &&
+            (this.isLayerEditable && !this.isLayerPivot) ||
             (lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True" && this.isLayerPivot);
     }
 
     /**
-     * Feature can be delete if it is editable and has delete capabilities and layer is not pivot
+     * Feature can be deleted if it is editable & if it has delete capabilities & if layer is not pivot
      * If layer is a pivot, unlink button is displayed but a delete action is made instead
      * @readonly
      */
@@ -181,11 +214,45 @@ export default class FeatureToolbar extends HTMLElement {
      * @readonly
      */
     get isFeatureExportable(){
-        return this.attributeTableConfig && 
-                this.hasGeometry && 
+        return this.attributeTableConfig &&
+                this.hasGeometry &&
                 Object.entries(lizMap.config.layers).some(
                     ([ ,value]) => value?.typename == this._featureType && value?.popup_allow_download
                 );
+    }
+
+    get hasDefaultPopupPrint(){
+        return mainLizmap.config?.layouts?.config?.default_popup_print;
+    }
+
+    get atlasLayouts() {
+        const atlasLayouts = [];
+
+        // Lizmap >= 3.7
+        this._layouts = mainLizmap.config?.layouts;
+
+        mainLizmap.config?.printTemplates.map((template, index) => {
+            if (this._layerId === template?.atlas?.coverageLayer && template?.atlas?.enabled === '1') {
+                // Lizmap >= 3.7
+                if (mainLizmap.config?.layouts?.list) {
+                    if (mainLizmap.config?.layouts?.list?.[index]?.enabled) {
+                        atlasLayouts.push({
+                            title: mainLizmap.config?.layouts?.list?.[index]?.layout,
+                            icon: mainLizmap.config?.layouts?.list?.[index]?.icon,
+                            labels: template?.labels
+                        });
+                    }
+                    // Lizmap < 3.7
+                } else {
+                    atlasLayouts.push({
+                        title: template?.title,
+                        labels: template?.labels
+                    });
+                }
+            }
+        });
+
+        return atlasLayouts;
     }
 
     updateIsFeatureEditable(editableFeatures) {
@@ -364,6 +431,90 @@ export default class FeatureToolbar extends HTMLElement {
                     Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', this._featureType + '.kml');
                 }
             }
+        });
+    }
+
+    /**
+     * Launch browser's print box with print_popup.css applied
+     * to print current popup content
+     */
+    print() {
+        // Clone popup and insert at begin of <body>
+        const clonedPopup = document.querySelector('.lizmapPopupContent').cloneNode(true);
+        clonedPopup.classList.add('print', 'hide');
+        document.querySelector('body').insertAdjacentElement('afterbegin', clonedPopup);
+
+        // Add special class to body to activate CSS in print_popup.css
+        document.querySelector('body').classList.add('print_popup');
+
+        // On afterprint event, delete clonedPopup + remove special class
+        window.addEventListener('afterprint', () => {
+            clonedPopup.remove();
+            document.querySelector('body').classList.remove('print_popup');
+        }, {
+            once: true
+        });
+
+        // Launch print box
+        window.print();
+    }
+
+    printAtlas(templateName) {
+        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref;
+        const wmsParams = {
+            SERVICE: 'WMS',
+            REQUEST: 'GetPrint',
+            VERSION: '1.3.0',
+            FORMAT: 'pdf',
+            TRANSPARENT: true,
+            SRS: projectProjection,
+            DPI: 100,
+            TEMPLATE: templateName,
+            ATLAS_PK: this._fid
+        };
+
+        // Add layers
+        const layers = [];
+
+        // Get active baselayer, and add the corresponding QGIS layer if needed
+        const activeBaseLayerName = mainLizmap._lizmap3.map.baseLayer.name;
+        const externalBaselayersReplacement = mainLizmap._lizmap3.getExternalBaselayersReplacement();
+        const exbl = externalBaselayersReplacement?.[activeBaseLayerName];
+        if (mainLizmap.config.layers?.[exbl]) {
+            const activeBaseLayerConfig = mainLizmap.config.layers[exbl];
+            if (activeBaseLayerConfig?.id && mainLizmap.config.options?.useLayerIDs == 'True') {
+                layers.push(activeBaseLayerConfig.id);
+            } else {
+                layers.push(exbl);
+            }
+        }
+
+        layers.push(this._featureType);
+
+        wmsParams['LAYERS'] = layers.join(',');
+
+        // Custom labels
+        this.querySelectorAll('.custom-labels:not(.hide) .custom-label').forEach(field => wmsParams[field.dataset.labelid] = field.value);
+
+        // Disable buttons and display message while waiting for print
+        this.querySelectorAll('.feature-atlas button').forEach(element => {
+            element.disabled = true;
+            if (element.classList.contains('btn-print-launch')) {
+                element.classList.add('spinner');
+            }
+        });
+
+        mainLizmap._lizmap3.addMessage(lizDict['print.started'], 'info', true).addClass('print-in-progress');
+
+        Utils.downloadFile(mainLizmap.serviceURL, wmsParams, () => {
+            this.querySelectorAll('.feature-atlas button').forEach(element => {
+                element.disabled = false;
+                if (element.classList.contains('btn-print-launch')) {
+                    element.classList.remove('spinner');
+                }
+            });
+
+            document.querySelector('#message .print-in-progress a').click();
         });
     }
 }

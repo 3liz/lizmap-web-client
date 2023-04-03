@@ -16,9 +16,10 @@ class serviceCtrl extends jController
      *
      * @urlparam $REPOSITORY Name of the repository
      * @urlparam $PROJECT Name of the project
+     * @urlparam $NAME The action name
      * @urlparam $LAYERID Layer Id
      * @urlparam $FEATUREID Feature Id
-     * @urlparam $NAME The action name
+     * @urlparam $WKT An optional geometry in WKT format
      *
      * @return jResponseJson the request response
      */
@@ -27,13 +28,13 @@ class serviceCtrl extends jController
         // Get parameters
         $repository = $this->param('repository');
         $project = $this->param('project');
-        $layerId = $this->param('layerId');
-        $featureId = $this->intParam('featureId', 0);
+        $layerId = trim($this->param('layerId', ''));
+        $featureId = $this->intParam('featureId', -1);
 
-        // Check project, repository and acl
+        // Check the project, repository and the access rights
         try {
-            $lproj = lizmap::getProject($repository.'~'.$project);
-            if (!$lproj) {
+            $lizmapProject = lizmap::getProject($repository.'~'.$project);
+            if (!$lizmapProject) {
                 $errors = array(
                     'title' => 'Wrong repository and project !',
                     'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
@@ -50,8 +51,8 @@ class serviceCtrl extends jController
             return $this->error($errors);
         }
 
-        // Redirect if no rights to access this repository
-        if (!$lproj->checkAcl()) {
+        // Redirect if the user has no right to access this repository
+        if (!$lizmapProject->checkAcl()) {
             $errors = array(
                 'title' => 'Access forbiden',
                 'detail' => jLocale::get('view~default.repository.access.denied'),
@@ -60,7 +61,70 @@ class serviceCtrl extends jController
             return $this->error($errors);
         }
 
-        if (!$featureId) {
+        // Check there is a valid configuration for the action tool
+        jClasses::inc('action~actionConfig');
+        $actionConfig = new actionConfig($repository, $project);
+        if (!$actionConfig->getStatus()) {
+            return $this->error($actionConfig->getErrors());
+        }
+        $config = $actionConfig->getConfig();
+        if (empty($config)) {
+            return $this->error($actionConfig->getErrors());
+        }
+
+        // Check if a configuration exists for the given parameters
+        $actionName = trim($this->param('name'));
+        $action = $actionConfig->getAction($actionName, $layerId);
+        if (!$action) {
+            $errors = array(
+                'title' => 'Action unknown',
+                'detail' => 'The action named '.$actionName.' does not exist in the config file for this layer: '.$layerId .' !',
+            );
+
+            return $this->error($errors);
+        }
+
+        // Get the action scope
+        $scope = $action->scope;
+
+        // Get the PostgreSQL connection for the project scope
+        // In this case, we cannot use the layer datasource
+        // We choose to use the default PostgreSQL connection
+        $cnx = jDb::getConnection();
+
+        // Depending on the scope (project, layer or feature)
+        // we must check if the required parameters are given and are valid
+        if (in_array($scope, array('layer', 'feature')) && empty($layerId)) {
+            $errors = array(
+                'title' => 'The layerId must not be empty',
+                'detail' => 'The layerId must not be empty !',
+            );
+
+            return $this->error($errors);
+        }
+
+
+        // Check the layer does exists in the given project
+        // If we find a layer, we override the PostgreSQL database connexion
+        // with the one retrieved from the layer data source
+        $qgisLayer = null;
+        if (in_array($scope, array('layer', 'feature'))) {
+            /** @var null|qgisVectorLayer $qgisLayer */
+            $qgisLayer = $lizmapProject->getLayer($layerId);
+            if ($qgisLayer) {
+                $cnx = $qgisLayer->getDatasourceConnection();
+            } else {
+                $errors = array(
+                    'title' => 'Layer not in project',
+                    'detail' => 'The layer with id '.$layerId.' does not exist in this project !',
+                );
+
+                return $this->error($errors);
+            }
+        }
+
+        // Test the feature ID
+        if ($scope == 'feature' && empty($featureId)) {
             $errors = array(
                 'title' => 'No feature id given',
                 'detail' => 'The feature id must be a positive integer !',
@@ -68,80 +132,69 @@ class serviceCtrl extends jController
 
             return $this->error($errors);
         }
-
-        // Check action config
-        jClasses::inc('action~actionConfig');
-        $dv = new actionConfig($repository, $project);
-        if (!$dv->getStatus()) {
-            return $this->error($dv->getErrors());
-        }
-        $config = $dv->getConfig();
-        if (empty($config)) {
-            return $this->error($dv->getErrors());
+        if ($scope != 'feature') {
+            $featureId = '-1';
         }
 
-        // Check if configuration exists for this layer and name
-        $name = $this->param('name');
-        if (!property_exists($config, $layerId)) {
-            $errors = array(
-                'title' => 'Layer id unknown',
-                'detail' => 'The layer id '.$layerId.' does not exist in the config file !',
-            );
+        // Check the given WKT (optional parameter, but must be valid)
+        // Check also the map center and extent (must be valid WKT)
+        $wktParameters = array('wkt', 'mapCenter', 'mapExtent');
+        $wkt = $mapCenter = $mapExtent = '';
+        foreach($wktParameters as $paramName) {
+            $value = trim($this->param($paramName, ''));
+            ${$paramName} = $value;
+            if (!empty($value) && \lizmapWkt::check($value)) {
+                $geom = \lizmapWkt::parse($value);
+                if ($geom === null) {
+                    ${$paramName} = '';
+                    $errors = array(
+                        'title' => 'This given parameter ' . $value . ' is invalid !',
+                        'detail' => 'Please check the value of the ' . $value . ' parameter is either empty or valid.',
+                    );
 
-            return $this->error($errors);
-        }
-        $layerConf = $config->{$layerId};
-        $action = null;
-        foreach ($layerConf as $layer_action) {
-            if ($name == $layer_action->name) {
-                $action = $layer_action;
-
-                break;
+                    return $this->error($errors);
+                }
+            } else {
+                ${$paramName} = '';
             }
         }
-        if (!$action) {
-            $errors = array(
-                'title' => 'Action unknown',
-                'detail' => 'The action named '.$name.' does not exist in the config file for this layer !',
-            );
 
-            return $this->error($errors);
-        }
-
-        // Check layer in project
-        $p = lizmap::getProject($repository.'~'.$project);
-        $qgisLayer = $p->getLayer($layerId);
-        if ($qgisLayer) {
-            $cnx = $qgisLayer->getDatasourceConnection();
-        } else {
-            $errors = array(
-                'title' => 'Layer not in project',
-                'detail' => 'The layer with id '.$layerId.' does not exist in this project !',
-            );
-
-            return $this->error($errors);
-        }
-
-        // Get data
+        // Compute the parameters to pass to the PostgreSQL action function
+        // depending on the scope and given parameters
         $data = array();
-        $layerName = $qgisLayer->getName();
-        $lp = $qgisLayer->getDatasourceParameters();
         $action_params = array(
-            'layer_name' => str_replace("'", "''", $layerName),
-            'layer_schema' => $lp->schema,
-            'layer_table' => $lp->tablename,
-            'feature_id' => $featureId,
-            'action_name' => $name,
+            'lizmap_repository' => $repository,
+            'lizmap_project' => $project,
+            'action_name' => $actionName,
+            'action_scope' => $scope,
+            'layer_name' => null,
+            'layer_schema' => null,
+            'layer_table' => null,
+            'feature_id' => null,
+            'map_center' => $mapCenter,
+            'map_extent' => $mapExtent,
+            'wkt' => $wkt,
         );
+
+        if ($qgisLayer && in_array($scope, array('layer', 'feature'))) {
+            $layerName = $qgisLayer->getName();
+            $layerDatasource = $qgisLayer->getDatasourceParameters();
+            $action_params['layer_name'] = str_replace("'", "''", $layerName);
+            $action_params['layer_schema'] = $layerDatasource->schema;
+            $action_params['layer_table'] = $layerDatasource->tablename;
+            $action_params['feature_id'] = $featureId;
+        }
+
+        // Get the additional options from the JSON config file
+        // Not for any requests parameters !!!
         foreach ($action->options as $k => $v) {
             $action_params[$k] = $v;
         }
 
-        // Run action
+        // Run the action
         $sql = "SELECT lizmap_get_data('";
         $sql .= json_encode($action_params);
         $sql .= "') AS data";
-
         try {
             $res = $cnx->query($sql);
             foreach ($res as $r) {
@@ -150,7 +203,7 @@ class serviceCtrl extends jController
         } catch (Exception $e) {
             jLog::log('Error while running the query : '.$sql);
             $errors = array(
-                'title' => 'An error occured while running the PostgreSQL query !',
+                'title' => 'An error occurred while running the PostgreSQL query !',
                 'detail' => $e->getMessage(),
             );
 

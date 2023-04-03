@@ -10,6 +10,8 @@ import Layers from './Layers.js';
 import WFS from './WFS.js';
 import WMS from './WMS.js';
 import Utils from './Utils.js';
+import Action from './Action';
+import FeatureStorage from './FeatureStorage';
 
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
@@ -55,6 +57,8 @@ export default class Lizmap {
                 this.wfs = new WFS();
                 this.wms = new WMS();
                 this.utils = Utils;
+                this.action = new Action();
+                this.featureStorage = new FeatureStorage();
             }
         });
     }
@@ -93,6 +97,10 @@ export default class Lizmap {
 
     get serviceURL() {
         return lizUrls.wms + '?' + (new URLSearchParams(lizUrls.params).toString());
+    }
+
+    get mediaURL() {
+        return lizUrls.media + '?' + (new URLSearchParams(lizUrls.params).toString());
     }
 
     get hasOverview() {

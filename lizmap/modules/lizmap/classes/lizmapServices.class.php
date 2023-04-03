@@ -91,7 +91,6 @@ class lizmapServices
         'cacheRedisDb',
         'cacheRedisKeyPrefix',
         'adminSenderEmail',
-        'adminSenderName',
         'proxyHttpBackend',
     );
 
@@ -461,7 +460,7 @@ class lizmapServices
                 jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'warning');
             } elseif (!$email) {
                 jLog::log('Notification cannot be send: no notification email has been configured', 'warning');
-            } elseif (!$sender) {
+            } else {
                 jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
             }
         }

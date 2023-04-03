@@ -62,6 +62,7 @@ services:
       default:
         aliases:
           - lizmap.local
+#          - othersite.local
     ports:
       - ${LZMWEBPORT}:80
     depends_on:
@@ -71,21 +72,22 @@ services:
     image: 3liz/qgis-map-server:${LZMQGSRVVERSION}
     environment:
       PGSERVICEFILE: /srv/etc/pg_service.conf
+      QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: yes
+      QGSRV_API_ENABLED_LIZMAP: yes
       QGSRV_CACHE_ROOTDIR: /srv/projects
-      QGSRV_SERVER_PLUGINPATH: /srv/qgis-server-plugins
       QGSRV_CACHE_SIZE: '20'
+      # For testing purpose, I think it's better to have a strict check of layers
+      QGSRV_CACHE_STRICT_CHECK: yes
       QGSRV_LOGGING_LEVEL: DEBUG
+      QGSRV_SERVER_PLUGINPATH: /srv/qgis-server-plugins
+      QGSRV_SERVER_WORKERS: 4
       QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
       ROUTER_HOST: map
-      QGSRV_SERVER_WORKERS: 4
-      QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: 1
-    command: qgisserver -c /srv/etc/pyqgis.conf
     volumes:
       - ./qgis-projects:/srv/projects
       - ./qgis-server-plugins:/srv/qgis-server-plugins
       - ./wps-data:/srv/data
       - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
-      - ./docker-conf/pyqgis.conf:/srv/etc/pyqgis.conf
     ports:
       - ${LZMQGSRVPORT}:8080
 volumes:

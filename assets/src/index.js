@@ -7,10 +7,12 @@ import Scaleline from './components/Scaleline.js';
 import MousePosition from './components/MousePosition.js';
 import Digitizing from './components/Digitizing.js';
 import OverviewMap from './components/OverviewMap.js';
-
 import FeatureToolbar from './components/FeatureToolbar.js';
-
 import ReverseGeom from './components/edition/ReverseGeom.js';
+import PasteGeom from './components/edition/PasteGeom.js';
+import ActionSelector from './components/ActionSelector.js';
+import Print from './components/Print.js';
+import FullScreen from './components/FullScreen.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 
@@ -24,14 +26,15 @@ lizMap.events.on({
         window.customElements.define('lizmap-scaleline', Scaleline);
         window.customElements.define('lizmap-mouse-position', MousePosition);
         window.customElements.define('lizmap-digitizing', Digitizing);
-
         if(mainLizmap.hasOverview){
             window.customElements.define('lizmap-overviewmap', OverviewMap);
         }
-
         window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
-
         window.customElements.define('lizmap-reverse-geom', ReverseGeom);
+        window.customElements.define('lizmap-paste-geom', PasteGeom);
+        window.customElements.define('lizmap-action-selector', ActionSelector);
+        window.customElements.define('lizmap-print', Print);
+        window.customElements.define('lizmap-fullscreen', FullScreen);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;

@@ -196,6 +196,9 @@ class QgisProjectTest extends TestCase
                     'referencedField' => 'QUARTMNO',
                     'referencingField' => 'QUARTMNO',
                     'previewField' => 'LIBQUART',
+                    'relationName' => 'Subdistricts by district',
+                    'relationId' => 'SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO',
+
                 ),
             ),
             'tramstop20150328114203878' => array(
@@ -203,6 +206,9 @@ class QgisProjectTest extends TestCase
                     'referencedField' => 'osm_id',
                     'referencingField' => 'stop_id',
                     'previewField' => 'unique_name',
+                    'relationName' => 'Tram stop -> pivot tram stop/tram line',
+                    'relationId' => 'jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id',
+
                 ),
             ),
             'pivot' => array(),
@@ -416,7 +422,7 @@ class QgisProjectTest extends TestCase
         if ($sname) {
             $this->assertEquals($sname, $layer->{$lname}->shortname);
         } else {
-            $this->assertObjectNotHasAttribute('shortname', $layer->{$lname});
+            $this->assertFalse(property_exists($layer->{$lname}, 'shortname'));
         }
     }
 
@@ -656,7 +662,7 @@ class QgisProjectTest extends TestCase
         $prop = $props['type'];
         $this->assertEquals($prop->getFieldEditType(), 'Classification');
 
-        // DateTime widget
+        // ExternalResource widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -835,6 +841,77 @@ class QgisProjectTest extends TestCase
         $options = (object) $prop->getEditAttributes();
         $this->assertTrue(property_exists($options, 'FilterExpression'));
         $this->assertEquals($options->FilterExpression, 'intersects(@current_geometry , $geometry)');
+
+        // RelationReference widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="risque">
+              <editWidget type="RelationReference">
+                <config>
+                  <Option type="Map">
+                    <Option type="bool" value="false" name="AllowAddFeatures"/>
+                    <Option type="bool" value="true" name="AllowNULL"/>
+                    <Option type="bool" value="false" name="MapIdentification"/>
+                    <Option type="bool" value="false" name="OrderByValue"/>
+                    <Option type="bool" value="false" name="ReadOnly"/>
+                    <Option type="QString" value="service=lizmap sslmode=disable key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
+                    <Option type="QString" value="risque_66cb8d43_86b7_4583_9217_f7ead54463c3" name="ReferencedLayerId"/>
+                    <Option type="QString" value="risque" name="ReferencedLayerName"/>
+                    <Option type="QString" value="postgres" name="ReferencedLayerProviderKey"/>
+                    <Option type="QString" value="tab_demand_risque_risque_66c_risque" name="Relation"/>
+                    <Option type="bool" value="false" name="ShowForm"/>
+                    <Option type="bool" value="true" name="ShowOpenFormButton"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(is_array($props));
+        $this->assertCount(1, $props);
+        $this->assertTrue(array_key_exists('risque', $props));
+
+        $prop = $props['risque'];
+        $this->assertEquals($prop->getFieldEditType(), 'RelationReference');
+
+        $options = (object) $prop->getEditAttributes();
+        $this->assertTrue(property_exists($options, 'AllowNULL'));
+        $this->assertTrue($options->AllowNULL);
+        $this->assertTrue(property_exists($options, 'MapIdentification'));
+        $this->assertFalse($options->MapIdentification);
+        $this->assertTrue(property_exists($options, 'OrderByValue'));
+        $this->assertFalse($options->OrderByValue);
+        $this->assertTrue(property_exists($options, 'ReadOnly'));
+        $this->assertFalse($options->ReadOnly);
+        $this->assertTrue(property_exists($options, 'ReferencedLayerId'));
+        $this->assertEquals($options->ReferencedLayerId, 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
+        $this->assertTrue(property_exists($options, 'ReferencedLayerName'));
+        $this->assertEquals($options->ReferencedLayerName, 'risque');
+        $this->assertTrue(property_exists($options, 'Relation'));
+        $this->assertEquals($options->Relation, 'tab_demand_risque_risque_66c_risque');
+        $this->assertTrue(property_exists($options, 'filters'));
+        $this->assertTrue(is_array($options->filters));
+        $this->assertCount(0, $options->filters);
+        $this->assertTrue(property_exists($options, 'chainFilters'));
+        $this->assertFalse($options->chainFilters);
+
+        $relationReferenceData = $prop->getRelationReference();
+        $this->assertTrue(is_array($relationReferenceData));
+        $this->assertTrue($relationReferenceData['allowNull']);
+        $this->assertFalse($relationReferenceData['orderByValue']);
+        $this->assertEquals($relationReferenceData['relation'], 'tab_demand_risque_risque_66c_risque');
+        $this->assertFalse($relationReferenceData['mapIdentification']);
+        $this->assertTrue(is_array($relationReferenceData['filters']));
+        $this->assertCount(0, $relationReferenceData['filters']);
+        $this->assertEquals($relationReferenceData['filterExpression'], Null);
+        $this->assertFalse($relationReferenceData['chainFilters']);
+        $this->assertEquals($relationReferenceData['referencedLayerName'], 'risque');
+        $this->assertEquals($relationReferenceData['referencedLayerId'], 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
 
         // Range widget
         $xmlStr = '
@@ -1460,6 +1537,38 @@ class QgisProjectTest extends TestCase
         $props = $testProj->getFieldConfigurationForTest($xml);
         $this->assertTrue(array_key_exists('tram_id', $props));
         $this->assertEquals($props['tram_id']->getMarkup(), 'checkboxes');
+
+        // RelationReference widget
+        $xmlStr = '
+        <maplayer>
+          <fieldConfiguration>
+            <field configurationFlags="None" name="risque">
+              <editWidget type="RelationReference">
+                <config>
+                  <Option type="Map">
+                    <Option type="bool" value="false" name="AllowAddFeatures"/>
+                    <Option type="bool" value="true" name="AllowNULL"/>
+                    <Option type="bool" value="false" name="MapIdentification"/>
+                    <Option type="bool" value="false" name="OrderByValue"/>
+                    <Option type="bool" value="false" name="ReadOnly"/>
+                    <Option type="QString" value="service=lizmap sslmode=disable key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
+                    <Option type="QString" value="risque_66cb8d43_86b7_4583_9217_f7ead54463c3" name="ReferencedLayerId"/>
+                    <Option type="QString" value="risque" name="ReferencedLayerName"/>
+                    <Option type="QString" value="postgres" name="ReferencedLayerProviderKey"/>
+                    <Option type="QString" value="tab_demand_risque_risque_66c_risque" name="Relation"/>
+                    <Option type="bool" value="false" name="ShowForm"/>
+                    <Option type="bool" value="true" name="ShowOpenFormButton"/>
+                  </Option>
+                </config>
+              </editWidget>
+            </field>
+          </fieldConfiguration>
+        </maplayer>
+        ';
+        $xml = simplexml_load_string($xmlStr);
+        $props = $testProj->getFieldConfigurationForTest($xml);
+        $this->assertTrue(array_key_exists('risque', $props));
+        $this->assertEquals($props['risque']->getMarkup(), 'menulist');
 
         // ValueMap widget
         $xmlStr = '

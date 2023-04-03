@@ -22,9 +22,24 @@ class serviceCtrl extends jController
     private $project;
 
     /**
+     * @var null|Lizmap\Project\Project the Lizmap project
+     */
+    private $lizmapProject;
+
+    /**
      * @var datavizConfig
      */
     private $config;
+
+    /**
+     * @var bool If the basic authentication is used
+     */
+    private $basicAuthUsed = false;
+
+    /**
+     * @var bool Debug mode
+     */
+    private $debugMode;
 
     /**
      * Redirect to the appropriate action depending on the REQUEST parameter.
@@ -37,19 +52,110 @@ class serviceCtrl extends jController
      */
     public function index()
     {
+        // Get the debug mode status
+        $services = lizmap::getServices();
+        $this->debugMode = $services->debugMode;
+
         // Check project
         $repository = $this->param('repository');
         $project = $this->param('project');
+        $plotConfigParameter = $this->param('plot_config');
 
-        // Check dataviz config
-        jClasses::inc('dataviz~datavizConfig');
-        $dv = new datavizConfig($repository, $project);
-        if (!$dv->getStatus()) {
-            return $this->error($dv->getErrors());
+        if ($this->debugMode == '1') {
+            \jLog::log('Dataviz - parameter repository  = '.$repository);
+            \jLog::log('Dataviz - parameter project     = '.$project);
         }
-        $config = $dv->getConfig();
-        if (empty($config)) {
-            return $this->error($dv->getErrors());
+
+        // Connect from auth basic if necessary
+        if (isset($_SERVER['PHP_AUTH_USER'])) {
+            $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+            if (!$ok) {
+                return $this->error(
+                    array(
+                        'code' => 403,
+                        'error_code' => 'wrong_credentials',
+                        'title' => jLocale::get('dataviz~dataviz.log.wrong_credentials.title'),
+                        'detail' => jLocale::get('dataviz~dataviz.log.wrong_credentials.detail'),
+                    )
+                );
+            }
+            $this->basicAuthUsed = true;
+        }
+
+        if ($this->debugMode == '1') {
+            \jLog::log('Dataviz - basic authentication  = '.json_encode($this->basicAuthUsed));
+        }
+
+        // Check the repository exists
+        $lizmapRepository = lizmap::getRepository($repository);
+        if (!$lizmapRepository) {
+            return $this->error(
+                array(
+                    'code' => 404,
+                    'error_code' => 'repository_not_found',
+                    'title' => jLocale::get('dataviz~dataviz.log.repository_not_found.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.repository_not_found.detail', array($repository)),
+                )
+            );
+        }
+
+        // Check project
+        try {
+            $lizmapProject = lizmap::getProject($repository.'~'.$project);
+            if (!$lizmapProject) {
+                return $this->error(
+                    array(
+                        'code' => 404,
+                        'error_code' => 'project_not_found',
+                        'title' => jLocale::get('dataviz~dataviz.log.project_not_found.title'),
+                        'detail' => jLocale::get('dataviz~dataviz.log.project_not_found.detail', array($project, $repository)),
+                    )
+                );
+            }
+        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+            return $this->error(
+                array(
+                    'code' => 404,
+                    'error_code' => 'project_not_found',
+                    'title' => jLocale::get('dataviz~dataviz.log.project_not_found.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.project_not_found.detail', array($project, $repository)),
+                )
+            );
+        }
+        $this->lizmapProject = $lizmapProject;
+
+        // Redirect if no rights to access this repository
+        if (!$lizmapProject->checkAcl()) {
+            return $this->error(
+                array(
+                    'code' => 403,
+                    'error_code' => 'access_denied',
+                    'title' => jLocale::get('dataviz~dataviz.log.access_denied.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.access_denied.detail'),
+                )
+            );
+        }
+
+        // Check dataviz config only for plots configured for this project layers
+        // If a plot_config is given and basic authentication is used for the connected user,
+        // do not raise an error, as the dataviz configuration might be empty
+        jClasses::inc('dataviz~datavizConfig');
+        $datavizConfig = new datavizConfig($repository, $project);
+        if (empty($plotConfigParameter) && !$this->basicAuthUsed) {
+            if (!$datavizConfig->getStatus()) {
+                return $this->error(
+                    $datavizConfig->getErrors(),
+                );
+            }
+        }
+        // Get the content of dataviz configuration
+        $config = $datavizConfig->getConfig();
+
+        // Do not report errors also for dataviz API if there is an empty configuration
+        if (empty($config) && empty($plotConfigParameter) && !$this->basicAuthUsed) {
+            return $this->error(
+                $datavizConfig->getErrors(),
+            );
         }
         $this->repository = $repository;
         $this->project = $project;
@@ -63,8 +169,10 @@ class serviceCtrl extends jController
 
         return $this->error(
             array(
-                'title' => 'Not supported request',
-                'detail' => 'The request "'.$request.'" is not supported!',
+                'code' => 400,
+                'error_code' => 'request_not_supported',
+                'title' => jLocale::get('dataviz~dataviz.log.request_not_supported.title'),
+                'detail' => jLocale::get('dataviz~dataviz.log.request_not_supported.detail', array($request)),
             )
         );
     }
@@ -80,6 +188,15 @@ class serviceCtrl extends jController
     {
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
+
+        // HTTP status code
+        if (array_key_exists('code', $errors)) {
+            $code = (int) $errors['code'];
+            $rep->setHttpStatus(
+                $code,
+                \Lizmap\Request\Proxy::getHttpStatusMsg($code)
+            );
+        }
         $rep->data = array('errors' => $errors);
 
         return $rep;
@@ -97,18 +214,81 @@ class serviceCtrl extends jController
         $project = $this->project;
         $plot_id = $this->intParam('plot_id');
         $exp_filter = trim((string) $this->param('exp_filter'));
-        $color = null;
-        $color2 = null;
-        $layout = null;
+        $plotConfigParameter = $this->param('plot_config');
 
-        // Fins layer by id
-        if (array_key_exists($plot_id, $this->config['layers'])) {
+        if ($this->debugMode == '1') {
+            \jLog::log('Dataviz - parameter plot_id     = '.$plot_id);
+            \jLog::log('Dataviz - parameter exp_filter  = '.$exp_filter);
+            $logPlotConfigParameter = $plotConfigParameter;
+            if (is_array($plotConfigParameter)) {
+                $logPlotConfigParameter = json_encode($plotConfigParameter);
+            }
+            \jLog::log('Dataviz - parameter plot_config = '.$logPlotConfigParameter);
+        }
+
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+
+        // Get the plot configuration from Lizmap config file
+        $plotConfig = null;
+        if ($this->config !== null && array_key_exists($plot_id, $this->config['layers'])) {
             $plotConfig = $this->config['layers'][$plot_id];
-        } else {
+            if ($this->debugMode == '1') {
+                \jLog::log('Dataviz - a plot configuration exists for this plot_id = '.$plot_id);
+            }
+        }
+
+        // Get the configuration from the parameter
+        // This allow to test the plot from outside LWC
+        // For example from the QGIS Lizmap plugin
+        // Only if basic authentication has been used*
+        if (!empty($plotConfigParameter) && !is_array($plotConfigParameter)) {
+            // Convert the given string to a PHP array if needed
+            if ($this->debugMode == '1') {
+                \jLog::log('Dataviz - the given plot_config must be converted to an Array');
+            }
+            $plotConfigParameter = json_decode($plotConfigParameter, true);
+        }
+        if (!empty($plotConfigParameter) && $this->basicAuthUsed && \jAuth::isConnected()) {
+            if ($this->debugMode == '1') {
+                \jLog::log('Dataviz - parameter plot_config is not empty & basic authentication is used');
+            }
+
+            // Transform back to object
+            $configObject = json_decode(json_encode($plotConfigParameter), false);
+
+            // Parse the plot configuration
+            $parsedPlotConfig = $this->lizmapProject->parseDatavizPlotConfig($configObject);
+            if (!empty($parsedPlotConfig)) {
+                $plotConfig = $parsedPlotConfig;
+                if ($this->debugMode == '1') {
+                    \jLog::log('Dataviz - plot_config is used to override the original plot configuration');
+                }
+            } else {
+                if (property_exists($configObject, 'layerId')) {
+                    $getLayer = $this->lizmapProject->findLayerByAnyName($configObject->layerId);
+                    if (!$getLayer) {
+                        return $this->error(
+                            array(
+                                'code' => 404,
+                                'error_code' => 'layer_not_found',
+                                'title' => jLocale::get('dataviz~dataviz.log.layer_not_found.title'),
+                                'detail' => jLocale::get('dataviz~dataviz.log.layer_not_found.detail', array($configObject->layerId)),
+                            )
+                        );
+                    }
+                }
+            }
+        }
+
+        // No valid configuration found, return the corresponding error
+        if (!$plotConfig) {
             return $this->error(
                 array(
-                    'title' => 'No corresponding plot',
-                    'detail' => 'No plot could be created for this request',
+                    'code' => 404,
+                    'error_code' => 'plot_configuration_not_found',
+                    'title' => jLocale::get('dataviz~dataviz.log.plot_configuration_not_found.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.plot_configuration_not_found.detail'),
                 )
             );
         }
@@ -141,21 +321,40 @@ class serviceCtrl extends jController
         if (!$dplot) {
             return $this->error(
                 array(
-                    'title' => 'No corresponding plot',
-                    'detail' => 'No plot could be created for this request',
+                    'code' => 400,
+                    'error_code' => 'invalid_plot_type',
+                    'title' => jLocale::get('dataviz~dataviz.log.invalid_plot_type.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.invalid_plot_type.detail', array($type)),
                 )
             );
         }
 
         $fd = $dplot->fetchData('wfs', $exp_filter);
+        if (!$fd) {
+            return $this->error(
+                array(
+                    'code' => 404,
+                    'error_code' => 'no_data',
+                    'title' => jLocale::get('dataviz~dataviz.log.no_data.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.no_data.detail', array($plotConfig['layer_id'])),
+                )
+            );
+        }
         $plot = array(
             'title' => $dplot->title,
             'data' => $dplot->getData(),
             'layout' => $dplot->getLayout(),
         );
 
-        /** @var jResponseJson $rep */
-        $rep = $this->getResponse('json');
+        // We also add the URL to access the Plotly JavaScript file
+        // to let the client use the same one
+        $basePath = jApp::config()->urlengine['basePath'];
+        $locale = substr(jApp::config()->locale, 0, 2);
+        $plot['plotly'] = array(
+            'script' => $basePath.'assets/js/dataviz/plotly-latest.min.js',
+            'locale' => $basePath.'assets/js/dataviz/plotly-locale-'.$locale.'-latest.js',
+        );
+
         $rep->data = $plot;
 
         return $rep;

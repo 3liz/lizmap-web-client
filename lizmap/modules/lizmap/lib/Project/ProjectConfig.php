@@ -51,6 +51,11 @@ class ProjectConfig
     /**
      * @var object
      */
+    protected $layouts;
+
+    /**
+     * @var object
+     */
     protected $loginFilteredLayers;
 
     /**
@@ -83,6 +88,7 @@ class ProjectConfig
         'timemanagerLayers',
         'atlas',
         'tooltipLayers',
+        'layouts',
         'loginFilteredLayers',
         'filter_by_polygon',
         'datavizLayers',
@@ -171,7 +177,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getAttributeLayers()
     {
@@ -179,7 +185,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getLocateByLayer()
     {
@@ -449,7 +455,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getAtlas()
     {
@@ -457,7 +463,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getTooltipLayers()
     {
@@ -465,7 +471,17 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * Print layouts since Lizmap 3.7.
+     *
+     * @return null|object
+     */
+    public function getLayouts()
+    {
+        return $this->layouts;
+    }
+
+    /**
+     * @return null|object
      */
     public function getLoginFilteredLayers()
     {
@@ -482,7 +498,7 @@ class ProjectConfig
     }
 
     /**
-     * @return object
+     * @return null|object
      */
     public function getDatavizLayers()
     {

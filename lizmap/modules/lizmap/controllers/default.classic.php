@@ -18,6 +18,7 @@ class defaultCtrl extends jController
      */
     public function index()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Get repository data

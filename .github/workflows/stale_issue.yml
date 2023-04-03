@@ -7,7 +7,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/stale@v6.0.0
+    - uses: actions/stale@v8.0.0
       with:
         repo-token: ${{ secrets.BOT_HUB_TOKEN }}
         days-before-stale: 180
@@ -16,9 +16,9 @@ jobs:
         stale-issue-message: |
           Hiya!
           This issue has gone quiet.  👻
-          We get a few questions in the bug tracker, so we currently slowly closing issues.
+          We get a few questions in the bug tracker, we are currently slowly closing issues.
           If we missed this issue or if you want to keep it open, please reply here.
           As a friendly reminder: the best way to see this issue, or any other, fixed is to open a Pull Request.
           Thanks for being a part of the Lizmap community! 🦎
         stale-issue-label: 'stale'
-        exempt-issue-labels: 'bug,enhancement,doc-needed,new feature'
+        exempt-issue-labels: 'bug,enhancement,doc-needed,new feature,Feature request'

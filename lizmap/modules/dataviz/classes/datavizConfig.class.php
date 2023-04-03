@@ -18,40 +18,48 @@ class datavizConfig
     public function __construct($repository, $project)
     {
         try {
-            $lproj = lizmap::getProject($repository.'~'.$project);
-            if (!$lproj) {
+            $lizmapProject = lizmap::getProject($repository.'~'.$project);
+            if (!$lizmapProject) {
                 $this->errors = array(
-                    'title' => 'Invalid Query Parameter',
-                    'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                    'code' => 404,
+                    'error_code' => 'project_not_found',
+                    'title' => jLocale::get('dataviz~dataviz.log.project_not_found.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.project_not_found.detail', array($project, $repository)),
                 );
 
                 return;
             }
         } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $this->errors = array(
-                'title' => 'Invalid Query Parameter',
-                'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                'code' => 404,
+                'error_code' => 'project_not_found',
+                'title' => jLocale::get('dataviz~dataviz.log.project_not_found.title'),
+                'detail' => jLocale::get('dataviz~dataviz.log.project_not_found.detail', array($project, $repository)),
             );
 
             return;
         }
 
         // Check acl
-        if (!$lproj->checkAcl()) {
+        if (!$lizmapProject->checkAcl()) {
             $this->errors = array(
-                'title' => 'Access Denied',
-                'detail' => jLocale::get('view~default.repository.access.denied'),
+                'code' => 403,
+                'error_code' => 'access_denied',
+                'title' => jLocale::get('dataviz~dataviz.log.access_denied.title'),
+                'detail' => jLocale::get('dataviz~dataviz.log.access_denied.detail'),
             );
 
             return;
         }
 
         // Get config
-        $datavizConfig = $lproj->getDatavizLayersConfig();
+        $datavizConfig = $lizmapProject->getDatavizLayersConfig();
         if (!$datavizConfig) {
             $this->errors = array(
-                'title' => 'Dataviz Configuration not found',
-                'detail' => 'No dataviz configuration has been found for this project',
+                'code' => 404,
+                'error_code' => 'no_configuration',
+                'title' => jLocale::get('dataviz~dataviz.log.no_configuration.title'),
+                'detail' => jLocale::get('dataviz~dataviz.log.no_configuration.detail'),
             );
 
             return;
@@ -59,8 +67,10 @@ class datavizConfig
 
         if (empty($datavizConfig['layers'])) {
             $this->errors = array(
-                'title' => 'Dataviz Configuration: empty layers',
-                'detail' => 'No layers dataviz configuration has been found for this project',
+                'code' => 404,
+                'error_code' => 'no_layers',
+                'title' => jLocale::get('dataviz~dataviz.log.no_layers.title'),
+                'detail' => jLocale::get('dataviz~dataviz.log.no_layers.detail'),
             );
 
             return;

@@ -13,7 +13,7 @@ class server_informationCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.access'),
+        '*' => array('jacl2.right' => 'lizmap.admin.server.information.view'),
     );
 
     /**
@@ -66,15 +66,8 @@ class server_informationCtrl extends jController
             'displayPluginActionColumn' => $displayPluginActionColumn,
             'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,
             'lizmapPluginUpdate' => $updateLizmapPlugin,
-            'errorQgisPlugin' => jLocale::get(
-                'admin.server.information.qgis.error.fetching.information.detail',
-                array(
-                    $qgisMinimumVersionRequired,
-                    $lizmapPluginMinimumVersionRequired,
-                    $qgisMinimumVersionRequired,
-                    $lizmapPluginMinimumVersionRequired,
-                )
-            ),
+            'minimumQgisVersion' => $qgisMinimumVersionRequired,
+            'minimumLizmapServer' => $lizmapPluginMinimumVersionRequired,
         );
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('server_information'));

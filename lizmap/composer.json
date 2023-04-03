@@ -11,7 +11,9 @@
     "jelix/composer-module-setup": "^1.0.6",
     "jelix/jcommunity-module": "~1.3.15",
     "jelix/ldapdao-module": "~2.2.1",
-    "proj4php/proj4php": "dev-proj4php5.2"
+    "proj4php/proj4php": "~2.0.0",
+    "violet/streaming-json-encoder": "^1.1",
+    "guzzlehttp/guzzle": "^7.4.5"
   },
   "require-dev": {
     "gettext/gettext": "^4.6.1"

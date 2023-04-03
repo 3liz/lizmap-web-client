@@ -24,6 +24,9 @@
 describe('External WMS layers', function () {
 
     it('should get correct mime type in response', function () {
+        // Increasing the timeout because the external server seems too slow to respond on time
+        defaultCommandTimeout: 10000
+
         cy.visit('/index.php/view/map/?repository=testsrepository&project=external_wms_layer')
 
         cy.intercept('*REQUEST=GetMap*',

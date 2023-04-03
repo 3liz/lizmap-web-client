@@ -32,7 +32,7 @@ class editionCtrl extends jController
     /** @var int|string an integer or an array of integers */
     private $featureId;
 
-    /** @var object feature data as a PHP object from GeoJSON via json_decode */
+    /** @var null|object feature data as a PHP object from GeoJSON via json_decode */
     private $featureData;
 
     /** @var SimpleXMLElement Layer data as simpleXml object */
@@ -286,19 +286,24 @@ class editionCtrl extends jController
                 $wfs_params,
                 lizmap::getServices()
             );
-            // FIXME no support of the case where $wfs_response is the content of serviceException?
+
+            $this->featureData = null;
+
             $wfs_response = $wfs_request->process();
-            if (property_exists($wfs_response, 'data')) {
-                $data = $wfs_response->data;
-                if (substr($data, 0, 7) == 'file://' && is_file(substr($data, 7))) {
-                    $data = jFile::read(substr($data, 7));
-                }
-                $this->featureData = json_decode($data);
-                if (empty($this->featureData)) {
-                    $this->featureData = null;
-                } elseif (empty($this->featureData->features)) {
-                    $this->featureData = null;
-                }
+            // Check code
+            if (floor($wfs_response->getCode() / 100) >= 4) {
+                return;
+            }
+            // Check mime/type
+            if (in_array(strtolower($wfs_response->getMime()), array('text/html', 'text/xml'))) {
+                return;
+            }
+
+            $this->featureData = json_decode($wfs_response->getBodyAsString());
+            if (empty($this->featureData)) {
+                $this->featureData = null;
+            } elseif (empty($this->featureData->features)) {
+                $this->featureData = null;
             }
         }
     }
@@ -404,6 +409,7 @@ class editionCtrl extends jController
         }
 
         // Redirect to the display action
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->params = array(
             'project' => $this->project->getKey(),
@@ -464,6 +470,7 @@ class editionCtrl extends jController
         }
 
         // Redirect to the display action
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->params = array(
             'project' => $this->project->getKey(),
@@ -673,6 +680,7 @@ class editionCtrl extends jController
             $check = false;
         }
 
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->params = array(
             'project' => $this->project->getKey(),

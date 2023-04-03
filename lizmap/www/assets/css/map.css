@@ -3,6 +3,15 @@ body {
   padding-left:0;
   padding-right:0;
 }
+
+.flex {
+  display: flex;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
 #title {
   margin-top : 5px;
 }
@@ -461,13 +470,11 @@ SubDock
   right:60px;
   top:10px;
   max-width:30%;
-  max-height:50%;
   z-index:1010;
-  overflow:auto;
   background-color:#4A4A4A !important;
   background-color:rgba(0,0,0,0.7) !important;
-
 }
+
 #content.mobile #mini-dock{
   max-width:100%;
   top:auto;
@@ -476,6 +483,10 @@ SubDock
   left:30px;
 }
 
+#mini-dock div.menu-content{
+  overflow: auto;
+  max-height: 45vh;
+}
 
 #mini-dock-tabs {
   display:none;
@@ -988,11 +999,8 @@ div.modal div.control-group {
 div.modal .form-horizontal .control-label {
   width: 90px;
   -webkit-hyphens: auto;
-  -moz-hyphens: auto;
-  -ms-hyphens: auto;
   hyphens: auto;
 }
-
 
 #dock .form-horizontal .jforms-choice .control-label,
 div.modal .form-horizontal .jforms-choice .control-label {
@@ -1278,29 +1286,13 @@ transform: none !important;
 #right-dock .title .btn.btn-stop:hover {
   background-position : -20px -20px;
 }
-/*
-#toolbar .menu-content .btn.btn-print-launch .icon{
-  display:inline-block;
-  vertical-align:middle;
-  background : url(images/sprite_menu_tools.png) no-repeat right;
-  background-position : -20px -80px;
-  width : 20px;
-  height : 20px;
-}
-#toolbar .menu-content .btn.btn-print-launch:hover .icon{
-  background-position : 0px -80px;
-}
-*/
 #toolbar .menu-content .btn.btn-success,
 #dock .menu-content .btn.btn-success,
 #sub-dock .menu-content .btn.btn-success,
 #mini-dock .menu-content .btn.btn-success,
 #right-dock .menu-content .btn.btn-success{
   background-color: #93C01F;
-  background-image: -webkit-linear-gradient(top, #9BC144, #93C01F);
-  background-image:    -moz-linear-gradient(top, #9BC144, #93C01F);
-  background-image:      -o-linear-gradient(top, #9BC144, #93C01F);
-  background-image:         linear-gradient(to bottom, #9BC144, #93C01F);
+  background-image:linear-gradient(to bottom, #9BC144, #93C01F);
 }
 #dock .print .menu-content,
 #mini-dock .print .menu-content,
@@ -1325,9 +1317,38 @@ transform: none !important;
 
 #print-template{max-width: 125px;}
 
+#print-parameters {
+  margin-bottom: 10px;
+}
+
 #print-parameters td, #print-parameters td select{
   padding-left: 1px;
   padding-right: 1px;
+}
+
+lizmap-print .print-advanced {
+  padding-bottom: 10px;
+}
+
+lizmap-print .print-advanced summary {
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+lizmap-print .print-dpi{
+  margin-bottom: 10px;
+}
+
+lizmap-print .print-rotation span {
+  display: block;
+}
+
+lizmap-print .print-rotation .add-on {
+  font-weight: bold;
+}
+
+lizmap-print .flex {
+  gap: 10px;
 }
 
 #baselayer-menu div.baselayer-select,
@@ -1897,11 +1918,11 @@ lizmap-mouse-position > div.mouse-position input[type="number"]{
 }
 lizmap-mouse-position input[type="number"]::-webkit-outer-spin-button,
 lizmap-mouse-position input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  display: none;
+  margin: 0;
 }
 lizmap-mouse-position input[type="number"] {
-    -moz-appearance: textfield;
+    appearance: textfield;
 }
 lizmap-mouse-position > div.mouse-position > button{
   height: 30px;
@@ -1924,8 +1945,6 @@ lizmap-mouse-position > div.coords-unit > select{
   z-index : 1000;
   background-color : white;
   background-color : rgba(255,255,255,0.7);
-  -webkit-border-top-left-radius: 1em;
-  -moz-border-top-left-radius: 1em;
   border-top-left-radius: 1em;
 }
 #attribution {
@@ -2557,6 +2576,10 @@ div.tooltip {
   vertical-align: text-bottom;
 }
 
+#selectiontool .digitizing-circle{
+  display: none;
+}
+
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;
@@ -2568,11 +2591,15 @@ lizmap-selection-invert svg {
   min-width: 260px;
 }
 
+.digitizing .hide{
+  display: none;
+}
+
 .digitizing .btn {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   box-sizing: border-box;
-  padding: 5px;
+  padding: 4px;
 }
 
 .digitizing .dropdown-toggle{
@@ -2593,7 +2620,7 @@ lizmap-selection-invert svg {
 }
 
 svg.digitizing-selected-tool{
-  width: 15px;
+  width: 13px;
   position: absolute;
   bottom: -4px;
   right: 1px;
@@ -2620,6 +2647,11 @@ input[type="color"].digitizing-color{
   transform: rotate(270deg);
 }
 
+.digitizing-import-export{
+  display: inline;
+  margin-left: 10px;
+}
+
 .digitizing-import{
   display: inline-block;
 }
@@ -2630,6 +2662,50 @@ input[type="color"].digitizing-color{
   display: inline-block;
   word-break: break-word;
   vertical-align: middle;
+}
+
+.digitizing-constraints input{
+  width: 6em;
+}
+
+.digitizing-constraints .angle ~ .add-on{
+  font-size: x-large;
+}
+
+.ol-tooltip {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  opacity: 0.7;
+  white-space: nowrap;
+  font-size: 12px;
+  cursor: default;
+  user-select: none;
+}
+.ol-tooltip-measure {
+  opacity: 1;
+  font-weight: bold;
+}
+.ol-tooltip-static {
+  background-color: #ffcc33;
+  color: black;
+  border: 1px solid white;
+}
+.ol-tooltip-measure:before,
+.ol-tooltip-static:before {
+  border-top: 6px solid rgba(0, 0, 0, 0.5);
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  margin-left: -7px;
+  left: 50%;
+}
+.ol-tooltip-static:before {
+  border-top-color: #ffcc33;
 }
 
 /*
@@ -2826,11 +2902,11 @@ lizmap-reverse-geom svg{
   height: 21px;
 }
 
-#print-launch{
-  position: relative;;
+.btn-print-launch {
+  position: relative;
 }
 
-#print-launch.spinner::after{
+.btn-print-launch.spinner::after {
   right: 5px;
 }
 /* lizmap-feature-toolbar */
@@ -2846,14 +2922,72 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
   background-image: url(images/glyphicons-halflings-white.png);
 }
 
-/* Don't display filter or export buttons in attribute table */
+.feature-atlas {
+  display: inline-block;
+  position: relative;
+}
+
+.feature-atlas .custom-labels {
+  position: absolute;
+  right: 0px;
+  background: white;
+  padding: 5px;
+  border: black solid 1px;
+}
+
+.feature-atlas .custom-labels button {
+  width: 100%;
+}
+
+/* In attribute table, don't display filter, export or print buttons */
 #attribute-table-container lizmap-feature-toolbar .feature-filter,
-#attribute-table-container lizmap-feature-toolbar .feature-export{
+#attribute-table-container lizmap-feature-toolbar .feature-export,
+#attribute-table-container lizmap-feature-toolbar .feature-print,
+#attribute-table-container lizmap-feature-toolbar .feature-atlas{
   display: none;
+}
+
+.feature-atlas button svg {
+  display: block;
+  width: 16px;
+  height: 20px;
+}
+
+.feature-atlas button:hover > img[src$=".svg"] {
+  filter: invert(1);
 }
 
 /* Form filter */
 .liz-filter-field-value{
   line-height: 25px;
   transform: scale(1.6);
+}
+
+lizmap-fullscreen {
+  position: absolute;
+  z-index: 1;
+  bottom: 5px;
+  left: 5px;
+}
+lizmap-fullscreen button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+lizmap-fullscreen button svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+}
+
+lizmap-paste-geom {
+  display: inline-block;
+}
+
+lizmap-paste-geom svg {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: text-top;
 }

@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Additional packages you want to use to enhance Lizmap",
     "require": {
-        "jelix/composer-module-setup": "^1.0.6"
+        "jelix/composer-module-setup": "^1.1.0"
     },
     "extra": {
         "jelix": {

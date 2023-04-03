@@ -2,6 +2,116 @@
 
 ## Unreleased
 
+### Important
+
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.0
+* Minimum QGIS server needed 3.10
+
+### Fixed
+
+* Add a check for requesting a QGIS server WMS GetFeatureInfo whe the layer name was not the same as in the filter
+* Display the reverse geometry button only for linestrings and polygons, not for points
+* UX - Transform `_` and `-` to a space when creating a repository
+
+## 3.5.11 - 2023-02-28
+
+### Important
+
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 1.3.1
+* Minimum QGIS server needed 3.10
+
+### Added
+
+* Improve the wizard for the repository creation :
+  * Better form with auto-completion
+  * Some rights are now already checked by default when creating a new repository
+
+### Fixed
+
+* In a QGIS project, the primary key defined by QGIS desktop for a Postgres layer may not be a field.
+* In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
+* When you click on the zoom to feature button, from the popup, the zoom/pan could be broken
+* When you try to select features by point, no selection were performed
+* Improve the error message when QGIS server and the Lizmap QGIS server plugin are not installed correctly
+
+### Backend
+
+* Update the way to check the validity about : 
+  * a geometry in a Well Known Text format
+  * a proj4 string in tests
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Tests
+
+* Add more tests about End2End integration to avoid regressions
+
+## 3.5.10 - 2023-01-25
+
+### Fixed
+
+* Fix a bug about a hidden checkbox in a form
+* Add XML header in the GetCapabilities request to avoid a message in the web browser console
+* Fix an error during the upgrade
+
+### Backend
+
+* Update the minimum Lizmap server plugin to version 1.3.0
+
+### Translations
+
+* Update translated strings from the Transifex website
+
+## 3.5.9 - 2023-01-23
+
+### Changed
+
+* Improve the user experience when creating a new repository in the administration interface
+
+### Fixed
+
+* Projects page: display projects title and buttons at bottom whatever the thumbnail's image size is
+* Improve performance in the dataviz panel to avoid too many requests to the server
+* Change some CSS about the digitizing toolbar
+* No PostGIS features were returned if the map projection was different from the layer projection
+
+### Backend
+
+* Upgrade Jelix to version 1.6.39 to avoid an exception during installation
+
+### Translations
+
+* Update translated strings from the Transifex website
+
+## 3.5.8 - 2022-12-08
+
+### Fixed
+
+* Editing - Fix the HTML form widget must use a WYSIWYG editor
+* IP into the logs was not the real IP when a reverse proxy was used
+* Fix an issue when reading a QGIS project with different capitalization in some values in the QGS files :
+  `allownull` in the **RelationReference** widget for instance
+* Scales displayed according to the base layer which is used, ticket https://github.com/3liz/lizmap-web-client/issues/2978
+* Fix loading of projects having a space or several dot in their filename
+* Docker: the `var/themes` content was lost when mounting a volume on this directory
+* Docker: some PHP extensions (PDO) were missing
+* Fix some GetFeatureInfo requests when it is in parent popup
+* Dataviz - Fix wrong display for the horizontal bar charts
+* Overview has to use projection and not QGIS Project projection
+
+### Backend
+
+* Upgrade Jelix, improve configuration of SMTP with no TLS
+* Fix some issues when deployed with Docker
+
+### Tests
+
+* Upgrade Cypress to 4.2.0
+
 ## 3.5.7 - 2022-10-18
 
 ### Fixed
@@ -32,6 +142,7 @@
 * Fix some minor issues when reading the JSON file about editing capabilities
 * Improve the settings about the mail server
 * Improve the error message when the Lizmap server plugin is not found
+* Fix button to toggle compact/explode table view in popups. Also each button only toggle its own children popup group
 * Fixed PHP syntax error in the dataviz module, contribution from @RobiFag
 * Fix one issue with PHP8
 
@@ -156,7 +267,7 @@
 
 - New method in `AppContext` to get user public groups ID
 - Convert QGis XML Option value based on type attribute
-- Add a revision parameter on assets url for cache 
+- Add a revision parameter on assets url for cache
 
 ### Backend
 
@@ -171,6 +282,7 @@
 
 ### Added
 
+- Add new Ukrainian and Romanian languages
 - A new panel in the administration interface can display QGIS Server information such version and plugins.
   - This information can be retrieved as well in the QGIS Desktop plugin if the administrator login is provided
 
@@ -187,13 +299,15 @@
 - Fix the backup script about third-party modules such as MapBuilder and AltiProfil
 - Fix a regression during the init of relation references into forms
 - Fix a regression during the loading of embedded projects
+- Fix editing when a geom can be created on an existing feature without a geometry on update only
+- Fix wrong file storage path for images with the `media` folder
 - Fix the landing page using modern CSS - Remove JS resizing project thumbnails and use CSS Grid
 - Fix the mime type for SVG files. It should be `image/svg+xml`
 - Fix the layer export when :
   - a selection or a filter is active
   - the layer is not spatial
   - the layer has parenthesis inside its name
-- Update Lizmap locales about missing languages in the package like Romanian and others
+- Update Lizmap locales
 
 ## 3.5.0 - 2021-12-15
 
@@ -243,11 +357,11 @@
   by removing the additionnal double-quotes that QGIS sometimes adds in the array of values
   (ex: `{"one_value", "second_value"}`)
   - Lizmap user and groups was not forwarded to the QGIS Server backend. It's now possible to use
-  `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form.
+   `@lizmap_user` and `@lizmap_user_groups` in a QGIS Expression in an editing form.
 - Selection: improve the export tool to allow bigger selections
   - use the selection token instead of a list of feature identifiers
   - internally use POST instead of GET requests to query data from QGIS Server
-- Before the button export to ODS was always visible. The button is now show only if available
+- Before the button export to ODS was always visible. The button is now shown only if available
 
 ### New JS events
 

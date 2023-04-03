@@ -29,13 +29,14 @@ fallbackLocale=en_US
 [minimumRequiredVersion]
 ; Versions on the server, for the system administrator
 ; The minimum version required about external software to make Lizmap Web Client happy
-qgisServer="3.10"
-lizmapServerPlugin="1.2.0"
+qgisServer="3.16"
+lizmapServerPlugin="2.7.0"
 
-; Versions written in QGIS projects, for the GIS administrator
-; QGIS project with a lower version are not displayed in the landing page, but displayed in the administration panel
+; Versions written in QGIS/CFG files, for the GIS administrator
+; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
+; Lizmap CFG files with this target version are still displayed in the landing page, but have a warning in the administration panel
 ; 3 versions behind the current version of LWC
-lizmapWebClientTargetVersion=30300
+lizmapWebClientTargetVersion=30400
 
 [lizmap]
 ; CSP header for the map interface
@@ -86,9 +87,10 @@ jauthdb_admin.enabled=on
 master_admin.enabled=on
 multiauth.installparam[noconfigfile]=on
 multiauth.installparam[localconfig]=on
-ldapdao.installparam=noconfigfile
+ldapdao.installparam[noconfigfile]=on
 ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
-saml.installparam="localconfig"
+saml.installparam[localconfig]=on
+saml.installparam[authep]=admin
 
 [coordplugins]
 ;name = file_ini_name or 1
@@ -285,6 +287,9 @@ useCollection=common
 [webassets_common]
 jquery.js[]="assets/js/jquery/jquery-3.5.1.min.js"
 jquery.js[]="assets/js/jquery/jquery-migrate-3.3.1.min.js"
+
+jquery_ui.js[]="assets/js/jquery/ui/jquery-ui.min.js"
+jquery_ui.css[]="assets/js/jquery/ui/jquery-ui.min.css"
 
 jforms_htmleditor_default.js[]="$jelix/ckeditor5/ckeditor.js"
 jforms_htmleditor_default.js[]="$jelix/ckeditor5/translations/$lang.js"

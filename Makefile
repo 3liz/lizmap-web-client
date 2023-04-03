@@ -46,19 +46,12 @@ else
 DOCKER_MANIFEST_VERSION=$(SHORT_VERSION)-dev
 endif
 
-PACKAGE_MANIFEST_EXISTS=$(shell [ -f build/LIZMAP_SAAS.manifest ] && echo 1 || echo 0 )
-ifeq ($(PACKAGE_MANIFEST_EXISTS), 1)
-SAAS_LZMPACK_VERSION=$(shell sed -n 's:version=\(.*\):\1:p' build/LIZMAP_SAAS.manifest)
-else
-SAAS_LZMPACK_VERSION=
-endif
 SAAS_LIZMAP_VERSION=$(LIZMAP_VERSION).$(COMMIT_NUMBER)
 
 
 #-------- Packages names
 PACKAGE_NAME=lizmap-web-client-$(LIZMAP_VERSION)
 DEMO_PACKAGE_NAME=lizmapdemo-module-$(MAJOR_VERSION).$(MINOR_VERSION)
-SAAS_PACKAGE=lizmap_web_client_$(SHORT_VERSION_NAME)
 ZIP_PACKAGE=$(STAGE)/$(PACKAGE_NAME).zip
 ZIP_DEMO_PACKAGE=$(STAGE)/$(DEMO_PACKAGE_NAME).zip
 GENERIC_DIR_NAME=lizmap_web_client
@@ -87,7 +80,7 @@ FORBIDDEN_CONFIG_FILES := installer.ini.php installer.bak.ini.php liveconfig.ini
 EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions var/lizmap-theme-config/ var/themes/default
 
 .PHONY: debug build tests clean check-release check-registry check-factory stage package deploy_download deploy_download_stable saas_package saas_release
-.PHONY: local_saas_package docker-build docker-build-ci docker-tag docker-deliver docker-clean docker-clean-all docker-release docker-hub docker-run
+.PHONY: docker-build docker-build-ci docker-tag docker-deliver docker-clean docker-clean-all docker-release docker-hub docker-run
 
 debug:
 	@echo "LIZMAP_VERSION="$(LIZMAP_VERSION)
@@ -108,9 +101,7 @@ ifdef DOCKER_MANIFEST_RELEASE_TAG
 	@echo "DOCKER_MANIFEST_RELEASE_TAG="$(DOCKER_MANIFEST_RELEASE_TAG)
 endif
 	@echo "SAAS_LIZMAP_VERSION="$(SAAS_LIZMAP_VERSION)
-	@echo "SAAS_LZMPACK_VERSION="$(SAAS_LZMPACK_VERSION)
 	@echo "PACKAGE_NAME="$(PACKAGE_NAME)
-	@echo "SAAS_PACKAGE="$(SAAS_PACKAGE)
 	@echo "GENERIC_PACKAGE_PATH="$(GENERIC_PACKAGE_PATH)
 	@echo "BRANCH="$(BRANCH)
 	@echo "BUILDID="$(BUILDID)
@@ -211,17 +202,11 @@ deploy_download_stable:
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 	upload_to_packages_server $(ZIP_DEMO_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 
-saas_package: $(GENERIC_PACKAGE_DIR)
-	saasv2_register_package $(SAAS_PACKAGE) $(SAAS_LIZMAP_VERSION) $(GENERIC_DIR_NAME) $(STAGE)
-	mv  $(STAGE)/MANIFEST $(STAGE)/LIZMAP_SAAS.manifest
-
 saas_deploy_snap:
-	saasv2_deploy_to_snap $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest
+	saas_release_lizmap snap $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
 saas_release: check-release
-	saasv2_release_package $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest
-
-local_saas_package: clean stage saas_package
+	saas_release_lizmap release $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
 docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
 

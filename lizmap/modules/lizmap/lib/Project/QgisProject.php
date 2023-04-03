@@ -676,116 +676,7 @@ class QgisProject
             }
         }
 
-        $services = $this->services;
         $printTemplates = array();
-        // get composer qg project version < 3
-        $composers = $this->xml->xpath('//Composer');
-        if ($composers && is_array($composers)) {
-            foreach ($composers as $composer) {
-                // test restriction
-                if (in_array((string) $composer['title'], $rComposers)) {
-                    continue;
-                }
-                // get composition element
-                $composition = $composer->xpath('Composition');
-                if (!$composition) {
-                    continue;
-                }
-                $composition = $composition[0];
-
-                // init print template element
-                $printTemplate = array(
-                    'title' => (string) $composer['title'],
-                    'width' => (int) $composition['paperWidth'],
-                    'height' => (int) $composition['paperHeight'],
-                    'maps' => array(),
-                    'labels' => array(),
-                );
-
-                // get composer maps
-                $cMaps = $composer->xpath('.//ComposerMap');
-                if ($cMaps && is_array($cMaps)) {
-                    foreach ($cMaps as $cMap) {
-                        $cMapItem = $cMap->xpath('ComposerItem');
-                        if (!$cMapItem) {
-                            continue;
-                        }
-                        $cMapItem = $cMapItem[0];
-                        $ptMap = array(
-                            'id' => 'map'.(string) $cMap['id'],
-                            'width' => (int) $cMapItem['width'],
-                            'height' => (int) $cMapItem['height'],
-                        );
-
-                        // Before 2.6
-                        if (property_exists($cMap->attributes(), 'overviewFrameMap') and (string) $cMap['overviewFrameMap'] != '-1') {
-                            $ptMap['overviewMap'] = 'map'.(string) $cMap['overviewFrameMap'];
-                        }
-                        // >= 2.6
-                        $cMapOverviews = $cMap->xpath('ComposerMapOverview');
-                        foreach ($cMapOverviews as $cMapOverview) {
-                            if ($cMapOverview && (string) $cMapOverview->attributes()->frameMap != '-1') {
-                                $ptMap['overviewMap'] = 'map'.(string) $cMapOverview->attributes()->frameMap;
-                            }
-                        }
-                        // Grid
-                        $cMapGrids = $cMap->xpath('ComposerMapGrid');
-                        foreach ($cMapGrids as $cMapGrid) {
-                            if ($cMapGrid && (string) $cMapGrid->attributes()->show != '0') {
-                                $ptMap['grid'] = 'True';
-                            }
-                        }
-                        // In QGIS 3.*
-                        // Layout maps now use a string UUID as "id", let's assume that the first map
-                        // has id 0 and so on ...
-                        $ptMap['id'] = 'map'.(string) count($printTemplate['maps']);
-                        $printTemplate['maps'][] = $ptMap;
-                    }
-                }
-
-                // get composer labels
-                $cLabels = $composer->xpath('.//ComposerLabel');
-                if ($cLabels && is_array($cLabels)) {
-                    foreach ($cLabels as $cLabel) {
-                        $cLabelItem = $cLabel->xpath('ComposerItem');
-                        if (!$cLabelItem) {
-                            continue;
-                        }
-                        $cLabelItem = $cLabelItem[0];
-                        if ((string) $cLabelItem['id'] == '') {
-                            continue;
-                        }
-                        $printTemplate['labels'][] = array(
-                            'id' => (string) $cLabelItem['id'],
-                            'htmlState' => (int) $cLabel['htmlState'],
-                            'text' => (string) $cLabel['labelText'],
-                        );
-                    }
-                }
-
-                // get composer attribute tables
-                $cTables = $composer->xpath('.//ComposerAttributeTableV2');
-                if ($cTables && is_array($cTables)) {
-                    foreach ($cTables as $cTable) {
-                        $printTemplate['tables'][] = array(
-                            'composerMap' => (int) $cTable['composerMap'],
-                            'vectorLayer' => (string) $cTable['vectorLayer'],
-                        );
-                    }
-                }
-
-                // Atlas
-                $Atlas = $composer->xpath('Atlas');
-                if ($Atlas) {
-                    $Atlas = $Atlas[0];
-                    $printTemplate['atlas'] = array(
-                        'enabled' => (string) $Atlas['enabled'],
-                        'coverageLayer' => (string) $Atlas['coverageLayer'],
-                    );
-                }
-                $printTemplates[] = $printTemplate;
-            }
-        }
         // get layout qgs project version >= 3
         $layouts = $this->xml->xpath('//Layout');
         if ($layouts && is_array($layouts)) {
@@ -875,27 +766,6 @@ class QgisProject
                     }
                 }
 
-                // get layout attribute tables
-                $lTables = $layout->xpath('LayoutMultiFrame[@type="65649"]');
-                if ($lTables && is_array($lTables)) {
-                    foreach ($lTables as $lTable) {
-                        $composerMap = -1;
-                        if (isset($lTable['mapUuid'])) {
-                            $mapUuid = (string) $lTable['mapUuid'];
-                            if (!array_key_exists($mapUuid, $mapUuidId)) {
-                                $mapId = $mapUuidId[$mapUuid];
-                                $composerMap = (string) str_replace('map', '', $mapId);
-                            }
-                        }
-
-                        $printTemplate['tables'][] = array(
-                            'composerMap' => $composerMap,
-                            'vectorLayer' => (string) $lTable['vectorLayer'],
-                            'vectorLayerName' => (string) $lTable['vectorLayerName'],
-                        );
-                    }
-                }
-
                 // Atlas
                 $atlas = $layout->xpath('Atlas');
                 if ($atlas) {
@@ -925,19 +795,18 @@ class QgisProject
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
             $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
-            if (count($xmlLayer) == 0) {
+            if (is_null($xmlLayer)) {
                 continue;
             }
-            $xmlLayerZero = $xmlLayer[0];
             // aliases
-            $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
+            $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->fieldName."']");
             if ($alias && is_array($alias)) {
                 $alias = $alias[0];
                 $v->fieldAlias = (string) $alias['name'];
                 $locateByLayer->{$k} = $v;
             }
             if (property_exists($v, 'filterFieldName')) {
-                $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
+                $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->filterFieldName."']");
                 if ($alias && is_array($alias)) {
                     $alias = $alias[0];
                     $v->filterFieldAlias = (string) $alias['name'];
@@ -945,7 +814,7 @@ class QgisProject
                 }
             }
             // vectorjoins
-            $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
+            $vectorjoins = $xmlLayer->xpath('vectorjoins/join');
             if ($vectorjoins && is_array($vectorjoins)) {
                 if (!property_exists($v, 'vectorjoins')) {
                     $v->vectorjoins = array();
@@ -983,11 +852,10 @@ class QgisProject
 
             // Read layer property from QGIS project XML
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $provider = $layerXmlZero->xpath('provider');
+            $provider = $layerXml->xpath('provider');
             $provider = (string) $provider[0];
             if ($provider == 'spatialite') {
                 unset($editionLayers->{$key});
@@ -1003,11 +871,10 @@ class QgisProject
     {
         foreach ($editionLayers as $key => $obj) {
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $formControls = $this->readFormControls($layerXmlZero, $obj->layerId, $proj);
+            $formControls = $this->readFormControls($layerXml, $obj->layerId, $proj);
             $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
         }
     }
@@ -1029,11 +896,10 @@ class QgisProject
         $layersLabeledFieldsConfig = array();
         foreach ($layerIds as $layerId) {
             $layerXml = $this->getXmlLayer2($this->xml, $layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $formControls = $this->readFormControls($layerXmlZero, $layerId, $proj);
+            $formControls = $this->readFormControls($layerXml, $layerId, $proj);
             $getLayer = $this->getLayer($layerId, $proj);
             $layerName = $getLayer->getName();
             $fields_config = array();
@@ -1096,11 +962,10 @@ class QgisProject
 
             // Read layer property from QGIS project XML
             $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
-            if (count($layerXml) == 0) {
+            if (is_null($layerXml)) {
                 continue;
             }
-            $layerXmlZero = $layerXml[0];
-            $attributetableconfigXml = $layerXmlZero->xpath('attributetableconfig');
+            $attributetableconfigXml = $layerXml->xpath('attributetableconfig');
             if (count($attributetableconfigXml) == 0) {
                 continue;
             }
@@ -1469,12 +1334,13 @@ class QgisProject
                 if (!array_key_exists($referencedLayerId, $relations)) {
                     $relations[$referencedLayerId] = array();
                 }
-
                 $relations[$referencedLayerId][] = array(
                     'referencingLayer' => $referencingLayerId,
                     'referencedField' => $relationField['referencedField'],
                     'referencingField' => $relationField['referencingField'],
                     'previewField' => $relationField['previewField'],
+                    'relationName' => (string) $relationObj->name,
+                    'relationId' => (string) $relationObj->id,
                 );
 
                 if (!array_key_exists($referencingLayerId, $pivotGather)) {
@@ -2177,11 +2043,15 @@ class QgisProject
                 $fieldEditType = 'LineEdit';
                 $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'];
             } else {
-                $useHtml = 0;
+                $useHtml = false;
                 if (array_key_exists('UseHtml', $editAttributes)) {
                     $useHtml = $editAttributes['UseHtml'];
                 }
-                $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][$useHtml];
+                if ($useHtml) {
+                    $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][1];
+                } else {
+                    $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][0];
+                }
             }
         } elseif ($fieldEditType === 5) {
             $markup = $qgisEdittypeMap[$fieldEditType]['jform']['markup'][0];

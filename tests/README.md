@@ -52,10 +52,12 @@ Then:
 
 Then, in your browser, go to `http://localhost:8130/`. (see below to change the port)
 
-Optionally, you can set `lizmap.local` into your `/etc/hosts`:
+Optionally, you can set `lizmap.local` into your `/etc/hosts`, as well as `othersite.local`
+for some tests:
 
 ```bash
 127.0.0.1 lizmap.local
+127.0.0.1 othersite.local
 ```
 
 Then, in your browser, go to `http://lizmap.local:8130/`. (see below to change the port)
@@ -232,7 +234,10 @@ Output colors can be kept with `--tty` parameter but it won't work with `--group
 ### Playwright
 You have to install the browsers with `npx playwright install` (only the first time or after an update)
 You can then :
-- execute `npx playwright test` to execute all tests
+- execute `npx playwright test` to execute all tests with all browsers
+- execute `npx playwright test --project=chromium` to execute all tests with the chromium browser
+- execute `npx playwright test mytest.spec.js --project=chromium` to execute one test with the chromium browser
+- execute `npx playwright test mytest.spec.js --project=chromium --debug` to execute one test with the chromium browser in debug mode
 - other command line : https://playwright.dev/docs/intro#command-line
 
 You can also install the handy Visual Studio Code extension : https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
@@ -257,6 +262,10 @@ In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` 
 Put your projects into `tests/qgis-projects/tests/` (replace `tests` by the name
 of your choice), and then you can declare `tests` projects into
 the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
+
+To test CORS, you can load `http://othersite.local:8130`, click on the buttons,
+and check the JS console for errors.
+
 
 ## Using LDAP
 

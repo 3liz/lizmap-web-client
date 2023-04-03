@@ -58,8 +58,6 @@ lizmap/www/assets/js/filter.js.map
 lizmap/www/assets/js/map.js
 lizmap/www/assets/js/map.js.map
 lizmap/www/assets/js/map.js.LICENSE.txt
-lizmap/www/assets/js/popupQgisAtlas.js
-lizmap/www/assets/js/popupQgisAtlas.js.map
 lizmap/www/assets/js/search.js
 lizmap/www/assets/js/search.js.map
 lizmap/www/assets/js/switcher-layers-actions.js
@@ -97,6 +95,7 @@ tests/units/composer.lock
 tests/units/.phpunit.result.cache
 tests/qgis-projects/*
 !tests/qgis-projects/tests
+!tests/qgis-projects/ProJets 1982*!
 tests/qgis-projects/tests/media
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/.empty
@@ -106,6 +105,7 @@ tests/end2end/cypress/downloads/
 tests/end2end/cypress/screenshots/
 tests/.env
 tests/end2end/playwright-report/
+tests/end2end/test-results
 
 .vscode/
 /.composer

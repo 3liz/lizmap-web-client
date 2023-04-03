@@ -1,5 +1,5 @@
 ;<?php die(''); ?>
-;for security reasons , don't remove or modify the first line
+;for security reasons , don't remove or modify the previous line
 
 ;Services
 ;list the different map services (servers, generic parameters, etc.)

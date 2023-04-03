@@ -1,14 +1,14 @@
 
 {meta_html js $j_basepath.'assets/js/admin/copy_to_clipboard.js'}
 
-{ifacl2 'lizmap.admin.access'}
+{ifacl2 'lizmap.admin.server.information.view'}
   <!--Services-->
   <div id="lizmap_server_information">
     <h2>{@admin.menu.server.information.label@}</h2>
 
     <h3>{@admin.server.information.lizmap.label@}</h3>
     <h4>{@admin.server.information.lizmap.info@}</h4>
-    <table class="table table-striped table-bordered table-server-info">
+    <table class="table table-striped table-bordered table-server-info table-lizmap-web-client">
         <tr>
             <th>{@admin.server.information.lizmap.info.version@}</th>
             <td>{$data['info']['version']}</td>
@@ -32,6 +32,8 @@
     <h3>{@admin.server.information.qgis.label@}</h3>
 
     {if array_key_exists('qgis_server', $data) && array_key_exists('test', $data['qgis_server'])}
+      {* The lizmap plugin is not installed or not well configured *}
+      {* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
       {if $data['qgis_server']['test'] == 'OK'}
           <p>{@admin.server.information.qgis.test.ok@}</p>
       {else}
@@ -40,13 +42,22 @@
     {/if}
 
 {if array_key_exists('error', $data['qgis_server_info'])}
+{* The lizmap plugin is not installed or not well configured *}
+{* The QGIS Server has been tried with a WMS GetCapabilities without map parameter *}
+{if $data['qgis_server']['test'] == 'OK'}
 
     <p>
         <b>{@admin.server.information.qgis.error.fetching.information@}</b><br/>
         {if $data['qgis_server_info']['error'] == 'NO_ACCESS'}
             <i>{@admin.server.information.qgis.error.fetching.information.detail.NO_ACCESS@}</i><br>
         {else}
-            <i>{$errorQgisPlugin}</i>
+            <p>{@admin.server.information.qgis.error.fetching.information.description@}</p>
+            <ul>
+                <li>{jlocale "admin.server.information.qgis.error.fetching.information.qgis.version.html", array($minimumQgisVersion)}</li>
+                <li>{jlocale "admin.server.information.qgis.error.fetching.information.plugin.version.html", array($minimumLizmapServer)}</li>
+                <li>{@admin.server.information.qgis.error.fetching.information.environment.variable@}</li>
+                <li>{@admin.server.information.qgis.error.fetching.information.help@}</li>
+            </ul>
             <br>
             <a href="{$linkDocumentation}" target="_blank">{$linkDocumentation}</a>
             <br>
@@ -59,14 +70,18 @@
             <i>{@admin.server.information.qgis.error.fetching.information.detail.HTTP_ERROR@} {$errorcode}</i><br>
         {/if}
     </p>
-
+{/if}
 {else}
 
     <h4>{@admin.server.information.qgis.metadata@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info">
+    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server">
         <tr>
             <th>{@admin.server.information.qgis.version@}</th>
-            <td>{$data['qgis_server_info']['metadata']['version']}</td>
+            <td>
+                <a href="https://github.com/qgis/QGIS/releases/tag/{$data['qgis_server_info']['metadata']['tag']}" target="_blank">
+                    {$data['qgis_server_info']['metadata']['version']}
+                </a>
+            </td>
         </tr>
         <tr>
             <th>{@admin.server.information.qgis.name@}</th>
@@ -78,7 +93,21 @@
         </tr>
         <tr>
             <th>Py-QGIS-Server</th>
-            <td><a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['metadata']['py_qgis_server_version']}" target="_blank">{$data['qgis_server_info']['metadata']['py_qgis_server_version']}</a></td>
+            <td>
+                {if $data['qgis_server_info']['py_qgis_server']['found']}
+                    {if $data['qgis_server_info']['py_qgis_server']['stable']}
+                    <a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['py_qgis_server']['version']}" target="_blank">
+                        {$data['qgis_server_info']['py_qgis_server']['version']}
+                    </a>
+                    {else}
+                    <a href="https://github.com/3liz/py-qgis-server/commit/{$data['qgis_server_info']['py_qgis_server']['commit_id']}" target="_blank">
+                        {$data['qgis_server_info']['py_qgis_server']['version']} - {$data['qgis_server_info']['py_qgis_server']['commit_id']}
+                    </a>
+                    {/if}
+                {else}
+                    {$data['qgis_server_info']['py_qgis_server']['version']}
+                {/if}
+            </td>
         </tr>
         {if $qgisServerNeedsUpdate }
         <tr>
@@ -90,17 +119,22 @@
     {hook 'QgisServerVersion', $data['qgis_server_info']['metadata']}
 
     <h4>{@admin.server.information.qgis.plugins@}</h4>
-    <table class="table table-condensed table-striped table-bordered table-server-info">
+    <table class="table table-condensed table-striped table-bordered table-server-info table-qgis-server-plugins">
         <tr>
             <th style="width:20%;">{@admin.server.information.qgis.plugin@}</th>
             <th style="width:20%;">{@admin.server.information.qgis.plugin.version@}</th>
             {if $displayPluginActionColumn }
                 <th>{@admin.server.information.qgis.plugin.action@}</th>
             {/if}
-        <tr/>
+        </tr>
         {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
         <tr>
+            {if $version['name']}
+            {* Fixed in lizmap_server plugin 1.3.2 https://github.com/3liz/qgis-lizmap-server-plugin/commit/eb6a773ba035f877e9fa91db5ef87911a2648ee1 *}
+            <th style="width:20%;">{$version['name']}</th>
+            {else}
             <th style="width:20%;">{$name}</th>
+            {/if}
             <td style="width:20%;">
                 {if $version['repository']}
                     {if $version['commitNumber'] == 1}

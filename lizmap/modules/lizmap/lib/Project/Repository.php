@@ -3,7 +3,7 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012-2020 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      https://3liz.com
  *
@@ -21,6 +21,7 @@ class Repository
         'label',
         'path',
         'allowUserDefinedThemes',
+        'accessControlAllowOrigin',
     );
 
     /**
@@ -37,6 +38,10 @@ class Repository
         ),
         'allowUserDefinedThemes' => array(
             'fieldType' => 'checkbox',
+            'required' => false,
+        ),
+        'accessControlAllowOrigin' => array(
+            'fieldType' => 'text',
             'required' => false,
         ),
     );
@@ -130,6 +135,39 @@ class Repository
         $strVal = strtolower($value);
 
         return in_array($strVal, array('true', 't', 'on', '1'));
+    }
+
+    /**
+     * Return the value of the Access-Control-Allow-Origin HTTP header.
+     *
+     * @param $referer
+     *
+     * @return string the value of the ACAO header. If empty, the header should not be set.
+     */
+    public function getACAOHeaderValue($referer)
+    {
+        $origins = $this->getData('accessControlAllowOrigin');
+        if (!$origins || $referer == '') {
+            return '';
+        }
+
+        if (is_string($origins)) {
+            $origins = preg_split('/\\s*,\\s*/', $origins);
+        }
+
+        $refParts = parse_url($referer);
+        $referer = ($refParts['scheme'] ?? 'https').'://'.$refParts['host'];
+        if (isset($refParts['port'])) {
+            $referer .= ':'.$refParts['port'];
+        }
+
+        foreach ($origins as $origin) {
+            if ($origin == $referer) {
+                return $origin;
+            }
+        }
+
+        return '';
     }
 
     protected $cleanedPath;
@@ -348,8 +386,9 @@ class Repository
                             // Get project
                             $keepReference = false;
                             $proj = $this->getProject(substr($qgsFile, 0, -4), $keepReference);
-                            if ($proj != null) {
-                                // Get project metadata and add it to the returned object
+                            // Get the project metadata and add it to the returned object
+                            // only if the authenticated user can access the project
+                            if ($proj != null && $proj->checkAcl()) {
                                 $data[] = $proj->getMetadata();
                             }
                         } catch (UnknownLizmapProjectException $e) {

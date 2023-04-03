@@ -33,11 +33,20 @@ class project_listZone extends jZone
 
         // Loop for each repository and find projects
         $hasInspectionData = false;
+        $hasSomeProjectsNotDisplayed = false;
         foreach ($repositories as $r) {
-            $lrep = lizmap::getRepository($r);
-            $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
-            $metadata = $lrep->getProjectsMetadata();
+            $lizmapRepository = lizmap::getRepository($r);
+            if (!jAcl2::check('lizmap.repositories.view', $r)) {
+                continue;
+            }
+            $lizmapViewItem = new lizmapMainViewItem($r, $lizmapRepository->getLabel());
+            $metadata = $lizmapRepository->getProjectsMetadata();
             foreach ($metadata as $projectMetadata) {
+                // Do not add the project if the authenticated user
+                // has no access to it
+                if (!$projectMetadata->getAcl()) {
+                    continue;
+                }
 
                 // Get the projects data needed for the administration list table
                 /** @var Lizmap\Project\ProjectMetadata $projectItem */
@@ -48,12 +57,22 @@ class project_listZone extends jZone
                     $hasInspectionData = true;
                 }
 
-                $mrep->childItems[] = $projectItem;
+                if ($projectItem['needs_update_error']) {
+                    $hasSomeProjectsNotDisplayed = true;
+                }
+
+                $lizmapViewItem->childItems[] = $projectItem;
             }
-            $maps[$r] = $mrep;
+            $maps[$r] = $lizmapViewItem;
         }
+        $lizmapTargetVersionInt = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
+        $humanLizmapTargetVersion = substr($lizmapTargetVersionInt, 0, 1);
+        $humanLizmapTargetVersion .= '.'.ltrim(substr($lizmapTargetVersionInt, 2, 1), '');
+
         $this->_tpl->assign('mapItems', $maps);
         $this->_tpl->assign('hasInspectionData', $hasInspectionData);
+        $this->_tpl->assign('minimumLizmapTargetVersionRequired', $humanLizmapTargetVersion);
+        $this->_tpl->assign('hasSomeProjectsNotDisplayed', $hasSomeProjectsNotDisplayed);
 
         // Get the server metadata
         $server = new \Lizmap\Server\Server();
@@ -64,20 +83,41 @@ class project_listZone extends jZone
             'lizmap_plugin_server_version' => null,
             'lizmap_plugin_server_version_int' => null,
         );
+        $oldQgisVersionDelta = 6;
         if (!array_key_exists('error', $data['qgis_server_info'])) {
             // QGIS server
             $qgisServerVersion = $data['qgis_server_info']['metadata']['version'];
             $serverVersions['qgis_server_version'] = $qgisServerVersion;
             $explode = explode('.', $qgisServerVersion);
             // Keep only major and minor version
-            $serverVersions['qgis_server_version_int'] = (int) $explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT);
-
+            $qgisServerVersionInt = intval($explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT));
+            $serverVersions['qgis_server_version_int'] = $qgisServerVersionInt;
+            $serverVersions['qgis_server_version_human_readable'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt);
+            $serverVersions['qgis_server_version_old'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta);
+            $serverVersions['qgis_server_version_next'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt + 1);
             // Lizmap server plugin
             $lizmapVersion = $data['info']['version'];
             $serverVersions['lizmap_plugin_server_version'] = $lizmapVersion;
         }
         $this->_tpl->assign('serverVersions', $serverVersions);
 
+        // Check QGIS server status
+        $statusQgisServer = true;
+        $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
+        if ($server->versionCompare($server->getQgisServerVersion(), $requiredQgisVersion)) {
+            $statusQgisServer = false;
+        }
+        // Check Lizmap server status
+        $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+        $currentLizmapVersion = $server->getLizmapPluginServerVersion();
+        if ($server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
+            $statusQgisServer = false;
+        }
+        $this->_tpl->assign('qgisServerOk', $statusQgisServer);
+
+        $lizmapInfo = \Jelix\Core\Infos\AppInfos::load();
+        $this->_tpl->assign('lizmapVersion', $lizmapInfo->version);
+        $this->_tpl->assign('oldQgisVersionDiff', $oldQgisVersionDelta);
         // Add the application base path to let the template load the CSS and JS assets
         $basePath = jApp::urlBasePath();
         $this->_tpl->assign('basePath', $basePath);
@@ -110,7 +150,8 @@ class project_listZone extends jZone
                 array('repository' => $projectMetadata->getRepository(), 'project' => $projectMetadata->getId())
             ),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
-            'lizmap_plugin_version' => $projectMetadata->getLizmapPluginVersion(),
+            // convert int to string orderable
+            'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
             'file_time' => $projectMetadata->getFileTime(),
             'layer_count' => $projectMetadata->getLayerCount(),
             'acl_groups' => $projectMetadata->getAclGroups(),
@@ -231,5 +272,38 @@ class project_listZone extends jZone
         }
 
         return $inspectionData;
+    }
+
+    private function qgisMajMinHumanVersion($qgisIntVersion): string
+    {
+        // NOTE Will work as long a Major version is on 1 Digit
+        return substr($qgisIntVersion, 0, 1).'.'.substr($qgisIntVersion, -2);
+    }
+
+    /**
+     * Transform int formatted version (from 5 or 6 integer) to sortable string .
+     *
+     * Transform "10102" into "01.01.02"
+     * Transform "050912" into "05.09.12"
+     *
+     * @param string $intVersion the lizmap QGIS plugin version (not always int !!)
+     *
+     * @return string the version as sortable string
+     */
+    private function pluginIntVersionToSortableString(string $intVersion): string
+    {
+        // in some old plugin the version is already human readable
+        if (strpos($intVersion, '.') != false) {
+            list($majorVersion, $minorVersion, $patchVersion) = explode('.', $intVersion);
+            // add 0 to 1 digit version
+            $majorVersion = (strlen($majorVersion) == 1 ? '0'.$majorVersion : $majorVersion);
+            $minorVersion = (strlen($minorVersion) == 1 ? '0'.$minorVersion : $minorVersion);
+            $patchVersion = (strlen($patchVersion) == 1 ? '0'.$patchVersion : $patchVersion);
+        } else {
+            $intVersion6Digit = (strlen($intVersion) == 6 ? $intVersion : '0'.$intVersion);
+            list($majorVersion, $minorVersion, $patchVersion) = str_split($intVersion6Digit, 2);
+        }
+
+        return $majorVersion.'.'.$minorVersion.'.'.$patchVersion;
     }
 }

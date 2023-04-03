@@ -3,7 +3,7 @@
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      http://3liz.com
  *
@@ -223,6 +223,9 @@ class lizmap
             }
             $ctrl->required = $propertiesOptions[$k]['required'];
             $ctrl->label = jLocale::get('admin~admin.form.admin_section.repository.'.$k.'.label');
+            if ($k != 'allowUserDefinedThemes') {
+                $ctrl->help = jLocale::get('admin~admin.form.admin_section.repository.'.$k.'.help');
+            }
             $ctrl->size = 100;
             $form->addControl($ctrl);
         }
@@ -367,7 +370,7 @@ class lizmap
      */
     public static function getProject($key)
     {
-        $match = preg_match('/(?P<rep>\w+)~(?P<proj>[\w-]+)/', $key, $matches);
+        $match = preg_match('/(?P<rep>\w+)~(?P<proj>[-\.\s\w]+)/', $key, $matches);
         if ($match != 1) {
             return null;
         }

@@ -5,7 +5,8 @@
   <div id="logo">
   </div>
   <div id="title">
-    <h1>{$repositoryLabel}</h1>
+    <h1>{$title}</h1>
+    <h2>{$subTitle}</h2>
   </div>
 
   <div id="headermenu" class="navbar navbar-fixed-top">
@@ -30,6 +31,12 @@
     </div>
   </div>
   {jmessage_bootstrap}
+  {if $checkServerInformation}
+  <div class="alert alert-block alert-error fade in" data-alert="alert">
+    <a class="close" data-dismiss="alert" href="#">×</a>
+    <p>{@view~default.server.information.error.admin@} <a href="{jurl 'admin~server_information:index'}">🔗</a></p>
+  </div>
+  {/if}
   {if isset($landing_page_content)}
   <div id="landingPageContent">
     {$landing_page_content}

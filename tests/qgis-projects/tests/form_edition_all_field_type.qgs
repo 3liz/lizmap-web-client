@@ -1,9 +1,10 @@
-<qgis projectname="" saveDateTime="2022-02-08T15:58:11" saveUser="mdouchin" saveUserFull="mdouchin" version="3.16.15-Hannover">
-  <homePath path=""></homePath>
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis saveUser="" saveUserFull="" saveDateTime="2023-01-24T16:22:33" projectname="" version="3.22.9-Białowieża">
+  <homePath path=""/>
   <title></title>
-  <autotransaction active="0"></autotransaction>
-  <evaluateDefaultValues active="0"></evaluateDefaultValues>
-  <trust active="0"></trust>
+  <autotransaction active="0"/>
+  <evaluateDefaultValues active="0"/>
+  <trust active="0"/>
   <projectCrs>
     <spatialrefsys>
       <wkt>PROJCRS["RGF93 / Lambert-93",BASEGEOGCRS["RGF93",DATUM["Reseau Geodesique Francais 1993",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["France"],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
@@ -18,26 +19,37 @@
     </spatialrefsys>
   </projectCrs>
   <layer-tree-group>
-    <customproperties></customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" legend_exp="" legend_split_behavior="0" name="form_edition_upload" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload&quot;">
-      <customproperties></customproperties>
+    <customproperties>
+      <Option/>
+    </customproperties>
+    <layer-tree-layer patch_size="-1,-1" id="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" checked="Qt::Checked" expanded="1" legend_exp="" legend_split_behavior="0" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload&quot;" name="form_edition_upload" providerKey="postgres">
+      <customproperties>
+        <Option/>
+      </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" legend_exp="" legend_split_behavior="0" name="data_integers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
-      <customproperties></customproperties>
+    <layer-tree-layer patch_size="-1,-1" id="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" checked="Qt::Checked" expanded="1" legend_exp="" legend_split_behavior="0" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;" name="data_integers" providerKey="postgres">
+      <customproperties>
+        <Option/>
+      </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_uids_43391461_e5ea_4a95_9167_7b24b713ba9b" legend_exp="" legend_split_behavior="0" name="data_uids" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_uids&quot;">
-      <customproperties></customproperties>
+    <layer-tree-layer patch_size="-1,-1" id="data_uids_43391461_e5ea_4a95_9167_7b24b713ba9b" checked="Qt::Checked" expanded="1" legend_exp="" legend_split_behavior="0" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_uids&quot;" name="data_uids" providerKey="postgres">
+      <customproperties>
+        <Option/>
+      </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51" legend_exp="" legend_split_behavior="0" name="form_edition_all_fields_types" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_all_fields_types&quot;">
-      <customproperties></customproperties>
+    <layer-tree-layer patch_size="0,0" id="form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51" checked="Qt::Checked" expanded="1" legend_exp="" legend_split_behavior="0" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_all_fields_types&quot;" name="form_edition_all_fields_types" providerKey="postgres">
+      <customproperties>
+        <Option/>
+      </customproperties>
     </layer-tree-layer>
-    <custom-order enabled="0"></custom-order>
+    <custom-order enabled="0"/>
   </layer-tree-group>
-  <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
-    <individual-layer-settings></individual-layer-settings>
+  <snapping-settings type="1" scaleDependencyMode="0" tolerance="12" intersection-snapping="0" enabled="0" mode="2" unit="1" maxScale="0" self-snapping="0" minScale="0">
+    <individual-layer-settings/>
   </snapping-settings>
-  <relations></relations>
-  <mapcanvas annotationsVisible="1" name="theMapCanvas">
+  <relations/>
+  <polymorphicRelations/>
+  <mapcanvas name="theMapCanvas" annotationsVisible="1">
     <units>meters</units>
     <extent>
       <xmin>-1.7628992628992628</xmin>
@@ -60,224 +72,34 @@
       </spatialrefsys>
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
-    <expressionContextScope></expressionContextScope>
+    <expressionContextScope/>
   </mapcanvas>
-  <DataPlotly>
-    <Option type="Map">
-      <Option name="dynamic_properties" type="Map">
-        <Option name="name" type="QString" value=""></Option>
-        <Option name="properties"></Option>
-        <Option name="type" type="QString" value="collection"></Option>
-      </Option>
-      <Option name="plot_layout" type="Map">
-        <Option name="additional_info_expression" type="QString" value=""></Option>
-        <Option name="bar_mode" type="QString" value="group"></Option>
-        <Option name="bargaps" type="double" value="0"></Option>
-        <Option name="bins_check" type="bool" value="false"></Option>
-        <Option name="gridcolor" type="QString" value="#bdbfc0"></Option>
-        <Option name="legend" type="bool" value="true"></Option>
-        <Option name="legend_orientation" type="QString" value="v"></Option>
-        <Option name="legend_title" type="invalid"></Option>
-        <Option name="polar" type="Map">
-          <Option name="angularaxis" type="Map">
-            <Option name="direction" type="QString" value="clockwise"></Option>
-          </Option>
-        </Option>
-        <Option name="range_slider" type="Map">
-          <Option name="borderwidth" type="int" value="1"></Option>
-          <Option name="visible" type="bool" value="false"></Option>
-        </Option>
-        <Option name="title" type="QString" value=""></Option>
-        <Option name="x_inv" type="invalid"></Option>
-        <Option name="x_max" type="invalid"></Option>
-        <Option name="x_min" type="invalid"></Option>
-        <Option name="x_title" type="QString" value=""></Option>
-        <Option name="x_type" type="QString" value="linear"></Option>
-        <Option name="xaxis" type="invalid"></Option>
-        <Option name="y_inv" type="invalid"></Option>
-        <Option name="y_max" type="invalid"></Option>
-        <Option name="y_min" type="invalid"></Option>
-        <Option name="y_title" type="QString" value=""></Option>
-        <Option name="y_type" type="QString" value="linear"></Option>
-        <Option name="z_title" type="QString" value=""></Option>
-      </Option>
-      <Option name="plot_properties" type="Map">
-        <Option name="additional_hover_text" type="invalid"></Option>
-        <Option name="bins" type="int" value="10"></Option>
-        <Option name="box_orientation" type="QString" value="v"></Option>
-        <Option name="box_outliers" type="bool" value="false"></Option>
-        <Option name="box_stat" type="bool" value="false"></Option>
-        <Option name="color_scale" type="QString" value="Greys"></Option>
-        <Option name="color_scale_data_defined_in_check" type="bool" value="false"></Option>
-        <Option name="color_scale_data_defined_in_invert_check" type="bool" value="false"></Option>
-        <Option name="cont_type" type="QString" value="fill"></Option>
-        <Option name="contour_type_combo" type="QString" value="Plein"></Option>
-        <Option name="cumulative" type="bool" value="false"></Option>
-        <Option name="custom" type="List">
-          <Option type="QString" value=""></Option>
-        </Option>
-        <Option name="hover_label_position" type="QString" value="auto"></Option>
-        <Option name="hover_label_text" type="invalid"></Option>
-        <Option name="hover_text" type="QString" value="all"></Option>
-        <Option name="in_color" type="QString" value="#8ebad9"></Option>
-        <Option name="invert_color_scale" type="bool" value="false"></Option>
-        <Option name="invert_hist" type="QString" value="increasing"></Option>
-        <Option name="layout_filter_by_atlas" type="bool" value="false"></Option>
-        <Option name="layout_filter_by_map" type="bool" value="false"></Option>
-        <Option name="line_combo" type="QString" value="ligne pleine"></Option>
-        <Option name="line_dash" type="QString" value="solid"></Option>
-        <Option name="marker" type="QString" value="markers"></Option>
-        <Option name="marker_size" type="double" value="10"></Option>
-        <Option name="marker_symbol" type="int" value="0"></Option>
-        <Option name="marker_type_combo" type="QString" value="Points"></Option>
-        <Option name="marker_width" type="double" value="1"></Option>
-        <Option name="name" type="QString" value=""></Option>
-        <Option name="normalization" type="QString" value=""></Option>
-        <Option name="opacity" type="double" value="1"></Option>
-        <Option name="out_color" type="QString" value="#1f77b4"></Option>
-        <Option name="point_combo" type="QString" value=""></Option>
-        <Option name="selected_features_only" type="bool" value="false"></Option>
-        <Option name="show_colorscale_legend" type="bool" value="false"></Option>
-        <Option name="show_lines" type="bool" value="true"></Option>
-        <Option name="show_lines_check" type="bool" value="true"></Option>
-        <Option name="show_mean_line" type="bool" value="true"></Option>
-        <Option name="violin_box" type="bool" value="true"></Option>
-        <Option name="violin_side" type="QString" value="both"></Option>
-        <Option name="visible_features_only" type="bool" value="false"></Option>
-        <Option name="x_name" type="QString" value=""></Option>
-        <Option name="y_name" type="QString" value=""></Option>
-        <Option name="z_name" type="QString" value=""></Option>
-      </Option>
-      <Option name="plot_type" type="QString" value="scatter"></Option>
-      <Option name="source_layer_id" type="QString" value="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7"></Option>
-    </Option>
-  </DataPlotly>
-  <projectModels></projectModels>
+  <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="form_edition_upload" open="true" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="form_edition_upload" open="true">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" visible="1"></legendlayerfile>
+        <legendlayerfile layerid="form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204" visible="1" isInOverview="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="data_integers" open="true" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="data_integers" open="true">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" visible="1"></legendlayerfile>
+        <legendlayerfile layerid="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7" visible="1" isInOverview="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="data_uids" open="true" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="data_uids" open="true">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="data_uids_43391461_e5ea_4a95_9167_7b24b713ba9b" visible="1"></legendlayerfile>
+        <legendlayerfile layerid="data_uids_43391461_e5ea_4a95_9167_7b24b713ba9b" visible="1" isInOverview="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="form_edition_all_fields_types" open="true" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="form_edition_all_fields_types" open="true">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51" visible="1"></legendlayerfile>
+        <legendlayerfile layerid="form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51" visible="1" isInOverview="0"/>
       </filegroup>
     </legendlayer>
   </legend>
-  <mapViewDocks></mapViewDocks>
-  <mapViewDocks3D></mapViewDocks3D>
-  <mapcanvas annotationsVisible="1" name="mAreaCanvas">
-    <units>meters</units>
-    <extent>
-      <xmin>-1.7628992628992628</xmin>
-      <ymin>-1</ymin>
-      <xmax>1.7628992628992628</xmax>
-      <ymax>1</ymax>
-    </extent>
-    <rotation>0</rotation>
-    <destinationsrs>
-      <spatialrefsys>
-        <wkt>PROJCRS["RGF93 / Lambert-93",BASEGEOGCRS["RGF93",DATUM["Reseau Geodesique Francais 1993",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["France"],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
-        <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
-        <srsid>145</srsid>
-        <srid>2154</srid>
-        <authid>EPSG:2154</authid>
-        <description>RGF93 / Lambert-93</description>
-        <projectionacronym>lcc</projectionacronym>
-        <ellipsoidacronym>EPSG:7019</ellipsoidacronym>
-        <geographicflag>false</geographicflag>
-      </spatialrefsys>
-    </destinationsrs>
-    <rendermaptile>0</rendermaptile>
-    <expressionContextScope></expressionContextScope>
-  </mapcanvas>
-  <mapcanvas annotationsVisible="1" name="mAreaCanvas">
-    <units>meters</units>
-    <extent>
-      <xmin>-1.7628992628992628</xmin>
-      <ymin>-1</ymin>
-      <xmax>1.7628992628992628</xmax>
-      <ymax>1</ymax>
-    </extent>
-    <rotation>0</rotation>
-    <destinationsrs>
-      <spatialrefsys>
-        <wkt>PROJCRS["RGF93 / Lambert-93",BASEGEOGCRS["RGF93",DATUM["Reseau Geodesique Francais 1993",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["France"],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
-        <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
-        <srsid>145</srsid>
-        <srid>2154</srid>
-        <authid>EPSG:2154</authid>
-        <description>RGF93 / Lambert-93</description>
-        <projectionacronym>lcc</projectionacronym>
-        <ellipsoidacronym>EPSG:7019</ellipsoidacronym>
-        <geographicflag>false</geographicflag>
-      </spatialrefsys>
-    </destinationsrs>
-    <rendermaptile>0</rendermaptile>
-    <expressionContextScope></expressionContextScope>
-  </mapcanvas>
-  <mapcanvas annotationsVisible="1" name="mAreaCanvas">
-    <units>meters</units>
-    <extent>
-      <xmin>-1.7628992628992628</xmin>
-      <ymin>-1</ymin>
-      <xmax>1.7628992628992628</xmax>
-      <ymax>1</ymax>
-    </extent>
-    <rotation>0</rotation>
-    <destinationsrs>
-      <spatialrefsys>
-        <wkt>PROJCRS["RGF93 / Lambert-93",BASEGEOGCRS["RGF93",DATUM["Reseau Geodesique Francais 1993",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["France"],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
-        <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
-        <srsid>145</srsid>
-        <srid>2154</srid>
-        <authid>EPSG:2154</authid>
-        <description>RGF93 / Lambert-93</description>
-        <projectionacronym>lcc</projectionacronym>
-        <ellipsoidacronym>EPSG:7019</ellipsoidacronym>
-        <geographicflag>false</geographicflag>
-      </spatialrefsys>
-    </destinationsrs>
-    <rendermaptile>0</rendermaptile>
-    <expressionContextScope></expressionContextScope>
-  </mapcanvas>
-  <mapcanvas annotationsVisible="1" name="">
-    <units>meters</units>
-    <extent>
-      <xmin>-1.7628992628992628</xmin>
-      <ymin>-1</ymin>
-      <xmax>1.7628992628992628</xmax>
-      <ymax>1</ymax>
-    </extent>
-    <rotation>0</rotation>
-    <destinationsrs>
-      <spatialrefsys>
-        <wkt>PROJCRS["RGF93 / Lambert-93",BASEGEOGCRS["RGF93",DATUM["Reseau Geodesique Francais 1993",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["France"],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
-        <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
-        <srsid>145</srsid>
-        <srid>2154</srid>
-        <authid>EPSG:2154</authid>
-        <description>RGF93 / Lambert-93</description>
-        <projectionacronym>lcc</projectionacronym>
-        <ellipsoidacronym>EPSG:7019</ellipsoidacronym>
-        <geographicflag>false</geographicflag>
-      </spatialrefsys>
-    </destinationsrs>
-    <rendermaptile>0</rendermaptile>
-    <expressionContextScope></expressionContextScope>
-  </mapcanvas>
-  <main-annotation-layer autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" type="annotation">
+  <mapViewDocks/>
+  <mapViewDocks3D/>
+  <main-annotation-layer type="annotation" legendPlaceholderImage="" refreshOnNotifyMessage="" autoRefreshEnabled="0" autoRefreshTime="0" refreshOnNotifyEnabled="0">
     <id>Annotations_eefc8023_c983_41a3_a6a5_64d52a30a0b7</id>
     <datasource></datasource>
     <keywordList>
@@ -304,7 +126,7 @@
       <type></type>
       <title></title>
       <abstract></abstract>
-      <links></links>
+      <links/>
       <fees></fees>
       <encoding></encoding>
       <crs>
@@ -320,13 +142,15 @@
           <geographicflag>false</geographicflag>
         </spatialrefsys>
       </crs>
-      <extent></extent>
+      <extent/>
     </resourceMetadata>
-    <items></items>
+    <items/>
     <layerOpacity>1</layerOpacity>
+    <blendMode>0</blendMode>
+    <paintEffect/>
   </main-annotation-layer>
   <projectlayers>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
+    <maplayer type="vector" readOnly="0" legendPlaceholderImage="" geometry="No geometry" maxScale="0" refreshOnNotifyMessage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" minScale="1e+08" autoRefreshTime="0" refreshOnNotifyEnabled="0">
       <id>data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7</id>
       <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table="tests_projects"."data_integers"</datasource>
       <keywordList>
@@ -353,7 +177,7 @@
         <type>dataset</type>
         <title></title>
         <abstract></abstract>
-        <links></links>
+        <links/>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -369,102 +193,107 @@
             <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
-        <extent></extent>
+        <extent/>
       </resourceMetadata>
       <provider encoding="">postgres</provider>
-      <vectorjoins></vectorjoins>
-      <layerDependencies></layerDependencies>
-      <dataDependencies></dataDependencies>
-      <expressionfields></expressionfields>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <expressionfields/>
       <map-layer-style-manager current="default">
-        <map-layer-style name="default"></map-layer-style>
+        <map-layer-style name="default"/>
       </map-layer-style-manager>
-      <auxiliaryLayer></auxiliaryLayer>
+      <auxiliaryLayer/>
+      <metadataUrls/>
       <flags>
         <Identifiable>1</Identifiable>
         <Removable>1</Removable>
         <Searchable>1</Searchable>
+        <Private>0</Private>
       </flags>
-      <temporal accumulate="0" durationField="" durationUnit="min" enabled="0" endExpression="" endField="" fixedDuration="0" mode="0" startExpression="" startField="">
+      <temporal startExpression="" endExpression="" fixedDuration="0" enabled="0" mode="0" accumulate="0" startField="" endField="" durationField="" durationUnit="min" limitMode="0">
         <fixedRange>
           <start></start>
           <end></end>
         </fixedRange>
       </temporal>
       <customproperties>
-        <property key="dualview/previewExpressions" value="&quot;id&quot;"></property>
+        <Option type="Map">
+          <Option type="QString" name="dualview/previewExpressions" value="&quot;id&quot;"/>
+        </Option>
       </customproperties>
       <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks type="StringList">
-          <Option type="QString" value=""></Option>
+          <Option type="QString" value=""/>
         </activeChecks>
-        <checkConfiguration></checkConfiguration>
+        <checkConfiguration/>
       </geometryOptions>
-      <legend type="default-vector"></legend>
-      <referencedLayers></referencedLayers>
+      <legend type="default-vector" showLabelLegend="0"/>
+      <referencedLayers/>
       <fieldConfiguration>
         <field configurationFlags="None" name="id">
           <editWidget type="">
             <config>
-              <Option></Option>
+              <Option/>
             </config>
           </editWidget>
         </field>
         <field configurationFlags="None" name="label">
           <editWidget type="">
             <config>
-              <Option></Option>
+              <Option/>
             </config>
           </editWidget>
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias field="id" index="0" name=""></alias>
-        <alias field="label" index="1" name=""></alias>
+        <alias index="0" name="" field="id"/>
+        <alias index="1" name="" field="label"/>
       </aliases>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"></default>
-        <default applyOnUpdate="0" expression="" field="label"></default>
+        <default applyOnUpdate="0" field="id" expression=""/>
+        <default applyOnUpdate="0" field="label" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
-        <constraint constraints="0" exp_strength="0" field="label" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint notnull_strength="1" unique_strength="1" field="id" constraints="3" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="label" constraints="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint desc="" exp="" field="id"></constraint>
-        <constraint desc="" exp="" field="label"></constraint>
+        <constraint desc="" exp="" field="id"/>
+        <constraint desc="" exp="" field="label"/>
       </constraintExpressions>
-      <expressionfields></expressionfields>
+      <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"></defaultAction>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
-          <column hidden="0" name="id" type="field" width="-1"></column>
-          <column hidden="0" name="label" type="field" width="-1"></column>
-          <column hidden="1" type="actions" width="-1"></column>
+          <column type="field" hidden="0" width="-1" name="id"/>
+          <column type="field" hidden="0" width="-1" name="label"/>
+          <column type="actions" hidden="1" width="-1"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
-        <rowstyles></rowstyles>
-        <fieldstyles></fieldstyles>
+        <rowstyles/>
+        <fieldstyles/>
       </conditionalstyles>
-      <storedexpressions></storedexpressions>
+      <storedexpressions/>
       <editform tolerant="1"></editform>
-      <editforminit></editforminit>
+      <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
       <editforminitfilepath></editforminitfilepath>
-      <editforminitcode></editforminitcode>
+      <editforminitcode><![CDATA[]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
-      <editable></editable>
-      <labelOnTop></labelOnTop>
-      <dataDefinedFieldProperties></dataDefinedFieldProperties>
-      <widgets></widgets>
+      <editable/>
+      <labelOnTop/>
+      <reuseLastValue/>
+      <dataDefinedFieldProperties/>
+      <widgets/>
       <previewExpression>"id"</previewExpression>
       <mapTip></mapTip>
     </maplayer>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
+    <maplayer type="vector" readOnly="0" legendPlaceholderImage="" geometry="No geometry" maxScale="0" refreshOnNotifyMessage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" minScale="1e+08" autoRefreshTime="0" refreshOnNotifyEnabled="0">
       <id>data_uids_43391461_e5ea_4a95_9167_7b24b713ba9b</id>
       <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table="tests_projects"."data_uids"</datasource>
       <keywordList>
@@ -491,7 +320,7 @@
         <type>dataset</type>
         <title></title>
         <abstract></abstract>
-        <links></links>
+        <links/>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -507,114 +336,119 @@
             <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
-        <extent></extent>
+        <extent/>
       </resourceMetadata>
       <provider encoding="">postgres</provider>
-      <vectorjoins></vectorjoins>
-      <layerDependencies></layerDependencies>
-      <dataDependencies></dataDependencies>
-      <expressionfields></expressionfields>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <expressionfields/>
       <map-layer-style-manager current="défaut">
-        <map-layer-style name="défaut"></map-layer-style>
+        <map-layer-style name="défaut"/>
       </map-layer-style-manager>
-      <auxiliaryLayer></auxiliaryLayer>
+      <auxiliaryLayer/>
+      <metadataUrls/>
       <flags>
         <Identifiable>1</Identifiable>
         <Removable>1</Removable>
         <Searchable>1</Searchable>
+        <Private>0</Private>
       </flags>
-      <temporal accumulate="0" durationField="" durationUnit="min" enabled="0" endExpression="" endField="" fixedDuration="0" mode="0" startExpression="" startField="">
+      <temporal startExpression="" endExpression="" fixedDuration="0" enabled="0" mode="0" accumulate="0" startField="" endField="" durationField="" durationUnit="min" limitMode="0">
         <fixedRange>
           <start></start>
           <end></end>
         </fixedRange>
       </temporal>
       <customproperties>
-        <property key="dualview/previewExpressions" value="&quot;id&quot;"></property>
+        <Option type="Map">
+          <Option type="QString" name="dualview/previewExpressions" value="&quot;id&quot;"/>
+        </Option>
       </customproperties>
       <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks type="StringList">
-          <Option type="QString" value=""></Option>
+          <Option type="QString" value=""/>
         </activeChecks>
-        <checkConfiguration></checkConfiguration>
+        <checkConfiguration/>
       </geometryOptions>
-      <legend type="default-vector"></legend>
-      <referencedLayers></referencedLayers>
+      <legend type="default-vector" showLabelLegend="0"/>
+      <referencedLayers/>
       <fieldConfiguration>
         <field configurationFlags="None" name="id">
           <editWidget type="">
             <config>
-              <Option></Option>
+              <Option/>
             </config>
           </editWidget>
         </field>
         <field configurationFlags="None" name="uid">
           <editWidget type="">
             <config>
-              <Option></Option>
+              <Option/>
             </config>
           </editWidget>
         </field>
         <field configurationFlags="None" name="label">
           <editWidget type="">
             <config>
-              <Option></Option>
+              <Option/>
             </config>
           </editWidget>
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias field="id" index="0" name=""></alias>
-        <alias field="uid" index="1" name=""></alias>
-        <alias field="label" index="2" name=""></alias>
+        <alias index="0" name="" field="id"/>
+        <alias index="1" name="" field="uid"/>
+        <alias index="2" name="" field="label"/>
       </aliases>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"></default>
-        <default applyOnUpdate="0" expression="" field="uid"></default>
-        <default applyOnUpdate="0" expression="" field="label"></default>
+        <default applyOnUpdate="0" field="id" expression=""/>
+        <default applyOnUpdate="0" field="uid" expression=""/>
+        <default applyOnUpdate="0" field="label" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
-        <constraint constraints="0" exp_strength="0" field="uid" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="label" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint notnull_strength="1" unique_strength="1" field="id" constraints="3" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="uid" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="label" constraints="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint desc="" exp="" field="id"></constraint>
-        <constraint desc="" exp="" field="uid"></constraint>
-        <constraint desc="" exp="" field="label"></constraint>
+        <constraint desc="" exp="" field="id"/>
+        <constraint desc="" exp="" field="uid"/>
+        <constraint desc="" exp="" field="label"/>
       </constraintExpressions>
-      <expressionfields></expressionfields>
+      <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"></defaultAction>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
-          <column hidden="0" name="id" type="field" width="-1"></column>
-          <column hidden="0" name="uid" type="field" width="-1"></column>
-          <column hidden="0" name="label" type="field" width="-1"></column>
-          <column hidden="1" type="actions" width="-1"></column>
+          <column type="field" hidden="0" width="-1" name="id"/>
+          <column type="field" hidden="0" width="-1" name="uid"/>
+          <column type="field" hidden="0" width="-1" name="label"/>
+          <column type="actions" hidden="1" width="-1"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
-        <rowstyles></rowstyles>
-        <fieldstyles></fieldstyles>
+        <rowstyles/>
+        <fieldstyles/>
       </conditionalstyles>
-      <storedexpressions></storedexpressions>
+      <storedexpressions/>
       <editform tolerant="1"></editform>
-      <editforminit></editforminit>
+      <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
       <editforminitfilepath></editforminitfilepath>
-      <editforminitcode></editforminitcode>
+      <editforminitcode><![CDATA[]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
-      <editable></editable>
-      <labelOnTop></labelOnTop>
-      <dataDefinedFieldProperties></dataDefinedFieldProperties>
-      <widgets></widgets>
+      <editable/>
+      <labelOnTop/>
+      <reuseLastValue/>
+      <dataDefinedFieldProperties/>
+      <widgets/>
       <previewExpression>"id"</previewExpression>
       <mapTip></mapTip>
     </maplayer>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
+    <maplayer type="vector" readOnly="0" legendPlaceholderImage="" geometry="No geometry" maxScale="0" refreshOnNotifyMessage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" minScale="1e+08" autoRefreshTime="0" refreshOnNotifyEnabled="0">
       <id>form_edition_all_fields_types_3821ea29_eb6d_4774_81ee_ad42a1e13b51</id>
       <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_all_fields_types"</datasource>
       <keywordList>
@@ -650,7 +484,7 @@
           <email></email>
           <role></role>
         </contact>
-        <links></links>
+        <links/>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -667,7 +501,7 @@
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial crs="" dimensions="2" maxx="0" maxy="0" maxz="0" minx="0" miny="0" minz="0"></spatial>
+          <spatial maxz="0" dimensions="2" minz="0" maxy="0" crs="" minx="0" miny="0" maxx="0"/>
           <temporal>
             <period>
               <start></start>
@@ -677,42 +511,46 @@
         </extent>
       </resourceMetadata>
       <provider encoding="">postgres</provider>
-      <vectorjoins></vectorjoins>
-      <layerDependencies></layerDependencies>
-      <dataDependencies></dataDependencies>
-      <expressionfields></expressionfields>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <expressionfields/>
       <map-layer-style-manager current="default">
-        <map-layer-style name="default"></map-layer-style>
+        <map-layer-style name="default"/>
       </map-layer-style-manager>
-      <auxiliaryLayer></auxiliaryLayer>
+      <auxiliaryLayer/>
+      <metadataUrls/>
       <flags>
         <Identifiable>1</Identifiable>
         <Removable>1</Removable>
         <Searchable>1</Searchable>
+        <Private>0</Private>
       </flags>
-      <temporal accumulate="0" durationField="" durationUnit="min" enabled="0" endExpression="" endField="" fixedDuration="0" mode="0" startExpression="" startField="">
+      <temporal startExpression="" endExpression="" fixedDuration="0" enabled="0" mode="0" accumulate="0" startField="" endField="" durationField="" durationUnit="min" limitMode="0">
         <fixedRange>
           <start></start>
           <end></end>
         </fixedRange>
       </temporal>
       <customproperties>
-        <property key="dualview/previewExpressions" value="&quot;id&quot;"></property>
-        <property key="embeddedWidgets/count" value="0"></property>
-        <property key="variableNames"></property>
-        <property key="variableValues"></property>
+        <Option type="Map">
+          <Option type="QString" name="dualview/previewExpressions" value="&quot;id&quot;"/>
+          <Option type="QString" name="embeddedWidgets/count" value="0"/>
+          <Option name="variableNames"/>
+          <Option name="variableValues"/>
+        </Option>
       </customproperties>
       <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
-        <activeChecks></activeChecks>
-        <checkConfiguration></checkConfiguration>
+        <activeChecks/>
+        <checkConfiguration/>
       </geometryOptions>
-      <legend type="default-vector"></legend>
-      <referencedLayers></referencedLayers>
+      <legend type="default-vector" showLabelLegend="0"/>
+      <referencedLayers/>
       <fieldConfiguration>
         <field configurationFlags="None" name="id">
           <editWidget type="TextEdit">
             <config>
-              <Option></Option>
+              <Option/>
             </config>
           </editWidget>
         </field>
@@ -720,12 +558,12 @@
           <editWidget type="Range">
             <config>
               <Option type="Map">
-                <Option name="AllowNull" type="bool" value="true"></Option>
-                <Option name="Max" type="int" value="2147483647"></Option>
-                <Option name="Min" type="int" value="-2147483648"></Option>
-                <Option name="Precision" type="int" value="0"></Option>
-                <Option name="Step" type="int" value="1"></Option>
-                <Option name="Style" type="QString" value="SpinBox"></Option>
+                <Option type="bool" name="AllowNull" value="true"/>
+                <Option type="int" name="Max" value="2147483647"/>
+                <Option type="int" name="Min" value="-2147483648"/>
+                <Option type="int" name="Precision" value="0"/>
+                <Option type="int" name="Step" value="1"/>
+                <Option type="QString" name="Style" value="SpinBox"/>
               </Option>
             </config>
           </editWidget>
@@ -734,15 +572,15 @@
           <editWidget type="ValueMap">
             <config>
               <Option type="Map">
-                <Option name="map" type="List">
+                <Option type="List" name="map">
                   <Option type="Map">
-                    <Option name="&lt;NULL>" type="QString" value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}"></Option>
+                    <Option type="QString" name="&lt;NULL>" value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}"/>
                   </Option>
                   <Option type="Map">
-                    <Option name="True" type="QString" value="true"></Option>
+                    <Option type="QString" name="True" value="true"/>
                   </Option>
                   <Option type="Map">
-                    <Option name="False" type="QString" value="false"></Option>
+                    <Option type="QString" name="False" value="false"/>
                   </Option>
                 </Option>
               </Option>
@@ -753,9 +591,20 @@
           <editWidget type="CheckBox">
             <config>
               <Option type="Map">
-                <Option name="CheckedState" type="QString" value=""></Option>
-                <Option name="TextDisplayMethod" type="int" value="0"></Option>
-                <Option name="UncheckedState" type="QString" value=""></Option>
+                <Option type="QString" name="CheckedState" value=""/>
+                <Option type="int" name="TextDisplayMethod" value="0"/>
+                <Option type="QString" name="UncheckedState" value=""/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="boolean_readonly">
+          <editWidget type="CheckBox">
+            <config>
+              <Option type="Map">
+                <Option type="QString" name="CheckedState" value=""/>
+                <Option type="int" name="TextDisplayMethod" value="0"/>
+                <Option type="QString" name="UncheckedState" value=""/>
               </Option>
             </config>
           </editWidget>
@@ -764,19 +613,19 @@
           <editWidget type="ValueRelation">
             <config>
               <Option type="Map">
-                <Option name="AllowMulti" type="bool" value="true"></Option>
-                <Option name="AllowNull" type="bool" value="false"></Option>
-                <Option name="Description" type="QString" value=""></Option>
-                <Option name="FilterExpression" type="QString" value=""></Option>
-                <Option name="Key" type="QString" value="id"></Option>
-                <Option name="Layer" type="QString" value="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7"></Option>
-                <Option name="LayerName" type="QString" value="data_integers"></Option>
-                <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
-                <Option name="NofColumns" type="int" value="1"></Option>
-                <Option name="OrderByValue" type="bool" value="false"></Option>
-                <Option name="UseCompleter" type="bool" value="false"></Option>
-                <Option name="Value" type="QString" value="label"></Option>
+                <Option type="bool" name="AllowMulti" value="true"/>
+                <Option type="bool" name="AllowNull" value="false"/>
+                <Option type="QString" name="Description" value=""/>
+                <Option type="QString" name="FilterExpression" value=""/>
+                <Option type="QString" name="Key" value="id"/>
+                <Option type="QString" name="Layer" value="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7"/>
+                <Option type="QString" name="LayerName" value="data_integers"/>
+                <Option type="QString" name="LayerProviderName" value="postgres"/>
+                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"/>
+                <Option type="int" name="NofColumns" value="1"/>
+                <Option type="bool" name="OrderByValue" value="false"/>
+                <Option type="bool" name="UseCompleter" value="false"/>
+                <Option type="QString" name="Value" value="label"/>
               </Option>
             </config>
           </editWidget>
@@ -785,19 +634,19 @@
           <editWidget type="ValueRelation">
             <config>
               <Option type="Map">
-                <Option name="AllowMulti" type="bool" value="true"></Option>
-                <Option name="AllowNull" type="bool" value="false"></Option>
-                <Option name="Description" type="QString" value=""></Option>
-                <Option name="FilterExpression" type="QString" value=""></Option>
-                <Option name="Key" type="QString" value="label"></Option>
-                <Option name="Layer" type="QString" value="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7"></Option>
-                <Option name="LayerName" type="QString" value="data_integers"></Option>
-                <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
-                <Option name="NofColumns" type="int" value="1"></Option>
-                <Option name="OrderByValue" type="bool" value="false"></Option>
-                <Option name="UseCompleter" type="bool" value="false"></Option>
-                <Option name="Value" type="QString" value="label"></Option>
+                <Option type="bool" name="AllowMulti" value="true"/>
+                <Option type="bool" name="AllowNull" value="false"/>
+                <Option type="QString" name="Description" value=""/>
+                <Option type="QString" name="FilterExpression" value=""/>
+                <Option type="QString" name="Key" value="label"/>
+                <Option type="QString" name="Layer" value="data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7"/>
+                <Option type="QString" name="LayerName" value="data_integers"/>
+                <Option type="QString" name="LayerProviderName" value="postgres"/>
+                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"/>
+                <Option type="int" name="NofColumns" value="1"/>
+                <Option type="bool" name="OrderByValue" value="false"/>
+                <Option type="bool" name="UseCompleter" value="false"/>
+                <Option type="QString" name="Value" value="label"/>
               </Option>
             </config>
           </editWidget>
@@ -806,19 +655,19 @@
           <editWidget type="ValueRelation">
             <config>
               <Option type="Map">
-                <Option name="AllowMulti" type="bool" value="true"></Option>
-                <Option name="AllowNull" type="bool" value="false"></Option>
-                <Option name="Description" type="QString" value=""></Option>
-                <Option name="FilterExpression" type="QString" value=""></Option>
-                <Option name="Key" type="QString" value="uid"></Option>
-                <Option name="Layer" type="QString" value="data_uids_43391461_e5ea_4a95_9167_7b24b713ba9b"></Option>
-                <Option name="LayerName" type="QString" value="data_uids"></Option>
-                <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_uids&quot;"></Option>
-                <Option name="NofColumns" type="int" value="1"></Option>
-                <Option name="OrderByValue" type="bool" value="true"></Option>
-                <Option name="UseCompleter" type="bool" value="false"></Option>
-                <Option name="Value" type="QString" value="label"></Option>
+                <Option type="bool" name="AllowMulti" value="true"/>
+                <Option type="bool" name="AllowNull" value="false"/>
+                <Option type="QString" name="Description" value=""/>
+                <Option type="QString" name="FilterExpression" value=""/>
+                <Option type="QString" name="Key" value="uid"/>
+                <Option type="QString" name="Layer" value="data_uids_43391461_e5ea_4a95_9167_7b24b713ba9b"/>
+                <Option type="QString" name="LayerName" value="data_uids"/>
+                <Option type="QString" name="LayerProviderName" value="postgres"/>
+                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;data_uids&quot;"/>
+                <Option type="int" name="NofColumns" value="1"/>
+                <Option type="bool" name="OrderByValue" value="true"/>
+                <Option type="bool" name="UseCompleter" value="false"/>
+                <Option type="QString" name="Value" value="label"/>
               </Option>
             </config>
           </editWidget>
@@ -827,92 +676,127 @@
           <editWidget type="ValueMap">
             <config>
               <Option type="Map">
-                <Option name="map" type="List">
+                <Option type="List" name="map">
                   <Option type="Map">
-                    <Option name="one" type="QString" value="1"></Option>
+                    <Option type="QString" name="one" value="1"/>
                   </Option>
                   <Option type="Map">
-                    <Option name="two" type="QString" value="2"></Option>
+                    <Option type="QString" name="two" value="2"/>
                   </Option>
                   <Option type="Map">
-                    <Option name="three" type="QString" value="3"></Option>
+                    <Option type="QString" name="three" value="3"/>
                   </Option>
                   <Option type="Map">
-                    <Option name="four" type="QString" value="4"></Option>
+                    <Option type="QString" name="four" value="4"/>
                   </Option>
                 </Option>
               </Option>
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="None" name="html_text">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option type="bool" name="IsMultiline" value="true"/>
+                <Option type="bool" name="UseHtml" value="false"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="multiline_text">
+          <editWidget type="TextEdit">
+            <config>
+              <Option type="Map">
+                <Option type="bool" name="IsMultiline" value="true"/>
+                <Option type="bool" name="UseHtml" value="true"/>
+              </Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
-        <alias field="id" index="0" name=""></alias>
-        <alias field="integer_field" index="1" name=""></alias>
-        <alias field="boolean_nullable" index="2" name=""></alias>
-        <alias field="boolean_notnull_for_checkbox" index="3" name=""></alias>
-        <alias field="integer_array" index="4" name=""></alias>
-        <alias field="text" index="5" name=""></alias>
-        <alias field="uids" index="6" name="uids"></alias>
-        <alias field="value_map_integer" index="7" name=""></alias>
+        <alias index="0" name="" field="id"/>
+        <alias index="1" name="" field="integer_field"/>
+        <alias index="2" name="" field="boolean_nullable"/>
+        <alias index="3" name="" field="boolean_notnull_for_checkbox"/>
+        <alias index="4" name="" field="boolean_readonly"/>
+        <alias index="5" name="" field="integer_array"/>
+        <alias index="6" name="" field="text"/>
+        <alias index="7" name="uids" field="uids"/>
+        <alias index="8" name="" field="value_map_integer"/>
+        <alias index="9" name="Multiline text" field="html_text"/>
+        <alias index="10" name="HTML WYSIWYG widget" field="multiline_text"/>
       </aliases>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"></default>
-        <default applyOnUpdate="0" expression="" field="integer_field"></default>
-        <default applyOnUpdate="0" expression="" field="boolean_nullable"></default>
-        <default applyOnUpdate="0" expression="" field="boolean_notnull_for_checkbox"></default>
-        <default applyOnUpdate="0" expression="" field="integer_array"></default>
-        <default applyOnUpdate="0" expression="" field="text"></default>
-        <default applyOnUpdate="0" expression="" field="uids"></default>
-        <default applyOnUpdate="0" expression="" field="value_map_integer"></default>
+        <default applyOnUpdate="0" field="id" expression=""/>
+        <default applyOnUpdate="0" field="integer_field" expression=""/>
+        <default applyOnUpdate="0" field="boolean_nullable" expression=""/>
+        <default applyOnUpdate="0" field="boolean_notnull_for_checkbox" expression=""/>
+        <default applyOnUpdate="0" field="boolean_readonly" expression=""/>
+        <default applyOnUpdate="0" field="integer_array" expression=""/>
+        <default applyOnUpdate="0" field="text" expression=""/>
+        <default applyOnUpdate="0" field="uids" expression=""/>
+        <default applyOnUpdate="0" field="value_map_integer" expression=""/>
+        <default applyOnUpdate="0" field="html_text" expression=""/>
+        <default applyOnUpdate="0" field="multiline_text" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
-        <constraint constraints="0" exp_strength="0" field="integer_field" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="boolean_nullable" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="1" exp_strength="0" field="boolean_notnull_for_checkbox" notnull_strength="1" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="integer_array" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="text" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="uids" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="value_map_integer" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint notnull_strength="1" unique_strength="1" field="id" constraints="3" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="integer_field" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="boolean_nullable" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="1" unique_strength="0" field="boolean_notnull_for_checkbox" constraints="1" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="boolean_readonly" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="integer_array" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="text" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="uids" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="value_map_integer" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="html_text" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="multiline_text" constraints="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint desc="" exp="" field="id"></constraint>
-        <constraint desc="" exp="" field="integer_field"></constraint>
-        <constraint desc="" exp="" field="boolean_nullable"></constraint>
-        <constraint desc="" exp="" field="boolean_notnull_for_checkbox"></constraint>
-        <constraint desc="" exp="" field="integer_array"></constraint>
-        <constraint desc="" exp="" field="text"></constraint>
-        <constraint desc="" exp="" field="uids"></constraint>
-        <constraint desc="" exp="" field="value_map_integer"></constraint>
+        <constraint desc="" exp="" field="id"/>
+        <constraint desc="" exp="" field="integer_field"/>
+        <constraint desc="" exp="" field="boolean_nullable"/>
+        <constraint desc="" exp="" field="boolean_notnull_for_checkbox"/>
+        <constraint desc="" exp="" field="boolean_readonly"/>
+        <constraint desc="" exp="" field="integer_array"/>
+        <constraint desc="" exp="" field="text"/>
+        <constraint desc="" exp="" field="uids"/>
+        <constraint desc="" exp="" field="value_map_integer"/>
+        <constraint desc="" exp="" field="html_text"/>
+        <constraint desc="" exp="" field="multiline_text"/>
       </constraintExpressions>
-      <expressionfields></expressionfields>
+      <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"></defaultAction>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;id&quot;" sortOrder="0">
+      <attributetableconfig sortExpression="&quot;id&quot;" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
-          <column hidden="0" name="id" type="field" width="-1"></column>
-          <column hidden="0" name="integer_field" type="field" width="-1"></column>
-          <column hidden="1" type="actions" width="-1"></column>
-          <column hidden="0" name="boolean_nullable" type="field" width="184"></column>
-          <column hidden="0" name="integer_array" type="field" width="288"></column>
-          <column hidden="0" name="text" type="field" width="-1"></column>
-          <column hidden="0" name="boolean_notnull_for_checkbox" type="field" width="285"></column>
-          <column hidden="0" name="uids" type="field" width="-1"></column>
-          <column hidden="0" name="value_map_integer" type="field" width="-1"></column>
+          <column type="field" hidden="0" width="-1" name="id"/>
+          <column type="field" hidden="0" width="-1" name="integer_field"/>
+          <column type="actions" hidden="1" width="-1"/>
+          <column type="field" hidden="0" width="184" name="boolean_nullable"/>
+          <column type="field" hidden="0" width="288" name="integer_array"/>
+          <column type="field" hidden="0" width="-1" name="text"/>
+          <column type="field" hidden="0" width="285" name="boolean_notnull_for_checkbox"/>
+          <column type="field" hidden="0" width="-1" name="uids"/>
+          <column type="field" hidden="0" width="-1" name="html_text"/>
+          <column type="field" hidden="0" width="-1" name="multiline_text"/>
+          <column type="field" hidden="0" width="-1" name="boolean_readonly"/>
+          <column type="field" hidden="0" width="-1" name="value_map_integer"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
-        <rowstyles></rowstyles>
-        <fieldstyles></fieldstyles>
+        <rowstyles/>
+        <fieldstyles/>
       </conditionalstyles>
-      <storedexpressions></storedexpressions>
+      <storedexpressions/>
       <editform tolerant="1"></editform>
-      <editforminit></editforminit>
+      <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
       <editforminitfilepath></editforminitfilepath>
-      <editforminitcode># -*- coding: utf-8 -*-
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
 opened.
@@ -928,37 +812,56 @@ from qgis.PyQt.QtWidgets import QWidget
 def my_form_open(dialog, layer, feature):
 	geom = feature.geometry()
 	control = dialog.findChild(QWidget, "MyLineEdit")
-</editforminitcode>
+]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
       <editable>
-        <field editable="1" name="boolean_notnull_for_checkbox"></field>
-        <field editable="1" name="boolean_nullable"></field>
-        <field editable="1" name="boolean_nullable_for_checkbox"></field>
-        <field editable="1" name="id"></field>
-        <field editable="1" name="integer_array"></field>
-        <field editable="1" name="integer_field"></field>
-        <field editable="1" name="text"></field>
-        <field editable="1" name="uids"></field>
-        <field editable="1" name="value_map_integer"></field>
+        <field name="boolean_notnull_for_checkbox" editable="1"/>
+        <field name="boolean_nullable" editable="1"/>
+        <field name="boolean_nullable_for_checkbox" editable="1"/>
+        <field name="boolean_readonly" editable="0"/>
+        <field name="html_text" editable="1"/>
+        <field name="id" editable="1"/>
+        <field name="integer_array" editable="1"/>
+        <field name="integer_field" editable="1"/>
+        <field name="multiline_text" editable="1"/>
+        <field name="text" editable="1"/>
+        <field name="uids" editable="1"/>
+        <field name="value_map_integer" editable="1"/>
       </editable>
       <labelOnTop>
-        <field labelOnTop="0" name="boolean_notnull_for_checkbox"></field>
-        <field labelOnTop="0" name="boolean_nullable"></field>
-        <field labelOnTop="0" name="boolean_nullable_for_checkbox"></field>
-        <field labelOnTop="0" name="id"></field>
-        <field labelOnTop="0" name="integer_array"></field>
-        <field labelOnTop="0" name="integer_field"></field>
-        <field labelOnTop="0" name="text"></field>
-        <field labelOnTop="0" name="uids"></field>
-        <field labelOnTop="0" name="value_map_integer"></field>
+        <field name="boolean_notnull_for_checkbox" labelOnTop="0"/>
+        <field name="boolean_nullable" labelOnTop="0"/>
+        <field name="boolean_nullable_for_checkbox" labelOnTop="0"/>
+        <field name="boolean_readonly" labelOnTop="0"/>
+        <field name="html_text" labelOnTop="0"/>
+        <field name="id" labelOnTop="0"/>
+        <field name="integer_array" labelOnTop="0"/>
+        <field name="integer_field" labelOnTop="0"/>
+        <field name="multiline_text" labelOnTop="0"/>
+        <field name="text" labelOnTop="0"/>
+        <field name="uids" labelOnTop="0"/>
+        <field name="value_map_integer" labelOnTop="0"/>
       </labelOnTop>
-      <dataDefinedFieldProperties></dataDefinedFieldProperties>
-      <widgets></widgets>
+      <reuseLastValue>
+        <field name="boolean_notnull_for_checkbox" reuseLastValue="0"/>
+        <field name="boolean_nullable" reuseLastValue="0"/>
+        <field name="boolean_readonly" reuseLastValue="0"/>
+        <field name="html_text" reuseLastValue="0"/>
+        <field name="id" reuseLastValue="0"/>
+        <field name="integer_array" reuseLastValue="0"/>
+        <field name="integer_field" reuseLastValue="0"/>
+        <field name="multiline_text" reuseLastValue="0"/>
+        <field name="text" reuseLastValue="0"/>
+        <field name="uids" reuseLastValue="0"/>
+        <field name="value_map_integer" reuseLastValue="0"/>
+      </reuseLastValue>
+      <dataDefinedFieldProperties/>
+      <widgets/>
       <previewExpression>"id"</previewExpression>
       <mapTip></mapTip>
     </maplayer>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
+    <maplayer type="vector" readOnly="0" legendPlaceholderImage="" geometry="No geometry" maxScale="0" refreshOnNotifyMessage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" minScale="1e+08" autoRefreshTime="0" refreshOnNotifyEnabled="0">
       <id>form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204</id>
       <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload"</datasource>
       <keywordList>
@@ -994,7 +897,7 @@ def my_form_open(dialog, layer, feature):
           <email></email>
           <role></role>
         </contact>
-        <links></links>
+        <links/>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -1011,7 +914,7 @@ def my_form_open(dialog, layer, feature):
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial crs="" dimensions="2" maxx="0" maxy="0" maxz="0" minx="0" miny="0" minz="0"></spatial>
+          <spatial maxz="0" dimensions="2" minz="0" maxy="0" crs="" minx="0" miny="0" maxx="0"/>
           <temporal>
             <period>
               <start></start>
@@ -1021,44 +924,48 @@ def my_form_open(dialog, layer, feature):
         </extent>
       </resourceMetadata>
       <provider encoding="">postgres</provider>
-      <vectorjoins></vectorjoins>
-      <layerDependencies></layerDependencies>
-      <dataDependencies></dataDependencies>
-      <expressionfields></expressionfields>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <expressionfields/>
       <map-layer-style-manager current="défaut">
-        <map-layer-style name="défaut"></map-layer-style>
+        <map-layer-style name="défaut"/>
       </map-layer-style-manager>
-      <auxiliaryLayer></auxiliaryLayer>
+      <auxiliaryLayer/>
+      <metadataUrls/>
       <flags>
         <Identifiable>1</Identifiable>
         <Removable>1</Removable>
         <Searchable>1</Searchable>
+        <Private>0</Private>
       </flags>
-      <temporal accumulate="0" durationField="" durationUnit="min" enabled="0" endExpression="" endField="" fixedDuration="0" mode="0" startExpression="" startField="">
+      <temporal startExpression="" endExpression="" fixedDuration="0" enabled="0" mode="0" accumulate="0" startField="" endField="" durationField="" durationUnit="min" limitMode="0">
         <fixedRange>
           <start></start>
           <end></end>
         </fixedRange>
       </temporal>
       <customproperties>
-        <property key="QFieldSync/action" value="offline"></property>
-        <property key="QFieldSync/cloud_action" value="offline"></property>
-        <property key="QFieldSync/photo_naming" value="{&quot;generic_file&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;text_file&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;image_file&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;text_file_mandatory&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;image_file_mandatory&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;}"></property>
-        <property key="embeddedWidgets/count" value="0"></property>
-        <property key="variableNames"></property>
-        <property key="variableValues"></property>
+        <Option type="Map">
+          <Option type="QString" name="QFieldSync/action" value="offline"/>
+          <Option type="QString" name="QFieldSync/cloud_action" value="offline"/>
+          <Option type="QString" name="QFieldSync/photo_naming" value="{&quot;generic_file&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;text_file&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;image_file&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;text_file_mandatory&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;, &quot;image_file_mandatory&quot;: &quot;'DCIM/form-edition-upload_' || format_date(now(),'yyyyMMddhhmmsszzz') || '.jpg'&quot;}"/>
+          <Option type="QString" name="embeddedWidgets/count" value="0"/>
+          <Option type="invalid" name="variableNames"/>
+          <Option type="invalid" name="variableValues"/>
+        </Option>
       </customproperties>
       <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
-        <activeChecks></activeChecks>
-        <checkConfiguration></checkConfiguration>
+        <activeChecks/>
+        <checkConfiguration/>
       </geometryOptions>
-      <legend type="default-vector"></legend>
-      <referencedLayers></referencedLayers>
+      <legend type="default-vector" showLabelLegend="0"/>
+      <referencedLayers/>
       <fieldConfiguration>
         <field configurationFlags="None" name="id">
           <editWidget type="Hidden">
             <config>
-              <Option></Option>
+              <Option/>
             </config>
           </editWidget>
         </field>
@@ -1066,19 +973,19 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
-                <Option name="DocumentViewer" type="int" value="0"></Option>
-                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
-                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
-                <Option name="FileWidget" type="bool" value="true"></Option>
-                <Option name="FileWidgetButton" type="bool" value="true"></Option>
-                <Option name="FileWidgetFilter" type="QString" value=""></Option>
-                <Option name="PropertyCollection" type="Map">
-                  <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties" type="invalid"></Option>
-                  <Option name="type" type="QString" value="collection"></Option>
+                <Option type="int" name="DocumentViewer" value="0"/>
+                <Option type="int" name="DocumentViewerHeight" value="0"/>
+                <Option type="int" name="DocumentViewerWidth" value="0"/>
+                <Option type="bool" name="FileWidget" value="true"/>
+                <Option type="bool" name="FileWidgetButton" value="true"/>
+                <Option type="QString" name="FileWidgetFilter" value=""/>
+                <Option type="Map" name="PropertyCollection">
+                  <Option type="QString" name="name" value=""/>
+                  <Option type="invalid" name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
-                <Option name="RelativeStorage" type="int" value="0"></Option>
-                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option type="int" name="RelativeStorage" value="0"/>
+                <Option type="int" name="StorageMode" value="0"/>
               </Option>
             </config>
           </editWidget>
@@ -1087,19 +994,19 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
-                <Option name="DocumentViewer" type="int" value="0"></Option>
-                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
-                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
-                <Option name="FileWidget" type="bool" value="true"></Option>
-                <Option name="FileWidgetButton" type="bool" value="true"></Option>
-                <Option name="FileWidgetFilter" type="QString" value="Text files (*.txt)"></Option>
-                <Option name="PropertyCollection" type="Map">
-                  <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties" type="invalid"></Option>
-                  <Option name="type" type="QString" value="collection"></Option>
+                <Option type="int" name="DocumentViewer" value="0"/>
+                <Option type="int" name="DocumentViewerHeight" value="0"/>
+                <Option type="int" name="DocumentViewerWidth" value="0"/>
+                <Option type="bool" name="FileWidget" value="true"/>
+                <Option type="bool" name="FileWidgetButton" value="true"/>
+                <Option type="QString" name="FileWidgetFilter" value="Text files (*.txt)"/>
+                <Option type="Map" name="PropertyCollection">
+                  <Option type="QString" name="name" value=""/>
+                  <Option type="invalid" name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
-                <Option name="RelativeStorage" type="int" value="0"></Option>
-                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option type="int" name="RelativeStorage" value="0"/>
+                <Option type="int" name="StorageMode" value="0"/>
               </Option>
             </config>
           </editWidget>
@@ -1108,19 +1015,19 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
-                <Option name="DocumentViewer" type="int" value="0"></Option>
-                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
-                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
-                <Option name="FileWidget" type="bool" value="true"></Option>
-                <Option name="FileWidgetButton" type="bool" value="true"></Option>
-                <Option name="FileWidgetFilter" type="QString" value="Images (*.png *.jpg *.jpeg)"></Option>
-                <Option name="PropertyCollection" type="Map">
-                  <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties" type="invalid"></Option>
-                  <Option name="type" type="QString" value="collection"></Option>
+                <Option type="int" name="DocumentViewer" value="0"/>
+                <Option type="int" name="DocumentViewerHeight" value="0"/>
+                <Option type="int" name="DocumentViewerWidth" value="0"/>
+                <Option type="bool" name="FileWidget" value="true"/>
+                <Option type="bool" name="FileWidgetButton" value="true"/>
+                <Option type="QString" name="FileWidgetFilter" value="Images (*.png *.jpg *.jpeg)"/>
+                <Option type="Map" name="PropertyCollection">
+                  <Option type="QString" name="name" value=""/>
+                  <Option type="invalid" name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
-                <Option name="RelativeStorage" type="int" value="0"></Option>
-                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option type="int" name="RelativeStorage" value="0"/>
+                <Option type="int" name="StorageMode" value="0"/>
               </Option>
             </config>
           </editWidget>
@@ -1129,19 +1036,19 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
-                <Option name="DocumentViewer" type="int" value="0"></Option>
-                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
-                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
-                <Option name="FileWidget" type="bool" value="true"></Option>
-                <Option name="FileWidgetButton" type="bool" value="true"></Option>
-                <Option name="FileWidgetFilter" type="QString" value="*.txt"></Option>
-                <Option name="PropertyCollection" type="Map">
-                  <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties" type="invalid"></Option>
-                  <Option name="type" type="QString" value="collection"></Option>
+                <Option type="int" name="DocumentViewer" value="0"/>
+                <Option type="int" name="DocumentViewerHeight" value="0"/>
+                <Option type="int" name="DocumentViewerWidth" value="0"/>
+                <Option type="bool" name="FileWidget" value="true"/>
+                <Option type="bool" name="FileWidgetButton" value="true"/>
+                <Option type="QString" name="FileWidgetFilter" value="*.txt"/>
+                <Option type="Map" name="PropertyCollection">
+                  <Option type="QString" name="name" value=""/>
+                  <Option type="invalid" name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
-                <Option name="RelativeStorage" type="int" value="0"></Option>
-                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option type="int" name="RelativeStorage" value="0"/>
+                <Option type="int" name="StorageMode" value="0"/>
               </Option>
             </config>
           </editWidget>
@@ -1150,19 +1057,19 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
-                <Option name="DocumentViewer" type="int" value="0"></Option>
-                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
-                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
-                <Option name="FileWidget" type="bool" value="true"></Option>
-                <Option name="FileWidgetButton" type="bool" value="true"></Option>
-                <Option name="FileWidgetFilter" type="QString" value="Images png (*.png);;Images jpeg (*.jpg *.jpeg)"></Option>
-                <Option name="PropertyCollection" type="Map">
-                  <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties" type="invalid"></Option>
-                  <Option name="type" type="QString" value="collection"></Option>
+                <Option type="int" name="DocumentViewer" value="0"/>
+                <Option type="int" name="DocumentViewerHeight" value="0"/>
+                <Option type="int" name="DocumentViewerWidth" value="0"/>
+                <Option type="bool" name="FileWidget" value="true"/>
+                <Option type="bool" name="FileWidgetButton" value="true"/>
+                <Option type="QString" name="FileWidgetFilter" value="Images png (*.png);;Images jpeg (*.jpg *.jpeg)"/>
+                <Option type="Map" name="PropertyCollection">
+                  <Option type="QString" name="name" value=""/>
+                  <Option type="invalid" name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
-                <Option name="RelativeStorage" type="int" value="0"></Option>
-                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option type="int" name="RelativeStorage" value="0"/>
+                <Option type="int" name="StorageMode" value="0"/>
               </Option>
             </config>
           </editWidget>
@@ -1171,87 +1078,87 @@ def my_form_open(dialog, layer, feature):
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
-                <Option name="DefaultRoot" type="QString" value="../media/specific_media_folder"></Option>
-                <Option name="DocumentViewer" type="int" value="1"></Option>
-                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
-                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
-                <Option name="FileWidget" type="bool" value="true"></Option>
-                <Option name="FileWidgetButton" type="bool" value="true"></Option>
-                <Option name="FileWidgetFilter" type="QString" value=""></Option>
-                <Option name="PropertyCollection" type="Map">
-                  <Option name="name" type="QString" value=""></Option>
-                  <Option name="properties"></Option>
-                  <Option name="type" type="QString" value="collection"></Option>
+                <Option type="QString" name="DefaultRoot" value="../media/specific_media_folder"/>
+                <Option type="int" name="DocumentViewer" value="1"/>
+                <Option type="int" name="DocumentViewerHeight" value="0"/>
+                <Option type="int" name="DocumentViewerWidth" value="0"/>
+                <Option type="bool" name="FileWidget" value="true"/>
+                <Option type="bool" name="FileWidgetButton" value="true"/>
+                <Option type="QString" name="FileWidgetFilter" value=""/>
+                <Option type="Map" name="PropertyCollection">
+                  <Option type="QString" name="name" value=""/>
+                  <Option type="invalid" name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
                 </Option>
-                <Option name="RelativeStorage" type="int" value="1"></Option>
-                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option type="int" name="RelativeStorage" value="1"/>
+                <Option type="int" name="StorageMode" value="0"/>
               </Option>
             </config>
           </editWidget>
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias field="id" index="0" name=""></alias>
-        <alias field="generic_file" index="1" name=""></alias>
-        <alias field="text_file" index="2" name=""></alias>
-        <alias field="image_file" index="3" name=""></alias>
-        <alias field="text_file_mandatory" index="4" name=""></alias>
-        <alias field="image_file_mandatory" index="5" name=""></alias>
-        <alias field="image_file_specific_root_folder" index="6" name=""></alias>
+        <alias index="0" name="" field="id"/>
+        <alias index="1" name="" field="generic_file"/>
+        <alias index="2" name="" field="text_file"/>
+        <alias index="3" name="" field="image_file"/>
+        <alias index="4" name="" field="text_file_mandatory"/>
+        <alias index="5" name="" field="image_file_mandatory"/>
+        <alias index="6" name="" field="image_file_specific_root_folder"/>
       </aliases>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"></default>
-        <default applyOnUpdate="0" expression="" field="generic_file"></default>
-        <default applyOnUpdate="0" expression="" field="text_file"></default>
-        <default applyOnUpdate="0" expression="" field="image_file"></default>
-        <default applyOnUpdate="0" expression="" field="text_file_mandatory"></default>
-        <default applyOnUpdate="0" expression="" field="image_file_mandatory"></default>
-        <default applyOnUpdate="0" expression="" field="image_file_specific_root_folder"></default>
+        <default applyOnUpdate="0" field="id" expression=""/>
+        <default applyOnUpdate="0" field="generic_file" expression=""/>
+        <default applyOnUpdate="0" field="text_file" expression=""/>
+        <default applyOnUpdate="0" field="image_file" expression=""/>
+        <default applyOnUpdate="0" field="text_file_mandatory" expression=""/>
+        <default applyOnUpdate="0" field="image_file_mandatory" expression=""/>
+        <default applyOnUpdate="0" field="image_file_specific_root_folder" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" exp_strength="0" field="id" notnull_strength="1" unique_strength="1"></constraint>
-        <constraint constraints="0" exp_strength="0" field="generic_file" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="text_file" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="image_file" notnull_strength="0" unique_strength="0"></constraint>
-        <constraint constraints="1" exp_strength="0" field="text_file_mandatory" notnull_strength="1" unique_strength="0"></constraint>
-        <constraint constraints="1" exp_strength="0" field="image_file_mandatory" notnull_strength="1" unique_strength="0"></constraint>
-        <constraint constraints="0" exp_strength="0" field="image_file_specific_root_folder" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint notnull_strength="1" unique_strength="1" field="id" constraints="3" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="generic_file" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="text_file" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="image_file" constraints="0" exp_strength="0"/>
+        <constraint notnull_strength="1" unique_strength="0" field="text_file_mandatory" constraints="1" exp_strength="0"/>
+        <constraint notnull_strength="1" unique_strength="0" field="image_file_mandatory" constraints="1" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" field="image_file_specific_root_folder" constraints="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint desc="" exp="" field="id"></constraint>
-        <constraint desc="" exp="" field="generic_file"></constraint>
-        <constraint desc="" exp="" field="text_file"></constraint>
-        <constraint desc="" exp="" field="image_file"></constraint>
-        <constraint desc="" exp="" field="text_file_mandatory"></constraint>
-        <constraint desc="" exp="" field="image_file_mandatory"></constraint>
-        <constraint desc="" exp="" field="image_file_specific_root_folder"></constraint>
+        <constraint desc="" exp="" field="id"/>
+        <constraint desc="" exp="" field="generic_file"/>
+        <constraint desc="" exp="" field="text_file"/>
+        <constraint desc="" exp="" field="image_file"/>
+        <constraint desc="" exp="" field="text_file_mandatory"/>
+        <constraint desc="" exp="" field="image_file_mandatory"/>
+        <constraint desc="" exp="" field="image_file_specific_root_folder"/>
       </constraintExpressions>
-      <expressionfields></expressionfields>
+      <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"></defaultAction>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
-          <column hidden="0" name="id" type="field" width="-1"></column>
-          <column hidden="0" name="text_file" type="field" width="-1"></column>
-          <column hidden="0" name="image_file" type="field" width="-1"></column>
-          <column hidden="0" name="text_file_mandatory" type="field" width="-1"></column>
-          <column hidden="0" name="image_file_mandatory" type="field" width="-1"></column>
-          <column hidden="1" type="actions" width="-1"></column>
-          <column hidden="0" name="generic_file" type="field" width="-1"></column>
-          <column hidden="0" name="image_file_specific_root_folder" type="field" width="-1"></column>
+          <column type="field" hidden="0" width="-1" name="id"/>
+          <column type="field" hidden="0" width="-1" name="text_file"/>
+          <column type="field" hidden="0" width="-1" name="image_file"/>
+          <column type="field" hidden="0" width="-1" name="text_file_mandatory"/>
+          <column type="field" hidden="0" width="-1" name="image_file_mandatory"/>
+          <column type="actions" hidden="1" width="-1"/>
+          <column type="field" hidden="0" width="-1" name="generic_file"/>
+          <column type="field" hidden="0" width="-1" name="image_file_specific_root_folder"/>
         </columns>
       </attributetableconfig>
       <conditionalstyles>
-        <rowstyles></rowstyles>
-        <fieldstyles></fieldstyles>
+        <rowstyles/>
+        <fieldstyles/>
       </conditionalstyles>
-      <storedexpressions></storedexpressions>
+      <storedexpressions/>
       <editform tolerant="1"></editform>
-      <editforminit></editforminit>
+      <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
       <editforminitfilepath></editforminitfilepath>
-      <editforminitcode># -*- coding: utf-8 -*-
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 Les formulaires QGIS peuvent avoir une fonction Python qui sera appelée à l'ouverture du formulaire.
 
@@ -1266,34 +1173,35 @@ def my_form_open(dialog, layer, feature):
 	geom = feature.geometry()
 	control = dialog.findChild(QWidget, "MyLineEdit")
 
-</editforminitcode>
+]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
       <editable>
-        <field editable="1" name="generic_file"></field>
-        <field editable="1" name="id"></field>
-        <field editable="1" name="image_file"></field>
-        <field editable="1" name="image_file_mandatory"></field>
-        <field editable="1" name="image_file_specific_root_folder"></field>
-        <field editable="1" name="text_file"></field>
-        <field editable="1" name="text_file_mandatory"></field>
+        <field name="generic_file" editable="1"/>
+        <field name="id" editable="1"/>
+        <field name="image_file" editable="1"/>
+        <field name="image_file_mandatory" editable="1"/>
+        <field name="image_file_specific_root_folder" editable="1"/>
+        <field name="text_file" editable="1"/>
+        <field name="text_file_mandatory" editable="1"/>
       </editable>
       <labelOnTop>
-        <field labelOnTop="0" name="generic_file"></field>
-        <field labelOnTop="0" name="id"></field>
-        <field labelOnTop="0" name="image_file"></field>
-        <field labelOnTop="0" name="image_file_mandatory"></field>
-        <field labelOnTop="0" name="image_file_specific_root_folder"></field>
-        <field labelOnTop="0" name="text_file"></field>
-        <field labelOnTop="0" name="text_file_mandatory"></field>
+        <field name="generic_file" labelOnTop="0"/>
+        <field name="id" labelOnTop="0"/>
+        <field name="image_file" labelOnTop="0"/>
+        <field name="image_file_mandatory" labelOnTop="0"/>
+        <field name="image_file_specific_root_folder" labelOnTop="0"/>
+        <field name="text_file" labelOnTop="0"/>
+        <field name="text_file_mandatory" labelOnTop="0"/>
       </labelOnTop>
-      <dataDefinedFieldProperties></dataDefinedFieldProperties>
-      <widgets></widgets>
+      <reuseLastValue/>
+      <dataDefinedFieldProperties/>
+      <widgets/>
       <previewExpression>"id"</previewExpression>
       <mapTip></mapTip>
     </maplayer>
   </projectlayers>
-  <layerorder></layerorder>
+  <layerorder/>
   <properties>
     <DefaultStyles>
       <ColorRamp type="QString"></ColorRamp>
@@ -1365,7 +1273,7 @@ def my_form_open(dialog, layer, feature):
         <value></value>
       </variableValues>
     </Variables>
-    <WCSLayers type="QStringList"></WCSLayers>
+    <WCSLayers type="QStringList"/>
     <WCSUrl type="QString"></WCSUrl>
     <WFSLayers type="QStringList">
       <value>data_integers_ca1eb372_c518_4cc2_b2d8_c66d71b908a7</value>
@@ -1380,9 +1288,9 @@ def my_form_open(dialog, layer, feature):
       <form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204 type="int">8</form_edition_upload_65de30e9_0bab_44f1_9a3d_b2bf9f47a204>
     </WFSLayersPrecision>
     <WFSTLayers>
-      <Delete type="QStringList"></Delete>
-      <Insert type="QStringList"></Insert>
-      <Update type="QStringList"></Update>
+      <Delete type="QStringList"/>
+      <Insert type="QStringList"/>
+      <Update type="QStringList"/>
     </WFSTLayers>
     <WFSUrl type="QString"></WFSUrl>
     <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
@@ -1416,23 +1324,23 @@ def my_form_open(dialog, layer, feature):
     <WMSUrl type="QString"></WMSUrl>
     <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
     <WMTSGrids>
-      <CRS type="QStringList"></CRS>
-      <Config type="QStringList"></Config>
+      <CRS type="QStringList"/>
+      <Config type="QStringList"/>
     </WMTSGrids>
     <WMTSJpegLayers>
-      <Group type="QStringList"></Group>
-      <Layer type="QStringList"></Layer>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
       <Project type="bool">false</Project>
     </WMTSJpegLayers>
     <WMTSLayers>
-      <Group type="QStringList"></Group>
-      <Layer type="QStringList"></Layer>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
       <Project type="bool">false</Project>
     </WMTSLayers>
     <WMTSMinScale type="int">5000</WMTSMinScale>
     <WMTSPngLayers>
-      <Group type="QStringList"></Group>
-      <Layer type="QStringList"></Layer>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
       <Project type="bool">false</Project>
     </WMTSPngLayers>
     <WMTSUrl type="QString"></WMTSUrl>
@@ -1447,13 +1355,13 @@ def my_form_open(dialog, layer, feature):
   </properties>
   <dataDefinedServerProperties>
     <Option type="Map">
-      <Option name="name" type="QString" value=""></Option>
-      <Option name="properties"></Option>
-      <Option name="type" type="QString" value="collection"></Option>
+      <Option type="QString" name="name" value=""/>
+      <Option name="properties"/>
+      <Option type="QString" name="type" value="collection"/>
     </Option>
   </dataDefinedServerProperties>
-  <visibility-presets></visibility-presets>
-  <transformContext></transformContext>
+  <visibility-presets/>
+  <transformContext/>
   <projectMetadata>
     <identifier></identifier>
     <parentidentifier></parentidentifier>
@@ -1470,16 +1378,16 @@ def my_form_open(dialog, layer, feature):
       <email></email>
       <role></role>
     </contact>
-    <links></links>
+    <links/>
     <author>nboisteault</author>
     <creation>2020-12-07T10:34:58</creation>
   </projectMetadata>
-  <Annotations></Annotations>
-  <Layouts></Layouts>
-  <Bookmarks></Bookmarks>
+  <Annotations/>
+  <Layouts/>
+  <Bookmarks/>
   <ProjectViewSettings UseProjectScales="0">
-    <Scales></Scales>
-    <DefaultViewExtent xmax="1.7628992628992628" xmin="-1.7628992628992628" ymax="1.63231413231413214" ymin="-1.63231413231413214">
+    <Scales/>
+    <DefaultViewExtent xmax="1.7628992628992628" xmin="-1.7628992628992628" ymin="-1.89936735304755588" ymax="1.89936735304755588">
       <spatialrefsys>
         <wkt>PROJCRS["RGF93 / Lambert-93",BASEGEOGCRS["RGF93",DATUM["Reseau Geodesique Francais 1993",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["France"],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
         <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
@@ -1493,18 +1401,18 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </DefaultViewExtent>
   </ProjectViewSettings>
-  <ProjectTimeSettings cumulativeTemporalRange="0" frameRate="1" timeStep="1" timeStepUnit="h"></ProjectTimeSettings>
+  <ProjectTimeSettings cumulativeTemporalRange="0" frameRate="1" timeStepUnit="h" timeStep="1"/>
   <ProjectDisplaySettings>
     <BearingFormat id="bearing">
       <Option type="Map">
-        <Option name="decimal_separator" type="QChar" value=""></Option>
-        <Option name="decimals" type="int" value="6"></Option>
-        <Option name="direction_format" type="int" value="0"></Option>
-        <Option name="rounding_type" type="int" value="0"></Option>
-        <Option name="show_plus" type="bool" value="false"></Option>
-        <Option name="show_thousand_separator" type="bool" value="true"></Option>
-        <Option name="show_trailing_zeros" type="bool" value="false"></Option>
-        <Option name="thousand_separator" type="QChar" value=""></Option>
+        <Option type="QChar" name="decimal_separator" value=""/>
+        <Option type="int" name="decimals" value="6"/>
+        <Option type="int" name="direction_format" value="0"/>
+        <Option type="int" name="rounding_type" value="0"/>
+        <Option type="bool" name="show_plus" value="false"/>
+        <Option type="bool" name="show_thousand_separator" value="true"/>
+        <Option type="bool" name="show_trailing_zeros" value="false"/>
+        <Option type="QChar" name="thousand_separator" value=""/>
       </Option>
     </BearingFormat>
   </ProjectDisplaySettings>

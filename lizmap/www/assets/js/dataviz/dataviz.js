@@ -1,65 +1,266 @@
-var lizDataviz = function() {
+let lizDataviz = function () {
 
-    var dv = {
-        'config' : null,
+    /**
+     * Global variable which helps to get
+     * the dataviz state
+     */
+    let dv = {
+        'config': null,
         'plots': {},
         'template': null
     };
 
-    function optionToBoolean(string){
-        var ret = false;
-        if (string.toString().toLowerCase() == "true"){
-            ret = true;
-        }else{
-            ret = false;
+    /**
+     * Check if an HTML element is in the current viewport
+     * and is visible at the same time.
+     *
+     * This will be used to lazy load the plots.
+     *
+     * @param {HTMLElement} elem The element to check
+     * @return {boolean} True if the element is in the viewport and visible
+     */
+    function isInViewport(elem) {
+        let bounding = elem.getBoundingClientRect();
+        let inViewport = (
+            bounding.top >= 0 &&
+            bounding.left >= 0 &&
+            bounding.width > 0 &&
+            bounding.height > 0 &&
+            bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+        let style = window.getComputedStyle(elem);
+        let isVisible = !((style.display === 'none') || (style.visibility === 'hidden'))
+
+        return (inViewport && isVisible);
+    };
+
+    /**
+     * Get the percentage of an element covering the viewport
+     *
+     * @param {HTMLElement} element The element to test
+     * @return {integer} Percentage
+     */
+    function getViewPercentage(element) {
+        const viewport = {
+            top: window.pageYOffset,
+            bottom: window.pageYOffset + window.innerHeight
+        };
+        const elementBoundingRect = element.getBoundingClientRect();
+        const elementPos = {
+            top: elementBoundingRect.y + window.pageYOffset,
+            bottom: elementBoundingRect.y + elementBoundingRect.height + window.pageYOffset
+        };
+        if (viewport.top > elementPos.bottom || viewport.bottom < elementPos.top) {
+            return 0;
         }
-        return ret;
+        // Element is fully within viewport
+        if (viewport.top < elementPos.top && viewport.bottom > elementPos.bottom) {
+            return 100;
+        }
+        // Element is bigger than the viewport
+        if (elementPos.top < viewport.top && elementPos.bottom > viewport.bottom) {
+            return 100;
+        }
+
+        const elementHeight = elementBoundingRect.height;
+        let elementHeightInView = elementHeight;
+        if (elementPos.top < viewport.top) {
+            elementHeightInView = elementHeight - (window.pageYOffset - elementPos.top);
+        }
+        if (elementPos.bottom > viewport.bottom) {
+            elementHeightInView = elementHeightInView - (elementPos.bottom - viewport.bottom);
+        }
+        const percentageInView = (elementHeightInView / window.innerHeight) * 100;
+
+        return Math.round(percentageInView);
     }
 
-    function getPlots(){
-        if(!dv.config.layers)
+    /**
+     * Converts a string 'False' or 'True' to boolean
+     *
+     * @param {string} string The string to convert to boolean.
+     * @return {boolean} The converted boolean value.
+     */
+    function optionToBoolean(string) {
+
+        return (string.toString().toLowerCase() == "true");
+    }
+
+    /**
+     * List the plots written in Lizmap configuration object
+     * and create the needed HTML containers.
+     *
+     * It also get the data and render the plot if they are
+     * not only displayed in the popup.
+     *
+     */
+    function getPlots() {
+        if (!dv.config.layers)
             return false;
-        for( var i in dv.config.layers) {
+
+        // Observe plots intersection with viewport
+        // To help lazy loading data
+        let observer = new IntersectionObserver(function (entries) {
+            // callback code
+            for (let i = 0; i < entries.length; i++) {
+                if (entries[i]['isIntersecting']) {
+                    let plotContainerId = entries[i]['target'].id;
+                    let plotId = plotContainerId.replace('dataviz_plot_', '');
+                    let data_fetched = dv.plots[plotId]['data_fetched'];
+                    if (!data_fetched) {
+                        getPlot(plotId, dv.plots[plotId]['filter'], plotContainerId);
+                    }
+                }
+            }
+        }, { threshold: [0.1], rootMargin: "0px 0px 0px 0px" });
+
+        // For each configured plot, add reference in our global object
+        // Add add the plot container div
+        for (let i in dv.config.layers) {
             // initialize plot info
-            dv.plots[i] = {'json': null, 'filter': null, 'show_plot': true, 'cache': null};
-            if (!( optionToBoolean(dv.config.layers[i]['only_show_child']) )) {
+            dv.plots[i] = { 'json': null, 'filter': null, 'show_plot': true, 'cache': null, 'data_fetched': false };
+            if (!(optionToBoolean(dv.config.layers[i]['only_show_child']))) {
+                let plotContainerId = `dataviz_plot_${i}`;
+
+                // Add plot container
                 addPlotContainer(i);
             }
         }
-        lizMap.events.triggerEvent( "datavizplotcontainersadded" );
-        for( var i in dv.config.layers) {
-            if (!( optionToBoolean(dv.config.layers[i]['only_show_child']) )){
-                getPlot(i, null, 'dataviz_plot_' + i);
+
+        // Trigger the Lizmap event that the plots containers have been added
+        lizMap.events.triggerEvent("datavizplotcontainersadded");
+
+        // Get the plot data and display the plots
+        // for the plot which are visible in the dock, not only in the parent popup
+        for (let i in dv.config.layers) {
+            let plotContainerId = `dataviz_plot_${i}`;
+
+            // Set the plot container visibility at startup depending on the layer visibility
+            setPlotContainerVisibilityFromLayerVisibility(i);
+
+            // Get the data and display the plot only if needed
+            if (!(optionToBoolean(dv.config.layers[i]['only_show_child']))) {
+                // Get the plot data and display it if the container is visible
+                let elem = document.getElementById(plotContainerId);
+                if (isInViewport(elem) || getViewPercentage(elem) > 0) {
+                    getPlot(i, null, plotContainerId);
+                }
+
+                // Add intersection observer on the plot container
+                // to let the script get the data anytime the plot is displayed
+                observer.observe(elem);
             }
         }
 
         // Filter plot if needed
         lizMap.events.on({
-            layerFilterParamChanged: function(e) {
+            layerFilterParamChanged: function (e) {
                 refreshPlotsOnFilter(e.featureType, e.filter);
             },
-            layerfeatureremovefilter: function(e) {
-
+            layerfeatureremovefilter: function (e) {
                 refreshPlotsOnFilter(e.featureType, null);
+            }
+        });
+
+
+        // Toggle the plot visibility based on the plot configuration
+        // and the layer visibility
+        // Add event to hide/show plots if needed
+        // We use the id variable for the plot: we are in the buildPlot function
+        lizMap.events.on({
+            'lizmaplayerchangevisibility': e => {
+                if (e.config !== undefined && 'datavizLayers' in lizMap.config) {
+                    // Get layer info
+                    let layerConfig = e.config;
+                    let layerId = layerConfig.id;
+
+                    for (let pid in dv.config.layers) {
+                        // Plot container ID
+                        let plotContainerId = `dataviz_plot_${pid}`;
+
+                        // Plot global configuration
+                        let plot_config = dv.config.layers[pid];
+                        if (!('display_when_layer_visible' in plot_config.plot)) {
+                            continue;
+                        }
+
+                        // Check correspondance between layers
+                        let pLayerId = plot_config['layer_id'];
+                        let displayPlot = optionToBoolean(plot_config.plot.display_when_layer_visible);
+                        if (pLayerId == layerId && displayPlot) {
+                            // Set plot visibility depending on layer visibility
+                            let layer = lizMap.map.getLayersByName(layerConfig.cleanname)[0]
+                            let showPlot = (
+                                layer.getVisibility() && layer.inRange
+                            );
+                            $('#' + plotContainerId + '_container').toggle(showPlot);
+                            dv.plots[pid]['show_plot'] = showPlot;
+                            if (showPlot) {
+                                resizePlot(plotContainerId);
+                            }
+                        }
+                    }
+                }
             }
         });
 
     }
 
-    function refreshPlotsOnFilter(featureType, filter){
-        for( var i in dv.config.layers) {
-            var dvLayerId = dv.config.layers[i]['layer_id']
-            if( featureType in lizMap.config.layers ){
-                var layerId = lizMap.config.layers[featureType].id;
+    /**
+     * Refresh the plot by requesting new data
+     * anytime a filter has been applied or discarded
+     * on the source layer
+     *
+     * @param {string} featureType The layer feature type
+     * @param {string} filter The OWS filter, in format my_layer_feature_type: "a_field" = 'value'
+     */
+    function refreshPlotsOnFilter(featureType, filter) {
+        for (let i in dv.config.layers) {
+            let dvLayerId = dv.config.layers[i]['layer_id']
 
-                if( layerId == dvLayerId ){
-                    if(filter === null){
-                        getPlot(i, null, 'dataviz_plot_' + i);
+            // Check the plot corresponding to the currently (un-)filtered layer
+            // and refresh the plot if needed
+            if (featureType in lizMap.config.layers) {
+                let layerId = lizMap.config.layers[featureType].id;
+                // Do it only if the plot layer ID corresponds to the filtered layer
+                if (layerId == dvLayerId) {
+                    // Reset the status of data_fetched
+                    dv.plots[i]['data_fetched'] = false;
+
+                    // Plot container ID
+                    let plotContainerId = `dataviz_plot_${i}`;
+                    let plotContainerElement = document.getElementById(plotContainerId);
+
+                    // Show container if needed
+                    if (dv.plots[i]['show_plot']) {
+                        $('#' + plotContainerId + '_container').show();
                     }
-                    else{
-                        var pFilter = filter.replace(featureType+':', '');
-                        if( pFilter.length > 5){
-                            getPlot(i, pFilter, 'dataviz_plot_' + i);
+
+                    // If the filter has been removed
+                    // we should refresh the plot, only if visible
+                    // we want to lazy load the plots
+                    if (filter === null) {
+                        // Reset the global variable filter
+                        dv.plots[i]['filter'] = null;
+                        // Get the plot data and display the plot
+                        // only if it is visible in the view port
+                        if (isInViewport(plotContainerElement) || getViewPercentage(plotContainerElement) > 0) {
+                            getPlot(i, null, plotContainerId);
+                        }
+                    }
+                    // When a filter is applied, we consider the performance
+                    // will be ok and always refresh all the plots even
+                    // if they are not in the viewport
+                    else {
+                        // Compute the exp_filter based on the layer filter
+                        let pFilter = filter.replace(featureType + ':', '');
+                        // Reset the global variable filter
+                        dv.plots[i]['filter'] = pFilter;
+                        if (pFilter.length > 5) {
+                            if (isInViewport(plotContainerElement) || getViewPercentage(plotContainerElement) > 0) {
+                                getPlot(i, pFilter, plotContainerId);
+                            }
                         }
                     }
                 }
@@ -67,60 +268,93 @@ var lizDataviz = function() {
         }
     }
 
-    function buildPlotContainerHtml(title, abstract, target_id, with_title){
-        with_title = typeof with_title !== 'undefined' ?  with_title : true;
-        var html = '';
-        html+= '<div class="dataviz_plot_container"  id="'+target_id+'_container">';
-        if(with_title){
-            html+= '<h3><span class="title">';
-            html+= '<span class="icon"></span>&nbsp;';
-            html+= '<span class="text">'+title+'</span>';
-            html+= '</span></h3>';
+    /**
+     * Build the HTML wrapper code inside which to add each plot
+     *
+     * @param {string} title The plot title.
+     * @param {string} abstract The plot abstract.
+     * @param {string} target_id The plot container element id.
+     * @param {boolean} with_title If we need to display the plot title
+     *
+     * @return {boolean} The converted boolean value.
+     */
+    function buildPlotContainerHtml(title, abstract, target_id, with_title) {
+        with_title = typeof with_title !== 'undefined' ? with_title : true;
+        let html = '';
+        html += '<div class="dataviz_plot_container"  id="' + target_id + '_container">';
+        if (with_title) {
+            html += '<h3><span class="title">';
+            html += '<span class="icon"></span>&nbsp;';
+            html += '<span class="text">' + title + '</span>';
+            html += '</span></h3>';
         }
-        html+= '<div class="menu-content">';
+        html += '<div class="menu-content">';
         if (abstract.trim() != '') {
-            html+= '  <p>'+abstract.trim()+'</p>';
+            html += '  <p>' + abstract.trim() + '</p>';
         }
-        html+= '  <div class="dataviz-waiter progress progress-striped active" style="margin:5px 5px;">';
-        html+= '    <div class="bar" style="width: 100%;"></div>';
-        html+= '  </div>';
-        html+= '  <div id="'+target_id+'"></div>';
-        html+= '</div>';
-        html+= '</div>';
+        html += '  <div class="dataviz-waiter progress progress-striped active" style="margin:5px 5px;">';
+        html += '    <div class="bar" style="width: 100%;"></div>';
+        html += '  </div>';
+        html += '  <div id="' + target_id + '"></div>';
+        html += '</div>';
+        html += '</div>';
 
         return html;
     }
 
-    function addPlotContainer(plot_id){
-        var dataviz_plot_id = 'dataviz_plot_' + plot_id;
-        dv.plots[plot_id] = {'json': null, 'filter': null, 'show_plot': true, 'cache': null};
-        var plot_config = dv.config.layers[plot_id];
+    /**
+     * Add the HTML plot container in the right place
+     * in the page: either the #dataviz-content div
+     * or in a user-defined plot container if the HTML template
+     * has been configured inside Lizmap plugin
+     *
+     * @param {integer} plot_id The plot id
+     */
+    function addPlotContainer(plot_id) {
+        let dataviz_plot_id = 'dataviz_plot_' + plot_id;
+        dv.plots[plot_id] = { 'json': null, 'filter': null, 'show_plot': true, 'cache': null };
+        let plot_config = dv.config.layers[plot_id];
+
         //if we chose to hide the parent plot the html variable become empty
-        var html = '';
-        if( !(optionToBoolean(plot_config.only_show_child)) )
-        {
+        let html = '';
+        if (!(optionToBoolean(plot_config.only_show_child))) {
             html = buildPlotContainerHtml(plot_config.title, plot_config.abstract, dataviz_plot_id);
         }
 
         // Move plot at the end of the main container
         // to the corresponding place if id is referenced in the template
-        var pgetter = '#dataviz_plot_template_' + plot_id;
-        var p = $(pgetter);
-        if( p.length ){
+        let pgetter = '#dataviz_plot_template_' + plot_id;
+        let p = $(pgetter);
+        if (p.length) {
             p.append(html);
         }
-        else{
+        else {
             $('#dataviz-content').append(html);
         }
     }
 
-    function getPlot(plot_id, exp_filter, target_id){
-        if ( $('#'+target_id).length == 0) return;
+    /**
+     * Get the plot data from the backend
+     * and draw the plot with the buildPlot method
+     *
+     * @param {integer} plot_id The id of the plot.
+     * @param {string} exp_filter The optional data filter.
+     * @param {string} target_id The ID of the target dom element.
+     *
+     */
+    function getPlot(plot_id, exp_filter, target_id) {
 
-        exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
-        target_id = typeof target_id !== 'undefined' ?  target_id : new Date().valueOf()+btoa(Math.random()).substring(0,12);
+        if ($('#' + target_id).length == 0) {
+            return;
+        }
 
-        var lparams = {
+        // Show the infinite progress bar
+        $('#' + target_id).prev('.dataviz-waiter:first').show();
+
+        exp_filter = typeof exp_filter !== 'undefined' ? exp_filter : null;
+        target_id = typeof target_id !== 'undefined' ? target_id : new Date().valueOf() + btoa(Math.random()).substring(0, 12);
+
+        let lparams = {
             'request': 'getPlot',
             'plot_id': plot_id
         };
@@ -146,8 +380,8 @@ var lizDataviz = function() {
             }
 
             // Build plot
-            var plot = buildPlot(target_id, dv.plots[plot_id]['cache']);
-            $('#'+target_id).prev('.dataviz-waiter:first').hide();
+            buildPlot(target_id, dv.plots[plot_id]['cache']);
+            $('#' + target_id).prev('.dataviz-waiter:first').hide();
 
             return true;
         }
@@ -155,95 +389,118 @@ var lizDataviz = function() {
         // No cache -> get data
         $.getJSON(datavizConfig.url,
             lparams,
-            function(json){
-                if( 'errors' in json ){
+            function (json) {
+                if ('errors' in json) {
                     console.log('Dataviz configuration error');
                     console.log(json.errors);
-                    return false;
                 }
+
                 // Store json only if no filter
                 // Because we use cache for the full data
                 // and we do not want to override it
-                if (!exp_filter) {
+                if (!exp_filter && !('errors' in json)) {
                     dv.plots[plot_id]['cache'] = json;
+                    dv.plots[plot_id]['json'] = json;
                 }
-                dv.plots[plot_id]['json'] = json;
 
                 // Store filter
                 dv.plots[plot_id]['filter'] = exp_filter;
 
                 // Hide container if no data
-                if( !json.data || json.data.length < 1){
-                    // hide full container
+                if (!json.data || json.data.length < 1) {
+                    // hide the full container
                     $('#' + target_id + '_container').hide();
-                    $('#'+target_id).prev('.dataviz-waiter:first').hide();
-                    $('#'+target_id).parents('div.lizdataviz.lizmapPopupChildren:first').hide();
+                    // Hide the infinite progress bar
+                    $('#' + target_id).prev('.dataviz-waiter:first').hide();
+                    $('#' + target_id).parents('div.lizdataviz.lizmapPopupChildren:first').hide();
+
                     return false;
                 }
+
                 // Show container if needed
                 if (dv.plots[plot_id]['show_plot']) {
                     $('#' + target_id + '_container').show();
                 }
 
+                // The data has been successfully fetched
+                dv.plots[plot_id]['data_fetched'] = true;
+
                 // Build plot
                 // Pass plot_id to inherit custom configurations in child charts
-                var plot = buildPlot(target_id, json, plot_id);
-                $('#'+target_id).prev('.dataviz-waiter:first').hide();
+                buildPlot(target_id, json, plot_id);
+
+                // Hide the infinite progress bar
+                $('#' + target_id).prev('.dataviz-waiter:first').hide();
             }
         );
     }
 
-    function buildHtmlPlot(id, data, layout) {
+
+    /**
+     * Build the full HTML for the very specific plot
+     * of type 'html' which cannot be rendered by PlotLy
+     * as they are a Lizmap only feature.
+     *
+     * It is responsible for rendering the plot and
+     * adding it in the document.
+     *
+     * @param {integer} plotContainerId The plot container element ID
+     * @param {object} data The plot data as given by the backend
+     * @param {object} layout The plot layout defined by the user
+     *
+     */
+    function buildHtmlPlot(plotContainerId, data, layout) {
         if (!data) {
             return;
         }
-        var a = parseInt(id.replace('dataviz_plot_', ''));
-        var plot_config = dv.config.layers[a];
-        var plot = plot_config.plot;
+        let plot_id = parseInt(plotContainerId.replace('dataviz_plot_', ''));
+        let plot_config = dv.config.layers[plot_id];
+        let plot = plot_config.plot;
         if (!('html_template' in plot)) {
             return;
         }
-        var template = plot.html_template;
+        let template = plot.html_template;
 
         // data has as many item as traces
         // First get number of x distinct values of 1st trace
-        var nb_traces = data.length;
+        let nb_traces = data.length;
 
-        var htmls = {};
-        var max_distinct_x = 500;
-        var distinct_x = [];
-        for (var x in data[0]['x']) {
+        let htmls = {};
+        let max_distinct_x = 500;
+        let distinct_x = [];
+        for (let x in data[0]['x']) {
             // Keep only N first x values
             // For performance
             if (x > max_distinct_x) {
                 break;
             }
-            var html = template;
-            var x_val = data[0]['x'][x];
+            let html = template;
+            let x_val = data[0]['x'][x];
             distinct_x.push(x_val);
-            var x_search = '{$x}';
-            var x_replacement = x_val;
+            let x_search = '{$x}';
+            let x_replacement = x_val;
             html = html.split(x_search).join(x_replacement);
             // Loop over traces
-            for (var i = 0; i < nb_traces; i++ ) {
-                var trace = data[i];
+            for (let i = 0; i < nb_traces; i++) {
+                let trace = data[i];
                 // Y value
-                var y_val = trace.y[x];
-                var y_search = '{$yi}'.replace('i', i+1);
-                var localeString = dv.config.locale.replace('_', '-')
-                var y_replacement = y_val.toLocaleString(localeString);;
+                let y_val = trace.y[x];
+                let y_search = '{$yi}'.replace('i', i + 1);
+                let localeString = dv.config.locale.replace('_', '-')
+                let y_replacement = y_val.toLocaleString(localeString);;
                 html = html.split(y_search).join(y_replacement);
 
                 // Colors
+                let y_color = 'purple';
+                let y_creplacement = y_color;
+                let y_csearch = '{$colori}'.replace('i', i + 1);
                 if ('color' in trace.marker) {
-                    var y_color = trace.marker.color;
-                    var y_csearch = '{$colori}'.replace('i', i+1);
-                    var y_creplacement = y_color;
+                    y_color = trace.marker.color;
+                    y_creplacement = y_color;
                 }
                 if ('colors' in trace.marker) {
-                    var y_color = trace.marker.colors[x];
-                    var y_csearch = '{$colori}'.replace('i', i+1);
-                    var y_creplacement = y_color;
+                    y_color = trace.marker.colors[x];
+                    y_creplacement = y_color;
                 }
                 html = html.split(y_csearch).join(y_creplacement);
             }
@@ -254,35 +511,44 @@ var lizDataviz = function() {
         distinct_x.sort();
 
         // Empty previous html
-        $('#'+id).html('');
-        for (var x in distinct_x) {
-            var x_val = distinct_x[x];
-            var html = '<div style="padding:5px;">' + htmls[x_val] + '</div>';
-            $('#'+id).append(html);
+        $('#' + plotContainerId).html('');
+
+        // Add new built html
+        for (let x in distinct_x) {
+            let x_val = distinct_x[x];
+            let html = '<div style="padding:5px;">' + htmls[x_val] + '</div>';
+            $('#' + plotContainerId).append(html);
         }
     }
 
-    function resizePlot(id){
-       // Plotly.d3.select causes an error if the selector parameter is not a correct CSS one
-       try {
-           var gd = Plotly.d3.select('#' + id)
-               .style({
-                   width: '100%',
-                   margin: '0px'
-               });
-           Plotly.Plots.resize(gd.node());
-       } catch (e) {}
+
+    /**
+     * Trigger the event to resize the plots.
+     *
+     * This method is used when the size of the plot(s) container(s)
+     * may have changed.
+     *
+     */
+    function resizePlot() {
+        window.dispatchEvent(new Event('resize'));
     }
 
-    function getPlotIdByContainerId(id){
-        var pid = null;
+
+    /**
+     * Return the plot integer ID by passing the plot element container ID?
+     *
+     * @param {string} id The plot integer ID
+     * @return {integer} The container HTML element ID
+     */
+    function getPlotIdByContainerId(id) {
+        let pid = null;
         if (id.substring(0, 13) == 'dataviz_plot_') {
             pid = parseInt(id.replace('dataviz_plot_', ''));
         } else {
-            for( var i in dv.config.layers) {
-                var dvLayerId = dv.config.layers[i]['layer_id'];
+            for (let i in dv.config.layers) {
+                let dvLayerId = dv.config.layers[i]['layer_id'];
                 // Remove layer id prefix
-                var temp_pid = id.replace(dvLayerId, '');
+                let temp_pid = id.replace(dvLayerId, '');
                 if (id == temp_pid) {
                     continue;
                 }
@@ -298,13 +564,22 @@ var lizDataviz = function() {
         return pid;
     }
 
-    function buildPlot(id, conf, pid = null){
+
+    /**
+     * Create and display the plot from the given plot configuration data.
+     *
+     * @param {string} targetId The ID of the plot HTML container element.
+     * @param {object} conf The plot configuration with data and layout properties.
+     * @param {integer} pid The plot integer ID
+     */
+    function buildPlot(targetId, conf, pid = null) {
+
         // Build plot with plotly or lizmap
-        if(conf.data.length && conf.data[0]['type'] == 'html'){
-            buildHtmlPlot(id, conf.data, conf.layout);
-        }else{
-            var plotLocale = dv.config.locale.substring(0, 2);
-            var plotConfig = {
+        if (conf.data.length && conf.data[0]['type'] == 'html') {
+            buildHtmlPlot(targetId, conf.data, conf.layout);
+        } else {
+            let plotLocale = dv.config.locale.substring(0, 2);
+            let plotConfig = {
                 showLink: false,
                 scrollZoom: false,
                 locale: plotLocale,
@@ -317,17 +592,17 @@ var lizDataviz = function() {
                 },
                 editable: false,
                 modeBarButtonsToRemove: [
-                    'sendDataToCloud','editInChartStudio',
-                    'zoom2d','pan2d','select2d','lasso2d',
-                    'drawclosedpath','drawopenpath','drawline',
-                    'resetScale2d','toggleSpikelines','toggleHover',
-                    'hoverClosestCartesian','hoverCompareCartesian'
+                    'sendDataToCloud', 'editInChartStudio',
+                    'zoom2d', 'pan2d', 'select2d', 'lasso2d',
+                    'drawclosedpath', 'drawopenpath', 'drawline',
+                    'resetScale2d', 'toggleSpikelines', 'toggleHover',
+                    'hoverClosestCartesian', 'hoverCompareCartesian'
                 ],
                 displaylogo: false,
                 doubleClickDelay: 1000
             };
             Plotly.newPlot(
-                id,
+                targetId,
                 conf.data,
                 conf.layout,
                 plotConfig
@@ -335,172 +610,136 @@ var lizDataviz = function() {
 
             // Apply user defined layout
             // We need to get the plot Lizmap config from its container id
-            pid = pid != null ? pid : getPlotIdByContainerId(id);
+            pid = pid != null ? pid : getPlotIdByContainerId(targetId);
 
             // Do nothing if pid not found
             if (pid == null) {
                 return;
             }
-            var plot_config = dv.config.layers[pid];
+            let plot_config = dv.config.layers[pid];
             if ('layout' in plot_config.plot && plot_config.plot.layout) {
-                var user_layout = plot_config.plot.layout;
-                //var json_layout = JSON.stringify(user_layout);
-                //var new_layout = JSON.parse(json_layout.replace('"False"', 'false').replace('"True"', 'true'));
-                var new_layout = user_layout;
-                Plotly.relayout(id, new_layout);
+                let user_layout = plot_config.plot.layout;
+                let new_layout = user_layout;
+                Plotly.relayout(targetId, new_layout);
             }
 
         }
 
-
-
-
         // Add events to resize plot when needed
         lizMap.events.on({
-            dockopened: function(e) {
-                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
-                    resizePlot(id);
+            dockopened: e => {
+                if ($.inArray(e.id, ['dataviz', 'popup']) > -1) {
+                    resizePlot();
                 }
-                if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
-                }
-            },
-            rightdockopened: function(e) {
-                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
-                    resizePlot(id);
-                }
-                if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+                if ($('#mapmenu li.dataviz').hasClass('active')) {
+                    resizePlot();
                 }
             },
-            bottomdockopened: function(e) {
-                if ( e.id == 'dataviz' ) {
-                    resizePlot(id);
+            rightdockopened: e => {
+                if ($.inArray(e.id, ['dataviz', 'popup']) > -1) {
+                    resizePlot();
+                }
+                if ($('#mapmenu li.dataviz').hasClass('active')) {
+                    resizePlot();
                 }
             },
-            bottomdocksizechanged: function(e) {
-                if($('#mapmenu li.dataviz').hasClass('active')  || $('#mapmenu li.popup').hasClass('active')){
-                    resizePlot(id);
+            bottomdockopened: e => {
+                if (e.id == 'dataviz') {
+                    resizePlot();
                 }
             },
-            dockclosed: function(e) {
-                if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+            bottomdocksizechanged: () => {
+                if ($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')) {
+                    resizePlot();
                 }
             },
-            rightdockclosed: function(e) {
-                if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+            dockclosed: () => {
+                if ($('#mapmenu li.dataviz').hasClass('active')) {
+                    resizePlot();
                 }
             },
-            lizmapswitcheritemselected: function(e){
-                if($('#mapmenu li.dataviz').hasClass('active')){
-                    resizePlot(id);
+            rightdockclosed: () => {
+                if ($('#mapmenu li.dataviz').hasClass('active')) {
+                    resizePlot();
                 }
-            }
-
-        });
-
-        window.addEventListener('resize', function () {
-            if ($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')) {
-                resizePlot(id);
-            }
-        });
-
-        // Add event to hide/show plots if needed
-        // We use the id variable for the plot: we are in the buildPlot function
-        lizMap.events.on({
-            'lizmaplayerchangevisibility': function(e) {
-                if (e.config !== undefined && 'datavizLayers' in lizMap.config ){
-                    // Get layer info
-                    var config = e.config;
-                    var layerId = config.id;
-
-                    // Get plot id and layer id
-                    var pid = getPlotIdByContainerId(id);
-                    if (pid == null) {
-                        return;
-                    }
-                    var plot_config = dv.config.layers[pid];
-                    if(!('display_when_layer_visible' in plot_config.plot)){
-                        return;
-                    }
-
-                    // Check correspondance
-                    var pLayerId = plot_config['layer_id'];
-                    var ltoggle = optionToBoolean(plot_config.plot.display_when_layer_visible);
-                    if (pLayerId == layerId && ltoggle){
-                        // Set plot visibility depending on layer visibility
-                        var layer = lizMap.map.getLayersByName(config.cleanname)[0]
-                        var showPlot = (
-                            layer.getVisibility() && layer.inRange
-                            && dv.plots[pid]['json']
-                            && 'data' in dv.plots[pid]['json']
-                            && dv.plots[pid]['json']['data'] && dv.plots[pid]['json']['data'].length > 0
-                        );
-                        $('#' + id + '_container').toggle(showPlot);
-                        dv.plots[pid]['show_plot'] = showPlot;
-                        if(showPlot){
-                            resizePlot(id);
-                        }
-                    }
+            },
+            lizmapswitcheritemselected: () => {
+                if ($('#mapmenu li.dataviz').hasClass('active')) {
+                    resizePlot();
                 }
             }
         });
 
         // AT STARTUP : Hide plot when layer not shown
-        // Todo: we should not refresh plot or even load it if not visible
-        // First check if id begins with dataviz_plot -> main panel
-        // or not -> popup child dataviz: do nothing
-        if (id.substring(0, 13) == 'dataviz_plot_') {
-            var pid = parseInt(id.replace('dataviz_plot_', ''));
-            var plot_config = dv.config.layers[pid];
-            if('display_when_layer_visible' in plot_config.plot && optionToBoolean(plot_config.plot.display_when_layer_visible)) {
-                var getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
-                if (getLayerConfig) {
-                    var layerConfig = getLayerConfig[1];
-                    var featureType = getLayerConfig[0];
-
-                    // Use layer visibility
-                    var oLayers = lizMap.map.getLayersByName(layerConfig.cleanname);
-                    if(oLayers.length == 1){
-                        var oLayer = oLayers[0];
-                        var lvisibility = oLayer.visibility;
-                        var pvisibility = $('#' + id + '_container').is(":visible");
-                        var showPlot = (
-                            lvisibility
-                            && dv.plots[pid]['json']
-                            && 'data' in dv.plots[pid]['json']
-                            && dv.plots[pid]['json']['data'] && dv.plots[pid]['json']['data'].length > 0
-                        );
-                        $('#' + id + '_container').toggle(showPlot);
-                        dv.plots[pid]['show_plot'] = showPlot;
-                        if(showPlot && !pvisibility){
-                            resizePlot(id);
-                        }
-                    }
-                }
-            }
+        // First check if id begins with dataviz_plot -> this is a plot shown
+        // in main panel and not in parent popup
+        if (targetId.substring(0, 13) == 'dataviz_plot_') {
+            let pid = parseInt(targetId.replace('dataviz_plot_', ''));
+            setPlotContainerVisibilityFromLayerVisibility(pid);
         }
 
-        lizMap.events.triggerEvent( "datavizplotloaded",
-            {'id':id}
+        lizMap.events.triggerEvent("datavizplotloaded",
+            { 'id': targetId }
         );
 
     }
 
+
+    /**
+     * Set the plot container visibility
+     * based on the source OpenLayers layer visibility
+     * depending on the parameter display_when_layer_visible
+     *
+     * @param {integer} plotId The plot integer ID
+     * @return {boolean} True if the plot must be visible
+     */
+    function setPlotContainerVisibilityFromLayerVisibility(plotId) {
+        let plot_config = dv.config.layers[plotId];
+        if ('display_when_layer_visible' in plot_config.plot && optionToBoolean(plot_config.plot.display_when_layer_visible)) {
+            let getLayerConfig = lizMap.getLayerConfigById(plot_config['layer_id']);
+            if (getLayerConfig) {
+                // OpenLayers configuration
+                let layerConfig = getLayerConfig[1];
+
+                // Get the OL layer
+                let oLayers = lizMap.map.getLayersByName(layerConfig.cleanname);
+                if (oLayers.length == 1) {
+                    // Layer visibility in the map
+                    let oLayer = oLayers[0];
+                    let layerVisibility = oLayer.visibility;
+
+                    // Plot visibility
+                    let targetId = `dataviz_plot_${plotId}`;
+                    let plotVisibility = $('#' + targetId + '_container').is(":visible");
+                    let showPlot = (
+                        layerVisibility
+                    );
+
+                    // Toggle plot container visibility
+                    $('#' + targetId + '_container').toggle(showPlot);
+                    dv.plots[plotId]['show_plot'] = showPlot;
+
+                    // Resize the plot
+                    if (showPlot && !plotVisibility) {
+                        resizePlot(targetId);
+                    }
+                }
+            }
+        }
+    }
+
     lizMap.events.on({
-        'uicreated':function(evt){
-            if( 'datavizLayers' in lizMap.config ){
+        'uicreated': function (evt) {
+            if ('datavizLayers' in lizMap.config) {
                 // Get config
                 dv.config = lizMap.config.datavizLayers;
 
                 // Add HTML template
-                if( 'datavizTemplate' in lizMap.config.options ){
+                if ('datavizTemplate' in lizMap.config.options) {
                     datavizTemplate = lizMap.config.options.datavizTemplate;
                     // Replace $N by container divs
                     dv.template = datavizTemplate.replace(
-                        new RegExp('\\$([0-9]+)','gm'),
+                        new RegExp('\\$([0-9]+)', 'gm'),
                         '<div id="dataviz_plot_template_$1"></div>'
                     )
                     $('#dataviz-content').append(dv.template);
@@ -511,35 +750,35 @@ var lizDataviz = function() {
         },
 
         // Set plot visibility for non spatial child layers
-        'lizmaplayerchangevisibility': function(e) {
-            if( e.config !== undefined && 'datavizLayers' in lizMap.config ){
+        'lizmaplayerchangevisibility': function (e) {
+            if (e.config !== undefined && 'datavizLayers' in lizMap.config) {
                 // Get layer info
-                var name = e.name;
-                var config = e.config;
-                var layerId = config.id;
+                let name = e.name;
+                let config = e.config;
+                let layerId = config.id;
 
                 // Test if layer is visible and in range (scales)
-                var layer = lizMap.map.getLayersByName(config.cleanname)[0]
-                var showPlot = (
+                let layer = lizMap.map.getLayersByName(config.cleanname)[0]
+                let showPlot = (
                     layer.getVisibility() && layer.inRange
                 );
             }
         }
     });
 
-    var obj = {
+    let obj = {
 
-        buildPlot: function(id, conf, pid = null) {
-          return buildPlot(id, conf, pid);
+        buildPlot: function (id, conf, pid = null) {
+            return buildPlot(id, conf, pid);
         },
-        buildPlotContainerHtml: function(title, abstract, target_id, with_title) {
-          return buildPlotContainerHtml(title, abstract, target_id, with_title);
+        buildPlotContainerHtml: function (title, abstract, target_id, with_title) {
+            return buildPlotContainerHtml(title, abstract, target_id, with_title);
         },
-        getPlot: function(plot_id, exp_filter, target_id) {
-          return getPlot(plot_id, exp_filter, target_id);
+        getPlot: function (plot_id, exp_filter, target_id) {
+            return getPlot(plot_id, exp_filter, target_id);
         },
-        resizePlot: function(id) {
-          return resizePlot(id);
+        resizePlot: function (id) {
+            return resizePlot(id);
         },
         data: dv
     }

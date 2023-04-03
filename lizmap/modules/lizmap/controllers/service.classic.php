@@ -1,14 +1,16 @@
 <?php
 
+use GuzzleHttp\Psr7;
 use Lizmap\Request\WFSRequest;
 use Lizmap\Request\WMSRequest;
+
 use Lizmap\Request\WMTSRequest;
 
 /**
  * Php proxy to access map services.
  *
  * @author    3liz
- * @copyright 2011-2019 3liz
+ * @copyright 2011-2022 3liz
  *
  * @see      http://3liz.com
  *
@@ -48,21 +50,15 @@ class serviceCtrl extends jController
      */
     public function index()
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            return $this->processOptionsRequests();
+        }
+
         lizmap::startMetric();
 
         if (isset($_SERVER['PHP_AUTH_USER'])) {
             $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-        }
-
-        $rep = $this->getResponse('redirect');
-
-        // Get the project
-        $project = $this->iParam('project');
-        if (!$project) {
-            // Error message
-            jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
-
-            return $this->serviceException();
+            // FIXME we don't return an error if login fails?
         }
 
         // Get parameters
@@ -151,6 +147,32 @@ class serviceCtrl extends jController
     }
 
     /**
+     * construct the response to a CORS preflights request.
+     *
+     * This kind of requests are made by browsers before fetching a resource
+     *
+     * @return jResponseText
+     *
+     * @see https://fetch.spec.whatwg.org/#http-cors-protocol
+     */
+    protected function processOptionsRequests()
+    {
+        /** @var jResponseText $resp */
+        $resp = $this->getResponse('text');
+        if ($this->request->header('Origin')) {
+            $resp->addHttpHeader('Access-Control-Allow-Methods', 'GET,POST');
+            $resp->addHttpHeader('Access-Control-Request-Headers', $this->request->header('Access-Control-Request-Headers'));
+            $resp->addHttpHeader('Access-Control-Allow-Credentials', 'true');
+            $resp->addHttpHeader('Access-Control-Max-Age', '3600');
+            if ($this->getServiceParameters(true)) {
+                $this->setACAOHeader($resp);
+            }
+        }
+
+        return $resp;
+    }
+
+    /**
      * Get a request parameter
      * whatever its case
      * and returns its value.
@@ -200,6 +222,34 @@ class serviceCtrl extends jController
         }
 
         return $resp;
+    }
+
+    /**
+     * Set CORS headers on the response to allow an application other than Lizmap
+     * to access to the services.
+     *
+     * Authorized application are sets into repository properties
+     *
+     * @param jResponse $resp
+     */
+    protected function setACAOHeader($resp)
+    {
+        if (!$this->request->header('Origin')) {
+            return;
+        }
+        $referer = $this->request->header('Referer');
+        $header = $this->repository->getACAOHeaderValue($referer);
+        if ($header != '') {
+            $resp->addHttpHeader('Access-Control-Allow-Origin', $header);
+            $resp->addHttpHeader('Vary', 'origin');
+            $resp->addHttpHeader('Access-Control-Allow-Credentials', 'true');
+            $resp->addHttpHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+
+            $requestHeaders = $this->request->header('Access-Control-Request-Headers');
+            if ($requestHeaders) {
+                $resp->addHttpHeader('Access-Control-Allow-Headers', $requestHeaders);
+            }
+        }
     }
 
     /**
@@ -260,11 +310,35 @@ class serviceCtrl extends jController
     }
 
     /**
+     * @param jResponseBinary $rep
+     * @param mixed           $ogcResult
+     * @param mixed           $filename
+     * @param mixed           $eTag
+     */
+    protected function setupBinaryResponse($rep, $ogcResult, $filename, $eTag = '')
+    {
+        $rep->setHttpStatus($ogcResult->code, \Lizmap\Request\Proxy::getHttpStatusMsg($ogcResult->code));
+        $rep->mimeType = $ogcResult->mime;
+        if (is_string($ogcResult->data) || is_callable($ogcResult->data)) {
+            $rep->content = $ogcResult->data;
+        }
+        $rep->doDownload = false;
+        $rep->outputFileName = $filename;
+        if ($eTag !== '' && $ogcResult->code < 400) {
+            $this->setEtagCacheHeaders($rep, $eTag);
+        }
+        $this->setACAOHeader($rep);
+    }
+
+    /**
      * Read parameters and set classes for the project and repository given.
+     *
+     * @param bool $forOptionsMethodOnly set it to true for HTTP request with OPTIONS method
+     *                                   so it will load only the required resources
      *
      * @return bool false if some request parameters are missing
      */
-    protected function getServiceParameters()
+    protected function getServiceParameters($forOptionsMethodOnly = false)
     {
 
         // Get the project
@@ -291,6 +365,13 @@ class serviceCtrl extends jController
 
             return false;
         }
+
+        if ($forOptionsMethodOnly) {
+            $this->repository = $lrep;
+
+            return true;
+        }
+
         // Get the project object
         $lproj = null;
 
@@ -439,19 +520,15 @@ class serviceCtrl extends jController
         $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
         $etag = sha1($etag);
         if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            $this->setACAOHeader($rep);
+
             return $rep;
         }
 
         $result = $ogcRequest->process();
+        $filename = 'qgis_server_'.$service.'_capabilities_'.$this->repository->getKey().'_'.$this->project->getKey();
 
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_'.$service.'_capabilities_'.$this->repository->getKey().'_'.$this->project->getKey();
-        if ($result->code < 400) {
-            $this->setEtagCacheHeaders($rep, $etag);
-        }
+        $this->setupBinaryResponse($rep, $result, $filename, $etag);
 
         return $rep;
     }
@@ -470,14 +547,9 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
-        // Return response
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_getContext';
+        $this->setupBinaryResponse($rep, $result, 'qgis_server_getContext');
 
         return $rep;
     }
@@ -496,14 +568,9 @@ class serviceCtrl extends jController
     {
         $result = $wmsRequest->process();
 
-        // Return response
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_schema_extension';
+        $this->setupBinaryResponse($rep, $result, 'qgis_server_schema_extension');
 
         return $rep;
     }
@@ -527,11 +594,8 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_wms_map_'.$this->repository->getKey().'_'.$this->project->getKey();
+        $filename = 'qgis_server_wms_map_'.$this->repository->getKey().'_'.$this->project->getKey();
+        $this->setupBinaryResponse($rep, $result, $filename);
 
         if (!preg_match('/^image/', $result->mime)) {
             return $rep;
@@ -573,11 +637,7 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_legend';
+        $this->setupBinaryResponse($rep, $result, 'qgis_server_legend');
 
         return $rep;
     }
@@ -607,11 +667,7 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'getFeatureInfo';
+        $this->setupBinaryResponse($rep, $result, 'getFeatureInfo');
 
         return $rep;
     }
@@ -632,11 +688,9 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
+        $fileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+        $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
-        $rep->outputFileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
 
         // Log
         $logContent = '<a href="'.jUrl::get('lizmap~service:index', jApp::coord()->request->params).'" target="_blank">'.$this->params['template'].'<a>';
@@ -667,11 +721,8 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+        $fileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+        $this->setupBinaryResponse($rep, $result, $fileName);
 
         // Log
         $logContent = '
@@ -704,11 +755,7 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_style';
+        $this->setupBinaryResponse($rep, $result, 'qgis_style');
 
         return $rep;
     }
@@ -719,10 +766,14 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseJson|jResponseXml JSON configuration file for the specified project or Service Exception
+     * @return jResponseJson|jResponseText|jResponseXml JSON configuration file for the specified project or Service Exception
      */
     public function getProjectConfig()
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            return $this->processOptionsRequests();
+        }
+
         // Get and Check parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
@@ -744,12 +795,15 @@ class serviceCtrl extends jController
         $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
         $etag = sha1($etag);
         if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            $this->setACAOHeader($rep);
+
             return $rep;
         }
 
         // Set body
         $rep->data = $this->project->getUpdatedConfig();
         $this->setEtagCacheHeaders($rep, $etag);
+        $this->setACAOHeader($rep);
 
         return $rep;
     }
@@ -760,10 +814,13 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      *
-     * @return jResponseJson|jResponseXml key/value JSON configuration file for the specified project or Service Exception
+     * @return jResponseJson|jResponseText|jResponseXml key/value JSON configuration file for the specified project or Service Exception
      */
     public function getKeyValueConfig()
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            return $this->processOptionsRequests();
+        }
 
         // Get parameters
         if (!$this->getServiceParameters()) {
@@ -773,6 +830,7 @@ class serviceCtrl extends jController
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $this->project->getLayersLabeledFieldsConfig();
+        $this->setACAOHeader($rep);
 
         return $rep;
     }
@@ -785,7 +843,7 @@ class serviceCtrl extends jController
      *
      * @param mixed $wfsRequest
      *
-     * @return jResponseBinary image rendered by the Map Server
+     * @return jResponseBinary WFS GetFeature response
      */
     protected function GetFeature($wfsRequest)
     {
@@ -793,25 +851,14 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->mimeType = $result->mime;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_wfs';
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
+        $this->setupBinaryResponse($rep, $result, 'qgis_server_wfs');
 
         if ($result->code >= 400) {
-            $rep->content = $result->data;
-
             return $rep;
         }
 
-        if (substr($result->data, 0, 7) == 'file://' && is_file(substr($result->data, 7))) {
-            $rep->fileName = substr($result->data, 7);
-            $rep->deleteFileAfterSending = true;
-        } else {
-            $rep->content = $result->data; // causes memory_limit for big content
-        }
-
         // Define file name
+        $outputFileName = 'qgis_server_wfs';
         $typenames = implode('_', array_map('trim', explode(',', $wfsRequest->requestedTypename())));
         $zipped_files = array('shp', 'mif', 'tab');
         $outputformat = 'gml2';
@@ -819,28 +866,32 @@ class serviceCtrl extends jController
             $outputformat = strtolower($this->params['outputformat']);
         }
         if (in_array($outputformat, $zipped_files)) {
-            $rep->outputFileName = $typenames.'.zip';
+            $outputFileName = $typenames.'.zip';
         } else {
-            $rep->outputFileName = $typenames.'.'.$outputformat;
+            $outputFileName = $typenames.'.'.$outputformat;
         }
 
         // Export
+        $doDownload = false;
         $dl = $this->param('dl');
         if ($dl) {
             // force download
-            $rep->doDownload = true;
+            $doDownload = true;
 
-            if ($rep->fileName == '' && $rep->content != '') {
-                // debug 1st line blank from QGIS Server
-                $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
-            }
             // Change file name
             if (in_array($outputformat, $zipped_files)) {
-                $rep->outputFileName = 'export_'.$this->params['typename'].'.zip';
+                $outputFileName = 'export_'.$this->params['typename'].'.zip';
             } else {
-                $rep->outputFileName = 'export_'.$this->params['typename'].'.'.$outputformat;
+                $outputFileName = 'export_'.$this->params['typename'].'.'.$outputformat;
             }
         }
+        $rep->outputFileName = $outputFileName;
+        $rep->doDownload = $doDownload;
+
+        $rep->setContentCallback(function () use ($result) {
+            $output = Psr7\Utils::streamFor(fopen('php://output', 'w+'));
+            Psr7\Utils::copyToStream($result->getBodyAsStream(), $output);
+        });
 
         return $rep;
     }
@@ -859,14 +910,9 @@ class serviceCtrl extends jController
     {
         $result = $wfsRequest->process();
 
-        // Return response
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_wfs';
+        $this->setupBinaryResponse($rep, $result, 'qgis_server_wfs');
 
         return $rep;
     }
@@ -882,15 +928,9 @@ class serviceCtrl extends jController
      */
     protected function GetProj4()
     {
-
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
-
-        // Return response
         /** @var jResponseText $rep */
         $rep = $this->getResponse('text');
+        $this->setACAOHeader($rep);
 
         // Projection authority id (ESPG:* or USER:*)
         $authid = $this->iParam('authid');
@@ -929,11 +969,8 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $rep->mimeType = $result->mime;
-        $rep->content = $result->data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_wmts_tile_'.$this->repository->getKey().'_'.$this->project->getKey();
-        $rep->setHttpStatus($result->code, \Lizmap\Request\Proxy::getHttpStatusMsg($result->code));
+        $filename = 'qgis_server_wmts_tile_'.$this->repository->getKey().'_'.$this->project->getKey();
+        $this->setupBinaryResponse($rep, $result, $filename);
 
         if (!preg_match('/^image/', $result->mime)) {
             return $rep;
@@ -992,14 +1029,10 @@ class serviceCtrl extends jController
      */
     protected function getSelectionToken()
     {
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
-
         // Prepare response
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
+        $this->setACAOHeader($rep);
 
         // Get params
         $typename = $this->params['typename'];
@@ -1034,13 +1067,11 @@ class serviceCtrl extends jController
         $token = md5($repository.$project.$typename.$filter);
 
         $data = jCache::get($token);
-        $incache = true;
         if (!$data) {
             $data = array();
             $data['token'] = $token;
             $data['typename'] = $typename;
             $data['filter'] = $filter;
-            $incache = false;
             jCache::set($token, json_encode($data), 3600);
         } else {
             $data = json_decode($data, true);
@@ -1051,14 +1082,10 @@ class serviceCtrl extends jController
 
     protected function getFilterToken()
     {
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
-
         // Prepare response
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
+        $this->setACAOHeader($rep);
 
         // Get params
         $typename = $this->params['typename'];

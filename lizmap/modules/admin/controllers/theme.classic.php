@@ -13,7 +13,12 @@ class themeCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.access'),
+        '*' => array('jacl2.right' => 'lizmap.admin.theme.view'),
+        'modify' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'edit' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'save' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'validate' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'removeThemeImage' => array('jacl2.right' => 'lizmap.admin.theme.update'),
     );
 
     /**
@@ -125,7 +130,6 @@ class themeCtrl extends jController
      */
     public function save()
     {
-
         // If the section does exists in the ini file : get the data
         $theme = lizmap::getTheme();
 
@@ -197,8 +201,7 @@ class themeCtrl extends jController
         }
 
         // Modify class properties
-        $modifytheme = $theme->update($data);
-        if ($modifytheme) {
+        if ($theme->update($data)) {
             jMessage::add(jLocale::get('admin~admin.form.admin_theme.message.data.saved'));
         }
 
@@ -257,7 +260,7 @@ class themeCtrl extends jController
         }
 
         // update theme
-        $modifytheme = $theme->update($data);
+        $theme->update($data);
 
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');

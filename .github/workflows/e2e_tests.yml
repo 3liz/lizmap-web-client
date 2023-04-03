@@ -1,0 +1,174 @@
+name: "🎳 End2end"
+on:
+  pull_request:
+    types: [ labeled, opened, synchronize, reopened ]
+    branches:
+      - master
+      - release_3_*
+  workflow_dispatch:
+  repository_dispatch:
+    types: [ run-e2e-branches ]
+
+jobs:
+  end2end:
+    # The first condition is triggered when we set the new label
+    # The second one when we update the PR with new commits without changing labels
+    # The third one when external workflow
+    # The fourth one is for the manual button
+    if: |
+      github.event.label.name == 'run end2end' ||
+      contains(github.event.pull_request.labels.*.name, 'run end2end') ||
+      github.event_name == 'repository_dispatch' ||
+      github.event_name == 'workflow_dispatch'
+    name: "End-to-end"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tests
+    env:
+      CYPRESS_CI: TRUE
+    steps:
+
+#      - name: Debug
+#        working-directory: .
+#        run: |
+#            echo ${{ github.event.pull_request.head.sha }}
+#            echo ${{ github.head_ref }}
+#            echo ${{ github.ref_name }}
+
+      - name: Define branch name from env for the checkout
+        working-directory: .
+        run: |
+          if ${{ github.event_name == 'repository_dispatch' }}
+          then
+            # repository_dispatch is from an external workflow, for instance a cron workflow
+            echo "Set branch from manual input: ${{ github.event.client_payload.branch }}"
+            BRANCH="${{ github.event.client_payload.branch }}"
+          elif ${{ github.event_name == 'workflow_dispatch' }}
+          then
+            # workflow_dispatch is the the button in UI
+            echo "Set branch from default value: ${{ github.ref }}"
+            BRANCH="${{ github.ref }}"
+          else
+            # From a PR
+            echo "Event type ${{ github.event_name }}"
+            echo "Set branch from default value : ${{ github.event.pull_request.head.sha }} "
+            BRANCH="${{ github.event.pull_request.head.sha }}"
+          fi
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.BRANCH }}
+          token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
+
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/} with CYPRESS = ${CYPRESS_CI}
+
+      - name: Install Lizmap as a QGIS Server plugin
+        run: make build-plugins
+
+      - name: Show Lizmap environment and versions
+        # Not available in QGIS 3.16, which is used in LWC 3.5
+        if: ${{ env.BRANCH != 'release_3_5' }}
+        run: make show-qgis-server-versions && make env && cat .env
+
+      - name: Pull docker images
+        run: ./run-docker pull
+
+      # In this step, this action saves a list of existing images,
+      # the cache is created without them in the post run.
+      # It also restores the cache if it exists.
+      - uses: jpribyl/action-docker-layer-caching@v0.1.1
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
+
+      - name: Build and start docker images
+        run: ./run-docker up --build -d
+
+      - name: Wait docker images ready and install Lizmap
+        run: sleep 30 && ./lizmap-ctl install
+
+      - name: Load SQL data
+        run: cd qgis-projects/tests && ./load_sql.sh
+
+      - name: Add hosts to /etc/hosts
+        run: |
+            sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
+
+      # Playwright
+      - uses: actions/setup-node@v3
+
+      - name: Install dependencies
+        run: cd end2end && npm ci
+
+      - name: Install Playwright
+        # No Playwright tests in LWC 3.5
+        if: ${{ env.BRANCH != 'release_3_5' }}
+        run: cd end2end && npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        id: test-playwright
+        # No Playwright tests in LWC 3.5
+        if: ${{ env.BRANCH != 'release_3_5' }}
+        run: cd end2end && npx playwright test --project=chromium
+
+      - name: Notify in case of playwright failure, from mainstream branches only
+        uses: peter-evans/commit-comment@v2
+        if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-playwright.outcome != 'success' && github.event_name == 'repository_dispatch'
+        with:
+          body: |
+            The latest run of end2end "playwright" tests failed with this latest commit on the branch ${{ env.BRANCH }} 😣
+            CC @nboisteault and @Gustry, please have a look 💪
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: playwright-report
+          path: tests/end2end/playwright-report
+
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        id: test-cypress
+        # Always run, even if playwright has failed
+        if: always()
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          browser: chrome
+          working-directory: tests/end2end
+          spec: cypress/integration/*-ghaction.js
+          wait-on: http://localhost:8130
+
+      - name: Notify in case of cypress failure, from mainstream branches only
+        uses: peter-evans/commit-comment@v2
+        if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-cypress.outcome != 'success' && github.event_name == 'repository_dispatch'
+        with:
+          token: ${{ secrets.BOT_HUB_TOKEN }}
+          body: |
+            The latest run of end2end "cypress" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
+
+            CC @nboisteault and @Gustry, please have a look 💪 Maybe it's a false positive ? 🙍
+
+            Visit ${{ GITHUB_SERVER_URL }}/${{ GITHUB_REPOSITORY }}/actions/runs/${{ GITHUB_RUN_ID }}
+
+      - name: Save screenshots as artifacts if a test fails to ease debug
+        uses: actions/upload-artifact@v3.1.2
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: |
+            tests/end2end/cypress/screenshots
+            tests/end2end/cypress/downloads
+
+#  debug:
+#    name: "Debug"
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Dump GitHub context
+#        env:
+#          GITHUB_CONTEXT: ${{ toJson(github) }}
+#        run: |
+#          echo "$GITHUB_CONTEXT"

@@ -24,7 +24,7 @@ jobs:
 
       - name: Get composer cache directory
         id: get-composer-cache-dir
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+        run: echo "composer_cache_dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
 
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
@@ -35,7 +35,7 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
-          path: ${{ steps.get-composer-cache-dir.outputs.dir }}
+          path: ${{ env.composer_cache_dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
@@ -43,7 +43,28 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: PHPStan version
-        run: phpstan -V
+        run: |
+          phpstan -V
+          echo "PHPSTAN_VERSION=$(phpstan -V)" >> $GITHUB_ENV
 
       - name: Run PHPStan
+        id: test-phpstan
         run: phpstan analyse -c ../phpstan.neon
+
+      - name: Notify in case of failure
+        uses: peter-evans/commit-comment@v2
+        if: failure()
+        with:
+          body: |
+            The latest run of **PHPStan** has **failed**, maybe it's due to a newer version released recently 😣
+            Current version used on CI :
+
+            > ${{ env.PHPSTAN_VERSION }}
+
+            Have a look to **your** current version of PHPStan like :
+
+            ➡ `docker exec CONTAINER_test_php tests/units/vendor/phpstan/phpstan/phpstan -V`
+
+            And update if needed :
+
+            ➡ `./limap-ctl composer-update`

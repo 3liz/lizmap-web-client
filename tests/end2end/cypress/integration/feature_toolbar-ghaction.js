@@ -1,13 +1,9 @@
 import {arrayBufferToBase64} from '../support/function.js'
 
-describe('Feature Toolbar', function () {
+describe('Feature Toolbar in popup', function () {
 
     beforeEach(function () {
         // Runs before each tests in the block
-        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
-
-        cy.wait(300)
-
         cy.intercept('*REQUEST=GetFeatureInfo*',
             { middleware: true },
             (req) => {
@@ -17,6 +13,138 @@ describe('Feature Toolbar', function () {
                     res.headers['cache-control'] = 'no-store'
                 })
             }).as('getFeatureInfo')
+
+        cy.intercept('POST','*service*').as('postToService')
+
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
+
+        // Go to the web map
+        cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
+
+        // Wait for map displayed
+        cy.wait('@getMap')
+
+    })
+
+    it('should zoom', function () {
+        // Check the started map
+        cy.get('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
+        })
+
+        // Click feature with id=1 on the map
+        cy.mapClick(655, 437)
+        cy.wait('@getFeatureInfo')
+
+        // Click to zoom to feature
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-zoom').click()
+
+        // The map is reloaded
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
+        })
+
+        // The map is zoomed to feature
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
+        })
+
+    })
+
+    it('should center', function () {
+        // Check the started map
+        cy.get('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
+        })
+
+        // Click feature with id=1 on the map
+        cy.mapClick(655, 437)
+        cy.wait('@getFeatureInfo')
+
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+        cy.get('#navbar button.btn.zoom-in').click()
+        cy.wait('@getMap')
+
+        // Click to zoom to feature
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-center').click()
+
+        // The map is centered to feature
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
+        })
     })
 
     it('should select', function () {
@@ -35,21 +163,85 @@ describe('Feature Toolbar', function () {
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
-        cy.intercept('*REQUEST=GetMap*',
-            { middleware: true },
-            (req) => {
-                req.on('before:response', (res) => {
-                    // force all API responses to not be cached
-                    // It is needed when launching tests multiple time in headed mode
-                    res.headers['cache-control'] = 'no-store'
-                })
-            }).as('getMap')
-
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').click()
 
-        cy.wait('@getMap')
+        // WFS GetFeature request
+        cy.wait('@postToService').as('postToService1')
 
-        // Test feature is selected on map
+        // WFS DescribeFeatureType request
+        cy.wait('@postToService').as('postToService2')
+
+        // WMS GetSelectionToken request
+        cy.wait('@postToService').as('postToService3')
+
+        // Check WFS GetFeature request
+        cy.get('@postToService1').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WFS')
+                .to.contain('REQUEST=GetFeature')
+                .to.contain('TYPENAME=parent_layer')
+                .to.contain('FEATUREID=parent_layer.1')
+        })
+
+        // Check WFS DescribeFeatureType request
+        // Check WMS GetSelectionToken request
+        // and store the selection token
+        let selectiontoken = ''
+        cy.get('@postToService2').then((interception) => {
+            if ( interception.request.body.includes('SERVICE=WFS') ) {
+                expect(interception.request.body)
+                    .to.contain('SERVICE=WFS')
+                    .to.contain('REQUEST=DescribeFeatureType')
+                    .to.contain('TYPENAME=parent_layer')
+            } else {
+                expect(interception.request.body)
+                    .to.contain('service=WMS')
+                    .to.contain('request=GETSELECTIONTOKEN')
+                    .to.contain('typename=parent_layer')
+                    .to.contain('ids=1')
+                expect(interception.response.body)
+                    .to.have.property('token')
+                selectiontoken = interception.response.body.token
+            }
+        })
+
+        cy.get('@postToService3').then((interception) => {
+            if ( interception.request.body.includes('service=WMS') ) {
+                expect(interception.request.body)
+                    .to.contain('service=WMS')
+                    .to.contain('request=GETSELECTIONTOKEN')
+                    .to.contain('typename=parent_layer')
+                    .to.contain('ids=1')
+                expect(interception.response.body)
+                    .to.have.property('token')
+                selectiontoken = interception.response.body.token
+            } else {
+                expect(interception.request.body)
+                    .to.contain('SERVICE=WFS')
+                    .to.contain('REQUEST=DescribeFeatureType')
+                    .to.contain('TYPENAME=parent_layer')
+            }
+        })
+
+        // Check that GetMap is requested with the selection token
+        // The events could reload the map before updated the request
+        cy.wait('@getMap').then((first_interception) => {
+            // Check that the selection token has been set
+            expect(selectiontoken).to.not.be.eq('')
+            // Verify if we need to wait for a second getMap
+            const first_req_url = new URL(first_interception.request.url)
+            if ( !first_req_url.searchParams.has('SELECTIONTOKEN') ) {
+                cy.wait('@getMap').then((second_interception) => {
+                    const second_req_url = new URL(second_interception.request.url)
+                    expect(second_req_url.searchParams.has('SELECTIONTOKEN')).to.be.true
+                    expect(second_req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
+                })
+            } else {
+                expect(second_req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
+            }
+        })
+
+        // Test feature is selected on last map
         cy.get('@getMap').should(({ request, response }) => {
             const responseBodyAsBase64 = arrayBufferToBase64(response.body)
 
@@ -162,13 +354,13 @@ describe('Feature Toolbar', function () {
         cy.get('#message .jelix-msg-item-success').should('have.text', 'Selected features have been correctly linked.')
     })
 
-    it('should display working custom action', function () {
+    it('should display working custom action for the popup feature', function () {
 
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
-        cy.get('.popupButtonBar .popup-action').click()
+        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="buffer_500.parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"]').click()
 
         // Test feature is selected on popup
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
@@ -176,11 +368,62 @@ describe('Feature Toolbar', function () {
         cy.on('window:confirm', () => true);
 
         // Confirmation message should be displayed
-        cy.get('#message #lizmap-action-message p').should('have.text', 'The buffer 500m has been displayed in the map')
+        cy.get('#message #lizmap-action-message p').should('have.text', 'The buffer 500 m has been displayed in the map')
 
         // End action
-        cy.get('.popupButtonBar .popup-action').click()
+        cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="buffer_500.parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"]').click()
         cy.get('#message').should('be.empty')
+
+    })
+
+    it('should display working project action selector', function () {
+
+        // Get the project action
+        // Check the dock is visible
+        cy.get('a#button-action').should('have.length', 1)
+
+        // Open the project action dock
+        cy.get('a#button-action').click()
+
+        // Select an action
+        cy.get('#lizmap-project-actions select.action-select').select('project_map_center_buffer')
+
+        // Run the project action
+        cy.get('#lizmap-project-actions button.action-run-button').click()
+
+        // Check result
+        cy.get('#message #lizmap-action-message p').should('have.text', 'The displayed geometry represents the buffer 2000 m of the current map center')
+
+        // Deactivate
+        cy.get('#lizmap-project-actions button.action-run-button').click()
+
+        // Check
+        cy.get('#message').should('be.empty')
+
+    })
+
+    it('should display working layer action selector', function () {
+        // Select the layer in the legend tree
+        cy.get('tr#layer-parent_layer td span.label').click()
+
+        // Check the action selector is present
+        cy.get('#sub-dock div.layer-action-selector-container').should('have.length', 1);
+
+        // Select an action
+        cy.get('#sub-dock div.layer-action-selector-container select.action-select').select('layer_spatial_extent')
+
+        // Run the project action
+        cy.get('#sub-dock div.layer-action-selector-container button.action-run-button').click()
+
+        // Check result
+        cy.get('#message #lizmap-action-message p').should('have.text', 'The displayed geometry represents the contour of all the layer features')
+
+        // Deactivate
+        cy.get('#sub-dock div.layer-action-selector-container button.action-run-button').click()
+
+        // Check
+        cy.get('#message').should('be.empty')
+
     })
 
     it('should start child edition linked to a parent feature', function () {
@@ -196,6 +439,72 @@ describe('Feature Toolbar', function () {
 
         // Parent_id is disabled in form when edition is started from parent form
         cy.get('#jforms_view_edition_parent_id').should('be.disabled')
+    })
+})
+
+describe('Feature Toolbar in attribute table', function () {
+
+    beforeEach(function () {
+        // Runs before each tests in the block
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
+
+            cy.visit('/index.php/view/map/?repository=testsrepository&project=feature_toolbar&lang=en_US')
+
+        cy.wait('@getMap')
+
+    })
+
+    it('Zoom and center', function () {
+        // Open parent_layer in attribute table
+        cy.get('#button-attributeLayers').click()
+        cy.get('button[value="parent_layer"].btn-open-attribute-layer').click({ force: true })
+
+        // Check table lines
+        cy.get('#attribute-layer-table-parent_layer tbody tr').should('have.length', 2)
+
+        // Zoom to feature 1
+        cy.get('#attribute-layer-table-parent_layer tr[id="1"] lizmap-feature-toolbar .feature-zoom').click({ force: true })
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
+        })
+
+        // Move to feature 2
+        cy.get('#attribute-layer-table-parent_layer tr[id="2"] lizmap-feature-toolbar .feature-center').click({ force: true })
+        cy.wait('@getMap').then((interception) => {
+            expect(interception.request.url).to.contain('BBOX=')
+            const req_url = new URL(interception.request.url)
+            const bbox = req_url.searchParams.get('BBOX')
+            const bbox_array = bbox.split(',')
+            expect(bbox_array).to.have.length(4)
+            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
+            expect(parseFloat(bbox_array[0])).to.be.within(781610.0,781611.0)
+            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
+            expect(parseFloat(bbox_array[1])).to.be.within(6278991.0,6278992.0)
+            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
+            expect(parseFloat(bbox_array[2])).to.be.within(783277.0,783278.0)
+            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
+            expect(parseFloat(bbox_array[3])).to.be.within(6279964.0,6279965.0)
+        })
     })
 })
 
