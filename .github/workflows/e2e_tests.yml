@@ -152,7 +152,7 @@ jobs:
 
             CC @nboisteault and @Gustry, please have a look 💪 Maybe it's a false positive ? 🙍
 
-            Visit ${{$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID}}
+            Visit ${{ GITHUB_SERVER_URL }}/${{ GITHUB_REPOSITORY }}/actions/runs/${{ GITHUB_RUN_ID }}
 
       - name: Save screenshots as artifacts if a test fails to ease debug
         uses: actions/upload-artifact@v3.1.2
