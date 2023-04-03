@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 =============================================================================
-WARNING: DON'T CHANGE ANYTHING IN THIS FILE. IF YOU WANT TO ADD/ MODIFY SOME
-OPTIONS, SET THEM INTO var/config/localurls.xml
+WARNING: EXCEPT IF YOU ARE A CONTRIBUTOR, DON'T CHANGE ANYTHING IN THIS FILE.
+IF YOU WANT TO ADD/ MODIFY SOME OPTIONS, SET THEM INTO var/config/localurls.xml
 =============================================================================
-ATTENTION: NE CHANGEZ RIEN DANS CE FICHIER
+ATTENTION: SAUF SI VOUS ETES UN CONTRIBUTEUR, NE CHANGEZ RIEN DANS CE FICHIER
 SI VOUS VOULEZ MODIFIER/AJOUTER DES OPTIONS DANS CE FICHIER, METTEZ LES
 DANS LE FICHIER var/config/localurls.xml
 =============================================================================
