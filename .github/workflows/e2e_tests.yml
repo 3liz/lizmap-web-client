@@ -147,8 +147,11 @@ jobs:
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-cypress.outcome != 'success' && github.event_name == 'repository_dispatch'
         with:
           body: |
-            The latest run of end2end "cypress" tests failed with this latest commit on the branch ${{ env.BRANCH }} 😣
+            The latest run of end2end "cypress" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
+
             CC @nboisteault and @Gustry, please have a look 💪
+
+            Visit ${{$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID}}
 
       - name: Save screenshots as artifacts if a test fails to ease debug
         uses: actions/upload-artifact@v3.1.2
