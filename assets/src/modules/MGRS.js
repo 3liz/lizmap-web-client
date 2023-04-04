@@ -4,6 +4,8 @@ import Point from 'ol/geom/Point.js';
 import LineString from 'ol/geom/LineString';
 import Feature from 'ol/Feature.js';
 
+import {Text, Fill, Stroke, Style} from 'ol/style.js';
+
 import {
     applyTransform,
     equals,
@@ -195,7 +197,25 @@ class MGRS extends Graticule {
         for (i = 0, l = this.lines_.length; i < l; ++i) {
             feature = this.featurePool_[poolIndex++];
             feature.setGeometry(this.lines_[i]);
-            // feature.setStyle(this.lineStyle_);
+            feature.setStyle((feature) => {
+                return new Style({
+                    stroke: new Stroke({
+                        color: '#000',
+                        width: 1.25,
+                      }),
+                    text: new Text({
+                        text: feature.getGeometry().get('label'),
+                        offsetY: -10,
+                        fill: new Fill({
+                            color: '#000',
+                          }),
+                          stroke: new Stroke({
+                            color: '#fff',
+                            width: 4,
+                          }),
+                    })
+                  })
+            });
             featuresColl.push(feature);
         }
     }
@@ -407,10 +427,15 @@ class MGRS extends Graticule {
 
                             if (leftBottomCoords[0] <= lon + lonInterval) {
 
-                                this.lines_.push(new LineString([
+                                const parallel = new LineString([
                                     transform(leftBottomCoords, 'EPSG:4326', this.projection_),
                                     transform(rightBottomCoords, 'EPSG:4326', this.projection_)
-                                ]));
+                                ]);
+
+                                // Display label on parallel
+                                parallel.set('label', forward([leftBottomCoords[0] + delta, leftBottomCoords[1] + delta], 0), true);
+
+                                this.lines_.push(parallel);
 
                                 this.lines_.push(new LineString([
                                     transform(leftBottomCoords, 'EPSG:4326', this.projection_),
