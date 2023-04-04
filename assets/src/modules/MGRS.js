@@ -5,6 +5,7 @@ import LineString from 'ol/geom/LineString';
 import Feature from 'ol/Feature.js';
 
 import {
+    applyTransform,
     equals,
     getCenter,
     isEmpty,
@@ -13,8 +14,13 @@ import {
 } from 'ol/extent.js';
 
 import {
-    equivalent as equivalentProjection, transform,
+    equivalent as equivalentProjection,
+    transform,
+    getTransform,
+    get as getProjection,
 } from 'ol/proj.js';
+
+import {clamp} from 'ol/math.js';
 
 import { forward, toPoint } from '../dependencies/mgrs';
 class MGRS extends Graticule {
@@ -72,18 +78,6 @@ class MGRS extends Graticule {
                 }
             }
             this.meridians_[index++] = lineString;
-        }
-        return index;
-    }
-
-    addLine_(coords1, coords2, extent, index) {
-        const lineString = new LineString([
-            transform(coords1, 'EPSG:4326', this.projection_),
-            transform(coords2, 'EPSG:4326', this.projection_)
-        ]);
-
-        if (intersects(lineString.getExtent(), extent)) {
-            this.lines_[index++] = lineString;
         }
         return index;
     }
@@ -215,22 +209,34 @@ class MGRS extends Graticule {
     */
     createGraticule_(extent, center, resolution, squaredTolerance) {
 
+        const validExtent = applyTransform(
+            extent,
+            getTransform(this.projection_, getProjection('EPSG:4326')),
+            undefined,
+            8
+        );
+
         // Force minLat and maxLat for MGRS
-        this.maxLat_ = 72;
-        this.minLat_ = -80;
+        const MGRSMaxLat = 72;
+        const MGRSMinLat = -80;
 
         let lat, lon;
 
         const lonInterval = 6;
         let latInterval = 8;
 
+        const maxLat = clamp(Math.floor(validExtent[3] / latInterval) * latInterval + latInterval, MGRSMinLat, MGRSMaxLat) ;
+        const maxLon = clamp(Math.floor(validExtent[2] / lonInterval) * lonInterval + lonInterval, this.minLon_, this.maxLon_);
+        const minLat = clamp(Math.floor(validExtent[1] / latInterval) * latInterval, MGRSMinLat, MGRSMaxLat);
+        const minLon = clamp(Math.floor(validExtent[0] / lonInterval) * lonInterval, this.minLon_, this.maxLon_);
+
         let idxParallels = 0;
         let idxMeridians = 0;
 
         // GZD grid
         if (resolution >= 2000) {
-            for (lon = this.minLon_; lon <= this.maxLon_; lon += lonInterval) {
-                for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
+            for (lon = minLon; lon <= maxLon; lon += lonInterval) {
+                for (lat = minLat; lat <= maxLat; lat += latInterval) {
 
                     // The northmost latitude band, X, is 12° high
                     if (lat == 72) {
@@ -306,13 +312,13 @@ class MGRS extends Graticule {
 
 
         // 100KM grid
-        let idxLines = 0;
+        this.lines_ = [];
         if (resolution < 2000) {
             // Get code inside grid
             const delta = 0.01;
 
-            for (lon = this.minLon_; lon < this.maxLon_; lon += lonInterval) {
-                for (lat = this.minLat_; lat <= this.maxLat_; lat += latInterval) {
+            for (lon = minLon; lon < maxLon; lon += lonInterval) {
+                for (lat = minLat; lat <= maxLat; lat += latInterval) {
                     const leftBottom = forward([lon, lat], 0);
 
                     const rightColumnLetter = forward([lon + lonInterval - delta, lat], 0).slice(-2, -1).charCodeAt();
@@ -400,19 +406,16 @@ class MGRS extends Graticule {
                             }
 
                             if (leftBottomCoords[0] <= lon + lonInterval) {
-                                idxLines = this.addLine_(
-                                    leftBottomCoords,
-                                    rightBottomCoords,
-                                    extent,
-                                    idxLines
-                                );
 
-                                idxLines = this.addLine_(
-                                    leftBottomCoords,
-                                    leftTopCoords,
-                                    extent,
-                                    idxLines
-                                );
+                                this.lines_.push(new LineString([
+                                    transform(leftBottomCoords, 'EPSG:4326', this.projection_),
+                                    transform(rightBottomCoords, 'EPSG:4326', this.projection_)
+                                ]));
+
+                                this.lines_.push(new LineString([
+                                    transform(leftBottomCoords, 'EPSG:4326', this.projection_),
+                                    transform(leftTopCoords, 'EPSG:4326', this.projection_)
+                                ]));
                             }
 
                             // Increment rowLetter
@@ -434,7 +437,6 @@ class MGRS extends Graticule {
                 }
             }
         }
-        this.lines_.length = idxLines;
     }
 }
 
