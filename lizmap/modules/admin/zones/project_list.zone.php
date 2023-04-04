@@ -93,8 +93,8 @@ class project_listZone extends jZone
             $qgisServerVersionInt = intval($explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT));
             $serverVersions['qgis_server_version_int'] = $qgisServerVersionInt;
             $serverVersions['qgis_server_version_human_readable'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt);
-            $serverVersions['qgis_server_version_old'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta);
-            $serverVersions['qgis_server_version_next'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt + 1);
+            $serverVersions['qgis_server_version_old'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta - 2);
+            $serverVersions['qgis_server_version_next'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt + 2);
             // Lizmap server plugin
             $lizmapVersion = $data['info']['version'];
             $serverVersions['lizmap_plugin_server_version'] = $lizmapVersion;
