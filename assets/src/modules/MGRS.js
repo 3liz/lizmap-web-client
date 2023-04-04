@@ -68,7 +68,7 @@ class MGRS extends Graticule {
         );
         if (intersects(lineString.getExtent(), extent)) {
             if (this.meridiansLabels_) {
-                const text = forward([lon, minLat], 0);
+                const text = forward([lon, minLat], 0).slice(0, -2);
 
                 if (index in this.meridiansLabels_) {
                     this.meridiansLabels_[index].text = text;
