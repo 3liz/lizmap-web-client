@@ -100,7 +100,7 @@ tests/qgis-projects/*/*_attachments.zip
 !tests/qgis-projects/ProJets 1982*!
 tests/qgis-projects/tests/media
 tests/qgis-server-plugins/*
-!tests/qgis-server-plugins/.empty
+!tests/qgis-server-plugins/upgrade_projects.py
 tests/lizmap-qgis-plugin.master.zip
 tests/end2end/node_modules/
 tests/end2end/cypress/downloads/
