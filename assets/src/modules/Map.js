@@ -6,7 +6,6 @@ import DragPan from "ol/interaction/DragPan";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
 import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
-import { Kinetic } from "ol";
 
 /** Class initializing Openlayers Map. */
 export default class Map extends olMap {
@@ -18,7 +17,7 @@ export default class Map extends olMap {
                 dragPan: false,
                 mouseWheelZoom: false
             }).extend([
-                new DragPan({ kinetic: new Kinetic(0, 0, 0) }),
+                new DragPan(),
                 new MouseWheelZoom({ duration: 0 }),
                 new DoubleClickZoom({ duration: 0 })
             ]),
