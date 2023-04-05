@@ -25,6 +25,7 @@ import {
 import {clamp} from 'ol/math.js';
 
 import { forward, toPoint } from '../dependencies/mgrs';
+import { mainLizmap } from './Globals';
 class MGRS extends Graticule {
 
     /**
@@ -229,6 +230,9 @@ class MGRS extends Graticule {
     */
     createGraticule_(extent, center, resolution, squaredTolerance) {
 
+        const zoom = mainLizmap.map.getView().getZoomForResolution(resolution);
+        const zoomSwitch = 4;
+
         const validExtent = applyTransform(
             extent,
             getTransform(this.projection_, getProjection('EPSG:4326')),
@@ -254,7 +258,7 @@ class MGRS extends Graticule {
         let idxMeridians = 0;
 
         // GZD grid
-        if (resolution >= 2000) {
+        if (zoom <= zoomSwitch) {
             for (lon = minLon; lon <= maxLon; lon += lonInterval) {
                 for (lat = minLat; lat <= maxLat; lat += latInterval) {
 
@@ -333,7 +337,7 @@ class MGRS extends Graticule {
 
         // 100KM grid
         this.lines_ = [];
-        if (resolution < 2000) {
+        if (zoom > zoomSwitch) {
             // Get code inside grid
             const delta = 0.01;
 
