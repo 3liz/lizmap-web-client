@@ -44,6 +44,16 @@ env:
 build-plugins:
 	./add_server_plugins.sh
 
+upgrade-projects:
+	@echo "Upgrading all projects in qgis-projects/tests to ${LZMQGSRVVERSION}"
+	docker run \
+	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
+	    --rm -i \
+	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
+	    -v $(shell pwd)/qgis-projects/tests:/tmp/qgis-projects \
+	    --entrypoint /srv/plugins/upgrade_projects.py \
+	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+
 up: env
 	docker compose up  -V --force-recreate -d
 
