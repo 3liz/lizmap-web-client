@@ -433,7 +433,11 @@ class MGRS extends Graticule {
                                 ]);
 
                                 // Display label on parallel
-                                parallel.set('label', forward([leftBottomCoords[0] + delta, leftBottomCoords[1] + delta], 0), true);
+                                let label = '';
+                                try {
+                                    label = forward([leftBottomCoords[0] + delta, leftBottomCoords[1] + delta], 0);
+                                } catch (error) {}
+                                parallel.set('label', label, true);
 
                                 this.lines_.push(parallel);
 

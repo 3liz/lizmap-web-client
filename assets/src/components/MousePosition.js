@@ -131,32 +131,35 @@ export default class MousePosition extends HTMLElement {
         }
     }
 
-    redraw(lon, lat){
+    redraw(lon, lat) {
         let lonLatToDisplay = [lon, lat];
 
         // Display in degree, degree minute, degree minute second or MGRS
         if (['degrees', 'dm', 'dms', 'mgrs'].includes(this._displayUnit)) {
             // If map projection is not yet in degrees => reproject to EPSG:4326
-            if (mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees'){
+            if (mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees') {
                 lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, 'EPSG:4326');
             }
 
             // If in degrees, lon/lat are editable
-            if (this._displayUnit === 'degrees'){
+            if (this._displayUnit === 'degrees') {
                 render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
-             }else if (this._displayUnit === 'mgrs') {
-                let mgrsCoords = forward(lonLatToDisplay);
+            } else if (this._displayUnit === 'mgrs') {
+                let mgrsCoords = '';
+                try {
+                    mgrsCoords = forward(lonLatToDisplay);
 
-                mgrsCoords = mgrsCoords.slice(0,-12) + ' ' + mgrsCoords.slice(-12,-10) + ' ' + mgrsCoords.slice(-10,-5) + ' ' + mgrsCoords.slice(-5);
-    
+                    mgrsCoords = mgrsCoords.slice(0, -12) + ' ' + mgrsCoords.slice(-12, -10) + ' ' + mgrsCoords.slice(-10, -5) + ' ' + mgrsCoords.slice(-5);
+                } catch (error) {}
+
                 render(this.mainTemplate(mgrsCoords, ''), this);
-            }else{
+            } else {
                 lonLatToDisplay[0] = this.getFormattedLonLat(lonLatToDisplay[0], 'lon', this._displayUnit);
                 lonLatToDisplay[1] = this.getFormattedLonLat(lonLatToDisplay[1], 'lat', this._displayUnit);
 
                 render(this.mainTemplate(lonLatToDisplay[0], lonLatToDisplay[1]), this);
             }
-        }else{
+        } else {
             lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, mainLizmap.qgisProjectProjection);
 
             render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
