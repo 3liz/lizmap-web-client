@@ -96,6 +96,8 @@ tests/units/vendor/
 tests/units/composer.lock
 tests/units/.phpunit.result.cache
 tests/qgis-projects/*
+# Zip file coming with QGIS 3.28
+tests/qgis-projects/*/*_attachments.zip
 !tests/qgis-projects/tests
 !tests/qgis-projects/ProJets 1982*!
 tests/qgis-projects/tests/media
@@ -109,7 +111,6 @@ tests/.env
 tests/end2end/playwright-report/
 tests/end2end/test-results
 
-.vscode/
 /.composer
 /.npm
 
