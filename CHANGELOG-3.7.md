@@ -37,6 +37,8 @@
     * set X/Y parameters for the grid
     * set main map rotation
     * set DPI
+* Add a button to paste a geometry
+* Add [MGRS](https://en.wikipedia.org/wiki/Military_Grid_Reference_System) coordinates display on the map
 
 ### Fixed
 
@@ -71,6 +73,7 @@
 
 ### Funders
 
+* **[ICRC](https://www.icrc.org/)**
 * **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com)**
 * **[Avignon city](https://www.avignon.fr)**
 * **[Parc naturel régional du Haut-Jura](http://www.parc-haut-jura.fr/)**
