@@ -6,7 +6,7 @@ SHELL:=bash
 .ONESHELL:
 .PHONY: env
 
-export LZMBRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
+export LZMBRANCH ?= $(shell git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]')
 
 PREFIX:=lizmap-$(LZMBRANCH)-tests
 
