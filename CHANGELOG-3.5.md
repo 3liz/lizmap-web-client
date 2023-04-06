@@ -12,6 +12,14 @@
 * Add a check for requesting a QGIS server WMS GetFeatureInfo whe the layer name was not the same as in the filter
 * Display the reverse geometry button only for linestrings and polygons, not for points
 * UX - Transform `_` and `-` to a space when creating a repository
+* Fix issue for retrieving a CSS file
+* Fix a possible crash from OpenLayers 7 map when the map was dragged and released
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ## 3.5.11 - 2023-02-28
 
