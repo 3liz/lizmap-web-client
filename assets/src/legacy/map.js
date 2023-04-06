@@ -3419,7 +3419,7 @@ window.lizMap = function() {
                   || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
                                      || editionLayer.capabilities.modifyAttribute == 'True'
                                      || editionLayer.capabilities.deleteFeature == 'True') ) ){
-                    url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
+                    url = Array.isArray(layer.url) ? layer.url[0] : layer.url;
                     // if the control was not configured with a url, set it
                     // to the first layer url
                     if(this.drillDown === false && !this.url) {

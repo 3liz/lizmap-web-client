@@ -12,6 +12,7 @@ import WMS from './WMS.js';
 import Utils from './Utils.js';
 import Action from './Action';
 import FeatureStorage from './FeatureStorage';
+import Popup from './Popup';
 
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
@@ -59,6 +60,7 @@ export default class Lizmap {
                 this.utils = Utils;
                 this.action = new Action();
                 this.featureStorage = new FeatureStorage();
+                this.popup = new Popup();
             }
         });
     }
