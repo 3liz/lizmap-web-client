@@ -1126,7 +1126,7 @@ def my_form_open(dialog, layer, feature):
     <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
     <WMSServiceAbstract type="QString">Test how Lizmap Web Client shows the child tables in a parent form</WMSServiceAbstract>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
-    <WMSServiceTitle type="QString">editing_relation_data</WMSServiceTitle>
+    <WMSServiceTitle type="QString">form_edit_related_child_data</WMSServiceTitle>
     <WMSTileBuffer type="int">0</WMSTileBuffer>
     <WMSUrl type="QString"></WMSUrl>
     <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
