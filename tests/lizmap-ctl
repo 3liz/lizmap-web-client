@@ -8,7 +8,7 @@ SCRIPTDIR="$( cd "$(dirname "$0")" ; pwd -P )"
 APPDIR="$SCRIPTDIR/../lizmap/"
 
 if [ "$LZMBRANCH" == "" ]; then
-  LZMBRANCH=$(git rev-parse --abbrev-ref HEAD)
+  LZMBRANCH=$(git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]')
 fi
 
 if [ "$LZMPGPORT" == "" ]; then
