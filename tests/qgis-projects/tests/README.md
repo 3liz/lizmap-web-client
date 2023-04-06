@@ -4,7 +4,7 @@
 
 In this directory for every test you will find :
 
-* a QGIS project (*.qgs)
+* a QGIS project (*.qgs) saved with the [qgis_trackable_project_files plugin](https://github.com/opengisch/qgis_trackable_project_files)
 * a Lizmap configuration (*.qgs.cfg)
 * an optional markdown describing the manual tests scenarios (*.md)
 
@@ -25,14 +25,17 @@ The PostgreSQL dump (schema + data) `tests_dataset.sql` contains all data to run
 * Lizmap repository called in the UI `testsrepository`
 
 ```bash
+# SERVICE from the remote server to be replaced
+SERVICE=qgis_test
+
 # Replace service name in QGIS projects
-./replace_database_connection_qgs_project.sh /home/etienne/dev/lizmap/lizmap-master/tests/qgis-projects/tests/ qgis_test
+./replace_database_connection_qgs_project.sh $PWD/ ${SERVICE}
 
 # Transfert files with FTP
 
 # Clean existing schema in PG
 PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -n -d qgis_test -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
-psql service=SERVICE -n -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
+psql service=${SERVICE} -n -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
 
 # Insert users needed for tests, maybe truncate ?
 # Change the LWC version
@@ -40,9 +43,11 @@ sed -i "s#INSERT INTO lizmap\.#INSERT INTO lizmap_lizmap_3_5\.#g" set_tests_resp
 
 # Make the PG query
 PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -d DB_NAME -f set_tests_respository_rights.sql
-psql service=SERVICE -f set_tests_respository_rights.sql
+psql service=${SERVICE} -f set_tests_respository_rights.sql
 
 # Import data, check there isn't any ACL before
-psql service=SERVICE -f tests_dataset.sql
-psql service=SERVICE -f set_tests_lizmap_search.sql
+psql service=${SERVICE} -f tests_dataset.sql
+psql service=${SERVICE} -f set_tests_lizmap_search.sql
+
+git reset --hard
 ```
