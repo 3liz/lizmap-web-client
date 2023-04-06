@@ -5,9 +5,8 @@
 NAME=lizmap-builder
 
 PHP_VERSION:=8.1
-COMPOSER_VERSION:=2.3.7
 
-VERSION_TAG=$(COMPOSER_VERSION)-php$(PHP_VERSION)
+VERSION_TAG=php$(PHP_VERSION)
 
 all: build image
 
@@ -16,14 +15,13 @@ image:
 
 builder:
 	docker build --rm \
-		--build-arg="PHP_VERSION=$(PHP_VERSION)" \
-		--build-arg="COMPOSER_VERSION=$(COMPOSER_VERSION)" \
+		--build-arg="php_version=$(PHP_VERSION)" \
 		-t $(NAME):$(VERSION_TAG) \
 		.
 
 WORKDIR=$(realpath ..)
 
-build: builder
+package: builder
 	mkdir -p $(WORKDIR)/.composer $(WORKDIR)/.npm
 	docker run --rm -it --user $$(id -u):$$(id -g) \
 		--workdir /build \
