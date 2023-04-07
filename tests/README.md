@@ -234,6 +234,7 @@ Output colors can be kept with `--tty` parameter but it won't work with `--group
 ### Playwright
 You have to install the browsers with `npx playwright install` (only the first time or after an update)
 You can then :
+- execute `npx playwright test --ui` to open a UI as in Cypress which ease testing
 - execute `npx playwright test` to execute all tests with all browsers
 - execute `npx playwright test --project=chromium` to execute all tests with the chromium browser
 - execute `npx playwright test mytest.spec.js --project=chromium` to execute one test with the chromium browser
