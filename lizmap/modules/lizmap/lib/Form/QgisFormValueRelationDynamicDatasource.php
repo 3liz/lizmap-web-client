@@ -79,7 +79,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                 );
 
                 // Get Feature With Forms Scope
-                $features = \qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn));
+                $features = \qgisExpressionUtils::getFeatureWithFormScope($layer, $filterExpression, $form_feature, array($keyColumn, $valueColumn), true);
                 foreach ($features as $feat) {
                     if (property_exists($feat, 'properties')
                         and property_exists($feat->properties, $keyColumn)
@@ -99,8 +99,11 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                     'GEOMETRYNAME' => 'none',
                 );
 
-                // Perform request
+                // Get request
                 $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices());
+                // Set Editing context
+                $wfsRequest->setEditingContext(true);
+                // Process request
                 $wfsResult = $wfsRequest->process();
 
                 $data = $wfsResult->getBodyAsString();
