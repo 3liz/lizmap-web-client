@@ -1392,10 +1392,11 @@ class qgisVectorLayer extends qgisMapLayer
      *
      * @param bool $editing_context If we are in a editing context or no. Default false
      * @param int  $ttl             Cache TTL in seconds. Default 60. Use -1 to deactivate the cache.
+     * @param bool $get_expression  If we need the expression and not the SQL
      *
      * @return array associative array containing the keys 'expression' and 'polygon'
      */
-    protected function requestPolygonFilter($editing_context = false, $ttl = 60)
+    protected function requestPolygonFilter($editing_context = false, $ttl = 60, $get_expression = false)
     {
         // No filter response
         $no_filter_array = array(
@@ -1464,6 +1465,9 @@ class qgisVectorLayer extends qgisMapLayer
             'map' => $this->project->getRelativeQgisPath(),
             'layer' => $this->name,
         );
+        if ($get_expression) {
+            $params['filter_type'] = 'expression';
+        }
 
         // Add user and groups in parameters
         $user_and_groups = array(
@@ -1525,7 +1529,7 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * Returns the expression used to filter the layer data by polygon.
+     * Returns the sql used to filter the layer data by polygon.
      *
      * It is requested from Lizmap plugin and used only when querying the data
      * directly from PostgreSQL via a SQL query. The filter is added in the WHERE clause.
@@ -1557,5 +1561,60 @@ class qgisVectorLayer extends qgisMapLayer
         $filter_from_lizmap = $this->requestPolygonFilter($editing_context, $ttl);
 
         return $filter_from_lizmap['polygon'];
+    }
+
+    /**
+     * Returns the expression used to filter the layer data by polygon.
+     *
+     * It is requested from Lizmap plugin and used only if a filter by polygon is active.
+     *
+     * @param bool $editing_context If we are in a editing context or no. Default false
+     * @param int  $ttl             Cache TTL in seconds. Default 60. Use -1 to deactivate the cache.
+     *
+     * @return string the geometry of the polygons in eWKT format
+     */
+    public function getPolygonFilterExpression($editing_context = false, $ttl = 60)
+    {
+        // Do not request filter if the layer is not concerned by the filter by polygon filter
+        $polygonFilterConfig = $this->project->getLayerPolygonFilterConfig($this->getName(), $editing_context);
+        if (!$polygonFilterConfig) {
+            return '';
+        }
+        $filter_from_lizmap = $this->requestPolygonFilter($editing_context, $ttl, true);
+
+        $polygon = $filter_from_lizmap['polygon'];
+        if (!$polygon) {
+            return '';
+        }
+
+        $exp = $filter_from_lizmap['expression'];
+        if (!str_contains($exp, 'ST_Transform')) {
+            // the expression is not an SQL
+            return $exp;
+        }
+
+        // Extract information form EWKT polygon
+        $srid = explode('=', explode(';', $polygon)[0])[1];
+        $wkt = explode(';', $polygon)[1];
+
+        // Build expression
+        // 1 parse geom
+        $exp = 'geom_from_wkt(\''.$wkt.'\')';
+        // 2 transform geometry to layer srid
+        $exp = 'transform('.$exp.', \'EPSG:'.$srid.'\', \'EPSG:'.$this->srid.'\')';
+        // 3 convert to centroid if requested
+        $geom = '$geometry';
+        if (array_key_exists('use_centroid', $polygonFilterConfig)
+            && strtolower($polygonFilterConfig['use_centroid']) == 'true') {
+            $geom = 'centroid('.$geom.')';
+        }
+        // 4 define spatial relationship
+        if (array_key_exists('spatial_relationship', $polygonFilterConfig)) {
+            $exp = $polygonFilterConfig['spatial_relationship'].'('.$exp.', '.$geom.')';
+        } else {
+            $exp = 'intersects('.$exp.', '.$geom.')';
+        }
+        // Expression is ready
+        return $exp;
     }
 }

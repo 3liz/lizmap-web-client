@@ -97,19 +97,29 @@ class qgisExpressionUtils
         }
 
         // get login filter
-        $loginFilter = $project->getLoginFilter($layer->getName(), $edition);
+        $loginFilterObj = $project->getLoginFilter($layer->getName(), $edition);
+        $loginFilter = '';
+        if (!empty($loginFilterObj) && array_key_exists('filter', $loginFilterObj)) {
+            $loginFilter = $loginFilterObj['filter'];
+        }
+        // get polygon filter
+        $polygonFilter = $layer->getPolygonFilterExpression($edition);
 
-        // login filters array is empty
+        // filters are empty
+        if (empty($loginFilter) && empty($polygonFilter)) {
+            return '';
+        }
+        // login filter is empty and not the polygon filter
+        if (!empty($loginFilter) && empty($polygonFilter)) {
+            return $loginFilter;
+        }
+        // polygon filter is empty and not the login filter
         if (empty($loginFilter)) {
-            return '';
+            return $polygonFilter;
         }
 
-        // layer not in login filters array
-        if (!array_key_exists('filter', $loginFilter)) {
-            return '';
-        }
-
-        return $loginFilter['filter'];
+        // Combine filters
+        return '('.$loginFilter.') AND ('.$polygonFilter.')';
     }
 
     /**
