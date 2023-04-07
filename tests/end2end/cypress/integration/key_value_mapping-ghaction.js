@@ -199,6 +199,97 @@ describe('Key/value in attribute table', function () {
             })
         })
     })
+
+    it.only('As children layers are not published in WFS, it must display keys and not values in attribute table shortname', function () {
+
+        cy.get('button[value="attribute_table_shortname"].btn-open-attribute-layer').click({ force: true })
+
+        cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollHead th').then(theaders => {
+            expect(theaders).to.have.length(11)
+            const headers = [...theaders].map(t => t.innerText)
+            expect(headers).to.have.length(11)
+            expect(headers).to.include.members([
+                'id',
+                'label_from_array_int_multiple_value_relation',
+                'label_from_array_text_multiple_value_relation',
+                'label from int (relation reference)',
+                'label from int (value map)',
+                'label from int (value relation)',
+                'label_from_text_multiple_value_relation',
+                'label from text (relation reference)',
+                'label from text (value map)',
+                'label from text (value relation)'
+            ])
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="1"] td').then(tdata => {
+                expect(tdata).to.have.length(11)
+                const data = [...tdata].map(t => t.innerText)
+                expect(data).to.have.length(11)
+                expect(data).to.include.members([
+                    '1',
+                    '1',
+                    'first',
+                    'one',
+                    'one',
+                    '1',
+                    'first',
+                    '{"first"}',
+                    '1',
+                    'first'
+                ])
+            })
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="2"] td').then(tdata => {
+                expect(tdata).to.have.length(11)
+                const data = [...tdata].map(t => t.innerText)
+                expect(data).to.have.length(11)
+                expect(data).to.include.members([
+                    '2',
+                    '2',
+                    'second',
+                    'two',
+                    'two',
+                    '2',
+                    'second',
+                    '{"second"}',
+                    '2',
+                    'second'
+                ])
+            })
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="3"] td').then(tdata => {
+                expect(tdata).to.have.length(11)
+                const data = [...tdata].map(t => t.innerText)
+                expect(data).to.have.length(11)
+                expect(data).to.include.members([
+                    '3',
+                    '3',
+                    'third',
+                    'three',
+                    'three',
+                    '3',
+                    'third',
+                    '{"third"}',
+                    '3',
+                    'third'
+                ])
+            })
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="4"] td').then(tdata => {
+                expect(tdata).to.have.length(11)
+                const data = [...tdata].map(t => t.innerText)
+                expect(data).to.have.length(11)
+                expect(data).to.include.members([
+                    '4',
+                    '4',
+                    'fourth',
+                    'four',
+                    'four',
+                    '4',
+                    'fourth',
+                    '{"first","second","third","fourth"}',
+                    '1,2,3,4',
+                    'first,second,third,fourth'
+                ])
+            })
+        })
+    })
 })
 
 describe('Key/value in form filter', function () {
