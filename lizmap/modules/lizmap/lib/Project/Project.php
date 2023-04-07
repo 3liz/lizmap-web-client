@@ -1529,18 +1529,7 @@ class Project
             return;
         }
 
-        $editionLayers = $this->cfg->getEditionLayers();
-
-        // Check ability to load spatialite extension
-        // And remove ONLY spatialite layers if no extension found
-        $spatialiteExt = '';
-        if (class_exists('SQLite3')) {
-            $spatialiteExt = $this->getSpatialiteExtension();
-        }
-        if (!$spatialiteExt) {
-            $this->appContext->logMessage('Spatialite is not available', 'error');
-            $xml->readEditionLayers($editionLayers);
-        }
+        $xml->readEditionLayers($this->cfg->getEditionLayers());
     }
 
     protected function readAttributeLayers(QgisProject $xml, ProjectConfig $cfg)
@@ -2239,38 +2228,5 @@ class Project
         }
 
         return false;
-    }
-
-    public function getSpatialiteExtension()
-    {
-        if ($this->spatialiteExt !== null && $this->spatialiteExt !== '') {
-            return $this->spatialiteExt;
-        }
-
-        // Try with mod_spatialite
-        try {
-            $db = new \SQLite3(':memory:');
-            $this->spatialiteExt = 'mod_spatialite.so';
-            $spatial = @$db->loadExtension($this->spatialiteExt); // loading SpatiaLite as an extension
-            if ($spatial) {
-                return $this->spatialiteExt;
-            }
-        } catch (\Exception $e) {
-            $spatial = false;
-        }
-
-        try {
-            $db = new \SQLite3(':memory:');
-            $this->spatialiteExt = 'libspatialite.so';
-            $spatial = @$db->loadExtension($this->spatialiteExt); // loading SpatiaLite as an extension
-            if ($spatial) {
-                return $this->spatialiteExt;
-            }
-        } catch (\Exception $e) {
-        }
-
-        $this->spatialiteExt = '';
-
-        return '';
     }
 }
