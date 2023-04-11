@@ -40,6 +40,14 @@ function resetfiles() {
     rm -f $APPDIR/composer.lock
   fi
 
+  if [ -d $APPDIR/my-packages/vendor ]; then
+    rm -rf $APPDIR/my-packages/vendor
+  fi
+
+  if [ -f $APPDIR/my-packages/composer.lock ]; then
+    rm -f $APPDIR/my-packages/composer.lock
+  fi
+
   if [ -f $APPDIR/www/assets/js/lizmap.js ]; then
     rm -f $APPDIR/www/assets/js/lizmap.js
   fi
