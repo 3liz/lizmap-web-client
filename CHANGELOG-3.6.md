@@ -15,6 +15,7 @@
 * Increase the timeout when fetching data for a layer export with WfsOutputExtension
 * Fix issue for retrieving a CSS file
 * Fix a possible crash from OpenLayers 7 map when the map was dragged and released
+* Fix installation of the multiauth module. Be sure to install the version 1.2.1 or higher, of the module
 
 ### Translations
 
