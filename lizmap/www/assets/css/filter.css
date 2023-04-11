@@ -76,6 +76,7 @@ div.liz-filter-field-box p {
   overflow-y: auto;
   overflow-y: scroll;
   padding-left: 5px;
+  clear: both;
 }
 div.liz-filter-field-box p label {
     font-size: 12px;
