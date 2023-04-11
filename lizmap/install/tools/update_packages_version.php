@@ -35,7 +35,7 @@ class ComposerVersionUpdaterCommand extends Command
     protected static $packagesVersions = array(
         'arno974/lizmap-altiprofil' => '^0.3.0',
         'jelix/composer-module-setup' => '^1.1.0',
-        'jelix/multiauth-module' => '^1.2.0',
+        'jelix/multiauth-module' => '^1.2.1',
         'jelix/saml-module' => '^2.1.0',
         'lizmap/lizmap-adresse-module' => '^1.1.0',
         'lizmap/lizmap-cadastre-module' => '^2.0.0',
