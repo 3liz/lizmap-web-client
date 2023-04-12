@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.5.12 - 2023-04-12
+
 ### Important
 
 * Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.0
@@ -14,6 +16,7 @@
 * UX - Transform `_` and `-` to a space when creating a repository
 * Fix issue for retrieving a CSS file
 * Fix a possible crash from OpenLayers 7 map when the map was dragged and released
+* Remove a warning from Spatialite in the logs, which was not supported for a long time in the QGIS plugin
 
 ### Translations
 
