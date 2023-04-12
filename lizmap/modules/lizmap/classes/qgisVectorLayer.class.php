@@ -673,6 +673,11 @@ class qgisVectorLayer extends qgisMapLayer
                 $spatial_relationship = 'ST_'.$polygonFilterConfig['spatial_relationship'];
             }
         }
+        // And apply use_centroid
+        if (array_key_exists('use_centroid', $polygonFilterConfig)
+            && strtolower($polygonFilterConfig['use_centroid']) == 'true') {
+            $geometry_sql = 'ST_Centroid('.$geometry_sql.')';
+        }
 
         // Query PostgreSQL to get the intersection between the geometry and the polygons
         $sql = "
