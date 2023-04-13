@@ -2190,9 +2190,11 @@ var lizAttributeTable = function() {
                 var layer = lizMap.map.getLayersByName( lizMap.cleanName(featureType) )[0];
                 if( layer ) {
                     delete layer.params['FILTER'];
+                    delete layer.params['FILTERTOKEN'];
                 }
                 config.layers[featureType]['request_params']['filter'] = null;
                 config.layers[featureType]['request_params']['exp_filter'] = null;
+                config.layers[featureType]['request_params']['filtertoken'] = null;
 
                 lizMap.events.triggerEvent("layerFilteredFeaturesChanged",
                     {
@@ -2369,6 +2371,7 @@ var lizAttributeTable = function() {
         }
 
         function applyEmptyLayerFilter( typeName, typeNamePile, typeNameFilter, typeNameDone, cascade ){
+
             // Add done typeName to the list
             typeNameDone.push( typeName );
 
@@ -2456,8 +2459,11 @@ var lizAttributeTable = function() {
 
             // **5** Add other parent to pile when typeName is a pivot
             if( pivotParam ){
+                console.log(pivotParam);
                 // Add a Filter to the "other parent" layers
                 config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = null;
+                config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['exp_filter'] = null;
+                config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filtertoken'] = null;
 
                 typeNameFilter[ pivotParam['otherParentTypeName'] ] = null;
                 typeNamePile.push( pivotParam['otherParentTypeName'] );
@@ -2670,6 +2676,7 @@ var lizAttributeTable = function() {
                         var cName = x;
                         var cData = typeNameChildren[x];
                         var cFilter = null;
+                        var cExpFilter = null;
                         var wmsCname = cName;
                         // Get WMS layer name (can be different depending on QGIS Server version)
                         var wlayer = lizMap.map.getLayersByName( lizMap.cleanName(cName) )[0];
@@ -2681,11 +2688,13 @@ var lizAttributeTable = function() {
                         // and add child to the typeNameFilter and typeNamePile objects
                         // only if typeName filter aFilter was originally set
                         if( aFilter && cData['parentValues'].length > 0 && cascade != 'removeChildrenFilter' )
-                            cFilter = wmsCname + ':"' + cData['fieldToFilter'] + '" IN ( ' + cData['parentValues'].join() + ' )';
+                            cExpFilter = '"' + cData['fieldToFilter'] + '" IN ( ' + cData['parentValues'].join() + ' )';
                         else if( aFilter && cascade != 'removeChildrenFilter' )
-                            cFilter = wmsCname + ':"' + cData['fieldToFilter'] + '" IN ( -99999 )';
+                            cExpFilter = '"' + cData['fieldToFilter'] + '" IN ( -99999 )';
+                        cFilter = wmsCname + ':' + cExpFilter;
 
                         config.layers[cName]['request_params']['filter'] = cFilter;
+                        config.layers[cName]['request_params']['exp_filter'] = cExpFilter;
 
                         typeNameFilter[x] = cFilter;
                         typeNamePile.push( x );
@@ -2697,6 +2706,7 @@ var lizAttributeTable = function() {
                 if( pivotParam ){
                     // Add a Filter to the "other parent" layers
                     var cFilter = null;
+                    var cExpFilter = null;
                     var orObj = null;
                     var pwmsName = pivotParam['otherParentTypeName'];
                     // Get WMS layer name
@@ -2706,16 +2716,17 @@ var lizAttributeTable = function() {
                     }
                     if( aFilter  ){
                         if( pivotParam['otherParentValues'].length > 0 ){
-                            cFilter = pwmsName + ':"';
-                            cFilter+= pivotParam['otherParentRelation'].referencedField;
-                            cFilter+= '" IN ( ' + pivotParam['otherParentValues'].join() + ' )';
+                            cExpFilter = '"' + pivotParam['otherParentRelation'].referencedField + '"';
+                            cExpFilter+= ' IN ( ' + pivotParam['otherParentValues'].join() + ' )';
+                            cFilter = pwmsName + ':' + cExpFilter;
                             orObj = {
                                 field: pivotParam['otherParentRelation'].referencedField,
                                 values: pivotParam['otherParentValues']
                             }
                         }
                         else {
-                            cFilter = pwmsName + ':"' + pivotParam['otherParentRelation'].referencedField + '" IN ( ' + "'-999999'" + ' )';
+                            cExpFilter = '"' + pivotParam['otherParentRelation'].referencedField + '" IN ( ' + "'-999999'" + ' )';
+                            cFilter = pwmsName + ':' + cExpFilter;
                             orObj = {
                                 field: pivotParam['otherParentRelation'].referencedField,
                                 values: ['-999999']
@@ -2724,6 +2735,7 @@ var lizAttributeTable = function() {
                     }
 
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = cFilter;
+                    config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['exp_filter'] = cExpFilter;
 
                     typeNameFilter[ pivotParam['otherParentTypeName'] ] = cFilter;
                     typeNamePile.push( pivotParam['otherParentTypeName'] );
