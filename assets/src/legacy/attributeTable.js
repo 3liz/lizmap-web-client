@@ -2144,7 +2144,7 @@ var lizAttributeTable = function() {
 
             // ** ** If typeName is a pivot, add some info about the otherParent
             // If pivot, re-loop relations to find configuration for other parents (go up)
-            var pivotParam = getPivotParam( typeNameId, attributeLayerConfig, attributeLayerConfig, typeNameDone );
+            var pivotParam = getPivotParam( typeNameId, attributeLayerConfig, typeNameDone );
 
             // **3** Apply filter to the typeName and redraw if necessary
             var layer = lizMap.map.getLayersByName( lizMap.cleanName(typeName) )[0];
