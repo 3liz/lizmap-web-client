@@ -14,7 +14,28 @@ describe('Feature Toolbar in popup', function () {
                 })
             }).as('getFeatureInfo')
 
-        cy.intercept('POST','*service*').as('postToService')
+        cy.intercept('POST','*service*', (req) => {
+            if (typeof req.body == 'string') {
+                const req_body = req.body.toLowerCase()
+                if (req_body.includes('service=wms') ) {
+                    if (req_body.includes('request=getfeatureinfo'))
+                        req.alias = 'postGetFeatureInfo'
+                    else if (req_body.includes('request=getselectiontoken'))
+                        req.alias = 'postGetSelectionToken'
+                    else
+                        req.alias = 'postToService'
+                } else if (req_body.includes('service=wfs') ) {
+                    if (req_body.includes('request=getfeature'))
+                        req.alias = 'postGetFeature'
+                    else if (req_body.includes('request=describefeaturetype'))
+                        req.alias = 'postDescribeFeatureType'
+                    else
+                        req.alias = 'postToService'
+                } else
+                    req.alias = 'postToService'
+            } else
+                req.alias = 'postToService'
+          })
 
         cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
@@ -55,6 +76,15 @@ describe('Feature Toolbar in popup', function () {
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
+
+        // Check WMS GetFeatureInfo request for children
+        cy.wait('@postGetFeatureInfo').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WMS')
+                .to.contain('REQUEST=GetFeatureInfo')
+                .to.contain('QUERY_LAYERS=children_layer')
+                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%271%27')
+        })
 
         // Click to zoom to feature
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-zoom').click()
@@ -117,6 +147,15 @@ describe('Feature Toolbar in popup', function () {
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
+        // Check WMS GetFeatureInfo request for children
+        cy.wait('@postGetFeatureInfo').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WMS')
+                .to.contain('REQUEST=GetFeatureInfo')
+                .to.contain('QUERY_LAYERS=children_layer')
+                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%271%27')
+        })
+
         cy.get('#navbar button.btn.zoom-in').click()
         cy.wait('@getMap')
         cy.get('#navbar button.btn.zoom-in').click()
@@ -163,19 +202,24 @@ describe('Feature Toolbar in popup', function () {
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
+        // Check WMS GetFeatureInfo request for children
+        cy.wait('@postGetFeatureInfo').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WMS')
+                .to.contain('REQUEST=GetFeatureInfo')
+                .to.contain('QUERY_LAYERS=children_layer')
+                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%271%27')
+        })
+
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').click()
 
         // WFS GetFeature request
-        cy.wait('@postToService').as('postToService1')
-
         // WFS DescribeFeatureType request
-        cy.wait('@postToService').as('postToService2')
-
         // WMS GetSelectionToken request
-        cy.wait('@postToService').as('postToService3')
+        cy.wait(['@postGetFeature', '@postDescribeFeatureType', '@postGetSelectionToken'])
 
         // Check WFS GetFeature request
-        cy.get('@postToService1').then((interception) => {
+        cy.get('@postGetFeature').then((interception) => {
             expect(interception.request.body)
                 .to.contain('SERVICE=WFS')
                 .to.contain('REQUEST=GetFeature')
@@ -184,43 +228,25 @@ describe('Feature Toolbar in popup', function () {
         })
 
         // Check WFS DescribeFeatureType request
+        cy.get('@postDescribeFeatureType').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WFS')
+                .to.contain('REQUEST=DescribeFeatureType')
+                .to.contain('TYPENAME=parent_layer')
+        })
+
         // Check WMS GetSelectionToken request
         // and store the selection token
         let selectiontoken = ''
-        cy.get('@postToService2').then((interception) => {
-            if ( interception.request.body.includes('SERVICE=WFS') ) {
-                expect(interception.request.body)
-                    .to.contain('SERVICE=WFS')
-                    .to.contain('REQUEST=DescribeFeatureType')
-                    .to.contain('TYPENAME=parent_layer')
-            } else {
-                expect(interception.request.body)
-                    .to.contain('service=WMS')
-                    .to.contain('request=GETSELECTIONTOKEN')
-                    .to.contain('typename=parent_layer')
-                    .to.contain('ids=1')
-                expect(interception.response.body)
-                    .to.have.property('token')
-                selectiontoken = interception.response.body.token
-            }
-        })
-
-        cy.get('@postToService3').then((interception) => {
-            if ( interception.request.body.includes('service=WMS') ) {
-                expect(interception.request.body)
-                    .to.contain('service=WMS')
-                    .to.contain('request=GETSELECTIONTOKEN')
-                    .to.contain('typename=parent_layer')
-                    .to.contain('ids=1')
-                expect(interception.response.body)
-                    .to.have.property('token')
-                selectiontoken = interception.response.body.token
-            } else {
-                expect(interception.request.body)
-                    .to.contain('SERVICE=WFS')
-                    .to.contain('REQUEST=DescribeFeatureType')
-                    .to.contain('TYPENAME=parent_layer')
-            }
+        cy.get('@postGetSelectionToken').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('service=WMS')
+                .to.contain('request=GETSELECTIONTOKEN')
+                .to.contain('typename=parent_layer')
+                .to.contain('ids=1')
+            expect(interception.response.body)
+                .to.have.property('token')
+            selectiontoken = interception.response.body.token
         })
 
         // Check that GetMap is requested with the selection token
@@ -281,6 +307,15 @@ describe('Feature Toolbar in popup', function () {
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
 
+        // Check WMS GetFeatureInfo request for children
+        cy.wait('@postGetFeatureInfo').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WMS')
+                .to.contain('REQUEST=GetFeatureInfo')
+                .to.contain('QUERY_LAYERS=children_layer')
+                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%271%27')
+        })
+
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').click()
 
         // Test feature is filtered on popup
@@ -317,6 +352,15 @@ describe('Feature Toolbar in popup', function () {
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
+
+        // Check WMS GetFeatureInfo request for children
+        cy.wait('@postGetFeatureInfo').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WMS')
+                .to.contain('REQUEST=GetFeatureInfo')
+                .to.contain('QUERY_LAYERS=children_layer')
+                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%271%27')
+        })
 
         // Open parent_layer in attribute table
         cy.get('#button-attributeLayers').click()
@@ -359,6 +403,15 @@ describe('Feature Toolbar in popup', function () {
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@getFeatureInfo')
+
+        // Check WMS GetFeatureInfo request for children
+        cy.wait('@postGetFeatureInfo').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WMS')
+                .to.contain('REQUEST=GetFeatureInfo')
+                .to.contain('QUERY_LAYERS=children_layer')
+                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%271%27')
+        })
 
         cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="buffer_500.parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"]').click()
 
@@ -430,6 +483,15 @@ describe('Feature Toolbar in popup', function () {
         // Click feature with id=2 on the map
         cy.mapClick(1055, 437)
         cy.wait('@getFeatureInfo')
+
+        // Check WMS GetFeatureInfo request for children
+        cy.wait('@postGetFeatureInfo').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WMS')
+                .to.contain('REQUEST=GetFeatureInfo')
+                .to.contain('QUERY_LAYERS=children_layer')
+                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%272%27')
+        })
 
         // Start parent edition
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"] .feature-edit').click()
