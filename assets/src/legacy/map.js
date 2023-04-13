@@ -6102,8 +6102,7 @@ window.lizMap = function() {
           const wfs = new WFS();
           const wfsParams = {
               TYPENAME: layerName,
-              EXP_FILTER: filter,
-              GEOMETRYNAME: 'extent'
+              EXP_FILTER: filter
           };
 
           featureExtentRequest = wfs.getFeature(wfsParams);
@@ -6132,6 +6131,7 @@ window.lizMap = function() {
         const wfsCapaData = responses[4];
 
         let featuresExtent = responses[5]?.features?.[0]?.bbox;
+        let features = responses[5]?.features;
 
         if(featuresExtent){
           for (const feature of responses[5].features) {
@@ -6291,6 +6291,20 @@ window.lizMap = function() {
             }
           } else {
             map.zoomToExtent(map.initialExtent);
+          }
+          if(featuresExtent){
+            var format = new OpenLayers.Format.GeoJSON({
+                ignoreExtraDims: true
+            });
+            var locatelayer = map.getLayersByName('locatelayer')[0];
+            for (const feature of features) {
+              if( feature.geometry != null){
+                  var feat = format.read(feature)[0];
+                  feat.geometry.transform('EPSG:4326', map.getProjection());
+                  locatelayer.addFeatures([feat]);
+                  locatelayer.setVisibility(true);
+              }
+            }
           }
           verifyingVisibility = false;
         }
