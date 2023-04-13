@@ -1587,34 +1587,6 @@ class qgisVectorLayer extends qgisMapLayer
             return '';
         }
 
-        $exp = $filter_from_lizmap['expression'];
-        if (!str_contains($exp, 'ST_Transform')) {
-            // the expression is not an SQL
-            return $exp;
-        }
-
-        // Extract information form EWKT polygon
-        $srid = explode('=', explode(';', $polygon)[0])[1];
-        $wkt = explode(';', $polygon)[1];
-
-        // Build expression
-        // 1 parse geom
-        $exp = 'geom_from_wkt(\''.$wkt.'\')';
-        // 2 transform geometry to layer srid
-        $exp = 'transform('.$exp.', \'EPSG:'.$srid.'\', \'EPSG:'.$this->srid.'\')';
-        // 3 convert to centroid if requested
-        $geom = '$geometry';
-        if (array_key_exists('use_centroid', $polygonFilterConfig)
-            && strtolower($polygonFilterConfig['use_centroid']) == 'true') {
-            $geom = 'centroid('.$geom.')';
-        }
-        // 4 define spatial relationship
-        if (array_key_exists('spatial_relationship', $polygonFilterConfig)) {
-            $exp = $polygonFilterConfig['spatial_relationship'].'('.$exp.', '.$geom.')';
-        } else {
-            $exp = 'intersects('.$exp.', '.$geom.')';
-        }
-        // Expression is ready
-        return $exp;
+        return $filter_from_lizmap['expression'];
     }
 }
