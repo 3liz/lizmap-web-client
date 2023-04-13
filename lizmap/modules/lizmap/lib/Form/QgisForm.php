@@ -597,14 +597,20 @@ class QgisForm implements QgisFormControlsInterface
             $form->setErrorOn($geometryColumn, $this->appContext->getLocale('view~edition.message.error.geometry.outside.polygons'));
         }
 
+        $project = $this->layer->getProject();
+
         // Get filter by login
-        $expByUserKey = 'filterByLogin';
-        $expByUser = \qgisExpressionUtils::getExpressionByUser($this->layer, true);
-        if ($expByUser !== '') {
-            while (array_key_exists($expByUserKey, $constraintExpressions)) {
-                $expByUserKey .= '@';
+        $expByUserLoginKey = 'filterByLogin';
+        $expByUserLoginObj = $project->getLoginFilter($this->layer->getName(), true);
+        $expByUserLogin = '';
+        if (!empty($expByUserLoginObj) && array_key_exists('filter', $expByUserLoginObj)) {
+            $expByUserLogin = $expByUserLoginObj['filter'];
+        }
+        if ($expByUserLogin !== '') {
+            while (array_key_exists($expByUserLoginKey, $constraintExpressions)) {
+                $expByUserLoginKey .= '@';
             }
-            $constraintExpressions[$expByUserKey] = $expByUser;
+            $constraintExpressions[$expByUserLoginKey] = $expByUserLogin;
         }
 
         // Evaluate constraint expressions
@@ -625,8 +631,7 @@ class QgisForm implements QgisFormControlsInterface
                 if ($result === 1) {
                     continue;
                 }
-                if ($fieldName === $expByUserKey) {
-                    $project = $this->layer->getProject();
+                if ($fieldName === $expByUserLoginKey) {
                     $loginFilterConfig = $project->getLoginFilteredConfig($this->layer->getName());
                     $form->setErrorOn($loginFilterConfig->filterAttribute, \jLocale::get('view~edition.message.error.feature.editable'));
 
@@ -1430,7 +1435,6 @@ class QgisForm implements QgisFormControlsInterface
             'PROPERTYNAME' => $relation['propertyName'],
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
-            'map' => $project->getPath(),
         );
 
         // add EXP_FILTER. Only for QGIS >=2.0
@@ -1455,7 +1459,11 @@ class QgisForm implements QgisFormControlsInterface
             unset($params['PROPERTYNAME']);
         }
 
+        // Get request
         $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, \lizmap::getServices());
+        // Set Editing context
+        $wfsRequest->setEditingContext(true);
+        // Perform request
         $this->PerformWfsRequest($wfsRequest, $formControl, $relation['referencedField'], $relation['previewField']);
     }
 
