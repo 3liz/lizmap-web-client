@@ -2510,36 +2510,44 @@ var lizAttributeTable = function() {
 
             function updateMapLayerDrawing( featureType, cascade ){
                 cascade = typeof cascade !== 'undefined' ?  cascade : true;
-                // Get layer
-                var layer = lizMap.map.getLayersByName( lizMap.cleanName(featureType) )[0];
+                // Get layer config
+                var lConfig = config.layers[featureType];
+                if( !lConfig )
+                    return;
+
+                // Get OL layer to update params if it exists
+                var cleanName = lizMap.cleanName(featureType);
+                var layer = lizMap.map.getLayersByName( cleanName )[0];
 
                 // Build filter from filteredFeatures
                 var cFilter = null;
-                if ( config.layers[featureType]['filteredFeatures']
-                    && config.layers[featureType]['filteredFeatures'].length > 0
+                if ( lConfig['filteredFeatures']
+                    && lConfig['filteredFeatures'].length > 0
                 ){
-                    cFilter = '$id IN ( ' + config.layers[featureType]['filteredFeatures'].join() + ' ) ';
+                    cFilter = '$id IN ( ' + lConfig['filteredFeatures'].join() + ' ) ';
                 }
 
+                var wmsName = featureType;
+                if ( lConfig['shortname'] )
+                    wmsName = lConfig['shortname'];
+
                 // Build selection parameter from selectedFeatures
-                var layerN = attributeLayersDic[featureType];
-                if( config.layers[featureType]
-                    && config.layers[featureType]['selectedFeatures']
-                    && config.layers[featureType]['selectedFeatures'].length
+                if( lConfig['selectedFeatures']
+                    && lConfig['selectedFeatures'].length
                 ) {
-                    config.layers[featureType]['request_params']['selection'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    lConfig['request_params']['selection'] = wmsName + ':' + lConfig['selectedFeatures'].join();
 
                     // Get selection token
                     var sdata = {
                         service: 'WMS',
                         request: 'GETSELECTIONTOKEN',
-                        typename: featureType,
-                        ids: config.layers[featureType]['selectedFeatures'].join()
+                        typename: wmsName,
+                        ids: lConfig['selectedFeatures'].join()
                     };
                     $.post(lizUrls.service, sdata, function(result){
-                        config.layers[featureType]['request_params']['selectiontoken'] = result.token;
+                        lConfig['request_params']['selectiontoken'] = result.token;
                         if ( layer ) {
-                            //layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
+                            //layer.params['SELECTION'] = wmsName + ':' + lConfig['selectedFeatures'].join();
                             layer.params['SELECTIONTOKEN'] = result.token;
                         }
                     });
@@ -2549,8 +2557,8 @@ var lizAttributeTable = function() {
                         //delete layer.params['SELECTION'];
                         delete layer.params['SELECTIONTOKEN'];
                     }
-                    config.layers[featureType]['request_params']['selection'] = null;
-                    config.layers[featureType]['request_params']['selectiontoken'] = null;
+                    lConfig['request_params']['selection'] = null;
+                    lConfig['request_params']['selectiontoken'] = null;
                 }
 
                 // Build data to update layer drawing and other components
@@ -2563,16 +2571,20 @@ var lizAttributeTable = function() {
             }
 
             function updateMapLayerSelection( featureType ) {
+                // Get layer config
+                var lConfig = config.layers[featureType];
+                if( !lConfig )
+                    return;
 
-                // Get layer
+                // Get OL layer to be redrawn
                 var cleanName = lizMap.cleanName(featureType);
                 var layer = lizMap.map.getLayersByName( cleanName )[0];
                 if( !layer )
                     return;
 
-                var lConfig = config.layers[featureType];
-                if( !lConfig )
-                    return;
+                var wmsName = featureType;
+                if ( lConfig['shortname'] )
+                    wmsName = lConfig['shortname'];
 
                 // Build selection parameter from selectedFeatures
                 if( lConfig.selectedFeatures
@@ -2580,13 +2592,13 @@ var lizAttributeTable = function() {
                 ) {
                     if ( !( 'request_params' in lConfig ) )
                         lConfig['request_params'] = {};
-                    lConfig.request_params['selection'] = featureType + ':' + lConfig.selectedFeatures.join();
+                    lConfig.request_params['selection'] = wmsName + ':' + lConfig.selectedFeatures.join();
 
                     // Get selection token
                     var sdata = {
                         service: 'WMS',
                         request: 'GETSELECTIONTOKEN',
-                        typename: featureType,
+                        typename: wmsName,
                         ids: lConfig.selectedFeatures.join()
                     };
                     $.post(lizUrls.service, sdata, function(result){
