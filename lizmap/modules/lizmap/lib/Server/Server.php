@@ -245,10 +245,6 @@ class Server
             ),
         );
 
-        if (\jAcl2::check('lizmap.admin.server.information.view') && isset(\jApp::config()->lizmap['hosting'])) {
-            $data['hosting'] = \jApp::config()->lizmap['hosting'];
-        }
-
         // Add information about available APIs
         $data['api'] = array(
             'dataviz' => array(
@@ -258,13 +254,19 @@ class Server
             ),
         );
 
-        // Add the list of repositories
         if (\jAcl2::check('lizmap.admin.server.information.view')) {
-            $data['repositories'] = $this->getLizmapRepositories();
-        }
+            if (isset(\jApp::config()->lizmap['hosting'])) {
+                $data['hosting'] = \jApp::config()->lizmap['hosting'];
+            }
 
-        // Add the list of user groups
-        if (\jAcl2::check('lizmap.admin.server.information.view')) {
+            if (\jApp::isModuleEnabled('webdav') && class_exists('\\LizmapDAV\\Server')) {
+                $data['webdav'] = \jServer::getServerURI().\LizmapDAV\Server::serverBaseUri();
+            }
+
+            // Add the list of repositories
+            $data['repositories'] = $this->getLizmapRepositories();
+
+            // Add the list of user groups
             $data['acl'] = array(
                 'groups' => $this->getAclGroups(),
             );
