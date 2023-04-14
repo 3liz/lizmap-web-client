@@ -3979,6 +3979,9 @@ window.lizMap = function() {
             if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
                 printLayers.push(activeBaseLayerConfig.id);
             }
+            else if ( 'shortname' in activeBaseLayerConfig ){
+                printLayers.push(activeBaseLayerConfig.shortname);
+            }
             else{
                 printLayers.push(exbl);
             }
