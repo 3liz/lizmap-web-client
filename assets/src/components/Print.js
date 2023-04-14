@@ -17,7 +17,7 @@ export default class Print extends HTMLElement {
     }
 
     connectedCallback() {
-        document.querySelector('.btn-print-clear').addEventListener('click', 
+        document.querySelector('.btn-print-clear').addEventListener('click',
             () => document.querySelector('#button-print').click()
         );
 
@@ -64,25 +64,25 @@ export default class Print extends HTMLElement {
 
                     this._mainMapID = 'map0';
                     this._overviewMapId;
-            
+
                     this._maskWidth = 0;
                     this._maskHeight = 0;
-            
+
                     this.printTemplate = 0;
                     this._printFormat = this.defaultFormat;
                     this._printDPI = this.defaultDPI;
-            
+
                     // Create a mask layer to display the extent for the main map
                     this._maskLayer = new MaskLayer();
                     this._maskLayer.getSize = () => [this._maskWidth, this._maskHeight];
                     this._maskLayer.getScale = () => {
                         return this._printScale
                     };
-            
+
                     mainLizmap.map.addLayer(this._maskLayer);
 
                     mainLizmap.map.getView().on('change:resolution', this._onChangeResolution);
-            
+
                     render(this._template(), this);
                 }
             },
@@ -123,7 +123,7 @@ export default class Print extends HTMLElement {
                 <div class="print-labels">
                     <p>${lizDict['print.labels']}</p>
 
-                    ${this._printTemplates[this.printTemplate].labels.slice().reverse().map((label) => 
+                    ${this._printTemplates[this.printTemplate].labels.slice().reverse().map((label) =>
                     label?.htmlState ?
                         html`<textarea name="${label.id}" class="print-label" placeholder="${label.text}" .value=${label.text}></textarea><br>`
                         : html`<input  name="${label.id}" class="print-label" placeholder="${label.text}" value="${label.text}" type="text"><br>`
@@ -219,6 +219,8 @@ export default class Print extends HTMLElement {
             const activeBaseLayerConfig = mainLizmap.config.layers[exbl];
             if (activeBaseLayerConfig?.id && mainLizmap.config.options?.useLayerIDs == 'True') {
                 printLayers.push(activeBaseLayerConfig.id);
+            } else if (activeBaseLayerConfig?.shortname) {
+                printLayers.push(activeBaseLayerConfig.shortname);
             } else {
                 printLayers.push(exbl);
             }
