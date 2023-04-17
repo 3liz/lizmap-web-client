@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.6.3 - 2022-04-17
+
 ### Added
 
 * Display feature geometries defined in map parameter
