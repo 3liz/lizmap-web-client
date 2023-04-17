@@ -268,14 +268,21 @@ and check the JS console for errors.
 
 ## Using LDAP
 
-Into `lizmap/var/config/localconfig.ini.php`:
+Be sure there are users into the ldap: execute `./lizmap-ctl ldap-reset`. 
+You can list users with `./lizmap-ctl ldap-users`.
 
-1. set `ldapdao.access=2` into the `modules` section
-2. set `driver=ldapdao` into the `coordplugin_auth` section
-3. launch `lizmap-ctl  install`
+Enter into the php container:
 
-Be sure there are users into the ldap: execute `lizmap-ctl ldap-users`. It should
-show a list of users (Jane and John). If there are not present, launch `lizmap-ctl ldap-reset`.
+```
+./lizmap-ctl shell
+```
+
+Enable the ldapdao module and launch the installer:
+
+```
+php lizmap/install/configurator.php ldapdao
+php lizmap/install/installer.php
+```
 
 You should then be able to connect yourself into lizmap with login jane (password: passjane) or
 login john (password: passjohn).
