@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+* Display feature geometries defined in map parameter
+
 ### Changed
 
 * Update some CLI tools : `wmts:capabilities`, `wmts:seed` and `wmts:clean`
@@ -16,6 +20,13 @@
 * Fix issue for retrieving a CSS file
 * Fix a possible crash from OpenLayers 7 map when the map was dragged and released
 * Fix installation of the multiauth module. Be sure to install the version 1.2.1 or higher, of the module
+* Remove a warning from Spatialite in the logs, which was not supported for a long time in the QGIS plugin
+* Fix display of key/value when the layer is not published as WFS in the form filter and the attribute table panel
+* Check if the centroid is used for the filtering by polygon when editing the layer
+* When the layer has a shortname :
+  * fix the PDF print request
+  * the user do a selection
+* The `EXP_FILTER` URL parameter was not build for cascade and pivot layers
 
 ### Translations
 
@@ -26,6 +37,7 @@
 ### Backend
 
 * Include the latest updates from Jelix 1.8
+* Some bugfix about the docker image
 
 ## 3.6.2 - 2022-02-28
 
