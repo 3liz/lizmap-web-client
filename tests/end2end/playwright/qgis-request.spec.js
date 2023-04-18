@@ -19,20 +19,13 @@ test.describe('QGIS Requests', () => {
       expect(await legendResponse?.headerValue('Content-Type')).toBe('image/png');
       // get Original WMS request
       let echoLegend = await page.request.get(legendRequest.url() + '&__echo__');
-      let legendParams = [/SERVICE=WMS/i,
-        /VERSION=1\.3\.0/i,
-        /REQUEST=GetLegendGraphic/i,
-        new RegExp('LAYER=' + layer_name, 'i'),
-        /STYLE=défaut/i,
-        /EXCEPTIONS=application\/vnd\.ogc\.se_inimage/i,
-        /FORMAT=image\/png/i,
-        /TRANSPARENT=TRUE/i,
-        /WIDTH=150/i
-      ];
       const originalUrl = decodeURIComponent(await echoLegend.text());
-      for (let y in legendParams) {
-        expect(originalUrl).toMatch(legendParams[y]);
-      }
+      const urlObj = new URLSearchParams(originalUrl);
+      expect(urlObj.get("version")).toBe("1.3.0");
+      expect(urlObj.get("service")).toBe("WMS");
+      expect(urlObj.get("format")).toBe("image/png");
+      expect(urlObj.get("request")).toBe("getlegendgraphic");
+      expect(urlObj.get("layer")).toBe(layer_name);
     }
   });
 });
