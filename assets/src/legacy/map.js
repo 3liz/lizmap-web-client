@@ -1833,7 +1833,7 @@ window.lizMap = function() {
 
   function createSwitcher() {
     // set the switcher content
-    $('#switcher-layers').html(getSwitcherNode(tree,0));
+    $('#switcher-layers').html(getSwitcherNode(tree,0) + '<lizmap-treeview></lizmap-treeview>');
     $('#switcher table.tree').treeTable({
       stringExpand: lizDict['tree.button.expand'],
       stringCollapse: lizDict['tree.button.collapse'],
@@ -5342,6 +5342,7 @@ window.lizMap = function() {
         config = responses[0];
         keyValueConfig = responses[1];
         const wmsCapaData = responses[2];
+        self.WMSCapabilities = wmsCapaData;
         const wmtsCapaData = responses[3];
         const wfsCapaData = responses[4];
 
@@ -5443,6 +5444,8 @@ window.lizMap = function() {
         var firstLayer = capability.nestedLayers[0];
         getLayerTree(firstLayer, tree);
         analyseNode(tree);
+
+        document.getElementById('switcher-layers').insertAdjacentHTML('beforeend', '<lizmap-treeview></lizmap-treeview>');
 
         // Re-save the config in self
         self.config = config;
