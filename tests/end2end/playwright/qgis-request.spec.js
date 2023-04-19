@@ -14,18 +14,29 @@ test.describe('QGIS Requests', () => {
       const legendRequestPromise = page.waitForRequest(/GetLegend/);
       await page.locator('#layer-' + layer_name + ' a[class="expander"]').click();
       let legendRequest = await legendRequestPromise;
+
       // check response is type image/png
       let legendResponse = await legendRequest.response();
       expect(await legendResponse?.headerValue('Content-Type')).toBe('image/png');
+
       // get Original WMS request
       let echoLegend = await page.request.get(legendRequest.url() + '&__echo__');
       const originalUrl = decodeURIComponent(await echoLegend.text());
+
+      // expected request params
+      const expectedParamValue = [
+        {'param' : 'version', 'expectedvalue' : '1.3.0'},
+        {'param' : 'service', 'expectedvalue' : 'WMS'},
+        {'param' : 'format', 'expectedvalue' : 'image/png'},
+        {'param' : 'request', 'expectedvalue' : 'getlegendgraphic'},
+        {'param' : 'layer', 'expectedvalue' : layer_name},
+      ];
+
+      // check if WMS Request params are as expected 
       const urlObj = new URLSearchParams(originalUrl);
-      expect(urlObj.get("version")).toBe("1.3.0");
-      expect(urlObj.get("service")).toBe("WMS");
-      expect(urlObj.get("format")).toBe("image/png");
-      expect(urlObj.get("request")).toBe("getlegendgraphic");
-      expect(urlObj.get("layer")).toBe(layer_name);
+      for( let obj of expectedParamValue) {
+        expect(urlObj.get(obj.param)).toBe(obj.expectedvalue);
+      }
     }
   });
 });
