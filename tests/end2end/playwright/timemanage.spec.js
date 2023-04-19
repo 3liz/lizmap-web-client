@@ -15,6 +15,7 @@ test.describe('Time Manager', () => {
       { 'start': '2012-01-01', 'end': '2016-12-31' },
       { 'start': '2017-01-01', 'end': '2021-12-31' }
     ];
+    
     const responseMatchGetFilterTokenFunc = function (response) {
       return (response.request().method() == 'POST' &&  response.request().postData().match(/GetFilterToken/i));
     };
@@ -40,19 +41,27 @@ test.describe('Time Manager', () => {
       let getMapRequest = await getMapRequestPromise;
       // check request is build with token
       expect(getMapRequest.url()).toMatch(/FILTERTOKEN/);
-      // re-send the request with additionnal echo param to retreive the WMS Request
+      // re-send the request with additionnal echo param to retrieve the WMS Request
       let echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
       const originalUrl = decodeURIComponent(await echoGetMap.text());
+
+      // expected request params
+      const expectedParamValue = [
+        {'param' : 'version', 'expectedvalue' : '1.3.0'},
+        {'param' : 'service', 'expectedvalue' : 'WMS'},
+        {'param' : 'format', 'expectedvalue' : 'image/png'},
+        {'param' : 'request', 'expectedvalue' : 'getmap'},
+        {'param' : 'filter', 'expectedvalue' : 'time_manager: ( ( "test_date" >= \''+ timeObj.start +'\' ) AND ( "test_date" <= \''+ timeObj.end +'\' ) ) '},
+
+      ];
+      // check if WMS Request params are as expected 
       const urlObj = new URLSearchParams(originalUrl);
-      expect(urlObj.get("version")).toBe("1.3.0");
-      expect(urlObj.get("service")).toBe("WMS");
-      expect(urlObj.get("format")).toBe("image/png");
-      expect(urlObj.get("request")).toBe("getmap");
-      expect(urlObj.get("filter")).toBe('time_manager: ( ( "test_date" >= \''+ timeObj.start +'\' ) AND ( "test_date" <= \''+ timeObj.end +'\' ) ) ');
-       
+      for( let obj of expectedParamValue) {
+        expect(urlObj.get(obj.param)).toBe(obj.expectedvalue);
+      }
     }
 
-    // back to normal behaviour => no token
+    // back to normal behaviour => no token in request
     // closing time manager
     await page.locator('.btn-timemanager-clear').click();
     
