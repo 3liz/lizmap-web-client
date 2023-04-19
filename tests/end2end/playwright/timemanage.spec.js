@@ -22,10 +22,10 @@ test.describe('Time Manager', () => {
 
     let firstRun = true;
     for (let timeObj of timeRequest) {
-      // will catch getFilterToken response
+      // We will catch getFilterToken response
       let getFilterTokenPromise = page.waitForResponse(responseMatchGetFilterTokenFunc);
 
-      // will catch GetMapRequest
+      // We will catch GetMapRequest
       let getMapRequestPromise = page.waitForRequest(/GetMap/);
 
       if (firstRun) {
@@ -34,14 +34,17 @@ test.describe('Time Manager', () => {
         await page.locator('#tmTogglePlay').click();
         firstRun = false;
       }
-      // wait for the getFilterToken response
+      // Wait for the getFilterToken response
       let getFiltertokenResponse = await getFilterTokenPromise;
-      // check the json response contains token prop
+
+      // Check the json response contains token prop
       expect((await getFiltertokenResponse.json())).toHaveProperty('token');
       let getMapRequest = await getMapRequestPromise;
-      // check request is build with token
+
+      // Check request is build with token
       expect(getMapRequest.url()).toMatch(/FILTERTOKEN/);
-      // re-send the request with additionnal echo param to retrieve the WMS Request
+
+      // Re-send the request with additionnal echo param to retrieve the WMS Request
       let echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
       const originalUrl = decodeURIComponent(await echoGetMap.text());
 
@@ -52,9 +55,8 @@ test.describe('Time Manager', () => {
         {'param' : 'format', 'expectedvalue' : 'image/png'},
         {'param' : 'request', 'expectedvalue' : 'getmap'},
         {'param' : 'filter', 'expectedvalue' : 'time_manager: ( ( "test_date" >= \''+ timeObj.start +'\' ) AND ( "test_date" <= \''+ timeObj.end +'\' ) ) '},
-
       ];
-      // check if WMS Request params are as expected 
+      // Check if WMS Request params are as expected
       const urlObj = new URLSearchParams(originalUrl);
       for( let obj of expectedParamValue) {
         expect(urlObj.get(obj.param)).toBe(obj.expectedvalue);
@@ -65,12 +67,14 @@ test.describe('Time Manager', () => {
     // closing time manager
     await page.locator('.btn-timemanager-clear').click();
     
-    // will catch GetMapRequest
+    // We will catch GetMapRequest
     let getMapNoFiltertPromise = page.waitForRequest(/GetMap/);
-    // move to force request
+
+    // We move to force request
     await page.locator('button.zoom-in').click();
     let getMapNoFilter = await getMapNoFiltertPromise;
-    // assert no more filter token
+
+    // We assert no more filter token
     expect(getMapNoFilter.url()).not.toMatch(/FILTERTOKEN/i);
    
   });
