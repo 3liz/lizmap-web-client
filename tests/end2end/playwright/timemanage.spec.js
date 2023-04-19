@@ -6,10 +6,10 @@ test.describe('Time Manager', () => {
     const url = '/index.php/view/map?repository=testsrepository&project=time_manager';
     await page.goto(url, { waitUntil: 'networkidle' });
 
-    // when Time manager is running, 2 requests are send for each time range
+    // When the Time manager is running, 2 requests are sent for each time range
     // - getFilterToken with method POST, returning a json with a token
-    // - getMap that use the token 
-    // there is 3 time range in the test data, we'll check each
+    // - getMap that uses this token 
+    // There are 3 time ranges in the test data: we check each one
     const timeRequest = [
       { 'start': '2007-01-01', 'end': '2011-12-31' },
       { 'start': '2012-01-01', 'end': '2016-12-31' },
