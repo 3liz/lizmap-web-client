@@ -512,7 +512,7 @@ class Proxy
             // did the request has to be echoed ?
             if (self::hasEchoInBody($options['body'])) {
                 $content = self::getEchoFromRequest($url, $options['body']);
-                // we don't perform the request, but return the content previously logged
+                // We do not perform the request, but return the content previously logged
                 return array(
                     $content,
                     'text/json',
@@ -551,7 +551,7 @@ class Proxy
             // did the request has to be echoed ?
             if (self::hasEchoInBody($options['body'])) {
                 $content = self::getEchoFromRequest($url, $options['body']);
-                // we don't perform the request, but return the content previously logged
+                // We do not perform the request, but return the content previously logged
                 $stream = \GuzzleHttp\Psr7\Utils::streamFor($content);
 
                 return new ProxyResponse(
@@ -989,12 +989,11 @@ class Proxy
     }
 
     /**
-     * log the URL and body in the 'echoproxy' log file
-     * add a md5 hash of the string to help retrieving it
-     * NOTE : currently we log only the url & body, thus it don't really need to be logged
-     * because the same url & body are need to retreive the content
-     * but the function will be usefull when it'll log additionnal content
-     * (HTTP-Header, content-type, ...).
+     * Log the URL and its body in the 'echoproxy' log file
+     * We add a md5 hash of the string to help retrieving it later
+     * NOTE : currently we log only the url & body, thus it doesn't really need to be logged
+     * because the same url & body are needed to retreive the content
+     * but the function will be useful when it will log additionnal content.
      */
     public static function logRequestToEcho(string $url, string $body)
     {
