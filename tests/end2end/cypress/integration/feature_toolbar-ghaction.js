@@ -55,6 +55,17 @@ describe('Feature Toolbar in popup', function () {
 
     })
 
+    it('should display zoom and center buttons if "Add geometry to feature response" is checked', function () {
+        cy.get('#layer-parent_layer button').click()
+        cy.get('#layer-parent_layer_without_attribute_table button').click()
+
+        cy.mapClick(655, 437)
+        cy.wait('@getFeatureInfo')
+
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e.1"] .feature-zoom').should('be.visible')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e.1"] .feature-center').should('be.visible')
+    })
+
     it('should zoom', function () {
         // Check the started map
         cy.get('@getMap').then((interception) => {
@@ -122,7 +133,6 @@ describe('Feature Toolbar in popup', function () {
             expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
             expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
         })
-
     })
 
     it('should center', function () {
