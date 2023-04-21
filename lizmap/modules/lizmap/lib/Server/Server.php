@@ -259,10 +259,6 @@ class Server
                 $data['hosting'] = \jApp::config()->lizmap['hosting'];
             }
 
-            if (\jApp::isModuleEnabled('webdav') && class_exists('\\LizmapDAV\\Server')) {
-                $data['webdav'] = \jServer::getServerURI().\LizmapDAV\Server::serverBaseUri();
-            }
-
             // Add the list of repositories
             $data['repositories'] = $this->getLizmapRepositories();
 
@@ -270,6 +266,12 @@ class Server
             $data['acl'] = array(
                 'groups' => $this->getAclGroups(),
             );
+        }
+
+        if (\jApp::isModuleEnabled('webdav') && class_exists('\\LizmapDAV\\Server')) {
+            if (\jAcl2::check('lizmap.webdav.access')) {
+                $data['webdav'] = \jServer::getServerURI().\LizmapDAV\Server::serverBaseUri();
+            }
         }
 
         return $data;
