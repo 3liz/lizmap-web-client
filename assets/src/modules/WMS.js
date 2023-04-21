@@ -10,6 +10,15 @@ export default class WMS {
             SRS: 'EPSG:4326',
             INFO_FORMAT: 'text/html'
         };
+
+        this._defaultGetLegendGraphicsParameters = {
+            repository: lizUrls.params.repository,
+            project: lizUrls.params.project,
+            SERVICE: 'WMS',
+            REQUEST: 'GetLegendGraphics',
+            VERSION: '1.3.0',
+            FORMAT: 'application/json',
+        };
     }
 
     /**
@@ -26,5 +35,21 @@ export default class WMS {
             })
         });
         return await response.text();
+    }
+
+    /**
+     * @param {Object} options - optional parameters which can override this._defaultGetLegendGraphicsParameters
+     * @return {Promise} Promise object represents data
+     * @memberof WMS
+     */
+    async getLegendGraphics(options) {
+        const response = await fetch(lizUrls.wms, {
+            method: "POST",
+            body: new URLSearchParams({
+                ...this._defaultGetLegendGraphicsParameters,
+                ...options
+            })
+        });
+        return await response.json();
     }
 }

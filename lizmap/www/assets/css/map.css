@@ -1663,6 +1663,9 @@ lizmap-print .flex {
   position: relative;
   max-width: none;
 }
+#switcher img.legend {
+  margin-left: 5px;
+}
 #switcher .treeTable td a.expander {
   font-size : 1em;
 }

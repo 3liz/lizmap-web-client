@@ -5464,6 +5464,23 @@ window.lizMap = function() {
         self.events.triggerEvent("layersadded", self);
 
 
+        // Add legends
+        const wms = new WMS();
+        const layersName = layers.map(layer => layer.params.LAYERS).join();
+        const wmsParams = {
+          LAYERS: layersName,
+        };
+
+        wms.getLegendGraphics(wmsParams).then(response => {
+          const treeviewLayers = document.querySelectorAll('.liz-layer');
+          treeviewLayers.forEach((treeviewLayer, index) => {
+            const icon = response.nodes[index].icon;
+            if(icon){
+              treeviewLayer.querySelector('button').insertAdjacentHTML('afterend',`<img class="legend" src="data:image/png;base64, ${icon}">`);
+            }
+          });
+        });
+
         // Verifying z-index
         var lastLayerZIndex = map.layers[map.layers.length - 1].getZIndex();
         if (lastLayerZIndex > map.Z_INDEX_BASE['Feature'] - 100) {
