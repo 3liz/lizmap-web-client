@@ -1,5 +1,6 @@
 {jmessage_bootstrap}
 <h1>{@admin.form.admin_theme.h1@}</h1>
+<p class="lead">{@admin.form.admin_theme.helpcolor@}</p>
 {formfull $form, 'theme:save', array(), 'htmlbootstrap'}
 
 <div>
