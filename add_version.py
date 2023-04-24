@@ -39,5 +39,6 @@ else:
 
 with open('versions.json', 'w') as f:
     json.dump(versions, f, sort_keys=True, indent=4)
+    f.write("\n")
 
 print(f"Version {sys.argv[1]} added into versions.json")
