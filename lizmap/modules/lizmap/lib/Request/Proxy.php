@@ -507,6 +507,22 @@ class Proxy
         $options = self::buildOptions($options, $method, $debug);
         list($url, $options) = self::buildHeaders($url, $options);
 
+        // check is the env variable is set
+        if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
+            // did the request has to be echoed ?
+            if (self::hasEchoInBody($options['body'])) {
+                $content = self::getEchoFromRequest($url, $options['body']);
+                // We do not perform the request, but return the content previously logged
+                return array(
+                    $content,
+                    'text/json',
+                    200,
+                );
+            }
+            // All requests are logged
+            self::logRequestToEcho($url, $options['body']);
+        }
+
         // Proxy http backend : use curl or file_get_contents
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
@@ -530,6 +546,23 @@ class Proxy
     {
         $options = self::buildOptions($options, 'get', null);
         list($url, $options) = self::buildHeaders($url, $options);
+        // check is the env variable is set
+        if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
+            // did the request has to be echoed ?
+            if (self::hasEchoInBody($options['body'])) {
+                $content = self::getEchoFromRequest($url, $options['body']);
+                // We do not perform the request, but return the content previously logged
+                $stream = \GuzzleHttp\Psr7\Utils::streamFor($content);
+
+                return new ProxyResponse(
+                    200,
+                    'text/json',
+                    $stream
+                );
+            }
+            // All requests are logged
+            self::logRequestToEcho($url, $options['body']);
+        }
 
         if ($options['referer']) {
             $options['headers']['Referer'] = $options['referer'];
@@ -941,6 +974,64 @@ class Proxy
         $appContext->eventNotify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
 
         return true;
+    }
+
+    /**
+     * check if $body contains a '__echo__=&' param.
+     *
+     * @return bool
+     */
+    public static function hasEchoInBody(string $body)
+    {
+        $encodedEchoParam = '%5F%5Fecho%5F%5F=&';
+
+        return strstr($body, $encodedEchoParam);
+    }
+
+    /**
+     * Log the URL and its body in the 'echoproxy' log file
+     * We add a md5 hash of the string to help retrieving it later
+     * NOTE : currently we log only the url & body, thus it doesn't really need to be logged
+     * because the same url & body are needed to retreive the content
+     * but the function will be useful when it will log additionnal content.
+     */
+    public static function logRequestToEcho(string $url, string $body)
+    {
+        $md5 = md5($url.'|'.$body);
+        \jLog::log($md5."\t".$url.'?'.$body, 'echoproxy');
+    }
+
+    /**
+     * return the content that was logged for the (url, body) params
+     * using a md5 hash to search it in the log file.
+     *
+     * @see logRequestToEcho()
+     */
+    public static function getEchoFromRequest(string $url, string $body): string
+    {
+        $encodedEchoParam = '%5F%5Fecho%5F%5F=&';
+        // md5 hash to search in the file
+        $md5ToSearch = md5($url.'|'.str_replace($encodedEchoParam, '', $body));
+
+        $logPath = \jApp::varPath('log/echoproxy.log');
+        if (is_file($logPath)) {
+            // Only display content if the file is small to avoid memory issues
+            if (filesize($logPath) > 512000) {
+                return 'toobig';
+            }
+            // retrieve the 50 last lines
+            // key : md5 , value : usefull content
+            $nLastLines = array_slice(file($logPath), -50);
+            $md5Assoc = array();
+            foreach ($nLastLines as $line) {
+                $words = explode("\t", $line);
+                $md5Assoc[$words[3]] = $words[4];
+            }
+
+            return $md5Assoc[$md5ToSearch];
+        }
+
+        return 'unfound';
     }
 }
 

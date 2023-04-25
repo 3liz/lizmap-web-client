@@ -36,6 +36,10 @@ warning = file
 notice = file
 deprecated = file
 auth = file
+echoproxy = file
+
+[fileLogger]
+echoproxy = echoproxy.log
 
 [jcommunity]
 registrationEnabled=off
