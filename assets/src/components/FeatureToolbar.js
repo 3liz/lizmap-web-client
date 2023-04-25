@@ -14,9 +14,9 @@ export default class FeatureToolbar extends HTMLElement {
     constructor() {
         super();
 
-        this._fid = this.getAttribute('value').split('.').pop();
-        this._layerId = this.getAttribute('value').replace('.' + this.fid, '');
-        this._featureType = lizMap.getLayerConfigById(this.layerId)[0];
+        [this._layerId, this._fid] = this.getAttribute('value').split('.');
+        [this._featureType, this._layerConfig] = lizMap.getLayerConfigById(this.layerId);
+        this._typeName = this._layerConfig?.shortname || this._layerConfig?.typename || this._layerConfig?.name;
         this._parentLayerId = this.getAttribute('parent-layer-id');
 
         this._isFeatureEditable = true;
@@ -142,12 +142,12 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     get isSelected() {
-        const selectedFeatures = lizMap.config.layers[this.featureType]['selectedFeatures'];
+        const selectedFeatures = this._layerConfig?.['selectedFeatures'];
         return selectedFeatures && selectedFeatures.includes(this.fid);
     }
 
     get isFiltered() {
-        const filteredFeatures = lizMap.config.layers[this.featureType]['filteredFeatures'];
+        const filteredFeatures = this._layerConfig?.['filteredFeatures'];
         return filteredFeatures && filteredFeatures.includes(this.fid);
     }
 
@@ -216,9 +216,7 @@ export default class FeatureToolbar extends HTMLElement {
     get isFeatureExportable(){
         return this.attributeTableConfig &&
                 this.hasGeometry &&
-                Object.entries(lizMap.config.layers).some(
-                    ([ ,value]) => value?.typename == this._featureType && value?.popup_allow_download
-                );
+                this._layerConfig?.popup_allow_download
     }
 
     get hasDefaultPopupPrint(){
@@ -415,20 +413,20 @@ export default class FeatureToolbar extends HTMLElement {
 
     export(format){
         lizMap.mainLizmap.wfs.getFeature({
-            TYPENAME: this._featureType,
-            FEATUREID: this._featureType + '.' + this._fid
+            TYPENAME: this._typeName,
+            FEATUREID: this._typeName + '.' + this._fid
         }).then(response => {
             if(format == 'GeoJSON'){
-                Utils.downloadFileFromString(JSON.stringify(response), 'application/geo+json', this._featureType + '.json');
+                Utils.downloadFileFromString(JSON.stringify(response), 'application/geo+json', this.featureType + '.json');
             }else{
                 // Convert GeoJSON to GPX or KML
                 const features = (new GeoJSON()).readFeatures(response);
                 if(format == 'GPX'){
                     const gpx = (new GPX()).writeFeatures(features);
-                    Utils.downloadFileFromString(gpx, 'application/gpx+xml', this._featureType + '.gpx');
+                    Utils.downloadFileFromString(gpx, 'application/gpx+xml', this.featureType + '.gpx');
                 }else{
                     const kml = (new KML()).writeFeatures(features);
-                    Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', this._featureType + '.kml');
+                    Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', this.featureType + '.kml');
                 }
             }
         });
@@ -480,8 +478,8 @@ export default class FeatureToolbar extends HTMLElement {
         const activeBaseLayerName = mainLizmap._lizmap3.map.baseLayer.name;
         const externalBaselayersReplacement = mainLizmap._lizmap3.getExternalBaselayersReplacement();
         const exbl = externalBaselayersReplacement?.[activeBaseLayerName];
-        if (mainLizmap.config.layers?.[exbl]) {
-            const activeBaseLayerConfig = mainLizmap.config.layers[exbl];
+        if (this._layerConfig?.[exbl]) {
+            const activeBaseLayerConfig = this._layerConfig[exbl];
             if (activeBaseLayerConfig?.id && mainLizmap.config.options?.useLayerIDs == 'True') {
                 layers.push(activeBaseLayerConfig.id);
             } else {
@@ -489,7 +487,7 @@ export default class FeatureToolbar extends HTMLElement {
             }
         }
 
-        layers.push(this._featureType);
+        layers.push(this._typeName);
 
         wmsParams['LAYERS'] = layers.join(',');
 
