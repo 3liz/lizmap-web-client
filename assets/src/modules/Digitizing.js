@@ -415,7 +415,7 @@ export default class Digitizing {
         }
         this._drawLayer.destroyFeatures();
 
-        localStorage.removeItem(this._repoAndProjectString + '_drawLayer');
+        localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
 
         this.isEdited = false;
 
