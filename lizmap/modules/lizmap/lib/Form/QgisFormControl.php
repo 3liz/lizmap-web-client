@@ -173,7 +173,7 @@ class QgisFormControl
         'timestamp' => 'datetime',
         'timestamptz' => 'datetime',
         'time' => 'time',
-        'uuid' => 'uuid',
+        'uuid' => 'text',
     );
 
     /** @var App\AppContextInterface */
