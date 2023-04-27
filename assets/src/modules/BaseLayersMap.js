@@ -112,6 +112,7 @@ export default class BaseLayersMap extends olMap {
                             source: new BingMaps({
                                 key: mainLizmap.config.options.bingKey,
                                 imagerySet: bingConfig.imagerySet,
+                                culture: navigator.language
                             }),
                         })
                     );
