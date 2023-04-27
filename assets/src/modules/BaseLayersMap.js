@@ -6,6 +6,7 @@ import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
+import BingMaps from 'ol/source/BingMaps';
 
 import DragPan from "ol/interaction/DragPan";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
@@ -70,7 +71,7 @@ export default class BaseLayersMap extends olMap {
         }
 
         if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
-            this._baseLayers.push(
+            this.addLayer(
                 new TileLayer({
                     name: 'osm-cycle',
                     title: 'OSM CycleMap',
@@ -79,6 +80,43 @@ export default class BaseLayersMap extends olMap {
                     })
                 })
             );
+        }
+
+
+        // Bing
+        if(Object.keys(mainLizmap.config.options).some( option => option.startsWith('bing'))){
+            const bingConfigs = {
+                bingStreets : {
+                    title: 'Bing Road',
+                    imagerySet: 'RoadOnDemand'
+                },
+                bingSatellite : {
+                    title: 'Bing Aerial',
+                    imagerySet: 'Aerial'
+                },
+                bingHybrid : {
+                    title: 'Bing Hybrid',
+                    imagerySet: 'AerialWithLabelsOnDemand'
+                }
+            };
+
+            for (const key in bingConfigs) {
+                if(mainLizmap.config.options?.[key]){
+
+                    const bingConfig = bingConfigs[key];
+
+                    this.addLayer(
+                        new TileLayer({
+                            title: bingConfig.title,
+                            preload: Infinity,
+                            source: new BingMaps({
+                                key: mainLizmap.config.options.bingKey,
+                                imagerySet: bingConfig.imagerySet,
+                            }),
+                        })
+                    );
+                }
+            }
         }
 
         // Sync new OL view with OL2 view
