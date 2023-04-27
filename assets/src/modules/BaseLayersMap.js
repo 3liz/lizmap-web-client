@@ -4,6 +4,8 @@ import View from 'ol/View';
 
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
+import Stamen from 'ol/source/Stamen';
+import XYZ from 'ol/source/XYZ';
 
 import DragPan from "ol/interaction/DragPan";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
@@ -33,8 +35,39 @@ export default class BaseLayersMap extends olMap {
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
-            target: 'baseLayersOlMap',
+            target: 'baseLayersOlMap'
         });
+
+        if (mainLizmap.config.options?.['osmMapnik']) {
+            this.addLayer(
+                new TileLayer({
+                    title: 'OpenStreetMap',
+                    source: new OSM()
+                })
+            );
+        }
+
+        if (mainLizmap.config.options?.['osmStamenToner']) {
+            this.addLayer(
+                new TileLayer({
+                    source: new Stamen({
+                        title: 'OSM Stamen Toner',
+                        layer: 'toner-lite',
+                    }),
+                }),
+            );
+        }
+
+        if (mainLizmap.config.options?.['openTopoMap']) {
+            this.addLayer(
+                new TileLayer({
+                    title: 'OpenTopoMap',
+                    source: new XYZ({
+                        url: 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
+                    })
+                })
+            );
+        }
 
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
