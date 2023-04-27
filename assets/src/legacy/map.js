@@ -6347,68 +6347,6 @@ lizMap.events.on({
       } catch(e) {
        }
      }
-
-      if('lizmapExternalBaselayers' in evt.config){
-
-        var externalService = lizUrls.service;
-        if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
-            externalService = [];
-            for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
-              externalService.push(
-                OpenLayers.Util.urlAppend(
-                  lizUrls.publicUrlList[j],
-                  new URLSearchParams(lizUrls.params)
-                )
-              );
-            }
-        }
-
-        // Add lizmap external baselayers
-        for (var id in evt.config['lizmapExternalBaselayers']) {
-
-          var layerConfig = evt.config['lizmapExternalBaselayers'][id];
-
-          if (!('repository' in layerConfig) || !('project' in layerConfig))
-            continue;
-
-          var layerName = evt.cleanName(layerConfig.layerName);
-
-          var layerWmsParams = {
-            layers:layerConfig.layerName
-            ,version:'1.3.0'
-            ,exceptions:'application/vnd.ogc.se_inimage'
-            ,format:(layerConfig.layerImageFormat) ? 'image/'+layerConfig.layerImageFormat : 'image/png'
-            ,dpi:96
-          };
-          if (layerWmsParams.format != 'image/jpeg')
-            layerWmsParams['transparent'] = true;
-
-          // Change repository and project in service URL
-          var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
-          if (! (externalService instanceof Array) )
-            var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
-          else
-            var url = jQuery.map(externalService, function(element) { return element.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project) });
-
-          // creating the base layer
-          layerConfig.title = layerConfig.layerTitle
-          layerConfig.name = layerConfig.layerName
-          layerConfig.baselayer = true;
-          layerConfig.singleTile = "False";
-          evt.config.layers[layerName] = layerConfig;
-          evt.baselayers.push(new OpenLayers.Layer.WMS(layerName,url
-            ,layerWmsParams
-            ,{isBaseLayer:true
-            ,gutter:(layerConfig.cached == 'True') ? 0 : 5
-            ,buffer:0
-            ,singleTile:(layerConfig.singleTile == 'True')
-            ,ratio:1
-          }));
-          evt.map.allOverlays = false;
-
-        }
-      }
-
     }
    ,
    'uicreated': function(evt){
