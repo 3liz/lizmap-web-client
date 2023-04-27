@@ -1,5 +1,11 @@
 # Changelog Lizmap 3.7
 
+<!--
+Format from https://keepachangelog.com/en/1.0.0/
+added, fixed, changed, removed, deprecated, security
+with some extra keywords : backend, tests, test, translation, funders, important
+-->
+
 ## Unreleased
 
 ### Added
@@ -66,9 +72,7 @@
 * Remove some old code about QGIS Server 2
 * Update the OpenLayers library to version 7.3.0
 * Fix some issues when deployed with Docker
-* Bump minimum version Lizmap QGIS server plugin to 1.3.1
 * Switch to PHP 8.1 in the docker image
-* Upgrade QGIS server minimum version to 3.16
 * Upgrade Lizmap Web Client target minimum version to 3.4
 
 ### Funders
