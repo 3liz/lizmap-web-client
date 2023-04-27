@@ -69,6 +69,18 @@ export default class BaseLayersMap extends olMap {
             );
         }
 
+        if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
+            this._baseLayers.push(
+                new TileLayer({
+                    name: 'osm-cycle',
+                    title: 'OSM CycleMap',
+                    source: new XYZ({
+                        url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
+                    })
+                })
+            );
+        }
+
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
             move: () => {
