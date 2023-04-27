@@ -1,6 +1,26 @@
 # Changelog Lizmap 3.6
 
+<!--
+Format from https://keepachangelog.com/en/1.0.0/
+added, fixed, changed, removed, deprecated, security
+with some extra keywords : backend, tests, test, translation, funders, important
+-->
+
 ## Unreleased
+
+### Added
+
+* Quick help to open an online color picker
+* Add reminder to check the QGIS server URL
+
+### Fixed
+
+* Display zoom and center buttons if "Add geometry to feature response" is checked
+* Fix the export from the popup feature toolbar
+
+### Tests
+
+* Better test environment for automatic testing with QGIS server
 
 ## 3.6.3 - 2022-04-17
 
