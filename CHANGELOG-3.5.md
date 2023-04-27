@@ -1,6 +1,31 @@
 # Changelog Lizmap 3.5
 
+<!--
+Format from https://keepachangelog.com/en/1.0.0/
+added, fixed, changed, removed, deprecated, security
+with some extra keywords : backend, tests, test, translation, funders, important
+-->
+
 ## Unreleased
+
+### Important
+
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.1
+* Minimum QGIS server needed 3.10
+
+### Added
+
+* Quick help to open an online color picker
+* Add reminder to check the QGIS server URL
+
+### Fixed
+
+* When the layer has a shortname :
+  * fix the PDF print request
+  * the user do a selection
+* The `EXP_FILTER` URL parameter was not build for cascade and pivot layers
+
+### 
 
 ## 3.5.12 - 2023-04-12
 
