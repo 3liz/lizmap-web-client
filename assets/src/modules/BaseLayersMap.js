@@ -1,6 +1,7 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olMap from 'ol/Map';
 import View from 'ol/View';
+import Projection from 'ol/proj/Projection.js';
 
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
@@ -32,7 +33,10 @@ export default class BaseLayersMap extends olMap {
                 resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
                 center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
-                projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection,
+                projection: new Projection({
+                    code: mainLizmap.projection,
+                    extent: mainLizmap.lizmap3.map.restrictedExtent.toArray()
+                }),
                 enableRotation: false,
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
