@@ -130,7 +130,9 @@ export default class BaseLayersMap extends olMap {
                         title: title,
                         visible: firstBaseLayer,
                         source: new XYZ({
-                            url: params.url
+                            url: params.url,
+                            minZoom: params?.zmin,
+                            maxZoom: params?.zmax,
                         })
                     })
                 );
