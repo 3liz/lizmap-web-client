@@ -1,4 +1,4 @@
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olMap from 'ol/Map';
 import View from 'ol/View';
 
@@ -7,6 +7,7 @@ import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
 import BingMaps from 'ol/source/BingMaps';
+import LayerGroup from 'ol/layer/Group';
 
 import DragPan from "ol/interaction/DragPan";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
@@ -120,6 +121,34 @@ export default class BaseLayersMap extends olMap {
             }
         }
 
+        this._baseLayers = [];
+        let firstBaseLayer = true;
+        for (const [title, params] of Object.entries(mainLizmap.config?.baseLayers)) {
+            if(params.type = 'xyz'){
+                this._baseLayers.push(
+                    new TileLayer({
+                        title: title,
+                        visible: firstBaseLayer,
+                        source: new XYZ({
+                            url: params.url
+                        })
+                    })
+                );
+            }
+
+            firstBaseLayer = false;
+        }
+
+        const layerGroup = new LayerGroup({
+            layers: this._baseLayers
+        });
+
+        layerGroup.on('change', () => {
+            mainEventDispatcher.dispatch('baseLayers.changed');
+        });
+
+        this.setLayerGroup(layerGroup);
+
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
             move: () => {
@@ -141,5 +170,9 @@ export default class BaseLayersMap extends olMap {
             zoom: mainLizmap.lizmap3.map.getZoom(),
             duration: 0
         });
+    }
+
+    setLayerVisibilityByTitle(title){
+        this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') == title));
     }
 }
