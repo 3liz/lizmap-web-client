@@ -5814,7 +5814,7 @@ lizMap.events.on({
       if ( ('emptyBaselayer' in evt.config.options)
          && evt.config.options.emptyBaselayer == 'True') {
         // creating the empty base layer
-        layerConfig = {};
+        const layerConfig = {};
         layerConfig.title = lizDict['baselayer.empty.title'];
         layerConfig.name = 'emptyBaselayer';
         evt.config.layers['emptyBaselayer'] = layerConfig;
