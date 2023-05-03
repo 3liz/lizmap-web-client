@@ -101,15 +101,20 @@ class project_listZone extends jZone
         }
         $this->_tpl->assign('serverVersions', $serverVersions);
 
-        // Check QGIS server status
+        // Is QGIS server OK ?
+        // We don't care about the reason of the error
         $statusQgisServer = true;
+
+        // Check QGIS server status
         $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
         if ($server->versionCompare($server->getQgisServerVersion(), $requiredQgisVersion)) {
             $statusQgisServer = false;
         }
+
         // Check Lizmap server status
         $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
         $currentLizmapVersion = $server->getLizmapPluginServerVersion();
+
         if ($server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
             $statusQgisServer = false;
         }
