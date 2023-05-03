@@ -66,12 +66,17 @@
             <ul>
                 <li>{jlocale "admin.server.information.qgis.error.fetching.information.qgis.version.html", array($minimumQgisVersion)}</li>
                 <li>{jlocale "admin.server.information.qgis.error.fetching.information.plugin.version.html", array($minimumLizmapServer)}</li>
-                <li>{@admin.server.information.qgis.error.fetching.information.qgis.url@}</li>
+                <li>{@admin.server.information.qgis.error.fetching.information.qgis.url.html@}</li>
+                <li>{@admin.server.information.qgis.error.fetching.information.lizmap.logs.html@}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.environment.variable@}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.help@}</li>
             </ul>
             <br>
-            <a href="{$linkDocumentation}" target="_blank">{$linkDocumentation}</a>
+            {assign $lizmapDoc='https://docs.lizmap.com/current/en/install/pre_requirements.html#lizmap-server-plugin'}
+            {assign $qgisDoc='https://docs.qgis.org/latest/en/docs/server_manual/config.html#environment-variables'}
+            <a href="{$lizmapDoc}" target="_blank">{$lizmapDoc}</a>
+            <br>
+            <a href="{$qgisDoc}" target="_blank">{$qgisDoc}</a>
             <br>
             {if $data['qgis_server_info']['error_http_code'] == '200'}
                 {* QGIS Server might return a 200, it's confusing for users. Ticket #2755 *}
