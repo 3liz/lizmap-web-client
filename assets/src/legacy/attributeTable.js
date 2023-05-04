@@ -2634,76 +2634,67 @@ var lizAttributeTable = function() {
 
             }
 
-            function updateMapLayerSelection( featureType ) {
+            function updateMapLayerSelection(featureType) {
                 // Get layer config
                 var lConfig = config.layers[featureType];
-                if( !lConfig )
+                if (!lConfig){
                     return;
+                }
 
                 // Get OL layer to be redrawn
                 var cleanName = lizMap.cleanName(featureType);
-                var layer = lizMap.map.getLayersByName( cleanName )[0];
-                if( !layer )
+                let layer;
+                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
+                    if (lyr.getSource().getParams().LAYERS === cleanName) {
+                        layer = lyr;
+                        break;
+                    }
+                }
+                if (!layer) {
                     return;
+                }
 
-                var wmsName = featureType;
-                if ( lConfig['shortname'] )
-                    wmsName = lConfig['shortname'];
+                const WMSparams = layer.getSource().getParams();
+                const wmsName = lConfig?.['shortname'] || featureType;
 
                 // Build selection parameter from selectedFeatures
-                if( lConfig.selectedFeatures
-                    && lConfig.selectedFeatures.length
-                ) {
-                    if ( !( 'request_params' in lConfig ) )
+                if (lConfig?.selectedFeatures?.length) {
+                    if (!('request_params' in lConfig)) {
                         lConfig['request_params'] = {};
+                    }
                     lConfig.request_params['selection'] = wmsName + ':' + lConfig.selectedFeatures.join();
 
                     // Get selection token
-                    var sdata = {
-                        service: 'WMS',
-                        request: 'GETSELECTIONTOKEN',
-                        typename: wmsName,
-                        ids: lConfig.selectedFeatures.join()
-                    };
-                    $.post(lizUrls.service, sdata, function(result){
+                    fetch(lizUrls.service, {
+                        method: "POST",
+                        body: new URLSearchParams({
+                            service: 'WMS',
+                            request: 'GETSELECTIONTOKEN',
+                            typename: wmsName,
+                            ids: lConfig.selectedFeatures.join()
+                        })
+                    }).then(response => {
+                        return response.json();
+                    }).then(result => {
                         lConfig.request_params['selectiontoken'] = result.token;
-                        if ( layer )
-                            layer.params['SELECTIONTOKEN'] = result.token;
-
                         // Update layer state
                         lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectionToken = {
                             selectedFeatures: lConfig.selectedFeatures,
                             token: result.token
                         };
-
-                        // Redraw openlayers layer
-                        if( lConfig['geometryType']
-                            && lConfig.geometryType != 'none'
-                            && lConfig.geometryType != 'unknown'
-                        ){
-                            layer.redraw(true);
-                        }
                     });
                 }
                 else {
-                    //delete layer.params['SELECTION'];
-                    if ( layer )
-                        delete layer.params['SELECTIONTOKEN'];
-                    if ( !( 'request_params' in lConfig ) )
+                    delete WMSparams['SELECTIONTOKEN'];
+                    layer.getSource().updateParams(WMSparams);
+                    if (!('request_params' in lConfig)) {
                         lConfig['request_params'] = {};
+                    }
                     lConfig.request_params['selection'] = null;
                     lConfig.request_params['selectiontoken'] = null;
 
                     // Update layer state
                     lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectedFeatures = null;
-
-                    // Redraw openlayers layer
-                    if( lConfig['geometryType']
-                        && lConfig.geometryType != 'none'
-                        && lConfig.geometryType != 'unknown'
-                    ){
-                        layer.redraw(true);
-                    }
                 }
             }
 
