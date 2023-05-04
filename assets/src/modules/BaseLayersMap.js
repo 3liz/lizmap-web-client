@@ -172,6 +172,7 @@ export default class BaseLayersMap extends olMap {
                 extent: extent,
                 minResolution: minResolution,
                 maxResolution: maxResolution,
+                visible: params.toggled === "True",
                 source: new ImageWMS({
                     url: mainLizmap.serviceURL,
                     serverType: 'qgis',
