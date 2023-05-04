@@ -5429,6 +5429,7 @@ window.lizMap = function() {
           }
           wmtsCapabilities = null;
         }
+        self.wmtsCapabilities = wmtsCapaData;
 
         // Parse WFS capabilities
         wfsCapabilities = domparser.parseFromString(wfsCapaData, "application/xml");
