@@ -4,6 +4,8 @@ import olMap from 'ol/Map';
 import View from 'ol/View';
 import { transformExtent, Projection } from 'ol/proj';
 import ImageWMS from 'ol/source/ImageWMS.js';
+import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
+import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
 import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
@@ -168,21 +170,37 @@ export default class BaseLayersMap extends olMap {
             }
             const minResolution = Utils.getResolutionFromScale(params.minScale);
             const maxResolution = Utils.getResolutionFromScale(params.maxScale);
-            this.addLayer(new ImageLayer({
-                extent: extent,
-                minResolution: minResolution,
-                maxResolution: maxResolution,
-                visible: params.toggled === "True",
-                source: new ImageWMS({
-                    url: mainLizmap.serviceURL,
-                    serverType: 'qgis',
-                    params: {
-                        LAYERS: params?.shortname || params.name,
-                        FORMAT: params.imageFormat,
-                        DPI: 96
-                    },
-                }),
-            }));
+
+            if (params.cached === "False") {
+                this.addLayer(new ImageLayer({
+                    extent: extent,
+                    minResolution: minResolution,
+                    maxResolution: maxResolution,
+                    visible: params.toggled === "True",
+                    source: new ImageWMS({
+                        url: mainLizmap.serviceURL,
+                        serverType: 'qgis',
+                        params: {
+                            LAYERS: params?.shortname || params.name,
+                            FORMAT: params.imageFormat,
+                            DPI: 96
+                        },
+                    }),
+                }));
+            } else {
+                const parser = new WMTSCapabilities();
+                const result = parser.read(lizMap.wmtsCapabilities);
+                const options = optionsFromCapabilities(result, {
+                    layer: params?.shortname || params.name,
+                    matrixSet: params.crs,
+                });
+
+                this.addLayer(new TileLayer({
+                    minResolution: minResolution,
+                    maxResolution: maxResolution,
+                    source: new WMTS(options),
+                }));
+            }
         }
 
         // Sync new OL view with OL2 view
