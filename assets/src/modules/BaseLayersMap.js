@@ -1,4 +1,5 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import Utils from '../modules/Utils.js';
 import olMap from 'ol/Map';
 import View from 'ol/View';
 import { transformExtent, Projection } from 'ol/proj';
@@ -165,15 +166,20 @@ export default class BaseLayersMap extends olMap {
             if(params.crs !== mainLizmap.projection){
                 extent = transformExtent(extent, params.crs, mainLizmap.projection);
             }
+            const minResolution = Utils.getResolutionFromScale(params.minScale);
+            const maxResolution = Utils.getResolutionFromScale(params.maxScale);
             this.addLayer(new ImageLayer({
                 extent: extent,
+                minResolution: minResolution,
+                maxResolution: maxResolution,
                 source: new ImageWMS({
                     url: mainLizmap.serviceURL,
+                    serverType: 'qgis',
                     params: {
                         LAYERS: params?.shortname || params.name,
-                        FORMAT: params.imageFormat
+                        FORMAT: params.imageFormat,
+                        DPI: 96
                     },
-                    serverType: 'qgis',
                 }),
             }));
         }
