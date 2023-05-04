@@ -106,21 +106,22 @@ class defaultCtrl extends jController
             $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
         }
 
-        // Information taken from QGIS Server with the help of Lizmap plugin
+        // Is QGIS server OK ?
+        // We don't care about the reason of the error
         $checkServerInformation = false;
         if (jAcl2::check('lizmap.admin.server.information.view')) {
             // Check server status
             $server = new \Lizmap\Server\Server();
 
-            // Minimum QGIS server version
+            // Check QGIS server status
             $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
             $currentQgisVersion = $server->getQgisServerVersion();
 
-            // lizmap_server plugin version
+            // Check Lizmap server status
             $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
             $currentLizmapVersion = $server->getLizmapPluginServerVersion();
 
-            // Check versions
+            // Check if they are found and also their versions
             if ($server->versionCompare($currentQgisVersion, $requiredQgisVersion)
                 || $server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
                 $checkServerInformation = true;

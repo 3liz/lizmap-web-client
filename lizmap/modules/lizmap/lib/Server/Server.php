@@ -47,12 +47,12 @@ class Server
 
     /** Get the current Lizmap server version.
      *
-     * @return string String containing the current Lizmap QGIS server version
+     * @return null|string String containing the current Lizmap QGIS server version or null
      */
     public function getLizmapPluginServerVersion()
     {
         if (array_key_exists('error', $this->metadata['qgis_server_info'])) {
-            return '0.0.0';
+            return null;
         }
 
         return $this->metadata['qgis_server_info']['plugins']['lizmap_server']['version'];
@@ -60,12 +60,12 @@ class Server
 
     /** Get the current QGIS server version.
      *
-     * @return string String containing the current QGIS server version
+     * @return null|string String containing the current QGIS server version or null
      */
     public function getQgisServerVersion()
     {
         if (array_key_exists('error', $this->metadata['qgis_server_info'])) {
-            return '0.0.0';
+            return null;
         }
 
         return $this->metadata['qgis_server_info']['metadata']['version'];
@@ -89,13 +89,17 @@ class Server
 
     /** Compare two versions and return true if the second parameter is greater or equal to the first parameter.
      *
-     * @param string $currentVersion  The current version to check
-     * @param string $requiredVersion The minimum required version
+     * @param null|string $currentVersion  The current version to check
+     * @param string      $requiredVersion The minimum required version
      *
-     * @return bool boolean If the software needs to be updated
+     * @return bool boolean If the software needs to be updated or True if the current version is null
      */
     public function versionCompare($currentVersion, $requiredVersion)
     {
+        if (is_null($currentVersion)) {
+            return true;
+        }
+
         return version_compare($currentVersion, $requiredVersion) < 0;
     }
 
