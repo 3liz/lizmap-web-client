@@ -169,7 +169,10 @@ export default class BaseLayersMap extends olMap {
                 extent: extent,
                 source: new ImageWMS({
                     url: mainLizmap.serviceURL,
-                    params: { 'LAYERS': params?.shortname || params.name },
+                    params: {
+                        LAYERS: params?.shortname || params.name,
+                        FORMAT: params.imageFormat
+                    },
                     serverType: 'qgis',
                 }),
             }));
