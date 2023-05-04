@@ -1,9 +1,9 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olMap from 'ol/Map';
 import View from 'ol/View';
-import Projection from 'ol/proj/Projection.js';
-
-import TileLayer from 'ol/layer/Tile';
+import { transformExtent, Projection } from 'ol/proj';
+import ImageWMS from 'ol/source/ImageWMS.js';
+import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
 import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
@@ -127,7 +127,11 @@ export default class BaseLayersMap extends olMap {
 
         this._baseLayers = [];
         let firstBaseLayer = true;
-        for (const [title, params] of Object.entries(mainLizmap.config?.baseLayers)) {
+        let baseLayers = [];
+        if(mainLizmap.config?.baseLayers){
+            baseLayers = Object.entries(mainLizmap.config.baseLayers);
+        }
+        for (const [title, params] of baseLayers) {
             if(params.type = 'xyz'){
                 this._baseLayers.push(
                     new TileLayer({
@@ -154,6 +158,22 @@ export default class BaseLayersMap extends olMap {
         });
 
         this.setLayerGroup(layerGroup);
+
+        // Overlay layers
+        for (const [title, params] of Object.entries(mainLizmap.config?.layers)) {
+            let extent = params.extent;
+            if(params.crs !== mainLizmap.projection){
+                extent = transformExtent(extent, params.crs, mainLizmap.projection);
+            }
+            this.addLayer(new ImageLayer({
+                extent: extent,
+                source: new ImageWMS({
+                    url: mainLizmap.serviceURL,
+                    params: { 'LAYERS': params?.shortname || params.name },
+                    serverType: 'qgis',
+                }),
+            }));
+        }
 
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
