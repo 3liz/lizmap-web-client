@@ -1922,10 +1922,18 @@ var lizAttributeTable = function() {
                 lizMap.lizmapLayerFilterActive = null;
 
                 // Empty layer filter
-                var layer = lizMap.map.getLayersByName( lizMap.cleanName(featureType) )[0];
+                let layer;
+                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
+                    if (lyr.getSource().getParams().LAYERS === lizMap.cleanName(featureType)) {
+                        layer = lyr;
+                        break;
+                    }
+                }
                 if( layer ) {
-                    delete layer.params['FILTER'];
-                    delete layer.params['FILTERTOKEN'];
+                    const wmsParams = layer.getSource().getParams();
+                    delete wmsParams['FILTER'];
+                    delete wmsParams['FILTERTOKEN'];
+                    layer.getSource().updateParams(wmsParams);
                 }
                 config.layers[featureType]['request_params']['filter'] = null;
                 config.layers[featureType]['request_params']['exp_filter'] = null;
@@ -2326,9 +2334,22 @@ var lizAttributeTable = function() {
                 var layerN = attributeLayersDic[lizMap.cleanName(typeName)];
 
                 var lFilter = null;
-                var layer = lizMap.map.getLayersByName( lizMap.cleanName(typeName) )[0];
-                if( layer && layer.params) {
-                    layerN = layer.params['LAYERS'];
+                let layer;
+                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
+                    if (lyr.getSource().getParams().LAYERS === typeName) {
+                        layer = lyr;
+                        break;
+                    }
+                }
+
+                if(!layer){
+                    return;
+                }
+
+                const wmsParams = layer.getSource().getParams();
+
+                if( wmsParams?.LAYERS) {
+                    layerN = wmsParams.LAYERS;
                 }
 
                 // Add false value to hide all features if we need to hide layer
@@ -2357,20 +2378,23 @@ var lizAttributeTable = function() {
                 layerConfig['request_params']['exp_filter'] = aFilter;
 
                 // Add filter to openlayers layer
-                if( layer
-                    && layer.params
-                ){
+                if( wmsParams){
                     if( aFilter ){
                         // Get filter token
-                        var sdata = {
-                            service: 'WMS',
-                            request: 'GETFILTERTOKEN',
-                            typename: typeName,
-                            filter: lFilter
-                        };
-                        $.post(lizUrls.service, sdata, function(result){
-                            layer.params['FILTERTOKEN'] = result.token;
-                            delete layer.params['FILTER'];
+                        fetch(lizUrls.service, {
+                            method: "POST",
+                            body: new URLSearchParams({
+                                service: 'WMS',
+                                request: 'GETFILTERTOKEN',
+                                typename: typeName,
+                                filter: lFilter
+                            })
+                        }).then(response => {
+                            return response.json();
+                        }).then(result => {
+                            wmsParams['FILTERTOKEN'] = result.token;
+                            delete wmsParams['FILTER'];
+                            layer.getSource().updateParams(wmsParams);
                             layerConfig['request_params']['filtertoken'] = result.token;
 
                             // Update layer state
@@ -2378,20 +2402,11 @@ var lizAttributeTable = function() {
                                 expressionFilter: layerConfig['request_params']['exp_filter'],
                                 token: result.token
                             };
-
-                            // Redraw openlayers layer
-                            if( layerConfig['geometryType']
-                                && layerConfig.geometryType != 'none'
-                                && layerConfig.geometryType != 'unknown'
-                            ){
-                                layer.redraw(true);
-                            }
                         });
-
-                    }
-                    else{
-                        delete layer.params['FILTER'];
-                        delete layer.params['FILTERTOKEN'];
+                    } else {
+                        delete wmsParams['FILTER'];
+                        delete wmsParams['FILTERTOKEN'];
+                        layer.getSource().updateParams(wmsParams);
                         layerConfig['request_params']['filtertoken'] = null;
 
                         // Update layer state
@@ -2400,14 +2415,6 @@ var lizAttributeTable = function() {
                 } else {
                     // Update layer state
                     lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = layerConfig['request_params']['exp_filter'];
-                }
-
-                // Redraw openlayers layer
-                if( layer
-                    && layerConfig['geometryType'] != 'none'
-                    && layerConfig['geometryType'] != 'unknown'
-                ){
-                    layer.redraw(true);
                 }
 
                 // Refresh attributeTable
@@ -2565,60 +2572,60 @@ var lizAttributeTable = function() {
                 cascade = typeof cascade !== 'undefined' ?  cascade : true;
                 // Get layer config
                 var lConfig = config.layers[featureType];
-                if( !lConfig )
+                if( !lConfig ){
                     return;
+                }
 
                 // Get OL layer to update params if it exists
                 var cleanName = lizMap.cleanName(featureType);
-                var layer = lizMap.map.getLayersByName( cleanName )[0];
+                let layer;
+
+                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
+                    if (lyr.getSource().getParams().LAYERS === cleanName) {
+                        layer = lyr;
+                        break;
+                    }
+                }
 
                 // Build filter from filteredFeatures
                 var cFilter = null;
-                if ( lConfig['filteredFeatures']
-                    && lConfig['filteredFeatures'].length > 0
-                ){
+                if (lConfig?.['filteredFeatures']?.length) {
                     // The values must be separated by comma AND spaces
                     // since QGIS controls the syntax for the FILTER parameter
                     cFilter = '$id IN ( ' + lConfig['filteredFeatures'].join( ' , ' ) + ' ) ';
                 }
 
-                var wmsName = featureType;
-                if ( lConfig['shortname'] )
-                    wmsName = lConfig['shortname'];
+                const wmsParams = layer.getSource().getParams();
+                const wmsName = lConfig?.['shortname'] || featureType;
 
                 // Build selection parameter from selectedFeatures
-                if( lConfig['selectedFeatures']
-                    && lConfig['selectedFeatures'].length
-                ) {
+                if( lConfig?.['selectedFeatures']?.length) {
                     lConfig['request_params']['selection'] = wmsName + ':' + lConfig['selectedFeatures'].join();
 
                     // Get selection token
-                    var sdata = {
-                        service: 'WMS',
-                        request: 'GETSELECTIONTOKEN',
-                        typename: wmsName,
-                        ids: lConfig['selectedFeatures'].join()
-                    };
-                    $.post(lizUrls.service, sdata, function(result){
-                        lConfig['request_params']['selectiontoken'] = result.token;
-
+                    fetch(lizUrls.service, {
+                        method: "POST",
+                        body: new URLSearchParams({
+                            service: 'WMS',
+                            request: 'GETSELECTIONTOKEN',
+                            typename: wmsName,
+                            ids: lConfig.selectedFeatures.join()
+                        })
+                    }).then(response => {
+                        return response.json();
+                    }).then(result => {
+                        lConfig.request_params['selectiontoken'] = result.token;
                         // Update layer state
                         lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectionToken = {
                             selectedFeatures: lConfig.selectedFeatures,
                             token: result.token
                         };
-
-                        if ( layer ) {
-                            //layer.params['SELECTION'] = wmsName + ':' + lConfig['selectedFeatures'].join();
-                            layer.params['SELECTIONTOKEN'] = result.token;
-                        }
                     });
                 }
                 else {
-                    if ( layer ){
-                        //delete layer.params['SELECTION'];
-                        delete layer.params['SELECTIONTOKEN'];
-                    }
+                    delete wmsParams['SELECTIONTOKEN'];
+                    layer.getSource().updateParams(wmsParams);
+
                     lConfig['request_params']['selection'] = null;
                     lConfig['request_params']['selectiontoken'] = null;
 
@@ -2631,7 +2638,6 @@ var lizAttributeTable = function() {
                 typeNameFilter[featureType] = cFilter;
                 var typeNameDone = [];
                 updateLayer(typeNamePile, typeNameFilter, typeNameDone,  cascade );
-
             }
 
             function updateMapLayerSelection(featureType) {
@@ -2654,7 +2660,7 @@ var lizAttributeTable = function() {
                     return;
                 }
 
-                const WMSparams = layer.getSource().getParams();
+                const wmsParams = layer.getSource().getParams();
                 const wmsName = lConfig?.['shortname'] || featureType;
 
                 // Build selection parameter from selectedFeatures
@@ -2685,8 +2691,8 @@ var lizAttributeTable = function() {
                     });
                 }
                 else {
-                    delete WMSparams['SELECTIONTOKEN'];
-                    layer.getSource().updateParams(WMSparams);
+                    delete wmsParams['SELECTIONTOKEN'];
+                    layer.getSource().updateParams(wmsParams);
                     if (!('request_params' in lConfig)) {
                         lConfig['request_params'] = {};
                     }
