@@ -230,7 +230,12 @@ export default class BaseLayersMap extends olMap {
         this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') == title));
     }
 
+    /**
+     * Returns OL WMS layer if typeName match
+     */
     getLayerByTypeName(typeName){
-        return this.getAllLayers().find(layer => layer.getSource().getParams().LAYERS === typeName);
+        return this.getAllLayers().find(
+            layer => layer.getSource().getParams?.()?.LAYERS === typeName
+        );
     }
 }

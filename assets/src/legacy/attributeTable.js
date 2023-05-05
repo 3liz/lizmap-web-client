@@ -83,14 +83,12 @@ var lizAttributeTable = function() {
                     };
 
                     // Get existing filter if exists (via permalink)
-                    var layer = lizMap.map.getLayersByName(cleanName)[0];
+                    const layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
 
-                    if( layer
-                        && 'FILTER' in layer.params
-                        && layer.params['FILTER']
-                    ){
+                    const wmsParams = layer?.getSource?.().getParams?.();
 
-                        config.layers[configLayerName]['request_params']['filter'] = layer.params['FILTER'];
+                    if (wmsParams?.['FILTER']) {
+                        config.layers[configLayerName]['request_params']['filter'] = wmsParams['FILTER'];
 
                         // Send signal so that getFeatureInfo takes it into account
                         lizMap.events.triggerEvent("layerFilterParamChanged",
@@ -167,13 +165,9 @@ var lizAttributeTable = function() {
 
                         // Disable attribute table if limitDataToBbox and layer not visible in map
                         if(limitDataToBbox){
-                            var layer = lizMap.map.getLayersByName( cleanName )[0];
-                            var ms = lizMap.map.getScale();
+                            let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
                             if( layer ) {
-                                var lvisibility = layer.maxScale < ms && ms < layer.minScale;
-                                if( !lvisibility ){
-                                    var msg = lizDict['attributeLayers.msg.layer.not.visible'];
-                                    lizMap.addMessage( msg, 'info', true).attr('id','lizmap-attribute-message');
+                                if(warnResolution(layer)){
                                     return false;
                                 }
                             }
@@ -263,6 +257,17 @@ var lizAttributeTable = function() {
                 return -1;
             }
             $('body').css('cursor', 'auto');
+
+            function warnResolution(layer) {
+                const mapResolution = lizMap.mainLizmap.baseLayersMap.getView().getResolution();
+                const visibility = layer.getMaxResolution() > mapResolution && mapResolution > layer.getMinResolution();
+                if( !visibility ){
+                    const msg = lizDict['attributeLayers.msg.layer.not.visible'];
+                    lizMap.addMessage( msg, 'info', true).attr('id','lizmap-attribute-message');
+                    return true;
+                }
+                return false;
+            }
 
             function getDataAndFillAttributeTable(layerName, filter, tableSelector, callBack){
 
@@ -623,13 +628,9 @@ var lizAttributeTable = function() {
                         .removeClass('btn-warning');
 
                         // Disable if the layer is not visible
-                        var layer = lizMap.map.getLayersByName( cleanName )[0];
-                        var ms = lizMap.map.getScale();
+                        let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
                         if( layer ) {
-                            var lvisibility = layer.maxScale < ms && ms < layer.minScale;
-                            if( !lvisibility ){
-                                var msg = lizDict['attributeLayers.msg.layer.not.visible'];
-                                lizMap.addMessage( msg, 'info', true).attr('id','lizmap-attribute-message');
+                            if(warnResolution(layer)){
                                 return false;
                             }
                         }else{
@@ -2155,7 +2156,14 @@ var lizAttributeTable = function() {
             var pivotParam = getPivotParam( typeNameId, attributeLayerConfig, typeNameDone );
 
             // **3** Apply filter to the typeName and redraw if necessary
-            var layer = lizMap.map.getLayersByName( lizMap.cleanName(typeName) )[0];
+            let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
+
+            if(!layer) {
+                return;
+            }
+
+            const wmsParams = layer.getSource().getParams();
+
             layerConfig['request_params']['filter'] = null;
             layerConfig['request_params']['exp_filter'] = null;
             layerConfig['request_params']['filtertoken'] = null;
@@ -2163,18 +2171,7 @@ var lizAttributeTable = function() {
             // Update layer state
             lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = null;
 
-            if( layer ) {
-                delete layer.params['FILTER'];
-                delete layer.params['FILTERTOKEN'];
-            }
-
-            // Redraw openlayers layer
-            if( layer
-                && layerConfig['geometryType'] != 'none'
-                && layerConfig['geometryType'] != 'unknown'
-            ){
-                layer.redraw(true);
-            }
+            layer.getSource().updateParams(wmsParams);
 
             // Refresh attributeTable
             var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
@@ -2427,12 +2424,9 @@ var lizAttributeTable = function() {
                         var cData = typeNameChildren[x];
                         var cFilter = null;
                         var cExpFilter = null;
-                        var wmsCname = cName;
                         // Get WMS layer name (can be different depending on QGIS Server version)
-                        var wlayer = lizMap.map.getLayersByName( lizMap.cleanName(cName) )[0];
-                        if( wlayer && wlayer.params) {
-                            wmsCname = wlayer.params['LAYERS'];
-                        }
+                        let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(lizMap.cleanName(cName));
+                        var wmsCname = layer.getSource?.().getParams?.()?.['LAYERS'] || cName;
 
                         // Build filter for children
                         // and add child to the typeNameFilter and typeNamePile objects
@@ -2468,12 +2462,10 @@ var lizAttributeTable = function() {
                     // the cFilter will be based on this value but with the layer name as prefix
                     var cExpFilter = null;
                     var orObj = null;
-                    var pwmsName = pivotParam['otherParentTypeName'];
                     // Get WMS layer name
-                    var pwlayer = lizMap.map.getLayersByName( lizMap.cleanName(pwmsName) )[0];
-                    if( pwlayer && pwlayer.params) {
-                        pwmsName = pwlayer.params['LAYERS'];
-                    }
+                    let pwlayer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(lizMap.cleanName(pwmsName));
+                    let pwmsName = pwlayer.getSource?.().getParams?.()?.['LAYERS'] || pivotParam['otherParentTypeName'];
+
                     if( aFilter  ){
                         if( pivotParam['otherParentValues'].length > 0 ){
                             cExpFilter = '"' + pivotParam['otherParentRelation'].referencedField + '"';
