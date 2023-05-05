@@ -229,4 +229,8 @@ export default class BaseLayersMap extends olMap {
     setLayerVisibilityByTitle(title){
         this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') == title));
     }
+
+    getLayerByTypeName(typeName){
+        return this.getAllLayers().find(layer => layer.getSource().getParams().LAYERS === typeName);
+    }
 }

@@ -1922,13 +1922,7 @@ var lizAttributeTable = function() {
                 lizMap.lizmapLayerFilterActive = null;
 
                 // Empty layer filter
-                let layer;
-                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
-                    if (lyr.getSource().getParams().LAYERS === lizMap.cleanName(featureType)) {
-                        layer = lyr;
-                        break;
-                    }
-                }
+                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(lizMap.cleanName(featureType));
                 if( layer ) {
                     const wmsParams = layer.getSource().getParams();
                     delete wmsParams['FILTER'];
@@ -2334,13 +2328,7 @@ var lizAttributeTable = function() {
                 var layerN = attributeLayersDic[lizMap.cleanName(typeName)];
 
                 var lFilter = null;
-                let layer;
-                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
-                    if (lyr.getSource().getParams().LAYERS === typeName) {
-                        layer = lyr;
-                        break;
-                    }
-                }
+                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
 
                 if(!layer){
                     return;
@@ -2563,10 +2551,8 @@ var lizAttributeTable = function() {
                         var parentFeatureType = lizMap.lizmapLayerFilterActive;
                         updateMapLayerDrawing( parentFeatureType, cascadeToChildren );
                     }
-
                 });
             }
-
 
             function updateMapLayerDrawing( featureType, cascade ){
                 cascade = typeof cascade !== 'undefined' ?  cascade : true;
@@ -2578,14 +2564,7 @@ var lizAttributeTable = function() {
 
                 // Get OL layer to update params if it exists
                 var cleanName = lizMap.cleanName(featureType);
-                let layer;
-
-                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
-                    if (lyr.getSource().getParams().LAYERS === cleanName) {
-                        layer = lyr;
-                        break;
-                    }
-                }
+                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
 
                 // Build filter from filteredFeatures
                 var cFilter = null;
@@ -2649,13 +2628,8 @@ var lizAttributeTable = function() {
 
                 // Get OL layer to be redrawn
                 var cleanName = lizMap.cleanName(featureType);
-                let layer;
-                for (const lyr of lizMap.mainLizmap.baseLayersMap.getAllLayers()) {
-                    if (lyr.getSource().getParams().LAYERS === cleanName) {
-                        layer = lyr;
-                        break;
-                    }
-                }
+                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
+
                 if (!layer) {
                     return;
                 }
