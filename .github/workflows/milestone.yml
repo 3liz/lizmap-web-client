@@ -1,0 +1,40 @@
+name: 🚓 Milestone
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    if: github.repository == '3liz/lizmap-web-client'
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: 'master'
+          fetch-depth: 0
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Get milestone
+        id: milestone
+        run: ./.github/auto_milestone.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BASE: ${{ github.event.pull_request.base.ref }}
+
+      - name: Update PR milestone
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          route: PATCH /repos/${{ github.repository }}/issues/${{github.event.number}}
+          pull_number: ${{github.event.number}}
+          milestone: ${{ steps.milestone.outputs.milestone_number }}
