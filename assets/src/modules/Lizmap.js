@@ -25,6 +25,14 @@ export default class Lizmap {
                 this._lizmap3 = lizMap;
 
                 // Register projections if unknown
+                for (const [ref, def] of Object.entries(lizProj4)) {
+                    if (ref !== "" && !getProjection(ref)) {
+                        proj4.defs(ref, def);
+                    }
+                }
+
+                register(proj4);
+
                 if (!getProjection(this.projection)) {
                     const proj = this.config.options.projection;
                     proj4.defs(proj.ref, proj.proj4);
@@ -34,6 +42,7 @@ export default class Lizmap {
                     const proj = this.config.options.qgisProjectProjection;
                     proj4.defs(proj.ref, proj.proj4);
                 }
+
                 register(proj4);
 
                 // Override getPointResolution method to always return resolution
