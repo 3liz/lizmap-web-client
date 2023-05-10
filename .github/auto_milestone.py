@@ -14,7 +14,7 @@ def parse_branch(branch: str, milestones_available: list) -> Optional[packaging.
         return milestones_available[-1]
 
     try:
-        branch = branch.replace('release-', '').replace('_', '.')
+        branch = branch.replace('release_', '').replace('_', '.')
         branch = packaging.version.Version(branch)
         for m in milestones_available:
             if m.major == branch.major and m.minor == branch.minor:
@@ -45,9 +45,13 @@ def all_gh_milestones(token: str, repo: str):
 
 
 if __name__ == "__main__":
-    gh_milestones, gh_milestones_object = all_gh_milestones(
-        token=os.getenv("GITHUB_TOKEN"), repo=os.getenv("GITHUB_REPOSITORY"))
-    final_milestone = parse_branch(os.getenv("GITHUB_BASE"), gh_milestones)
+    token = os.getenv("GITHUB_TOKEN")
+    repo = os.getenv("GITHUB_REPOSITORY")
+    base_branch = os.getenv("GITHUB_BASE")
+    gh_milestones, gh_milestones_object = all_gh_milestones(token=token, repo=repo)
+    final_milestone = parse_branch(base_branch, gh_milestones)
+
+    print(f"Found milestone {final_milestone} for base branch {base_branch}")
 
     milestone_id = None
     for milestone in gh_milestones_object:
@@ -57,6 +61,8 @@ if __name__ == "__main__":
 
     if not milestone_id:
         exit(0)
+
+    print(f"Retuning milestone {final_milestone} wih ID {milestone_id}")
 
     with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
         print(f'milestone_number={milestone_id}', file=fh)
