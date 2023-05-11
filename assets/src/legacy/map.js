@@ -4876,38 +4876,35 @@ window.lizMap = function() {
   }
 
   function deactivateMaplayerFilter (layername) {
-    var layerN = layername;
-    var layer = null;
-    var layers = map.getLayersByName( cleanName(layername) );
-    if( layers.length == 1) {
-      layer = layers[0];
-    }
+    let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName(layername));
+
+    if(!layer) return false;
+
+    const wmsParams = layer.getSource().getParams();
 
     // Remove layer filter
-    delete layer.params['FILTER'];
-    delete layer.params['FILTERTOKEN'];
-    delete layer.params['EXP_FILTER'];
+    delete wmsParams['FILTER'];
+    delete wmsParams['FILTERTOKEN'];
+    delete wmsParams['EXP_FILTER'];
     if( !('request_params' in config.layers[layername]) ){
       config.layers[layername]['request_params'] = {};
     }
     config.layers[layername]['request_params']['exp_filter'] = null;
     config.layers[layername]['request_params']['filtertoken'] = null;
     config.layers[layername]['request_params']['filter'] = null;
-    layer.redraw();
+    layer.getSource().updateParams(wmsParams);
   }
 
   function triggerLayerFilter (layername, filter) {
       // Get layer information
       var layerN = layername;
-      var layer = null;
-      var layers = map.getLayersByName( cleanName(layername) );
-      if( layers.length == 1) {
-        layer = layers[0];
-      }
-      if(!layer)
-          return false;
-      if( layer.params) {
-        layerN = layer.params['LAYERS'];
+      let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName(layername));
+
+      if(!layer) return false;
+
+      const wmsParams = layer.getSource().getParams();
+      if( wmsParams) {
+        layerN = wmsParams['LAYERS'];
       }
 
       // Add filter to the layer
@@ -4918,7 +4915,7 @@ window.lizMap = function() {
       }else{
         var lfilter = layerN + ':' + filter;
       }
-      layer.params['FILTER'] = lfilter;
+      wmsParams['FILTER'] = lfilter;
       if( !('request_params' in config.layers[layername]) ){
         config.layers[layername]['request_params'] = {};
       }
@@ -4927,43 +4924,37 @@ window.lizMap = function() {
       config.layers[layername]['request_params']['exp_filter'] = filter;
 
       // Get WMS filter token ( used via GET in GetMap or GetPrint )
-      var sdata = {
-        service: 'WMS',
-        request: 'GETFILTERTOKEN',
-        typename: layername,
-        filter: lfilter
-      };
-      $.post(lizUrls.service, sdata, function(result){
-        var filtertoken = result.token;
-        // Add OpenLayers layer parameter
-        delete layer.params['FILTER'];
-        layer.params['FILTERTOKEN'] = filtertoken
-        config.layers[layername]['request_params']['filtertoken'] = filtertoken;
+      fetch(lizUrls.service, {
+        method: "POST",
+        body: new URLSearchParams({
+            service: 'WMS',
+            request: 'GETFILTERTOKEN',
+            typename: layername,
+            filter: lfilter
+          })
+        }).then(response => {
+            return response.json();
+        }).then(result => {
+          var filtertoken = result.token;
+          // Add OpenLayers layer parameter
+          config.layers[layername]['request_params']['filtertoken'] = filtertoken;
 
-        // Update layer state
-        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername).filterToken = {
-          expressionFilter: config.layers[layername]['request_params']['exp_filter'],
-          token: result.token
-        };
+          // Update layer state
+          lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername).filterToken = {
+            expressionFilter: config.layers[layername]['request_params']['exp_filter'],
+            token: result.token
+          };
 
-        // Redraw openlayers layer
-        if( config.layers[layername]['geometryType']
-          && config.layers[layername]['geometryType'] != 'none'
-          && config.layers[layername]['geometryType'] != 'unknown'
-        ){
-            //layer.redraw(true);
-          layer.redraw();
-        }
-
-        // Tell popup to be aware of the filter
-        lizMap.events.triggerEvent("layerFilterParamChanged",
-          {
-            'featureType': layername,
-            'filter': lfilter,
-            'updateDrawing': false
-          }
-        );
-      });
+  
+          // Tell popup to be aware of the filter
+          lizMap.events.triggerEvent("layerFilterParamChanged",
+            {
+              'featureType': layername,
+              'filter': lfilter,
+              'updateDrawing': false
+            }
+          );
+        });
 
       return true;
   }
