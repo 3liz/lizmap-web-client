@@ -2330,6 +2330,8 @@ var lizAttributeTable = function() {
                     typeNamePkeyValues.push('-99999');
 
                 if( aFilter ){
+                    // The values must be separated by comma AND spaces
+                    // since QGIS controls the syntax for the FILTER parameter
                     lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
 
                     // Try to use the simple filter ( for example myforeignkey = 4 )
@@ -2424,16 +2426,20 @@ var lizAttributeTable = function() {
                         // Build filter for children
                         // and add child to the typeNameFilter and typeNamePile objects
                         // only if typeName filter aFilter was originally set
-                        if( aFilter && cData['parentValues'].length > 0 && cascade != 'removeChildrenFilter' )
-                            cExpFilter = '"' + cData['fieldToFilter'] + '" IN ( ' + cData['parentValues'].join() + ' )';
-                        else if( aFilter && cascade != 'removeChildrenFilter' )
+                        if( aFilter && cData['parentValues'].length > 0 && cascade != 'removeChildrenFilter' ) {
+                            // The values must be separated by comma AND spaces
+                            // since QGIS controls the syntax for the FILTER parameter
+                            cExpFilter = '"' + cData['fieldToFilter'] + '" IN ( ' + cData['parentValues'].join( ' , ' ) + ' )';
+                        }
+                        else if( aFilter && cascade != 'removeChildrenFilter' ) {
                             cExpFilter = '"' + cData['fieldToFilter'] + '" IN ( -99999 )';
+                        }
                         cFilter = wmsCname + ':' + cExpFilter;
 
                         config.layers[cName]['request_params']['filter'] = cFilter;
                         config.layers[cName]['request_params']['exp_filter'] = cExpFilter;
 
-                        typeNameFilter[x] = cFilter;
+                        typeNameFilter[x] = cExpFilter;
                         typeNamePile.push( x );
 
                     }
@@ -2443,6 +2449,9 @@ var lizAttributeTable = function() {
                 if( pivotParam ){
                     // Add a Filter to the "other parent" layers
                     var cFilter = null;
+                    // The stored filter in this variable cExpFilter must not be prefixed by the layername
+                    // since it is used to build the EXP_FILTER parameter
+                    // the cFilter will be based on this value but with the layer name as prefix
                     var cExpFilter = null;
                     var orObj = null;
                     var pwmsName = pivotParam['otherParentTypeName'];
@@ -2454,7 +2463,9 @@ var lizAttributeTable = function() {
                     if( aFilter  ){
                         if( pivotParam['otherParentValues'].length > 0 ){
                             cExpFilter = '"' + pivotParam['otherParentRelation'].referencedField + '"';
-                            cExpFilter+= ' IN ( ' + pivotParam['otherParentValues'].join() + ' )';
+                            // The values must be separated by comma AND spaces
+                            // since QGIS controls the syntax for the FILTER parameter
+                            cExpFilter+= ' IN ( ' + pivotParam['otherParentValues'].join( ' , ' ) + ' )';
                             cFilter = pwmsName + ':' + cExpFilter;
                             orObj = {
                                 field: pivotParam['otherParentRelation'].referencedField,
@@ -2470,11 +2481,13 @@ var lizAttributeTable = function() {
                             }
                         }
                     }
-
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = cFilter;
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['exp_filter'] = cExpFilter;
 
-                    typeNameFilter[ pivotParam['otherParentTypeName'] ] = cFilter;
+                    // The stored filter in this variable must not be prefixed by the layername
+                    // since it is used to build the EXP_FILTER parameter
+                    // the FILTER will be based on this value but with the layer name as prefix
+                    typeNameFilter[ pivotParam['otherParentTypeName'] ] = cExpFilter;
                     typeNamePile.push( pivotParam['otherParentTypeName'] );
                 }
 
@@ -2542,7 +2555,9 @@ var lizAttributeTable = function() {
                 if ( lConfig['filteredFeatures']
                     && lConfig['filteredFeatures'].length > 0
                 ){
-                    cFilter = '$id IN ( ' + lConfig['filteredFeatures'].join() + ' ) ';
+                    // The values must be separated by comma AND spaces
+                    // since QGIS controls the syntax for the FILTER parameter
+                    cFilter = '$id IN ( ' + lConfig['filteredFeatures'].join( ' , ' ) + ' ) ';
                 }
 
                 var wmsName = featureType;
