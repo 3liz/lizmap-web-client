@@ -281,13 +281,9 @@ var lizLayerActionButtons = function() {
                     if (themeNameSelected in lizMap.config.themes){
                         var themeSelected = lizMap.config.themes[themeNameSelected];
 
-                        // Uncheck every layers then if a layer is present in theme, check it
-                        $('#switcher-layers .liz-layer a.expander ~ button.checked').each(function(){
-                            if ($(this).hasClass('disabled')) {
-                                $(this).removeClass('partial').removeClass('checked');
-                            } else {
-                                $(this).click();
-                            }
+                        // Set every layer's visibility to false then to true if a layer is present in theme
+                        lizMap.mainLizmap.baseLayersMap.overlayLayers.forEach(layer => {
+                            layer.setVisible(false);
                         });
 
                         // Handle layers visibility and style states.
@@ -304,16 +300,11 @@ var lizLayerActionButtons = function() {
                                     }
 
                                     // Visibility
-                                    var layerButton = $('#switcher-layers #layer-' + layerConfig.cleanname + ' a.expander ~ button');
-                                    if (layerButton.hasClass('disabled')) {
-                                        layerButton.removeClass('partial').addClass('checked');
-                                    } else {
-                                        layerButton.click();
-                                    }
+                                    layer.setVisible(true);
 
                                     // Style
-                                    if ('style' in themeSelected.layers[layerId]) {
-                                        var layerStyle = themeSelected.layers[layerId]['style'];
+                                    let layerStyle = themeSelected.layers[layerId]?.['style'];
+                                    if (layerStyle) {
                                         const wmsParams = layer.getSource().getParams();
                                         if (wmsParams) {
                                             wmsParams['STYLES'] = layerStyle;
@@ -358,7 +349,7 @@ var lizLayerActionButtons = function() {
                 placement: 'bottom'
             });
 
-            // Expand all of unfold all
+            // Expand all or unfold all
             $('#layers-unfold-all').click(function(){
                 $('#switcher table.tree tr.collapsed:not(.liz-layer.disabled) a.expander').click();
                 return false;
