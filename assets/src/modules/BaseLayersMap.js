@@ -128,15 +128,15 @@ export default class BaseLayersMap extends olMap {
             }
         }
 
-        this._baseLayers = [];
+        const baseLayers = [];
         let firstBaseLayer = true;
-        let baseLayers = [];
+        let cfgBaseLayers = [];
         if(mainLizmap.config?.baseLayers){
-            baseLayers = Object.entries(mainLizmap.config.baseLayers);
+            cfgBaseLayers = Object.entries(mainLizmap.config.baseLayers);
         }
-        for (const [title, params] of baseLayers) {
+        for (const [title, params] of cfgBaseLayers) {
             if(params.type = 'xyz'){
-                this._baseLayers.push(
+                baseLayers.push(
                     new TileLayer({
                         title: title,
                         visible: firstBaseLayer,
@@ -152,16 +152,15 @@ export default class BaseLayersMap extends olMap {
             firstBaseLayer = false;
         }
 
-        const layerGroup = new LayerGroup({
-            layers: this._baseLayers
+        this._baseLayersGroup = new LayerGroup({
+            layers: baseLayers
         });
 
-        layerGroup.on('change', () => {
+        this._baseLayersGroup.on('change', () => {
             mainEventDispatcher.dispatch('baseLayers.changed');
         });
 
-        this.setLayerGroup(layerGroup);
-
+        const overlayLayers = [];
         // Overlay layers
         for (const [title, params] of Object.entries(mainLizmap.config?.layers)) {
             if(params.type !== 'layer'){
@@ -175,7 +174,7 @@ export default class BaseLayersMap extends olMap {
             const maxResolution = Utils.getResolutionFromScale(params.maxScale);
 
             if (params.cached === "False") {
-                this.addLayer(new ImageLayer({
+                overlayLayers.push(new ImageLayer({
                     extent: extent,
                     minResolution: minResolution,
                     maxResolution: maxResolution,
@@ -198,13 +197,19 @@ export default class BaseLayersMap extends olMap {
                     matrixSet: params.crs,
                 });
 
-                this.addLayer(new TileLayer({
+                overlayLayers.push(new TileLayer({
                     minResolution: minResolution,
                     maxResolution: maxResolution,
                     source: new WMTS(options),
                 }));
             }
         }
+
+        this._overlayLayersGroup = new LayerGroup({layers: overlayLayers});
+
+        this.setLayerGroup(new LayerGroup({
+            layers: [this._baseLayersGroup, this._overlayLayersGroup]
+        }));
 
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
@@ -215,6 +220,10 @@ export default class BaseLayersMap extends olMap {
 
         // Init view
         this.syncNewOLwithOL2View();
+    }
+
+    get overlayLayers(){
+        return this._overlayLayersGroup.getLayers().getArray();
     }
 
     /**
@@ -234,10 +243,10 @@ export default class BaseLayersMap extends olMap {
     }
 
     /**
-     * Returns OL WMS layer if typeName match
+     * Return overlay layer if typeName match
      */
     getLayerByTypeName(typeName){
-        return this.getAllLayers().find(
+        return this.overlayLayers.find(
             layer => layer.getSource().getParams?.()?.LAYERS === typeName
         );
     }
