@@ -22,6 +22,13 @@ import { defaults as defaultInteractions } from 'ol/interaction.js';
 export default class BaseLayersMap extends olMap {
 
     constructor() {
+        const qgisProjectProjection = mainLizmap.projection;
+        let mapProjection = new Projection({code: qgisProjectProjection});
+
+        if(!['EPSG:3857', 'EPSG:4326'].includes(qgisProjectProjection)){
+            mapProjection.setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
+        }
+
         super({
             controls: [], // disable default controls
             interactions: defaultInteractions({
@@ -36,10 +43,7 @@ export default class BaseLayersMap extends olMap {
                 resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
                 center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
-                projection: new Projection({
-                    code: mainLizmap.projection,
-                    extent: mainLizmap.lizmap3.map.restrictedExtent.toArray()
-                }),
+                projection: mapProjection,
                 enableRotation: false,
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
@@ -162,7 +166,7 @@ export default class BaseLayersMap extends olMap {
 
         const overlayLayers = [];
         // Overlay layers
-        for (const [title, params] of Object.entries(mainLizmap.config?.layers)) {
+        for (const [title, params] of Object.entries(mainLizmap.config?.layers).reverse()) {
             if(params.type !== 'layer'){
                 continue;
             }
