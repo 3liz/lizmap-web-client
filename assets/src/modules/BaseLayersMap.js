@@ -164,8 +164,11 @@ export default class BaseLayersMap extends olMap {
 
         // Overlay layers
         for (const [title, params] of Object.entries(mainLizmap.config?.layers)) {
+            if(params.type !== 'layer'){
+                continue;
+            }
             let extent = params.extent;
-            if(params.crs !== mainLizmap.projection){
+            if(params.crs !== "" && params.crs !== mainLizmap.projection){
                 extent = transformExtent(extent, params.crs, mainLizmap.projection);
             }
             const minResolution = Utils.getResolutionFromScale(params.minScale);
