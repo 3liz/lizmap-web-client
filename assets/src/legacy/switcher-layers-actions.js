@@ -296,12 +296,11 @@ var lizLayerActionButtons = function() {
 
                                 var getLayerConfig = lizMap.getLayerConfigById(layerId);
                                 if (getLayerConfig) {
-                                    var layerName = getLayerConfig[0];
-                                    var featureType = layerName;
-                                    var layerConfig = getLayerConfig[1];
-
-                                    if ('typename' in layerConfig){
-                                        featureType = layerConfig.typename;
+                                    const [layerName, layerConfig] = getLayerConfig;
+                                    let typeName = layerConfig?.shortname || layerConfig?.typename || lizMap.cleanName(layerName);
+                                    let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
+                                    if (!layer) {
+                                        continue;
                                     }
 
                                     // Visibility
@@ -315,17 +314,13 @@ var lizLayerActionButtons = function() {
                                     // Style
                                     if ('style' in themeSelected.layers[layerId]) {
                                         var layerStyle = themeSelected.layers[layerId]['style'];
-                                        var layers = lizMap.map.getLayersByName(lizMap.cleanName(layerName));
-                                        if (layers.length == 0) {
-                                            continue;
-                                        }
-                                        var layer = layers[0];
-                                        if (layer && layer.params) {
-                                            layer.params['STYLES'] = layerStyle;
-                                            layer.redraw(true);
+                                        const wmsParams = layer.getSource().getParams();
+                                        if (wmsParams) {
+                                            wmsParams['STYLES'] = layerStyle;
+                                            layer.getSource().updateParams(wmsParams);
 
                                             lizMap.events.triggerEvent("layerstylechanged",
-                                                { 'featureType': featureType }
+                                                { 'featureType': typeName }
                                             );
                                         }
                                     }
