@@ -214,14 +214,6 @@ class lizmapProject
         return $this->proj->hasAtlasEnabled();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getQgisServerPlugins()
-    {
-        return $this->proj->getQgisServerPlugins();
-    }
-
     public function hasTooltipLayers()
     {
         return $this->proj->hasTooltipLayers();

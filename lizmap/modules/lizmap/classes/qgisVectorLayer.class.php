@@ -1428,14 +1428,6 @@ class qgisVectorLayer extends qgisMapLayer
             'polygon' => 'SRID=2154;POLYGON((0 0.1,0.1 0.1,0.1 0,0 0.1))',
         );
 
-        // No filter if Lizmap plugin is not installed server side
-        $plugins = $this->project->getQgisServerPlugins();
-        if (!array_key_exists('Lizmap', $plugins)) {
-            \jLog::log('requestPolygonFilter: no lizmap plugin installed for QGIS Server');
-
-            return $no_data_array;
-        }
-
         // Check if the current user is connected
         $appContext = $this->project->getAppContext();
         $is_connected = $appContext->UserIsConnected();

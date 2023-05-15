@@ -783,16 +783,6 @@ class Project
         return false;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getQgisServerPlugins()
-    {
-        $qgisServer = new \qgisServer();
-
-        return $qgisServer->getPlugins($this);
-    }
-
     public function hasTooltipLayers()
     {
         $tooltip = $this->cfg->getTooltipLayers();
@@ -1772,9 +1762,6 @@ class Project
                 unset($configJson->datavizLayers);
             }
         }
-
-        // Get server plugins
-        $configJson->qgisServerPlugins = $this->getQgisServerPlugins();
 
         // Check layers group visibility
         $userGroups = array('');

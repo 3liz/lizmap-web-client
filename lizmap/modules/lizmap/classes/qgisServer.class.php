@@ -22,36 +22,4 @@ class qgisServer
     {
         $this->services = lizmap::getServices();
     }
-
-    public function getPlugins($project)
-    {
-        $key = 'qgis/server/plugins';
-        $key = jCache::normalizeKey($key);
-        $plugins = jCache::get($key);
-        if ($plugins !== false && $plugins !== null) {
-            return $plugins;
-        }
-
-        $plugins = array();
-
-        // Check Lizmap plugin
-        $params = array(
-            'service' => 'LIZMAP',
-            'request' => 'GetServerSettings',
-            'map' => $project->getRelativeQgisPath(),
-        );
-        $url = \Lizmap\Request\Proxy::constructUrl($params, $this->services);
-        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
-        if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
-            $json = json_decode($data);
-            if (property_exists($json, 'lizmap')) {
-                $metadata = $json->lizmap;
-                $plugins[$metadata->name] = array('version' => $metadata->version);
-            }
-        }
-
-        jCache::set($key, $plugins, 3600);
-
-        return $plugins;
-    }
 }
