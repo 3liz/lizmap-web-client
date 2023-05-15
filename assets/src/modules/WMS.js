@@ -7,7 +7,7 @@ export default class WMS {
             SERVICE: 'WMS',
             REQUEST: 'GetFeatureInfo',
             VERSION: '1.3.0',
-            SRS: 'EPSG:4326',
+            CRS: 'EPSG:4326',
             INFO_FORMAT: 'text/html'
         };
 

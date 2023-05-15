@@ -51,7 +51,7 @@ test.describe('Popup', () => {
         await page.locator('#liz-filter-field-test').selectOption('1');
         await getMapRequestPromise;
 
-        let getFeatureInfoRequestPromise = page.waitForRequest(/GetFeatureInfo/);
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
         await page.locator('#map').click({
           position: {
             x: 486,
@@ -60,6 +60,6 @@ test.describe('Popup', () => {
         });
 
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        expect(getFeatureInfoRequest.url()).toMatch(/FILTERTOKEN/);
+        expect(getFeatureInfoRequest.postData()).toMatch(/FILTERTOKEN/);
     });
 });
