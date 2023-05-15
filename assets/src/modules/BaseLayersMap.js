@@ -167,9 +167,14 @@ export default class BaseLayersMap extends olMap {
         const overlayLayers = [];
         // Overlay layers
         for (const [title, params] of Object.entries(mainLizmap.config?.layers).reverse()) {
+            // Keep only layers with a geometry
             if(params.type !== 'layer'){
                 continue;
             }
+            if(["", "none", "unknown"].includes(params.geometryType)){
+                continue;
+            }
+
             let extent = params.extent;
             if(params.crs !== "" && params.crs !== mainLizmap.projection){
                 extent = transformExtent(extent, params.crs, mainLizmap.projection);
