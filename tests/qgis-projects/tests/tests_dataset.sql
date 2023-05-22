@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.13 (Debian 11.13-1.pgdg100+1)
--- Dumped by pg_dump version 13.7 (Ubuntu 13.7-1.pgdg20.04+1)
+-- Dumped from database version 14.7 (Debian 14.7-1.pgdg110+1)
+-- Dumped by pg_dump version 14.7 (Ubuntu 14.7-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1999,6 +1999,7 @@ COPY tests_projects.dnd_form_geom (id, field_in_dnd_form, field_not_in_dnd_form,
 
 COPY tests_projects.dnd_popup (id, field_tab1, field_tab2, geom) FROM stdin;
 1	tab1_value	tab2_value	01030000206A0800000100000004000000541E93BC41682741EFF7CD63FDF6574182A712AB07682741602DE34CB7F157411AFC5F7C19AD27413F086B27A5F15741541E93BC41682741EFF7CD63FDF65741
+2	\N	\N	01030000206A08000001000000040000002AE4B62B3E6927418A4F186F3DF85741F4E1E68337AE2741A143F22A09F2574170B84E664BAE27414C64E47D33F857412AE4B62B3E6927418A4F186F3DF85741
 \.
 
 
@@ -2481,7 +2482,7 @@ SELECT pg_catalog.setval('tests_projects.dnd_form_id_seq', 1, true);
 -- Name: dnd_popup_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.dnd_popup_id_seq', 1, true);
+SELECT pg_catalog.setval('tests_projects.dnd_popup_id_seq', 2, true);
 
 
 --
