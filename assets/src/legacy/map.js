@@ -3358,7 +3358,7 @@ window.lizMap = function() {
 
       }
 
-      var info = new OpenLayers.Control.WMSGetFeatureInfo({
+      var WMSGetFeatureInfo = new OpenLayers.Control.WMSGetFeatureInfo({
             url: lizUrls.service,
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
@@ -3386,13 +3386,14 @@ window.lizMap = function() {
             )
           );
         }
-        info.layerUrls = layerUrls;
+        WMSGetFeatureInfo.layerUrls = layerUrls;
      }
-     info.findLayers = function() {
+     WMSGetFeatureInfo.findLayers = function() {
         var candidates = this.layers || this.map.layers;
         var layers = [];
         var maxFeatures = 0;
         var layer, url;
+        const filterTokenList = [];
         for(var i=0, len=candidates.length; i<len; ++i) {
             layer = candidates[i];
             if( (layer instanceof OpenLayers.Layer.WMS || layer instanceof OpenLayers.Layer.WMTS)
@@ -3426,7 +3427,14 @@ window.lizMap = function() {
                         this.url = url;
                     }
 
+                    // Filtertoken
+                    const filterToken = configLayer?.['request_params']?.['filtertoken'];
+                    if (filterToken) {
+                      filterTokenList.push(filterToken);
+                    }
+
                     layers.push(layer);
+
                     if ( 'popupMaxFeatures' in configLayer && !isNaN(parseInt(configLayer.popupMaxFeatures)) )
                         maxFeatures += parseInt(configLayer.popupMaxFeatures);
                     else
@@ -3435,6 +3443,11 @@ window.lizMap = function() {
             }
         }
         this.maxFeatures = maxFeatures == 0 ? 10 : maxFeatures;
+
+        if(filterTokenList.length){
+          this.vendorParams['filtertoken'] = filterTokenList.join(';');
+        }
+
         return layers;
      };
      function refreshGetFeatureInfo( evt ) {
@@ -3467,7 +3480,7 @@ window.lizMap = function() {
         if ( refreshInfo  ) {
             //lastLonLatInfo = null;
             $('#'+popupContainerId+' div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+evt.layerId+'.'+evt.featureId+'"]').parent().remove();
-            info.request( lastPx, {} );
+            WMSGetFeatureInfo.request( lastPx, {} );
         }
         return;
      }
@@ -3479,7 +3492,7 @@ window.lizMap = function() {
             if (nbPopupDisplayed == 0) {
               return;
             }
-            var filter = [];
+
             for ( var  lName in config.layers ) {
                 var lConfig = config.layers[lName];
 
@@ -3513,15 +3526,12 @@ window.lizMap = function() {
                         typename: lName,
                         filter: lConfig['request_params']['filter']
                     };
-                    $.post(lizUrls.service, sdata, function(result){
-                        filter.push(result.token);
-                        info.vendorParams['filtertoken'] = filter.join(';');
-                        info.vendorParams['filter'] = null;
+                    $.post(lizUrls.service, sdata, function(){
                         refreshGetFeatureInfo(evt);
                     });
                 }else{
-                      info.vendorParams['filtertoken'] = requestParams['filtertoken'];
-                      info.vendorParams['filter'] = requestParams['filter'];
+                      WMSGetFeatureInfo.vendorParams['filtertoken'] = requestParams['filtertoken'];
+                      WMSGetFeatureInfo.vendorParams['filter'] = requestParams['filter'];
                 }
             }
         },
@@ -3546,9 +3556,9 @@ window.lizMap = function() {
             }
         }
      });
-     map.addControl(info);
-     info.activate();
-     return info;
+     map.addControl(WMSGetFeatureInfo);
+     WMSGetFeatureInfo.activate();
+     return WMSGetFeatureInfo;
   }
 
   function addTooltipControl() {
