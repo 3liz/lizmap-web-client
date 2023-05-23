@@ -164,59 +164,80 @@ export default class BaseLayersMap extends olMap {
             mainEventDispatcher.dispatch('baseLayers.changed');
         });
 
-        const overlayLayers = [];
-        // Overlay layers
-        for (const [title, params] of Object.entries(mainLizmap.config?.layers).reverse()) {
-            // Keep only layers with a geometry
-            if(params.type !== 'layer'){
-                continue;
-            }
-            if(["", "none", "unknown"].includes(params.geometryType)){
-                continue;
-            }
-
-            let extent = params.extent;
-            if(params.crs !== "" && params.crs !== mainLizmap.projection){
-                extent = transformExtent(extent, params.crs, mainLizmap.projection);
-            }
-
-            // Set min/max resolution only if different from default
-            let minResolution = params.minScale === 1 ? undefined : Utils.getResolutionFromScale(params.minScale);
-            let maxResolution = params.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(params.maxScale);
-
-            if (params.cached === "False") {
-                overlayLayers.push(new ImageLayer({
-                    extent: extent,
-                    minResolution: minResolution,
-                    maxResolution: maxResolution,
-                    visible: params.toggled === "True",
-                    source: new ImageWMS({
-                        url: mainLizmap.serviceURL,
-                        serverType: 'qgis',
-                        params: {
-                            LAYERS: params?.shortname || params.name,
-                            FORMAT: params.imageFormat,
-                            DPI: 96
-                        },
-                    }),
-                }));
-            } else {
-                const parser = new WMTSCapabilities();
-                const result = parser.read(lizMap.wmtsCapabilities);
-                const options = optionsFromCapabilities(result, {
-                    layer: params?.shortname || params.name,
-                    matrixSet: params.crs,
+        // Returns a layer or a layerGroup depending of the node type
+        const createNode = (node) => {
+            if(node.type === 'group'){
+                const layers = [];
+                for (const layer of node.children.reverse()) {
+                    layers.push(createNode(layer));
+                }
+                return new LayerGroup({
+                    layers: layers,
+                    properties: {
+                        name: node.name
+                    }
                 });
+            } else {
+                let layer;
+                const layerCfg = mainLizmap.config?.layers?.[node.name];
+                // Keep only layers with a geometry
+                if(layerCfg.type !== 'layer'){
+                    return;
+                }
+                if(["", "none", "unknown"].includes(layerCfg.geometryType)){
+                    return;
+                }
 
-                overlayLayers.push(new TileLayer({
-                    minResolution: minResolution,
-                    maxResolution: maxResolution,
-                    source: new WMTS(options),
-                }));
+                let extent = layerCfg.extent;
+                if(layerCfg.crs !== "" && layerCfg.crs !== mainLizmap.projection){
+                    extent = transformExtent(extent, layerCfg.crs, mainLizmap.projection);
+                }
+
+                // Set min/max resolution only if different from default
+                let minResolution = layerCfg.minScale === 1 ? undefined : Utils.getResolutionFromScale(layerCfg.minScale);
+                let maxResolution = layerCfg.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(layerCfg.maxScale);
+
+                if (layerCfg.cached === "False") {
+                    layer = new ImageLayer({
+                        // extent: extent,
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        visible: layerCfg.toggled === "True",
+                        source: new ImageWMS({
+                            url: mainLizmap.serviceURL,
+                            serverType: 'qgis',
+                            params: {
+                                LAYERS: layerCfg?.shortname || layerCfg.name,
+                                FORMAT: layerCfg.imageFormat,
+                                DPI: 96
+                            },
+                        }),
+                        properties: {
+                            name: layerCfg.name
+                        }
+                    });
+                } else {
+                    const parser = new WMTSCapabilities();
+                    const result = parser.read(lizMap.wmtsCapabilities);
+                    const options = optionsFromCapabilities(result, {
+                        layer: layerCfg?.shortname || layerCfg.name,
+                        matrixSet: layerCfg.crs,
+                    });
+
+                    layer = new TileLayer({
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        source: new WMTS(options),
+                        properties: {
+                            name: layerCfg.name
+                        }
+                    });
+                }
+                return layer;
             }
         }
 
-        this._overlayLayersGroup = new LayerGroup({layers: overlayLayers});
+        this._overlayLayersGroup = createNode(mainLizmap.config.layersTree);
 
         this.setLayerGroup(new LayerGroup({
             layers: [this._baseLayersGroup, this._overlayLayersGroup]
@@ -233,8 +254,13 @@ export default class BaseLayersMap extends olMap {
         this.syncNewOLwithOL2View();
     }
 
+    // Get overlay layers (not layerGroups)
     get overlayLayers(){
-        return this._overlayLayersGroup.getLayers().getArray();
+        return this._overlayLayersGroup.getLayersArray();
+    }
+
+    get overlayLayersGroup(){
+        return this._overlayLayersGroup;
     }
 
     /**
