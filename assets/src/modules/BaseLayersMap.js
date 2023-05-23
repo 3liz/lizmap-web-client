@@ -179,8 +179,10 @@ export default class BaseLayersMap extends olMap {
             if(params.crs !== "" && params.crs !== mainLizmap.projection){
                 extent = transformExtent(extent, params.crs, mainLizmap.projection);
             }
-            const minResolution = Utils.getResolutionFromScale(params.minScale);
-            const maxResolution = Utils.getResolutionFromScale(params.maxScale);
+
+            // Set min/max resolution only if different from default
+            let minResolution = params.minScale === 1 ? undefined : Utils.getResolutionFromScale(params.minScale);
+            let maxResolution = params.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(params.maxScale);
 
             if (params.cached === "False") {
                 overlayLayers.push(new ImageLayer({
