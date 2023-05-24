@@ -253,8 +253,8 @@ let lizDataviz = function () {
                     // will be ok and always refresh all the plots even
                     // if they are not in the viewport
                     else {
-                        // Compute the exp_filter based on the layer filter
-                        let pFilter = filter.replace(featureType + ':', '');
+                        // Get exp_filter instead of wms filter
+                        let pFilter = lizMap.config.layers[featureType]['request_params']['exp_filter'];
                         // Reset the global variable filter
                         dv.plots[i]['filter'] = pFilter;
                         if (pFilter.length > 5) {
