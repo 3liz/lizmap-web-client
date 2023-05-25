@@ -2991,3 +2991,19 @@ lizmap-paste-geom svg {
   display: inline-block;
   vertical-align: text-top;
 }
+
+lizmap-treeview input[type="checkbox"] {
+  margin-top: 0;
+}
+
+lizmap-treeview label {
+  display: inline;
+}
+
+lizmap-treeview input:not(:checked) ~ ul input[type="checkbox"] {
+  accent-color: silver;
+}
+
+lizmap-treeview input:not(:checked) ~ ul label {
+  font-style: italic;
+}
