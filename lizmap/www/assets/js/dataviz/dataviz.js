@@ -57,7 +57,7 @@ var lizDataviz = function() {
                         getPlot(i, null, 'dataviz_plot_' + i);
                     }
                     else{
-                        var pFilter = filter.replace(featureType+':', '');
+                        var pFilter = lizMap.config.layers[featureType]['request_params']['exp_filter'];
                         if( pFilter.length > 5){
                             getPlot(i, pFilter, 'dataviz_plot_' + i);
                         }
