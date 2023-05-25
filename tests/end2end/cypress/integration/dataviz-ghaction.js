@@ -1,11 +1,52 @@
 describe('Dataviz tests', function () {
+    beforeEach(() => {
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
+
+            cy.intercept('*request=getPlot*',
+                { middleware: true },
+                (req) => {
+                    req.on('before:response', (res) => {
+                        // force all API responses to not be cached
+                        // It is needed when launching tests multiple time in headed mode
+                        res.headers['cache-control'] = 'no-store'
+                    })
+                }).as('getPlot')
+    })
+
     it('Test dataviz plots are rendered', function () {
+
         cy.visit('/index.php/view/map/?repository=testsrepository&project=dataviz')
+
+        // Wait for map displayed 2 layers are displayed
+        cy.wait(['@getMap', '@getMap'])
+
         cy.get('#button-dataviz').click()
+
+        // Wait for graphics displayed 4 plots are displayed
+        cy.wait(['@getPlot', '@getPlot', '@getPlot', '@getPlot'])
 
         // Test first plot - Municipalities
         cy.get('#dataviz_plot_0_container > h3:nth-child(1) > span:nth-child(1) > span:nth-child(2)')
             .should('have.text', 'Municipalities')
+
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer')
+        .should('have.length', 1)
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 10)
 
         // Test - Bar bakeries by municipalities
         cy.get('#dataviz_plot_1_container > h3:nth-child(1) > span:nth-child(1) > span:nth-child(2)')
@@ -45,6 +86,71 @@ describe('Dataviz tests', function () {
             .should('have.length', 1)
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points')
             .should('have.length', 1)
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 10)
+
+        // Using locate by layer to filter layers and plots
+        cy.get('#locate-layer-polygons ~ span.custom-combobox > a.custom-combobox-toggle').click()
+        cy.get('ul.ui-menu.ui-autocomplete:visible > li.ui-menu-item:nth-child(3)').click()
+
+        // Wait for visible graphics updated 2 plots are visible
+        cy.wait(['@getPlot', '@getPlot'])
+
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 1)
+
+        // Scroll the dataviz dock to update graphics
+        cy.get('#dock-content').scrollTo('bottom')
+        cy.wait(['@getPlot', '@getPlot'])
+
+        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace g.slice')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 1)
+
+        // Scroll to top
+        cy.get('#dock-content').scrollTo('top')
+
+        // Zoom and filter to an other feature
+        cy.get('#locate-layer-polygons ~ span.custom-combobox > a.custom-combobox-toggle').click()
+        cy.get('ul.ui-menu.ui-autocomplete:visible > li.ui-menu-item:nth-child(5)').click()
+
+        // Wait for visible graphics updated 2 plots are visible
+        cy.wait(['@getPlot', '@getPlot'])
+
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 1)
+
+        // Scroll the dataviz dock to update graphics
+        cy.get('#dock-content').scrollTo('bottom')
+        cy.wait(['@getPlot', '@getPlot'])
+
+        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace g.slice')
+            .should('have.length', 1)
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 1)
+
+        // Scroll to top
+        cy.get('#dock-content').scrollTo('top')
+
+        // Deactivate filter provided by locate by layer
+        cy.get('#locate-clear').click()
+        // Wait for map updated, because plots are in cache
+        cy.wait(['@getMap', '@getMap'])
+
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 10)
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 10)
+
+        // Scroll the dataviz dock to update graphics
+        cy.get('#dock-content').scrollTo('bottom')
+        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace g.slice')
+            .should('have.length', 10)
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
