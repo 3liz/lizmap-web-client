@@ -284,26 +284,32 @@ var lizLayerActionButtons = function() {
                             layer.set('visible', false, true);
                         });
 
-                        // Handle layers visibility and style states.
-                        if ('layers' in themeSelected){
-                            for (var layerId in themeSelected.layers) {
-                                const layerName = lizMap.getLayerConfigById(layerId)[0];
-                                const layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(layerName);
-                                if (layer) {
-                                    // Visibility
-                                    layer.set('visible', true, true);
+                        // Handle layers visibility and style states
+                        for (const layerId in themeSelected?.['layers']) {
+                            const layerName = lizMap.getLayerConfigById(layerId)[0];
+                            const layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(layerName);
+                            if (layer) {
+                                // Visibility
+                                layer.set('visible', true, true);
 
-                                    // Style
-                                    let layerStyle = themeSelected.layers[layerId]?.['style'];
-                                    if (layerStyle) {
-                                        const wmsParams = layer.getSource().getParams();
-                                        if (wmsParams) {
-                                            wmsParams['STYLES'] = layerStyle;
-                                            layer.getSource().updateParams(wmsParams);
-                                        }
+                                // Style
+                                let layerStyle = themeSelected.layers[layerId]?.['style'];
+                                if (layerStyle) {
+                                    const wmsParams = layer.getSource().getParams();
+                                    if (wmsParams) {
+                                        wmsParams['STYLES'] = layerStyle;
+                                        layer.getSource().updateParams(wmsParams);
                                     }
                                 }
                             }
+                        }
+
+                        // Handle group's visibility
+                        const checkedGroupNode = themeSelected?.checkedGroupNode;
+                        if (checkedGroupNode) {
+                            checkedGroupNode.forEach(
+                                groupId => lizMap.mainLizmap.baseLayersMap.getLayerOrGroupByName(groupId)?.set('visible', true, true)
+                            );
                         }
 
                         lizMap.mainLizmap.baseLayersMap.overlayLayersGroup.changed();
