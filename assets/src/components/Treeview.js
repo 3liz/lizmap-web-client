@@ -20,7 +20,10 @@ export default class Treeview extends HTMLElement {
             ${layerGroup.getLayers().getArray().slice().reverse().map(layer => html`
             <li>
                 <input type="checkbox" id="node-${layer.get('name')}" .checked=${layer.getVisible()} @click=${() => layer.setVisible(!layer.getVisible())} >
-                <label for="node-${layer.get('name')}">${layer.get('name')}</label>
+                <div class="node">
+                    <label for="node-${layer.get('name')}">${layer.get('name')}</label>
+                    <i class="icon-info-sign" @click=${() => this._toggleMetadata(layer.get('name'), layer instanceof LayerGroup)}></i>
+                </div>
                 ${when(layer instanceof LayerGroup, () => this._layerTemplate(layer))}
             </li>`
             )}
@@ -32,5 +35,11 @@ export default class Treeview extends HTMLElement {
     }
 
     disconnectedCallback() {
+    }
+
+    _toggleMetadata (layerName, isGroup){
+        lizMap.events.triggerEvent("lizmapswitcheritemselected",
+          { 'name': layerName, 'type': isGroup ? "group" : "layer", 'selected': true}
+        )
     }
 }

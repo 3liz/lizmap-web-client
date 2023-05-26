@@ -2992,12 +2992,24 @@ lizmap-paste-geom svg {
   vertical-align: text-top;
 }
 
+lizmap-treeview ul {
+  list-style: none;
+}
+
+lizmap-treeview .node {
+  display: inline-flex;
+  width: calc(100% - 25px);
+  vertical-align: top;
+}
+
 lizmap-treeview input[type="checkbox"] {
   margin-top: 0;
+  margin-right: 5px;
+  scale: 1.4;
 }
 
 lizmap-treeview label {
-  display: inline;
+  flex-grow: 1;
 }
 
 lizmap-treeview input:not(:checked) ~ ul input[type="checkbox"] {
@@ -3006,4 +3018,14 @@ lizmap-treeview input:not(:checked) ~ ul input[type="checkbox"] {
 
 lizmap-treeview input:not(:checked) ~ ul label {
   font-style: italic;
+}
+
+lizmap-treeview .icon-info-sign {
+  display: none;
+  margin-left: auto;
+}
+
+lizmap-treeview .node:hover > .icon-info-sign {
+  display: inline-block;
+  cursor: pointer;
 }
