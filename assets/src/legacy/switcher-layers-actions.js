@@ -467,14 +467,14 @@ var lizLayerActionButtons = function() {
 
                 // Get layer
                 var layer = null;
-                if( isBaselayer){
+                if (isBaselayer) {
                     layer = lizMap.map.baseLayer;
-                }else{
-                    layer = lizMap.map.getLayersByName( lizMap.cleanName(eName) )[0];
+                } else {
+                    layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(eName);
                 }
 
                 // Set opacity
-                if( layer && layer.params) {
+                if( layer ) {
                     layer.setOpacity(opacity);
                     opacityLayers[eName] = opacity;
                     $('a.btn-opacity-layer').removeClass('active');

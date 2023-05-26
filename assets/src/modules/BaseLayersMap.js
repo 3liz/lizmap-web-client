@@ -280,7 +280,17 @@ export default class BaseLayersMap extends olMap {
     }
 
     /**
-     * Return overlay layer if typeName match
+     * Return overlay layer if `name` matches.
+     * `name` is unique for every layers
+     */
+    getLayerByName(name){
+        return this.overlayLayers.find(
+            layer => layer.get('name') === name
+        );
+    }
+
+    /**
+     * Return overlay layer if `typeName` matches
      */
     getLayerByTypeName(typeName){
         return this.overlayLayers.find(
