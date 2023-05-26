@@ -164,19 +164,28 @@ export default class BaseLayersMap extends olMap {
             mainEventDispatcher.dispatch('baseLayers.changed');
         });
 
+        // Array of layers and groups in overlayLayerGroup
+        this._overlayLayersAndGroups = [];
+
         // Returns a layer or a layerGroup depending of the node type
         const createNode = (node) => {
             if(node.type === 'group'){
                 const layers = [];
-                for (const layer of node.children.reverse()) {
+                for (const layer of node.children.slice().reverse()) {
                     layers.push(createNode(layer));
                 }
-                return new LayerGroup({
+                const layerGroup = new LayerGroup({
                     layers: layers,
                     properties: {
                         name: node.name
                     }
                 });
+
+                if(node.name !== 'root'){
+                    this._overlayLayersAndGroups.push(layerGroup);
+                }
+
+                return layerGroup;
             } else {
                 let layer;
                 const layerCfg = mainLizmap.config?.layers?.[node.name];
@@ -233,6 +242,7 @@ export default class BaseLayersMap extends olMap {
                         }
                     });
                 }
+                this._overlayLayersAndGroups.push(layer);
                 return layer;
             }
         }
@@ -252,6 +262,10 @@ export default class BaseLayersMap extends olMap {
 
         // Init view
         this.syncNewOLwithOL2View();
+    }
+
+    get overlayLayersAndGroups(){
+        return this._overlayLayersAndGroups;
     }
 
     // Get overlay layers (not layerGroups)
@@ -285,6 +299,16 @@ export default class BaseLayersMap extends olMap {
      */
     getLayerByName(name){
         return this.overlayLayers.find(
+            layer => layer.get('name') === name
+        );
+    }
+
+    /**
+     * Return overlay layer or group if `name` matches.
+     * `name` is unique for every layers/groups
+     */
+    getLayerOrGroupByName(name){
+        return this.overlayLayersAndGroups.find(
             layer => layer.get('name') === name
         );
     }
