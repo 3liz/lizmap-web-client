@@ -418,7 +418,7 @@ var lizLayerActionButtons = function() {
             });
 
 
-            // Opacity
+            // Styles
             $('#content').on('change', 'select.styleLayer', function(){
 
                 // Get chosen style
@@ -432,17 +432,18 @@ var lizLayerActionButtons = function() {
                     return false;
 
                 // Get layer
-                var layer = null;
-                if( isBaselayer){
+                let layer;
+                if (isBaselayer) {
                     layer = lizMap.map.baseLayer;
-                }else{
-                    layer = lizMap.map.getLayersByName( lizMap.cleanName(eName) )[0];
+                } else {
+                    layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(eName);
                 }
 
                 // Set style
-                if( layer && layer.params) {
-                    layer.params['STYLES'] = eStyle;
-                    layer.redraw( true );
+                const wmsParams = layer.getSource().getParams();
+                if( layer && wmsParams) {
+                    wmsParams['STYLES'] = eStyle;
+                    layer.getSource().updateParams(wmsParams);
 
                     lizMap.events.triggerEvent("layerstylechanged",
                         { 'featureType': eName}
@@ -466,7 +467,7 @@ var lizLayerActionButtons = function() {
                 }
 
                 // Get layer
-                var layer = null;
+                let layer;
                 if (isBaselayer) {
                     layer = lizMap.map.baseLayer;
                 } else {
