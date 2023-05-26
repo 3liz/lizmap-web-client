@@ -280,25 +280,18 @@ var lizLayerActionButtons = function() {
                         var themeSelected = lizMap.config.themes[themeNameSelected];
 
                         // Set every layer's visibility to false then to true if a layer is present in theme
-                        lizMap.mainLizmap.baseLayersMap.overlayLayers.forEach(layer => {
-                            layer.setVisible(false);
+                        lizMap.mainLizmap.baseLayersMap.overlayLayersAndGroups.forEach(layer => {
+                            layer.set('visible', false, true);
                         });
 
                         // Handle layers visibility and style states.
                         if ('layers' in themeSelected){
                             for (var layerId in themeSelected.layers) {
-
-                                var getLayerConfig = lizMap.getLayerConfigById(layerId);
-                                if (getLayerConfig) {
-                                    const [layerName, layerConfig] = getLayerConfig;
-                                    let typeName = layerConfig?.shortname || layerConfig?.typename || lizMap.cleanName(layerName);
-                                    let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
-                                    if (!layer) {
-                                        continue;
-                                    }
-
+                                const layerName = lizMap.getLayerConfigById(layerId)[0];
+                                const layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(layerName);
+                                if (layer) {
                                     // Visibility
-                                    layer.setVisible(true);
+                                    layer.set('visible', true, true);
 
                                     // Style
                                     let layerStyle = themeSelected.layers[layerId]?.['style'];
@@ -307,15 +300,13 @@ var lizLayerActionButtons = function() {
                                         if (wmsParams) {
                                             wmsParams['STYLES'] = layerStyle;
                                             layer.getSource().updateParams(wmsParams);
-
-                                            lizMap.events.triggerEvent("layerstylechanged",
-                                                { 'featureType': typeName }
-                                            );
                                         }
                                     }
                                 }
                             }
                         }
+
+                        lizMap.mainLizmap.baseLayersMap.overlayLayersGroup.changed();
 
                         // Trigger map theme event
                         lizMap.events.triggerEvent("mapthemechanged",
@@ -444,10 +435,6 @@ var lizLayerActionButtons = function() {
                 if( layer && wmsParams) {
                     wmsParams['STYLES'] = eStyle;
                     layer.getSource().updateParams(wmsParams);
-
-                    lizMap.events.triggerEvent("layerstylechanged",
-                        { 'featureType': eName}
-                    );
                 }
             });
 
