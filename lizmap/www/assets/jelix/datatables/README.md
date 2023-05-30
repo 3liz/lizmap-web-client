@@ -1,4 +1,4 @@
-Datatables 1.12.1, downloaded from https://datatables.net/download/
+Datatables 1.13.4, downloaded from https://datatables.net/download/
 with :
 
 - styling framework jQueryUI
