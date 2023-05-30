@@ -11,12 +11,15 @@ with some extra keywords : backend, tests, test, translation, funders, important
 ### Added
 
 * Quick help to open an online color picker
-* Add reminder to check the QGIS server URL
+* Add a reminder to check the QGIS server URL
+* Add **uuid** in forms for relational values
 
 ### Fixed
 
 * Display zoom and center buttons if "Add geometry to feature response" is checked
 * Fix the export from the popup feature toolbar
+* Data filtering was broken on children layers
+* Plots have to be refreshed when a filter is applied on the parent layer
 
 ### Tests
 
