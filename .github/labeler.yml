@@ -8,13 +8,19 @@
   - any: ['lizmap/modules/lizmap/lib/Form/**/*']
 
 "dataviz":
-  - any: ['lizmap/modules/dataviz/**/*']
+  - any: [
+    'lizmap/modules/dataviz/**/*',
+    'lizmap/www/assets/js/dataviz/',
+  ]
 
 "docker":
   - any: ['docker/**/*']
 
 "javascript":
-  - any: ['assets/**/*']
+  - any: [
+    'assets/**/*',
+    'lizmap/www/assets/js/**/*',
+  ]
 
 #"run cypress":
 #  - any: ['tests/end2end/**/*']
