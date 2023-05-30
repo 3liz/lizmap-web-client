@@ -13,6 +13,13 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.1
 * Minimum QGIS server needed 3.10
 
+## 3.5.13 - 2023-05-30
+
+### Important
+
+* Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.1
+* Minimum QGIS server needed 3.10
+
 ### Added
 
 * Quick help to open an online color picker
