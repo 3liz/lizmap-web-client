@@ -65,6 +65,10 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 * Update translated strings from the Transifex website
 
+### Deprecated
+
+* The AtlasPrint QGIS server plugin should be removed from the installation. It's not used anymore.
+
 ### Backend
 
 * Some JavaScript code cleanup
