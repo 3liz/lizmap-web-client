@@ -16,16 +16,17 @@ with some extra keywords : backend, tests, test, translation, funders, important
 ### Added
 
 * Quick help to open an online color picker
-* Add reminder to check the QGIS server URL
+* Add a reminder to check the QGIS server URL
+* Add **uuid** in forms for relational values
 
 ### Fixed
 
-* When the layer has a shortname :
+* If the layer has a shortname :
   * fix the PDF print request
-  * the user do a selection
-* The `EXP_FILTER` URL parameter was not build for cascade and pivot layers
-
-### 
+  * the user does a selection
+* The `EXP_FILTER` URL parameter was not built for cascade and pivot layers
+* Data filtering was broken on children layers
+* Plots have to be refreshed when a filter is applied on the parent layer
 
 ## 3.5.12 - 2023-04-12
 
