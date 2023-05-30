@@ -1,4 +1,4 @@
-CKEditor 5 classic editor custom build v35.3.0
+CKEditor 5 classic editor custom build v38.0.1
 ==============================================
 
 This is a custom build of CkEditor from https://ckeditor.com/ckeditor-5/online-builder/,
@@ -8,11 +8,11 @@ with these features:
 - additionnal plugins:
   - Alignement
   - Indent block
-  - underline
+  - Simple upload adapter
   - strikethrough
   - subscript
   - superscript
-  - Simple upload adapter
+  - underline
 - removed plugins:
   - ckBox
   - cloud services

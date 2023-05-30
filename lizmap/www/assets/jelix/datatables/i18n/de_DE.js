@@ -8,9 +8,9 @@ var DatatablesTranslations = {
     "processing": "Bitte warten ..",
     "paginate": {
         "first": "Erste",
-        "previous": "Zurück",
         "next": "Nächste",
-        "last": "Letzte"
+        "last": "Letzte",
+        "previous": "Vorherige"
     },
     "aria": {
         "sortAscending": ": aktivieren, um Spalte aufsteigend zu sortieren",
@@ -41,20 +41,29 @@ var DatatablesTranslations = {
         "collection": "Aktionen <span class=\"ui-button-icon-primary ui-icon ui-icon-triangle-1-s\"><\/span>",
         "colvis": "Spaltensichtbarkeit",
         "colvisRestore": "Sichtbarkeit wiederherstellen",
-        "copyKeys": "Drücken Sie die Taste <i>ctrl<\/i> oder <i>⌘<\/i> + <i>C<\/i> um die Tabelle<br \/>in den Zwischenspeicher zu kopieren.<br \/><br \/>Um den Vorgang abzubrechen, klicken Sie die Nachricht an oder drücken Sie auf Escape.",
         "csv": "CSV",
         "excel": "Excel",
         "pageLength": {
             "-1": "Alle Zeilen anzeigen",
-            "_": "%d Zeilen anzeigen"
+            "1": "Zeige 1 Zeile",
+            "_": "Zeige %d Zeilen"
         },
-        "pdf": "PDF"
+        "pdf": "PDF",
+        "createState": "Ansicht erstellen",
+        "removeAllStates": "Alle Ansichten entfernen",
+        "removeState": "Entfernen",
+        "renameState": "Umbenennen",
+        "savedStates": "Gespeicherte Ansicht",
+        "stateRestore": "Ansicht %d",
+        "updateState": "Aktualisieren",
+        "copyKeys": "Drücken Sie die Taste <i>STRG<\/i> oder <i>⌘<\/i> + <i>C<\/i> um die Tabelle<br \/>in den Zwischenspeicher zu kopieren.<br \/><br \/>Um den Vorgang abzubrechen, klicken Sie die Nachricht an oder drücken Sie die Escape-Taste."
     },
     "autoFill": {
         "cancel": "Abbrechen",
         "fill": "Alle Zellen mit <i>%d<i> füllen<\/i><\/i>",
         "fillHorizontal": "Alle horizontalen Zellen füllen",
-        "fillVertical": "Alle vertikalen Zellen füllen"
+        "fillVertical": "Alle vertikalen Zellen füllen",
+        "info": "Automatische Vervollständigung"
     },
     "decimal": ",",
     "search": "Suche:",
@@ -97,8 +106,8 @@ var DatatablesTranslations = {
                 "notEmpty": "Nicht leer",
                 "startsWith": "Startet mit",
                 "notContains": "enthält nicht",
-                "notStarts": "startet nicht mit",
-                "notEnds": "endet nicht mit"
+                "notStartsWith": "startet nicht mit",
+                "notEndsWith": "endet nicht mit"
             },
             "array": {
                 "equals": "ist gleich",
@@ -112,15 +121,15 @@ var DatatablesTranslations = {
         "data": "Daten",
         "deleteTitle": "Filterregel entfernen",
         "leftTitle": "Äußere Kriterien",
-        "logicAnd": "UND",
-        "logicOr": "ODER",
         "rightTitle": "Innere Kriterien",
         "title": {
             "0": "Such-Baukasten",
             "_": "Such-Baukasten (%d)"
         },
         "value": "Wert",
-        "clearAll": "Alle löschen"
+        "clearAll": "Alle entfernen",
+        "logicAnd": "Und",
+        "logicOr": "Oder"
     },
     "searchPanes": {
         "clearMessage": "Leeren",
@@ -130,11 +139,11 @@ var DatatablesTranslations = {
         },
         "countFiltered": "{shown} ({total})",
         "emptyPanes": "Keine Suchmasken",
-        "loadMessage": "Lade Suchmasken..",
         "title": "Aktive Filter: %d",
         "showMessage": "zeige Alle",
         "collapseMessage": "Alle einklappen",
-        "count": "{total}"
+        "count": "{total}",
+        "loadMessage": "Lade Suchmasken..."
     },
     "thousands": ".",
     "zeroRecords": "Keine passenden Einträge gefunden",
@@ -175,21 +184,16 @@ var DatatablesTranslations = {
         "create": {
             "button": "Neu",
             "title": "Neuen Eintrag erstellen",
-            "submit": "Neu"
-        },
-        "edit": {
-            "button": "Ändern",
-            "title": "Eintrag ändern",
-            "submit": "ändern"
+            "submit": "Erstellen"
         },
         "remove": {
-            "button": "Löschen",
-            "title": "Löschen",
-            "submit": "Löschen",
             "confirm": {
                 "_": "Sollen %d Zeilen gelöscht werden?",
                 "1": "Soll diese Zeile gelöscht werden?"
-            }
+            },
+            "button": "Entfernen",
+            "title": "Entfernen",
+            "submit": "Entfernen"
         },
         "error": {
             "system": "Ein Systemfehler ist aufgetreten"
@@ -199,6 +203,41 @@ var DatatablesTranslations = {
             "info": "Die ausgewählten Elemente enthalten mehrere Werte für dieses Feld. Um alle Elemente für dieses Feld zu bearbeiten und auf denselben Wert zu setzen, klicken oder tippen Sie hier, andernfalls behalten diese ihre individuellen Werte bei.",
             "restore": "Änderungen zurücksetzen",
             "noMulti": "Dieses Feld kann nur einzeln bearbeitet werden, nicht als Teil einer Mengen-Änderung."
+        },
+        "edit": {
+            "button": "Bearbeiten",
+            "title": "Eintrag bearbeiten",
+            "submit": "Bearbeiten"
         }
+    },
+    "searchPlaceholder": "Suchen...",
+    "stateRestore": {
+        "creationModal": {
+            "button": "Erstellen",
+            "columns": {
+                "search": "Spalten Suche",
+                "visible": "Spalten Sichtbarkeit"
+            },
+            "name": "Name:",
+            "order": "Sortieren",
+            "paging": "Seiten",
+            "scroller": "Scroll Position",
+            "search": "Suche",
+            "searchBuilder": "Such-Baukasten",
+            "select": "Auswahl",
+            "title": "Neue Ansicht erstellen",
+            "toggleLabel": "Inkludiert:"
+        },
+        "duplicateError": "Eine Ansicht mit diesem Namen existiert bereits.",
+        "emptyError": "Name darf nicht leer sein.",
+        "emptyStates": "Keine gespeicherten Ansichten",
+        "removeConfirm": "Bist du dir sicher, dass du %s entfernen möchtest?",
+        "removeError": "Entfernen der Ansicht fehlgeschlagen.",
+        "removeJoiner": " und ",
+        "removeSubmit": "Entfernen",
+        "removeTitle": "Ansicht entfernen",
+        "renameButton": "Umbenennen",
+        "renameLabel": "Neuer Name für %s:",
+        "renameTitle": "Ansicht umbenennen"
     }
 };

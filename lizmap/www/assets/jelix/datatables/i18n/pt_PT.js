@@ -91,8 +91,8 @@ var DatatablesTranslations = {
                 "notEmpty": "Não está vazio",
                 "startsWith": "Começa em",
                 "notContains": "Não contém",
-                "notStarts": "Não começa com",
-                "notEnds": "Não termina com"
+                "notStartsWith": "Não começa com",
+                "notEndsWith": "Não termina com"
             },
             "array": {
                 "equals": "Igual",

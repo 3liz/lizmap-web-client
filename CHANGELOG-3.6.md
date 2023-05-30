@@ -20,6 +20,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Fix the export from the popup feature toolbar
 * Data filtering was broken on children layers
 * Plots have to be refreshed when a filter is applied on the parent layer
+* Issues in rights management when setting some specific rights to "forbidden"
 
 ### Tests
 
