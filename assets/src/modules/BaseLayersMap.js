@@ -168,16 +168,17 @@ export default class BaseLayersMap extends olMap {
         this._overlayLayersAndGroups = [];
 
         // Returns a layer or a layerGroup depending of the node type
-        const createNode = (node) => {
+        const createNode = (node, parentName) => {
             if(node.type === 'group'){
                 const layers = [];
                 for (const layer of node.children.slice().reverse()) {
-                    layers.push(createNode(layer));
+                    layers.push(createNode(layer, node.name));
                 }
                 const layerGroup = new LayerGroup({
                     layers: layers,
                     properties: {
-                        name: node.name
+                        name: node.name,
+                        parentName: parentName
                     }
                 });
 
@@ -220,10 +221,7 @@ export default class BaseLayersMap extends olMap {
                                 FORMAT: layerCfg.imageFormat,
                                 DPI: 96
                             },
-                        }),
-                        properties: {
-                            name: layerCfg.name
-                        }
+                        })
                     });
                 } else {
                     const parser = new WMTSCapabilities();
@@ -236,12 +234,25 @@ export default class BaseLayersMap extends olMap {
                     layer = new TileLayer({
                         minResolution: minResolution,
                         maxResolution: maxResolution,
-                        source: new WMTS(options),
-                        properties: {
-                            name: layerCfg.name
-                        }
+                        source: new WMTS(options)
                     });
                 }
+
+                layer.setProperties({
+                    name: layerCfg.name,
+                    parentName: parentName
+                });
+
+                // Set layer's group visible to `true` when layer's visible is set to `true`
+                // As in QGIS
+                layer.on('change:visible', evt => {
+                    const layer = evt.target;
+                    if (layer.getVisible()) {
+                        const parentGroup = this.getLayerOrGroupByName(layer.get('parentName'));
+                        parentGroup?.setVisible(true);
+                    }
+                });
+
                 this._overlayLayersAndGroups.push(layer);
                 return layer;
             }
