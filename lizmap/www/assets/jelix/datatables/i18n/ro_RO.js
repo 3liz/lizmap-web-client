@@ -6,12 +6,6 @@ var DatatablesTranslations = {
     "infoEmpty": "Afișate de la 0 la 0 din 0 înregistrări",
     "infoFiltered": "(filtrate dintr-un total de _MAX_ înregistrări)",
     "search": "Caută:",
-    "paginate": {
-        "first": "Prima",
-        "previous": "Precedenta",
-        "next": "Următoarea",
-        "last": "Ultima"
-    },
     "aria": {
         "sortAscending": "Sortează ascendent",
         "sortDescending": "Sortează descendent"
@@ -19,8 +13,8 @@ var DatatablesTranslations = {
     "autoFill": {
         "cancel": "Anulează",
         "fill": "Completează",
-        "fillHorizontal": "Completeză celule orizonatl",
-        "fillVertical": "Completează celule vertical"
+        "fillVertical": "Completează celule vertical",
+        "fillHorizontal": "Completeză celule orizonal"
     },
     "buttons": {
         "csv": "CSV",
@@ -35,7 +29,13 @@ var DatatablesTranslations = {
         "colvis": "Vizibilitate coloane",
         "copy": "Copie",
         "copyTitle": "Copie în Clipboard",
-        "colvisRestore": "Resetare vizibilitate"
+        "colvisRestore": "Resetare vizibilitate",
+        "copyKeys": "Apasă ctrl sau u2318 + C pentru a copia datele din tabel în clipboard-ul sistemului.<br \/><br \/>Pentru a anula, dați clic pe acest mesaj sau apăsați pe Escape.",
+        "createState": "Creează Stare",
+        "removeAllStates": "Înlătură Toate Stările",
+        "removeState": "Înlătură",
+        "renameState": "Redenumește",
+        "savedStates": "Salvează Stări"
     },
     "searchBuilder": {
         "add": "Adaugă",
@@ -43,27 +43,26 @@ var DatatablesTranslations = {
         "condition": "Condiție",
         "data": "Data",
         "logicAnd": "Și",
-        "logicOr": "Sau"
-    },
-    "editor": {
-        "close": "inchide",
-        "create": {
-            "button": "Nou",
-            "title": "Crează o intrare nouă",
-            "submit": "Crează"
+        "logicOr": "Sau",
+        "button": {
+            "0": "Generator de căutare",
+            "_": "Generator de căutare (%d)"
         },
-        "edit": {
-            "button": "Editează",
-            "submit": "Editează",
-            "title": "Editează rând"
+        "clearAll": "Curata tot",
+        "conditions": {
+            "date": {
+                "after": "După",
+                "before": "Inainte de",
+                "between": "Între",
+                "empty": "Gol"
+            }
         },
-        "remove": {
-            "button": "Șterge",
-            "title": "Șterge",
-            "submit": "Șterge"
-        },
-        "error": {
-            "system": "O eroare a apărut."
+        "deleteTitle": "Ștergeți regula de filtrare",
+        "leftTitle": "Criterii Outdent",
+        "rightTitle": "Criterii de indentare",
+        "title": {
+            "0": "Generator de căutare",
+            "_": "Generator de căutare (%d)"
         }
     },
     "loadingRecords": "Încarcă...",
@@ -77,10 +76,71 @@ var DatatablesTranslations = {
         "amPm": [
             "AM",
             "PM"
+        ],
+        "weekdays": [
+            "lun",
+            "Mar",
+            "Mer",
+            "Joi",
+            "Vin",
+            "Sam",
+            "Dum"
+        ],
+        "months": [
+            "Ianuarie",
+            "Februarie",
+            "Martie",
+            "Aprilie",
+            "Mai",
+            "Iunie",
+            "Iulie",
+            "August",
+            "Septembrie",
+            "Octombrie",
+            "Noiembrie",
+            "Decembrie"
         ]
+    },
+    "editor": {
+        "create": {
+            "button": "Nou",
+            "title": "Crează o intrare nouă",
+            "submit": "Crează"
+        },
+        "edit": {
+            "button": "Editează",
+            "submit": "Editează",
+            "title": "Editează rând"
+        },
+        "remove": {
+            "button": "Șterge",
+            "title": "Șterge",
+            "submit": "Șterge",
+            "confirm": {
+                "_": "Sigur doriți să ștergeți %d rânduri?",
+                "1": "Sigur doriți să ștergeți 1 rând?"
+            }
+        },
+        "close": "Închide",
+        "error": {
+            "system": "A apărut o eroare."
+        },
+        "multi": {
+            "title": "Valori multiple",
+            "info": "Elementele selectate conțin valori diferite pentru această intrare. Pentru a edita și a seta toate elementele pentru această intrare la aceeași valoare, faceți clic sau atingeți aici, altfel își vor păstra valorile individuale.",
+            "restore": "Anulează modificările",
+            "noMulti": "Această intrare poate fi editată individual, dar nu face parte dintr-un grup."
+        }
     },
     "decimal": ",",
     "emptyTable": "Nu există date în tabel",
     "searchPlaceholder": "Caută în tabel",
-    "thousands": "."
+    "thousands": ".",
+    "infoThousands": ".",
+    "paginate": {
+        "first": "Prima pagină",
+        "last": "Ultima pagină",
+        "next": "Pagina următoare",
+        "previous": "Pagina precedentă"
+    }
 };

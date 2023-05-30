@@ -197,12 +197,15 @@ var rightsEditor = {
                 // we could restore the previous values of rights of the same branch
                 this.value = this.dataset.previousValue;
             }
+            else if (val === 'n') {
+                this.value = 'n';
+            }
             else {
-                // we disable all rights having the same branch. we store their current value.
+                // we disable all rights having the same branch. we use the previous value.
                 if (this.dataset.previousValue !== 'y') {
                     this.value = this.dataset.previousValue;
                 }
-                else if (this.value === 'y') {
+                else  {
                     this.value = '';
                 }
             }

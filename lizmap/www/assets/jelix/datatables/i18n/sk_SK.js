@@ -78,7 +78,10 @@ var DatatablesTranslations = {
                 "equals": "Rovná sa",
                 "not": "Nie je",
                 "notEmpty": "Nie je prázdne",
-                "startsWith": "Začína s"
+                "startsWith": "Začína s",
+                "notContains": "Neobsahuje",
+                "notStartsWith": "Nezačína s",
+                "notEndsWith": "Nekončí s"
             },
             "array": {
                 "equals": "Rovná sa",
@@ -134,10 +137,6 @@ var DatatablesTranslations = {
         "minutes": "Minúty",
         "seconds": "Sekundy",
         "unknown": "Neznámy",
-        "amPm": [
-            "am",
-            "pm"
-        ],
         "previous": "Predchádzajúci",
         "months": {
             "0": "Január",
@@ -161,6 +160,10 @@ var DatatablesTranslations = {
             "Štvrtok",
             "Piatok",
             "Sobota"
+        ],
+        "amPm": [
+            "Dopoludnia",
+            "Popoludní"
         ]
     },
     "editor": {
