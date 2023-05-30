@@ -8,6 +8,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.3 - 2022-04-17
+
 ### Added
 
 * Quick help to open an online color picker
@@ -22,9 +24,19 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Plots have to be refreshed when a filter is applied on the parent layer
 * Issues in rights management when setting some specific rights to "forbidden"
 
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
 ### Tests
 
 * Better test environment for automatic testing with QGIS server
+
+### Backend
+
+* Include the latest updates from Jelix 1.8.1
 
 ## 3.6.3 - 2022-04-17
 
@@ -49,10 +61,10 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Remove a warning from Spatialite in the logs, which was not supported for a long time in the QGIS plugin
 * Fix display of key/value when the layer is not published as WFS in the form filter and the attribute table panel
 * Check if the centroid is used for the filtering by polygon when editing the layer
-* When the layer has a shortname :
+* If the layer has a shortname :
   * fix the PDF print request
-  * the user do a selection
-* The `EXP_FILTER` URL parameter was not build for cascade and pivot layers
+  * the user does a selection
+* The `EXP_FILTER` URL parameter was not built for cascade and pivot layers
 
 ### Translations
 
