@@ -8,7 +8,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
-## 3.6.3 - 2022-04-17
+## 3.6.4 - 2023-05-30
 
 ### Added
 
@@ -38,7 +38,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 * Include the latest updates from Jelix 1.8.1
 
-## 3.6.3 - 2022-04-17
+## 3.6.3 - 2023-04-17
 
 ### Added
 
@@ -77,7 +77,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Include the latest updates from Jelix 1.8
 * Some bugfix about the docker image
 
-## 3.6.2 - 2022-02-28
+## 3.6.2 - 2023-02-28
 
 ### Added
 
@@ -124,7 +124,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 * Add more tests about End2End integration to avoid regressions
 
-## 3.6.1 - 2022-01-23
+## 3.6.1 - 2023-01-23
 
 ### Added
 
