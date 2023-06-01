@@ -2992,6 +2992,12 @@ lizmap-paste-geom svg {
   vertical-align: text-top;
 }
 
+/* Treeview */
+
+lizmap-treeview .filtered, button#layerActionUnfilter.btn {
+  background-color: rgba(255, 171, 0, 0.4);
+}
+
 lizmap-treeview ul {
   list-style: none;
 }
@@ -3000,6 +3006,7 @@ lizmap-treeview .node {
   display: inline-flex;
   width: calc(100% - 25px);
   vertical-align: top;
+  padding-left: 2px;
 }
 
 lizmap-treeview input[type="checkbox"] {
