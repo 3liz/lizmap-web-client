@@ -251,6 +251,10 @@ export default class BaseLayersMap extends olMap {
                     const changedLayer = evt.target;
                     const parentGroup = this.getLayerOrGroupByName(changedLayer.get('parentName'));
 
+                    if(!parentGroup){
+                        return;
+                    }
+
                     if (changedLayer.getVisible()) {
                         parentGroup?.setVisible(true);
                     }

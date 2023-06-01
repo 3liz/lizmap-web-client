@@ -1979,7 +1979,6 @@ var lizAttributeTable = function() {
 
             // Get first elements of the pile and withdraw it from the pile
             var typeName = typeNamePile.shift();
-            var cleanName = lizMap.cleanName(typeName);
 
             // Get corresponding filter
             var aFilter = typeNameFilter[typeName];
@@ -1991,16 +1990,7 @@ var lizAttributeTable = function() {
                 applyEmptyLayerFilter( typeName, typeNamePile, typeNameFilter, typeNameDone, cascade );
             }
 
-            // Change background in switcher
-            var trFilteredBgcolor = 'inherit';
-            var displayUnFilterSwitcherTool = false;
-            if( aFilter ){
-                trFilteredBgcolor = 'rgba(255, 171, 0, 0.4)';
-                displayUnFilterSwitcherTool = true;
-            }
-            $('#switcher .treeTable tr#group-' + cleanName).css('background-color', trFilteredBgcolor );
-            $('#switcher .treeTable tr#layer-' + cleanName).css('background-color', trFilteredBgcolor );
-            $('#layerActionUnfilter' ).toggle( ( lizMap.lizmapLayerFilterActive !== null ) ).css( 'background-color', 'rgba(255, 171, 0, 0.4)');
+            $('#layerActionUnfilter').toggle((lizMap.lizmapLayerFilterActive !== null));
         }
 
         function buildChildParam( relation, typeNameDone ) {
@@ -2425,8 +2415,8 @@ var lizAttributeTable = function() {
                         var cFilter = null;
                         var cExpFilter = null;
                         // Get WMS layer name (can be different depending on QGIS Server version)
-                        let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(lizMap.cleanName(cName));
-                        var wmsCname = layer.getSource?.().getParams?.()?.['LAYERS'] || cName;
+                        let layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(lizMap.cleanName(cName));
+                        var wmsCname = layer?.getSource?.().getParams?.()?.['LAYERS'] || cName;
 
                         // Build filter for children
                         // and add child to the typeNameFilter and typeNamePile objects
