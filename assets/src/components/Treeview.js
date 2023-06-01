@@ -24,7 +24,7 @@ export default class Treeview extends HTMLElement {
                     <label for="node-${layer.get('name')}">${layer.get('name')}</label>
                     <i class="icon-info-sign" @click=${() => this._toggleMetadata(layer.get('name'), layer instanceof LayerGroup)}></i>
                 </div>
-                ${when(layer instanceof LayerGroup, () => this._layerTemplate(layer))}
+                ${when((layer instanceof LayerGroup) && !layer.get('groupAsLayer'), () => this._layerTemplate(layer))}
             </li>`
             )}
         </ul>`;

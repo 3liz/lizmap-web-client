@@ -170,6 +170,7 @@ export default class BaseLayersMap extends olMap {
         // Returns a layer or a layerGroup depending of the node type
         const createNode = (node, parentName) => {
             const layerCfg = mainLizmap.config?.layers?.[node.name];
+            const parentGroupCfg = mainLizmap.config?.layers?.[parentName];
 
             if(node.type === 'group'){
                 const layers = [];
@@ -177,15 +178,18 @@ export default class BaseLayersMap extends olMap {
                     layers.push(createNode(layer, node.name));
                 }
                 const layerGroup = new LayerGroup({
-                    layers: layers,
-                    properties: {
-                        name: node.name,
-                        parentName: parentName,
-                        mutuallyExclusive: layerCfg?.mutuallyExclusive === "True"
-                    }
+                    layers: layers
                 });
 
-                if(node.name !== 'root'){
+                if (node.name !== 'root') {
+                    layerGroup.setVisible(layerCfg?.toggled === "True");
+                    layerGroup.setProperties({
+                        name: node.name,
+                        parentName: parentName,
+                        mutuallyExclusive: layerCfg?.mutuallyExclusive === "True",
+                        groupAsLayer: layerCfg?.groupAsLayer === "True"
+                    });
+
                     this._overlayLayersAndGroups.push(layerGroup);
                 }
 
@@ -214,7 +218,6 @@ export default class BaseLayersMap extends olMap {
                         // extent: extent,
                         minResolution: minResolution,
                         maxResolution: maxResolution,
-                        visible: layerCfg.toggled === "True",
                         source: new ImageWMS({
                             url: mainLizmap.serviceURL,
                             serverType: 'qgis',
@@ -239,6 +242,16 @@ export default class BaseLayersMap extends olMap {
                         source: new WMTS(options)
                     });
                 }
+                
+                let isVisible = layerCfg.toggled === "True";
+
+                // If parent group is a "group as layer" all layers in it are visible
+                // and the visibility is handled by group
+                if (parentGroupCfg?.groupAsLayer === "True") {
+                    isVisible = true;
+                }
+
+                layer.setVisible(isVisible);
 
                 layer.setProperties({
                     name: layerCfg.name,
