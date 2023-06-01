@@ -3008,6 +3008,27 @@ lizmap-treeview input[type="checkbox"] {
   scale: 1.4;
 }
 
+lizmap-treeview input.rounded-checkbox {
+  width:13px;
+  height: 13px;
+  border-radius: 50%;
+  vertical-align: middle;
+  border: 1px solid #767676;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+lizmap-treeview input.rounded-checkbox[type="checkbox"]:focus{
+  outline: none;
+}
+
+lizmap-treeview input.rounded-checkbox:checked {
+  appearance: auto;
+  clip-path: circle(50% at 50% 50%);
+}
+
 lizmap-treeview label {
   flex-grow: 1;
 }

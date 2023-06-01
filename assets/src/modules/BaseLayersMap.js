@@ -169,6 +169,8 @@ export default class BaseLayersMap extends olMap {
 
         // Returns a layer or a layerGroup depending of the node type
         const createNode = (node, parentName) => {
+            const layerCfg = mainLizmap.config?.layers?.[node.name];
+
             if(node.type === 'group'){
                 const layers = [];
                 for (const layer of node.children.slice().reverse()) {
@@ -178,7 +180,8 @@ export default class BaseLayersMap extends olMap {
                     layers: layers,
                     properties: {
                         name: node.name,
-                        parentName: parentName
+                        parentName: parentName,
+                        mutuallyExclusive: layerCfg?.mutuallyExclusive === "True"
                     }
                 });
 
@@ -189,7 +192,6 @@ export default class BaseLayersMap extends olMap {
                 return layerGroup;
             } else {
                 let layer;
-                const layerCfg = mainLizmap.config?.layers?.[node.name];
                 // Keep only layers with a geometry
                 if(layerCfg.type !== 'layer'){
                     return;
@@ -243,13 +245,23 @@ export default class BaseLayersMap extends olMap {
                     parentName: parentName
                 });
 
-                // Set layer's group visible to `true` when layer's visible is set to `true`
-                // As in QGIS
                 layer.on('change:visible', evt => {
-                    const layer = evt.target;
-                    if (layer.getVisible()) {
-                        const parentGroup = this.getLayerOrGroupByName(layer.get('parentName'));
+                    // Set layer's group visible to `true` when layer's visible is set to `true`
+                    // As in QGIS
+                    const changedLayer = evt.target;
+                    const parentGroup = this.getLayerOrGroupByName(changedLayer.get('parentName'));
+
+                    if (changedLayer.getVisible()) {
                         parentGroup?.setVisible(true);
+                    }
+
+                    // Mutually exclusive groups
+                    if (changedLayer.getVisible() && parentGroup.get("mutuallyExclusive")) {
+                        parentGroup.getLayers().forEach(layer => {
+                            if (layer != changedLayer) {
+                                layer.setVisible(false);
+                            }
+                        })
                     }
                 });
 
