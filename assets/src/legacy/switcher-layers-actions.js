@@ -110,91 +110,89 @@ var lizLayerActionButtons = function() {
             html+= '<dd><button class="btn btn-mini layerActionZoom" title="'+lizDict['layer.metadata.zoomToExtent.title']+'" value="'+aName+'"><i class="icon-zoom-in"></i></button></dd>';
 
             // Tools
-            if( metadatas.type == 'layer'){
-                var isBaselayer = '';
-                if(metadatas.isBaselayer){
-                    isBaselayer = 'baselayer';
-                }
+            var isBaselayer = '';
+            if(metadatas.isBaselayer){
+                isBaselayer = 'baselayer';
+            }
 
-                // Styles
-                if( metadatas.styles ){
-                    let typeName = layerConfig?.shortname || layerConfig?.typename || lizMap.cleanName(aName);
-                    let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
-                    let selectedStyle = layer?.getSource().getParams()?.['STYLES'];
-                    options = '';
-                    for( var st in metadatas.styles ){
-                        st = metadatas.styles[st];
-                        if( st == selectedStyle )
-                            options += '<option value="'+st+'" selected>'+st+'</option>';
-                        else
-                            options += '<option value="'+st+'">'+st+'</option>';
-                    }
-                    if( options != '' ){
-                        html+= '        <dt>'+lizDict['layer.metadata.style.title']+'</dt>';
-                        html+= '<dd>';
-                        html+= '<input type="hidden" class="styleLayer '+isBaselayer+'" value="'+aName+'">';
-                        html+= '<select class="styleLayer '+isBaselayer+'">';
-                        html+= options;
-                        html+= '</select>';
-                        html+= '</dd>';
-                    }
+            // Styles
+            if( metadatas.styles ){
+                let typeName = layerConfig?.shortname || layerConfig?.typename || lizMap.cleanName(aName);
+                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
+                let selectedStyle = layer?.getSource().getParams()?.['STYLES'];
+                options = '';
+                for( var st in metadatas.styles ){
+                    st = metadatas.styles[st];
+                    if( st == selectedStyle )
+                        options += '<option value="'+st+'" selected>'+st+'</option>';
+                    else
+                        options += '<option value="'+st+'">'+st+'</option>';
                 }
+                if( options != '' ){
+                    html+= '        <dt>'+lizDict['layer.metadata.style.title']+'</dt>';
+                    html+= '<dd>';
+                    html+= '<input type="hidden" class="styleLayer '+isBaselayer+'" value="'+aName+'">';
+                    html+= '<select class="styleLayer '+isBaselayer+'">';
+                    html+= options;
+                    html+= '</select>';
+                    html+= '</dd>';
+                }
+            }
 
-                // Opacity
-                html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
-                html+= '<dd>';
-                var currentOpacity = 1;
-                if( aName in opacityLayers ){
-                    currentOpacity = opacityLayers[aName];
-                }
-                html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
-                var opacities = lizMap.config.options.layersOpacities;
-                if(typeof opacities === 'undefined') {
-                    opacities = [0.2, 0.4, 0.6, 0.8, 1];
-                }
-                for ( var i=0, len=opacities.length; i<len; i++ ) {
-                    var oactive = '';
-                    if(currentOpacity == opacities[i])
-                        oactive = 'active';
-                    html+= '<a href="#" class="btn btn-mini btn-opacity-layer '+ oactive+' '+ opacities[i]*100+'">'+opacities[i]*100+'</a>';
-                }
-                html+= '</dd>';
+            // Opacity
+            html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
+            html+= '<dd>';
+            var currentOpacity = 1;
+            if( aName in opacityLayers ){
+                currentOpacity = opacityLayers[aName];
+            }
+            html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
+            var opacities = lizMap.config.options.layersOpacities;
+            if(typeof opacities === 'undefined') {
+                opacities = [0.2, 0.4, 0.6, 0.8, 1];
+            }
+            for ( var i=0, len=opacities.length; i<len; i++ ) {
+                var oactive = '';
+                if(currentOpacity == opacities[i])
+                    oactive = 'active';
+                html+= '<a href="#" class="btn btn-mini btn-opacity-layer '+ oactive+' '+ opacities[i]*100+'">'+opacities[i]*100+'</a>';
+            }
+            html+= '</dd>';
 
-                // Export
-                if ( 'exportLayers' in lizMap.config.options
-                  && lizMap.config.options.exportLayers == 'True'
-                  && featureTypes != null
-                  && featureTypes.length != 0 ) {
-                    var exportFormats = lizMap.getVectorLayerResultFormat();
-                    var options = '';
-                    for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-                        var format = exportFormats[i];
-                        options += '<option value="'+format+'">'+format+'</option>';
-                    }
-                    // Export layer
-                    // Only if layer is in attribute table
-                    var showExport = false;
-                    if( options != '' ) {
-                        for (const featureType of featureTypes) {
-                            var typeName = featureType.getElementsByTagName('Name')[0].textContent;
-                            if ( typeName == aName ) {
-                                showExport = true;
-                                continue;
-                            } else if (typeName == aName.split(' ').join('_') ) {
-                                showExport = true;
-                                continue;
-                            }
+            // Export
+            if ( 'exportLayers' in lizMap.config.options
+                && lizMap.config.options.exportLayers == 'True'
+                && featureTypes != null
+                && featureTypes.length != 0 ) {
+                var exportFormats = lizMap.getVectorLayerResultFormat();
+                var options = '';
+                for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+                    var format = exportFormats[i];
+                    options += '<option value="'+format+'">'+format+'</option>';
+                }
+                // Export layer
+                // Only if layer is in attribute table
+                var showExport = false;
+                if( options != '' ) {
+                    for (const featureType of featureTypes) {
+                        var typeName = featureType.getElementsByTagName('Name')[0].textContent;
+                        if ( typeName == aName ) {
+                            showExport = true;
+                            continue;
+                        } else if (typeName == aName.split(' ').join('_') ) {
+                            showExport = true;
+                            continue;
                         }
                     }
-                    if( showExport ) {
-                        html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
-                        html+= '<dd>';
-                        html+= '<select class="exportLayer '+isBaselayer+'">';
-                        html+= options;
-                        html+= '</select>';
-                        html+= '<button class="btn btn-mini exportLayer '+isBaselayer+'" title="'+lizDict['layer.metadata.export.title']+'" value="'+aName+'"><i class="icon-download"></i></button>';
-                        html+= '</dd>';
-                    }
+                }
+                if( showExport ) {
+                    html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
+                    html+= '<dd>';
+                    html+= '<select class="exportLayer '+isBaselayer+'">';
+                    html+= options;
+                    html+= '</select>';
+                    html+= '<button class="btn btn-mini exportLayer '+isBaselayer+'" title="'+lizDict['layer.metadata.export.title']+'" value="'+aName+'"><i class="icon-download"></i></button>';
+                    html+= '</dd>';
                 }
             }
 
@@ -464,7 +462,7 @@ var lizLayerActionButtons = function() {
                 if (isBaselayer) {
                     layer = lizMap.map.baseLayer;
                 } else {
-                    layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(eName);
+                    layer = lizMap.mainLizmap.baseLayersMap.getLayerOrGroupByName(eName);
                 }
 
                 // Set opacity
