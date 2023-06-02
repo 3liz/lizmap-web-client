@@ -1,6 +1,6 @@
 import { mainLizmap } from '../modules/Globals.js';
-import { ADJUSTED_DPI } from '../utils/Constants';
-import ScaleLine from 'ol/control/ScaleLine';
+import { ADJUSTED_DPI } from '../utils/Constants.js';
+import ScaleLine from 'ol/control/ScaleLine.js';
 
 export default class Scaleline extends HTMLElement {
     constructor() {

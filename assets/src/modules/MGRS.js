@@ -1,7 +1,7 @@
-import Graticule from 'ol/layer/Graticule';
+import Graticule from 'ol/layer/Graticule.js';
 
 import Point from 'ol/geom/Point.js';
-import LineString from 'ol/geom/LineString';
+import LineString from 'ol/geom/LineString.js';
 import Feature from 'ol/Feature.js';
 
 import {Text, Fill, Stroke, Style} from 'ol/style.js';
@@ -24,8 +24,8 @@ import {
 
 import {clamp} from 'ol/math.js';
 
-import { forward, toPoint } from '../dependencies/mgrs';
-import { mainLizmap } from './Globals';
+import { forward, toPoint } from '../dependencies/mgrs.js';
+import { mainLizmap } from './Globals.js';
 class MGRS extends Graticule {
 
     /**

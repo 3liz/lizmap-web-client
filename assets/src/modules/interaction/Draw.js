@@ -1,9 +1,9 @@
 import { mainLizmap, mainEventDispatcher } from '../Globals.js';
 
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
-import { Draw as olDraw, Modify as olModify } from 'ol/interaction';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style.js';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
+import { Draw as olDraw, Modify as olModify } from 'ol/interaction.js';
 
 export default class Draw {
 

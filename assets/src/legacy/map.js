@@ -8,7 +8,7 @@
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-import {extend} from 'ol/extent';
+import {extend} from 'ol/extent.js';
 
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';

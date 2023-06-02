@@ -1,6 +1,6 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import olGeolocation from 'ol/Geolocation.js';
-import {transform} from 'ol/proj';
+import {transform} from 'ol/proj.js';
 
 export default class Geolocation {
 

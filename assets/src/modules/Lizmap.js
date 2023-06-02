@@ -10,11 +10,11 @@ import Layers from './Layers.js';
 import WFS from './WFS.js';
 import WMS from './WMS.js';
 import Utils from './Utils.js';
-import Action from './Action';
-import FeatureStorage from './FeatureStorage';
+import Action from './Action.js';
+import FeatureStorage from './FeatureStorage.js';
 
-import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj';
-import { register } from 'ol/proj/proj4';
+import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
+import { register } from 'ol/proj/proj4.js';
 
 import proj4 from 'proj4';
 import ProxyEvents from './ProxyEvents.js';
