@@ -2,11 +2,11 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import { html, render } from 'lit-html';
 
-import { transformExtent } from 'ol/proj';
-import { getCenter } from 'ol/extent';
-import GeoJSON from 'ol/format/GeoJSON';
-import GPX from 'ol/format/GPX';
-import KML from 'ol/format/KML';
+import { transformExtent } from 'ol/proj.js';
+import { getCenter } from 'ol/extent.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
+import GPX from 'ol/format/GPX.js';
+import KML from 'ol/format/KML.js';
 
 import '../images/svg/map-print.svg';
 
@@ -53,15 +53,15 @@ export default class FeatureToolbar extends HTMLElement {
                 : ''
             }
 
-            ${this.hasDefaultPopupPrint 
+            ${this.hasDefaultPopupPrint
             ? html`<button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} title="${lizDict['print.launch']}"><i class="icon-print"></i></button>`
             : ''
             }
-            
+
             ${this.atlasLayouts.map( layout => html`
                 <div class="feature-atlas">
-                    <button type="button" class="btn btn-mini" title="${layout.title}" @click=${ 
-                        event => layout.labels.length 
+                    <button type="button" class="btn btn-mini" title="${layout.title}" @click=${
+                        event => layout.labels.length
                         ? event.currentTarget.parentElement.querySelector('.custom-labels').classList.toggle('hide')
                         : this.printAtlas(layout.title)}>
                         ${layout.icon
@@ -73,7 +73,7 @@ export default class FeatureToolbar extends HTMLElement {
                     </button>
                     ${layout.labels.length
                         ? html`<div class="custom-labels hide">
-                            ${layout.labels.filter( label => !["lizmap_user", "lizmap_user_groups"].includes(label.id)).slice().reverse().map( label => 
+                            ${layout.labels.filter( label => !["lizmap_user", "lizmap_user_groups"].includes(label.id)).slice().reverse().map( label =>
                                 label.htmlState
                                     ? html`<textarea class="input-medium custom-label" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}">${label.text}</textarea>`
                                     : html`<input class="input-medium custom-label" type="text" size="15" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`

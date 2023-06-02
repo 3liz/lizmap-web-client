@@ -1,9 +1,9 @@
 import { mainLizmap } from '../modules/Globals.js';
-import olOverviewMap from 'ol/control/OverviewMap';
+import olOverviewMap from 'ol/control/OverviewMap.js';
 
-import ImageWMS from 'ol/source/ImageWMS';
-import { Image as ImageLayer } from 'ol/layer';
-import View from 'ol/View';
+import ImageWMS from 'ol/source/ImageWMS.js';
+import { Image as ImageLayer } from 'ol/layer.js';
+import View from 'ol/View.js';
 
 export default class OverviewMap extends HTMLElement {
     constructor() {

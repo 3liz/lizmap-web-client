@@ -11,15 +11,15 @@ import {
     MultiPolygon,
     Point,
     Polygon,
-} from 'ol/geom';
+} from 'ol/geom.js';
 
-import GML3 from 'ol/format/GML3';
-import GeoJSON from 'ol/format/GeoJSON';
+import GML3 from 'ol/format/GML3.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
 
 import WFS from '../modules/WFS.js';
 
-import {Vector as VectorSource} from 'ol/source';
-import {Vector as VectorLayer} from 'ol/layer';
+import {Vector as VectorSource} from 'ol/source.js';
+import {Vector as VectorLayer} from 'ol/layer.js';
 import { Feature } from 'ol';
 
 export default class SelectionTool {
@@ -177,7 +177,7 @@ export default class SelectionTool {
                                 wfsParams['BBOX'] = mainLizmap.map.getView().calculateExtent();
                                 wfsParams['SRSNAME'] = mainLizmap.map.getView().getProjection().getCode();
                             }
-                  
+
                             wfs.getFeature(wfsParams).then(response => {
                                 const features = (new GeoJSON()).readFeatures(response);
 

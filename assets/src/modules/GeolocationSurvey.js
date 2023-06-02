@@ -1,5 +1,5 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
-import {transform} from 'ol/proj';
+import {transform} from 'ol/proj.js';
 
 export default class GeolocationSurvey {
 
