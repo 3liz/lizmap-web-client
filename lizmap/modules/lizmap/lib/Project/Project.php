@@ -160,7 +160,10 @@ class Project
             foreach ($data['qgis']['layers'] as $index => $layer) {
                 if (array_key_exists('embedded', $layer)
                     && $layer['embedded'] == '1'
-                    && $layer['qgsmtime'] < filemtime($layer['file'])
+                    && (
+                        !array_key_exists('qgsmtime', $layer)
+                        || $layer['qgsmtime'] < filemtime($layer['file'])
+                    )
                 ) {
                     $qgsProj = new QgisProject($layer['file'], $services, $this->appContext);
                     $newLayer = $qgsProj->getLayerDefinition($layer['id']);
