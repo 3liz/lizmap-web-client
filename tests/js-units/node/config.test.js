@@ -10,7 +10,7 @@ describe('Config', function () {
             new Config()
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
-            expect(error.message).to.be.eq('The config is not an Object!')
+            expect(error.message).to.be.eq('The config is not an Object! It\'s undefined')
             expect(error).to.be.instanceOf(ValidationError)
         }
 

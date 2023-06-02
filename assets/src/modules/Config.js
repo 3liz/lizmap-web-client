@@ -17,7 +17,7 @@ export class Config {
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
-            throw new ValidationError('The config is not an Object!');
+            throw new ValidationError('The config is not an Object! It\'s '+(typeof cfg));
         }
 
         if (Object.getOwnPropertyNames(cfg).length == 0) {
