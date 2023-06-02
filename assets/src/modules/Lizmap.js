@@ -1,3 +1,4 @@
+import {Config} from './Config.js';
 import Map from './Map.js';
 import Edition from './Edition.js';
 import Geolocation from './Geolocation.js';
@@ -23,6 +24,10 @@ export default class Lizmap {
 
     constructor() {
         lizMap.events.on({
+            configsloaded: (configs) => {
+                // The initialConfig has been cloned because it will be freezed
+                this._initialConfig = new Config(structuredClone(configs.initialConfig));
+            },
             uicreated: () => {
                 this._lizmap3 = lizMap;
 
@@ -73,6 +78,16 @@ export default class Lizmap {
 
     get lizmap3() {
         return this._lizmap3;
+    }
+
+    /**
+     * The lizmap initial config instance
+     * It is based on the freezed config
+     *
+     * @type {Config}
+     **/
+    get initialConfig() {
+        return this._initialConfig;
     }
 
     get config() {

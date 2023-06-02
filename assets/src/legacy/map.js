@@ -5355,6 +5355,13 @@ window.lizMap = function() {
         const wmtsCapaData = responses[3];
         const wfsCapaData = responses[4];
 
+        self.events.triggerEvent("configsloaded", {
+          initialConfig: config,
+          wmsCapabilities: wmsCapaData,
+          wmtsCapabilities: wmtsCapaData,
+          wfsCapabilities: wfsCapaData,
+        });
+
         let featuresExtent = responses[5]?.features?.[0]?.bbox;
         let features = responses[5]?.features;
 
