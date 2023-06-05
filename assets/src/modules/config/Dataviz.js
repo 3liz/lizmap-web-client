@@ -1,4 +1,4 @@
-import { BaseObjectConfig } from './Base.js';
+import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
 const optionRequiredProperties = {

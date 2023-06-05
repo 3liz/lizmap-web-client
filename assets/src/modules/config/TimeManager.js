@@ -1,4 +1,4 @@
-import { BaseLayerConfig, BaseLayersConfig } from './Base.js';
+import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
     'startAttribute': {type: 'string'},
@@ -11,7 +11,7 @@ const requiredProperties = {
 const optionalProperties = {
 };
 
-export class TimeManagerLayerConfig extends BaseLayerConfig {
+export class TimeManagerLayerConfig extends BaseObjectLayerConfig {
     /**
      * @param {String} layerName - the layer name
      * @param {Object} cfg - the lizmap config object for tooltip layer
@@ -66,7 +66,7 @@ export class TimeManagerLayerConfig extends BaseLayerConfig {
     }
 }
 
-export class TimeManagerLayersConfig extends BaseLayersConfig {
+export class TimeManagerLayersConfig extends BaseObjectLayersConfig {
 
     /**
      * @param {Object} cfg - the lizmap tooltipLayers config object

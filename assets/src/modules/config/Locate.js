@@ -1,4 +1,4 @@
-import { BaseLayerConfig, BaseLayersConfig } from './Base.js';
+import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
     'layerId': {type: 'string'},
@@ -12,7 +12,7 @@ const requiredProperties = {
 const optionalProperties = {
 };
 
-export class LocateLayerConfig extends BaseLayerConfig {
+export class LocateLayerConfig extends BaseObjectLayerConfig {
     /**
      * @param {String} layerName - the layer name
      * @param {Object} cfg - the lizmap config object for tooltip layer
@@ -58,7 +58,7 @@ export class LocateLayerConfig extends BaseLayerConfig {
     }
 }
 
-export class LocateByLayerConfig  extends BaseLayersConfig {
+export class LocateByLayerConfig  extends BaseObjectLayersConfig {
 
     /**
      * @param {Object} cfg - the lizmap tooltipLayers config object

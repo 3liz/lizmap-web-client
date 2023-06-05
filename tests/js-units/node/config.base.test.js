@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { ValidationError, ConversionError } from '../../../assets/src/modules/Errors.js';
 import { Extent } from '../../../assets/src/modules/config/Tools.js';
-import { BaseObjectConfig, BaseLayerConfig, BaseLayersConfig } from '../../../assets/src/modules/config/Base.js';
+import { BaseObjectConfig, BaseObjectLayerConfig, BaseObjectLayersConfig } from '../../../assets/src/modules/config/BaseObject.js';
 
 describe('BaseObjectConfig', function () {
     it('Valid', function () {
@@ -110,9 +110,9 @@ describe('BaseObjectConfig', function () {
     })
 })
 
-describe('BaseLayerConfig', function () {
+describe('BaseObjectLayerConfig', function () {
     it('Valid', function () {
-        const layer = new BaseLayerConfig("v_cat", {
+        const layer = new BaseObjectLayerConfig("v_cat", {
             "layerId":"v_cat20180426181713938",
             "order": 3
         });
@@ -120,7 +120,7 @@ describe('BaseLayerConfig', function () {
         expect(layer.name).to.be.eq('v_cat')
         expect(layer.order).to.be.eq(3)
 
-        const layerNoOrder = new BaseLayerConfig("v_cat", {
+        const layerNoOrder = new BaseObjectLayerConfig("v_cat", {
             "layerId":"v_cat20180426181713938"
         });
         expect(layerNoOrder.id).to.be.eq('v_cat20180426181713938')
@@ -130,7 +130,7 @@ describe('BaseLayerConfig', function () {
 
     it('ValidationError', function () {
         try {
-            new BaseLayerConfig()
+            new BaseObjectLayerConfig()
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('The layerName parameter is mandatory!')
@@ -138,7 +138,7 @@ describe('BaseLayerConfig', function () {
         }
 
         try {
-            new BaseLayerConfig('v_cat')
+            new BaseObjectLayerConfig('v_cat')
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('The cfg parameter is not an Object!')
@@ -146,7 +146,7 @@ describe('BaseLayerConfig', function () {
         }
 
         try {
-            new BaseLayerConfig('v_cat', {})
+            new BaseObjectLayerConfig('v_cat', {})
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: \n- The required properties: layerId')
@@ -155,9 +155,9 @@ describe('BaseLayerConfig', function () {
     })
 })
 
-describe('BaseLayersConfig', function () {
+describe('BaseObjectLayersConfig', function () {
     it('Valid', function () {
-        const config = new BaseLayersConfig(BaseLayerConfig, {
+        const config = new BaseObjectLayersConfig(BaseObjectLayerConfig, {
             "v_cat": {
                 "layerId":"v_cat20180426181713938",
                 "order": 3
@@ -213,8 +213,8 @@ describe('BaseLayersConfig', function () {
 
         const configGetLayerConfigs = config.getLayerConfigs()
         expect(configGetLayerConfigs.next().value).to.be.eq(tramstop)
-        expect(configGetLayerConfigs.next().value).to.be.instanceOf(BaseLayerConfig)
+        expect(configGetLayerConfigs.next().value).to.be.instanceOf(BaseObjectLayerConfig)
         expect(configGetLayerConfigs.next().value).to.be.eq(tram_stop_work)
-        expect(configGetLayerConfigs.next().value).to.be.instanceOf(BaseLayerConfig)
+        expect(configGetLayerConfigs.next().value).to.be.instanceOf(BaseObjectLayerConfig)
     })
 })

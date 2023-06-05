@@ -1,4 +1,4 @@
-import { BaseObjectConfig } from './Base.js';
+import { BaseObjectConfig } from './BaseObject.js';
 
 const optionalProperties = {
     // Lizmap plugin 3.1.8 is the minimum version when these keys were included in the CFG file
