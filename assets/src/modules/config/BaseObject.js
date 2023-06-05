@@ -1,11 +1,19 @@
 import { convertNumber, convertBoolean, getNotContains, Extent } from './Tools.js';
-import { ValidationError } from './../Errors.js';
+import { ValidationError } from '../Errors.js';
 
+/**
+ * Class representing an object config
+ * @class
+ */
 export class BaseObjectConfig {
     /**
-     * @param {Object} cfg                - the lizmap config object
-     * @param {Object} requiredProperties - the required properties definition
-     * @param {Object} optionalProperties - the optional properties definition
+     * The generic constructor to build an instance based on required and optional properties description
+     * The values of each properties defined in requiredProperties and optionalProperties will be converted to is type:
+     * boolean, number, extent ; and will be stored in an _{name} attribute
+     * This will help to get values respecting the type defined in getter and to validate the config
+     * @param {Object} cfg                     - the lizmap config object
+     * @param {Object} [requiredProperties={}] - the required properties definition
+     * @param {Object} [optionalProperties={}] - the optional properties definition
      */
     constructor(cfg, requiredProperties={}, optionalProperties={}) {
         if (!cfg || typeof cfg !== "object") {
@@ -80,14 +88,21 @@ export class BaseObjectConfig {
     }
 }
 
-export class BaseLayerConfig extends BaseObjectConfig {
+/**
+ * Class representing an object layer config with layerId and order attribute
+ * @class
+ * @augments BaseObjectConfig
+ */
+export class BaseObjectLayerConfig extends BaseObjectConfig {
     /**
-     * @param {String} layerName - the layer name
-     * @param {Object} cfg                - the lizmap config object
-     * @param {Object} requiredProperties - the required properties definition
-     * @param {Object} optionalProperties - the optional properties definition
+     * @param {String} layerName                                          - the layer name
+     * @param {Object} cfg                                                - the lizmap config object
+     * @param {String} cfg.layerId                                        - the layer id
+     * @param {Number} [cfg.order]                                        - the layer order
+     * @param {Object} [requiredProperties={'layerId': {type: 'string'}}] - the required properties definition
+     * @param {Object} [optionalProperties={'order': {type: 'number'}}]   - the optional properties definition
      */
-    constructor(layerName, cfg, requiredProperties={}, optionalProperties={}) {
+    constructor(layerName, cfg, requiredProperties={'layerId': {type: 'string'}}, optionalProperties={'order': {type: 'number'}}) {
         if (!layerName) {
             throw new ValidationError('The layerName parameter is mandatory!');
         }
@@ -132,10 +147,15 @@ export class BaseLayerConfig extends BaseObjectConfig {
     }
 }
 
-export class BaseLayersConfig {
+/**
+ * Class representing an object with layer configs with layerId and order attribute
+ * @class
+ */
+export class BaseObjectLayersConfig {
 
     /**
-     * @param {Object} cfg - the lizmap layers config object
+     * @param {Function} layerConfig - the class name to construct instances contain in cfg
+     * @param {Object}   cfg         - the lizmap layers config object
      */
     constructor(layerConfig, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -163,27 +183,27 @@ export class BaseLayersConfig {
     }
 
     /**
-     * The layer names from config
+     * The copy of the layer names
      *
-     * @type {String[]} the copy of the layer names
+     * @type {String[]}
      **/
     get layerNames() {
         return [...this._names];
     }
 
     /**
-     * The layer ids from config
+     * The copy of the layer ids
      *
-     * @type {String[]} the copy of the layer ids
+     * @type {String[]}
      **/
     get layerIds() {
         return [...this._ids];
     }
 
     /**
-     * The layer configs from config
+     * The copy of the base layer configs or extended class
      *
-     * @type {BaseLayerConfig[]} the copy of the base layer configs or extended class
+     * @type {BaseObjectLayerConfig[]}
      **/
     get layerConfigs() {
         return [...this._configs];
@@ -217,7 +237,7 @@ export class BaseLayersConfig {
      * Iterate through layer configs
      *
      * @generator
-     * @yields {BaseLayerConfig} The next layer config or extended class
+     * @yields {BaseObjectLayerConfig} The next layer config or extended class
      **/
     *getLayerConfigs() {
         for (const config of this._configs) {
@@ -230,7 +250,7 @@ export class BaseLayersConfig {
      *
      * @param {String} name the layer name
      *
-     * @returns {BaseLayerConfig} The base layer config or extended class associated to the name
+     * @returns {BaseObjectLayerConfig} The base layer config or extended class associated to the name
      *
      * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
      **/
@@ -253,7 +273,7 @@ export class BaseLayersConfig {
      *
      * @param {String} id the layer id
      *
-     * @returns {BaseLayerConfig} The base layer config or extended class associated to the id
+     * @returns {BaseObjectLayerConfig} The base layer config or extended class associated to the id
      *
      * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
      **/

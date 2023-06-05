@@ -1,4 +1,4 @@
-import { BaseObjectConfig, BaseLayerConfig, BaseLayersConfig } from './Base.js';
+import { BaseObjectConfig, BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
 const capabilitiesProperties = {
@@ -60,7 +60,7 @@ const requiredProperties = {
 const optionalProperties = {
 };
 
-export class EditionLayerConfig extends BaseLayerConfig {
+export class EditionLayerConfig extends BaseObjectLayerConfig {
     /**
      * @param {String} layerName - the layer name
      * @param {Object} cfg - the lizmap config object for edition layer
@@ -103,7 +103,7 @@ export class EditionLayerConfig extends BaseLayerConfig {
     }
 }
 
-export class EditionLayersConfig extends BaseLayersConfig {
+export class EditionLayersConfig extends BaseObjectLayersConfig {
 
     /**
      * @param {Object} cfg - the lizmap editionLayers config object
