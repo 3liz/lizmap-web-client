@@ -1645,7 +1645,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }).then(function (response) {
             return response.json();
         }).then(function (data) {
-            for (groupId in data) {
+            for (var groupId in data) {
                 var group = $('#' + groupId);
                 if (group.hasClass('tab-pane')) {
                     // group is tab content
@@ -1715,7 +1715,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         // change, we retrieve the new group visibilities
         for(var i=0, len=dependencies.length; i< len; i++) {
             var depName = dependencies[i];
-            elt = form.find('#'+form.attr('id')+'_'+depName);
+            var elt = form.find('#'+form.attr('id')+'_'+depName);
             if (elt.length != 0) {
                 elt.change(function() {
                     dynamicGroupVisibilities(form);
