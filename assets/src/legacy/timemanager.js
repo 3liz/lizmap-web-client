@@ -66,8 +66,8 @@ var lizTimemanager = function() {
 
                 // Get min and max timestamps from layers
                 var minTime = Infinity, maxTime = -Infinity ;
-                for (l in config.timemanagerLayers) {
-                    tmLayerConfig = config.timemanagerLayers[l];
+                for (var l in config.timemanagerLayers) {
+                    var tmLayerConfig = config.timemanagerLayers[l];
                     getDataFromLayer(tmLayerConfig, function(mi, ma){
 
                         // Keep min and max values
@@ -227,8 +227,12 @@ var lizTimemanager = function() {
 
                 // Do nothing if min and max values entered equals the field min and max possible values
                 if( min_val == layerConfig['min'] && max_val == layerConfig['max'] ){
-                    config.timemanagerLayers[l]['filter'] = null;
-                    return true;
+                    layerConfig['data'] = {
+                        'min_date': null,
+                        'max_date': null
+                    };
+                    layerConfig['filter'] = null;
+                    return null;
                 }
 
                 // fields
@@ -238,42 +242,41 @@ var lizTimemanager = function() {
 
                 // min date filter
                 if(min_val && Date.parse(min_val)){
-                    var f = '( "' + startField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
+                    var f_min = '( "' + startField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
                     if (endField && endField != '' && endField != startField){
-                        f+= " OR " + ' "' + endField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
+                        f_min += " OR " + ' "' + endField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
                     }
-                    f+= " )";
-                    filters.push(f);
+                    f_min += " )";
+                    filters.push(f_min);
                 }else{
                     min_val = null;
                 }
 
                 // max date filter
                 if(max_val && Date.parse(max_val)){
-                    var f = '( "' + startField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
+                    var f_max = '( "' + startField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
                     if(endField && endField != '' && endField != startField) {
-                        f+= " OR " + ' "' + endField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
+                        f_max += " OR " + ' "' + endField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
                     }
-                    f+= " )";
-                    filters.push(f);
+                    f_max += " )";
+                    filters.push(f_max);
                 }else{
                     max_val = null;
                 }
 
                 var filter = null;
                 if(filters.length){
-                    var filter = ' ( ';
+                    filter = ' ( ';
                     filter+= filters.join(' AND ');
                     filter+= ' ) ';
                 }
-                config.timemanagerLayers[l]['data'] = {
+                layerConfig['data'] = {
                     'min_date': min_val,
                     'max_date': max_val
                 };
-                config.timemanagerLayers[l]['filter'] = filter;
-
-//console.log(filter);
-
+                layerConfig['filter'] = filter;
+                //console.log(filter);
+                return filter;
             }
 
 
@@ -284,10 +287,8 @@ var lizTimemanager = function() {
                 upperBoundary.subtract(1, 'milliseconds');
 
                 // Set filter for each vector layer
-                for (l in config.timemanagerLayers){
-                    buildDateFilter(config.timemanagerLayers[l], lowerBoundary, upperBoundary);
-                    filter = config.timemanagerLayers[l]['filter'];
-                    config.timemanagerLayers[l]['filter'] = filter;
+                for (var l in config.timemanagerLayers){
+                    filter = buildDateFilter(config.timemanagerLayers[l], lowerBoundary, upperBoundary);
                     lizMap.triggerLayerFilter(l, filter);
                 }
             }
@@ -434,7 +435,7 @@ var lizTimemanager = function() {
             }
 
             function formatDatetime(mytime, timeResolution){
-                myDate = moment(mytime);
+                var myDate = moment(mytime);
                 var dString = null;
                 switch(timeResolution){
                     case 'milliseconds': dString = 'YYYY-MM-DD HH:mm:ss';break;
