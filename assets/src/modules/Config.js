@@ -2,6 +2,8 @@ import { ValidationError } from './Errors.js';
 import { deepFreeze } from './config/Tools.js';
 import { MetadataConfig } from './config/Metadata.js';
 import { OptionsConfig } from './config/Options.js';
+import { LayersConfig } from './config/Layer.js';
+import { BaseLayersConfig } from './config/BaseLayer.js';
 import { LocateByLayerConfig } from './config/Locate.js';
 import { AttributeLayersConfig } from './config/AttributeTable.js';
 import { TooltipLayersConfig } from './config/Tooltip.js';
@@ -26,6 +28,7 @@ export class Config {
 
         this._theConfig = null;
         this._options = null;
+        this._layers = null;
         this._hasMetadata = true;
         this._metadata = null;
         this._hasLocateByLayer = true;
@@ -94,6 +97,19 @@ export class Config {
         }
         this._options = new OptionsConfig(this._theConfig.options);
         return this._options;
+    }
+
+    /**
+     * Config layers
+     *
+     * @type {LayersConfig}
+     **/
+    get layers() {
+        if (this._layers != null) {
+            return this._layers;
+        }
+        this._layers = new LayersConfig(this._theConfig.layers);
+        return this._layers;
     }
 
     /**
