@@ -10,9 +10,9 @@ export default class BaseLayers extends HTMLElement {
     connectedCallback() {
 
         this._template = () => html`
-        <select @change=${(event) => { mainLizmap.baseLayersMap.setLayerVisibilityByTitle(event.target.value) }}>
-            ${mainLizmap.baseLayersMap.getAllLayers().map((layer) => 
-                html`<option .selected="${layer.getVisible()}" value="${layer.get('title')}">${layer.get('title')}</option>`)}
+        <select @change=${(event) => { mainLizmap.baseLayersMap.changeBaseLayer(event.target.value) }}>
+            ${mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getArray().map((layer) => 
+                html`<option .selected="${layer.getVisible()}" value="${layer.get('name')}">${layer.get('name')}</option>`)}
         </select>`;
 
         render(this._template(), this);

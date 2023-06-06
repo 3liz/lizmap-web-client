@@ -2,13 +2,13 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import olMap from 'ol/Map';
 import View from 'ol/View';
-import { transformExtent, Projection } from 'ol/proj';
+import { transformExtent, get as getProjection } from 'ol/proj';
+import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
-import OSM from 'ol/source/OSM';
-import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
 import BingMaps from 'ol/source/BingMaps';
 import LayerGroup from 'ol/layer/Group';
@@ -23,11 +23,7 @@ export default class BaseLayersMap extends olMap {
 
     constructor() {
         const qgisProjectProjection = mainLizmap.projection;
-        let mapProjection = new Projection({code: qgisProjectProjection});
-
-        if(!['EPSG:3857', 'EPSG:4326'].includes(qgisProjectProjection)){
-            mapProjection.setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
-        }
+        const mapProjection = getProjection(qgisProjectProjection);
 
         super({
             controls: [], // disable default controls
@@ -51,106 +47,46 @@ export default class BaseLayersMap extends olMap {
             target: 'baseLayersOlMap'
         });
 
-        if (mainLizmap.config.options?.['osmMapnik']) {
-            this.addLayer(
-                new TileLayer({
-                    title: 'OpenStreetMap',
-                    source: new OSM()
-                })
-            );
-        }
-
-        if (mainLizmap.config.options?.['osmStamenToner']) {
-            this.addLayer(
-                new TileLayer({
-                    source: new Stamen({
-                        title: 'OSM Stamen Toner',
-                        layer: 'toner-lite',
-                    }),
-                }),
-            );
-        }
-
-        if (mainLizmap.config.options?.['openTopoMap']) {
-            this.addLayer(
-                new TileLayer({
-                    title: 'OpenTopoMap',
-                    source: new XYZ({
-                        url: 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
-                    })
-                })
-            );
-        }
-
-        if(mainLizmap.config.options?.['osmCyclemap'] && mainLizmap.config.options?.['OCMKey']){
-            this.addLayer(
-                new TileLayer({
-                    name: 'osm-cycle',
-                    title: 'OSM CycleMap',
-                    source: new XYZ({
-                        url : 'https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=' + mainLizmap.config.options?.['OCMKey']
-                    })
-                })
-            );
-        }
-
-
-        // Bing
-        if(Object.keys(mainLizmap.config.options).some( option => option.startsWith('bing'))){
-            const bingConfigs = {
-                bingStreets : {
-                    title: 'Bing Road',
-                    imagerySet: 'RoadOnDemand'
-                },
-                bingSatellite : {
-                    title: 'Bing Aerial',
-                    imagerySet: 'Aerial'
-                },
-                bingHybrid : {
-                    title: 'Bing Hybrid',
-                    imagerySet: 'AerialWithLabelsOnDemand'
-                }
-            };
-
-            for (const key in bingConfigs) {
-                if(mainLizmap.config.options?.[key]){
-
-                    const bingConfig = bingConfigs[key];
-
-                    this.addLayer(
-                        new TileLayer({
-                            title: bingConfig.title,
-                            preload: Infinity,
-                            source: new BingMaps({
-                                key: mainLizmap.config.options.bingKey,
-                                imagerySet: bingConfig.imagerySet,
-                                culture: navigator.language
-                            }),
-                        })
-                    );
-                }
-            }
-        }
-
         const baseLayers = [];
         let firstBaseLayer = true;
         let cfgBaseLayers = [];
         if(mainLizmap.config?.baseLayers){
             cfgBaseLayers = Object.entries(mainLizmap.config.baseLayers);
         }
-        for (const [title, params] of cfgBaseLayers) {
-            if(params.type = 'xyz'){
-                baseLayers.push(
-                    new TileLayer({
-                        title: title,
-                        visible: firstBaseLayer,
-                        source: new XYZ({
-                            url: params.url,
-                            minZoom: params?.zmin,
-                            maxZoom: params?.zmax,
-                        })
+        for (const [name, params] of cfgBaseLayers) {
+            let baseLayer;
+            if (params.type === 'xyz') {
+                baseLayer = new TileLayer({
+                    visible: firstBaseLayer,
+                    source: new XYZ({
+                        url: params.url,
+                        projection: params.crs,
+                        minZoom: params?.zmin,
+                        maxZoom: params?.zmax,
                     })
-                );
+                });
+            } else if (params.type === 'wms') {
+                baseLayer = new ImageLayer({
+                    visible: firstBaseLayer,
+                    source: new ImageWMS({
+                        url: params.url,
+                        projection: params.crs,
+                        params: {
+                            LAYERS: params.layer,
+                            FORMAT: params.format
+                        },
+                    })
+                });
+            }
+
+            baseLayer.setProperties({
+                name: name
+            });
+
+            baseLayers.push(baseLayer);
+
+            if (firstBaseLayer && params.crs !== qgisProjectProjection) {
+                this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
             }
 
             firstBaseLayer = false;
@@ -197,7 +133,7 @@ export default class BaseLayersMap extends olMap {
             } else {
                 let layer;
                 // Keep only layers with a geometry
-                if(layerCfg.type !== 'layer'){
+                if(layerCfg?.type !== 'layer'){
                     return;
                 }
                 if(["", "none", "unknown"].includes(layerCfg.geometryType)){
@@ -287,8 +223,13 @@ export default class BaseLayersMap extends olMap {
             }
         }
 
-        this._overlayLayersGroup = createNode(mainLizmap.config.layersTree);
+        this._overlayLayersGroup = new LayerGroup();
 
+        if(mainLizmap.config.layersTree.children.length){
+            this._overlayLayersGroup = createNode(mainLizmap.config.layersTree);
+        }
+
+        // Add base and overlay layers to the map's main LayerGroup
         this.setLayerGroup(new LayerGroup({
             layers: [this._baseLayersGroup, this._overlayLayersGroup]
         }));
@@ -302,6 +243,10 @@ export default class BaseLayersMap extends olMap {
 
         // Init view
         this.syncNewOLwithOL2View();
+    }
+
+    get baseLayersGroup(){
+        return this._baseLayersGroup;
     }
 
     get overlayLayersAndGroups(){
@@ -329,8 +274,27 @@ export default class BaseLayersMap extends olMap {
         });
     }
 
-    setLayerVisibilityByTitle(title){
-        this.getAllLayers().map( baseLayer => baseLayer.setVisible(baseLayer.get('title') == title));
+    changeBaseLayer(name){
+        let selectedBaseLayer;
+        // Choosen base layer is visible, others not
+        this.baseLayersGroup.getLayers().forEach( baseLayer => {
+            if (baseLayer.get('name') == name) {
+                selectedBaseLayer = baseLayer;
+                baseLayer.set("visible", true, true);
+            } else {
+                baseLayer.set("visible", false, true);
+            }
+        });
+
+        this._baseLayersGroup.changed();
+
+        // If base layer projection is different from project projection
+        // We must set the project extent to the View to reproject nicely
+        if (selectedBaseLayer.getSource().getProjection().getCode() !== mainLizmap.projection) {
+            this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
+        } else {
+            this.getView().getProjection().setExtent(getProjection(mainLizmap.projection).getExtent());
+        }
     }
 
     /**
