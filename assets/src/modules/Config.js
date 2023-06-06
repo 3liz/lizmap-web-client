@@ -29,6 +29,7 @@ export class Config {
         this._theConfig = null;
         this._options = null;
         this._layers = null;
+        this._baselayers = null;
         this._hasMetadata = true;
         this._metadata = null;
         this._hasLocateByLayer = true;
@@ -110,6 +111,23 @@ export class Config {
         }
         this._layers = new LayersConfig(this._theConfig.layers);
         return this._layers;
+    }
+
+    /**
+     * Config base layers
+     *
+     * @type {BaseLayersConfig}
+     **/
+    get baseLayers() {
+        if (this._baselayers != null) {
+            return this._baselayers;
+        }
+        let baseLayersCfg = {};
+        if (this._theConfig.hasOwnProperty('baseLayers')) {
+            baseLayersCfg = this._theConfig.baseLayers;
+        }
+        this._baselayers = new BaseLayersConfig(baseLayersCfg, this._theConfig.options, this.layers);
+        return this._baselayers;
     }
 
     /**
