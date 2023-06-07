@@ -37,10 +37,44 @@ const optionalProperties = {
     'mutuallyExclusive': {type: 'boolean', default: false},
 };
 
+/**
+ * Class representing a layer config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class LayerConfig extends BaseObjectConfig {
-
     /**
-     * @param {Object} cfg - the lizmap config object for layer
+     * Create a layer config instance based on a config object
+     * @param {Object}   cfg                       - the lizmap config object for layer
+     * @param {String}   cfg.id                    - the layer id
+     * @param {String}   cfg.name                  - the layer name
+     * @param {String}   cfg.type                  - the layer type
+     * @param {String}   cfg.title                 - the layer title
+     * @param {String}   cfg.abstract              - the layer abstract
+     * @param {String}   cfg.link                  - the layer link
+     * @param {Number}   cfg.minScale              - the layer minScale
+     * @param {Number}   cfg.maxScale              - the layer maxScale
+     * @param {Boolean}  cfg.toggled               - the layer toggled activation
+     * @param {Boolean}  cfg.popup                 - the layer popup activation
+     * @param {String}   cfg.popupSource           - the layer popup source
+     * @param {String}   cfg.popupTemplate         - the layer popup template
+     * @param {Number}   cfg.popupMaxFeatures      - the layer popup max features
+     * @param {Boolean}  cfg.popupDisplayChildren  - the layer popup display children activation
+     * @param {Boolean}  cfg.noLegendImage         - the layer no legend image activation
+     * @param {Boolean}  cfg.groupAsLayer          - the layer as group as layer activation (only group type)
+     * @param {Boolean}  cfg.baseLayer             - the layer as base layer activation
+     * @param {Boolean}  cfg.displayInLegend       - the layer display in legend activation
+     * @param {Boolean}  cfg.singleTile            - the layer singleTile activation
+     * @param {String}   cfg.imageFormat           - the layer image format
+     * @param {Boolean}  cfg.cached                - the layer cached activation
+     * @param {Number}   cfg.clientCacheExpiration - the layer client cache expiration
+     * @param {String}   [cfg.shortname]           - the layer short name
+     * @param {String}   [cfg.geometryType]        - the layer geometry type (only layer type)
+     * @param {Number[]} [cfg.extent]              - the layer extent (only layer type)
+     * @param {String}   [cfg.crs]                 - the layer crs (only layer type)
+     * @param {String}   [cfg.popupFrame]          - the layer popup frame
+     * @param {String}   [cfg.serverFrame]         - the layer server frame
+     * @param {Boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
@@ -65,7 +99,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer type
+     * The layer type: layer or group
      *
      * @type {String}
      **/
@@ -128,7 +162,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer geometry type (only layer)
+     * The layer geometry type (only layer type)
      *
      * @type {?String}
      **/
@@ -137,7 +171,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer extent (only layer)
+     * The layer extent (only layer type)
      *
      * @type {?Extent}
      **/
@@ -146,7 +180,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer crs (only layer)
+     * The layer crs (only layer type)
      *
      * @type {?String}
      **/
@@ -173,9 +207,9 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer popup activation
+     * The layer popup frame
      *
-     * @type {?String} a String or null
+     * @type {?String}
      **/
     get popupFrame() {
         return this._popupFrame;
@@ -227,7 +261,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer as group as layer activation (group only)
+     * The layer as group as layer activation (only group type)
      *
      * @type {Boolean}
      **/
@@ -308,9 +342,14 @@ export class LayerConfig extends BaseObjectConfig {
     }
 }
 
+/**
+ * Class representing a layers config
+ * @class
+ */
 export class LayersConfig {
 
     /**
+     * Create a layers config instance based on a config object
      * @param {Object} cfg - the lizmap config object for layers
      */
     constructor(cfg) {
@@ -331,27 +370,27 @@ export class LayersConfig {
     }
 
     /**
-     * The layer names from config
+     * The copy of the layer names
      *
-     * @type {String[]} the copy of the layer names
+     * @type {String[]}
      **/
     get layerNames() {
         return [...this._names];
     }
 
     /**
-     * The layer ids from config
+     * The copy of the layer ids
      *
-     * @type {String[]} the copy of the layer ids
+     * @type {String[]}
      **/
     get layerIds() {
         return [...this._ids];
     }
 
     /**
-     * The layer configs from config
+     * The copy of the layer configs
      *
-     * @type {LayerConfig[]} the copy of the layer configs
+     * @type {LayerConfig[]}
      **/
     get layerConfigs() {
         return [...this._configs];
