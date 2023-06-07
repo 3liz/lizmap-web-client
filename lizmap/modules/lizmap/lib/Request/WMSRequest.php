@@ -282,7 +282,7 @@ class WMSRequest extends OGCRequest
 
     protected function process_getlegendgraphics()
     {
-        $layers = $this->param('Layers', $this->param('Layer', ''));
+        $layers = $this->param('layers', $this->param('layer', ''));
         $layers = explode(',', $layers);
         if (count($layers) == 1) {
             $lName = $layers[0];
@@ -290,6 +290,97 @@ class WMSRequest extends OGCRequest
             if ($layer && property_exists($layer, 'showFeatureCount') && $layer->showFeatureCount == 'True') {
                 $this->params['showFeatureCount'] = 'True';
             }
+        }
+        if ($this->param('format') == 'application/json') {
+            if ($this->param('force_qgis', '') == '1') {
+                // check if we want to get the QGIS version to make tests
+                return $this->request(true);
+            }
+            // The root response
+            $legends = array(
+                'nodes' => array(),
+                'title' => '',
+            );
+            // If only one layer do not change the request
+            if (count($layers) == 1) {
+                $result = $this->request(true);
+                if ($result->code == 200) {
+                    $layer = $this->project->findLayerByAnyName($lName);
+                    $nodes = json_decode($result->data)->nodes;
+                    // Rework nodes
+                    if ($layer->type == 'group') {
+                        // Create a dedicated node for group
+                        $legends['nodes'] = array(array(
+                            'nodes' => $nodes,
+                            'type' => 'group',
+                            'name' => $lName,
+                            'title' => $layer->title ? $layer->title : $lName,
+                        ));
+                    } else {
+                        // Add name to the layer node
+                        $node = $nodes[0];
+                        $node->name = $lName;
+                        $legends['nodes'][] = $node;
+                    }
+
+                    return new OGCResponse(200, 'application/json', json_encode($legends));
+                }
+
+                return $result;
+            }
+            // Else split the request into 1 request per layer
+            $styles = $this->param('styles', $this->param('style', ''));
+            $styles = explode(',', $styles);
+            // Check styles is well defined
+            if (count($styles) != 1 && count($styles) != count($layers)) {
+                // if the number of styles and layers is not the same
+                // add empty string in styles
+                foreach ($layers as $idx => $lName) {
+                    if ($idx + 1 <= count($layers)) {
+                        continue;
+                    }
+                    $styles[] = '';
+                }
+            }
+
+            // Prepare parameters
+            $singleLayerParams = array_merge(array(), $this->params);
+            if (array_key_exists('layers', $singleLayerParams)) {
+                unset($singleLayerParams['layers']);
+            }
+            if (array_key_exists('layer', $singleLayerParams)) {
+                unset($singleLayerParams['layer']);
+            }
+            if (array_key_exists('styles', $singleLayerParams)) {
+                unset($singleLayerParams['styles']);
+            }
+            if (array_key_exists('style', $singleLayerParams)) {
+                unset($singleLayerParams['style']);
+            }
+
+            // The order in the response is the reverse of the parameters
+            $layers = array_reverse($layers);
+            $styles = array_reverse($styles);
+
+            // Loop through layers
+            foreach ($layers as $idx => $lName) {
+                $style = $styles[$idx];
+                $singleLayerParams['layer'] = $lName;
+                $singleLayerParams['styles'] = $style;
+
+                // Perform the request
+                $singleRequest = \Lizmap\Request\Proxy::build($this->project, $singleLayerParams);
+                $result = $singleRequest->process();
+                if ($result->code != 200) {
+                    // The request failed
+                    // return the result
+                    return $result;
+                }
+                $nodes = json_decode($result->data)->nodes;
+                $legends['nodes'][] = $nodes[0];
+            }
+
+            return new OGCResponse(200, 'application/json', json_encode($legends));
         }
 
         // Get remote data
