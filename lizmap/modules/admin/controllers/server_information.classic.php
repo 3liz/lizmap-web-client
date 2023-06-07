@@ -76,10 +76,11 @@ class server_informationCtrl extends jController
         // and it's still providing 'atlasPrint' with a 'not found' value
         // Lizmap server will stop when LWC 3.6 will be retired
         $removeAtlasPrintPlugin = false;
-        if (array_key_exists('atlasprint', $data['qgis_server_info']['plugins'])) {
-            if ($data['qgis_server_info']['plugins']['atlasprint']['version'] == 'not found') {
-                unset($data['qgis_server_info']['plugins']['atlasprint']);
-            }
+        if (array_key_exists('plugins', $data['qgis_server_info'])
+            && array_key_exists('atlasprint', $data['qgis_server_info']['plugins'])
+            && $data['qgis_server_info']['plugins']['atlasprint']['version'] == 'not found'
+        ) {
+            unset($data['qgis_server_info']['plugins']['atlasprint']);
             // Show the deprecated warning
             // Add the else statement again
             // Temporary disabled, let's wait a little

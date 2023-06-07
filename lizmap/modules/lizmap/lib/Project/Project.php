@@ -982,7 +982,7 @@ class Project
     }
 
     /**
-     * @param $layerName
+     * @param mixed $layerName
      *
      * @return null|object the layer or null if does not exist
      */
@@ -1039,7 +1039,7 @@ class Project
      * Return the given edition layer, whether the user has the right to edit
      * or not.
      *
-     * @param $layerName
+     * @param mixed $layerName
      */
     public function getEditionLayerByName($layerName)
     {
@@ -1059,7 +1059,7 @@ class Project
      * findEditionLayerByName loads alls edition layers if not already done.
      * Use it in a layers loop instead of getEditionLayerForCurrentUser.
      *
-     * @param $name
+     * @param mixed $name
      *
      * @return null|object
      */
@@ -1078,7 +1078,7 @@ class Project
      *
      * notice: it checks all edition layers.
      *
-     * @param $layerId
+     * @param mixed $layerId
      *
      * @return null|object
      */
@@ -1443,19 +1443,21 @@ class Project
      */
     public function getDatavizLayersConfig()
     {
-        // initialize config
+        // Initialize the dataviz config to be used by the browser
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
             'locale' => $this->appContext->appConfig()->locale,
         );
 
+        // Get the dataviz plots from the JSON config (as given by the plugin)
         $datavizLayers = $this->cfg->getDatavizLayers();
         if (!$datavizLayers) {
             // provide the empty config with locale
             return $config;
         }
 
+        // Check if all the plot must be displayed only in the parent popup
         $countPlotOnlyChild = 0;
         foreach ($datavizLayers as $order => $lc) {
             $plotConfig = $this->parseDatavizPlotConfig($lc);
@@ -1467,15 +1469,19 @@ class Project
             }
         }
 
+        // No plots in the configuration, return empty content
         if (empty($config['layers'])) {
             // provide the empty config with locale
             return $config;
         }
 
+        // Add the dataviz configuration options in the returned object
         $config['dataviz'] = array(
             'location' => 'dock',
             'theme' => 'dark',
         );
+
+        // Location i.e. in which dock should the plots be displayed
         $optionDatavizLocation = $this->cfg->getOption('datavizLocation');
         if (in_array(
             $optionDatavizLocation,
@@ -1484,11 +1490,14 @@ class Project
         ) {
             $config['dataviz']['location'] = $optionDatavizLocation;
         }
+
+        // Dataviz theme : dark, light
         $theme = $this->cfg->getOption('theme');
         if (in_array($theme, array('dark', 'light'))) {
             $config['dataviz']['theme'] = $theme;
         }
 
+        // Tell that all the plots must only be displayed in the popup
         if ($countPlotOnlyChild === count($config['layers'])) {
             $config['dataviz']['location'] = 'only-popup';
         }
@@ -2225,7 +2234,6 @@ class Project
      */
     public function checkAclByUser($login)
     {
-
         // Check right on repository
         if (!$this->appContext->aclCheck('lizmap.repositories.view', $this->repository->getKey())) {
             return false;

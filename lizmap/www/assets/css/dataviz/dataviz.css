@@ -84,3 +84,65 @@ Diagram height, 450px by default*/
 .plot-container {
     height: 400px;
 }
+
+
+/*
+TABS AND GROUPS
+*/
+/* Edition style */
+#dataviz ul.nav-tabs {
+    border-bottom: 1px solid gray;
+}
+#dataviz .nav-tabs > li > a {
+    color: white;
+    padding: 5px;
+    border: none;
+}
+#dataviz .nav > li > a:hover,
+#dataviz .nav > li > a:focus {
+    text-decoration: none;
+}
+#dataviz .nav-tabs > li > a:hover,
+#dataviz .nav-tabs > li > a:focus {
+    background: none;
+    border: none;
+    /* border-bottom: 3px solid #0094d6; */
+    border-bottom: 3px solid white;
+    color: white;
+    cursor: pointer;
+}
+
+#dataviz .nav-tabs > li.active > a,
+#dataviz .nav-tabs > li.active > a:hover,
+#dataviz .nav-tabs > li.active > a:focus {
+    background: none;
+    border: none;
+    border-bottom: 3px solid white;
+    color: white;
+    cursor: auto;
+}
+
+#dataviz div.tab-pane {
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    padding: 5px;
+}
+
+#dataviz legend {
+    color: white;
+    border-bottom: none;
+    padding: 5px;
+    width: unset;
+    max-width: 100%;
+    margin-bottom: 0px;
+}
+
+#dataviz fieldset {
+    padding: 10px;
+    padding-top: 0px;
+    margin: 0px 5px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+}

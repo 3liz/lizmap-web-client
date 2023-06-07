@@ -372,7 +372,7 @@ class ProjectConfig
     }
 
     /**
-     * @param $layerId
+     * @param mixed $layerId
      *
      * @return null|object
      */
@@ -503,6 +503,167 @@ class ProjectConfig
     public function getDatavizLayers()
     {
         return $this->datavizLayers;
+    }
+
+    /** Get the HTML template built from the Drag and drop layout
+     * and override the original datavizTemplate configuration option.
+     *
+     * @since Lizmap 3.7.
+     */
+    public function setDatavizTemplateFromDragAndDropLayout()
+    {
+        $tree = $this->getOption('dataviz_drag_drop');
+        if ($tree) {
+            $html = $this->parseDatavizTreeNode($tree, 0);
+            $this->setOption('datavizTemplate', $html);
+        }
+    }
+
+    private function setOption($name, $value)
+    {
+        $this->options->{$name} = $value;
+    }
+
+    /**
+     * Parse a dataviz drag & drop layout node and build the corresponding HTML.
+     *
+     * This is a recursive function.
+     *
+     * @param object $node  Tree node
+     * @param int    $level Tree node level
+     *
+     * @return string $html Built HTML content
+     */
+    private function parseDatavizTreeNode($node, $level)
+    {
+        // Get the correspondance between the plot uid & the plot ID (integer)
+        $plotUidToId = array();
+        foreach ($this->datavizLayers as $id => $plot) {
+            // If a uuid exists in the config, use it
+            if (property_exists($plot, 'uuid')) {
+                $plotUidToId[$plot->uuid] = $plot->order;
+            } else {
+                // If not, match the plot by its name
+                $plotUidToId[$plot->title] = $plot->order;
+            }
+        }
+
+        // HTML string
+        $html = '';
+        $prefix = "\n".str_repeat('    ', $level);
+
+        // Process the plots first
+        foreach ($node as $subNode) {
+            // Do not process tabs and groups here
+            if ($subNode->type != 'plot') {
+                continue;
+            }
+
+            // Get the plot ID
+            $plotIntegerId = 0;
+            if (array_key_exists($subNode->uuid, $plotUidToId)) {
+                $plotIntegerId = $plotUidToId[$subNode->uuid];
+            } else {
+                if (array_key_exists($subNode->_name, $plotUidToId)) {
+                    $plotIntegerId = $plotUidToId[$subNode->_name];
+                }
+            }
+
+            // We use the syntax "$0", since it is used with the historical (still supported) manual HTML template
+            $divClass = 'dataviz-dnd-plot';
+            $plotHtml = '<div id="plot-'.$subNode->uuid.'" class="'.$divClass.'">$'.$plotIntegerId.'</div>';
+            $html .= "\n\n";
+            $html .= $prefix.$plotHtml;
+        }
+
+        // Tabs UL and LI
+        $tabChildren = array();
+        // If the level is even (not odd), this is a tab
+        // else this is a group
+        if ($level % 2 == 0) {
+            $n = 0;
+            foreach ($node as $subNode) {
+                // Do not process plots here
+                if ($subNode->type == 'plot') {
+                    continue;
+                }
+                $active = ($n == 0) ? 'active' : '';
+                \jLog::log("Node {$subNode->name} - n = {$n} ET active = {$active}");
+                $item = $prefix.'    <li class="'.$active.'">';
+                $item .= $prefix.'    <a href="#dataviz-dnd-'.$level.'-'.md5($subNode->name);
+                $item .= '" data-toggle="tab">'.$subNode->name.'</a>';
+                $item .= '</li>';
+                $tabChildren[] = $item;
+                ++$n;
+            }
+            // Add the UL only if there is at least one child
+            if (!empty($tabChildren)) {
+                $html .= $prefix.'<div class="tab-content">';
+                $html .= $prefix.'<ul class="nav nav-tabs">';
+                $html .= implode("\n", $tabChildren);
+                $html .= $prefix.'</ul>';
+            }
+        }
+
+        // Containers
+        $n = 0;
+        foreach ($node as $subNode) {
+            // If the node is a plot, do not proceed
+            // Nodes have already been processed
+            if ($subNode->type == 'plot') {
+                continue;
+            }
+
+            $html .= "\n\n";
+
+            // Check if the node is a tab container or a group container
+            $type = 'tab';
+            if ($level % 2 != 0) {
+                $type = 'group';
+            }
+            $name = $subNode->name;
+
+            // Class of the container
+            $divClass = 'dataviz-dnd-'.$type;
+
+            // Check if it is a tab or a group
+            if ($type == 'tab') {
+                // Tab
+                $active = ($n == 0) ? 'active' : '';
+                $html .= $prefix.'<div id="dataviz-dnd-'.$level.'-'.md5($subNode->name).'"';
+                $html .= ' class="tab-pane '.$active.' '.$divClass.' level-'.$level.'">';
+            } else {
+                // Group : we use fieldset
+                $html .= $prefix.'<fieldset class="'.$divClass.' level-'.$level.'">';
+                $html .= $prefix.'<legend style="font-weight:bold;">'.$name.'</legend>';
+            }
+
+            // Process the children only if the current node has content
+            if (property_exists($subNode, 'content')) {
+                // Build the container content
+                $html .= $this->parseDatavizTreeNode($subNode->content, $level + 1);
+            }
+
+            // Close the HTML fieldset for the groups
+            if ($type == 'group') {
+                $html .= $prefix.'</fieldset>';
+            }
+
+            // Close the HTML div for the tab containers
+            if ($type == 'tab') {
+                $html .= $prefix.'</div>';
+            }
+            $html .= "\n";
+
+            ++$n;
+        }
+
+        // If it a tab
+        if (!empty($tabChildren)) {
+            $html .= "\n</div>";
+        }
+
+        return $html;
     }
 
     /**

@@ -31,6 +31,9 @@ with some extra keywords : backend, tests, test, translation, funders, important
     ```
   * A WKT in `EPSG:4326` can also be sent as an **additional parameter**. This is only possible when running the action with JavaScript. This allows to **send a geometry** to be used by the PostgreSQL action (for example to get data from another table with geometries intersecting this passed WKT geometry)
   * The **JavaScript and HTML code** has been **modernized** (no more jQuery calls, usage of web components, etc.)
+* **Dataviz** The editor can now configure how the plots will be organized in the web interface.
+  * A new **Drag & Drop layout** tab has been added in Lizmap plugin Dataviz tab,
+    which allows to create **tabs and groups** like it can be done for forms.
 * New print configurations. For each layout, you can:
   * enable/disable it
   * set allowed groups
