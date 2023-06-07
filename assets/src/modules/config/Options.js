@@ -23,10 +23,31 @@ const optionalProperties = {
     'fixed_scale_overview_map': {type: 'boolean', default: true},
 };
 
+/**
+ * Class representing the options config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class OptionsConfig  extends BaseObjectConfig {
 
     /**
-     * @param {Object} cfg - the lizmap config object for options
+     * Create an options config instance based on a config object
+     * @param {Object}   cfg                                  - the lizmap config object for options
+     * @param {Boolean}  cfg.hideProject                     - is the project hidden in user interface ? Only services are available.
+     * @param {Number[]} cfg.bbox                            - the project and web services max extent
+     * @param {Number[]} cfg.initialExtent                   - the map extent at the loading page
+     * @param {Number[]} cfg.mapScales                       - the map scales
+     * @param {Number}   cfg.minScale                        - the map's min scale
+     * @param {Number}   cfg.maxScale                        - the map's max scale
+     * @param {Object}   cfg.projection                      - the web map projection
+     * @param {Number}   cfg.pointTolerance                  - the point tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {Number}   cfg.lineTolerance                   - the line tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {Number}   cfg.polygonTolerance                - the polygon tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {String}   cfg.popupLocation                   - the popup location in the User interface: dock, bottom-dock, right-dock, mini-dock, map
+     * @param {String}   cfg.datavizLocation                 - the popup location in the User interface: dock, bottom-dock, right-dock
+     * @param {Number}   [cfg.wmsMaxHeight=3000]             - the image max height for WMS GetMap request
+     * @param {Number}   [cfg.wmsMaxWidth=3000]              - the image max width for WMS GetMap request
+     * @param {Boolean}  [cfg.fixed_scale_overview_map=true] - does the Overview map have fixed scale ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
