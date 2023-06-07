@@ -100,11 +100,14 @@ export function getNotContains(source, target) {
 }
 
 /**
- *
+ * Class representing an extent
+ * @class
+ * @augments Array
  **/
 export class Extent extends Array {
 
     /**
+     * Create an extent
      * @param {...(number|string)} args - the 4 values describing the extent
      *
      * @throws {ValidationError} for number of args different of 4
