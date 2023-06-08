@@ -1,10 +1,10 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import olMap from 'ol/Map';
-import View from 'ol/View';
+import olMap from 'ol/Map.js';
+import View from 'ol/View.js';
 
-import DragPan from "ol/interaction/DragPan";
-import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
-import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
+import DragPan from 'ol/interaction/DragPan.js';
+import MouseWheelZoom from 'ol/interaction/MouseWheelZoom.js';
+import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 
 /** Class initializing Openlayers Map. */

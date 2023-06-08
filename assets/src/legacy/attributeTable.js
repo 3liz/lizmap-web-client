@@ -2821,6 +2821,9 @@ var lizAttributeTable = function() {
             function refreshDatatableSize(container){
 
                 var dtable = $(container).find('table.dataTable');
+                if ( dtable.length == 0 ) {
+                    return;
+                }
 
                 // Adapt height
                 var h = $(container + ' div.attribute-layer-content').height() ? $(container + ' div.attribute-layer-content').height() : 0;
@@ -3106,7 +3109,7 @@ var lizAttributeTable = function() {
                                     if ( rGetLayerConfig ) {
                                         var rLayerName = rGetLayerConfig[0];
                                         var rConfigLayer = rGetLayerConfig[1];
-                                        filter = '"' + r.referencingField + '" = ' + "'" + fp[r.referencedField] + "'";
+                                        var filter = '"' + r.referencingField + '" = ' + "'" + fp[r.referencedField] + "'";
                                         // Get child table id
                                         var parent_and_child = lizMap.cleanName(featureType) + '-' + lizMap.cleanName(rLayerName);
                                         var childTable = '#edition-table-' + parent_and_child;

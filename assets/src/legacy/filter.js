@@ -1311,8 +1311,8 @@ var lizLayerFilterTool = function () {
                         var sourcebbox = result[a]['bbox'];
                         if (!sourcebbox)
                             return false;
-                        sbbox = $.parseJSON(sourcebbox);
-                        bbox = sbbox.bbox;
+                        var sbbox = $.parseJSON(sourcebbox);
+                        var bbox = sbbox.bbox;
                         var extent = bbox[0] + ',' + bbox[1] + ',' + bbox[2] + ',' + bbox[3];
                         $('#liz-filter-zoom').val(extent);
                     }
@@ -1324,7 +1324,7 @@ var lizLayerFilterTool = function () {
                 var bounds = $('#liz-filter-zoom').val();
                 var abounds = null;
                 if (bounds) {
-                    var abounds = bounds.split(',');
+                    abounds = bounds.split(',');
                 }
                 if (!bounds || abounds.length != 4) {
                     return false;

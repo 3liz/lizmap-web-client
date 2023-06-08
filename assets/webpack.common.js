@@ -1,6 +1,9 @@
-const path = require('path');
+import {resolve, dirname} from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default {
     entry: {
         lizmap: './src/index.js',
         map: './src/legacy/map.js',
@@ -17,7 +20,7 @@ module.exports = {
     output: {
         filename: '../../lizmap/www/assets/js/[name].js',
         chunkFilename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: resolve(__dirname, 'dist')
     },
     module: {
         rules: [

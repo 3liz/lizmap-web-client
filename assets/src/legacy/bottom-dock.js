@@ -99,7 +99,6 @@ var bottomDockFunction = function() {
               tab.hide();
               tab.removeClass('active');
               parent.removeClass('active');
-              bottomDockActive = false;
               lizMap.events.triggerEvent( "bottomdockclosed", {'id':id} );
           } else {
               var oldActive = $('#mapmenu li.nav-bottomdock.active');
@@ -110,7 +109,6 @@ var bottomDockFunction = function() {
               tab.show()
               tab.children('a').first().click();
               parent.addClass('active');
-              bottomDockActive = true;
               lizMap.events.triggerEvent( "bottomdockopened", {'id':id} );
               $('#bottom-dock').addClass('visible');
           }

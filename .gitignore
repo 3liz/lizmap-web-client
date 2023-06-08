@@ -105,6 +105,7 @@ tests/lizmap-qgis-plugin.master.zip
 tests/end2end/node_modules/
 tests/end2end/cypress/downloads/
 tests/end2end/cypress/screenshots/
+tests/js-units/node_modules/
 tests/.env
 tests/end2end/playwright-report/
 tests/end2end/test-results

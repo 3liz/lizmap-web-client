@@ -8,7 +8,7 @@
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-import {extend} from 'ol/extent';
+import {extend} from 'ol/extent.js';
 
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
@@ -5359,6 +5359,13 @@ window.lizMap = function() {
         const wmsCapaData = responses[2];
         const wmtsCapaData = responses[3];
         const wfsCapaData = responses[4];
+
+        self.events.triggerEvent("configsloaded", {
+          initialConfig: config,
+          wmsCapabilities: wmsCapaData,
+          wmtsCapabilities: wmtsCapaData,
+          wfsCapabilities: wfsCapaData,
+        });
 
         let featuresExtent = responses[5]?.features?.[0]?.bbox;
         let features = responses[5]?.features;

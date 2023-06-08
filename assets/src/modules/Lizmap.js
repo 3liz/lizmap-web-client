@@ -1,3 +1,4 @@
+import {Config} from './Config.js';
 import Map from './Map.js';
 import Edition from './Edition.js';
 import Geolocation from './Geolocation.js';
@@ -10,11 +11,11 @@ import Layers from './Layers.js';
 import WFS from './WFS.js';
 import WMS from './WMS.js';
 import Utils from './Utils.js';
-import Action from './Action';
-import FeatureStorage from './FeatureStorage';
+import Action from './Action.js';
+import FeatureStorage from './FeatureStorage.js';
 
-import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj';
-import { register } from 'ol/proj/proj4';
+import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
+import { register } from 'ol/proj/proj4.js';
 
 import proj4 from 'proj4';
 import ProxyEvents from './ProxyEvents.js';
@@ -23,6 +24,10 @@ export default class Lizmap {
 
     constructor() {
         lizMap.events.on({
+            configsloaded: (configs) => {
+                // The initialConfig has been cloned because it will be freezed
+                this._initialConfig = new Config(structuredClone(configs.initialConfig));
+            },
             uicreated: () => {
                 this._lizmap3 = lizMap;
 
@@ -73,6 +78,16 @@ export default class Lizmap {
 
     get lizmap3() {
         return this._lizmap3;
+    }
+
+    /**
+     * The lizmap initial config instance
+     * It is based on the freezed config
+     *
+     * @type {Config}
+     **/
+    get initialConfig() {
+        return this._initialConfig;
     }
 
     get config() {

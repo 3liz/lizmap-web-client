@@ -2,6 +2,7 @@
   "name": "assets",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "watch": "webpack --watch --config webpack.dev.js",

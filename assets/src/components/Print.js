@@ -1,12 +1,12 @@
 import { mainLizmap } from '../modules/Globals.js';
-import { ADJUSTED_DPI } from '../utils/Constants';
+import { ADJUSTED_DPI } from '../utils/Constants.js';
 import { html, render } from 'lit-html';
 
-import MaskLayer from '../modules/Mask';
+import MaskLayer from '../modules/Mask.js';
 import Utils from '../modules/Utils.js';
 
-import WKT from 'ol/format/WKT';
-import { transformExtent, get as getProjection } from 'ol/proj';
+import WKT from 'ol/format/WKT.js';
+import { transformExtent, get as getProjection } from 'ol/proj.js';
 
 const INCHES_PER_METER = 39.37;
 const DOTS_PER_INCH = 72;
