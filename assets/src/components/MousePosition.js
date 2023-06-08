@@ -1,9 +1,9 @@
 import { mainLizmap } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
-import { transform, get as getProjection } from 'ol/proj';
+import { transform, get as getProjection } from 'ol/proj.js';
 
-import { forward } from '../dependencies/mgrs';
+import { forward } from '../dependencies/mgrs.js';
 
 import MGRS from '../modules/MGRS.js';
 
@@ -47,7 +47,7 @@ export default class MousePosition extends HTMLElement {
                     <option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
                     ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`
                     <option selected value="f">${lizDict['mouseposition.units.f']}</option>` : ''}
-                
+
                     <option value="degrees">${lizDict['mouseposition.units.d']}</option>
                     <option value="dm">${lizDict['mouseposition.units.dm']}</option>
                     <option value="dms">${lizDict['mouseposition.units.dms']}</option>
@@ -99,7 +99,7 @@ export default class MousePosition extends HTMLElement {
                 });
             }
             mainLizmap.map.addLayer(this._MGRS);
-    
+
             mainLizmap.newOlMap = true;
         }else{
             if(this._MGRS){

@@ -19,9 +19,9 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Layer from 'ol/layer/Layer';
-import {createCanvasContext2D} from 'ol/dom';
-import {toRadians} from 'ol/math';
+import Layer from 'ol/layer/Layer.js';
+import {createCanvasContext2D} from 'ol/dom.js';
+import {toRadians} from 'ol/math.js';
 
 /**
  * @augments {Layer<import("ol/source/Source").default>}

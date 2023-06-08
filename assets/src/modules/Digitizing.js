@@ -1,27 +1,27 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 
-import GeoJSON from 'ol/format/GeoJSON';
-import GPX from 'ol/format/GPX';
-import KML from 'ol/format/KML';
+import GeoJSON from 'ol/format/GeoJSON.js';
+import GPX from 'ol/format/GPX.js';
+import KML from 'ol/format/KML.js';
 
-import { Draw, Modify, Select } from 'ol/interaction';
-import { createBox } from 'ol/interaction/Draw';
+import { Draw, Modify, Select } from 'ol/interaction.js';
+import { createBox } from 'ol/interaction/Draw.js';
 
-import { Circle, Fill, Stroke, RegularShape, Style } from 'ol/style';
+import { Circle, Fill, Stroke, RegularShape, Style } from 'ol/style.js';
 
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
-import { Point, LineString, Polygon, Circle as CircleGeom } from 'ol/geom';
-import { circular } from 'ol/geom/Polygon';
+import { Point, LineString, Polygon, Circle as CircleGeom } from 'ol/geom.js';
+import { circular } from 'ol/geom/Polygon.js';
 
-import { getArea, getLength } from 'ol/sphere';
-import Overlay from 'ol/Overlay';
-import { unByKey } from 'ol/Observable';
+import { getArea, getLength } from 'ol/sphere.js';
+import Overlay from 'ol/Overlay.js';
+import { unByKey } from 'ol/Observable.js';
 
-import { transform } from 'ol/proj';
+import { transform } from 'ol/proj.js';
 
 export default class Digitizing {
 
@@ -615,7 +615,7 @@ export default class Digitizing {
             return null;
         }
         let symbolizer = '';
-        let strokeAndFill = 
+        let strokeAndFill =
         `<Stroke>
             <SvgParameter name="stroke">${this._drawColor}</SvgParameter>
             <SvgParameter name="stroke-opacity">1</SvgParameter>
@@ -628,7 +628,7 @@ export default class Digitizing {
 
         // We consider LINESTRING and POLYGON together currently
         if (this.featureDrawn[index].getGeometry().getType() === 'Point') {
-            symbolizer = 
+            symbolizer =
             `<PointSymbolizer>
                 <Graphic>
                     <Mark>
@@ -639,13 +639,13 @@ export default class Digitizing {
                 </Graphic>
             </PointSymbolizer>`;
         } else {
-            symbolizer = 
+            symbolizer =
             `<PolygonSymbolizer>
                 ${strokeAndFill}
             </PolygonSymbolizer>`;
         }
 
-        const sld = 
+        const sld =
         `<?xml version="1.0" encoding="UTF-8"?>
         <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" xmlns:se="http://www.opengis.net/se">
             <UserStyle>

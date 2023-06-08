@@ -11,8 +11,8 @@ on:
       - release_3_*
 
 jobs:
-  tests:
-    name: "php-unit"
+  php-tests:
+    name: "🐘 PHP-Unit"
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -34,3 +34,21 @@ jobs:
 
       - name: Running tests
         run: make tests
+
+  js-tests:
+    name: "🟨 JS-Unit"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+
+      - name: Install dependencies
+        working-directory: tests/js-units
+        run: npm install
+
+      - name: Running tests
+        working-directory: tests/js-units
+        run: npm run js:test

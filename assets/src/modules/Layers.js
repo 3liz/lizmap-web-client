@@ -1,10 +1,10 @@
 import { mainLizmap } from './Globals.js';
 
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
 
-import WKT from 'ol/format/WKT';
-import GeoJSON from 'ol/format/GeoJSON';
+import WKT from 'ol/format/WKT.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
 
 export default class Layers {
 
