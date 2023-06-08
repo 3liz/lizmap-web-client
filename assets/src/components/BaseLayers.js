@@ -11,8 +11,9 @@ export default class BaseLayers extends HTMLElement {
 
         this._template = () => html`
         <select @change=${(event) => { mainLizmap.baseLayersMap.changeBaseLayer(event.target.value) }}>
-            ${mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getArray().map((layer) => 
-                html`<option .selected="${layer.getVisible()}" value="${layer.get('name')}">${layer.get('name')}</option>`)}
+            ${mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getArray().slice().reverse().map((layer) => 
+                html`<option .selected="${layer.getVisible()}" value="${layer.get('name')}">${layer.get('title')}</option>`)}
+                <option .selected="${mainLizmap.initialConfig.baseLayers.startupBaselayerName === 'empty'}" class="${mainLizmap.baseLayersMap.hasEmptyBaseLayer ? '' : 'hide'}" value="emptyBaselayer">${lizDict['baselayer.empty.title']}</option>
         </select>`;
 
         render(this._template(), this);
