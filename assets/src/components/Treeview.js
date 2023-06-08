@@ -1,5 +1,5 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
-import LayerGroup from 'ol/layer/Group';
+import LayerGroup from 'ol/layer/Group.js';
 import {html, render} from 'lit-html';
 import {when} from 'lit-html/directives/when.js';
 

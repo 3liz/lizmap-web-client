@@ -1,21 +1,19 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
-import olMap from 'ol/Map';
-import View from 'ol/View';
-import { transformExtent, get as getProjection } from 'ol/proj';
-import { register } from 'ol/proj/proj4';
-import proj4 from 'proj4';
+import olMap from 'ol/Map.js';
+import View from 'ol/View.js';
+import { transformExtent, get as getProjection } from 'ol/proj.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
-import XYZ from 'ol/source/XYZ';
-import BingMaps from 'ol/source/BingMaps';
-import LayerGroup from 'ol/layer/Group';
+import XYZ from 'ol/source/XYZ.js';
+import BingMaps from 'ol/source/BingMaps.js';
+import LayerGroup from 'ol/layer/Group.js';
 
-import DragPan from "ol/interaction/DragPan";
-import MouseWheelZoom from "ol/interaction/MouseWheelZoom";
-import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
+import DragPan from "ol/interaction/DragPan.js";
+import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
+import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 
 /** Class initializing Openlayers Map. */
