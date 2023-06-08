@@ -87,6 +87,7 @@ window.lizMap = function() {
   var externalBaselayersReplacement = {
     'osm': 'osm-mapnik',
     'osm-toner': 'osm-stamen-toner',
+    'opentopomap': 'open-topo-map',
     'osm-cycle': 'osm-cyclemap',
     'gsat': 'google-satellite',
     'ghyb': 'google-hybrid',
@@ -108,6 +109,7 @@ window.lizMap = function() {
   var startupBaselayersReplacement = {
     'osm-mapnik': 'osm',
     'osm-stamen-toner': 'osm-toner',
+    'open-topo-map': 'opentopomap',
     'osm-cyclemap': 'osm-cycle',
     'google-satellite': 'gsat',
     'google-hybrid': 'ghyb',
@@ -677,6 +679,8 @@ window.lizMap = function() {
         && config.options.osmMapnik == 'True') ||
        (('osmStamenToner' in config.options)
         && config.options.osmStamenToner == 'True') ||
+       (('openTopoMap' in config.options)
+        && config.options.openTopoMap == 'True') ||
        (('osmCyclemap' in config.options)
         && config.options.osmCyclemap == 'True'
         && ('OCMKey' in config.options)) ||
@@ -745,6 +749,7 @@ window.lizMap = function() {
          if (
              (('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
              (('osmStamenToner' in config.options) && config.options.osmStamenToner == 'True') ||
+             (('openTopoMap' in config.options) && config.options.openTopoMap == 'True') ||
              (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True' && ('OCMKey' in config.options)) ||
              (('bingStreets' in config.options) && config.options.bingStreets == 'True' && ('bingKey' in config.options)) ||
              (('bingSatellite' in config.options) && config.options.bingSatellite == 'True' && ('bingKey' in config.options)) ||
@@ -6634,6 +6639,8 @@ lizMap.events.on({
     && evt.config.options.osmMapnik == 'True') ||
     (('osmStamenToner' in evt.config.options)
      && evt.config.options.osmStamenToner == 'True') ||
+    (('openTopoMap' in evt.config.options)
+     && evt.config.options.openTopoMap == 'True') ||
     (('osmCyclemap' in evt.config.options)
      && evt.config.options.osmCyclemap == 'True'
      && ('OCMKey' in evt.config.options)) ||
@@ -6748,6 +6755,37 @@ lizMap.events.on({
         };
         evt.config.layers['osm-toner'] = stamenTonerCfg;
         evt.baselayers.push(stamenToner);
+      }
+
+      if (('openTopoMap' in evt.config.options) && evt.config.options.openTopoMap == 'True') {
+        evt.map.allOverlays = false;
+        var options = {
+          zoomOffset: 0,
+          maxResolution:156543.03390625,
+          numZoomLevels:23
+        };
+        if (lOptions.zoomOffset != 0) {
+          options.zoomOffset = lOptions.zoomOffset;
+          options.maxResolution = lOptions.maxResolution;
+        }
+        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+          options.numZoomLevels = lOptions.numZoomLevels;
+        else
+          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+        var openTopoMap = new OpenLayers.Layer.OSM('opentopomap',
+            ["https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
+            "https://b.tile.opentopomap.org/{z}/{x}/{y}.png",
+            "https://c.tile.opentopomap.org/{z}/{x}/{y}.png"]
+            ,options
+            );
+            openTopoMap.maxExtent = maxExtent;
+        var openTopoMapCfg = {
+          "name":"opentopomap"
+            ,"title":"OpenTopoMap"
+            ,"type":"baselayer"
+        };
+        evt.config.layers['opentopomap'] = openTopoMapCfg;
+        evt.baselayers.push(openTopoMap);
       }
 
       if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in evt.config.options)) {
