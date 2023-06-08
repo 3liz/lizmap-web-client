@@ -6,6 +6,8 @@ import { transformExtent, get as getProjection } from 'ol/proj.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
+import WMTSTileGrid from 'ol/tilegrid/WMTS.js';
+import {getWidth} from 'ol/extent.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
@@ -45,49 +47,100 @@ export default class BaseLayersMap extends olMap {
             target: 'baseLayersOlMap'
         });
 
+        this._hasEmptyBaseLayer = false;
         const baseLayers = [];
-        let firstBaseLayer = true;
         let cfgBaseLayers = [];
         if(mainLizmap.config?.baseLayers){
             cfgBaseLayers = Object.entries(mainLizmap.config.baseLayers);
         }
-        for (const [name, params] of cfgBaseLayers) {
+
+        for (const baseLayerCfg of mainLizmap.initialConfig.baseLayers.getBaseLayerConfigs()) {
             let baseLayer;
-            if (params.type === 'xyz') {
+            if (baseLayerCfg.type === 'xyz') {
                 baseLayer = new TileLayer({
-                    visible: firstBaseLayer,
                     source: new XYZ({
-                        url: params.url,
-                        projection: params.crs,
-                        minZoom: params?.zmin,
-                        maxZoom: params?.zmax,
+                        url: baseLayerCfg.url,
+                        projection: baseLayerCfg.crs,
+                        minZoom: 0,
+                        maxZoom: baseLayerCfg.numZoomLevels,
                     })
                 });
-            } else if (params.type === 'wms') {
+            } else if (baseLayerCfg.type === 'wms') {
                 baseLayer = new ImageLayer({
-                    visible: firstBaseLayer,
                     source: new ImageWMS({
-                        url: params.url,
-                        projection: params.crs,
+                        url: baseLayerCfg.url,
+                        projection: baseLayerCfg.crs,
                         params: {
-                            LAYERS: params.layer,
-                            FORMAT: params.format
+                            LAYERS: baseLayerCfg.layer,
+                            FORMAT: baseLayerCfg.format
                         },
                     })
                 });
+            } else if (baseLayerCfg.type === 'wmts') {
+                const proj3857 = getProjection('EPSG:3857');
+                const maxResolution = getWidth(proj3857.getExtent()) / 256;
+                const resolutions = [];
+                const matrixIds = [];
+
+                for (let i = 0; i < baseLayerCfg.numZoomLevels; i++) {
+                  matrixIds[i] = i.toString();
+                  resolutions[i] = maxResolution / Math.pow(2, i);
+                }
+
+                const tileGrid = new WMTSTileGrid({
+                  origin: [-20037508, 20037508],
+                  resolutions: resolutions,
+                  matrixIds: matrixIds,
+                });
+
+                let url = baseLayerCfg.url;
+                if(baseLayerCfg.key && url.includes('{key}')){
+                    url = url.replaceAll('{key}', baseLayerCfg.key);
+                }
+
+                baseLayer = new TileLayer({
+                    source: new WMTS({
+                        url: url,
+                        layer: baseLayerCfg.layer,
+                        matrixSet: baseLayerCfg.matrixSet,
+                        format: baseLayerCfg.format,
+                        projection: baseLayerCfg.crs,
+                        tileGrid: tileGrid,
+                        style: baseLayerCfg.style
+                    })
+                });
+            } else if (baseLayerCfg.type === 'bing') {
+                baseLayer = new TileLayer({
+                    preload: Infinity,
+                    source: new BingMaps({
+                        key: baseLayerCfg.key,
+                        imagerySet: baseLayerCfg.imagerySet,
+                    // use maxZoom 19 to see stretched tiles instead of the BingMaps
+                    // "no photos at this zoom level" tiles
+                    // maxZoom: 19
+                    }),
+                });
+            } else if (baseLayerCfg.type === 'empty') {
+                this._hasEmptyBaseLayer = true;
             }
 
+            if(!baseLayer){
+                continue;
+            }
+
+            const visible = mainLizmap.initialConfig.baseLayers.startupBaselayerName === baseLayerCfg.name;
+
             baseLayer.setProperties({
-                name: name
+                name: baseLayerCfg.name,
+                title: baseLayerCfg.title,
+                visible: visible
             });
 
             baseLayers.push(baseLayer);
 
-            if (firstBaseLayer && params.crs !== qgisProjectProjection) {
+            if (visible && baseLayerCfg.crs !== qgisProjectProjection) {
                 this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
             }
-
-            firstBaseLayer = false;
         }
 
         this._baseLayersGroup = new LayerGroup({
@@ -243,6 +296,10 @@ export default class BaseLayersMap extends olMap {
         this.syncNewOLwithOL2View();
     }
 
+    get hasEmptyBaseLayer() {
+        return this._hasEmptyBaseLayer;
+    }
+
     get baseLayersGroup(){
         return this._baseLayersGroup;
     }
@@ -288,7 +345,7 @@ export default class BaseLayersMap extends olMap {
 
         // If base layer projection is different from project projection
         // We must set the project extent to the View to reproject nicely
-        if (selectedBaseLayer.getSource().getProjection().getCode() !== mainLizmap.projection) {
+        if (selectedBaseLayer?.getSource().getProjection().getCode() !== mainLizmap.projection) {
             this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
         } else {
             this.getView().getProjection().setExtent(getProjection(mainLizmap.projection).getExtent());
