@@ -350,6 +350,22 @@ export default class BaseLayersMap extends olMap {
         } else {
             this.getView().getProjection().setExtent(getProjection(mainLizmap.projection).getExtent());
         }
+
+        // Trigger event
+        lizMap.events.triggerEvent("lizmapbaselayerchanged", { 'layer': name});
+
+        // Refresh metadatas if sub-dock is visible
+        if ( document.getElementById('sub-dock').offsetParent !== null ) {
+            lizMap.events.triggerEvent("lizmapswitcheritemselected", {
+                'name': name, 'type': 'baselayer', 'selected': true
+            });
+        }
+    }
+
+    getActiveBaseLayer(){
+        return this._baseLayersGroup.getLayers().getArray().find(
+            layer => layer.getVisible()
+        );
     }
 
     /**
