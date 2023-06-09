@@ -3049,11 +3049,15 @@ lizmap-treeview input:not(:checked) ~ ul label {
 }
 
 lizmap-treeview .icon-info-sign {
-  display: none;
+  visibility: hidden;
   margin-left: auto;
 }
 
 lizmap-treeview .node:hover > .icon-info-sign {
-  display: inline-block;
+  visibility: visible;
   cursor: pointer;
+}
+
+lizmap-treeview .link[href=""] {
+  visibility: hidden;
 }
