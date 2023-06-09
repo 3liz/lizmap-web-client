@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 
+import { readFileSync } from 'fs';
+
 import { ValidationError, ConversionError } from '../../../assets/src/modules/Errors.js';
+import { AttributionConfig } from '../../../assets/src/modules/config/Attribution.js';
 import { LayersConfig } from '../../../assets/src/modules/config/Layer.js';
-import { AttributionConfig, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../assets/src/modules/config/BaseLayer.js';
+import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../assets/src/modules/config/LayerTree.js';
+import { BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../assets/src/modules/config/BaseLayer.js';
 
 describe('BaseLayerConfig', function () {
     it('simple', function () {
@@ -85,7 +89,7 @@ describe('BaseLayerConfig', function () {
     })
 })
 
-describe('LayersConfig', function () {
+describe('BaseLayersConfig', function () {
     it('From Options', function () {
         const options = {
             emptyBaselayer: 'True',
@@ -243,7 +247,7 @@ describe('LayersConfig', function () {
         expect(ignScanBl.attribution.url).to.be.eq('https://www.ign.fr/')
     })
 
-    it('From layers COnfig', function () {
+    it('From layers config', function () {
         const layersCfg = new LayersConfig({
             "france_parts": {
                 "abstract": "",
@@ -365,7 +369,7 @@ describe('LayersConfig', function () {
         expect(baseLayerNames).to.include('Orthophotos clé essentiels')
     })
 
-    it('From layers COnfig', function () {
+    it('From options and layers config', function () {
         const layersCfg = new LayersConfig({
             "france_parts": {
                 "abstract": "",
@@ -496,6 +500,53 @@ describe('LayersConfig', function () {
         expect(baseLayerNames).to.include('google-satellite')
         expect(baseLayerNames).to.include('bing-road')
         expect(baseLayerNames).to.include('ign-cadastral')
+    })
+
+    it('From options and layers tree', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        // Update capabilities change Hidden group to Baselayers group
+        const blName = 'Baselayers';
+        capabilities.Capability.Layer.Layer[6].Name = blName;
+        const blGroupCfg = structuredClone(config.layers.Hidden);
+        blGroupCfg.id = blName;
+        blGroupCfg.name = blName;
+        blGroupCfg.title = blName;
+        delete config.layers.Hidden;
+        config.layers[blName] = blGroupCfg;
+
+        const layers = new LayersConfig(config.layers);
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+
+        expect(root).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(root.name).to.be.eq('root')
+        expect(root.type).to.be.eq('group')
+        expect(root.level).to.be.eq(0)
+        expect(root.childrenCount).to.be.eq(7)
+
+        const blGroup = root.children[6];
+        expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(blGroup.name).to.be.eq('Baselayers')
+        expect(blGroup.type).to.be.eq('group')
+        expect(blGroup.level).to.be.eq(1)
+
+        const options = {
+            emptyBaselayer: 'True'
+        };
+        const baseLayers = new BaseLayersConfig({}, options, layers, blGroup)
+
+        const baseLayerNames = baseLayers.baseLayerNames;
+        expect(baseLayerNames).to.have.length(3)
+        expect(baseLayerNames).to.include('empty')
+        expect(baseLayerNames).to.include('osm-mapnik')
+        expect(baseLayerNames).to.include('osm-stamen-toner')
+
+        expect(baseLayers.startupBaselayerName).to.be.eq('osm-mapnik')
+
     })
 
     it('startupBaseLayer', function () {

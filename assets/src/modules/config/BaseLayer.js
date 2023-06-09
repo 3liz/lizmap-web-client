@@ -2,56 +2,8 @@
 import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';
 import { convertBoolean } from './Tools.js';
+import { AttributionConfig } from './Attribution.js';
 import { LayersConfig } from './Layer.js';
-
-const attributionProperties = {
-    'title': { type: 'string' },
-    'url': { type: 'string' }
-}
-
-/**
- * Class representing an attribution
- * @class
- * @augments BaseObjectConfig
- */
-export class AttributionConfig extends BaseObjectConfig {
-    /**
-     * Create an attribution instance based on a config object
-     * @param {Object} cfg       - the lizmap config object for attribution
-     * @param {String} cfg.title - the attribution title
-     * @param {String} cfg.url   - the attribution url
-     */
-    constructor(cfg) {
-        if (!cfg || typeof cfg !== "object") {
-            throw new ValidationError('The cfg parameter is not an Object!');
-        }
-
-        if (Object.getOwnPropertyNames(cfg).length == 0) {
-            throw new ValidationError('The `options` in the config is empty!');
-        }
-
-        super(cfg, attributionProperties, {})
-    }
-
-    /**
-     * The attribution title
-     *
-     * @type {String}
-     **/
-    get title() {
-        return this._title;
-    }
-
-    /**
-     * The attribution url
-     *
-     * @type {String}
-     **/
-    get url() {
-        return this._url;
-    }
-
-}
 
 /**
  * Class representing a base layer config
@@ -648,8 +600,9 @@ export class BaseLayersConfig {
      * @param {Object} cfg          - the lizmap config object for base layers
      * @param {Object} options      - the lizmap config object for options
      * @param {LayersConfig} layers - the lizmap layers config
+     * @param {LayerTreeGroupConfig} [baseLayersTreeGroup]
      */
-    constructor(cfg, options, layers) {
+    constructor(cfg, options, layers, baseLayersTreeGroup) {
         if (!cfg || typeof cfg !== "object") {
             throw new ValidationError('The cfg parameter is not an Object!');
         }
@@ -702,9 +655,42 @@ export class BaseLayersConfig {
             }
         }
 
+        // Add base layers from tree and collect names
+        let names = [];
+        if (baseLayersTreeGroup) {
+            for (const layerTreeItem of baseLayersTreeGroup.getChildren()) {
+                if ( !extendedCfg.hasOwnProperty(layerTreeItem.name) ) {
+                    if ( defaultCompleteBaseLayersCfg.hasOwnProperty(layerTreeItem.name) ) {
+                        extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.name]);
+                        extendedCfg[layerTreeItem.name].title = layerTreeItem.wmsTitle;
+                    } else {
+                        extendedCfg[layerTreeItem.name] = {
+                            "type": "lizmap",
+                            "title": layerTreeItem.wmsTitle,
+                        }
+                    }
+                }
+                extendedCfg[layerTreeItem.name].title = layerTreeItem.wmsTitle;
+                names.push(layerTreeItem.name);
+            }
+        }
+
+        // Define startup base layer based on names from tree
+        this._startupBaselayer = null;
+        if (names.length != 0) {
+            this._startupBaselayer = names[0];
+        }
+
+        // Add names from keys
+        for (const key in extendedCfg) {
+            if (names.indexOf(key) == -1) {
+                names.push(key);
+            }
+        }
+
         this._names = [];
         this._configs = [];
-        for (const key in extendedCfg) {
+        for (const key of names) {
             if (key == 'empty') {
                 this._configs.push(new EmptyBaseLayerConfig({}));
                 this._names.push(key);
@@ -734,18 +720,20 @@ export class BaseLayersConfig {
             }
         }
 
-        if (options.hasOwnProperty('startupBaselayer')) {
-            let startupBlName = options.startupBaselayer
-            if (optionsProperties.hasOwnProperty(startupBlName)) {
-                startupBlName = optionsProperties[startupBlName].name;
-            }
-            if (this._names.indexOf(startupBlName) == -1) {
-                this._startupBaselayer = null;
+        if (this._startupBaselayer == null) {
+            if (options.hasOwnProperty('startupBaselayer')) {
+                let startupBlName = options.startupBaselayer
+                if (optionsProperties.hasOwnProperty(startupBlName)) {
+                    startupBlName = optionsProperties[startupBlName].name;
+                }
+                if (this._names.indexOf(startupBlName) == -1) {
+                    this._startupBaselayer = null;
+                } else {
+                    this._startupBaselayer = startupBlName;
+                }
             } else {
-                this._startupBaselayer = startupBlName;
+                this._startupBaselayer = null;
             }
-        } else {
-            this._startupBaselayer = null;
         }
     }
 

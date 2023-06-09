@@ -38,12 +38,36 @@ describe('Config', function () {
             new Config({layers:{}, datavizLayers:{}})
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The WMS Capabilities is not an Object! It\'s undefined')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+
+        try {
+            new Config({layers:{}, datavizLayers:{}}, {})
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The WMS Capabilities is empty!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+
+        try {
+            new Config({layers:{}, datavizLayers:{}}, {Service:{}})
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('No `options` in the config!')
             expect(error).to.be.instanceOf(ValidationError)
         }
 
         try {
-            new Config({options:{}, layers:{}, datavizLayers:{}})
+            new Config({options:{}, layers:{}, datavizLayers:{}}, {Service:{}})
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('No `Capability` in the WMS Capabilities!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+
+        try {
+            new Config({options:{}, layers:{}, datavizLayers:{}}, {Capability:{}})
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('The `options` in the config is empty!')

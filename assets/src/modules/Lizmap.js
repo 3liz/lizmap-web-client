@@ -14,6 +14,7 @@ import Utils from './Utils.js';
 import Action from './Action.js';
 import FeatureStorage from './FeatureStorage.js';
 
+import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
 import { register } from 'ol/proj/proj4.js';
 
@@ -25,8 +26,10 @@ export default class Lizmap {
     constructor() {
         lizMap.events.on({
             configsloaded: (configs) => {
+                const wmsParser = new WMSCapabilities();
+                const wmsCapabilities = wmsParser.read(configs.wmsCapabilities);
                 // The initialConfig has been cloned because it will be freezed
-                this._initialConfig = new Config(structuredClone(configs.initialConfig));
+                this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
             },
             uicreated: () => {
                 this._lizmap3 = lizMap;
