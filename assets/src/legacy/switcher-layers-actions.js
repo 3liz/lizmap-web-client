@@ -78,7 +78,7 @@ var lizLayerActionButtons = function() {
             if (layerActions.length) metadatas.actions = layerActions;
 
         }
-        if( lizMap.map.baseLayer && lizMap.map.baseLayer.name == aName ){
+        if( lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer().get("name") == aName ){
             metadatas.type = 'layer';
             metadatas.isBaselayer = true;
         }
@@ -357,13 +357,13 @@ var lizLayerActionButtons = function() {
 
                 $('#hide-sub-dock').click();
 
-                if( !lizMap.map.baseLayer)
+                const activeBaseLayerName = lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer().get("name");
+                if( !activeBaseLayerName ){
                     return false;
-                var layerName = lizMap.map.baseLayer.name;
-                if( !layerName )
-                    return false;
+                }
+
                 lizMap.events.triggerEvent("lizmapswitcheritemselected",
-                    { 'name': layerName, 'type': 'baselayer', 'selected': true}
+                    { 'name': activeBaseLayerName, 'type': 'baselayer', 'selected': true}
                 );
                 return false;
             });
@@ -460,7 +460,7 @@ var lizLayerActionButtons = function() {
                 // Get layer
                 let layer;
                 if (isBaselayer) {
-                    layer = lizMap.map.baseLayer;
+                    layer = lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer();
                 } else {
                     layer = lizMap.mainLizmap.baseLayersMap.getLayerOrGroupByName(eName);
                 }
