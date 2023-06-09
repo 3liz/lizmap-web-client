@@ -3081,3 +3081,13 @@ lizmap-treeview .node:hover .icon-info-sign {
 lizmap-treeview .link[href=""] {
   visibility: hidden;
 }
+
+lizmap-treeview .loading {
+  position: relative;
+}
+
+lizmap-treeview .spinner::after {
+  border-width: 2px;
+  border-color: black transparent black transparent;
+  right: 8px;
+}
