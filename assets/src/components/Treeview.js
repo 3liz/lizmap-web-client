@@ -22,8 +22,15 @@ export default class Treeview extends HTMLElement {
                 <input class="${layerGroup.get('mutuallyExclusive') ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${layer.get('name')}" .checked=${layer.getVisible()} @click=${() => layer.setVisible(!layer.getVisible())} >
                 <div class="node ${this._isFiltered(layer) ? 'filtered' : ''}">
                     <label for="node-${layer.get('name')}">${layer.get('name')}</label>
-                    <a href="${this._createLink(layer.get('name'))}" target="_blank" class="link" title="${lizDict['tree.button.link']}"><i class="icon-share"></i></a>
-                    <i class="icon-info-sign" @click=${() => this._toggleMetadata(layer.get('name'), layer instanceof LayerGroup)}></i>
+                    <div class="layer-actions">
+                        <a href="${this._createDocLink(layer.get('name'))}" target="_blank" class="link" title="${lizDict['tree.button.link']}">
+                            <i class="icon-share"></i>
+                        </a>
+                        <a href="${this._createRemoveCacheLink(layer.get('name'))}" target="_blank">
+                            <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${(event) => this._removeCache(event)}></i>
+                        </a>
+                        <i class="icon-info-sign" @click=${() => this._toggleMetadata(layer.get('name'), layer instanceof LayerGroup)}></i>
+                    </div>
                 </div>
                 ${when((layer instanceof LayerGroup) && !layer.get('groupAsLayer'), () => this._layerTemplate(layer))}
             </li>`
@@ -39,10 +46,10 @@ export default class Treeview extends HTMLElement {
     }
 
     _isFiltered(layer) {
-        return !(layer instanceof LayerGroup) && layer.getSource().getParams()?.['FILTERTOKEN'];
+        return !(layer instanceof LayerGroup) && layer.getSource().getParams?.()?.['FILTERTOKEN'];
     }
 
-    _createLink(layerName) {
+    _createDocLink(layerName) {
         let url = lizMap.config.layers?.[layerName]?.link;
 
         // Test if the url is internal
@@ -52,6 +59,17 @@ export default class Treeview extends HTMLElement {
             url = mediaLink + '&path=/' + url;
         }
         return url;
+    }
+
+    _createRemoveCacheLink(layerName) {
+        const removeCacheServerUrl = lizUrls.removeCache + '?' + new URLSearchParams(lizUrls.params);
+        return removeCacheServerUrl + '&layer=' + layerName;
+    }
+
+    _removeCache(event) {
+        if (! confirm(lizDict['tree.button.removeCache.confirmation'])){
+            event.preventDefault();
+        }
     }
 
     _toggleMetadata (layerName, isGroup){

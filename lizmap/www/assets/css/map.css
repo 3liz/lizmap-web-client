@@ -3002,9 +3002,13 @@ lizmap-treeview ul {
   list-style: none;
 }
 
+lizmap-treeview li {
+  display: flex;
+}
+
 lizmap-treeview .node {
   display: inline-flex;
-  width: calc(100% - 25px);
+  flex-grow: 1;
   vertical-align: top;
   padding-left: 2px;
 }
@@ -3048,14 +3052,30 @@ lizmap-treeview input:not(:checked) ~ ul label {
   font-style: italic;
 }
 
+lizmap-treeview .layer-actions a {
+  text-decoration: none;
+}
+
+lizmap-treeview .layer-actions > * {
+  padding: 3px;
+}
+
+lizmap-treeview .icon-info-sign,
+lizmap-treeview .icon-remove-sign {
+  cursor: pointer;
+}
+
+lizmap-treeview .icon-remove-sign {
+  filter: invert(26%) sepia(71%) saturate(5158%) hue-rotate(354deg) brightness(91%) contrast(143%);
+}
+
 lizmap-treeview .icon-info-sign {
   visibility: hidden;
   margin-left: auto;
 }
 
-lizmap-treeview .node:hover > .icon-info-sign {
+lizmap-treeview .node:hover .icon-info-sign {
   visibility: visible;
-  cursor: pointer;
 }
 
 lizmap-treeview .link[href=""] {
