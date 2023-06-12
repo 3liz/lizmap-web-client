@@ -83,6 +83,37 @@ describe('DatavizPlotConfig', function () {
         expect(plot.horizontal).to.be.eq(false)
         expect(plot.displayLegend).to.be.eq(true)
         expect(plot.displayWhenLayerVisible).to.be.eq(false)
+
+        const box = new DatavizPlotConfig({
+            "type": "box",
+            "aggregation": "",
+            "display_when_layer_visible": "False",
+            "traces": [
+                {
+                    "color": "#f938ff",
+                    "colorfield": "",
+                    "y_field": "socio_population_2009"
+                }
+            ],
+            "display_legend": true,
+            "stacked": false,
+            "horizontal": false
+        })
+        expect(box.type).to.be.eq('box')
+        expect(box.xField).to.be.null
+        expect(box.aggregation).to.be.eq('')
+
+        expect(box.traces.length).to.be.eq(1)
+        const boxTrace = box.traces[0]
+        expect(boxTrace.color).to.be.eq("#f938ff")
+        expect(boxTrace.colorField).to.be.eq("")
+        expect(boxTrace.yField).to.be.eq("socio_population_2009")
+        expect(boxTrace.zField).to.be.null
+
+        expect(box.stacked).to.be.false
+        expect(box.horizontal).to.be.false
+        expect(box.displayLegend).to.be.true
+        expect(box.displayWhenLayerVisible).to.be.false
     })
 
     it('ValidationError', function () {
