@@ -2,9 +2,9 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { Extent } from '../../../assets/src/modules/config/Tools.js';
-import { LayersConfig } from '../../../assets/src/modules/config/Layer.js';
-import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerStyleConfig, LayerTreeItemConfig, LayerTreeGroupConfig, LayerTreeLayerConfig, buildLayerTreeConfig } from '../../../assets/src/modules/config/LayerTree.js';
+import { Extent } from '../../../../assets/src/modules/config/Tools.js';
+import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
+import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerStyleConfig, LayerTreeItemConfig, LayerTreeGroupConfig, LayerTreeLayerConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 
 describe('LayerGeographicBoundingBoxConfig', function () {
     it('Valid', function () {

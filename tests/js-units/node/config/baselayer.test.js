@@ -2,11 +2,11 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { ValidationError, ConversionError } from '../../../assets/src/modules/Errors.js';
-import { AttributionConfig } from '../../../assets/src/modules/config/Attribution.js';
-import { LayersConfig } from '../../../assets/src/modules/config/Layer.js';
-import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../assets/src/modules/config/LayerTree.js';
-import { BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../assets/src/modules/config/BaseLayer.js';
+import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
+import { AttributionConfig } from '../../../../assets/src/modules/config/Attribution.js';
+import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
+import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
+import { BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
 
 describe('BaseLayerConfig', function () {
     it('simple', function () {
