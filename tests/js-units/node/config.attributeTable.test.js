@@ -7,7 +7,6 @@ describe('AttributeLayerConfig', function () {
     it('Valid', function () {
         const layer = new AttributeLayerConfig("Quartiers", {
             "primaryKey": "QUARTMNO",
-            "hiddenFields": "",
             "pivot": "False",
             "hideAsChild": "False",
             "hideLayer": "",
@@ -49,7 +48,6 @@ describe('AttributeLayersConfig', function () {
         const config = new AttributeLayersConfig({
             "tramstop": {
                 "primaryKey": "osm_id",
-                "hiddenFields": "",
                 "pivot": "False",
                 "hideAsChild": "",
                 "hideLayer": "",
@@ -58,7 +56,7 @@ describe('AttributeLayersConfig', function () {
             },
             "tramway_pivot": {
                 "primaryKey": "OGC_FID",
-                "hiddenFields": "",
+                "hiddenFields": "OGC_FID",
                 "pivot": "True",
                 "hideAsChild": "",
                 "hideLayer": "",
@@ -67,7 +65,6 @@ describe('AttributeLayersConfig', function () {
             },
             "tram_stop_work": {
                 "primaryKey": "work_id",
-                "hiddenFields": "",
                 "pivot": "False",
                 "hideAsChild": "",
                 "hideLayer": "True",
@@ -95,7 +92,7 @@ describe('AttributeLayersConfig', function () {
         expect(layer.id).to.be.eq('jointure_tram_stop20150328114216806')
         expect(layer.name).to.be.eq('tramway_pivot')
         expect(layer.primaryKey).to.be.eq('OGC_FID')
-        expect(layer.hiddenFields).to.be.eq('')
+        expect(layer.hiddenFields).to.be.eq('OGC_FID')
         expect(layer.pivot).to.be.eq(true)
         expect(layer.hideAsChild).to.be.eq(false)
         expect(layer.hideLayer).to.be.eq(false)
@@ -104,7 +101,6 @@ describe('AttributeLayersConfig', function () {
         const disorderConfig = new AttributeLayersConfig({
             "tramstop": {
                 "primaryKey": "osm_id",
-                "hiddenFields": "",
                 "pivot": "False",
                 "hideAsChild": "",
                 "hideLayer": "",
@@ -113,7 +109,6 @@ describe('AttributeLayersConfig', function () {
             },
             "tram_stop_work": {
                 "primaryKey": "work_id",
-                "hiddenFields": "",
                 "pivot": "False",
                 "hideAsChild": "",
                 "hideLayer": "True",
@@ -122,7 +117,7 @@ describe('AttributeLayersConfig', function () {
             },
             "tramway_pivot": {
                 "primaryKey": "OGC_FID",
-                "hiddenFields": "",
+                "hiddenFields": "OGC_FID",
                 "pivot": "True",
                 "hideAsChild": "",
                 "hideLayer": "",
