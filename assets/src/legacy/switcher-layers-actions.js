@@ -295,7 +295,7 @@ var lizLayerActionButtons = function() {
                             for (var layerId in themeSelected.layers) {
 
                                 var getLayerConfig = lizMap.getLayerConfigById(layerId);
-                                if (getLayerConfig) {
+                                if (getLayerConfig && themeSelected.layers[layerId].visible) {
                                     var layerName = getLayerConfig[0];
                                     var featureType = layerName;
                                     var layerConfig = getLayerConfig[1];
