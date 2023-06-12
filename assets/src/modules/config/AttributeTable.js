@@ -2,13 +2,13 @@ import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
     'primaryKey': {type: 'string'},
-    'hiddenFields': {type: 'string'},
     'pivot': {type: 'boolean'},
     'hideAsChild': {type: 'boolean'},
     'hideLayer': {type: 'boolean'}
 };
 
 const optionalProperties = {
+    'hiddenFields': {type: 'string', default: ''},
 };
 
 export class AttributeLayerConfig extends BaseObjectLayerConfig {
