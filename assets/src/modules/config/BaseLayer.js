@@ -437,6 +437,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
  */
 const defaultCompleteBaseLayersCfg = {
     "empty": {},
+    "project-background-color": {},
     "osm-mapnik": {
         "type": "xyz",
         "title": "OpenStreetMap",
@@ -728,7 +729,7 @@ export class BaseLayersConfig {
         this._names = [];
         this._configs = [];
         for (const key of names) {
-            if (key == 'empty') {
+            if (key == 'empty' || key == 'project-background-color') {
                 this._configs.push(new EmptyBaseLayerConfig({}));
                 this._names.push(key);
                 continue;
