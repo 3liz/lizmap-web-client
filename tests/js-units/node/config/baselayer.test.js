@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 
 import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
 import { AttributionConfig } from '../../../../assets/src/modules/config/Attribution.js';
-import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
+import { LayerConfig, LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
 
@@ -142,6 +142,7 @@ describe('BaseLayersConfig', function () {
         expect(emptyBl).to.be.instanceOf(EmptyBaseLayerConfig)
         expect(emptyBl.name).to.be.eq('empty')
         expect(emptyBl.title).to.be.eq('empty')
+        expect(emptyBl.layerConfig).to.be.null
 
         const osmMapnikBl = baseLayers.getBaseLayerConfigByBaseLayerName('osm-mapnik')
         expect(osmMapnikBl).to.be.instanceOf(BaseLayerConfig)
@@ -149,6 +150,7 @@ describe('BaseLayersConfig', function () {
         expect(osmMapnikBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(osmMapnikBl.name).to.be.eq('osm-mapnik')
         expect(osmMapnikBl.title).to.be.eq('OpenStreetMap')
+        expect(osmMapnikBl.layerConfig).to.be.null
         expect(osmMapnikBl.url).to.be.eq('http://tile.openstreetmap.org/{z}/{x}/{y}.png')
         expect(osmMapnikBl.hasKey).to.be.false
         expect(osmMapnikBl.key).to.be.null
@@ -166,6 +168,7 @@ describe('BaseLayersConfig', function () {
         expect(osmCycleBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(osmCycleBl.name).to.be.eq('osm-cyclemap')
         expect(osmCycleBl.title).to.be.eq('OSM CycleMap')
+        expect(osmCycleBl.layerConfig).to.be.null
         expect(osmCycleBl.url).to.be.eq('https://{a-c}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={key}')
         expect(osmCycleBl.hasKey).to.be.true
         expect(osmCycleBl.key).to.not.be.null
@@ -184,6 +187,7 @@ describe('BaseLayersConfig', function () {
         expect(googleSatBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(googleSatBl.name).to.be.eq('google-satellite')
         expect(googleSatBl.title).to.be.eq('Google Satellite')
+        expect(googleSatBl.layerConfig).to.be.null
         expect(googleSatBl.url).to.be.eq('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}')
         expect(googleSatBl.hasKey).to.be.false
         expect(googleSatBl.key).to.be.null
@@ -201,6 +205,7 @@ describe('BaseLayersConfig', function () {
         expect(bingAerialBl).to.be.instanceOf(BingBaseLayerConfig)
         expect(bingAerialBl.name).to.be.eq('bing-aerial')
         expect(bingAerialBl.title).to.be.eq('Bing Satellite')
+        expect(bingAerialBl.layerConfig).to.be.null
         expect(bingAerialBl.imagerySet).to.be.eq('Aerial')
         expect(bingAerialBl.hasKey).to.be.true
         expect(bingAerialBl.key).to.not.be.null
@@ -212,6 +217,7 @@ describe('BaseLayersConfig', function () {
         expect(ignPhotoBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(ignPhotoBl.name).to.be.eq('ign-photo')
         expect(ignPhotoBl.title).to.be.eq('IGN Orthophoto')
+        expect(ignPhotoBl.layerConfig).to.be.null
         expect(ignPhotoBl.url).to.be.eq('https://wxs.ign.fr/ortho/geoportail/wmts')
         expect(ignPhotoBl.hasKey).to.be.false
         expect(ignPhotoBl.key).to.be.null
@@ -232,6 +238,7 @@ describe('BaseLayersConfig', function () {
         expect(ignScanBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(ignScanBl.name).to.be.eq('ign-scan')
         expect(ignScanBl.title).to.be.eq('IGN Scans')
+        expect(ignScanBl.layerConfig).to.be.null
         expect(ignScanBl.url).to.be.eq('https://wxs.ign.fr/{key}/geoportail/wmts')
         expect(ignScanBl.hasKey).to.be.true
         expect(ignScanBl.key).to.be.eq('ign-key')
@@ -367,6 +374,14 @@ describe('BaseLayersConfig', function () {
         expect(baseLayerNames.length).to.be.eq(2);
         expect(baseLayerNames).to.include('OpenStreetMap')
         expect(baseLayerNames).to.include('Orthophotos clé essentiels')
+
+        const osmBl = baseLayers.baseLayerConfigs[0]
+        expect(osmBl).to.be.instanceOf(BaseLayerConfig)
+        expect(osmBl.type).to.be.eq('lizmap')
+        expect(osmBl.name).to.be.eq('OpenStreetMap')
+        expect(osmBl.title).to.be.eq('OpenStreetMap')
+        expect(osmBl.layerConfig).to.not.be.null
+        expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
     })
 
     it('From options and layers config', function () {
@@ -500,6 +515,14 @@ describe('BaseLayersConfig', function () {
         expect(baseLayerNames).to.include('google-satellite')
         expect(baseLayerNames).to.include('bing-road')
         expect(baseLayerNames).to.include('ign-cadastral')
+
+        const osmBl = baseLayers.baseLayerConfigs[5]
+        expect(osmBl).to.be.instanceOf(BaseLayerConfig)
+        expect(osmBl.type).to.be.eq('lizmap')
+        expect(osmBl.name).to.be.eq('OpenStreetMap')
+        expect(osmBl.title).to.be.eq('OpenStreetMap')
+        expect(osmBl.layerConfig).to.not.be.null
+        expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
     })
 
     it('From options and layers tree', function () {
@@ -546,6 +569,15 @@ describe('BaseLayersConfig', function () {
         expect(baseLayerNames).to.include('osm-stamen-toner')
 
         expect(baseLayers.startupBaselayerName).to.be.eq('osm-mapnik')
+
+        const osmBl = baseLayers.baseLayerConfigs[0]
+        expect(osmBl).to.be.instanceOf(BaseLayerConfig)
+        expect(osmBl.type).to.be.eq('xyz')
+        expect(osmBl).to.be.instanceOf(XyzBaseLayerConfig)
+        expect(osmBl.name).to.be.eq('osm-mapnik')
+        expect(osmBl.title).to.be.eq('osm-mapnik')
+        expect(osmBl.layerConfig).to.not.be.null
+        expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
 
     })
 

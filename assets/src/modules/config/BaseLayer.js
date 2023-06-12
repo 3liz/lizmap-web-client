@@ -3,7 +3,7 @@ import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';
 import { convertBoolean } from './Tools.js';
 import { AttributionConfig } from './Attribution.js';
-import { LayersConfig } from './Layer.js';
+import { LayerConfig, LayersConfig } from './Layer.js';
 
 /**
  * Class representing a base layer config
@@ -13,14 +13,15 @@ import { LayersConfig } from './Layer.js';
 export class BaseLayerConfig extends BaseObjectConfig {
     /**
      * Create a base layer config based on a config object
-     * @param {String} type                                                           - the base layer type
-     * @param {String} name                                                           - the base layer name
-     * @param {Object} cfg                                                            - the base layer lizmap config object
-     * @param {String} cfg.title                                                      - the base layer title
-     * @param {String} [cfg.key]                                                      - the base layer key
-     * @param {Object} [cfg.attribution]                                              - the base layer attribution config object
-     * @param {Object} [requiredProperties={'title': {type: 'string'}}]               - the required properties definition
-     * @param {Object} [optionalProperties={'key': {type: 'string', nullable: true}}] - the optional properties definition
+     * @param {String}      type                                                           - the base layer type
+     * @param {String}      name                                                           - the base layer name
+     * @param {Object}      cfg                                                            - the base layer lizmap config object
+     * @param {String}      cfg.title                                                      - the base layer title
+     * @param {LayerConfig} [cfg.layerConfig]                                              - the base layer Lizmap layer config
+     * @param {String}      [cfg.key]                                                      - the base layer key
+     * @param {Object}      [cfg.attribution]                                              - the base layer attribution config object
+     * @param {Object}      [requiredProperties={'title': {type: 'string'}}]               - the required properties definition
+     * @param {Object}      [optionalProperties={'key': {type: 'string', nullable: true}}] - the optional properties definition
      */
     constructor(type, name, cfg, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'key': { type: 'string', nullable: true } }) {
 
@@ -37,6 +38,14 @@ export class BaseLayerConfig extends BaseObjectConfig {
         this._name = name;
 
         this._type = type;
+
+        this._hasLayerConfig = false;
+        this._layerConfig = null;
+        if (cfg.hasOwnProperty('layerConfig')
+            && cfg.layerConfig instanceof LayerConfig) {
+            this._layerConfig = cfg.layerConfig;
+            this._hasLayerConfig = true;
+        }
 
         this._hasAttribution = false;
         this._attribution = null;
@@ -72,6 +81,23 @@ export class BaseLayerConfig extends BaseObjectConfig {
      **/
     get title() {
         return this._title;
+    }
+
+    /**
+     * A Lizmap layer config is associated with this base layer
+     *
+     * @type {Boolean}
+     **/
+    get hasLayerConfig() {
+        return this._hasLayerConfig;
+    }
+    /**
+     * The Lizmap layer config associated with this base layer
+     *
+     * @type {?LayerConfig}
+     **/
+    get layerConfig() {
+        return this._layerConfig;
     }
 
     /**
@@ -616,16 +642,6 @@ export class BaseLayersConfig {
         // Clone config to extend it with options and layers
         let extendedCfg = structuredClone(cfg);
 
-        for (const layer of layers.getLayerConfigs()) {
-            if (!layer.baseLayer) {
-                continue;
-            }
-            extendedCfg[layer.name] = {
-                "type": "lizmap",
-                "title": layer.title,
-            }
-        }
-
         // Converting options properties to base layers config
         const optionsProperties = {
             emptyBaselayer: { name: 'empty' },
@@ -662,17 +678,38 @@ export class BaseLayersConfig {
                 if ( !extendedCfg.hasOwnProperty(layerTreeItem.name) ) {
                     if ( defaultCompleteBaseLayersCfg.hasOwnProperty(layerTreeItem.name) ) {
                         extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.name]);
-                        extendedCfg[layerTreeItem.name].title = layerTreeItem.wmsTitle;
                     } else {
                         extendedCfg[layerTreeItem.name] = {
                             "type": "lizmap",
-                            "title": layerTreeItem.wmsTitle,
                         }
                     }
                 }
+                // Override title and set layer config
                 extendedCfg[layerTreeItem.name].title = layerTreeItem.wmsTitle;
+                extendedCfg[layerTreeItem.name].layerConfig = layerTreeItem.layerConfig;
                 names.push(layerTreeItem.name);
             }
+        }
+
+        // Add layers from config
+        for (const layerCfg of layers.getLayerConfigs()) {
+            if (!layerCfg.baseLayer) {
+                continue;
+            }
+            if (!extendedCfg.hasOwnProperty(layerCfg.name) ) {
+                if ( defaultCompleteBaseLayersCfg.hasOwnProperty(layerCfg.name) ) {
+                    extendedCfg[layerCfg.name] = structuredClone(defaultCompleteBaseLayersCfg[layerCfg.name]);
+                    // Override title
+                    extendedCfg[layerCfg.name].title = layerCfg.title;
+                } else {
+                    extendedCfg[layerCfg.name] = {
+                        "type": "lizmap",
+                        "title": layerCfg.title,
+                    }
+                }
+            }
+            // Set layer config
+            extendedCfg[layerCfg.name].layerConfig = layerCfg;
         }
 
         // Define startup base layer based on names from tree
