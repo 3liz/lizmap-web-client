@@ -3002,7 +3002,7 @@ lizmap-treeview ul {
   list-style: none;
 }
 
-lizmap-treeview li {
+lizmap-treeview li > div {
   display: flex;
 }
 
@@ -3017,6 +3017,8 @@ lizmap-treeview input[type="checkbox"] {
   margin-top: 0;
   margin-right: 5px;
   scale: 1.4;
+  align-self: baseline;
+  margin-top: 5px;
 }
 
 lizmap-treeview input.rounded-checkbox {
@@ -3044,12 +3046,16 @@ lizmap-treeview label {
   flex-grow: 1;
 }
 
-lizmap-treeview input:not(:checked) ~ ul input[type="checkbox"] {
+lizmap-treeview div:not(.checked) ~ ul input[type="checkbox"] {
   accent-color: silver;
 }
 
-lizmap-treeview input:not(:checked) ~ ul label {
+lizmap-treeview div:not(.checked) ~ ul label {
   font-style: italic;
+}
+
+lizmap-treeview .layer-actions {
+  display: flex;
 }
 
 lizmap-treeview .layer-actions a {
@@ -3078,7 +3084,7 @@ lizmap-treeview .node:hover .icon-info-sign {
   visibility: visible;
 }
 
-lizmap-treeview .link[href=""] {
+lizmap-treeview a[href=""] {
   visibility: hidden;
 }
 

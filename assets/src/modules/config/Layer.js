@@ -27,6 +27,7 @@ const requiredProperties = {
 };
 
 const optionalProperties = {
+    'noLegendImage': {type: 'boolean'},
     'shortname': {type: 'string'},
     'layerType': {type: 'string', nullable: true},
     'geometryType': {type: 'string', nullable: true},

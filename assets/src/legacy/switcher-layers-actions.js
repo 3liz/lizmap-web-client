@@ -78,7 +78,7 @@ var lizLayerActionButtons = function() {
             if (layerActions.length) metadatas.actions = layerActions;
 
         }
-        if( lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer().get("name") == aName ){
+        if( lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer()?.get("name") == aName ){
             metadatas.type = 'layer';
             metadatas.isBaselayer = true;
         }

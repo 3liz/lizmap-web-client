@@ -21,18 +21,20 @@ export default class Treeview extends HTMLElement {
         <ul>
             ${layerGroup.getLayers().getArray().slice().reverse().map(layer => html`
             <li>
-                <div class="loading ${layer.getSource().get('loading') ? 'spinner' : ''}"></div>
-                <input class="${layerGroup.get('mutuallyExclusive') ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${layer.get('name')}" .checked=${layer.getVisible()} @click=${() => layer.setVisible(!layer.getVisible())} >
-                <div class="node ${this._isFiltered(layer) ? 'filtered' : ''}">
-                    <label for="node-${layer.get('name')}">${layer.get('name')}</label>
-                    <div class="layer-actions">
-                        <a href="${this._createDocLink(layer.get('name'))}" target="_blank" class="link" title="${lizDict['tree.button.link']}">
-                            <i class="icon-share"></i>
-                        </a>
-                        <a href="${this._createRemoveCacheLink(layer.get('name'))}" target="_blank">
-                            <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${(event) => this._removeCache(event)}></i>
-                        </a>
-                        <i class="icon-info-sign" @click=${() => this._toggleMetadata(layer.get('name'), layer instanceof LayerGroup)}></i>
+                <div class="${layer.getVisible() ? 'checked' : ''}">
+                    <div class="loading ${layer?.getSource?.().get('loading') ? 'spinner' : ''}"></div>
+                    <input class="${layerGroup.get('mutuallyExclusive') ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${layer.get('name')}" .checked=${layer.getVisible()} @click=${() => layer.setVisible(!layer.getVisible())} >
+                    <div class="node ${this._isFiltered(layer) ? 'filtered' : ''}">
+                        <label for="node-${layer.get('name')}">${layer.get('name')}</label>
+                        <div class="layer-actions">
+                            <a href="${this._createDocLink(layer.get('name'))}" target="_blank" title="${lizDict['tree.button.link']}">
+                                <i class="icon-share"></i>
+                            </a>
+                            <a href="${this._createRemoveCacheLink(layer.get('name'))}" target="_blank">
+                                <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${(event) => this._removeCache(event)}></i>
+                            </a>
+                            <i class="icon-info-sign" @click=${() => this._toggleMetadata(layer.get('name'), layer instanceof LayerGroup)}></i>
+                        </div>
                     </div>
                 </div>
                 ${when((layer instanceof LayerGroup) && !layer.get('groupAsLayer'), () => this._layerTemplate(layer))}
@@ -45,7 +47,7 @@ export default class Treeview extends HTMLElement {
         mainLizmap.baseLayersMap.overlayLayersGroup.on('change', this._onChange);
 
         // Display a spinner when a layer is loading
-        for (const layer of mainLizmap.baseLayersMap.overlayLayersAndGroups) {
+        for (const layer of mainLizmap.baseLayersMap.overlayLayers) {
             const source = layer.getSource();
 
             if (source instanceof ImageWMS) {
@@ -90,6 +92,9 @@ export default class Treeview extends HTMLElement {
     }
 
     _createRemoveCacheLink(layerName) {
+        if(!lizUrls.removeCache){
+            return;
+        }
         const removeCacheServerUrl = lizUrls.removeCache + '?' + new URLSearchParams(lizUrls.params);
         return removeCacheServerUrl + '&layer=' + layerName;
     }
