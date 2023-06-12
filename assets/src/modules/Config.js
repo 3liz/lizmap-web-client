@@ -133,7 +133,7 @@ export class Config {
     /**
      * Config metadata
      *
-     * @type {Metadata}
+     * @type {MetadataConfig}
      **/
     get metadata() {
         if (this._metadata != null) {
