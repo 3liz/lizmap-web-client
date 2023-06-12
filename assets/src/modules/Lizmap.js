@@ -1,4 +1,5 @@
 import {Config} from './Config.js';
+import {State} from './State.js';
 import Map from './Map.js';
 import Edition from './Edition.js';
 import Geolocation from './Geolocation.js';
@@ -30,6 +31,7 @@ export default class Lizmap {
                 const wmsCapabilities = wmsParser.read(configs.wmsCapabilities);
                 // The initialConfig has been cloned because it will be freezed
                 this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
+                this._state = new State(this._initialConfig);
             },
             uicreated: () => {
                 this._lizmap3 = lizMap;
@@ -91,6 +93,15 @@ export default class Lizmap {
      **/
     get initialConfig() {
         return this._initialConfig;
+    }
+
+    /**
+     * The lizmap user interface state
+     *
+     * @type {Config}
+     **/
+    get state() {
+        return this._state;
     }
 
     get config() {
