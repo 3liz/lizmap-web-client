@@ -89,7 +89,7 @@ describe('OptionsConfig', function () {
             new OptionsConfig({hideProject: 'not hide'})
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
-            expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: hideProject\n- The required properties: hideProject,bbox,initialExtent,mapScales,minScale,maxScale,projection,pointTolerance,lineTolerance,polygonTolerance,popupLocation,datavizLocation')
+            expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: hideProject\n- The required properties: bbox,initialExtent,mapScales,minScale,maxScale,projection,pointTolerance,lineTolerance,polygonTolerance,popupLocation,datavizLocation')
             expect(error).to.be.instanceOf(ValidationError)
         }
     })
