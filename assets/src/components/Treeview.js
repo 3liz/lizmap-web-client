@@ -21,7 +21,7 @@ export default class Treeview extends HTMLElement {
         <ul>
             ${layerGroup.getLayers().getArray().slice().reverse().map(layer => html`
             <li>
-                <div class="${layer.getVisible() ? 'checked' : ''}">
+                <div class="${layer.getVisible() ? 'checked' : ''} ${layer instanceof LayerGroup ? 'group' : ''}">
                     <div class="loading ${layer?.getSource?.().get('loading') ? 'spinner' : ''}"></div>
                     <input class="${layerGroup.get('mutuallyExclusive') ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${layer.get('name')}" .checked=${layer.getVisible()} @click=${() => layer.setVisible(!layer.getVisible())} >
                     <div class="node ${this._isFiltered(layer) ? 'filtered' : ''}">
