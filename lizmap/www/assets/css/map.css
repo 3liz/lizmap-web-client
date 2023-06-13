@@ -3042,6 +3042,10 @@ lizmap-treeview input.rounded-checkbox:checked {
   clip-path: circle(50% at 50% 50%);
 }
 
+lizmap-treeview .group label {
+  font-weight: bold;
+}
+
 lizmap-treeview label {
   flex-grow: 1;
 }
