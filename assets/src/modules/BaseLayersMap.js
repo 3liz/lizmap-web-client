@@ -156,8 +156,16 @@ export default class BaseLayersMap extends olMap {
 
         // Returns a layer or a layerGroup depending of the node type
         const createNode = (node, parentName) => {
-            const layerCfg = mainLizmap.config?.layers?.[node.name];
-            const parentGroupCfg = mainLizmap.config?.layers?.[parentName];
+            let layerCfg;
+            let parentGroupCfg;
+
+            if (node.name !== 'root'){
+                layerCfg = mainLizmap.initialConfig.layers.getLayerConfigByLayerName(node.name);
+            }
+
+            if (parentName && parentName !== 'root'){
+                parentGroupCfg = mainLizmap.initialConfig.layers.getLayerConfigByLayerName(parentName);
+            }
 
             if(node.type === 'group'){
                 const layers = [];
@@ -169,12 +177,12 @@ export default class BaseLayersMap extends olMap {
                 });
 
                 if (node.name !== 'root') {
-                    layerGroup.setVisible(layerCfg?.toggled === "True");
+                    layerGroup.setVisible(layerCfg.toggled);
                     layerGroup.setProperties({
                         name: node.name,
                         parentName: parentName,
-                        mutuallyExclusive: layerCfg?.mutuallyExclusive === "True",
-                        groupAsLayer: layerCfg?.groupAsLayer === "True"
+                        mutuallyExclusive: layerCfg?.mutuallyExclusive,
+                        groupAsLayer: layerCfg?.groupAsLayer
                     });
 
                     this._overlayLayersAndGroups.push(layerGroup);
@@ -200,7 +208,20 @@ export default class BaseLayersMap extends olMap {
                 let minResolution = layerCfg.minScale === 1 ? undefined : Utils.getResolutionFromScale(layerCfg.minScale);
                 let maxResolution = layerCfg.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(layerCfg.maxScale);
 
-                if (layerCfg.cached === "False") {
+                if (layerCfg.cached) {
+                    const parser = new WMTSCapabilities();
+                    const result = parser.read(lizMap.wmtsCapabilities);
+                    const options = optionsFromCapabilities(result, {
+                        layer: layerCfg?.shortname || layerCfg.name,
+                        matrixSet: layerCfg.crs,
+                    });
+
+                    layer = new TileLayer({
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        source: new WMTS(options)
+                    });
+                } else {
                     layer = new ImageLayer({
                         // extent: extent,
                         minResolution: minResolution,
@@ -215,26 +236,13 @@ export default class BaseLayersMap extends olMap {
                             },
                         })
                     });
-                } else {
-                    const parser = new WMTSCapabilities();
-                    const result = parser.read(lizMap.wmtsCapabilities);
-                    const options = optionsFromCapabilities(result, {
-                        layer: layerCfg?.shortname || layerCfg.name,
-                        matrixSet: layerCfg.crs,
-                    });
-
-                    layer = new TileLayer({
-                        minResolution: minResolution,
-                        maxResolution: maxResolution,
-                        source: new WMTS(options)
-                    });
                 }
                 
-                let isVisible = layerCfg.toggled === "True";
+                let isVisible = layerCfg.toggled;
 
                 // If parent group is a "group as layer" all layers in it are visible
                 // and the visibility is handled by group
-                if (parentGroupCfg?.groupAsLayer === "True") {
+                if (parentGroupCfg?.groupAsLayer) {
                     isVisible = true;
                 }
 

@@ -37,7 +37,7 @@ export default class Popup {
                 candidateLayers = candidateLayers.filter(layer => layer.getVisible());
 
                 // Only request layers with 'popup' checked in plugin
-                candidateLayers = candidateLayers.filter(layer => mainLizmap.config.layers?.[layer.getSource().getParams().LAYERS]?.popup === "True");
+                candidateLayers = candidateLayers.filter(layer => mainLizmap.initialConfig.layers.getLayerConfigByLayerName(layer.get("name")).popup);
 
                 if(!candidateLayers.length){
                     return;
