@@ -357,6 +357,23 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
         }
 
         super('wmts', name, cfg, wmtsProperties, wmtsOptionalProperties);
+
+        // Remove unnecessary parameters
+        let wmtsUrl = new URL(this._url);
+        let keysToRemove = []
+        for (const [key, ] of wmtsUrl.searchParams) {
+            if (key.toLowerCase() == 'service'
+                || key.toLowerCase() == 'version'
+                || key.toLowerCase() == 'request') {
+                keysToRemove.push(key);
+            }
+        }
+        if (keysToRemove.length != 0) {
+            for (const key of keysToRemove) {
+                wmtsUrl.searchParams.delete(key);
+            }
+            this._url = wmtsUrl.toString();
+        }
     }
 
     /**
