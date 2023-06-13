@@ -3,7 +3,6 @@ import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
 const requiredProperties = {
-    'hideProject': {type: 'boolean'},
     'bbox': {type: 'extent'},
     'initialExtent': {type: 'extent'},
     'mapScales': {type: 'array'},
@@ -18,6 +17,7 @@ const requiredProperties = {
 };
 
 const optionalProperties = {
+    'hideProject': {type: 'boolean', default: false},
     'wmsMaxHeight': {type: 'number', default: 3000},
     'wmsMaxWidth': {type: 'number', default: 3000},
     'fixed_scale_overview_map': {type: 'boolean', default: true},
@@ -33,7 +33,6 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * Create an options config instance based on a config object
      * @param {Object}   cfg                                  - the lizmap config object for options
-     * @param {Boolean}  cfg.hideProject                     - is the project hidden in user interface ? Only services are available.
      * @param {Number[]} cfg.bbox                            - the project and web services max extent
      * @param {Number[]} cfg.initialExtent                   - the map extent at the loading page
      * @param {Number[]} cfg.mapScales                       - the map scales
@@ -45,6 +44,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {Number}   cfg.polygonTolerance                - the polygon tolerance for QGIS Server WMS GetFeatureInfo request
      * @param {String}   cfg.popupLocation                   - the popup location in the User interface: dock, bottom-dock, right-dock, mini-dock, map
      * @param {String}   cfg.datavizLocation                 - the popup location in the User interface: dock, bottom-dock, right-dock
+     * @param {Boolean}  [cfg.hideProject=false]             - is the project hidden in user interface ? Only services are available.
      * @param {Number}   [cfg.wmsMaxHeight=3000]             - the image max height for WMS GetMap request
      * @param {Number}   [cfg.wmsMaxWidth=3000]              - the image max width for WMS GetMap request
      * @param {Boolean}  [cfg.fixed_scale_overview_map=true] - does the Overview map have fixed scale ?

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../assets/src/modules/Errors.js';
-import { convertNumber, convertBoolean, getNotContains, Extent } from '../../../assets/src/modules/config/Tools.js';
+import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
+import { convertNumber, convertBoolean, getNotContains, Extent } from '../../../../assets/src/modules/config/Tools.js';
 
 describe('convertNumber', function () {
     it('Valid', function () {

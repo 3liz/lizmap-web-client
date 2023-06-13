@@ -11,13 +11,15 @@ import { EditionLayersConfig } from './config/Edition.js';
 import { TimeManagerLayersConfig } from './config/TimeManager.js';
 import { FormFilterConfig } from './config/FormFilter.js';
 import { DatavizOptionsConfig, DatavizLayersConfig } from './config/Dataviz.js';
+import { buildLayerTreeConfig } from './config/LayerTree.js';
 
 export class Config {
 
     /**
      * @param {Object} cfg - the lizmap config object
+     * @param {Object} wmsCapabilities - the wms capabilities
      */
-    constructor(cfg) {
+    constructor(cfg, wmsCapabilities) {
         if (!cfg || typeof cfg !== "object") {
             throw new ValidationError('The config is not an Object! It\'s '+(typeof cfg));
         }
@@ -26,9 +28,19 @@ export class Config {
             throw new ValidationError('The config is empty!');
         }
 
+        if (!wmsCapabilities || typeof wmsCapabilities !== "object") {
+            throw new ValidationError('The WMS Capabilities is not an Object! It\'s '+(typeof wmsCapabilities));
+        }
+
+        if (Object.getOwnPropertyNames(wmsCapabilities).length == 0) {
+            throw new ValidationError('The WMS Capabilities is empty!');
+        }
+
         this._theConfig = null;
+        this._theWmsCapabilities = null;
         this._options = null;
         this._layers = null;
+        this._layerTree = null;
         this._baselayers = null;
         this._hasMetadata = true;
         this._metadata = null;
@@ -57,7 +69,20 @@ export class Config {
             }
         }
 
+        const theWmsCapabilities = deepFreeze(wmsCapabilities);
+
+        // checking WMS Capabilities
+        const mandatoryWmsCapabilitiesgProperties = [
+            'Capability', //needed for  layers tree
+        ];
+        for (const prop of mandatoryWmsCapabilitiesgProperties) {
+            if (!theWmsCapabilities.hasOwnProperty(prop)) {
+                throw new ValidationError('No `' + prop + '` in the WMS Capabilities!');
+            }
+        }
+
         this._theConfig = theConfig;
+        this._theWmsCapabilities = theWmsCapabilities;
 
         const optionalConfigProperties = [
             'metadata',
@@ -114,6 +139,18 @@ export class Config {
     }
 
     /**
+     * Root tree layer group
+     *
+     * @type {LayerTreeGroupConfig}
+     **/
+    get layerTree() {
+        if (this._layerTree == null) {
+            this._layerTree = buildLayerTreeConfig(this._theWmsCapabilities.Capability.Layer, this.layers);
+        }
+        return this._layerTree;
+    }
+
+    /**
      * Config base layers
      *
      * @type {BaseLayersConfig}
@@ -126,14 +163,21 @@ export class Config {
         if (this._theConfig.hasOwnProperty('baseLayers')) {
             baseLayersCfg = this._theConfig.baseLayers;
         }
-        this._baselayers = new BaseLayersConfig(baseLayersCfg, this._theConfig.options, this.layers);
+        let baseLayerTreeItem = null;
+        for (const layerTreeItem of this.layerTree.getChildren()) {
+            if ( layerTreeItem.name.toLowerCase() == 'baselayers') {
+                baseLayerTreeItem = layerTreeItem;
+                break;
+            }
+        }
+        this._baselayers = new BaseLayersConfig(baseLayersCfg, this._theConfig.options, this.layers, baseLayerTreeItem);
         return this._baselayers;
     }
 
     /**
      * Config metadata
      *
-     * @type {Metadata}
+     * @type {MetadataConfig}
      **/
     get metadata() {
         if (this._metadata != null) {

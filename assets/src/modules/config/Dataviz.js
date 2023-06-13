@@ -93,7 +93,6 @@ export class DatavizTraceConfig extends BaseObjectConfig {
 
 const plotRequiredProperties = {
     'type': {type: 'string'},
-    'x_field': {type: 'string'},
     'aggregation': {type: 'string'},
     'display_when_layer_visible': {type: 'boolean'},
     'stacked': {type: 'boolean'},
@@ -102,6 +101,7 @@ const plotRequiredProperties = {
 }
 
 const plotOptionalProperties = {
+    'x_field': {type: 'string'},
 }
 
 export class DatavizPlotConfig extends BaseObjectConfig {
