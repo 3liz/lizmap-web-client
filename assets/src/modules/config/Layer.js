@@ -477,4 +477,32 @@ export class LayersConfig {
 
         return cfg;
     }
+
+    /**
+     * Get a layer config by layer WMS name
+     *
+     * @param {String} name the layer WMS name
+     *
+     * @returns {?LayerConfig} The layer config associated to the WMS name
+     *
+     * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
+     **/
+    getLayerConfigByWmsName(name) {
+        const idx = this._names.indexOf(name);
+        if (idx != -1) {
+            const cfg = this._configs[idx];
+            if (cfg.name != name) {
+                throw 'The config has been corrupted!'
+            }
+            return cfg;
+        }
+
+        for (const layer of this.getLayerConfigs()) {
+            if (layer.shortname == name) {
+                return layer;
+            }
+        }
+
+        return null;
+    }
 }
