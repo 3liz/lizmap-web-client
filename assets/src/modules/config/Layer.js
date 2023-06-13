@@ -29,12 +29,14 @@ const requiredProperties = {
 
 const optionalProperties = {
     'shortname': {type: 'string'},
+    'layerType': {type: 'string', nullable: true},
     'geometryType': {type: 'string', nullable: true},
     'extent': {type: 'extent', nullable: true},
     'crs': {type: 'string', nullable: true},
     'popupFrame': {type: 'string', nullable: true},
     'serverFrame': {type: 'string', nullable: true},
     'mutuallyExclusive': {type: 'boolean', default: false},
+    'externalWmsToggle': {type: 'boolean', default: false},
 };
 
 /**
@@ -69,12 +71,15 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {Boolean}  cfg.cached                - the layer cached activation
      * @param {Number}   cfg.clientCacheExpiration - the layer client cache expiration
      * @param {String}   [cfg.shortname]           - the layer short name
-     * @param {String}   [cfg.geometryType]        - the layer geometry type (only layer type)
-     * @param {Number[]} [cfg.extent]              - the layer extent (only layer type)
-     * @param {String}   [cfg.crs]                 - the layer crs (only layer type)
+     * @param {String}   [cfg.layerType]           - the layer layer type (layer only)
+     * @param {String}   [cfg.geometryType]        - the layer geometry type (layer only)
+     * @param {Number[]} [cfg.extent]              - the layer extent (layer only)
+     * @param {String}   [cfg.crs]                 - the layer crs (layer only)
      * @param {String}   [cfg.popupFrame]          - the layer popup frame
      * @param {String}   [cfg.serverFrame]         - the layer server frame
-     * @param {Boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive
+     * @param {Boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
+     * @param {Boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
+     * @param {Object}   [cfg.externalAccess]      - the layer external access
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
@@ -162,7 +167,16 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer geometry type (only layer type)
+     * The layer type (layer only)
+     *
+     * @type {?String}
+     **/
+    get layerType() {
+        return this._layerType;
+    }
+
+    /**
+     * The layer geometry type (layer only)
      *
      * @type {?String}
      **/
@@ -171,7 +185,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer extent (only layer type)
+     * The layer extent (layer only)
      *
      * @type {?Extent}
      **/
@@ -180,7 +194,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer crs (only layer type)
+     * The layer crs (layer only)
      *
      * @type {?String}
      **/
@@ -261,7 +275,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer as group as layer activation (only group type)
+     * The layer as group as layer activation (group only)
      *
      * @type {Boolean}
      **/
@@ -339,6 +353,24 @@ export class LayerConfig extends BaseObjectConfig {
      **/
     get mutuallyExclusive() {
         return this._mutuallyExclusive;
+    }
+
+    /**
+     * The layer provides parameters for external access (layer only)
+     *
+     * @type {Boolean}
+     **/
+    get externalWmsToggle() {
+        return this._externalWmsToggle;
+    }
+
+    /**
+     * The layer layer external access (layer only)
+     *
+     * @type {?Object}
+     **/
+    get externalAccess() {
+        return this._externalAccess;
     }
 }
 
