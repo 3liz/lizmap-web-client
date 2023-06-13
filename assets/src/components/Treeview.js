@@ -1,4 +1,6 @@
 import { mainLizmap } from '../modules/Globals.js';
+import WMS from '../modules/WMS.js';
+
 import LayerGroup from 'ol/layer/Group.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS from 'ol/source/WMTS.js';
@@ -11,6 +13,10 @@ export default class Treeview extends HTMLElement {
     }
 
     connectedCallback() {
+
+        this._getLegends();
+
+        this._legends = {};
 
         this._onChange = () => {
             render(this._layerTemplate(mainLizmap.baseLayersMap.overlayLayersGroup), this);
@@ -25,6 +31,10 @@ export default class Treeview extends HTMLElement {
                     <div class="loading ${layer?.getSource?.().get('loading') ? 'spinner' : ''}"></div>
                     <input class="${layerGroup.get('mutuallyExclusive') ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${layer.get('name')}" .checked=${layer.getVisible()} @click=${() => layer.setVisible(!layer.getVisible())} >
                     <div class="node ${this._isFiltered(layer) ? 'filtered' : ''}">
+                        ${!(layer instanceof LayerGroup)
+                            ? html`<img class="legend" src="data:image/png;base64, ${this._legends[layer.getSource().getParams()['LAYERS']]}">`
+                            : ''
+                        }
                         <label for="node-${layer.get('name')}">${layer.get('name')}</label>
                         <div class="layer-actions">
                             <a href="${this._createDocLink(layer.get('name'))}" target="_blank" title="${lizDict['tree.button.link']}">
@@ -109,5 +119,20 @@ export default class Treeview extends HTMLElement {
         lizMap.events.triggerEvent("lizmapswitcheritemselected",
           { 'name': layerName, 'type': isGroup ? "group" : "layer", 'selected': true}
         )
+    }
+
+    _getLegends() {
+        // Get legends
+        const wms = new WMS();
+        const layersWMSName = mainLizmap.baseLayersMap.overlayLayers.map(layer => layer.getSource().getParams()['LAYERS']).join();
+        const wmsParams = {
+            LAYERS: layersWMSName
+        };
+
+        wms.getLegendGraphics(wmsParams).then(response => {
+            for (const node of response.nodes) {
+                this._legends[node.name] = node.icon;
+            }
+        });
     }
 }

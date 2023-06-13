@@ -3009,8 +3009,9 @@ lizmap-treeview li > div {
 lizmap-treeview .node {
   display: inline-flex;
   flex-grow: 1;
-  vertical-align: top;
   padding-left: 2px;
+  align-items: center;
+  column-gap: 2px;
 }
 
 lizmap-treeview input[type="checkbox"] {
@@ -3048,6 +3049,7 @@ lizmap-treeview .group label {
 
 lizmap-treeview label {
   flex-grow: 1;
+  margin: 0;
 }
 
 lizmap-treeview div:not(.checked) ~ ul input[type="checkbox"] {
@@ -3100,4 +3102,13 @@ lizmap-treeview .spinner::after {
   border-width: 2px;
   border-color: black transparent black transparent;
   right: 8px;
+}
+
+lizmap-treeview img.legend{
+  height: 16px;
+  width: 16px;
+}
+
+lizmap-treeview img.legend[src="data:image/png;base64, "]{
+  visibility: hidden;
 }
