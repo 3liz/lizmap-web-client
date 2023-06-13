@@ -49,10 +49,14 @@ export class BaseLayerConfig extends BaseObjectConfig {
 
         this._hasAttribution = false;
         this._attribution = null;
-        if (cfg.hasOwnProperty('attribution')
-            && Object.getOwnPropertyNames(cfg['attribution']).length != 0) {
-            this._attribution = new AttributionConfig(cfg['attribution']);
-            this._hasAttribution = true;
+        if (cfg.hasOwnProperty('attribution')) {
+            if (cfg['attribution'] instanceof AttributionConfig) {
+                this._attribution = cfg['attribution'];
+                this._hasAttribution = true;
+            } else if (Object.getOwnPropertyNames(cfg['attribution']).length != 0) {
+                this._attribution = new AttributionConfig(cfg['attribution']);
+                this._hasAttribution = true;
+            }
         }
     }
 
@@ -165,12 +169,12 @@ export class EmptyBaseLayerConfig extends BaseLayerConfig {
 const xyzProperties = {
     'title': { type: 'string' },
     'url': { type: 'string' },
-    'zmin': { type: 'number' },
-    'zmax': { type: 'number' },
     'crs': { type: 'string' }
 }
 
 const xyzOptionalProperties = {
+    'zmin': { type: 'number', default: 0 },
+    'zmax': { type: 'number', default: 20 },
     'key': { type: 'string', nullable: true }
 }
 
@@ -186,9 +190,9 @@ export class XyzBaseLayerConfig extends BaseLayerConfig {
      * @param {Object} cfg               - the lizmap config object for XYZ base layer
      * @param {String} cfg.title         - the base layer title
      * @param {String} cfg.url           - the base layer url
-     * @param {Number} cfg.zmin          - the base layer zmin
-     * @param {Number} cfg.zmax          - the base layer zmax
      * @param {String} cfg.crs           - the base layer crs
+     * @param {Number} [cfg.zmin]        - the base layer zmin
+     * @param {Number} [cfg.zmax]        - the base layer zmax
      * @param {String} [cfg.key]         - the base layer key
      * @param {Object} [cfg.attribution] - the base layer attribution config object
      */
@@ -314,11 +318,11 @@ const wmtsProperties = {
     'format': { type: 'string' },
     'style': { type: 'string' },
     'matrixSet': { type: 'string' },
-    'crs': { type: 'string' },
-    'numZoomLevels': { type: 'number' }
+    'crs': { type: 'string' }
 }
 
 const wmtsOptionalProperties = {
+    'numZoomLevels': { type: 'number', default: 19 },
     'key': { type: 'string', nullable: true }
 }
 
@@ -330,18 +334,18 @@ const wmtsOptionalProperties = {
 export class WmtsBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create a WMTS base layer config based on a config object
-     * @param {String} name              - the base layer name
-     * @param {Object} cfg               - the lizmap config object for WMTS base layer
-     * @param {String} cfg.title         - the base layer title
-     * @param {String} cfg.url           - the base layer url
-     * @param {String} cfg.layer         - the base layer layer
-     * @param {String} cfg.format        - the base layer format
-     * @param {String} cfg.style         - the base layer style
-     * @param {String} cfg.matrixSet     - the base layer matrixSet
-     * @param {String} cfg.crs           - the base layer crs
-     * @param {Number} cfg.numZoomLevels - the base layer numZoomLevels
-     * @param {String} [cfg.key]         - the base layer key
-     * @param {Object} [cfg.attribution] - the base layer attribution config object
+     * @param {String} name                - the base layer name
+     * @param {Object} cfg                 - the lizmap config object for WMTS base layer
+     * @param {String} cfg.title           - the base layer title
+     * @param {String} cfg.url             - the base layer url
+     * @param {String} cfg.layer           - the base layer layer
+     * @param {String} cfg.format          - the base layer format
+     * @param {String} cfg.style           - the base layer style
+     * @param {String} cfg.matrixSet       - the base layer matrixSet
+     * @param {String} cfg.crs             - the base layer crs
+     * @param {Number} [cfg.numZoomLevels] - the base layer numZoomLevels
+     * @param {String} [cfg.key]           - the base layer key
+     * @param {Object} [cfg.attribution]   - the base layer attribution config object
      */
     constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -679,6 +683,8 @@ export class BaseLayersConfig {
                 if ( !extendedCfg.hasOwnProperty(layerTreeItem.name) ) {
                     if ( defaultCompleteBaseLayersCfg.hasOwnProperty(layerTreeItem.name) ) {
                         extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.name]);
+                    } else if ( layerTreeItem.layerCfg.externalWmsToggle ){
+                        extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.layerCfg.externalAccess]);
                     } else {
                         extendedCfg[layerTreeItem.name] = {
                             "type": "lizmap",
@@ -688,6 +694,10 @@ export class BaseLayersConfig {
                 // Override title and set layer config
                 extendedCfg[layerTreeItem.name].title = layerTreeItem.wmsTitle;
                 extendedCfg[layerTreeItem.name].layerConfig = layerTreeItem.layerConfig;
+                const wmsAttribution = layerTreeItem.wmsAttribution;
+                if (wmsAttribution != null) {
+                    extendedCfg[layerTreeItem.name].attribution = wmsAttribution;
+                }
                 names.push(layerTreeItem.name);
             }
         }
@@ -702,6 +712,8 @@ export class BaseLayersConfig {
                     extendedCfg[layerCfg.name] = structuredClone(defaultCompleteBaseLayersCfg[layerCfg.name]);
                     // Override title
                     extendedCfg[layerCfg.name].title = layerCfg.title;
+                } else if ( layerCfg.externalWmsToggle ){
+                    extendedCfg[layerCfg.name] = structuredClone(defaultCompleteBaseLayersCfg[layerCfg.externalAccess]);
                 } else {
                     extendedCfg[layerCfg.name] = {
                         "type": "lizmap",
