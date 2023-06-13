@@ -30,6 +30,34 @@ describe('Dataviz tests', function () {
 
         cy.get('#button-dataviz').click()
 
+        // Check the plots are organized as configured in plugin (HTML Drag & drop layout)
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+            .should('have.text', 'First tab')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+            .should('have.text', 'Second tab')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(1) > legend')
+            .should('have.text', 'Group A')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > legend')
+            .should('have.text', 'Group B')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+            .should('have.text', 'Sub-Tab X')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1)')
+            .should('have.text', 'Sub-tab Y')
+
+
+        // Click on the dataviz menu to trigger the visible plots data to be fetched
+        //cy.get('a#button-dataviz').click()
+
+        // Click on the other tabs to make the other plots visible
+        // Sub tab Y
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        .click()
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1)')
+        .click()
+        // Second tab
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+        .click()
+
         // Wait for graphics displayed 4 plots are displayed
         cy.wait(['@getPlot', '@getPlot', '@getPlot', '@getPlot'])
 
@@ -89,6 +117,13 @@ describe('Dataviz tests', function () {
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
+        // Click back to the first tab
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        .click()
+        // Click back to the first sub tab X
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+        .click()
+
         // Using locate by layer to filter layers and plots
         cy.get('#locate-layer-polygons ~ span.custom-combobox > a.custom-combobox-toggle').click()
         cy.get('ul.ui-menu.ui-autocomplete:visible > li.ui-menu-item:nth-child(3)').click()
@@ -101,17 +136,21 @@ describe('Dataviz tests', function () {
         cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
-        // Scroll the dataviz dock to update graphics
-        cy.get('#dock-content').scrollTo('bottom')
-        cy.wait(['@getPlot', '@getPlot'])
+        // Activate the Second tab dock to update one graphic
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+            .click()
 
-        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace g.slice')
-            .should('have.length', 1)
+        cy.wait(['@getPlot'])
+
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
-        // Scroll to top
-        cy.get('#dock-content').scrollTo('top')
+        // Go back to the first tab
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        .click()
+        // Click back to the first sub tab X
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+        .click()
 
         // Zoom and filter to an other feature
         cy.get('#locate-layer-polygons ~ span.custom-combobox > a.custom-combobox-toggle').click()
@@ -125,17 +164,21 @@ describe('Dataviz tests', function () {
         cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
-        // Scroll the dataviz dock to update graphics
-        cy.get('#dock-content').scrollTo('bottom')
-        cy.wait(['@getPlot', '@getPlot'])
+        // Activate the Second tab dock to update one graphic
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+            .click()
 
-        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace g.slice')
-            .should('have.length', 1)
+        cy.wait(['@getPlot'])
+
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
-        // Scroll to top
-        cy.get('#dock-content').scrollTo('top')
+        // Go back to the first tab
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        .click()
+        // Click back to the first sub tab X
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+        .click()
 
         // Deactivate filter provided by locate by layer
         cy.get('#locate-clear').click()
@@ -147,10 +190,9 @@ describe('Dataviz tests', function () {
         cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
-        // Scroll the dataviz dock to update graphics
-        cy.get('#dock-content').scrollTo('bottom')
-        cy.get('#dataviz_plot_2 div.svg-container svg.main-svg g.pielayer g.trace g.slice')
-            .should('have.length', 10)
+        // Activate the Second tab dock to update one graphic
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+            .click()
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
