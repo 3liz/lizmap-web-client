@@ -455,6 +455,10 @@ class QgisProject
                 $layerCfg->displayInLegend = 'False';
             }
         }
+
+        // Override the dataviz HTML template if a Drag & Drop template
+        // has been written
+        $cfg->setDatavizTemplateFromDragAndDropLayout();
     }
 
     /**
