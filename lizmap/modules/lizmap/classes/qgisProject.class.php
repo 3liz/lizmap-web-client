@@ -654,7 +654,6 @@ class qgisProject
                     $themes[(string) $themeObj->name]['layers'][(string) $layerObj->id] = array(
                         'style' => (string) $layerObj->style,
                         'expanded' => (string) $layerObj->expanded,
-                        'visible' => (string) $layerObj->visible ?? '1',
                     );
                 }
 
