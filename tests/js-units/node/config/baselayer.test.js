@@ -89,6 +89,75 @@ describe('BaseLayerConfig', function () {
     })
 })
 
+describe('WmtsBaseLayerConfig', function () {
+    it('Valid', function () {
+        const ignPhotoBl = new WmtsBaseLayerConfig("ign-photo", {
+            "type": "wmts",
+            "title": "IGN Orthophoto",
+            "url": "https://wxs.ign.fr/ortho/geoportail/wmts",
+            "layer": "ORTHOIMAGERY.ORTHOPHOTOS",
+            "format": "image/jpeg",
+            "style": "normal",
+            "matrixSet": "PM",
+            "crs": "EPSG:3857",
+            "numZoomLevels": 22,
+            "attribution": {
+                "title": "Institut national de l'information géographique et forestière",
+                "url": "https://www.ign.fr/"
+            }
+        })
+        expect(ignPhotoBl).to.be.instanceOf(BaseLayerConfig)
+        expect(ignPhotoBl.type).to.be.eq('wmts')
+        expect(ignPhotoBl).to.be.instanceOf(WmtsBaseLayerConfig)
+        expect(ignPhotoBl.name).to.be.eq('ign-photo')
+        expect(ignPhotoBl.title).to.be.eq('IGN Orthophoto')
+        expect(ignPhotoBl.layerConfig).to.be.null
+        expect(ignPhotoBl.url).to.be.eq('https://wxs.ign.fr/ortho/geoportail/wmts')
+        expect(ignPhotoBl.hasKey).to.be.false
+        expect(ignPhotoBl.key).to.be.null
+        expect(ignPhotoBl.layer).to.be.eq('ORTHOIMAGERY.ORTHOPHOTOS')
+        expect(ignPhotoBl.format).to.be.eq('image/jpeg')
+        expect(ignPhotoBl.style).to.be.eq('normal')
+        expect(ignPhotoBl.matrixSet).to.be.eq('PM')
+        expect(ignPhotoBl.crs).to.be.eq('EPSG:3857')
+        expect(ignPhotoBl.numZoomLevels).to.be.eq(22)
+        expect(ignPhotoBl.hasAttribution).to.be.true
+        expect(ignPhotoBl.attribution).to.be.instanceOf(AttributionConfig)
+        expect(ignPhotoBl.attribution.title).to.be.eq('Institut national de l\'information géographique et forestière')
+        expect(ignPhotoBl.attribution.url).to.be.eq('https://www.ign.fr/')
+
+
+        const lizmapBl = new WmtsBaseLayerConfig("Quartiers", {
+            "type": "wmts",
+            "title": "Quartiers",
+            "url": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=cache&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            "layer": "Quartiers",
+            "format": "image/png",
+            "style": "default",
+            "matrixSet": "EPSG:3857",
+            "crs": "EPSG:3857",
+            "numZoomLevels": 16
+        })
+        expect(lizmapBl).to.be.instanceOf(BaseLayerConfig)
+        expect(lizmapBl.type).to.be.eq('wmts')
+        expect(lizmapBl).to.be.instanceOf(WmtsBaseLayerConfig)
+        expect(lizmapBl.name).to.be.eq('Quartiers')
+        expect(lizmapBl.title).to.be.eq('Quartiers')
+        expect(lizmapBl.layerConfig).to.be.null
+        expect(lizmapBl.url).to.be.eq('http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=cache')
+        expect(lizmapBl.hasKey).to.be.false
+        expect(lizmapBl.key).to.be.null
+        expect(lizmapBl.layer).to.be.eq('Quartiers')
+        expect(lizmapBl.format).to.be.eq('image/png')
+        expect(lizmapBl.style).to.be.eq('default')
+        expect(lizmapBl.matrixSet).to.be.eq('EPSG:3857')
+        expect(lizmapBl.crs).to.be.eq('EPSG:3857')
+        expect(lizmapBl.numZoomLevels).to.be.eq(16)
+        expect(lizmapBl.hasAttribution).to.be.false
+        expect(lizmapBl.attribution).to.be.null
+    })
+})
+
 describe('BaseLayersConfig', function () {
     it('From Options', function () {
         const options = {
