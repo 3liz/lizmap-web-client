@@ -651,6 +651,12 @@ class qgisProject
                 // Copy layers and their attributes
                 foreach ($theme->layer as $layer) {
                     $layerObj = $layer->attributes();
+                    // Since QGIS 3.26, theme contains every layers with visible attributes
+                    // before only visible layers are in theme
+                    // So do not keep layer with visible != '1' if it is defined
+                    if (isset($layerObj->visible) && (string) $layerObj->visible != '1') {
+                        continue;
+                    }
                     $themes[(string) $themeObj->name]['layers'][(string) $layerObj->id] = array(
                         'style' => (string) $layerObj->style,
                         'expanded' => (string) $layerObj->expanded,
