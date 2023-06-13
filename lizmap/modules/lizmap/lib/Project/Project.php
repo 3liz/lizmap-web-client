@@ -1775,13 +1775,49 @@ class Project
             }
         }
 
-        // Check layers group visibility
+        // Get user groups to check layers visibility
         $userGroups = array('');
         if ($this->appContext->userIsConnected()) {
             $userGroups = $this->appContext->aclUserGroupsId();
         }
+        // Check layers visibility
+        // and update the layers info
         $layersToRemove = array();
         foreach ($configJson->layers as $obj) {
+            // Add layer type to layers
+            // and external access data if it is interesting
+            if ($obj->type == 'layer') {
+                // Get layer definition extracted from XML
+                $layerDef = $this->getLayerDefinition($obj->id);
+                // Add layer type
+                $obj->layerType = $layerDef['type'];
+                // Extract layer datasource parameters only for raster/wms
+                if ($layerDef['type'] == 'raster' && $layerDef['provider'] == 'wms') {
+                    // source xyz: $layerDatasource['type'] == 'xyz'
+                    // source wmts: stripos($layerDatasource['url'], 'wmts')
+                    // source wms : else
+                    parse_str($layerDef['datasource'], $layerDatasource);
+                    // Do not provide external access data if the datasource contains
+                    // authentication parameters
+                    if (!array_key_exists('password', $layerDatasource)
+                        && !array_key_exists('authcfg', $layerDatasource)) {
+                        // Add wmts type if type is not already defined (it is for xyz)
+                        // and the url contains wmts and the CRS is EPSG:3857
+                        if (!array_key_exists('type', $layerDatasource)
+                            && stripos($layerDatasource['url'], 'wmts')) {
+                            $layerDatasource['type'] = 'wmts';
+                        }
+                        // if the layer datasource contains type and crs EPSG:3857
+                        // external access can be provided
+                        if (array_key_exists('type', $layerDatasource)
+                            && $layerDatasource['crs'] == 'EPSG:3857') {
+                            $obj->externalWmsToggle = 'True';
+                            $obj->externalAccess = $layerDatasource;
+                        }
+                    }
+                }
+            }
+
             // no group_visibility config, nothing to do
             if (!property_exists($obj, 'group_visibility')) {
                 continue;
