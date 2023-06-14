@@ -156,6 +156,46 @@ class QgisProjectTest extends TestCase
         $testQgis = new qgisProjectForTests();
         $themes = $testQgis->readThemesForTests($xml);
         $this->assertEquals($expectedThemes, $themes);
+
+        $expectedThemes = array(
+          'theme2' => array(
+              'layers' => array(
+                 'sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872' => array(
+                    'style' => 'défaut',
+                    'expanded' => '1',
+                  ),
+                  'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d' => array(
+                      'style' => 'style2',
+                      'expanded' => '1',
+                  ),
+              ),
+              'expandedGroupNode' => array(
+                  'group1',
+              ),
+          ),
+          'theme1' => array(
+              'layers' => array(
+                  'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d' => array(
+                      'style' => 'style1',
+                      'expanded' => '1',
+                  ),
+              ),
+              'expandedGroupNode' => array(
+                  'group1',
+              ),
+          ),
+      );
+      $file = __DIR__.'/Ressources/themes-3_22.qgs';
+      $xml = simplexml_load_file($file);
+      $testQgis = new qgisProjectForTests();
+      $themes = $testQgis->readThemesForTests($xml);
+      $this->assertEquals($expectedThemes, $themes);
+
+      $file = __DIR__.'/Ressources/themes-3_26.qgs';
+      $xml = simplexml_load_file($file);
+      $testQgis = new qgisProjectForTests();
+      $themes = $testQgis->readThemesForTests($xml);
+      $this->assertEquals($expectedThemes, $themes);
     }
 
     public function testReadCustomProjectVariables()
