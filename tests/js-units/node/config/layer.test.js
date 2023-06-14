@@ -35,19 +35,19 @@ describe('LayerConfig', function () {
         });
         expect(group.id).to.be.eq('IGN')
         expect(group.name).to.be.eq('IGN')
-        expect(group.shortname).to.be.eq(null)
+        expect(group.shortname).to.be.null
         expect(group.title).to.be.eq('IGN')
         expect(group.abstract).to.be.eq('')
         expect(group.link).to.be.eq('')
         expect(group.type).to.be.eq('group')
         expect(group.minScale).to.be.eq(1)
         expect(group.maxScale).to.be.eq(1000000000000)
-        expect(group.geometryType).to.be.eq(null)
-        expect(group.extent).to.be.eq(null)
-        expect(group.crs).to.be.eq(null)
+        expect(group.geometryType).to.be.null
+        expect(group.extent).to.be.null
+        expect(group.crs).to.be.null
         expect(group.toggled).to.be.eq(true)
         expect(group.popup).to.be.eq(false)
-        expect(group.popupFrame).to.be.eq(null)
+        expect(group.popupFrame).to.be.null
         expect(group.popupSource).to.be.eq('auto')
         expect(group.popupTemplate).to.be.eq('')
         expect(group.popupMaxFeatures).to.be.eq(10)
@@ -59,7 +59,7 @@ describe('LayerConfig', function () {
         expect(group.singleTile).to.be.eq(true)
         expect(group.imageFormat).to.be.eq('image/png')
         expect(group.cached).to.be.eq(false)
-        expect(group.serverFrame).to.be.eq(null)
+        expect(group.serverFrame).to.be.null
         expect(group.clientCacheExpiration).to.be.eq(300)
         expect(group.mutuallyExclusive).to.be.eq(true)
 
@@ -96,7 +96,8 @@ describe('LayerConfig', function () {
             "cached": "False",
             "serverFrame": null,
             "clientCacheExpiration": 300,
-            "shortname": "null_island_qgis_info"
+            "shortname": "null_island_qgis_info",
+            "layerType": 'vector'
         });
         expect(layer1.id).to.be.eq('null_island20200414115730489')
         expect(layer1.name).to.be.eq('null_island OGRGeoJSON Point')
@@ -107,6 +108,7 @@ describe('LayerConfig', function () {
         expect(layer1.type).to.be.eq('layer')
         expect(layer1.minScale).to.be.eq(1)
         expect(layer1.maxScale).to.be.eq(1000000000000)
+        expect(layer1.layerType).to.be.eq('vector')
         expect(layer1.geometryType).to.be.eq('point')
         expect(layer1.extent).to.be.instanceOf(Extent)
         expect(layer1.extent.length).to.be.eq(4)
@@ -117,7 +119,7 @@ describe('LayerConfig', function () {
         expect(layer1.crs).to.be.eq('EPSG:4326')
         expect(layer1.toggled).to.be.eq(true)
         expect(layer1.popup).to.be.eq(true)
-        expect(layer1.popupFrame).to.be.eq(null)
+        expect(layer1.popupFrame).to.be.null
         expect(layer1.popupSource).to.be.eq('auto')
         expect(layer1.popupTemplate).to.be.eq('')
         expect(layer1.popupMaxFeatures).to.be.eq(10)
@@ -129,7 +131,7 @@ describe('LayerConfig', function () {
         expect(layer1.singleTile).to.be.eq(true)
         expect(layer1.imageFormat).to.be.eq('image/png')
         expect(layer1.cached).to.be.eq(false)
-        expect(layer1.serverFrame).to.be.eq(null)
+        expect(layer1.serverFrame).to.be.null
         expect(layer1.clientCacheExpiration).to.be.eq(300)
         expect(layer1.mutuallyExclusive).to.be.eq(false)
 
@@ -163,17 +165,19 @@ describe('LayerConfig', function () {
             "maxScale": 1000000000000,
             "popupSource": "auto",
             "imageFormat": "image/png",
-            "minScale": 1
+            "minScale": 1,
+            "layerType": 'vector'
         });
         expect(layer2.id).to.be.eq('france_parts_8d8d649f_7748_43cc_8bde_b013e17ede29')
         expect(layer2.name).to.be.eq('france_parts')
-        expect(layer2.shortname).to.be.eq(null)
+        expect(layer2.shortname).to.be.null
         expect(layer2.title).to.be.eq('france_parts')
         expect(layer2.abstract).to.be.eq('')
         expect(layer2.link).to.be.eq('')
         expect(layer2.type).to.be.eq('layer')
         expect(layer2.minScale).to.be.eq(1)
         expect(layer2.maxScale).to.be.eq(1000000000000)
+        expect(layer2.layerType).to.be.eq('vector')
         expect(layer2.geometryType).to.be.eq('polygon')
         expect(layer2.extent).to.be.instanceOf(Extent)
         expect(layer2.extent.length).to.be.eq(4)
@@ -184,7 +188,7 @@ describe('LayerConfig', function () {
         expect(layer2.crs).to.be.eq('EPSG:4326')
         expect(layer2.toggled).to.be.eq(true)
         expect(layer2.popup).to.be.eq(true)
-        expect(layer2.popupFrame).to.be.eq(null)
+        expect(layer2.popupFrame).to.be.null
         expect(layer2.popupSource).to.be.eq('auto')
         expect(layer2.popupTemplate).to.be.eq('')
         expect(layer2.popupMaxFeatures).to.be.eq(10)
@@ -196,7 +200,7 @@ describe('LayerConfig', function () {
         expect(layer2.singleTile).to.be.eq(true)
         expect(layer2.imageFormat).to.be.eq('image/png')
         expect(layer2.cached).to.be.eq(false)
-        expect(layer2.serverFrame).to.be.eq(null)
+        expect(layer2.serverFrame).to.be.null
         expect(layer2.clientCacheExpiration).to.be.eq(300)
         expect(layer2.mutuallyExclusive).to.be.eq(false)
     })
@@ -253,7 +257,8 @@ describe('LayersConfig', function () {
                 "cached": "False",
                 "serverFrame": null,
                 "clientCacheExpiration": 300,
-                "shortname": "null_island_qgis_info"
+                "shortname": "null_island_qgis_info",
+                "layerType": 'vector'
             }
         })
         expect(simpleLayers.layerNames.length).to.be.eq(1)
@@ -302,7 +307,8 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "popupSource": "lizmap",
                 "imageFormat": "image/png",
-                "minScale": 1
+                "minScale": 1,
+                "layerType": 'vector'
             },
             "france_parts tuilé en cache": {
                 "abstract": "",
@@ -335,7 +341,8 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "popupSource": "lizmap",
                 "imageFormat": "image/png",
-                "minScale": 1
+                "minScale": 1,
+                "layerType": 'vector'
             },
             "france_parts": {
                 "abstract": "",
@@ -367,7 +374,8 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "popupSource": "auto",
                 "imageFormat": "image/png",
-                "minScale": 1
+                "minScale": 1,
+                "layerType": 'vector'
             }
         })
         const francePartsLayerNames = francePartsLayers.layerNames;
@@ -454,7 +462,8 @@ describe('LayersConfig', function () {
                 "imageFormat": "image/jpeg",
                 "cached": "False",
                 "serverFrame": null,
-                "clientCacheExpiration": 300
+                "clientCacheExpiration": 300,
+                "layerType": 'raster'
             },
             "Plan IGN clé essentiels": {
                 "id": "Plan_essentiels_0cdc425e_0e3f_45b7_b439_f090fb8a02ea",
@@ -487,7 +496,8 @@ describe('LayersConfig', function () {
                 "imageFormat": "image/jpeg",
                 "cached": "False",
                 "serverFrame": null,
-                "clientCacheExpiration": 300
+                "clientCacheExpiration": 300,
+                "layerType": 'raster'
             },
             "Orthophotos clé essentiels": {
                 "id": "Orthophotos_essentiels_993e18ab_ef98_422d_aced_d82d4264b27b",
@@ -520,7 +530,8 @@ describe('LayersConfig', function () {
                 "imageFormat": "image/jpeg",
                 "cached": "False",
                 "serverFrame": null,
-                "clientCacheExpiration": 300
+                "clientCacheExpiration": 300,
+                "layerType": 'raster'
             },
             "OpenStreetMap": {
                 "id": "OpenStreetMap_098d6629_1ec4_4c2c_9489_9a44ae09223e",
@@ -553,7 +564,8 @@ describe('LayersConfig', function () {
                 "imageFormat": "image/png",
                 "cached": "False",
                 "serverFrame": null,
-                "clientCacheExpiration": 300
+                "clientCacheExpiration": 300,
+                "layerType": 'raster'
             },
             "Hidden": {
                 "id": "Hidden",
