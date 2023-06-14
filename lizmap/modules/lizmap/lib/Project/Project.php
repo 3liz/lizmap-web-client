@@ -498,6 +498,22 @@ class Project
     }
 
     /**
+     * Get OGC service Url.
+     *
+     * @return string
+     */
+    public function getOgcServiceUrl()
+    {
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+            )
+        );
+    }
+
+    /**
      * Get the WMS GetCapabilities Url.
      *
      * @return string

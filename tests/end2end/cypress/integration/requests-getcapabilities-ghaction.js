@@ -38,10 +38,10 @@ describe('Request GetCapabilities', function () {
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
                     for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
                         expect(onlineResourceElem.getAttribute('xlink:href'))
-                            .to.eq(
+                            .to.oneOf([
+                                baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                 baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                'OnlineResource error for Service'
-                            )
+                            ],'OnlineResource error for Service')
                     }
                 }
                 // OnlineResource for Request
@@ -49,10 +49,10 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
                             expect(onlineResourceElem.getAttribute('xlink:href'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
@@ -106,10 +106,10 @@ describe('Request GetCapabilities', function () {
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
                     for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
                         expect(onlineResourceElem.getAttribute('xlink:href'))
-                            .to.eq(
+                            .to.oneOf([
+                                baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                 baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                'OnlineResource error for Service'
-                            )
+                            ], 'OnlineResource error for Service')
                     }
                 }
                 // OnlineResource for Request
@@ -117,9 +117,10 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
                             expect(onlineResourceElem.getAttribute('xlink:href'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
+                                  ],'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
                                 )
                         }
                     }
@@ -176,10 +177,10 @@ describe('Request GetCapabilities', function () {
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
                     for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
                         expect(onlineResourceElem.getAttribute('xlink:href'))
-                            .to.eq(
+                            .to.oneOf([
+                                baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                 baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                'OnlineResource error for Service'
-                            )
+                            ], 'OnlineResource error for Service')
                     }
                 }
                 // OnlineResource for Request
@@ -187,10 +188,10 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
                             expect(onlineResourceElem.getAttribute('xlink:href'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
@@ -248,10 +249,10 @@ describe('Request GetCapabilities', function () {
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
                     for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
                         expect(onlineResourceElem.getAttribute('xlink:href'))
-                            .to.eq(
+                            .to.oneOf([
+                                baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                 baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                'OnlineResource error for Service'
-                            )
+                            ], 'OnlineResource error for Service')
                     }
                 }
                 // OnlineResource for Request
@@ -259,10 +260,10 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
                             expect(onlineResourceElem.getAttribute('xlink:href'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
@@ -322,10 +323,10 @@ describe('Request GetCapabilities', function () {
                 for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
                     for (const onlineResourceElem of serviceElem.getElementsByTagName('OnlineResource')) {
                         expect(onlineResourceElem.getAttribute('xlink:href'))
-                            .to.eq(
+                            .to.oneOf([
+                                baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                 baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                'OnlineResource error for Service'
-                            )
+                            ], 'OnlineResource error for Service')
                     }
                 }
                 // OnlineResource for Request
@@ -333,10 +334,10 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const onlineResourceElem of requestElem.getElementsByTagName('OnlineResource')) {
                             expect(onlineResourceElem.getAttribute('xlink:href'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
@@ -532,17 +533,17 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const getElem of requestElem.getElementsByTagName('Get')) {
                             expect(getElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName)
                         }
                         for (const postElem of requestElem.getElementsByTagName('Post')) {
                             expect(postElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
@@ -603,17 +604,17 @@ describe('Request GetCapabilities', function () {
                     for (const operationElem of getChildrenByTagName(operationsMetadataElem, 'ows:Operation')) {
                         for (const getElem of operationElem.getElementsByTagName('ows:Get')) {
                             expect(getElem.getAttribute('xlink:href'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+operationElem.getAttribute('name')
-                                )
+                                ], 'OnlineResource error for '+operationElem.getAttribute('name'))
                         }
                         for (const postElem of operationElem.getElementsByTagName('ows:Post')) {
                             expect(postElem.getAttribute('xlink:href'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+operationElem.getAttribute('name')
-                                )
+                                ], 'OnlineResource error for '+operationElem.getAttribute('name'))
                         }
                     }
                 }
@@ -670,17 +671,17 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const getElem of requestElem.getElementsByTagName('Get')) {
                             expect(getElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName)
                         }
                         for (const postElem of requestElem.getElementsByTagName('Post')) {
                             expect(postElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
@@ -737,17 +738,17 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const getElem of requestElem.getElementsByTagName('Get')) {
                             expect(getElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName)
                         }
                         for (const postElem of requestElem.getElementsByTagName('Post')) {
                             expect(postElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
@@ -807,17 +808,17 @@ describe('Request GetCapabilities', function () {
                     for (const requestElem of getChildrenByTagName(capabilityElem, 'Request')) {
                         for (const getElem of requestElem.getElementsByTagName('Get')) {
                             expect(getElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+getElem.parentElement.parentElement.parentElement.tagName)
                         }
                         for (const postElem of requestElem.getElementsByTagName('Post')) {
                             expect(postElem.getAttribute('onlineResource'))
-                                .to.eq(
+                                .to.oneOf([
+                                    baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                    'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName
-                                )
+                                ], 'OnlineResource error for '+postElem.parentElement.parentElement.parentElement.tagName)
                         }
                     }
                 }
