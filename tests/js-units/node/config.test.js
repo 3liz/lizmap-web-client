@@ -88,6 +88,26 @@ describe('Config', function () {
         expect(initialConfig.layers).to.be.instanceOf(LayersConfig)
         expect(initialConfig.layerTree).to.be.instanceOf(LayerTreeGroupConfig)
         expect(initialConfig.baseLayers).to.be.instanceOf(BaseLayersConfig)
+        expect(initialConfig.layersOrder).to.have.ordered.members([
+            "points_of_interest",
+            "edition_line",
+            "areas_of_interest",
+            "bus_stops",
+            "bus",
+            //"tramway_ref",
+            //"tramway_pivot",
+            //"tram_stop_work",
+            "tramstop",
+            "tramway",
+            "publicbuildings",
+            //"publicbuildings_tramstop",
+            //"donnes_sociodemo_sous_quartiers",
+            "SousQuartiers",
+            "Quartiers",
+            "VilleMTP_MTP_Quartiers_2011_4326",
+            "osm-mapnik",
+            "osm-stamen-toner"
+        ])
         expect(initialConfig.metadata).to.be.instanceOf(MetadataConfig)
         expect(initialConfig.hasLocateByLayer).to.be.true
         expect(initialConfig.locateByLayer).to.be.instanceOf(LocateByLayerConfig)
