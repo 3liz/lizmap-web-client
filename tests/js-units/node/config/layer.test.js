@@ -45,23 +45,23 @@ describe('LayerConfig', function () {
         expect(group.geometryType).to.be.null
         expect(group.extent).to.be.null
         expect(group.crs).to.be.null
-        expect(group.toggled).to.be.eq(true)
-        expect(group.popup).to.be.eq(false)
+        expect(group.toggled).to.be.true
+        expect(group.popup).to.be.false
         expect(group.popupFrame).to.be.null
         expect(group.popupSource).to.be.eq('auto')
         expect(group.popupTemplate).to.be.eq('')
         expect(group.popupMaxFeatures).to.be.eq(10)
-        expect(group.popupDisplayChildren).to.be.eq(false)
-        expect(group.noLegendImage).to.be.eq(false)
-        expect(group.groupAsLayer).to.be.eq(false)
-        expect(group.baseLayer).to.be.eq(false)
-        expect(group.displayInLegend).to.be.eq(true)
-        expect(group.singleTile).to.be.eq(true)
+        expect(group.popupDisplayChildren).to.be.false
+        expect(group.noLegendImage).to.be.false
+        expect(group.groupAsLayer).to.be.false
+        expect(group.baseLayer).to.be.false
+        expect(group.displayInLegend).to.be.true
+        expect(group.singleTile).to.be.true
         expect(group.imageFormat).to.be.eq('image/png')
-        expect(group.cached).to.be.eq(false)
+        expect(group.cached).to.be.false
         expect(group.serverFrame).to.be.null
         expect(group.clientCacheExpiration).to.be.eq(300)
-        expect(group.mutuallyExclusive).to.be.eq(true)
+        expect(group.mutuallyExclusive).to.be.true
 
         const layer1 = new LayerConfig({
             "id": "null_island20200414115730489",
@@ -117,23 +117,23 @@ describe('LayerConfig', function () {
         expect(layer1.extent[2]).to.be.eq(0)
         expect(layer1.extent[3]).to.be.eq(0)
         expect(layer1.crs).to.be.eq('EPSG:4326')
-        expect(layer1.toggled).to.be.eq(true)
-        expect(layer1.popup).to.be.eq(true)
+        expect(layer1.toggled).to.be.true
+        expect(layer1.popup).to.be.true
         expect(layer1.popupFrame).to.be.null
         expect(layer1.popupSource).to.be.eq('auto')
         expect(layer1.popupTemplate).to.be.eq('')
         expect(layer1.popupMaxFeatures).to.be.eq(10)
-        expect(layer1.popupDisplayChildren).to.be.eq(false)
-        expect(layer1.noLegendImage).to.be.eq(false)
-        expect(layer1.groupAsLayer).to.be.eq(false)
-        expect(layer1.baseLayer).to.be.eq(false)
-        expect(layer1.displayInLegend).to.be.eq(true)
-        expect(layer1.singleTile).to.be.eq(true)
+        expect(layer1.popupDisplayChildren).to.be.false
+        expect(layer1.noLegendImage).to.be.false
+        expect(layer1.groupAsLayer).to.be.false
+        expect(layer1.baseLayer).to.be.false
+        expect(layer1.displayInLegend).to.be.true
+        expect(layer1.singleTile).to.be.true
         expect(layer1.imageFormat).to.be.eq('image/png')
-        expect(layer1.cached).to.be.eq(false)
+        expect(layer1.cached).to.be.false
         expect(layer1.serverFrame).to.be.null
         expect(layer1.clientCacheExpiration).to.be.eq(300)
-        expect(layer1.mutuallyExclusive).to.be.eq(false)
+        expect(layer1.mutuallyExclusive).to.be.false
 
         const layer2 = new LayerConfig({
             "abstract": "",
@@ -157,7 +157,7 @@ describe('LayerConfig', function () {
                 3.11792890789,
                 49.7264741072
             ],
-            "toggled": "True",
+            "toggled": "False",
             "crs": "EPSG:4326",
             "name": "france_parts",
             "cached": "False",
@@ -186,23 +186,23 @@ describe('LayerConfig', function () {
         expect(layer2.extent[2]).to.be.gt(3.117928)
         expect(layer2.extent[3]).to.be.gt(49.726474)
         expect(layer2.crs).to.be.eq('EPSG:4326')
-        expect(layer2.toggled).to.be.eq(true)
-        expect(layer2.popup).to.be.eq(true)
+        expect(layer2.toggled).to.be.false
+        expect(layer2.popup).to.be.true
         expect(layer2.popupFrame).to.be.null
         expect(layer2.popupSource).to.be.eq('auto')
         expect(layer2.popupTemplate).to.be.eq('')
         expect(layer2.popupMaxFeatures).to.be.eq(10)
-        expect(layer2.popupDisplayChildren).to.be.eq(false)
-        expect(layer2.noLegendImage).to.be.eq(false)
-        expect(layer2.groupAsLayer).to.be.eq(false)
-        expect(layer2.baseLayer).to.be.eq(false)
-        expect(layer2.displayInLegend).to.be.eq(true)
-        expect(layer2.singleTile).to.be.eq(true)
+        expect(layer2.popupDisplayChildren).to.be.false
+        expect(layer2.noLegendImage).to.be.false
+        expect(layer2.groupAsLayer).to.be.false
+        expect(layer2.baseLayer).to.be.false
+        expect(layer2.displayInLegend).to.be.true
+        expect(layer2.singleTile).to.be.true
         expect(layer2.imageFormat).to.be.eq('image/png')
-        expect(layer2.cached).to.be.eq(false)
+        expect(layer2.cached).to.be.false
         expect(layer2.serverFrame).to.be.null
         expect(layer2.clientCacheExpiration).to.be.eq(300)
-        expect(layer2.mutuallyExclusive).to.be.eq(false)
+        expect(layer2.mutuallyExclusive).to.be.false
     })
 
     it('ValidationError', function () {
