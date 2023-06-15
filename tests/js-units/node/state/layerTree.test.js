@@ -80,4 +80,77 @@ describe('LayerTreeGroup', function () {
         expect(child4).to.be.instanceOf(LayerTreeLayer)
         expect(child4.name).to.be.eq('Quartiers')
     })
+
+    it('Check && visibility', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const root = new LayerTreeGroup(rootCfg);
+        expect(root).to.be.instanceOf(LayerTreeGroup)
+
+        expect(root.checked).to.be.true
+        expect(root.visibility).to.be.true
+
+        const edition = root.children[0];
+        expect(edition).to.be.instanceOf(LayerTreeGroup)
+
+        expect(edition.checked).to.be.true
+        expect(edition.visibility).to.be.true
+
+        const poi = edition.children[0];
+        expect(poi).to.be.instanceOf(LayerTreeLayer)
+
+        expect(poi.checked).to.be.false
+        expect(poi.visibility).to.be.false
+
+        const rides = edition.children[1];
+        expect(rides).to.be.instanceOf(LayerTreeLayer)
+
+        expect(rides.checked).to.be.true
+        expect(rides.visibility).to.be.true
+
+        const areas = edition.children[2];
+        expect(areas).to.be.instanceOf(LayerTreeLayer)
+
+        expect(areas.checked).to.be.false
+        expect(areas.visibility).to.be.false
+
+        // Unchecked group Edition
+        edition.checked = false;
+
+        expect(edition.checked).to.be.false
+        expect(edition.visibility).to.be.false
+
+        expect(poi.checked).to.be.false
+        expect(poi.visibility).to.be.false
+
+        expect(rides.checked).to.be.true
+        expect(rides.visibility).to.be.false
+
+        expect(areas.checked).to.be.false
+        expect(areas.visibility).to.be.false
+
+        // Checked Point Of Interests
+        poi.checked = true;
+
+        expect(edition.checked).to.be.true
+        expect(edition.visibility).to.be.true
+
+        expect(poi.checked).to.be.true
+        expect(poi.visibility).to.be.true
+
+        expect(rides.checked).to.be.true
+        expect(rides.visibility).to.be.true
+
+        expect(areas.checked).to.be.false
+        expect(areas.visibility).to.be.false
+    })
 })
