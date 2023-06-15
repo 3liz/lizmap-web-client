@@ -9,6 +9,10 @@ export default class BaseLayers extends HTMLElement {
 
     connectedCallback() {
 
+        if (mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getLength() === 0) {
+            document.getElementById('switcher-baselayer').classList.add('hide');
+        }
+
         this._template = () => html`
         <select @change=${(event) => { mainLizmap.baseLayersMap.changeBaseLayer(event.target.value) }}>
             ${mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getArray().slice().reverse().map((layer) => 
