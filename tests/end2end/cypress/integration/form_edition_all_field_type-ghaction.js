@@ -56,6 +56,8 @@ describe('Form edition all field type', function() {
     })
 
     it('expects error, string in integer field', function(){
+        // force as input type text to allow form validation
+        cy.get('#jforms_view_edition_integer_field').invoke('attr', 'type', 'text');
         // Typing text `foo` in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('foo')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -64,6 +66,8 @@ describe('Form edition all field type', function() {
     })
 
     it('expects error, value too big', function(){
+        // force as input type text to allow form validation
+        cy.get('#jforms_view_edition_integer_field').invoke('attr', 'type', 'text');
         // Typing `2147483648` value (too big) in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('2147483648')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -72,6 +76,8 @@ describe('Form edition all field type', function() {
     })
 
     it('expects error, negative value too big', function(){
+        // force as input type text to allow form validation
+        cy.get('#jforms_view_edition_integer_field').invoke('attr', 'type', 'text');
         // Typing `-2147483649` value (negative too big) in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('-2147483649')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -81,7 +87,7 @@ describe('Form edition all field type', function() {
 
     it('success, negative value', function(){
         // Typing negative value `-1` in `integer_field` and submit
-        cy.get('#jforms_view_edition_integer_field').type('-1')
+        cy.get('#jforms_view_edition_integer_field').type('-5')
         cy.get('#jforms_view_edition__submit_submit').click()
         // A message should confirm form had been saved
         cy.get('#lizmap-edition-message').should('be.visible')
@@ -97,7 +103,7 @@ describe('Form edition all field type', function() {
 
     it('success, positive value', function(){
         // Typing positive value (e.g. '1') in `integer_field` and submit
-        cy.get('#jforms_view_edition_integer_field').type('1')
+        cy.get('#jforms_view_edition_integer_field').type('5')
         cy.get('#jforms_view_edition__submit_submit').click()
         // A message should confirm form had been saved
         cy.get('#lizmap-edition-message').should('be.visible')
