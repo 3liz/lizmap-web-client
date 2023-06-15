@@ -12,6 +12,7 @@ import { TimeManagerLayersConfig } from './config/TimeManager.js';
 import { FormFilterConfig } from './config/FormFilter.js';
 import { DatavizOptionsConfig, DatavizLayersConfig } from './config/Dataviz.js';
 import { buildLayerTreeConfig } from './config/LayerTree.js';
+import { buildLayersOrder } from './config/LayersOrder.js';
 
 export class Config {
 
@@ -42,6 +43,7 @@ export class Config {
         this._layers = null;
         this._layerTree = null;
         this._baselayers = null;
+        this._layersOrder = null;
         this._hasMetadata = true;
         this._metadata = null;
         this._hasLocateByLayer = true;
@@ -172,6 +174,21 @@ export class Config {
         }
         this._baselayers = new BaseLayersConfig(baseLayersCfg, this._theConfig.options, this.layers, baseLayerTreeItem);
         return this._baselayers;
+    }
+
+    /**
+     * Layer names displaying order like in QGIS
+     *
+     * The first one in this list is the top one in the map
+     * The last one in this list is the bottom one in the map
+     *
+     * @type {String[]}
+     **/
+    get layersOrder() {
+        if (this._layersOrder == null) {
+            this._layersOrder = buildLayersOrder(this._theConfig, this.layerTree);
+        }
+        return [...this._layersOrder];
     }
 
     /**
