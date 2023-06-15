@@ -143,9 +143,11 @@ export default class BaseLayersMap extends olMap {
             }
         }
 
-        this._baseLayersGroup = new LayerGroup({
-            layers: baseLayers
-        });
+        this._baseLayersGroup = new LayerGroup({});
+
+        if (baseLayers.length) {
+            this.baseLayersGroup.setLayers(baseLayers);
+        }
 
         this._baseLayersGroup.on('change', () => {
             mainEventDispatcher.dispatch('baseLayers.changed');
