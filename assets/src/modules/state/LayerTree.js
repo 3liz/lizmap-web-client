@@ -16,7 +16,7 @@ export class LayerTreeItem {
             && parentLayerTreeGroup.type == 'group') {
             this._parentLayerTreeGroup = parentLayerTreeGroup;
         }
-        this._checked = this.__parentLayerTreeGroup == null ? true : false;
+        this._checked = this._parentLayerTreeGroup == null ? true : false;
     }
     /**
      * Config layers
@@ -96,7 +96,13 @@ export class LayerTreeItem {
      * @type {Boolean}
      **/
     set checked(val) {
+        if (this._checked == val) {
+            return;
+        }
         this._checked = val;
+        if (this._checked && this._parentLayerTreeGroup != null) {
+            this._parentLayerTreeGroup.checked = val;
+        }
     }
 
     /**
