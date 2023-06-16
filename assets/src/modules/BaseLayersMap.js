@@ -153,10 +153,6 @@ export default class BaseLayersMap extends olMap {
             this._baseLayersGroup = new LayerGroup();
         }
 
-        this._baseLayersGroup.on('change', () => {
-            mainEventDispatcher.dispatch('baseLayers.changed');
-        });
-
         // Array of layers and groups in overlayLayerGroup
         this._overlayLayersAndGroups = [];
 
@@ -308,6 +304,39 @@ export default class BaseLayersMap extends olMap {
 
         // Init view
         this.syncNewOLwithOL2View();
+
+        // Listen/Dispatch events
+        this._baseLayersGroup.on('change', () => {
+            mainEventDispatcher.dispatch('baseLayers.changed');
+        });
+
+        this._overlayLayersGroup.on('change', () => {
+            mainEventDispatcher.dispatch('overlayLayers.changed');
+        });
+
+        for (const layer of this.overlayLayers) {
+            const source = layer.getSource();
+
+            if (source instanceof ImageWMS) {
+                source.on('imageloadstart', event => {
+                    event.target.set('loading', true, true);
+                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                });
+                source.on(['imageloadend', 'imageloaderror'], event => {
+                    event.target.set('loading', false, true);
+                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                });
+            } else if (source instanceof WMTS) {
+                source.on('tileloadstart', event => {
+                    event.target.set('loading', true, true);
+                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                });
+                source.on(['tileloadend', 'imageloaderror'], event => {
+                    event.target.set('loading', false, true);
+                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                });
+            }
+        }
     }
 
     get hasEmptyBaseLayer() {
