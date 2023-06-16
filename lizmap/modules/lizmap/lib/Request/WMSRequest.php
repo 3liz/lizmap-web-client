@@ -265,12 +265,15 @@ class WMSRequest extends OGCRequest
      *
      * @see https://en.wikipedia.org/wiki/Web_Map_Service#Requests.
      */
-    protected function process_getlegendgraphic()
+    protected function process_getlegendgraphics()
     {
-        return $this->process_getlegendgraphics();
+        // The right request name is GetLegendGraphic not GetLegendGraphics
+        $this->params['request'] = 'getlegendgraphic';
+
+        return $this->process_getlegendgraphic();
     }
 
-    protected function process_getlegendgraphics()
+    protected function process_getlegendgraphic()
     {
         $layers = $this->param('layers', $this->param('layer', ''));
         $layers = explode(',', $layers);
