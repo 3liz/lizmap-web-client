@@ -1,9 +1,7 @@
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import WMS from '../modules/WMS.js';
 
 import LayerGroup from 'ol/layer/Group.js';
-import ImageWMS from 'ol/source/ImageWMS.js';
-import WMTS from 'ol/source/WMTS.js';
 import { html, render } from 'lit-html';
 import { when } from 'lit-html/directives/when.js';
 
@@ -54,35 +52,17 @@ export default class Treeview extends HTMLElement {
 
         render(this._layerTemplate(mainLizmap.baseLayersMap.overlayLayersGroup), this);
 
-        mainLizmap.baseLayersMap.overlayLayersGroup.on('change', this._onChange);
-
-        // Display a spinner when a layer is loading
-        for (const layer of mainLizmap.baseLayersMap.overlayLayers) {
-            const source = layer.getSource();
-
-            if (source instanceof ImageWMS) {
-                source.on('imageloadstart', event => {
-                    event.target.set('loading', true, true);
-                    this._onChange();
-                });
-                source.on(['imageloadend', 'imageloaderror'], event => {
-                    event.target.set('loading', false, true);
-                    this._onChange()
-                });
-            } else if (source instanceof WMTS) {
-                source.on('tileloadstart', event => {
-                    event.target.set('loading', true, true);
-                    this._onChange();
-                });
-                source.on(['tileloadend', 'imageloaderror'], event => {
-                    event.target.set('loading', false, true);
-                    this._onChange()
-                });
-            }
-        }
+        mainEventDispatcher.addListener(
+            this._onChange,
+            ['overlayLayers.changed', 'overlayLayer.loading.changed']
+        );
     }
 
     disconnectedCallback() {
+        mainEventDispatcher.removeListener(
+            this._onChange,
+            ['overlayLayers.changed', 'overlayLayer.loading.changed']
+        );
     }
 
     _isFiltered(layer) {
