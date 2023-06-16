@@ -242,7 +242,11 @@ class QgisFormControl
                     || $this->fieldEditType === 'Range'
                     || $this->fieldEditType === 'EditRange'
                 ) {
-                    $this->ctrl->datatype = new \jDatatypeDecimal();
+                    if ($this->fieldDataType == 'integer') {
+                        $this->ctrl->datatype = new \jDatatypeInteger();
+                    } else {
+                        $this->ctrl->datatype = new \jDatatypeDecimal();
+                    }
                     $min = $this->getEditAttribute('Min');
                     if ($min !== null) {
                         $this->ctrl->datatype->addFacet('minValue', $min);
@@ -250,6 +254,15 @@ class QgisFormControl
                     $max = $this->getEditAttribute('Max');
                     if ($max !== null) {
                         $this->ctrl->datatype->addFacet('maxValue', $max);
+                    }
+                    $step = $this->getEditAttribute('Step');
+                    $precision = $this->getEditAttribute('Precision');
+                    // step cast as integer, use only if datatype is integer
+                    if ($step !== null && $this->fieldDataType == 'integer') {
+                        $this->ctrl->setAttribute('stepValue', $step);
+                    } elseif ($this->fieldDataType == 'decimal' && $precision !== null) {
+                        // use precision as stepValue (will override untrustable step Value)
+                        $this->ctrl->setAttribute('stepValue', pow(10, -intval($precision)));
                     }
                 }
 
@@ -390,7 +403,6 @@ class QgisFormControl
     */
     protected function setControlMainProperties()
     {
-
         // Label
         $alias = $this->getFieldAlias();
         if ($alias) {
@@ -463,7 +475,6 @@ class QgisFormControl
     */
     protected function fillControlDatasource()
     {
-
         // Create a datasource for some types : menulist
         $dataSource = new \jFormsStaticDatasource();
 
@@ -477,7 +488,6 @@ class QgisFormControl
         }
 
         switch ($this->fieldEditType) {
-
             // Enumeration
             case -1:
             case 'Enumeration':
@@ -485,7 +495,7 @@ class QgisFormControl
 
                 break;
 
-              // Unique Values
+                // Unique Values
             case 2:
             case 'UniqueValuesEditable':
             case 'UniqueValues':
@@ -499,7 +509,7 @@ class QgisFormControl
 
                 break;
 
-            // Value map
+                // Value map
             case 3:
             case 'ValueMap':
                 $valueMap = $this->properties->getValueMap();
@@ -520,14 +530,14 @@ class QgisFormControl
 
                 break;
 
-            // Classification
+                // Classification
             case 4:
             case 'Classification':
                 $data = $this->properties->getRendererCategories();
 
                 break;
 
-            // Range
+                // Range
             case 5:
             case 'Range':
             case 'EditRange':
@@ -551,7 +561,7 @@ class QgisFormControl
 
                 break;
 
-            // Value relation
+                // Value relation
             case 15:
             case 'ValueRelation':
                 $this->valueRelationData = $this->properties->getValueRelationData();
@@ -562,7 +572,6 @@ class QgisFormControl
                 $this->relationReferenceData = $this->properties->getRelationReference();
 
                 break;
-
         }
 
         $dataSource->data = $data;
