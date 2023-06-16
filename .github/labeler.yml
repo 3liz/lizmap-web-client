@@ -19,7 +19,9 @@
 "javascript":
   - any: [
     'assets/**/*',
+    'assets/src/modules/**/*',
     'lizmap/www/assets/js/**/*',
+    'tests/js-units/**/*',
   ]
 
 #"run cypress":
