@@ -5,10 +5,12 @@ import { readFileSync } from 'fs';
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, BaseIconSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
+import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
+import { MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
 
-import { LayerTreeGroup, LayerTreeLayer } from '../../../../assets/src/modules/state/LayerTree.js';
+import { LayerTreeGroupState, LayerTreeLayerState } from '../../../../assets/src/modules/state/LayerTree.js';
 
-describe('LayerTreeGroup', function () {
+describe('LayerTreeGroupState', function () {
     it('Valid', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
@@ -21,7 +23,11 @@ describe('LayerTreeGroup', function () {
         const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
         expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
 
-        const root = new LayerTreeGroup(rootCfg);
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
         expect(root.level).to.be.eq(0)
@@ -47,7 +53,7 @@ describe('LayerTreeGroup', function () {
         expect(root.childrenCount).to.be.eq(4)
 
         const edition = root.children[0];
-        expect(edition).to.be.instanceOf(LayerTreeGroup)
+        expect(edition).to.be.instanceOf(LayerTreeGroupState)
         expect(edition.name).to.be.eq('Edition')
         expect(edition.type).to.be.eq('group')
         expect(edition.level).to.be.eq(1)
@@ -58,7 +64,7 @@ describe('LayerTreeGroup', function () {
         expect(edition.childrenCount).to.be.eq(3)
 
         const sousquartiers = root.children[2];
-        expect(sousquartiers).to.be.instanceOf(LayerTreeLayer)
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
         expect(sousquartiers.name).to.be.eq('SousQuartiers')
         expect(sousquartiers.type).to.be.eq('layer')
         expect(sousquartiers.level).to.be.eq(1)
@@ -74,11 +80,11 @@ describe('LayerTreeGroup', function () {
         const rootGetChildren = root.getChildren()
         expect(rootGetChildren.next().value).to.be.eq(edition)
         const child2 = rootGetChildren.next().value;
-        expect(child2).to.be.instanceOf(LayerTreeGroup)
+        expect(child2).to.be.instanceOf(LayerTreeGroupState)
         expect(child2.name).to.be.eq('datalayers')
         expect(rootGetChildren.next().value).to.be.eq(sousquartiers)
         const child4 = rootGetChildren.next().value;
-        expect(child4).to.be.instanceOf(LayerTreeLayer)
+        expect(child4).to.be.instanceOf(LayerTreeLayerState)
         expect(child4.name).to.be.eq('Quartiers')
     })
 
@@ -94,32 +100,36 @@ describe('LayerTreeGroup', function () {
         const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
         expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
 
-        const root = new LayerTreeGroup(rootCfg);
-        expect(root).to.be.instanceOf(LayerTreeGroup)
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         expect(root.checked).to.be.true
         expect(root.visibility).to.be.true
 
         const edition = root.children[0];
-        expect(edition).to.be.instanceOf(LayerTreeGroup)
+        expect(edition).to.be.instanceOf(LayerTreeGroupState)
 
         expect(edition.checked).to.be.true
         expect(edition.visibility).to.be.true
 
         const poi = edition.children[0];
-        expect(poi).to.be.instanceOf(LayerTreeLayer)
+        expect(poi).to.be.instanceOf(LayerTreeLayerState)
 
         expect(poi.checked).to.be.false
         expect(poi.visibility).to.be.false
 
         const rides = edition.children[1];
-        expect(rides).to.be.instanceOf(LayerTreeLayer)
+        expect(rides).to.be.instanceOf(LayerTreeLayerState)
 
         expect(rides.checked).to.be.true
         expect(rides.visibility).to.be.true
 
         const areas = edition.children[2];
-        expect(areas).to.be.instanceOf(LayerTreeLayer)
+        expect(areas).to.be.instanceOf(LayerTreeLayerState)
 
         expect(areas.checked).to.be.false
         expect(areas.visibility).to.be.false
@@ -167,22 +177,26 @@ describe('LayerTreeGroup', function () {
         const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
         expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
 
-        const root = new LayerTreeGroup(rootCfg);
-        expect(root).to.be.instanceOf(LayerTreeGroup)
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         const edition = root.children[0];
-        expect(edition).to.be.instanceOf(LayerTreeGroup)
+        expect(edition).to.be.instanceOf(LayerTreeGroupState)
 
         const poi = edition.children[0];
-        expect(poi).to.be.instanceOf(LayerTreeLayer)
+        expect(poi).to.be.instanceOf(LayerTreeLayerState)
         expect(poi.icon).to.be.eq(base64svg+base64svgPointLayer)
 
         const rides = edition.children[1];
-        expect(rides).to.be.instanceOf(LayerTreeLayer)
+        expect(rides).to.be.instanceOf(LayerTreeLayerState)
         expect(rides.icon).to.be.eq(base64svg+base64svgLineLayer)
 
         const areas = edition.children[2];
-        expect(areas).to.be.instanceOf(LayerTreeLayer)
+        expect(areas).to.be.instanceOf(LayerTreeLayerState)
         expect(areas.icon).to.be.eq(base64svg+base64svgPolygonLayer)
     })
 
@@ -198,11 +212,15 @@ describe('LayerTreeGroup', function () {
         const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
         expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
 
-        const root = new LayerTreeGroup(rootCfg);
-        expect(root).to.be.instanceOf(LayerTreeGroup)
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         const sousquartiers = root.children[2];
-        expect(sousquartiers).to.be.instanceOf(LayerTreeLayer)
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
         sousquartiers.symbology = {
             "icon":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAALklEQVQ4jWNkYGD4xYAJ2KA0uhxWcWwGEA2YKNFMFQMGBxjigTgaC4MhECk2AAAHYQX6C8Zs7gAAAABJRU5ErkJggg==",
             "title":"SousQuartiers",
@@ -214,7 +232,7 @@ describe('LayerTreeGroup', function () {
         expect(sousquartiers.symbologyChildrenCount).to.be.eq(0)
 
         const quartiers = root.children[3];
-        expect(quartiers).to.be.instanceOf(LayerTreeLayer)
+        expect(quartiers).to.be.instanceOf(LayerTreeLayerState)
         quartiers.symbology = {
             "symbols":[{
                 "icon":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWUlEQVQ4jWO09w1bzEAApDX0Hp7VUGyLTY7R3jdscVpD72FChmADsxqKbZnI0YgMBtaAtIbewwPrAuoEIrlRCDeAYhfgSmH0c8HQN4ARPTvjy7roIK2h9zAAH0sa4\/UtHhUAAAAASUVORK5CYII=",
@@ -281,8 +299,12 @@ describe('LayerTreeGroup', function () {
         const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
         expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
 
-        const root = new LayerTreeGroup(rootCfg);
-        expect(root).to.be.instanceOf(LayerTreeGroup)
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         expect(root.findTreeLayerNames()).to.have.ordered.members([
             "points_of_interest",
@@ -306,7 +328,7 @@ describe('LayerTreeGroup', function () {
         ])
 
         const transports = root.children[1];
-        expect(transports).to.be.instanceOf(LayerTreeGroup)
+        expect(transports).to.be.instanceOf(LayerTreeGroupState)
 
         expect(transports.findTreeLayerNames()).to.have.ordered.members([
             "bus_stops",
