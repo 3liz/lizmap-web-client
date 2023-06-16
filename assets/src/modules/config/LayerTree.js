@@ -295,6 +295,41 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
             yield item;
         }
     }
+
+
+    /**
+     * Find layer names
+     *
+     * @returns {String[]}
+     **/
+    findTreeLayerConfigNames() {
+        let names = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayerConfig) {
+                names.push(item.name);
+            } else if (item instanceof LayerTreeGroupConfig) {
+                names = names.concat(item.findTreeLayerNames());
+            }
+        }
+        return names;
+    }
+
+    /**
+     * Find layer items
+     *
+     * @returns {LayerTreeLayer[]}
+     **/
+    findTreeLayerConfigs() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayerConfig) {
+                items.push(item);
+            } else if (item instanceof LayerTreeGroupConfig) {
+                items = items.concat(item.findTreeLayerConfigs());
+            }
+        }
+        return items;
+    }
 }
 
 /**
