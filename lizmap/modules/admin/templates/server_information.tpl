@@ -63,7 +63,7 @@
             <i>{@admin.server.information.qgis.error.fetching.information.detail.NO_ACCESS@}</i><br>
         {else}
             <p>{@admin.server.information.qgis.error.fetching.information.description@}</p>
-            <ul>
+            <ol>
                 <li>{jlocale "admin.server.information.qgis.error.fetching.information.qgis.version.html", array($minimumQgisVersion)}</li>
                 <li>{jlocale "admin.server.information.qgis.error.fetching.information.plugin.version.html", array($minimumLizmapServer)}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.qgis.url.html@}</li>
@@ -71,7 +71,7 @@
                 <li>{@admin.server.information.qgis.error.fetching.information.lizmap.logs.html@}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.environment.variable@}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.help@}</li>
-            </ul>
+            </ol>
             <br>
             {assign $lizmapDoc='https://docs.lizmap.com/current/en/install/pre_requirements.html#lizmap-server-plugin'}
             {assign $qgisDoc='https://docs.qgis.org/latest/en/docs/server_manual/config.html#environment-variables'}
