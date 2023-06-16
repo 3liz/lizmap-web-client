@@ -1,5 +1,6 @@
-
+import { ValidationError } from './../Errors.js';
 import { LayerStyleConfig } from './../config/LayerTree.js';
+import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from './Symbology.js';
 
 export class LayerTreeItem {
 
@@ -230,6 +231,40 @@ export class LayerTreeGroup extends LayerTreeItem {
             yield item;
         }
     }
+
+    /**
+     * Find layer names
+     *
+     * @returns {String[]}
+     **/
+    findTreeLayerNames() {
+        let names = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayer) {
+                names.push(item.name);
+            } else if (item instanceof LayerTreeGroup) {
+                names = names.concat(item.findTreeLayerNames());
+            }
+        }
+        return names;
+    }
+
+    /**
+     * Find layer items
+     *
+     * @returns {LayerTreeLayer[]}
+     **/
+    findTreeLayers() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayer) {
+                items.push(item);
+            } else if (item instanceof LayerTreeGroup) {
+                items = items.concat(item.findTreeLayers());
+            }
+        }
+        return items;
+    }
 }
 
 export class LayerTreeLayer extends LayerTreeItem {
@@ -243,6 +278,32 @@ export class LayerTreeLayer extends LayerTreeItem {
         if (this.layerConfig.toggled) {
             this._checked = true;
         }
+        this._icon = getDefaultLayerIcon(this.layerConfig);
+        // set default style
+        this._wmsSelectedStyleName = this.wmsStyles[0].wmsName;
+        // set symbology to null
+        this._symbology = null;
+    }
+
+    /**
+     * The source icon of the layer
+     *
+     * @type {string}
+     **/
+    get icon() {
+        if (this._symbology instanceof LayerIconSymbology) {
+            return this._symbology.icon;
+        }
+        return this._icon;
+    }
+
+    /**
+     * WMS selected layer style name
+     *
+     * @type {String}
+     **/
+    get wmsSelectedStyleName() {
+        return this._wmsSelectedStyleName;
     }
 
     /**
@@ -269,4 +330,73 @@ export class LayerTreeLayer extends LayerTreeItem {
         return null;
     }
 
+    /**
+     * Layer symbology
+     *
+     * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
+     **/
+    get symbology() {
+        return this._symbology;
+    }
+
+    /**
+     * Update layer symbology
+     *
+     * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
+     **/
+    set symbology(node) {
+        if (!node.hasOwnProperty('name')) {
+            throw new ValidationError('Node symbology required `name` property!');
+        }
+        if (node.name != this.name) {
+            throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.name+'`');
+        }
+        this._symbology = buildLayerSymbology(node);
+    }
+
+    /**
+     * Children symbology count
+     *
+     * @type {Number}
+     **/
+    get symbologyChildrenCount() {
+        if (this._symbology instanceof LayerSymbolsSymbology
+            || this._symbology instanceof LayerGroupSymbology) {
+            return this._symbology.childrenCount;
+        }
+        return 0;
+    }
+
+    /**
+     * Children symbology
+     *
+     * @type {(SymbolIconSymbology|BaseIconSymbology|BaseSymbolsSymbology)[]}
+     **/
+    get symbologyChildren() {
+        if (this._symbology instanceof LayerSymbolsSymbology
+            || this._symbology instanceof LayerGroupSymbology) {
+            return this._symbology.children;
+        }
+        return [];
+    }
+
+
+    /**
+     * Iterate through children nodes
+     *
+     * @generator
+     * @yields {SymbolIconSymbology|BaseIconSymbology|BaseSymbolsSymbology} The next child node
+     **/
+    *getSymbologyChildren() {
+        if (this._symbology instanceof LayerSymbolsSymbology
+            || this._symbology instanceof LayerGroupSymbology) {
+            for (const symbol of this._symbology.getChildren()) {
+                yield symbol;
+            }
+        } else {
+            for (const symbol of this.symbologyChildren) {
+                yield symbol;
+            }
+        }
+    }
 }
