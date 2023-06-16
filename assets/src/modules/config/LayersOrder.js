@@ -19,7 +19,7 @@ function layersOrderFromLayerTreeGroup(layerTreeGroupCfg) {
 export function buildLayersOrder(initialConfig, rootLayerTreeCfg) {
     if (initialConfig.hasOwnProperty('layersOrder')) {
         return Object.keys(initialConfig.layersOrder).sort(function(a, b) {
-            initialConfig.layersOrder[a] - initialConfig.layersOrder[b];
+            return initialConfig.layersOrder[a] - initialConfig.layersOrder[b];
         });
     }
 
