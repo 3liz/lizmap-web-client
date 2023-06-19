@@ -1,23 +1,20 @@
-import { ValidationError } from './../Errors.js';
-import { LayerStyleConfig } from './../config/LayerTree.js';
-import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from './Symbology.js';
+import { MapGroupState, MapLayerState } from './MapLayer.js';
+import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology } from './Symbology.js';
 
-export class LayerTreeItem {
+export class LayerTreeItemState {
 
     /**
-     * @param {String} type                                - the layer tree item type
-     * @param {LayerTreeItemConfig} layerTreeItemCfg       - the layer tree item config
-     * @param {LayerTreeItem}       [parentLayerTreeGroup] - the parent layer tree group
+     * @param {MapItemState}        mapItemState           - the layer tree item config
+     * @param {LayerTreeItemState}  [parentGroupState] - the parent layer tree group
      */
-    constructor(type, layerTreeItemCfg, parentLayerTreeGroup) {
-        this._type = type
-        this._layerTreeItemCfg = layerTreeItemCfg;
-        this._parentLayerTreeGroup = null;
-        if (parentLayerTreeGroup instanceof LayerTreeItem
-            && parentLayerTreeGroup.type == 'group') {
-            this._parentLayerTreeGroup = parentLayerTreeGroup;
+    constructor(mapItemState, parentGroupState) {
+        this._mapItemState = mapItemState;
+        this._parentGroupState = null;
+        if (parentGroupState instanceof LayerTreeItemState
+            && parentGroupState.type == 'group') {
+            this._parentGroupState = parentGroupState;
         }
-        this._checked = this._parentLayerTreeGroup == null ? true : false;
+        this._checked = this._parentGroupState == null ? true : false;
     }
     /**
      * Config layers
@@ -25,7 +22,7 @@ export class LayerTreeItem {
      * @type {String}
      **/
     get name() {
-        return this._layerTreeItemCfg.name;
+        return this._mapItemState.name;
     }
 
     /**
@@ -34,7 +31,7 @@ export class LayerTreeItem {
      * @type {String}
      **/
     get type() {
-        return this._type;
+        return this._mapItemState.type;
     }
 
     /**
@@ -43,7 +40,7 @@ export class LayerTreeItem {
      * @type {Number}
      **/
     get level() {
-        return this._layerTreeItemCfg.level;
+        return this._mapItemState.level;
     }
 
     /**
@@ -52,7 +49,7 @@ export class LayerTreeItem {
      * @type {?String}
      **/
     get wmsName() {
-        return this._layerTreeItemCfg.wmsName;
+        return this._mapItemState.wmsName;
     }
 
     /**
@@ -61,7 +58,7 @@ export class LayerTreeItem {
      * @type {String}
      **/
     get wmsTitle() {
-        return this._layerTreeItemCfg.wmsTitle;
+        return this._mapItemState.wmsTitle;
     }
 
     /**
@@ -70,7 +67,7 @@ export class LayerTreeItem {
      * @type {?LayerGeographicBoundingBoxConfig}
      **/
     get wmsGeographicBoundingBox() {
-        return this._layerTreeItemCfg.wmsGeographicBoundingBox;
+        return this._mapItemState.wmsGeographicBoundingBox;
     }
 
     /**
@@ -79,7 +76,7 @@ export class LayerTreeItem {
      * @type {LayerBoundingBoxConfig[]}
      **/
     get wmsBoundingBoxes() {
-        return this._layerTreeItemCfg.wmsBoundingBoxes;
+        return this._mapItemState.wmsBoundingBoxes;
     }
 
     /**
@@ -88,7 +85,7 @@ export class LayerTreeItem {
      * @type {Boolean}
      **/
     get checked() {
-        return this._checked;
+        return this._mapItemState.checked;
     }
 
     /**
@@ -97,13 +94,7 @@ export class LayerTreeItem {
      * @type {Boolean}
      **/
     set checked(val) {
-        if (this._checked == val) {
-            return;
-        }
-        this._checked = val;
-        if (this._checked && this._parentLayerTreeGroup != null) {
-            this._parentLayerTreeGroup.checked = val;
-        }
+        this._mapItemState.checked = val;
     }
 
     /**
@@ -113,18 +104,7 @@ export class LayerTreeItem {
      * @type {Boolean}
      **/
     get visibility() {
-        // if the item has no parent item like root
-        // it is visible
-        if (this._parentLayerTreeGroup == null) {
-            return true;
-        }
-        // if the parent layer tree group is visible
-        // the visibility depends if the layer tree item is checked
-        // else the layer tree item is not visible
-        if (this._parentLayerTreeGroup.visibility) {
-            return this._checked;
-        }
-        return false;
+        return this._mapItemState.visibility;
     }
 
     /**
@@ -133,59 +113,36 @@ export class LayerTreeItem {
      * @type {?LayerConfig}
      **/
     get layerConfig() {
-        return this._layerTreeItemCfg.layerConfig;
+        return this._mapItemState.layerConfig;
     }
 }
 
-export class LayerTreeGroup extends LayerTreeItem {
+export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
-     * @param {LayerTreeGroupConfig} layerTreeGroupCfg    - the layer tree group config
-     * @param {LayerTreeGroup}       [parentLayerTreeGroup] - the parent layer tree group
+     * @param {MapGroupState}        mapGroupState      - the layer tree group config
+     * @param {LayerTreeGroupState}  [parentGroupState] - the parent layer tree group
      */
-    constructor(layerTreeGroupCfg, parentLayerTreeGroup) {
-        super('group', layerTreeGroupCfg, parentLayerTreeGroup);
+    constructor(mapGroupState, parentGroupState) {
+        super(mapGroupState, parentGroupState);
         this._items = [];
-        for (const layerTreeItem of layerTreeGroupCfg.getChildren()) {
-            if (layerTreeItem.name.toLowerCase() == 'hidden') {
-                continue;
-            }
-            if (layerTreeItem.name.toLowerCase() == 'overview' && layerTreeItem.level == 1) {
-                continue;
-            }
-            if (layerTreeItem.name.toLowerCase() == 'baselayers' && layerTreeItem.level == 1) {
-                continue;
-            }
+        for (const mapItemState of mapGroupState.getChildren()) {
 
-            const cfg = layerTreeItem.layerConfig;
-            if (cfg == null) {
-                throw new RangeError('The layer `'+ layerTreeItem.name +'` has no config!');
-            }
-            if (!cfg.displayInLegend) {
-                continue;
-            }
-
-            if ((layerTreeItem.type == 'layer'  && cfg.displayInLegend && !cfg.baseLayer)
-                || (cfg.groupAsLayer && layerTreeItem.childrenCount() != 0)) {
-                // Build layer
-                const layer = new LayerTreeLayer(layerTreeItem, this)
-                this._items.push(layer);
-                // Group is checked if one child is checked
-                if (layer.checked) {
-                    this._checked = true;
-                }
-            } else {
+            if (mapItemState instanceof MapGroupState) {
                 // Build group
-                const group = new LayerTreeGroup(layerTreeItem, this);
+                const group = new LayerTreeGroupState(mapItemState, this);
                 // If the group is empty do not keep it
                 if (group.childrenCount == 0) {
                     continue;
                 }
                 this._items.push(group);
-                // Group is checked if one child is checked
-                if (group.checked) {
-                    this._checked = true;
+            } else if (mapItemState instanceof MapLayerState) {
+                if (!mapItemState.displayInLayerTree) {
+                    continue;
                 }
+                // Build layer
+                const layer = new LayerTreeLayerState(mapItemState, this)
+                this._items.push(layer);
             }
         }
     }
@@ -214,7 +171,7 @@ export class LayerTreeGroup extends LayerTreeItem {
     /**
      * Children items
      *
-     * @type {LayerTreeItem[]}
+     * @type {LayerTreeItemState[]}
      **/
     get children() {
         return [...this._items];
@@ -240,9 +197,9 @@ export class LayerTreeGroup extends LayerTreeItem {
     findTreeLayerNames() {
         let names = []
         for(const item of this.getChildren()) {
-            if (item instanceof LayerTreeLayer) {
+            if (item instanceof LayerTreeLayerState) {
                 names.push(item.name);
-            } else if (item instanceof LayerTreeGroup) {
+            } else if (item instanceof LayerTreeGroupState) {
                 names = names.concat(item.findTreeLayerNames());
             }
         }
@@ -252,14 +209,14 @@ export class LayerTreeGroup extends LayerTreeItem {
     /**
      * Find layer items
      *
-     * @returns {LayerTreeLayer[]}
+     * @returns {LayerTreeLayerState[]}
      **/
     findTreeLayers() {
         let items = []
         for(const item of this.getChildren()) {
-            if (item instanceof LayerTreeLayer) {
+            if (item instanceof LayerTreeLayerState) {
                 items.push(item);
-            } else if (item instanceof LayerTreeGroup) {
+            } else if (item instanceof LayerTreeGroupState) {
                 items = items.concat(item.findTreeLayers());
             }
         }
@@ -267,22 +224,16 @@ export class LayerTreeGroup extends LayerTreeItem {
     }
 }
 
-export class LayerTreeLayer extends LayerTreeItem {
+export class LayerTreeLayerState extends LayerTreeItemState {
 
     /**
-     * @param {LayerTreeLayerConfig|LayerTreeGroupConfig} layerTreeItemCfg       - the layer tree group config
-     * @param {LayerTreeGroup}                            [parentLayerTreeGroup] - the parent layer tree group
+     * @param {MapLayerState} mapLayerState       - the layer tree group config
+     * @param {LayerTreeGroupState}                            [parentGroupState] - the parent layer tree group
      */
-    constructor(layerTreeItemCfg, parentLayerTreeGroup) {
-        super('layer', layerTreeItemCfg, parentLayerTreeGroup);
-        if (this.layerConfig.toggled) {
-            this._checked = true;
-        }
+    constructor(mapLayerState, parentGroupState) {
+        super(mapLayerState, parentGroupState);
+        // set default icon
         this._icon = getDefaultLayerIcon(this.layerConfig);
-        // set default style
-        this._wmsSelectedStyleName = this.wmsStyles[0].wmsName;
-        // set symbology to null
-        this._symbology = null;
     }
 
     /**
@@ -291,8 +242,8 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @type {string}
      **/
     get icon() {
-        if (this._symbology instanceof LayerIconSymbology) {
-            return this._symbology.icon;
+        if (this._mapItemState.symbology instanceof LayerIconSymbology) {
+            return this.symbology.icon;
         }
         return this._icon;
     }
@@ -303,7 +254,7 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @type {String}
      **/
     get wmsSelectedStyleName() {
-        return this._wmsSelectedStyleName;
+        return this._mapItemState.wmsSelectedStyleName;
     }
 
     /**
@@ -312,10 +263,7 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @type {LayerStyleConfig[]}
      **/
     get wmsStyles() {
-        if ( this._layerTreeItemCfg.type == 'layer' ) {
-            return this._layerTreeItemCfg.wmsStyles;
-        }
-        return [new LayerStyleConfig('', '')];
+        return this._mapItemState.wmsStyles;
     }
 
     /**
@@ -324,10 +272,7 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @type {?AttributionConfig}
      **/
     get wmsAttribution() {
-        if ( this._layerTreeItemCfg.type == 'layer' ) {
-            return this._layerTreeItemCfg.wmsAttribution;
-        }
-        return null;
+        return this._mapItemState.wmsAttribution;
     }
 
     /**
@@ -336,7 +281,7 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
      **/
     get symbology() {
-        return this._symbology;
+        return this._mapItemState.symbology;
     }
 
     /**
@@ -345,13 +290,7 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
      **/
     set symbology(node) {
-        if (!node.hasOwnProperty('name')) {
-            throw new ValidationError('Node symbology required `name` property!');
-        }
-        if (node.name != this.name) {
-            throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.name+'`');
-        }
-        this._symbology = buildLayerSymbology(node);
+        this._mapItemState.symbology = node;
     }
 
     /**
@@ -360,9 +299,9 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @type {Number}
      **/
     get symbologyChildrenCount() {
-        if (this._symbology instanceof LayerSymbolsSymbology
-            || this._symbology instanceof LayerGroupSymbology) {
-            return this._symbology.childrenCount;
+        if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
+            || this._mapItemState.symbology instanceof LayerGroupSymbology) {
+            return this._mapItemState.symbology.childrenCount;
         }
         return 0;
     }
@@ -373,9 +312,9 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @type {(SymbolIconSymbology|BaseIconSymbology|BaseSymbolsSymbology)[]}
      **/
     get symbologyChildren() {
-        if (this._symbology instanceof LayerSymbolsSymbology
-            || this._symbology instanceof LayerGroupSymbology) {
-            return this._symbology.children;
+        if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
+            || this._mapItemState.symbology instanceof LayerGroupSymbology) {
+            return this._mapItemState.symbology.children;
         }
         return [];
     }
@@ -388,9 +327,9 @@ export class LayerTreeLayer extends LayerTreeItem {
      * @yields {SymbolIconSymbology|BaseIconSymbology|BaseSymbolsSymbology} The next child node
      **/
     *getSymbologyChildren() {
-        if (this._symbology instanceof LayerSymbolsSymbology
-            || this._symbology instanceof LayerGroupSymbology) {
-            for (const symbol of this._symbology.getChildren()) {
+        if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
+            || this._mapItemState.symbology instanceof LayerGroupSymbology) {
+            for (const symbol of this._mapItemState.symbology.getChildren()) {
                 yield symbol;
             }
         } else {
