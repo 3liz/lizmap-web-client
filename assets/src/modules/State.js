@@ -1,3 +1,5 @@
+import { mainEventDispatcher } from '../modules/Globals.js';
+import { MapState } from './state/Map.js';
 import { MapGroupState } from './state/MapLayer.js';
 import { LayerTreeGroupState } from './state/LayerTree.js';
 
@@ -7,6 +9,17 @@ export class State {
      */
     constructor(initialCfg) {
         this._initialConfig = initialCfg;
+        this._map = new MapState();
+        mainEventDispatcher.addListener(this._map.update.bind(this._map), 'map.state.changed');
+    }
+
+    /**
+     * The map state
+     *
+     * @type {MapState}
+     **/
+    get map() {
+        return this._map;
     }
 
     /**

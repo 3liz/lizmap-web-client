@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { Extent } from '../../../../assets/src/modules/config/Tools.js';
+import { Extent } from '../../../../assets/src/modules/utils/Extent.js';
 import { BaseObjectConfig, BaseObjectLayerConfig, BaseObjectLayersConfig } from '../../../../assets/src/modules/config/BaseObject.js';
 
 describe('BaseObjectConfig', function () {

@@ -1,4 +1,6 @@
-import { convertNumber, convertBoolean, getNotContains, Extent } from './Tools.js';
+import { convertNumber, convertBoolean } from './../utils/Converters.js';
+import { Extent } from './../utils/Extent.js';
+import { getNotContains } from './Tools.js';
 import { ValidationError } from '../Errors.js';
 
 /**
