@@ -209,6 +209,32 @@ describe('buildLayerTreeConfig', function () {
         expect(edition.layerConfig).to.not.be.null;
         expect(edition.childrenCount).to.be.eq(3)
 
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const bus = transports.children[0];
+        expect(bus).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(bus.name).to.be.eq('Bus')
+        expect(bus.type).to.be.eq('group')
+        expect(bus.level).to.be.eq(2)
+        expect(bus.wmsName).to.be.eq('Bus')
+        expect(bus.wmsTitle).to.be.eq('Bus')
+        expect(bus.layerConfig).to.not.be.null;
+        expect(bus.childrenCount).to.be.eq(2)
+        expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
+        expect(bus.wmsMaxScaleDenominator).to.be.eq(-1)
+
+        const busStops = bus.children[0];
+        expect(busStops).to.be.instanceOf(LayerTreeLayerConfig)
+        expect(busStops.name).to.be.eq('bus_stops')
+        expect(busStops.type).to.be.eq('layer')
+        expect(busStops.level).to.be.eq(3)
+        expect(busStops.wmsName).to.be.eq('bus_stops')
+        expect(busStops.wmsTitle).to.be.eq('bus_stops')
+        expect(busStops.layerConfig).to.not.be.null
+        expect(busStops.wmsMinScaleDenominator).to.be.eq(0)
+        expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
+
         const sousquartiers = root.children[3];
         expect(sousquartiers).to.be.instanceOf(LayerTreeLayerConfig)
         expect(sousquartiers.name).to.be.eq('SousQuartiers')
@@ -222,6 +248,8 @@ describe('buildLayerTreeConfig', function () {
         expect(sousquartiers.wmsStyles[0].wmsName).to.be.eq('default')
         expect(sousquartiers.wmsStyles[0].wmsTitle).to.be.eq('default')
         expect(sousquartiers.wmsAttribution).to.be.null
+        expect(sousquartiers.wmsMinScaleDenominator).to.be.eq(-1)
+        expect(sousquartiers.wmsMaxScaleDenominator).to.be.eq(-1)
 
         const rootGetChildren = root.getChildren()
         expect(rootGetChildren.next().value).to.be.eq(edition)

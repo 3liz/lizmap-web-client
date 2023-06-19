@@ -197,6 +197,32 @@ export class LayerTreeItemConfig {
     }
 
     /**
+     * WMS layer minimum scale denominator
+     * If the minimum scale denominator is not defined: -1 is returned
+     *
+     * @type {Number}
+     **/
+    get wmsMinScaleDenominator() {
+        if(!this._wmsCapa.hasOwnProperty('MinScaleDenominator')) {
+            return -1;
+        }
+        return this._wmsCapa.MinScaleDenominator;
+    }
+
+    /**
+     * WMS layer maximum scale denominator
+     * If the maximum scale denominator is not defined: -1 is returned
+     *
+     * @type {Number}
+     **/
+    get wmsMaxScaleDenominator() {
+        if(!this._wmsCapa.hasOwnProperty('MaxScaleDenominator')) {
+            return -1;
+        }
+        return this._wmsCapa.MaxScaleDenominator;
+    }
+
+    /**
      * Lizmap layer config
      *
      * @type {?LayerConfig}
@@ -249,7 +275,6 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
             url: attribution.OnlineResource,
         });
     }
-
 }
 
 export class LayerTreeGroupConfig extends LayerTreeItemConfig {

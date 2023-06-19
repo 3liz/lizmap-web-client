@@ -41,6 +41,8 @@ describe('MapGroupState', function () {
         expect(root.wmsBoundingBoxes[0].ymin).to.be.eq(5394910.34)
         expect(root.wmsBoundingBoxes[0].xmax).to.be.eq(447158.049)
         expect(root.wmsBoundingBoxes[0].ymax).to.be.eq(5414844.995)
+        expect(root.wmsMinScaleDenominator).to.be.eq(-1)
+        expect(root.wmsMaxScaleDenominator).to.be.eq(-1)
         expect(root.checked).to.be.true
         expect(root.visibility).to.be.true
         expect(root.layerConfig).to.be.null
@@ -56,6 +58,34 @@ describe('MapGroupState', function () {
         expect(edition.layerConfig).to.not.be.null
         expect(root.mutuallyExclusive).to.be.false
         expect(edition.childrenCount).to.be.eq(3)
+
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(MapGroupState)
+        expect(transports.wmsMinScaleDenominator).to.be.eq(-1)
+        expect(transports.wmsMaxScaleDenominator).to.be.eq(-1)
+
+        const bus = transports.children[0];
+        expect(bus).to.be.instanceOf(MapGroupState)
+        expect(bus.name).to.be.eq('Bus')
+        expect(bus.type).to.be.eq('group')
+        expect(bus.level).to.be.eq(2)
+        expect(bus.wmsName).to.be.eq('Bus')
+        expect(bus.wmsTitle).to.be.eq('Bus')
+        expect(bus.layerConfig).to.not.be.null;
+        expect(bus.childrenCount).to.be.eq(2)
+        expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
+        expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
+
+        const busStops = bus.children[0];
+        expect(busStops).to.be.instanceOf(MapLayerState)
+        expect(busStops.name).to.be.eq('bus_stops')
+        expect(busStops.type).to.be.eq('layer')
+        expect(busStops.level).to.be.eq(3)
+        expect(busStops.wmsName).to.be.eq('bus_stops')
+        expect(busStops.wmsTitle).to.be.eq('bus_stops')
+        expect(busStops.layerConfig).to.not.be.null
+        expect(busStops.wmsMinScaleDenominator).to.be.eq(0)
+        expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
 
         const sousquartiers = root.children[2];
         expect(sousquartiers).to.be.instanceOf(MapLayerState)
