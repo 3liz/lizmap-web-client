@@ -83,6 +83,61 @@ export class MapItemState {
         return this._layerTreeItemCfg.wmsBoundingBoxes;
     }
 
+
+    /**
+     * WMS Minimum scale denominator
+     * If the minimum scale denominator is not defined: -1 is returned
+     * If the WMS layer is a group, the minimum scale denominator is -1 if only one layer
+     * minimum scale denominator is not defined else the smallest layer minimum scale denominator
+     * in the group
+     *
+     * @type {Number}
+     **/
+    get wmsMinScaleDenominator() {
+        if ( this._layerTreeItemCfg.type == 'group') {
+            let minScaleDenominator = -1;
+            for (const treeLayerCfg of this._layerTreeItemCfg.findTreeLayerConfigs()) {
+                const treeLayerMinScaleDenominator = treeLayerCfg.wmsMinScaleDenominator;
+                if (treeLayerMinScaleDenominator < 0) {
+                    return -1;
+                }
+                if (minScaleDenominator == -1) {
+                    minScaleDenominator = treeLayerMinScaleDenominator;
+                } else if (treeLayerMinScaleDenominator < minScaleDenominator) {
+                    minScaleDenominator = treeLayerMinScaleDenominator;
+                }
+            }
+            return minScaleDenominator;
+        }
+        return this._layerTreeItemCfg.wmsMinScaleDenominator;
+    }
+
+    /**
+     * WMS layer maximum scale denominator
+     * If the maximum scale denominator is not defined: -1 is returned
+     * If the WMS layer is a group, the maximum scale denominator is the largest of the layers in the group
+     *
+     * @type {Number}
+     **/
+    get wmsMaxScaleDenominator() {
+        if ( this._layerTreeItemCfg.type == 'group' ) {
+            let maxScaleDenominator = -1;
+            for (const treeLayerCfg of this._layerTreeItemCfg.findTreeLayerConfigs()) {
+                const treeLayerMaxScaleDenominator = treeLayerCfg.wmsMaxScaleDenominator;
+                if (treeLayerMaxScaleDenominator < 0) {
+                    return -1;
+                }
+                if (maxScaleDenominator == -1) {
+                    maxScaleDenominator = treeLayerMaxScaleDenominator;
+                } else if (treeLayerMaxScaleDenominator > maxScaleDenominator) {
+                    maxScaleDenominator = treeLayerMaxScaleDenominator;
+                }
+            }
+            return maxScaleDenominator;
+        }
+        return this._layerTreeItemCfg.wmsMaxScaleDenominator;
+    }
+
     /**
      * Layer tree item is checked
      *
@@ -375,7 +430,6 @@ export class MapLayerState extends MapItemState {
         }
         return null;
     }
-
 
     /**
      * Parameters for OGC WMS Request
