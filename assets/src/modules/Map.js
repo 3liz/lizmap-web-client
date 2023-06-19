@@ -1,6 +1,8 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
+import { ADJUSTED_DPI } from '../utils/Constants.js';
+import { getPointResolution } from 'ol/proj.js';
 
 import DragPan from 'ol/interaction/DragPan.js';
 import MouseWheelZoom from 'ol/interaction/MouseWheelZoom.js';
@@ -43,6 +45,27 @@ export default class Map extends olMap {
             );
         };
 
+        this._dispatchMapStateChanged = () => {
+            const view = this.getView();
+            const projection = view.getProjection();
+            // const resolution = view.getResolution()
+            // The Scale line control uses this method to defined scale denominator
+            const dpi = ADJUSTED_DPI;
+            const inchesPerMeter = 1000 / 25.4;
+            const resolution = getPointResolution(projection, view.getResolution(), view.getCenter(), projection.getUnits());
+            const scaleDenominator = resolution * inchesPerMeter * dpi;
+
+            mainEventDispatcher.dispatch({
+                'type': 'map.state.changed',
+                'projection': projection.getCode(),
+                'center': [...view.getCenter()],
+                'resolution': resolution,
+                'size': [...this.getSize()],
+                'extent': view.calculateExtent(),
+                'scaleDenominator': scaleDenominator,
+            });
+        };
+
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
             moveend: () => {
@@ -56,6 +79,8 @@ export default class Map extends olMap {
                     zoom: mainLizmap.lizmap3.map.getZoom(),
                     duration: 0
                 }, setTimeout(() => this.on('moveend', this._refreshOL2View), 500));
+
+                this._dispatchMapStateChanged();
 
                 mainEventDispatcher.dispatch('map.moveend');
             },
@@ -115,5 +140,7 @@ export default class Map extends olMap {
             zoom: mainLizmap.lizmap3.map.getZoom(),
             duration: 0
         });
+
+        this._dispatchMapStateChanged();
     }
 }
