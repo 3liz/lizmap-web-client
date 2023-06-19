@@ -39,6 +39,7 @@ export default class FeatureToolbar extends HTMLElement {
             <button type="button" class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
             <button type="button" class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isLayerPivot ? this.delete() : this.unlink()} title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
 
+
             ${this.isFeatureExportable
                 ? html`<div class="btn-group feature-export">
                         <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
@@ -84,6 +85,23 @@ export default class FeatureToolbar extends HTMLElement {
                     }
                 </div>
             `)}
+
+            ${this.editableChildrenLayers.length
+                ? html`
+                <div class="btn-group feature-create-child" style="margin-left: 0px;">
+                    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                        <i class="icon-plus-sign"></i>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        ${this.editableChildrenLayers.map((child) =>
+                            html`<li><a data-child-layer-id="${child.layerId}" @click=${() => this.createChild(child)}>${child.title}</a></li>`)}
+                    </ul>
+                </div>
+                `
+                : ''
+            }
+
         </div>`;
 
         render(this._mainTemplate(), this);
@@ -251,6 +269,31 @@ export default class FeatureToolbar extends HTMLElement {
         });
 
         return atlasLayouts;
+    }
+
+
+    /**
+     * Return the list of children layers for which a feature can be created
+     *
+     * @return array
+     */
+    get editableChildrenLayers() {
+        const editableChildrenLayers = [];
+        lizMap.config?.relations?.[this.layerId]?.some((relation) => {
+
+            // Check if the child layer has insert capabilities
+            let [childFeatureType, childLayerConfig] = lizMap.getLayerConfigById(relation.referencingLayer);
+            if (lizMap.config?.editionLayers?.[childFeatureType]?.capabilities?.createFeature !== "True") {
+                return;
+            }
+            editableChildrenLayers.push({
+                'layerId': childLayerConfig.id,
+                'layerName': childFeatureType,
+                'title': childLayerConfig.title
+            });
+        })
+
+        return editableChildrenLayers;
     }
 
     updateIsFeatureEditable(editableFeatures) {
@@ -513,6 +556,25 @@ export default class FeatureToolbar extends HTMLElement {
             });
 
             document.querySelector('#message .print-in-progress a').click();
+        });
+    }
+
+    /**
+     * Launch the creation of a new feature for the given child layer
+     *
+     */
+    createChild(childItem) {
+        // Get the parent feature corresponding to the popup
+        // where the create child button has been clicked
+        lizMap.getLayerFeature(this.featureType, this.fid, (parentFeature) => {
+            lizMap.launchEdition(
+                // Id of the layer to edit
+                childItem.layerId,
+                // Feature id (fid). Here null which means we want to create a new feature
+                null,
+                // Parent data
+                { layerId: this.layerId, feature: parentFeature }
+            );
         });
     }
 }

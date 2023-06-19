@@ -489,7 +489,7 @@ describe('Feature Toolbar in popup', function () {
 
     })
 
-    it('should start child edition linked to a parent feature', function () {
+    it('should start child edition linked to a parent feature from the child feature toolbar', function () {
         // Click feature with id=2 on the map
         cy.mapClick(1055, 437)
         cy.wait('@getFeatureInfo')
@@ -509,8 +509,33 @@ describe('Feature Toolbar in popup', function () {
         // Start child edition
         cy.get('#edition-children-container lizmap-feature-toolbar[value="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0.1"] .feature-edit').click()
 
+        cy.wait(300)
+
         // Parent_id is disabled in form when edition is started from parent form
         cy.get('#jforms_view_edition_parent_id').should('be.disabled')
+
+        // Parent_id input should have the value 2 selected
+        cy.get('#jforms_view_edition_parent_id').find('option:selected').should('have.value', '2');
+    })
+
+
+
+    it('should start child creation from the parent feature toolbar', function () {
+        // Click feature with id=2 on the map
+        cy.mapClick(1055, 437)
+        cy.wait('@getFeatureInfo')
+
+        // Start child creation
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"] .feature-create-child ul li a[data-child-layer-id="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0"]').click({ force: true })
+
+        cy.wait(300)
+
+        // Parent_id is disabled in form when edition is started from parent form
+        cy.get('#jforms_view_edition_parent_id').should('be.disabled')
+
+        // Parent_id input should have the value 2 selected
+        cy.get('#jforms_view_edition_parent_id').find('option:selected').should('have.value', '2');
+
     })
 })
 
