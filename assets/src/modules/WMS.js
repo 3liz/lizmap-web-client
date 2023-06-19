@@ -34,7 +34,7 @@ export default class WMS {
                 ...options
             })
         });
-        return await response.text();
+        return response.text();
     }
 
     /**
