@@ -286,8 +286,8 @@ export default class BaseLayersMap extends olMap {
 
         this._overlayLayersGroup = new LayerGroup();
 
-        if(mainLizmap.config.layersTree.children.length){
-            this._overlayLayersGroup = createNode(mainLizmap.config.layersTree);
+        if(mainLizmap.state.layerTree.children.length){
+            this._overlayLayersGroup = createNode(mainLizmap.state.layerTree);
         }
 
         // Add base and overlay layers to the map's main LayerGroup
@@ -306,6 +306,10 @@ export default class BaseLayersMap extends olMap {
         this.syncNewOLwithOL2View();
 
         // Listen/Dispatch events
+        this.getView().on('change:resolution', () => {
+            mainEventDispatcher.dispatch('resolution.changed');
+        });
+
         this._baseLayersGroup.on('change', () => {
             mainEventDispatcher.dispatch('baseLayers.changed');
         });
@@ -337,6 +341,11 @@ export default class BaseLayersMap extends olMap {
                 });
             }
         }
+
+        mainEventDispatcher.addListener(
+            evt => this.getLayerOrGroupByName(evt.name).setVisible(evt.checked),
+            ['overlayLayer.visibility.changed']
+        );
     }
 
     get hasEmptyBaseLayer() {
