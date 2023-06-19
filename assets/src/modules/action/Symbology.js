@@ -7,9 +7,7 @@ import WMS from './../WMS.js';
  */
 export async function updateLayerTreeLayersSymbology(treeLayers) {
     const wmsNames = treeLayers.map(layer => layer.wmsName);
-    console.log(wmsNames);
     const wmsStyles = treeLayers.map(layer => layer.wmsSelectedStyleName);
-    console.log(wmsStyles);
     let treeLayersByName = {};
     treeLayers.forEach(layer => treeLayersByName[layer.name] = layer);
 
