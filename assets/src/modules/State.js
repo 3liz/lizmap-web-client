@@ -1,4 +1,5 @@
-import { LayerTreeGroup } from './state/LayerTree.js';
+import { MapGroupState } from './state/MapLayer.js';
+import { LayerTreeGroupState } from './state/LayerTree.js';
 
 export class State {
     /**
@@ -9,13 +10,25 @@ export class State {
     }
 
     /**
+     * Root map group
+     *
+     * @type {MapGroupState}
+     **/
+    get rootMapGroup() {
+        if (this._rootMapGroup == null) {
+            this._rootMapGroup = new MapGroupState(this._initialConfig.layerTree, this._initialConfig.layersOrder);
+        }
+        return this._rootMapGroup;
+    }
+
+    /**
      * Root tree layer group
      *
-     * @type {LayerTreeGroup}
+     * @type {LayerTreeGroupState}
      **/
     get layerTree() {
         if (this._layerTree == null) {
-            this._layerTree = new LayerTreeGroup(this._initialConfig.layerTree);
+            this._layerTree = new LayerTreeGroupState(this.rootMapGroup);
         }
         return this._layerTree;
     }

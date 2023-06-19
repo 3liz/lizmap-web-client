@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import {buildLayersOrder} from '../../../../assets/src/modules/config/LayersOrder.js';
+import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 
 describe('buildLayersOrder', function () {
     it('From config', function () {
@@ -15,6 +15,24 @@ describe('buildLayersOrder', function () {
                 "parent_layer":2,
                 "parent_layer_without_attribute_table":3,
                 "tramway stop (with parenthesis) and spaces":4
+            }
+        })
+        expect(layersOrder).to.have.ordered.members([
+            "tramway_stops",
+            "tramway_lines",
+            "parent_layer",
+            "parent_layer_without_attribute_table",
+            "tramway stop (with parenthesis) and spaces"
+        ])
+    })
+    it('From config unordered', function () {
+        const layersOrder = buildLayersOrder({
+            "layersOrder": {
+                "parent_layer":2,
+                "tramway_stops":0,
+                "tramway stop (with parenthesis) and spaces":4,
+                "tramway_lines":1,
+                "parent_layer_without_attribute_table":3
             }
         })
         expect(layersOrder).to.have.ordered.members([

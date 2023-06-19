@@ -197,6 +197,32 @@ export class LayerTreeItemConfig {
     }
 
     /**
+     * WMS layer minimum scale denominator
+     * If the minimum scale denominator is not defined: -1 is returned
+     *
+     * @type {Number}
+     **/
+    get wmsMinScaleDenominator() {
+        if(!this._wmsCapa.hasOwnProperty('MinScaleDenominator')) {
+            return -1;
+        }
+        return this._wmsCapa.MinScaleDenominator;
+    }
+
+    /**
+     * WMS layer maximum scale denominator
+     * If the maximum scale denominator is not defined: -1 is returned
+     *
+     * @type {Number}
+     **/
+    get wmsMaxScaleDenominator() {
+        if(!this._wmsCapa.hasOwnProperty('MaxScaleDenominator')) {
+            return -1;
+        }
+        return this._wmsCapa.MaxScaleDenominator;
+    }
+
+    /**
      * Lizmap layer config
      *
      * @type {?LayerConfig}
@@ -249,7 +275,6 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
             url: attribution.OnlineResource,
         });
     }
-
 }
 
 export class LayerTreeGroupConfig extends LayerTreeItemConfig {
@@ -294,6 +319,41 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
         for (const item of this._items) {
             yield item;
         }
+    }
+
+
+    /**
+     * Find layer names
+     *
+     * @returns {String[]}
+     **/
+    findTreeLayerConfigNames() {
+        let names = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayerConfig) {
+                names.push(item.name);
+            } else if (item instanceof LayerTreeGroupConfig) {
+                names = names.concat(item.findTreeLayerNames());
+            }
+        }
+        return names;
+    }
+
+    /**
+     * Find layer items
+     *
+     * @returns {LayerTreeLayer[]}
+     **/
+    findTreeLayerConfigs() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayerConfig) {
+                items.push(item);
+            } else if (item instanceof LayerTreeGroupConfig) {
+                items = items.concat(item.findTreeLayerConfigs());
+            }
+        }
+        return items;
     }
 }
 
