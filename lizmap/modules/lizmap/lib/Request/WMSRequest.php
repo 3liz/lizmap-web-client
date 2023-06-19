@@ -306,13 +306,13 @@ class WMSRequest extends OGCRequest
                         $legends['nodes'] = array(array(
                             'nodes' => $nodes,
                             'type' => 'group',
-                            'name' => $lName,
-                            'title' => $layer->title ? $layer->title : $lName,
+                            'name' => $layer->name,
+                            'title' => $layer->title ? $layer->title : $layer->name,
                         ));
                     } else {
                         // Add name to the layer node
                         $node = $nodes[0];
-                        $node->name = $lName;
+                        $node->name = $layer->name;
                         $legends['nodes'][] = $node;
                     }
 
