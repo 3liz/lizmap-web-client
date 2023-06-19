@@ -1,4 +1,4 @@
-import { Extent } from './Tools.js';
+import { Extent } from './../utils/Extent.js';
 import { AttributionConfig } from './Attribution.js';
 
 export class LayerGeographicBoundingBoxConfig extends Extent {
