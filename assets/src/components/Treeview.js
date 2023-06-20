@@ -21,6 +21,14 @@ export default class Treeview extends HTMLElement {
         <ul>
             ${layerTreeGroupState.children.map(item => html`
             <li>
+                ${item instanceof LayerTreeGroupState
+                    ? html`<div class="expandable expanded" @click=${(event) => event.target.classList.toggle('expanded')}></div>`
+                    : ''
+                }
+                ${item.symbologyChildrenCount
+                    ? html`<div class="expandable" @click=${(event) => event.target.classList.toggle('expanded')}></div>`
+                    : ''
+                }
                 <div class="${item.checked ? 'checked' : ''} ${item instanceof LayerTreeGroupState ? 'group' : ''}">
                     <!-- <div class="loading ${item?.getSource?.().get('loading') ? 'spinner' : ''}"></div> -->
                     <input class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
@@ -47,7 +55,8 @@ export default class Treeview extends HTMLElement {
                             ${item.symbologyChildren.map(symbology => html`
                             <li>
                                 <img class="legend" src="${symbology.icon}"><label class="symbol-title">${symbology.title}</label>
-                            </li>`)}
+                            </li>`
+                            )}
                         </ul>`
                     : ''
                 }

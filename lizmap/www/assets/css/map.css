@@ -3002,8 +3002,33 @@ lizmap-treeview ul {
   list-style: none;
 }
 
+lizmap-treeview li {
+  position: relative;
+}
+
 lizmap-treeview li > div {
-  display: flex;
+  display: inline-flex;
+}
+
+lizmap-treeview div.expandable{
+  display: inline-block;
+  position: absolute;
+  left: -25px;
+  padding: 0 5px;
+}
+
+lizmap-treeview div.expandable::before {
+  content: "▶";
+  cursor: pointer;
+}
+
+lizmap-treeview div.expandable.expanded {
+  transform: rotate(90deg);
+  color: #CE1F2D;
+}
+
+lizmap-treeview div.expandable:not(.expanded) ~ ul {
+  display: none;
 }
 
 lizmap-treeview .node {
@@ -3053,11 +3078,11 @@ lizmap-treeview label {
   display: inline;
 }
 
-lizmap-treeview div:not(.checked) ~ ul input[type="checkbox"] {
+lizmap-treeview div.group:not(.checked) ~ ul input[type="checkbox"] {
   accent-color: silver;
 }
 
-lizmap-treeview div:not(.checked) ~ ul label {
+lizmap-treeview div.group:not(.checked) ~ ul label {
   font-style: italic;
 }
 
