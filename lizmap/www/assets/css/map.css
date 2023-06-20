@@ -3007,7 +3007,7 @@ lizmap-treeview li {
 }
 
 lizmap-treeview li > div {
-  display: inline-flex;
+  display: flex;
 }
 
 lizmap-treeview div.expandable{
