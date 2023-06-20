@@ -49,10 +49,6 @@ export default class BaseLayersMap extends olMap {
 
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
-        let cfgBaseLayers = [];
-        if(mainLizmap.config?.baseLayers){
-            cfgBaseLayers = Object.entries(mainLizmap.config.baseLayers);
-        }
 
         for (const baseLayerCfg of mainLizmap.initialConfig.baseLayers.getBaseLayerConfigs()) {
             let baseLayer;
@@ -157,18 +153,7 @@ export default class BaseLayersMap extends olMap {
         this._overlayLayersAndGroups = [];
 
         // Returns a layer or a layerGroup depending of the node type
-        const createNode = (node, parentName) => {
-            let layerCfg;
-            let parentGroupCfg;
-
-            if (node.name !== 'root'){
-                layerCfg = mainLizmap.initialConfig.layers.getLayerConfigByLayerName(node.name);
-            }
-
-            if (parentName && parentName !== 'root'){
-                parentGroupCfg = mainLizmap.initialConfig.layers.getLayerConfigByLayerName(parentName);
-            }
-
+        const createNode = (node) => {
             if(node.type === 'group'){
                 const layers = [];
                 for (const layer of node.children.slice().reverse()) {
@@ -179,12 +164,9 @@ export default class BaseLayersMap extends olMap {
                 });
 
                 if (node.name !== 'root') {
-                    layerGroup.setVisible(layerCfg.toggled);
+                    layerGroup.setVisible(node.visibility);
                     layerGroup.setProperties({
-                        name: node.name,
-                        parentName: parentName,
-                        mutuallyExclusive: layerCfg?.mutuallyExclusive,
-                        groupAsLayer: layerCfg?.groupAsLayer
+                        name: node.name
                     });
 
                     this._overlayLayersAndGroups.push(layerGroup);
@@ -194,28 +176,25 @@ export default class BaseLayersMap extends olMap {
             } else {
                 let layer;
                 // Keep only layers with a geometry
-                if(layerCfg?.type !== 'layer'){
-                    return;
-                }
-                if(["", "none", "unknown"].includes(layerCfg.geometryType)){
+                if(node.type !== 'layer'){
                     return;
                 }
 
-                let extent = layerCfg.extent;
-                if(layerCfg.crs !== "" && layerCfg.crs !== mainLizmap.projection){
-                    extent = transformExtent(extent, layerCfg.crs, mainLizmap.projection);
+                let extent = node.layerConfig.extent;
+                if(node.layerConfig.crs !== "" && node.layerConfig.crs !== mainLizmap.projection){
+                    extent = transformExtent(extent, node.layerConfig.crs, mainLizmap.projection);
                 }
 
                 // Set min/max resolution only if different from default
-                let minResolution = layerCfg.minScale === 1 ? undefined : Utils.getResolutionFromScale(layerCfg.minScale);
-                let maxResolution = layerCfg.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(layerCfg.maxScale);
+                let minResolution = node.layerConfig.minScale === 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale);
+                let maxResolution = node.layerConfig.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale);
 
-                if (layerCfg.cached) {
+                if (node.layerConfig.cached) {
                     const parser = new WMTSCapabilities();
                     const result = parser.read(lizMap.wmtsCapabilities);
                     const options = optionsFromCapabilities(result, {
-                        layer: layerCfg?.shortname || layerCfg.name,
-                        matrixSet: layerCfg.crs,
+                        layer: node.wmsName,
+                        matrixSet: mainLizmap.projection,
                     });
 
                     layer = new TileLayer({
@@ -232,51 +211,18 @@ export default class BaseLayersMap extends olMap {
                             url: mainLizmap.serviceURL,
                             serverType: 'qgis',
                             params: {
-                                LAYERS: layerCfg?.shortname || layerCfg.name,
-                                FORMAT: layerCfg.imageFormat,
+                                LAYERS: node.wmsName,
+                                FORMAT: node.layerConfig.imageFormat,
                                 DPI: 96
                             },
                         })
                     });
                 }
-                
-                let isVisible = layerCfg.toggled;
 
-                // If parent group is a "group as layer" all layers in it are visible
-                // and the visibility is handled by group
-                if (parentGroupCfg?.groupAsLayer) {
-                    isVisible = true;
-                }
-
-                layer.setVisible(isVisible);
+                layer.setVisible(node.visibility);
 
                 layer.setProperties({
-                    name: layerCfg.name,
-                    parentName: parentName
-                });
-
-                layer.on('change:visible', evt => {
-                    // Set layer's group visible to `true` when layer's visible is set to `true`
-                    // As in QGIS
-                    const changedLayer = evt.target;
-                    const parentGroup = this.getLayerOrGroupByName(changedLayer.get('parentName'));
-
-                    if(!parentGroup){
-                        return;
-                    }
-
-                    if (changedLayer.getVisible()) {
-                        parentGroup?.setVisible(true);
-                    }
-
-                    // Mutually exclusive groups
-                    if (changedLayer.getVisible() && parentGroup.get("mutuallyExclusive")) {
-                        parentGroup.getLayers().forEach(layer => {
-                            if (layer != changedLayer) {
-                                layer.setVisible(false);
-                            }
-                        })
-                    }
+                    name: node.name
                 });
 
                 this._overlayLayersAndGroups.push(layer);
@@ -287,7 +233,7 @@ export default class BaseLayersMap extends olMap {
         this._overlayLayersGroup = new LayerGroup();
 
         if(mainLizmap.state.layerTree.children.length){
-            this._overlayLayersGroup = createNode(mainLizmap.state.layerTree);
+            this._overlayLayersGroup = createNode(mainLizmap.state.rootMapGroup);
         }
 
         // Add base and overlay layers to the map's main LayerGroup
