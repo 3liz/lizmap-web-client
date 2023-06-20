@@ -343,13 +343,11 @@ var lizLayerActionButtons = function() {
             });
 
             // Expand all or unfold all
-            $('#layers-unfold-all').click(function(){
-                $('#switcher table.tree tr.collapsed:not(.liz-layer.disabled) a.expander').click();
-                return false;
+            document.getElementById('layers-unfold-all').addEventListener('click', () => {
+                document.querySelectorAll('lizmap-treeview .expandable').forEach(element => element.classList.add('expanded'));
             });
-            $('#layers-fold-all').click(function(){
-                $('#switcher table.tree').collapseAll();
-                return false;
+            document.getElementById('layers-fold-all').addEventListener('click', () => {
+                document.querySelectorAll('lizmap-treeview .expandable').forEach(element => element.classList.remove('expanded'));
             });
 
             // Activate get-baselayer-metadata button
