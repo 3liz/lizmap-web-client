@@ -10,7 +10,7 @@ export class State {
     constructor(initialCfg) {
         this._initialConfig = initialCfg;
         this._map = new MapState();
-        mainEventDispatcher.addListener(this._map.update.bind(this._map), 'map.state.changed');
+        mainEventDispatcher.addListener(this._map.update.bind(this._map), 'map.state.changing');
     }
 
     /**
