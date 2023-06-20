@@ -2,7 +2,7 @@ import { ValidationError } from './../Errors.js';
 import { convertBoolean } from './../utils/Converters.js';
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { LayerStyleConfig, LayerTreeGroupConfig, LayerTreeLayerConfig } from './../config/LayerTree.js';
-import { buildLayerSymbology } from './Symbology.js';
+import { buildLayerSymbology, LayerSymbolsSymbology } from './Symbology.js';
 
 export class MapItemState extends EventDispatcher {
 
@@ -505,6 +505,26 @@ export class MapLayerState extends MapItemState {
             'STYLES': this.wmsSelectedStyleName,
             'FORMAT': this.layerConfig.imageFormat,
             'DPI': 96
+        }
+        if (this.symbology instanceof LayerSymbolsSymbology) {
+            let keyChecked = [];
+            let keyUnchecked = [];
+            for (const symbol of this.symbology.getChildren()) {
+                if (symbol.rulekey === '') {
+                    keyChecked = [];
+                    keyUnchecked = [];
+                    break;
+                }
+                if (symbol.checked) {
+                    keyChecked.push(symbol.ruleKey);
+                } else {
+                    keyUnchecked.push(symbol.ruleKey);
+                }
+            }
+            if (keyChecked.length != 0 && keyUnchecked.length != 0) {
+                params['LEGEND_ON'] = this.wmsName+':'+keyChecked.join();
+                params['LEGEND_OFF'] = this.wmsName+':'+keyUnchecked.join();
+            }
         }
         return params;
     }

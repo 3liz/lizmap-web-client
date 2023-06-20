@@ -188,12 +188,20 @@ export class SymbolIconSymbology extends BaseIconSymbology {
     /**
      * Is rule checked ?
      *
-     * @type {String}
+     * @type {Boolean}
      **/
     get checked() {
         return this._checked;
     }
 
+    /**
+     * Checked or Unchecked rule
+     *
+     * @param {Boolean}
+     **/
+    set checked(val) {
+        this._checked = val;
+    }
 
     /**
      * The minimum scale denominator
