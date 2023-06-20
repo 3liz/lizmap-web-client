@@ -28,6 +28,12 @@ describe('Extent', function () {
         expect(ext.ymax).to.be.eq(2)
     })
 
+    it('Equals', function () {
+        let ext = new Extent(-1,-1,1,1)
+        expect(ext.equals([-1,-1,1,1])).to.be.true
+        expect(ext.equals([-1,-1,1,0])).to.be.false
+    })
+
     it('ValidationError', function () {
         try {
             new Extent()
