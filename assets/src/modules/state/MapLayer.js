@@ -274,6 +274,7 @@ export class MapGroupState extends MapItemState {
                     }
                     group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     this._items.push(group);
                     // Group is checked if one child is checked
                     if (group.checked) {
@@ -283,6 +284,7 @@ export class MapGroupState extends MapItemState {
                     // Build group as layer
                     const layer = new MapLayerState(layerTreeItem, layersOrder, this)
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     this._items.push(layer);
                     // Group is checked if one child is checked
                     if (layer.checked) {
@@ -307,6 +309,7 @@ export class MapGroupState extends MapItemState {
                 } else {
                     this._items.push(layer);
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     // Group is checked if one child is checked
                     if (layer.checked) {
                         this._checked = true;
@@ -444,6 +447,27 @@ export class MapLayerState extends MapItemState {
      **/
     get wmsSelectedStyleName() {
         return this._wmsSelectedStyleName;
+    }
+
+    /**
+     * Update WMS selected layer style name
+     * based on wmsStyles list
+     *
+     * @param {String} styleName
+     **/
+    set wmsSelectedStyleName(styleName) {
+        if (this._wmsSelectedStyleName == styleName) {
+            return;
+        }
+        if (this.wmsStyles.filter(style => style.wmsName == styleName).length == 0) {
+            throw TypeError('Cannot assign an unknown WMS style name! `'+styleName+'` is not in the layer `'+this.name+'` WMS styles!');
+        }
+        this._wmsSelectedStyleName = styleName;
+        this.dispatch({
+            type: 'layer.style.changed',
+            name: this.name,
+            style: this.wmsSelectedStyleName,
+        })
     }
 
     /**

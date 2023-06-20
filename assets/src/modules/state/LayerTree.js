@@ -18,6 +18,7 @@ export class LayerTreeItemState extends EventDispatcher {
         }
         if (mapItemState instanceof MapLayerState) {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
         } else if (mapItemState instanceof MapGroupState) {
             mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
         }
@@ -152,6 +153,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 }
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 this._items.push(group);
             } else if (mapItemState instanceof MapLayerState) {
                 if (!mapItemState.displayInLayerTree) {
@@ -160,6 +162,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 // Build layer
                 const layer = new LayerTreeLayerState(mapItemState, this)
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 this._items.push(layer);
             }
         }
@@ -273,6 +276,16 @@ export class LayerTreeLayerState extends LayerTreeItemState {
      **/
     get wmsSelectedStyleName() {
         return this._mapItemState.wmsSelectedStyleName;
+    }
+
+    /**
+     * Update WMS selected layer style name
+     * based on wmsStyles list
+     *
+     * @param {String} styleName
+     **/
+    set wmsSelectedStyleName(styleName) {
+        this._mapItemState.wmsSelectedStyleName = styleName;
     }
 
     /**
