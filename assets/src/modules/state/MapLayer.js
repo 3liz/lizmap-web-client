@@ -272,6 +272,8 @@ export class MapGroupState extends MapItemState {
                     if (group.childrenCount == 0) {
                         continue;
                     }
+                    group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     this._items.push(group);
                     // Group is checked if one child is checked
                     if (group.checked) {
@@ -280,6 +282,7 @@ export class MapGroupState extends MapItemState {
                 } else {
                     // Build group as layer
                     const layer = new MapLayerState(layerTreeItem, layersOrder, this)
+                    layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     this._items.push(layer);
                     // Group is checked if one child is checked
                     if (layer.checked) {
@@ -303,6 +306,7 @@ export class MapGroupState extends MapItemState {
                     this._notInLayerTree.push(layer);
                 } else {
                     this._items.push(layer);
+                    layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     // Group is checked if one child is checked
                     if (layer.checked) {
                         this._checked = true;

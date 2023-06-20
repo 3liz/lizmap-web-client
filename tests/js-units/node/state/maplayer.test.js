@@ -208,6 +208,15 @@ describe('MapGroupState', function () {
         const root = new MapGroupState(rootCfg, layersOrder);
         expect(root).to.be.instanceOf(MapGroupState)
 
+        let rootLayerVisibilityChangedEvt = null;
+        let rootGroupVisibilityChangedEvt = null;
+        root.addListener(evt => {
+            rootLayerVisibilityChangedEvt = evt
+        }, 'layer.visibility.changed');
+        root.addListener(evt => {
+            rootGroupVisibilityChangedEvt = evt
+        }, 'group.visibility.changed');
+
         const sousquartiers = root.children[2];
         expect(sousquartiers).to.be.instanceOf(MapLayerState)
 
@@ -228,13 +237,19 @@ describe('MapGroupState', function () {
         // Values have changed
         expect(sousquartiers.checked).to.be.true
         expect(sousquartiers.visibility).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.be.null
 
         // Reset
         sousquartiersVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
         // Set same value
         sousquartiers.checked = true;
         // Nothing changed
         expect(sousquartiersVisibilityChangedEvt).to.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.null
 
         // Change value
         sousquartiers.checked = false;
@@ -245,7 +260,14 @@ describe('MapGroupState', function () {
         // Values have changed
         expect(sousquartiers.checked).to.be.false
         expect(sousquartiers.visibility).to.be.false
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.be.null
 
+        // Reset
+        sousquartiersVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
 
         const edition = root.children[0];
         expect(edition).to.be.instanceOf(MapGroupState)
@@ -283,9 +305,14 @@ describe('MapGroupState', function () {
         // Edition group values have not changed
         expect(edition.checked).to.be.true
         expect(edition.visibility).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.be.null
 
         // Reset
         poiVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
         // Change edition group checked value
         edition.checked = false;
         // edition group event dispatched
@@ -300,10 +327,17 @@ describe('MapGroupState', function () {
         // Poi still checked but not visible
         expect(poi.checked).to.be.true
         expect(poi.visibility).to.be.false
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.not.be.null
+        expect(rootGroupVisibilityChangedEvt).to.be.deep.equal(editionVisibilityChangedEvt)
 
         // Reset
         editionVisibilityChangedEvt = null;
         poiVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
+        rootGroupVisibilityChangedEvt = null;
 
         // Change poi checked value
         poi.checked = false;
@@ -316,6 +350,9 @@ describe('MapGroupState', function () {
         // Poi checked changed
         expect(poi.checked).to.be.false
         expect(poi.visibility).to.be.false
+        // Events not dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.be.null
+        expect(rootGroupVisibilityChangedEvt).to.be.null
 
         // Change poi checked value
         poi.checked = true;
@@ -328,5 +365,8 @@ describe('MapGroupState', function () {
         // Poi values have changed
         expect(poi.checked).to.be.true
         expect(poi.visibility).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootGroupVisibilityChangedEvt).to.not.be.null
     })
 })
