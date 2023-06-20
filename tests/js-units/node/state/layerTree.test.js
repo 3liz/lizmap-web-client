@@ -338,4 +338,185 @@ describe('LayerTreeGroupState', function () {
             "publicbuildings",
         ])
     })
+
+    it('Events', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        let rootLayerVisibilityChangedEvt = null;
+        let rootGroupVisibilityChangedEvt = null;
+        root.addListener(evt => {
+            rootLayerVisibilityChangedEvt = evt
+        }, 'layer.visibility.changed');
+        root.addListener(evt => {
+            rootGroupVisibilityChangedEvt = evt
+        }, 'group.visibility.changed');
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
+
+        expect(sousquartiers.checked).to.be.false
+        expect(sousquartiers.visibility).to.be.false
+
+        let sousquartiersVisibilityChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersVisibilityChangedEvt = evt
+        }, 'layer.visibility.changed');
+
+        // Change value
+        sousquartiers.checked = true;
+        // Event dispatched
+        expect(sousquartiersVisibilityChangedEvt).to.not.be.null
+        expect(sousquartiersVisibilityChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersVisibilityChangedEvt.visibility).to.be.true
+        // Values have changed
+        expect(sousquartiers.checked).to.be.true
+        expect(sousquartiers.visibility).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.be.null
+
+        // Reset
+        sousquartiersVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
+        // Set same value
+        sousquartiers.checked = true;
+        // Nothing changed
+        expect(sousquartiersVisibilityChangedEvt).to.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.null
+
+        // Change value
+        sousquartiers.checked = false;
+        // Event dispatched
+        expect(sousquartiersVisibilityChangedEvt).to.not.be.null
+        expect(sousquartiersVisibilityChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersVisibilityChangedEvt.visibility).to.be.false
+        // Values have changed
+        expect(sousquartiers.checked).to.be.false
+        expect(sousquartiers.visibility).to.be.false
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.be.null
+
+        // Reset
+        sousquartiersVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
+
+        const edition = root.children[0];
+        expect(edition).to.be.instanceOf(LayerTreeGroupState)
+
+        expect(edition.checked).to.be.true
+        expect(edition.visibility).to.be.true
+
+        const poi = edition.children[0];
+        expect(poi).to.be.instanceOf(LayerTreeLayerState)
+
+        expect(poi.checked).to.be.false
+        expect(poi.visibility).to.be.false
+
+        let editionVisibilityChangedEvt = null;
+        edition.addListener(evt => {
+            editionVisibilityChangedEvt = evt
+        }, 'group.visibility.changed');
+
+        let poiVisibilityChangedEvt = null;
+        poi.addListener(evt => {
+            poiVisibilityChangedEvt = evt
+        }, 'layer.visibility.changed');
+
+        // Change poi checked value
+        poi.checked = true;
+        // Poi event dispatched
+        expect(poiVisibilityChangedEvt).to.not.be.null
+        expect(poiVisibilityChangedEvt.name).to.be.eq('points_of_interest')
+        expect(poiVisibilityChangedEvt.visibility).to.be.true
+        // Poi values have changed
+        expect(poi.checked).to.be.true
+        expect(poi.visibility).to.be.true
+        // Edition group event not dispatched
+        expect(editionVisibilityChangedEvt).to.be.null
+        // Edition group values have not changed
+        expect(edition.checked).to.be.true
+        expect(edition.visibility).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.be.null
+
+        // Reset
+        poiVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
+        // Change edition group checked value
+        edition.checked = false;
+        // edition group event dispatched
+        expect(editionVisibilityChangedEvt).to.not.be.null
+        expect(editionVisibilityChangedEvt.name).to.be.eq('Edition')
+        expect(editionVisibilityChangedEvt.visibility).to.be.false
+        // Edition group values have changed
+        expect(edition.checked).to.be.false
+        expect(edition.visibility).to.be.false
+        // Poi event dispatched
+        expect(poiVisibilityChangedEvt).to.not.be.null
+        // Poi still checked but not visible
+        expect(poi.checked).to.be.true
+        expect(poi.visibility).to.be.false
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootGroupVisibilityChangedEvt).to.not.be.null
+        expect(rootGroupVisibilityChangedEvt).to.be.deep.equal(editionVisibilityChangedEvt)
+
+        // Reset
+        editionVisibilityChangedEvt = null;
+        poiVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
+        rootGroupVisibilityChangedEvt = null;
+
+        // Change poi checked value
+        poi.checked = false;
+        // No visibility events dispatched
+        expect(editionVisibilityChangedEvt).to.be.null
+        expect(poiVisibilityChangedEvt).to.be.null
+        // Edition group values have not changed
+        expect(edition.checked).to.be.false
+        expect(edition.visibility).to.be.false
+        // Poi checked changed
+        expect(poi.checked).to.be.false
+        expect(poi.visibility).to.be.false
+        // Events not dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.be.null
+        expect(rootGroupVisibilityChangedEvt).to.be.null
+
+        // Change poi checked value
+        poi.checked = true;
+        // Visibility events dispatched
+        expect(editionVisibilityChangedEvt).to.not.be.null
+        expect(poiVisibilityChangedEvt).to.not.be.null
+        // Edition group values have changed
+        expect(edition.checked).to.be.true
+        expect(edition.visibility).to.be.true
+        // Poi values have changed
+        expect(poi.checked).to.be.true
+        expect(poi.visibility).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootGroupVisibilityChangedEvt).to.not.be.null
+    })
 })

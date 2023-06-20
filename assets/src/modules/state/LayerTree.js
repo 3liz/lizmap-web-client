@@ -1,20 +1,26 @@
+import EventDispatcher from './../../utils/EventDispatcher.js';
 import { MapGroupState, MapLayerState } from './MapLayer.js';
 import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology } from './Symbology.js';
 
-export class LayerTreeItemState {
+export class LayerTreeItemState extends EventDispatcher {
 
     /**
      * @param {MapItemState}        mapItemState           - the layer tree item config
      * @param {LayerTreeItemState}  [parentGroupState] - the parent layer tree group
      */
     constructor(mapItemState, parentGroupState) {
+        super();
         this._mapItemState = mapItemState;
         this._parentGroupState = null;
         if (parentGroupState instanceof LayerTreeItemState
             && parentGroupState.type == 'group') {
             this._parentGroupState = parentGroupState;
         }
-        this._checked = this._parentGroupState == null ? true : false;
+        if (mapItemState instanceof MapLayerState) {
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+        } else if (mapItemState instanceof MapGroupState) {
+            mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+        }
     }
     /**
      * Config layers
@@ -115,6 +121,15 @@ export class LayerTreeItemState {
     get layerConfig() {
         return this._mapItemState.layerConfig;
     }
+
+    /**
+     * Calculate and save visibility
+     *
+     * @returns {boolean} the calculated visibility
+     **/
+    calculateVisibility() {
+        return this._mapItemState.calculateVisibility();
+    }
 }
 
 export class LayerTreeGroupState extends LayerTreeItemState {
@@ -135,6 +150,8 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 if (group.childrenCount == 0) {
                     continue;
                 }
+                group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 this._items.push(group);
             } else if (mapItemState instanceof MapLayerState) {
                 if (!mapItemState.displayInLayerTree) {
@@ -142,6 +159,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 }
                 // Build layer
                 const layer = new LayerTreeLayerState(mapItemState, this)
+                layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 this._items.push(layer);
             }
         }
