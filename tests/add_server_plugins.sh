@@ -15,9 +15,9 @@ echo "Unstable from https://packages.3liz.org"
 # qgis-plugin-manager init
 echo "https://packages.3liz.org/pub/server-plugins-repository/unstable/plugins.[VERSION].xml" > /tmp/sources-plugin-manager.list
 qgis-plugin-manager update
-qgis-plugin-manager install "Lizmap server"
-qgis-plugin-manager install atlasprint
-qgis-plugin-manager install wfsOutputExtension
+qgis-plugin-manager install -f "Lizmap server"
+qgis-plugin-manager install -f atlasprint
+qgis-plugin-manager install -f wfsOutputExtension
 
 # echo "QGIS Server Lizmap plugin"
 # Latest commit
