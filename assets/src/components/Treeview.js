@@ -41,6 +41,16 @@ export default class Treeview extends HTMLElement {
                         </div>
                     </div>
                 </div>
+                ${item.symbologyChildrenCount
+                    ? html`
+                        <ul class="symbols">
+                            ${item.symbologyChildren.map(symbology => html`
+                            <li>
+                                <img class="legend" src="${symbology.icon}"><label class="symbol-title">${symbology.title}</label>
+                            </li>`)}
+                        </ul>`
+                    : ''
+                }
                 ${when(item instanceof LayerTreeGroupState, () => this._layerTemplate(item))}
             </li>`
             )}
