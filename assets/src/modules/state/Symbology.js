@@ -149,8 +149,13 @@ export class LayerIconSymbology extends BaseIconSymbology {
 const symbolIconProperties = {
     'icon': {type: 'string'},
     'title': {type: 'string'},
-    'ruleKey': {type: 'string'},
-    'checked': {type: 'boolean'},
+}
+
+const symbolIconOptionalProperties = {
+    'ruleKey': {type: 'string', default: ''},
+    'checked': {type: 'boolean', default: true},
+    'scaleMinDenom': {type: 'number', default: -1},
+    'scaleMaxDenom': {type: 'number', default: -1},
 }
 /**
  * Class representing the symbol icon symbology
@@ -168,7 +173,7 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      * @param {Boolean} node.checked - the node is checked by default
      **/
     constructor(node) {
-        super(node, symbolIconProperties, {})
+        super(node, symbolIconProperties, symbolIconOptionalProperties)
     }
 
     /**
@@ -187,6 +192,25 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      **/
     get checked() {
         return this._checked;
+    }
+
+
+    /**
+     * The minimum scale denominator
+     *
+     * @type {Number}
+     **/
+    get minScaleDenominator() {
+        return this._scaleMinDenom;
+    }
+
+    /**
+     * The maximum scale denominator
+     *
+     * @type {Number}
+     **/
+    get maxScaleDenominator() {
+        return this._scaleMaxDenom;
     }
 }
 
