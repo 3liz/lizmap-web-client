@@ -102,7 +102,9 @@ describe('MapGroupState', function () {
         expect(sousquartiers.wmsAttribution).to.be.null
         expect(sousquartiers.wmsParameters).to.be.an('object').that.deep.equal({
           'LAYERS': 'SousQuartiers',
-          'STYLES': 'default'
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
         })
 
         const rootGetChildren = root.getChildren()

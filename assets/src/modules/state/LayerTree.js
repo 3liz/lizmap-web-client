@@ -294,6 +294,15 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     }
 
     /**
+     * Parameters for OGC WMS Request
+     *
+     * @type {Object}
+     **/
+    get wmsParameters() {
+        return this._mapItemState.wmsParameters;
+    }
+
+    /**
      * Layer symbology
      *
      * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
