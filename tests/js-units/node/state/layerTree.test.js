@@ -519,4 +519,85 @@ describe('LayerTreeGroupState', function () {
         expect(rootLayerVisibilityChangedEvt).to.not.be.null
         expect(rootGroupVisibilityChangedEvt).to.not.be.null
     })
+
+    it('WMS selected styles', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(LayerTreeGroupState)
+
+        const tramway = transports.children[1];
+        expect(tramway).to.be.instanceOf(LayerTreeGroupState)
+        expect(tramway.name).to.be.eq('Tramway')
+
+        const tram = tramway.children[1];
+        expect(tram).to.be.instanceOf(LayerTreeLayerState)
+        expect(tram.name).to.be.eq('tramway')
+        expect(tram.wmsSelectedStyleName).to.be.eq('black')
+        expect(tram.wmsStyles).to.be.an('array').that.be.lengthOf(2)
+        expect(tram.wmsStyles[0].wmsName).to.be.eq('black')
+        expect(tram.wmsStyles[1].wmsName).to.be.eq('colored')
+
+        // Apply a known style name
+        tram.wmsSelectedStyleName = 'colored'
+        expect(tram.wmsSelectedStyleName).to.be.eq('colored')
+
+        // listen to layer style change
+        let tramStyleChangedEvt = null;
+        let rootStyleChangedEvt = null;
+        tram.addListener(evt => {
+            tramStyleChangedEvt = evt
+        }, 'layer.style.changed');
+        root.addListener(evt => {
+            rootStyleChangedEvt = evt
+        }, 'layer.style.changed');
+
+        // Apply a known style name
+        tram.wmsSelectedStyleName = 'black'
+        expect(tram.wmsSelectedStyleName).to.be.eq('black')
+        // Event dispatched
+        expect(tramStyleChangedEvt).to.not.be.null
+        expect(tramStyleChangedEvt.name).to.be.eq('tramway')
+        expect(tramStyleChangedEvt.style).to.be.eq('black')
+        expect(rootStyleChangedEvt).to.not.be.null
+        expect(rootStyleChangedEvt).to.be.deep.equal(tramStyleChangedEvt)
+
+        //Reset
+        tramStyleChangedEvt = null;
+        rootStyleChangedEvt = null;
+
+        // Apply same style
+        tram.wmsSelectedStyleName = 'black'
+        // No event dispatched
+        expect(tramStyleChangedEvt).to.be.null
+        expect(rootStyleChangedEvt).to.be.null
+
+        // Try to apply an unknown style name
+        try {
+            tram.wmsSelectedStyleName = 'foobar'
+        } catch (error) {
+            expect(error.name).to.be.eq('TypeError')
+            expect(error.message).to.be.eq('Cannot assign an unknown WMS style name! `foobar` is not in the layer `tramway` WMS styles!')
+            expect(error).to.be.instanceOf(TypeError)
+        }
+        // No event dispatched
+        expect(tramStyleChangedEvt).to.be.null
+        expect(rootStyleChangedEvt).to.be.null
+    })
 })
