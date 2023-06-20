@@ -1,8 +1,10 @@
 import { ValidationError } from './../Errors.js';
+import { convertBoolean } from './../utils/Converters.js';
+import EventDispatcher from './../../utils/EventDispatcher.js';
 import { LayerStyleConfig, LayerTreeGroupConfig, LayerTreeLayerConfig } from './../config/LayerTree.js';
 import { buildLayerSymbology } from './Symbology.js';
 
-export class MapItemState {
+export class MapItemState extends EventDispatcher {
 
     /**
      * @param {String} type                                - the layer tree item type
@@ -10,14 +12,17 @@ export class MapItemState {
      * @param {MapItemState}        [parentMapGroup] - the parent layer tree group
      */
     constructor(type, layerTreeItemCfg, parentMapGroup) {
+        super();
         this._type = type
         this._layerTreeItemCfg = layerTreeItemCfg;
         this._parentMapGroup = null;
         if (parentMapGroup instanceof MapItemState
             && parentMapGroup.type == 'group') {
             this._parentMapGroup = parentMapGroup;
+            this._parentMapGroup.addListener(this.calculateVisibility.bind(this), 'group.visibility.changed');
         }
         this._checked = this._parentMapGroup == null ? true : false;
+        this._stateVisibility = null;
     }
     /**
      * Config layers
@@ -153,13 +158,19 @@ export class MapItemState {
      * @type {Boolean}
      **/
     set checked(val) {
-        if (this._checked == val) {
+        const newVal = convertBoolean(val);
+        // No changes
+        if (this._checked == newVal) {
             return;
         }
-        this._checked = val;
+        // Set new value
+        this._checked = newVal;
+        // Propagation to parent if checked
         if (this._checked && this._parentMapGroup != null) {
-            this._parentMapGroup.checked = val;
+            this._parentMapGroup.checked = newVal;
         }
+        // Calculate visibility
+        this.calculateVisibility();
     }
 
     /**
@@ -169,18 +180,10 @@ export class MapItemState {
      * @type {Boolean}
      **/
     get visibility() {
-        // if the item has no parent item like root
-        // it is visible
-        if (this._parentMapGroup == null) {
-            return true;
+        if (this._stateVisibility !== null) {
+            return this._stateVisibility;
         }
-        // if the parent layer tree group is visible
-        // the visibility depends if the layer tree item is checked
-        // else the layer tree item is not visible
-        if (this._parentMapGroup.visibility) {
-            return this._checked;
-        }
-        return false;
+        return this.calculateVisibility();
     }
 
     /**
@@ -190,6 +193,38 @@ export class MapItemState {
      **/
     get layerConfig() {
         return this._layerTreeItemCfg.layerConfig;
+    }
+
+    /**
+     * Calculate and save visibility
+     *
+     * @returns {boolean} the calculated visibility
+     **/
+    calculateVisibility() {
+        // Save visibility before changing
+        const oldVisibility = this._stateVisibility;
+        // if the item has no parent item like root
+        // it is visible
+        if (this._parentMapGroup == null) {
+            this._stateVisibility = true;
+        }
+        // if the parent layer tree group is visible
+        // the visibility depends if the layer tree item is checked
+        // else the layer tree item is not visible
+        else if (this._parentMapGroup.visibility) {
+            this._stateVisibility = this._checked;
+        } else {
+            this._stateVisibility = false;
+        }
+        // Only dispatch event if visibility has changed
+        if (oldVisibility !== null && oldVisibility != this.visibility) {
+            this.dispatch({
+                type: this.type+'.visibility.changed',
+                name: this.name,
+                visibility: this.visibility,
+            })
+        }
+        return this._stateVisibility;
     }
 }
 
