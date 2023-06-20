@@ -479,6 +479,8 @@ export class MapLayerState extends MapItemState {
         let params = {
             'LAYERS': this.wmsName,
             'STYLES': this.wmsSelectedStyleName,
+            'FORMAT': this.layerConfig.imageFormat,
+            'DPI': 96
         }
         return params;
     }
