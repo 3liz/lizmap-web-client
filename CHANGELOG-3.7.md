@@ -10,7 +10,10 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Added
 
-* Editing - Better user experience with 1-n relations
+* Editing - Better user experience with 1-n relations: the data tables of the related child layers
+  now respect the position configured in the QGIS editing drag&drop designer.
+* Popup/Editing - Add a combobox in the popup to allow creating a new child feature for the related
+  layers. This will allow to create child features directly from the parent popup.
 * New display for measurements on the map when drawing
 * Better management of **QGIS projects** about versions (desktop, plugin versions, etc.)
 * **Form filter**: Allow to use a second field for the numeric type like it is already possible for dates.
