@@ -9,7 +9,7 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
     const wmsNames = treeLayers.map(layer => layer.wmsName);
     const wmsStyles = treeLayers.map(layer => layer.wmsSelectedStyleName);
     let treeLayersByName = {};
-    treeLayers.forEach(treeLayer => treeLayersByName[treeLayer.name] = treeLayer);
+    treeLayers.forEach(treeLayer => treeLayersByName[treeLayer.wmsName] = treeLayer);
 
     const wms = new WMS();
     const wmsParams = {
