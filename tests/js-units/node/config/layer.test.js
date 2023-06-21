@@ -17,7 +17,6 @@ describe('LayerConfig', function () {
             "maxScale": 1000000000000,
             "toggled": "True",
             "popup": "False",
-            "popupFrame": null,
             "popupSource": "auto",
             "popupTemplate": "",
             "popupMaxFeatures": 10,
@@ -29,7 +28,6 @@ describe('LayerConfig', function () {
             "singleTile": "True",
             "imageFormat": "image/png",
             "cached": "False",
-            "serverFrame": null,
             "clientCacheExpiration": 300,
             "mutuallyExclusive": "True"
         });
@@ -47,7 +45,6 @@ describe('LayerConfig', function () {
         expect(group.crs).to.be.null
         expect(group.toggled).to.be.true
         expect(group.popup).to.be.false
-        expect(group.popupFrame).to.be.null
         expect(group.popupSource).to.be.eq('auto')
         expect(group.popupTemplate).to.be.eq('')
         expect(group.popupMaxFeatures).to.be.eq(10)
@@ -59,7 +56,6 @@ describe('LayerConfig', function () {
         expect(group.singleTile).to.be.true
         expect(group.imageFormat).to.be.eq('image/png')
         expect(group.cached).to.be.false
-        expect(group.serverFrame).to.be.null
         expect(group.clientCacheExpiration).to.be.eq(300)
         expect(group.mutuallyExclusive).to.be.true
 
@@ -82,7 +78,6 @@ describe('LayerConfig', function () {
             "maxScale": 1000000000000,
             "toggled": "True",
             "popup": "True",
-            "popupFrame": null,
             "popupSource": "auto",
             "popupTemplate": "",
             "popupMaxFeatures": 10,
@@ -94,7 +89,6 @@ describe('LayerConfig', function () {
             "singleTile": "True",
             "imageFormat": "image/png",
             "cached": "False",
-            "serverFrame": null,
             "clientCacheExpiration": 300,
             "shortname": "null_island_qgis_info",
             "layerType": 'vector'
@@ -119,7 +113,6 @@ describe('LayerConfig', function () {
         expect(layer1.crs).to.be.eq('EPSG:4326')
         expect(layer1.toggled).to.be.true
         expect(layer1.popup).to.be.true
-        expect(layer1.popupFrame).to.be.null
         expect(layer1.popupSource).to.be.eq('auto')
         expect(layer1.popupTemplate).to.be.eq('')
         expect(layer1.popupMaxFeatures).to.be.eq(10)
@@ -131,7 +124,6 @@ describe('LayerConfig', function () {
         expect(layer1.singleTile).to.be.true
         expect(layer1.imageFormat).to.be.eq('image/png')
         expect(layer1.cached).to.be.false
-        expect(layer1.serverFrame).to.be.null
         expect(layer1.clientCacheExpiration).to.be.eq(300)
         expect(layer1.mutuallyExclusive).to.be.false
 
@@ -188,7 +180,6 @@ describe('LayerConfig', function () {
         expect(layer2.crs).to.be.eq('EPSG:4326')
         expect(layer2.toggled).to.be.false
         expect(layer2.popup).to.be.true
-        expect(layer2.popupFrame).to.be.null
         expect(layer2.popupSource).to.be.eq('auto')
         expect(layer2.popupTemplate).to.be.eq('')
         expect(layer2.popupMaxFeatures).to.be.eq(10)
@@ -200,7 +191,6 @@ describe('LayerConfig', function () {
         expect(layer2.singleTile).to.be.true
         expect(layer2.imageFormat).to.be.eq('image/png')
         expect(layer2.cached).to.be.false
-        expect(layer2.serverFrame).to.be.null
         expect(layer2.clientCacheExpiration).to.be.eq(300)
         expect(layer2.mutuallyExclusive).to.be.false
     })
@@ -243,7 +233,6 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "toggled": "True",
                 "popup": "True",
-                "popupFrame": null,
                 "popupSource": "auto",
                 "popupTemplate": "",
                 "popupMaxFeatures": 10,
@@ -255,7 +244,6 @@ describe('LayersConfig', function () {
                 "singleTile": "True",
                 "imageFormat": "image/png",
                 "cached": "False",
-                "serverFrame": null,
                 "clientCacheExpiration": 300,
                 "shortname": "null_island_qgis_info",
                 "layerType": 'vector'
@@ -415,7 +403,6 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "toggled": "True",
                 "popup": "False",
-                "popupFrame": null,
                 "popupSource": "auto",
                 "popupTemplate": "",
                 "popupMaxFeatures": 10,
@@ -427,7 +414,6 @@ describe('LayersConfig', function () {
                 "singleTile": "True",
                 "imageFormat": "image/png",
                 "cached": "False",
-                "serverFrame": null,
                 "clientCacheExpiration": 300,
                 "mutuallyExclusive": "True"
             },
@@ -449,7 +435,6 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "toggled": "True",
                 "popup": "False",
-                "popupFrame": null,
                 "popupSource": "auto",
                 "popupTemplate": "",
                 "popupMaxFeatures": 10,
@@ -461,7 +446,6 @@ describe('LayersConfig', function () {
                 "singleTile": "True",
                 "imageFormat": "image/jpeg",
                 "cached": "False",
-                "serverFrame": null,
                 "clientCacheExpiration": 300,
                 "layerType": 'raster'
             },
@@ -483,7 +467,6 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "toggled": "False",
                 "popup": "False",
-                "popupFrame": null,
                 "popupSource": "auto",
                 "popupTemplate": "",
                 "popupMaxFeatures": 10,
@@ -495,7 +478,6 @@ describe('LayersConfig', function () {
                 "singleTile": "True",
                 "imageFormat": "image/jpeg",
                 "cached": "False",
-                "serverFrame": null,
                 "clientCacheExpiration": 300,
                 "layerType": 'raster'
             },
@@ -517,7 +499,6 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "toggled": "False",
                 "popup": "False",
-                "popupFrame": null,
                 "popupSource": "auto",
                 "popupTemplate": "",
                 "popupMaxFeatures": 10,
@@ -529,7 +510,6 @@ describe('LayersConfig', function () {
                 "singleTile": "True",
                 "imageFormat": "image/jpeg",
                 "cached": "False",
-                "serverFrame": null,
                 "clientCacheExpiration": 300,
                 "layerType": 'raster'
             },
@@ -551,7 +531,6 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "toggled": "True",
                 "popup": "False",
-                "popupFrame": null,
                 "popupSource": "auto",
                 "popupTemplate": "",
                 "popupMaxFeatures": 10,
@@ -563,7 +542,6 @@ describe('LayersConfig', function () {
                 "singleTile": "True",
                 "imageFormat": "image/png",
                 "cached": "False",
-                "serverFrame": null,
                 "clientCacheExpiration": 300,
                 "layerType": 'raster'
             },
@@ -578,7 +556,6 @@ describe('LayersConfig', function () {
                 "maxScale": 1000000000000,
                 "toggled": "True",
                 "popup": "False",
-                "popupFrame": null,
                 "popupSource": "auto",
                 "popupTemplate": "",
                 "popupMaxFeatures": 10,
@@ -590,7 +567,6 @@ describe('LayersConfig', function () {
                 "singleTile": "True",
                 "imageFormat": "image/png",
                 "cached": "False",
-                "serverFrame": null,
                 "clientCacheExpiration": 300
             }
         })
