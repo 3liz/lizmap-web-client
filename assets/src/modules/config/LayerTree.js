@@ -172,6 +172,18 @@ export class LayerTreeItemConfig {
     }
 
     /**
+     * WMS layer abstract
+     *
+     * @type {?String}
+     **/
+    get wmsAbstract() {
+        if(!this._wmsCapa.hasOwnProperty('Abstract')) {
+            return null;
+        }
+        return this._wmsCapa.Abstract;
+    }
+
+    /**
      * WMS layer Geographic Bounding Box
      *
      * @type {?LayerGeographicBoundingBoxConfig}
