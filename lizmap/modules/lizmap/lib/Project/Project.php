@@ -993,7 +993,7 @@ class Project
     public function hasLoginFilteredLayers()
     {
         $login = (array) $this->cfg->getLoginFilteredLayers();
-        if ($login && count((array) $login)) {
+        if (count((array) $login) > 0) {
             return true;
         }
 
