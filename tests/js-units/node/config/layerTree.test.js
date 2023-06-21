@@ -183,6 +183,7 @@ describe('buildLayerTreeConfig', function () {
         expect(root.level).to.be.eq(0)
         expect(root.wmsName).to.be.eq('Montpellier-Transports')
         expect(root.wmsTitle).to.be.eq('Montpellier - Transports')
+        expect(root.wmsAbstract).to.be.eq('Demo project with bus and tramway lines in Montpellier, France.\nData is licensed under ODbl, OpenStreetMap contributors')
         expect(root.wmsGeographicBoundingBox).to.be.instanceOf(LayerGeographicBoundingBoxConfig)
         expect(root.wmsGeographicBoundingBox.west).to.be.eq(43.542477)
         expect(root.wmsGeographicBoundingBox.south).to.be.eq(3.746034)
@@ -206,6 +207,7 @@ describe('buildLayerTreeConfig', function () {
         expect(edition.level).to.be.eq(1)
         expect(edition.wmsName).to.be.eq('Edition')
         expect(edition.wmsTitle).to.be.eq('Edition')
+        expect(edition.wmsAbstract).to.be.null
         expect(edition.layerConfig).to.not.be.null;
         expect(edition.childrenCount).to.be.eq(3)
 
@@ -219,6 +221,7 @@ describe('buildLayerTreeConfig', function () {
         expect(bus.level).to.be.eq(2)
         expect(bus.wmsName).to.be.eq('Bus')
         expect(bus.wmsTitle).to.be.eq('Bus')
+        expect(bus.wmsAbstract).to.be.null
         expect(bus.layerConfig).to.not.be.null;
         expect(bus.childrenCount).to.be.eq(2)
         expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
@@ -231,6 +234,7 @@ describe('buildLayerTreeConfig', function () {
         expect(busStops.level).to.be.eq(3)
         expect(busStops.wmsName).to.be.eq('bus_stops')
         expect(busStops.wmsTitle).to.be.eq('bus_stops')
+        expect(busStops.wmsAbstract).to.be.null
         expect(busStops.layerConfig).to.not.be.null
         expect(busStops.wmsMinScaleDenominator).to.be.eq(0)
         expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
@@ -242,6 +246,7 @@ describe('buildLayerTreeConfig', function () {
         expect(sousquartiers.level).to.be.eq(1)
         expect(sousquartiers.wmsName).to.be.eq('SousQuartiers')
         expect(sousquartiers.wmsTitle).to.be.eq('SousQuartiers')
+        expect(sousquartiers.wmsAbstract).to.be.null
         expect(sousquartiers.layerConfig).to.not.be.null;
         expect(sousquartiers.wmsStyles).to.be.instanceOf(Array)
         expect(sousquartiers.wmsStyles).to.have.length(1)
