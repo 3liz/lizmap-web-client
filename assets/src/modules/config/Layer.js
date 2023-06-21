@@ -17,7 +17,6 @@ const requiredProperties = {
     'popupTemplate': {type: 'string'},
     'popupMaxFeatures': {type: 'number'},
     'popupDisplayChildren': {type: 'boolean'},
-    'noLegendImage': {type: 'boolean'},
     'groupAsLayer': {type: 'boolean'},
     'baseLayer': {type: 'boolean'},
     'displayInLegend': {type: 'boolean'},
@@ -33,8 +32,8 @@ const optionalProperties = {
     'geometryType': {type: 'string', nullable: true},
     'extent': {type: 'extent', nullable: true},
     'crs': {type: 'string', nullable: true},
-    'popupFrame': {type: 'string', nullable: true},
-    'serverFrame': {type: 'string', nullable: true},
+    'noLegendImage': {type: 'boolean', default:false},
+    'legend_image_option': {type: 'string', nullable: true},
     'mutuallyExclusive': {type: 'boolean', default: false},
     'externalWmsToggle': {type: 'boolean', default: false},
 };
@@ -62,7 +61,6 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {String}   cfg.popupTemplate         - the layer popup template
      * @param {Number}   cfg.popupMaxFeatures      - the layer popup max features
      * @param {Boolean}  cfg.popupDisplayChildren  - the layer popup display children activation
-     * @param {Boolean}  cfg.noLegendImage         - the layer no legend image activation
      * @param {Boolean}  cfg.groupAsLayer          - the layer as group as layer activation (only group type)
      * @param {Boolean}  cfg.baseLayer             - the layer as base layer activation
      * @param {Boolean}  cfg.displayInLegend       - the layer display in legend activation
@@ -75,8 +73,8 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {String}   [cfg.geometryType]        - the layer geometry type (layer only)
      * @param {Number[]} [cfg.extent]              - the layer extent (layer only)
      * @param {String}   [cfg.crs]                 - the layer crs (layer only)
-     * @param {String}   [cfg.popupFrame]          - the layer popup frame
-     * @param {String}   [cfg.serverFrame]         - the layer server frame
+     * @param {Boolean}  [cfg.noLegendImage]       - the layer no legend image activation
+     * @param {String}   [cfg.legend_image_option] - the layer no legend image activation
      * @param {Boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
      * @param {Boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
      * @param {Object}   [cfg.externalAccess]      - the layer external access
@@ -221,15 +219,6 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer popup frame
-     *
-     * @type {?String}
-     **/
-    get popupFrame() {
-        return this._popupFrame;
-    }
-
-    /**
      * The layer popup source
      *
      * @type {String}
@@ -263,15 +252,6 @@ export class LayerConfig extends BaseObjectConfig {
      **/
     get popupDisplayChildren() {
         return this._popupDisplayChildren;
-    }
-
-    /**
-     * The layer no legend image activation
-     *
-     * @type {Boolean}
-     **/
-    get noLegendImage() {
-        return this._noLegendImage;
     }
 
     /**
@@ -329,12 +309,23 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer server frame
+     * The layer no legend image activation
+     * replaced by legendImageOption
+     *
+     * @type {Boolean}
+     * @deprecated
+     **/
+    get noLegendImage() {
+        return this._noLegendImage;
+    }
+
+    /**
+     * The layer legend image option
      *
      * @type {?String}
      **/
-    get serverFrame() {
-        return this._serverFrame;
+    get legendImageOption() {
+        return this._legend_image_option;
     }
 
     /**
