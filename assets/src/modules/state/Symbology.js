@@ -1,5 +1,7 @@
 import { ValidationError } from './../Errors.js';
-import { BaseObjectConfig } from './../config/BaseObject.js';
+import { convertBoolean } from './../utils/Converters.js';
+import EventDispatcher from './../../utils/EventDispatcher.js';
+import { applyConfig } from './../config/BaseObject.js';
 
 export const base64png = 'data:image/png;base64, ';
 export const base64svg = 'data:image/svg+xml;base64,';
@@ -39,11 +41,11 @@ export function getDefaultLayerIcon(layerCfg) {
 }
 
 /**
- * Class representing the base symbology
+ * Class representing the base object symbology
  * @class
- * @augments BaseObjectConfig
+ * @augments EventDispatcher
  */
-export class BaseSymbology extends BaseObjectConfig {
+export class BaseObjectSymbology extends EventDispatcher {
 
     /**
      * Create a base symbology instance based on a node object provided by QGIS Server
@@ -59,7 +61,8 @@ export class BaseSymbology extends BaseObjectConfig {
             requiredProperties['title'] = { type: 'string' };
         }
 
-        super(node, requiredProperties, optionalProperties)
+        super()
+        applyConfig(this, node, requiredProperties, optionalProperties)
     }
 
     /**
@@ -75,9 +78,9 @@ export class BaseSymbology extends BaseObjectConfig {
 /**
  * Class representing a base icon symbology
  * @class
- * @augments BaseSymbology
+ * @augments BaseObjectSymbology
  */
-export class BaseIconSymbology extends BaseSymbology {
+export class BaseIconSymbology extends BaseObjectSymbology {
     /**
      * Create a base icon symbology instance based on a node object provided by QGIS Server
      *
@@ -200,7 +203,19 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      * @param {Boolean}
      **/
     set checked(val) {
-        this._checked = val;
+        const newVal = convertBoolean(val);
+        // No changes
+        if (this._checked == newVal) {
+            return;
+        }
+        // Set new value
+        this._checked = newVal;
+        this.dispatch({
+            type: 'symbol.checked.changed',
+            title: this.title,
+            ruleKey: this.ruleKey,
+            checked: this.checked,
+        })
     }
 
     /**
@@ -225,9 +240,9 @@ export class SymbolIconSymbology extends BaseIconSymbology {
 /**
  * Class representing the layer symbols symbology
  * @class
- * @augments BaseSymbology
+ * @augments BaseObjectSymbology
  */
-export class BaseSymbolsSymbology extends BaseSymbology {
+export class BaseSymbolsSymbology extends BaseObjectSymbology {
 
     /**
      * Create a layer symbols symbology instance based on a node object provided by QGIS Server
@@ -371,9 +386,9 @@ const layerGroupProperties = {
 /**
  * Class representing the layer group symbology
  * @class
- * @augments BaseSymbology
+ * @augments BaseObjectSymbology
  */
-export class LayerGroupSymbology extends BaseSymbology {
+export class LayerGroupSymbology extends BaseObjectSymbology {
 
     /**
      * Create a layer group symbology instance based on a node object provided by QGIS Server

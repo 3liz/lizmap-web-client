@@ -545,7 +545,19 @@ describe('MapGroupState', function () {
           'DPI': 96
         })
 
-        // Checked all rules
+        // Checked all rules and events
+        let rootLayerSymbologyChangedEvt = null;
+        let layerSymbologyChangedEvt = null;
+        let symbologyChangedEvt = null;
+        quartiers.symbology.children[6].addListener(evt => {
+            symbologyChangedEvt = evt
+        }, 'symbol.checked.changed');
+        quartiers.addListener(evt => {
+            layerSymbologyChangedEvt = evt
+        }, 'layer.symbol.checked.changed');
+        root.addListener(evt => {
+            rootLayerSymbologyChangedEvt = evt
+        }, 'layer.symbol.checked.changed');
         quartiers.symbology.children[6].checked = true;
         expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
           'LAYERS': 'Quartiers',
@@ -553,5 +565,16 @@ describe('MapGroupState', function () {
           'FORMAT': 'image/png',
           'DPI': 96
         })
+        expect(symbologyChangedEvt).to.not.be.null
+        expect(symbologyChangedEvt.title).to.be.eq('PRES D\'ARENE')
+        expect(symbologyChangedEvt.ruleKey).to.be.eq('6')
+        expect(symbologyChangedEvt.checked).to.be.true
+        expect(layerSymbologyChangedEvt).to.not.be.null
+        expect(layerSymbologyChangedEvt.name).to.be.eq('Quartiers')
+        expect(layerSymbologyChangedEvt.title).to.be.eq('PRES D\'ARENE')
+        expect(layerSymbologyChangedEvt.ruleKey).to.be.eq('6')
+        expect(layerSymbologyChangedEvt.checked).to.be.true
+        expect(rootLayerSymbologyChangedEvt).to.not.be.null
+        expect(rootLayerSymbologyChangedEvt).to.be.eq(layerSymbologyChangedEvt)
     })
 })
