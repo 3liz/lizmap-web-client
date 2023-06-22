@@ -4,9 +4,9 @@ import { readFileSync } from 'fs';
 
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, BaseIconSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
+import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
-import { MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
+import { MapGroupState } from '../../../../assets/src/modules/state/MapLayer.js';
 
 import { LayerTreeGroupState, LayerTreeLayerState } from '../../../../assets/src/modules/state/LayerTree.js';
 
@@ -610,5 +610,122 @@ describe('LayerTreeGroupState', function () {
         // No event dispatched
         expect(tramStyleChangedEvt).to.be.null
         expect(rootStyleChangedEvt).to.be.null
+    })
+
+    it('Legend on/off', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        const legend = JSON.parse(readFileSync('./data/montpellier-legend.json', 'utf8'));
+        expect(legend).to.not.be.undefined
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
+        expect(sousquartiers.name).to.be.eq('SousQuartiers')
+        expect(sousquartiers.wmsSelectedStyleName).to.be.eq('default')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'SousQuartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+        expect(sousquartiers.symbology).to.be.null
+        sousquartiers.symbology = legend.nodes[1]
+        expect(sousquartiers.symbology).to.be.instanceOf(LayerIconSymbology)
+
+        const quartiers = root.children[3];
+        expect(quartiers).to.be.instanceOf(LayerTreeLayerState)
+        expect(quartiers.name).to.be.eq('Quartiers')
+        expect(quartiers.wmsSelectedStyleName).to.be.eq('default')
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+        expect(quartiers.symbology).to.be.null
+
+        // Set symbologie
+        quartiers.symbology = legend.nodes[0]
+        // Check Symbologie
+        expect(quartiers.symbology).to.be.instanceOf(LayerSymbolsSymbology)
+        expect(quartiers.symbology.childrenCount).to.be.eq(8)
+        expect(quartiers.symbology.children[0]).to.be.instanceOf(SymbolIconSymbology)
+        expect(quartiers.symbology.children[0].checked).to.be.true
+        expect(quartiers.symbology.children[0].ruleKey).to.be.eq('0')
+
+        // Unchecked rules
+        quartiers.symbology.children[0].checked = false;
+        quartiers.symbology.children[2].checked = false;
+        quartiers.symbology.children[4].checked = false;
+        quartiers.symbology.children[6].checked = false;
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:1,3,5,7',
+          'LEGEND_OFF': 'Quartiers:0,2,4,6',
+          'DPI': 96
+        })
+
+        // Checked rules
+        quartiers.symbology.children[0].checked = true;
+        quartiers.symbology.children[2].checked = true;
+        quartiers.symbology.children[4].checked = true;
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:0,1,2,3,4,5,7',
+          'LEGEND_OFF': 'Quartiers:6',
+          'DPI': 96
+        })
+
+        // Checked all rules and events
+        let rootLayerSymbologyChangedEvt = null;
+        let layerSymbologyChangedEvt = null;
+        let symbologyChangedEvt = null;
+        quartiers.symbology.children[6].addListener(evt => {
+            symbologyChangedEvt = evt
+        }, 'symbol.checked.changed');
+        quartiers.addListener(evt => {
+            layerSymbologyChangedEvt = evt
+        }, 'layer.symbol.checked.changed');
+        root.addListener(evt => {
+            rootLayerSymbologyChangedEvt = evt
+        }, 'layer.symbol.checked.changed');
+        quartiers.symbology.children[6].checked = true;
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+        expect(symbologyChangedEvt).to.not.be.null
+        expect(symbologyChangedEvt.title).to.be.eq('PRES D\'ARENE')
+        expect(symbologyChangedEvt.ruleKey).to.be.eq('6')
+        expect(symbologyChangedEvt.checked).to.be.true
+        expect(layerSymbologyChangedEvt).to.not.be.null
+        expect(layerSymbologyChangedEvt.name).to.be.eq('Quartiers')
+        expect(layerSymbologyChangedEvt.title).to.be.eq('PRES D\'ARENE')
+        expect(layerSymbologyChangedEvt.ruleKey).to.be.eq('6')
+        expect(layerSymbologyChangedEvt.checked).to.be.true
+        expect(rootLayerSymbologyChangedEvt).to.not.be.null
+        expect(rootLayerSymbologyChangedEvt).to.be.eq(layerSymbologyChangedEvt)
     })
 })

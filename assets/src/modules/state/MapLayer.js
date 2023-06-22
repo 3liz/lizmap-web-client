@@ -275,6 +275,7 @@ export class MapGroupState extends MapItemState {
                     group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     this._items.push(group);
                     // Group is checked if one child is checked
                     if (group.checked) {
@@ -285,6 +286,7 @@ export class MapGroupState extends MapItemState {
                     const layer = new MapLayerState(layerTreeItem, layersOrder, this)
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     this._items.push(layer);
                     // Group is checked if one child is checked
                     if (layer.checked) {
@@ -310,6 +312,7 @@ export class MapGroupState extends MapItemState {
                     this._items.push(layer);
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     // Group is checked if one child is checked
                     if (layer.checked) {
                         this._checked = true;
@@ -551,5 +554,19 @@ export class MapLayerState extends MapItemState {
             throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.wmsName+'`');
         }
         this._symbology = buildLayerSymbology(node);
+        if (this.symbology instanceof LayerSymbolsSymbology) {
+            for (const symbol of this.symbology.getChildren()) {
+                const self = this;
+                symbol.addListener(evt => {
+                    self.dispatch({
+                        type: 'layer.symbol.checked.changed',
+                        name: self.name,
+                        title: evt.title,
+                        ruleKey: evt.ruleKey,
+                        checked: evt.checked,
+                    });
+                }, 'symbol.checked.changed');
+            }
+        }
     }
 }

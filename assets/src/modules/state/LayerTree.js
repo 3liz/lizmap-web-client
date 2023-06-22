@@ -26,6 +26,7 @@ export class LayerTreeItemState extends EventDispatcher {
         if (mapItemState instanceof MapLayerState) {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
         } else if (mapItemState instanceof MapGroupState) {
             mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
         }
@@ -168,6 +169,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 this._items.push(group);
             } else if (mapItemState instanceof MapLayerState) {
                 if (!mapItemState.displayInLayerTree) {
@@ -177,6 +179,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 const layer = new LayerTreeLayerState(mapItemState, this)
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 this._items.push(layer);
             }
         }
