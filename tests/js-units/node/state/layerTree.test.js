@@ -230,6 +230,8 @@ describe('LayerTreeGroupState', function () {
         expect(sousquartiers.icon).to.have.string(base64png)
         expect(sousquartiers.icon).to.be.eq(sousquartiers.symbology.icon)
         expect(sousquartiers.symbologyChildrenCount).to.be.eq(0)
+        expect(sousquartiers.symbologyChildren).to.be.an('array').that.have.lengthOf(0)
+        expect(sousquartiers.getSymbologyChildren().next().value).to.be.undefined
 
         const quartiers = root.children[3];
         expect(quartiers).to.be.instanceOf(LayerTreeLayerState)
