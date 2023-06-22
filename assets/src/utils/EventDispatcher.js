@@ -8,6 +8,8 @@
  * @copyright 3Liz 2019
  */
 
+import { hashCode } from './../modules/utils/Converters.js'
+
 /**
  * Dispatch some application events to listeners
  */
@@ -15,6 +17,8 @@ export default class EventDispatcher {
 
     constructor() {
         this._listeners = {};
+        this._stackEventId = [];
+        this._serial = 0;
     }
 
     /**
@@ -123,6 +127,42 @@ export default class EventDispatcher {
 
         if (event.type == '*') {
             throw Error('Notification for all events is not allowed');
+        }
+
+        // Define an __eventid__ property and do not dispatch an already dispatched event
+        if (!event.hasOwnProperty('__eventid__')) {
+            this._serial += 1;
+            // Add the immutable __eventid__ property
+            Object.defineProperty(event, "__eventid__", {
+                value: hashCode(JSON.stringify(event)) +'-'+ Date.now() +'-'+ this._serial,
+                enumerable: false,
+                // This could go either way, depending on your
+                // interpretation of what an "id" is
+                writable: false
+            });
+            // Add it to the stack
+            this._stackEventId.unshift(event['__eventid__']);
+            // Limit the stack to 10 events
+            if (this._stackEventId.length > 10) {
+                this._stackEventId.pop();
+            }
+        } else {
+            // Get the index in the dispatched event stack
+            const eventIdIdx = this._stackEventId.indexOf(event['__eventid__']);
+            if ( eventIdIdx == -1) {
+                // if the eventid is unknown add it to the stack
+                this._stackEventId.unshift(event['__eventid__']);
+                // Limit the stack to 10 events
+                if (this._stackEventId.length > 10) {
+                    this._stackEventId.pop();
+                }
+            } else {
+                // The eventid is already in the stack
+                // move it to the top and do not dispatch
+                this._stackEventId.slice(eventIdIdx, 1);
+                this._stackEventId.unshift(event['__eventid__']);
+                return;
+            }
         }
 
         if (event.type in this._listeners) {
