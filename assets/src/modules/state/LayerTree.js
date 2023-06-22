@@ -396,10 +396,6 @@ export class LayerTreeLayerState extends LayerTreeItemState {
             for (const symbol of this._mapItemState.symbology.getChildren()) {
                 yield symbol;
             }
-        } else {
-            for (const symbol of this.symbologyChildren) {
-                yield symbol;
-            }
         }
     }
 }
