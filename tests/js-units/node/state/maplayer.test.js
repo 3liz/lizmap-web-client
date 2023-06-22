@@ -371,6 +371,17 @@ describe('MapGroupState', function () {
         // Events dispatched at root level
         expect(rootLayerVisibilityChangedEvt).to.not.be.null
         expect(rootGroupVisibilityChangedEvt).to.not.be.null
+
+        // Reset root
+        //editionVisibilityChangedEvt = null;
+        //poiVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = null;
+        rootGroupVisibilityChangedEvt = null;
+        // Do not dispatch already dispatched event
+        edition.dispatch(poiVisibilityChangedEvt);
+        expect(rootLayerVisibilityChangedEvt).to.be.null
+        edition.dispatch(editionVisibilityChangedEvt);
+        expect(rootGroupVisibilityChangedEvt).to.be.null
     })
 
     it('WMS selected styles', function () {
