@@ -462,8 +462,8 @@ export class MapLayerState extends MapItemState {
         if (!node.hasOwnProperty('name')) {
             throw new ValidationError('Node symbology required `name` property!');
         }
-        if (node.name != this.name) {
-            throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.name+'`');
+        if (node.name != this.wmsName) {
+            throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.wmsName+'`');
         }
         this._symbology = buildLayerSymbology(node);
     }
