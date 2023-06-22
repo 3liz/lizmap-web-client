@@ -2,9 +2,16 @@ import EventDispatcher from './../../utils/EventDispatcher.js';
 import { MapGroupState, MapLayerState } from './MapLayer.js';
 import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology } from './Symbology.js';
 
+/**
+ * Class representing a layer tree item
+ * @class
+ * @augments EventDispatcher
+ */
 export class LayerTreeItemState extends EventDispatcher {
 
     /**
+     * Instantiate a layer tree item
+     *
      * @param {MapItemState}        mapItemState           - the layer tree item config
      * @param {LayerTreeItemState}  [parentGroupState] - the parent layer tree group
      */
@@ -133,9 +140,16 @@ export class LayerTreeItemState extends EventDispatcher {
     }
 }
 
+/**
+ * Class representing a layer tree group
+ * @class
+ * @augments LayerTreeItemState
+ */
 export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
+     * Instantiate a layer tree group
+     *
      * @param {MapGroupState}        mapGroupState      - the layer tree group config
      * @param {LayerTreeGroupState}  [parentGroupState] - the parent layer tree group
      */
@@ -245,9 +259,16 @@ export class LayerTreeGroupState extends LayerTreeItemState {
     }
 }
 
+/**
+ * Class representing a layer tree layer
+ * @class
+ * @augments LayerTreeItemState
+ */
 export class LayerTreeLayerState extends LayerTreeItemState {
 
     /**
+     * Instantiate a layer tree layer
+     *
      * @param {MapLayerState} mapLayerState       - the layer tree group config
      * @param {LayerTreeGroupState}                            [parentGroupState] - the parent layer tree group
      */
@@ -349,7 +370,7 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * Children symbology
      *
-     * @type {(SymbolIconSymbology|BaseIconSymbology|BaseSymbolsSymbology)[]}
+     * @type {(SymbolIconSymbology[]|Array.<BaseIconSymbology|BaseSymbolsSymbology>)}
      **/
     get symbologyChildren() {
         if (this._mapItemState.symbology instanceof LayerSymbolsSymbology

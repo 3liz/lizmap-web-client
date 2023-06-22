@@ -423,7 +423,7 @@ export class LayerGroupSymbology extends BaseSymbology {
     /**
      * The children nodes
      *
-     * @type {(BaseIconSymbology|BaseSymbolsSymbology)[]}
+     * @type {Array.<BaseIconSymbology|BaseSymbolsSymbology>}
      **/
     get children() {
         return [...this._symbologyNodes];
