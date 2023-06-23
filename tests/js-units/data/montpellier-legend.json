@@ -1,0 +1,358 @@
+{
+    "nodes": [
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWUlEQVQ4jWO09w1bzEAApDX0Hp7VUGyLTY7R3jdscVpD72FChmADsxqKbZnI0YgMBtaAtIbewwPrAuoEIrlRCDeAYhfgSmH0c8HQN4ARPTvjy7roIK2h9zAAH0sa4\/UtHhUAAAAASUVORK5CYII=",
+                    "title": "CROIX D'ARGENT",
+                    "ruleKey": "0",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWUlEQVQ4jWPk1nVezEAACHsXHn67td8Wmxwjt67zYmHvwsOEDMEG3m7tt2UiRyMyGFgDhL0LDw+sC6gTiORGIdwAil2AK4XRzwVD3wBG9OyML+uiA2HvwsMACoMZCj04skUAAAAASUVORK5CYII=",
+                    "title": "HOPITAUX-FACULTES",
+                    "ruleKey": "1",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWUlEQVQ4jWN0DjZZzEAA5HWHHp5UutoWmxyjc7DJ4rzu0MOEDMEGJpWutmUiRyMyGFgD8rpDDw+sC6gTiORGIdwAil2AK4XRzwVD3wBG9OyML+uig7zu0MMALjsadrnFGLAAAAAASUVORK5CYII=",
+                    "title": "LES CEVENNES",
+                    "ruleKey": "2",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWklEQVQ4jWOMs7JazEAAzEmMO5wyf5EtNjnGOCurxXMS4w4TMgQbSJm\/yJaJHI3IYGANmJMYd3hgXUCdQCQ3CuEGUOwCXCmMfi4Y+gYwomdnfFkXHcxJjDsMAIAKGpsFw6NBAAAAAElFTkSuQmCC",
+                    "title": "MONTPELLIER CENTRE",
+                    "ruleKey": "3",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWUlEQVQ4jWMM4+RezEAA9AoIHC7+8MEWmxxjGCf34l4BgcOEDMEGij98sGUiRyMyGFgDegUEDg+sC6gTiORGIdwAil2AK4XRzwVD3wBG9OyML+uig14BgcMAV7AYtZKc8NMAAAAASUVORK5CYII=",
+                    "title": "MOSSON",
+                    "ruleKey": "4",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWklEQVQ4jWOMN2BYzEAALPBnOJywkcEWmxxjvAHD4gX+DIcJGYINJGxksGUiRyMyGFgDFvgzHB5YF1AnEMmNQrgBFLsAVwqjnwuGvgGM6NkZX9ZFBwv8GQ4DAGqJFGb85cxrAAAAAElFTkSuQmCC",
+                    "title": "PORT MARIANNE",
+                    "ruleKey": "5",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWUlEQVQ4jWP0dQ5czEAA1Oa1HW6eVGWLTY7R1zlwcW1e22FChmADzZOqbJnI0YgMBtaA2ry2wwPrAuoEIrlRCDeAYhfgSmH0c8HQN4ARPTvjy7rooDav7TAAFPoa3pkC2qcAAAAASUVORK5CYII=",
+                    "title": "PRES D'ARENE",
+                    "ruleKey": "6",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAWklEQVQ4jWNUF7NazEAAOKklHt53a74tNjlGdTGrxU5qiYcJGYIN7Ls135aJHI3IYGANcFJLPDywLqBOIJIbhXADKHYBrhRGPxcMfQMY0bMzvqyLDpzUEg8DAOMQGPhYL1pmAAAAAElFTkSuQmCC",
+                    "title": "",
+                    "ruleKey": "7",
+                    "checked": true
+                }
+            ],
+            "title": "Quartiers",
+            "type": "layer",
+            "name": "Quartiers"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAALklEQVQ4jWNkYGD4xYAJ2KA0uhxWcWwGEA2YKNFMFQMGBxjigTgaC4MhECk2AAAHYQX6C8Zs7gAAAABJRU5ErkJggg==",
+            "title": "SousQuartiers",
+            "type": "layer",
+            "name": "SousQuartiers"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAYAAACJfM0wAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABUklEQVQ4je2QzypEYRjGf+9xxnCOsRiRlAUZBxti6wIsLRwrF2DjCrgAF2A5N8C5CWVD2cqfUtRQQqLMMDiPxXymkTRNsVCezfP2+57v+Xo\/+CVZs8BEt0bSN2IgFvQaJJaydVix3ZaLx7tV0CuxjBiY+ubuOZAgNo\/Ltv+leAZlKiE9VSPvp8zLWAQmm23ySeLUjMREYsZl9ZE7G81p1lJ2WipqJiP2frSwQb6lPBjsCfJAQXDlwRmAYBAYcKveONYHDAElgwvHhoFe4MjgXnBbfyHq0kIUSmOBNuos1HoUSlGopToLtByFUhRorSFXdLm5D\/ZrX\/Ff\/F\/8VQYQBVrFWAM6gBeg6s7bgQzwDLw65gNZl3lxLOv4k0TxpGwrVshq2PM5cKU\/oTdg2s88U3oK6PcMAbR5qM3N\/nXNM9T8CuS7+cPbQZ1uzjnfrpX\/Mb0Ds6hyazeez+0AAAAASUVORK5CYII=",
+            "title": "public buildings",
+            "type": "layer",
+            "name": "publicbuildings"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAHklEQVQ4jWNgGAWjgIGBkYGB4T8lBjBRySGjYIQDAI9GAQOJBA80AAAAAElFTkSuQmCC",
+            "title": "Tram lines [10]",
+            "type": "layer",
+            "name": "tramway"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABgklEQVQ4jc2TPYtTQRiFn3PnGlQCEfxgwZQSvJOARRC1WWx0QQR\/h63Y+QME0cJfYJXKTjtBBMFCdBtJ5sKKWlgta+EHJJAweS0Mcvfe2V218sA058w5zHlnBv43KEUOBoOry+XyFtA2sxGwkHQNOA48DSHcPzDIe98GtoGjwHfgupktgLuSLgNkWbYxHo+fVX1ZPSjGeBo4DNxwzl1wzu3kef41z\/ObwEVgK8ZY1H15nWi1Wooxfg4hPEnV9t6\/SDVpnGiFY9771h7aqRTZONEKHWDTe\/+hSppZB1gHXv5pEMBgtX5DSl4ysHe1v0YjaD6fG7Aws0vA44r0Mcuyc2b2DrADg5xzn4Bvks6ye7DtGGMhqQO8rvuSpYuiuCJpBJxMyLdDCA\/qZHLYkr7w62W\/qklnJC2TnjoxHA4PTafTt8CoLMt7Va3f7583s+dmNizL8n1Va8xoNpvdkfSjLMvGx5xMJm8kPZT0KOXdhV6vd6Lb7R7ZZ4vz3q8Bbt+gf8VPZdhvHvwef0QAAAAASUVORK5CYII=",
+            "title": "Tram stops",
+            "type": "layer",
+            "name": "tramstop"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADBON1\/4nxIDmCh1wcAbMAqGBQAA18MCdniucKkAAAAASUVORK5CYII=",
+                    "title": "La navette",
+                    "ruleKey": "0",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAekDf6T4kBTJS6YOANGAXDAgAA0n4CGMuFs78AAAAASUVORK5CYII=",
+                    "title": "La Ronde",
+                    "ruleKey": "1",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 11",
+                    "ruleKey": "2",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADB+azj2nxIDmCh1wcAbMAqGBQAAEx8DQ9xAw4oAAAAASUVORK5CYII=",
+                    "title": "Ligne 12",
+                    "ruleKey": "3",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 14",
+                    "ruleKey": "4",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAeuCT6nxIDmCh1wcAbMAqGBQAAdH8Crkgc2v8AAAAASUVORK5CYII=",
+                    "title": "Ligne 15",
+                    "ruleKey": "5",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADC+k5zxnxIDmCh1wcAbMAqGBQAAXeICppb8hjgAAAAASUVORK5CYII=",
+                    "title": "Ligne 16",
+                    "ruleKey": "6",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADA+++TxnxIDmCh1wcAbMAqGBQAAxYIDJ9hC0HMAAAAASUVORK5CYII=",
+                    "title": "Ligne 17",
+                    "ruleKey": "7",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 18",
+                    "ruleKey": "8",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 20",
+                    "ruleKey": "9",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 21",
+                    "ruleKey": "10",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 22",
+                    "ruleKey": "11",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 23",
+                    "ruleKey": "12",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 24",
+                    "ruleKey": "13",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 25",
+                    "ruleKey": "14",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 29",
+                    "ruleKey": "15",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 30",
+                    "ruleKey": "16",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 31",
+                    "ruleKey": "17",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 32",
+                    "ruleKey": "18",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 33",
+                    "ruleKey": "19",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 34",
+                    "ruleKey": "20",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 35",
+                    "ruleKey": "21",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 36",
+                    "ruleKey": "22",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 37",
+                    "ruleKey": "23",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADDOvP\/zPyUGMFHqgoE3YBQMCwAApiwDeO30DpAAAAAASUVORK5CYII=",
+                    "title": "Ligne 38",
+                    "ruleKey": "24",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADD+3sv5nxIDmCh1wcAbMAqGBQAAvTACyBLzjsEAAAAASUVORK5CYII=",
+                    "title": "Ligne 5",
+                    "ruleKey": "25",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAyLAv4T4kBTJS6YOANGAXDAgAAhm0B\/cJJ\/UIAAAAASUVORK5CYII=",
+                    "title": "Ligne 6",
+                    "ruleKey": "26",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADBunnD+PyUGMFHqgoE3YBQMCwAAncoDGTpN\/XcAAAAASUVORK5CYII=",
+                    "title": "Ligne 7",
+                    "ruleKey": "27",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAu8tT6T4kBTJS6YOANGAXDAgAA3YwCHGdZRXcAAAAASUVORK5CYII=",
+                    "title": "Ligne 8",
+                    "ruleKey": "28",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADCmHY\/8T4kBTJS6YOANGAXDAgAAF\/gCjRUY+NsAAAAASUVORK5CYII=",
+                    "title": "Ligne 9",
+                    "ruleKey": "29",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAH0lEQVQ4jWNgGAXDADAyMDD8p8QAJkpdMPAGjIJhAQDZagEHwzuUIgAAAABJRU5ErkJggg==",
+                    "title": "",
+                    "ruleKey": "30",
+                    "checked": true
+                }
+            ],
+            "title": "Bus lines",
+            "type": "layer",
+            "name": "bus"
+        },
+        {
+            "icon": "iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAA90lEQVQ4ja3STStFURTG8R\/X6EopRd0IMTOTkhnJnIEZn8JEGRr6CChT34EMvIwNTOhOFFJyB1KSvAwcOraz9znJU3uy1rP+a6+1N\/+ktki8E9MYRz9quMYZ9tEKC2oFkGUcYBRHuMEVHrCATbzhsOxGLVziHo9Bro4uTKCBu8hEenEbS+Z0gql8oD0wDOOiAug880ZBQ2hWADUz77c6AsMAXtBdAnrFYMqwiveKZytfGI72padEs+cM9ENFoG2MJEBzWAuD4Y5gXrDIQBvo8\/nDk6AezCZAk0XBELSDMSxhxu+fDXs4xXqiGVjEsfhD7GKlDPJnfQAnaDEx\/aSbQQAAAABJRU5ErkJggg==",
+            "title": "bus_stops",
+            "type": "layer",
+            "name": "bus_stops"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAKUlEQVQ4jWNMWtj4jIECwMLAwMAwL+7fKXINYKLE9lEDRg0YNYCKBgAAi6sFUBuENXUAAAAASUVORK5CYII=",
+                    "title": "checked",
+                    "ruleKey": "0",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAKUlEQVQ4jWNcWJ70jIECwMLAwMAQd2\/eKXINYKLE9lEDRg0YNYCKBgAA6m4FJnbMmwIAAAAASUVORK5CYII=",
+                    "title": "not checked",
+                    "ruleKey": "1",
+                    "checked": true
+                }
+            ],
+            "title": "Areas of interest",
+            "type": "layer",
+            "name": "areas_of_interest"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAy\/Gf4T4kBTJS6YOANGAXDAgAAn84CBk1SM5QAAAAASUVORK5CYII=",
+                    "title": "easy",
+                    "ruleKey": "0",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADD+\/8\/wnxIDmCh1wcAbMAqGBQAAZzEDBdPkLQsAAAAASUVORK5CYII=",
+                    "title": "normal",
+                    "ruleKey": "1",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADD+Z2D4T4kBTJS6YOANGAXDAgAAoM0CBuYhqkkAAAAASUVORK5CYII=",
+                    "title": "difficult",
+                    "ruleKey": "2",
+                    "checked": true
+                }
+            ],
+            "title": "Bicycle rides",
+            "type": "layer",
+            "name": "edition_line"
+        },
+        {
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABTklEQVRIib3WwQ7BQBAG4FkqUs4kIhx65RE48ArCQbyE8CZuzh6hj+EBHNzFwcFZ6ndoGqU72xltTNKk3Z3utzvbpEv05zDSRABwDmSMaKzcpDxIC7OdWkgKWxuLYi4001AWxqEfD2VjNtSzZgBE67V+5NmMaDyW5eI7PA+Iafm132eGSSJxKuwMGg39Cn0\/N6WSrC7T02rpQcckPwxrDUYjfUkHA2A+B3Y7Z1nt4GKhB9PX4WAF+T3sdPQlTcf5bG3mwW63GNhuK8HhsBgYBHyfdQ+v19\/3r1oFLhflRwMAQSBHplOgVovvl0v3V8qi260M6\/eB5xO434HTCYgiN8aCx6MM3GzYIrEgi65WbqzZjFelxVjwdgMmE8CYLNbrAWGoWp38B\/x4EEVR6k1DVK+zk3+nOX7AuagyREeMslDVIaoI\/PMxUQtLD8J\/jxdqF9GmouAWJgAAAABJRU5ErkJggg==",
+                    "title": "caf\u00e9",
+                    "ruleKey": "0",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABCklEQVRIid2WvQ3CMBCFv0MUqaIMQAFb0CBlFiZgA2CDTMAskWjYAgoGiKjShcooJubs\/Eu8Ls9nfzn5xTFMLAktrKqqUhcSCVrLW+QDtQX\/HGwLCgU7zb4wDdowNFhBScbN8g5sSYiCodaDr7MHBRsyy7tzYE2iTbOgC7VyBH2AQ+2bS\/W15+lwzO6MDGPpGiwoKSgb\/pNXkAeQEDnTK3W60YmcM7n3rTUdSTmR2jARmS+lfwt07qEWmh0Xy7uyZ0XcqHWFRkTEmdJfCXNpRew92upaGHLwjI4yjPlCM2aXs\/4trNCIiGjnakLE8ev08IVL\/QEbTXrFGAra6hLVB9z5mtgWPMW33ElviuBhWOAd5qgAAAAASUVORK5CYII=",
+                    "title": "pharmacy",
+                    "ruleKey": "1",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAACJUlEQVRIic2WPWgUQRiGnz3vcjFEgmJEJWjAoEWMiAERKwPaGO0MomAjYlKIKBb2gkgUsdAiYmGjRVAL01j4c6DgD4pRc0kj0UhULIyH5swZI\/dZrHO3PzO7O4ohLyzLzHzzPfPu7nyzMMtykgaKiEQmcpxEuWKD4kC2YOOgLSgpOG2CvXoHVx7A1LQdaGE97O9wc+igoQ4RkR8z0NQDE5PV\/kvdsHWdHnI5ByeuV9vrm2Hw9B9AAOpzqB7j6Cc\/DKAuC\/W1emBtxt9+MQbTM5DNhJ366AqYH4e2Y7CkAbo2mUFBTRSh\/yFMlqB0tboQL7DiUPeR9B+BLa3JYEobW+DgRX+f12UqavLaFXYwgLaYOSm1AvvUdlKMSIf\/Q3ML+PGLfcIPMXO0lUbpQB8c3p58W3z+Br03\/wH4dBT2nU8GS6pI4I52aFoEuWHo2WaOKwucGXBr6L08PH79l8BTe2H1Mmg\/Di1LzXG\/yrCyEU7ugRtPYNfZGKDjOI5uL+4+B4sXQOE73BkyJykLjLyHnb3wckwfoypNpcZ5gV+nYHm3\/dGk1NwIby6A95wIAYPQgWfQdxtuDbrtjlZIGTZRoQjP38L8GujcAEc7YfOaMCwkCahQFKHLvUo\/g6NV5fJuzKpD+nEvw\/fRBN9lNgM1aUjPg3REiWio89+DOc0zNU7vDoncHzG7U7r2SGR43OyssoAoaOzKImRyNnd+E23BSX+EZ12\/AXKRQ1CDPZa2AAAAAElFTkSuQmCC",
+                    "title": "bus stop",
+                    "ruleKey": "2",
+                    "checked": true
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAA9hAAAPYQGoP6dpAAACmElEQVRIic2WTUsbYRCAn82KH42FVrC9pVZQetQc6k0v6X8QNHjyEDwK+QtqvAheVAxC9JRD40V6kOJBkCo2UIkfMdUYaFWKadjU6K5J9u2hGE12s4naSgf2sDOz87wz8zI78MgiVesohBCWgSSpqlgVnSqB7goua7wrqFqwqfKhMCuorRJMzav3Bpod3GbloGQVej\/1Vgy88XMDX9THzOEM6Wy6IrTIeFtGd0cFQcR6cr3UVJDZw1lBkMLjXHYKXehFPqYZlho0XWMiNgHA2N6Y6QFj5zF8UV+RLpwKM30wjS500ywNPbyWwFGAU\/UUgMXjRfZ\/7RfZ3Rtu2j+0G\/QAnrCHro9dKFnFYLOZZacLnfHoeNn33fQuC4mFcmcFYDO1yeTXycL7NcM0w9D3ELHzWJFuPjHPiXoCQJ1ch1TFkEpkEgadKXAsauyZpmtM7P\/paau9FfcrtyWsXq7H+8ZbGahkFbJ61jTI2dUZANvpbZZOliyBal5lLj5XGXiZvzSU81oiSgQAz2cPyaukJRBgZG+ELWXLGrjyY4WcnjMNcHx5zE56p3B7q5FSXwOwsaYRTddMP07n0jTVNjHQMlAVrMXeQk9zT5FOgpsrq+ZVOpc7AWh72kY8EyeiRHC9dCGEIHYeo7u5m8DbAFMHU6wl13C9cLF6too\/7gcg\/C6MP+5HlmSG24dxPHHcwG4PcyGEyOt5kdNzhZE0FB4SBBGhb6GCTstrhvHm\/eIVBBH29\/ayI9C0pDbJhizJlmWqtdUadKlsCoCL3EXZdhiA1a4IZhLPxAEQCI4yRwb77dg1VoH6Hf10POvA+dxpCRx8PUifow+ABrnB0teQ1d\/62xcAJZV79BXj\/1iiHgK+95p4V\/BDbvk\/ld\/x2rlL018KAQAAAABJRU5ErkJggg==",
+                    "title": "park",
+                    "ruleKey": "3",
+                    "checked": true
+                }
+            ],
+            "title": "Points of interest",
+            "type": "layer",
+            "name": "points_of_interest"
+        }
+    ],
+    "title": ""
+}

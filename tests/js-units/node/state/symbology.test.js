@@ -72,6 +72,28 @@ describe('SymbolIconSymbology', function () {
         expect(icon.title).to.be.eq('category 1')
         expect(icon.ruleKey).to.be.eq('0')
         expect(icon.checked).to.be.true
+        expect(icon.minScaleDenominator).to.be.eq(-1)
+        expect(icon.maxScaleDenominator).to.be.eq(-1)
+    })
+
+    it('Event', function () {
+        it('Valid', function () {
+            const icon = new SymbolIconSymbology({
+                "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q9YelkMRC7Zl+I\/LMKyC2AxBGPYIq8uYcLmIVDBEDLp79y5jsO0jkgwiKfphlpBkwyigPgAATTcaN5pMVDUAAAAASUVORK5CYII=",
+                "title":"category 1",
+                "ruleKey":"0",
+                "checked":true
+            })
+            expect(icon).to.be.instanceOf(SymbolIconSymbology)
+            let symbologyChangedEvt = null;
+            icon.addListener(evt => {
+                symbologyChangedEvt = evt
+            }, 'symbol.checked.changed');
+            expect(symbologyChangedEvt).to.not.be.null
+            expect(symbologyChangedEvt.title).to.be.eq('category 1')
+            expect(symbologyChangedEvt.ruleKey).to.be.eq('0')
+            expect(symbologyChangedEvt.checked).to.be.true
+        })
     })
 
     it('Failing required properties', function () {

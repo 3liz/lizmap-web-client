@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { convertNumber, convertBoolean } from '../../../../assets/src/modules/utils/Converters.js';
+import { convertNumber, convertBoolean, hashCode } from '../../../../assets/src/modules/utils/Converters.js';
 
 describe('convertNumber', function () {
     it('Valid', function () {
@@ -148,5 +148,18 @@ describe('convertBoolean', function () {
             expect(error.message).to.be.eq('The Object is not an expected boolean!')
             expect(error).to.be.instanceOf(ConversionError)
         }
+    })
+})
+
+describe('hashCode', function () {
+    it('Valid', function () {
+        expect(hashCode('')).to.be.eq(0)
+        expect(hashCode('Hello')).to.be.eq(69609650)
+        expect(hashCode('HeLLo')).to.be.eq(69577906)
+        expect(hashCode(JSON.stringify({
+            type: 'layer.visibility.change',
+            name: 'Quartiers',
+            visibility: true,
+        }))).to.be.eq(391836828)
     })
 })
