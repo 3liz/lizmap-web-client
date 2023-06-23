@@ -1,4 +1,5 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { updateLayerTreeGroupLayersSymbology } from '../modules/action/Symbology.js';
 import Utils from '../modules/Utils.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -46,6 +47,9 @@ export default class BaseLayersMap extends olMap {
             }),
             target: 'baseLayersOlMap'
         });
+
+        // Mapping between states and OL layers and groups
+        this._statesOlLayersandGroupsMap = new Map();
 
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
@@ -169,6 +173,7 @@ export default class BaseLayersMap extends olMap {
                         name: node.name
                     });
 
+                    this._statesOlLayersandGroupsMap.set(node.name, [node, layerGroup]);
                     this._overlayLayersAndGroups.push(layerGroup);
                 }
 
@@ -226,6 +231,7 @@ export default class BaseLayersMap extends olMap {
                 });
 
                 this._overlayLayersAndGroups.push(layer);
+                this._statesOlLayersandGroupsMap.set(node.name, [node, layer]);
                 return layer;
             }
         }
@@ -292,6 +298,26 @@ export default class BaseLayersMap extends olMap {
             evt => this.getLayerOrGroupByName(evt.name).setVisible(evt.checked),
             ['overlayLayer.visibility.changed']
         );
+
+        mainLizmap.state.rootMapGroup.addListener(
+            evt => {
+                const [state, olLayer] = this._statesOlLayersandGroupsMap.get(evt.name);
+                const wmsParams = olLayer.getSource().getParams();
+
+                // Delete entries in `wmsParams` not in `state.wmsParameters`
+                for(const key of Object.keys(wmsParams)){
+                    if(!Object.hasOwn(state.wmsParameters, key)){
+                        delete wmsParams[key];
+                    }
+                }
+                Object.assign(wmsParams, state.wmsParameters);
+
+                olLayer.getSource().updateParams(wmsParams);
+            },
+            ['layer.symbol.checked.changed']
+        );
+
+        updateLayerTreeGroupLayersSymbology(mainLizmap.state.layerTree);
     }
 
     get hasEmptyBaseLayer() {
