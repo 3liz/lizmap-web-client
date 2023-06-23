@@ -4,11 +4,18 @@ import EventDispatcher from './../../utils/EventDispatcher.js';
 import { LayerStyleConfig, LayerTreeGroupConfig, LayerTreeLayerConfig } from './../config/LayerTree.js';
 import { buildLayerSymbology, LayerSymbolsSymbology } from './Symbology.js';
 
+/**
+ * Class representing a map item: could be a group or a layer
+ * @class
+ * @augments EventDispatcher
+ */
 export class MapItemState extends EventDispatcher {
 
     /**
-     * @param {String} type                                - the layer tree item type
-     * @param {LayerTreeItemConfig} layerTreeItemCfg       - the layer tree item config
+     * Create a map item
+     *
+     * @param {String}              type             - the layer tree item type
+     * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer tree item config
      * @param {MapItemState}        [parentMapGroup] - the parent layer tree group
      */
     constructor(type, layerTreeItemCfg, parentMapGroup) {
@@ -228,11 +235,18 @@ export class MapItemState extends EventDispatcher {
     }
 }
 
+/**
+ * Class representing a map group state
+ * @class
+ * @augments MapItemState
+ */
 export class MapGroupState extends MapItemState {
 
     /**
+     * Creating a map group state instance
+     *
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer tree group config
-     * @param {String[]}             layersOrder       - the layers order
+     * @param {Number[]}             layersOrder       - the layers order
      * @param {MapGroupState}        [parentMapGroup]  - the parent layer tree group
      */
     constructor(layerTreeGroupCfg, layersOrder, parentMapGroup) {
@@ -356,7 +370,7 @@ export class MapGroupState extends MapItemState {
      * Iterate through children items
      *
      * @generator
-     * @yields {LayerTreeItem} The next child item
+     * @yields {MapItemState} The next child item
      **/
     *getChildren() {
         for (const item of this._items) {
@@ -384,7 +398,7 @@ export class MapGroupState extends MapItemState {
     /**
      * Find layer items
      *
-     * @returns {MapLayerState[]}
+     * @returns {MapItemState[]}
      **/
     findMapLayers() {
         let items = []
@@ -399,9 +413,16 @@ export class MapGroupState extends MapItemState {
     }
 }
 
+/**
+ * Class representing a map layer state
+ * @class
+ * @augments MapItemState
+ */
 export class MapLayerState extends MapItemState {
 
     /**
+     * Creating a map layer state instance
+     *
      * @param {LayerTreeLayerConfig|LayerTreeGroupConfig} layerTreeItemCfg - the layer tree group config
      * @param {String[]}                                  layersOrder      - the layers order
      * @param {MapGroupState}                             [parentMapGroup] - the parent layer tree group
