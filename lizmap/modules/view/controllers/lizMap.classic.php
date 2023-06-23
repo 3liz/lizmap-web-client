@@ -257,6 +257,8 @@ class lizMapCtrl extends jController
             $rep->addJSCode('var filterConfigData = '.json_encode($filterConfigData));
         }
 
+        $rep->addJSLink($bp.'assets/js/ol.js');
+
         // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
         if ($lproj->hasAtlasEnabled()) {
             // Add JS

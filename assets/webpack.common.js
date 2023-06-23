@@ -16,9 +16,18 @@ export default {
         search: './src/legacy/search.js',
         view: './src/legacy/view.js',
         'bottom-dock': './src/legacy/bottom-dock.js',
+        ol: './src/dependencies/ol.js',
+        // ol: {
+        //     import: './src/dependencies/ol.js',
+        //     library: {
+        //         name: 'MyLibrary',
+        //         type: 'window'
+        //     }
+        // }
     },
     output: {
         filename: '../../lizmap/www/assets/js/[name].js',
+        library: ['lizLib', '[name]'],
         chunkFilename: '[name].bundle.js',
         path: resolve(__dirname, 'dist')
     },
