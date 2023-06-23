@@ -52,9 +52,13 @@ export default class Treeview extends HTMLElement {
                 ${item.symbologyChildrenCount
                     ? html`
                         <ul class="symbols">
-                            ${item.symbologyChildren.map(symbology => html`
+                            ${item.symbologyChildren.map(symbol => html`
                             <li>
-                                <img class="legend" src="${symbology.icon}"><label class="symbol-title">${symbology.title}</label>
+                                <label class="symbol-title">
+                                    <input type="checkbox" .checked=${symbol.checked} @click=${() => symbol.checked = !symbol.checked}>
+                                    <img class="legend" src="${symbol.icon}">
+                                    ${symbol.title}
+                                </label>
                             </li>`
                             )}
                         </ul>`
