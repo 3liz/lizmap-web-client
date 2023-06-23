@@ -5,13 +5,15 @@ import { LayerGeographicBoundingBoxConfig, LayerTreeGroupConfig } from './../con
 import { buildLayerSymbology, LayerSymbolsSymbology } from './Symbology.js';
 
 /**
- * Class representing a layer item: could be group, vector or raster layer
+ * Class representing a layer item state: could be group, vector or raster layer
  * @class
  * @augments EventDispatcher
  */
 export class LayerItemState extends EventDispatcher {
 
     /**
+     * Creating a layer item state
+     *
      * @param {String} type                          - the layer item type
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
@@ -407,13 +409,15 @@ export class LayerItemState extends EventDispatcher {
 }
 
 /**
- * Class representing a layer item: could be vector or raster layer
+ * Class representing a layer: could be vector or raster layer
  * @class
  * @augments LayerItemState
  */
 export class LayerLayerState extends LayerItemState {
 
     /**
+     * Creating a layer state
+     *
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {Number[]}            layersOrder      - the layers order
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
@@ -642,6 +646,8 @@ export class LayerLayerState extends LayerItemState {
 export class LayerVectorState extends LayerLayerState {
 
     /**
+     * Creating a vector layer state
+     *
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {Number[]}            layersOrder      - the layers order
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
@@ -930,6 +936,8 @@ export class LayerVectorState extends LayerLayerState {
 export class LayerRasterState extends LayerLayerState {
 
     /**
+     * Creating a raster layer state
+     *
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {String[]}            layersOrder      - the layers order
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
@@ -968,9 +976,11 @@ export class LayerRasterState extends LayerLayerState {
 export class LayerGroupState extends LayerItemState {
 
     /**
+     * Creating a layer group state
+     *
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
-     * @param {Number[]}            layersOrder       - the layers order
-     * @param {LayerItemState}      [parentGroup]     - the parent layer group
+     * @param {Number[]}            layersOrder        - the layers order
+     * @param {LayerItemState}      [parentGroup]      - the parent layer group
      */
     constructor(layerTreeGroupCfg, layersOrder, parentMapGroup) {
         super('group', layerTreeGroupCfg, parentMapGroup);
@@ -1122,7 +1132,7 @@ export class LayerGroupState extends LayerItemState {
     /**
      * Find layer items
      *
-     * @returns {LayerItemState[]}
+     * @returns {LayerLayerState[]}
      **/
     findLayers() {
         let items = []
@@ -1130,9 +1140,254 @@ export class LayerGroupState extends LayerItemState {
             if (item instanceof LayerLayerState) {
                 items.push(item);
             } else if (item instanceof LayerGroupState) {
-                items = items.concat(item.findTreeLayers());
+                items = items.concat(item.findLayers());
             }
         }
         return items;
+    }
+
+    /**
+     * Find group items
+     *
+     * @returns {LayerGroupState[]}
+     **/
+    findGroups() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerGroupState) {
+                items.push(item);
+                items = items.concat(item.findGroups());
+            }
+        }
+        return items;
+    }
+}
+
+/**
+ * Class representing a collections of layers and groups state
+ * @class
+ * @augments EventDispatcher
+ */
+export class LayersAndGroupsCollection extends EventDispatcher {
+
+    /**
+     * Creating the collection of layers and groups state
+     *
+     * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
+     * @param {Number[]}             layersOrder       - the layers order
+     */
+    constructor(layerTreeGroupCfg, layersOrder) {
+        super();
+        this._root = new LayerGroupState(layerTreeGroupCfg, layersOrder);
+        this._layersMap = new Map(this._root.findLayers().map(l => [l.name, l]));
+        this._groupsMap = new Map(this._root.findGroups().map(g => [g.name, g]));
+    }
+
+    /**
+     * The root group state
+     *
+     * @type {LayerGroupState}
+     **/
+    get root() {
+        return this._root;
+    }
+
+    /**
+     * The layers state
+     *
+     * @type {Array<LayerVectorState|LayerRasterState>}
+     **/
+    get layers() {
+        return [...this._layersMap.values()];
+    }
+
+    /**
+     * The layer names
+     *
+     * @type {String[]}
+     **/
+    get layerNames() {
+        return [...this._layersMap.keys()];
+    }
+
+    /**
+     * The groups
+     *
+     * @type {LayerGroupState[]}
+     **/
+    get groups() {
+        return [...this._groupsMap.values()];
+    }
+
+    /**
+     * The group names
+     *
+     * @type {String[]}
+     **/
+    get groupNames() {
+        return [...this._groupsMap.keys()];
+    }
+
+    /**
+     * Get a layer state by layer name
+     *
+     * @param {String} name - the layer name
+     *
+     * @returns {LayerVectorState|LayerRasterState} The layer state associated to the name
+     *
+     * @throws {RangeError} The layer name is unknown
+     **/
+    getLayerByName(name) {
+        const layer = this._layersMap.get(name);
+        if (layer !== undefined) {
+            if (layer.name !== name) {
+                throw 'The layers and groups collection has been corrupted!'
+            }
+            return layer;
+        }
+        throw new RangeError('The layer name `'+ name +'` is unknown!');
+    }
+
+    /**
+     * Get a layer state by layer id
+     *
+     * @param {String} layerId - the layer id
+     *
+     * @returns {LayerVectorState|LayerRasterState} The layer state associated to the id
+     *
+     * @throws {RangeError} The layer id is unknown
+     **/
+    getLayerById(layerId) {
+        for (const layer of this.getLayers()) {
+            if (layer.id === layerId) {
+                return layer;
+            }
+        }
+        throw new RangeError('The layer id `'+ layerId +'` is unknown!');
+    }
+
+    /**
+     * Get a layer state by WMS Name
+     *
+     * @param {String} wmsName - the layer WMS Name
+     *
+     * @returns {LayerVectorState|LayerRasterState} The layer state associated to the WMS Name
+     *
+     * @throws {RangeError} The layer WMS Name is unknown
+     **/
+    getLayerByWmsName(wmsName) {
+        for (const layer of this.getLayers()) {
+            if (layer.wmsName === wmsName) {
+                return layer;
+            }
+        }
+        throw new RangeError('The layer WMS Name `'+ wmsName +'` is unknown!');
+    }
+
+    /**
+     * Iterate through layer states
+     *
+     * @generator
+     * @yields {LayerVectorState|LayerRasterState} The next layer state
+     **/
+    *getLayers() {
+        for (const layer of this._layersMap.values()) {
+            yield layer;
+        }
+    }
+
+    /**
+     * Get a group state by group name
+     *
+     * @param {String} name the group name
+     *
+     * @returns {LayerVectorState|LayerRasterState} The group state associated to the name
+     *
+     * @throws {RangeError} The group name is unknown
+     **/
+    getGroupByName(name) {
+        const group = this._groupsMap.get(name);
+        if (group !== undefined) {
+            if (group.name !== name) {
+                throw 'The layers and groups collection has been corrupted!'
+            }
+            return group;
+        }
+        throw new RangeError('The group name `'+ name +'` is unknown!');
+    }
+
+    /**
+     * Get a group state by WMS Name
+     *
+     * @param {String} wmsName the group WMS Name
+     *
+     * @returns {LayerGroupState} The group state associated to the WMS Name
+     *
+     * @throws {RangeError} The group WMS Name is unknown
+     **/
+    getGroupByWmsName(wmsName) {
+        for (const group of this.getGroups()) {
+            if (group.wmsName === wmsName) {
+                return group;
+            }
+        }
+        throw new RangeError('The group WMS Name `'+ wmsName +'` is unknown!');
+    }
+
+    /**
+     * Iterate through group states
+     *
+     * @generator
+     * @yields {LayerGroupState} The next group state
+     **/
+    *getGroups() {
+        for (const group of this._groupsMap.values()) {
+            yield group;
+        }
+    }
+
+    /**
+     * Get a layer or group state by name
+     *
+     * @param {String} name the name
+     *
+     * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the name
+     *
+     * @throws {RangeError} The name is unknown
+     **/
+    getLayerOrGroupByName(name) {
+        const layer = this._layersMap.get(name);
+        if (layer !== undefined) {
+            return layer;
+        }
+        const group = this._groupsMap.get(name);
+        if (group !== undefined) {
+            return group;
+        }
+        throw new RangeError('The name `'+ name +'` is unknown!');
+    }
+
+
+    /**
+     * Get a layer or group state by WMS Name
+     *
+     * @param {String} wmsName the WMS Name
+     *
+     * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the WMS Name
+     *
+     * @throws {RangeError} The WMS Name is unknown
+     **/
+    getLayerOrGroupByWmsName(wmsName) {
+        for (const layer of this.getLayers()) {
+            if (layer.wmsName === wmsName) {
+                return layer;
+            }
+        }
+        for (const group of this.getGroups()) {
+            if (group.wmsName === wmsName) {
+                return group;
+            }
+        }
+        throw new RangeError('The WMS Name `'+ wmsName +'` is unknown!');
     }
 }
