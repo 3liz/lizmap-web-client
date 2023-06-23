@@ -314,7 +314,7 @@ export default class BaseLayersMap extends olMap {
 
                 olLayer.getSource().updateParams(wmsParams);
             },
-            ['layer.symbol.checked.changed']
+            ['layer.symbol.checked.changed', 'layer.style.changed']
         );
 
         updateLayerTreeGroupLayersSymbology(mainLizmap.state.layerTree);

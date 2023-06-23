@@ -419,9 +419,9 @@ var lizLayerActionButtons = function() {
 
                 // Get layer name and type
                 var h = $(this).parent().find('input.styleLayer');
-                var eName = h.val();
+                var name = h.val();
                 var isBaselayer = h.hasClass('baselayer');
-                if( !eName )
+                if( !name )
                     return false;
 
                 // Get layer
@@ -429,15 +429,11 @@ var lizLayerActionButtons = function() {
                 if (isBaselayer) {
                     layer = lizMap.map.baseLayer;
                 } else {
-                    layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(eName);
+                    layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(name);
                 }
 
                 // Set style
-                const wmsParams = layer.getSource().getParams();
-                if( layer && wmsParams) {
-                    wmsParams['STYLES'] = eStyle;
-                    layer.getSource().updateParams(wmsParams);
-                }
+                layer.wmsSelectedStyleName = eStyle;
             });
 
             // Opacity
