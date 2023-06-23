@@ -36,6 +36,7 @@ const optionalProperties = {
     'legend_image_option': {type: 'string', nullable: true},
     'mutuallyExclusive': {type: 'boolean', default: false},
     'externalWmsToggle': {type: 'boolean', default: false},
+    'externalAccess': {type: 'object'},
 };
 
 /**
