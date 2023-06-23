@@ -27,6 +27,12 @@ import NavBar from './components/NavBar.js';
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
 
+import olDep from './dependencies/ol.js';
+import proj4 from 'proj4';
+
+lizMap.ol = olDep;
+lizMap.proj4 = proj4;
+
 lizMap.events.on({
     uicreated: () => {
         window.customElements.define('lizmap-geolocation', Geolocation);
