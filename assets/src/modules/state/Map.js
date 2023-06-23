@@ -1,4 +1,5 @@
 import { ValidationError } from './../Errors.js';
+import EventDispatcher from './../../utils/EventDispatcher.js';
 import { convertNumber, convertBoolean } from './../utils/Converters.js';
 import { Extent } from './../utils/Extent.js';
 
@@ -11,9 +12,10 @@ const mapStateProperties = {
     scaleDenominator: {type: 'number'},
 };
 
-export class MapState {
+export class MapState extends EventDispatcher {
 
     constructor() {
+        super()
         // default values
         this._projection = 'EPSG:3857'
         this._center = [0, 0]
@@ -31,10 +33,13 @@ export class MapState {
      *
      **/
     update(evt) {
-        //console.log(evt);
+        let updatedProperties = {};
         for (const prop in mapStateProperties) {
-            const def = mapStateProperties[prop];
             if (evt.hasOwnProperty(prop)) {
+                // Get definition
+                const def = mapStateProperties[prop];
+                // save old value
+                const oldValue = this['_'+prop];
                 // convert value
                 switch (def.type){
                     case 'boolean':
@@ -49,6 +54,9 @@ export class MapState {
                             || !(evt[prop] instanceof Array)) {
                             throw new ValidationError('The value for `'+prop+'` has to be an array!');
                         }
+                        if (oldValue.length != evt[prop].length) {
+                            throw new ValidationError('The length for `'+prop+'` is not expected! It has to be: '+oldValue.length);
+                        }
                         this['_'+prop] = new Extent(...evt[prop]);
                         break;
                     case 'array':
@@ -62,7 +70,27 @@ export class MapState {
                     default:
                         this['_'+prop] = evt[prop];
                 }
+                // Check if the value has changed
+                if (def.type == 'extent') {
+                    if (!oldValue.equals([...this['_'+prop]])){
+                        updatedProperties[prop] = evt[prop];
+                    }
+                } else if (def.type == 'array') {
+                    if (oldValue.filter((v, i) => {return evt[prop][i] != v}).length != 0) {
+                        updatedProperties[prop] = evt[prop];
+                    }
+                } else if (oldValue != this['_'+prop]) {
+                    updatedProperties[prop] = evt[prop];
+                }
             }
+        }
+        // Dispatch event only if something have changed
+        if (Object.getOwnPropertyNames(updatedProperties).length != 0) {
+            this.dispatch(
+                Object.assign({
+                    type: 'map.state.changed'
+                }, updatedProperties)
+            );
         }
     }
 

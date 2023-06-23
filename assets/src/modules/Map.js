@@ -56,7 +56,7 @@ export default class Map extends olMap {
             const scaleDenominator = resolution * inchesPerMeter * dpi;
 
             mainEventDispatcher.dispatch({
-                'type': 'map.state.changed',
+                'type': 'map.state.changing',
                 'projection': projection.getCode(),
                 'center': [...view.getCenter()],
                 'resolution': resolution,

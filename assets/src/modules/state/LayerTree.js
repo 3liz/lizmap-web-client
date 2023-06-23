@@ -1,20 +1,35 @@
+import EventDispatcher from './../../utils/EventDispatcher.js';
 import { MapGroupState, MapLayerState } from './MapLayer.js';
 import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology } from './Symbology.js';
 
-export class LayerTreeItemState {
+/**
+ * Class representing a layer tree item
+ * @class
+ * @augments EventDispatcher
+ */
+export class LayerTreeItemState extends EventDispatcher {
 
     /**
+     * Instantiate a layer tree item
+     *
      * @param {MapItemState}        mapItemState           - the layer tree item config
      * @param {LayerTreeItemState}  [parentGroupState] - the parent layer tree group
      */
     constructor(mapItemState, parentGroupState) {
+        super();
         this._mapItemState = mapItemState;
         this._parentGroupState = null;
         if (parentGroupState instanceof LayerTreeItemState
             && parentGroupState.type == 'group') {
             this._parentGroupState = parentGroupState;
         }
-        this._checked = this._parentGroupState == null ? true : false;
+        if (mapItemState instanceof MapLayerState) {
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+        } else if (mapItemState instanceof MapGroupState) {
+            mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+        }
     }
     /**
      * Config layers
@@ -115,11 +130,27 @@ export class LayerTreeItemState {
     get layerConfig() {
         return this._mapItemState.layerConfig;
     }
+
+    /**
+     * Calculate and save visibility
+     *
+     * @returns {boolean} the calculated visibility
+     **/
+    calculateVisibility() {
+        return this._mapItemState.calculateVisibility();
+    }
 }
 
+/**
+ * Class representing a layer tree group
+ * @class
+ * @augments LayerTreeItemState
+ */
 export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
+     * Instantiate a layer tree group
+     *
      * @param {MapGroupState}        mapGroupState      - the layer tree group config
      * @param {LayerTreeGroupState}  [parentGroupState] - the parent layer tree group
      */
@@ -135,6 +166,10 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 if (group.childrenCount == 0) {
                     continue;
                 }
+                group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 this._items.push(group);
             } else if (mapItemState instanceof MapLayerState) {
                 if (!mapItemState.displayInLayerTree) {
@@ -142,6 +177,9 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 }
                 // Build layer
                 const layer = new LayerTreeLayerState(mapItemState, this)
+                layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 this._items.push(layer);
             }
         }
@@ -224,9 +262,16 @@ export class LayerTreeGroupState extends LayerTreeItemState {
     }
 }
 
+/**
+ * Class representing a layer tree layer
+ * @class
+ * @augments LayerTreeItemState
+ */
 export class LayerTreeLayerState extends LayerTreeItemState {
 
     /**
+     * Instantiate a layer tree layer
+     *
      * @param {MapLayerState} mapLayerState       - the layer tree group config
      * @param {LayerTreeGroupState}                            [parentGroupState] - the parent layer tree group
      */
@@ -258,6 +303,16 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     }
 
     /**
+     * Update WMS selected layer style name
+     * based on wmsStyles list
+     *
+     * @param {String} styleName
+     **/
+    set wmsSelectedStyleName(styleName) {
+        this._mapItemState.wmsSelectedStyleName = styleName;
+    }
+
+    /**
      * WMS layer styles
      *
      * @type {LayerStyleConfig[]}
@@ -273,6 +328,15 @@ export class LayerTreeLayerState extends LayerTreeItemState {
      **/
     get wmsAttribution() {
         return this._mapItemState.wmsAttribution;
+    }
+
+    /**
+     * Parameters for OGC WMS Request
+     *
+     * @type {Object}
+     **/
+    get wmsParameters() {
+        return this._mapItemState.wmsParameters;
     }
 
     /**
@@ -309,7 +373,7 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * Children symbology
      *
-     * @type {(SymbolIconSymbology|BaseIconSymbology|BaseSymbolsSymbology)[]}
+     * @type {(SymbolIconSymbology[]|Array.<BaseIconSymbology|BaseSymbolsSymbology>)}
      **/
     get symbologyChildren() {
         if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
@@ -330,10 +394,6 @@ export class LayerTreeLayerState extends LayerTreeItemState {
         if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
             || this._mapItemState.symbology instanceof LayerGroupSymbology) {
             for (const symbol of this._mapItemState.symbology.getChildren()) {
-                yield symbol;
-            }
-        } else {
-            for (const symbol of this.symbologyChildren) {
                 yield symbol;
             }
         }

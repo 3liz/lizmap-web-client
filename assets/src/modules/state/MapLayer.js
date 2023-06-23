@@ -1,8 +1,10 @@
 import { ValidationError } from './../Errors.js';
+import { convertBoolean } from './../utils/Converters.js';
+import EventDispatcher from './../../utils/EventDispatcher.js';
 import { LayerStyleConfig, LayerTreeGroupConfig, LayerTreeLayerConfig } from './../config/LayerTree.js';
-import { buildLayerSymbology } from './Symbology.js';
+import { buildLayerSymbology, LayerSymbolsSymbology } from './Symbology.js';
 
-export class MapItemState {
+export class MapItemState extends EventDispatcher {
 
     /**
      * @param {String} type                                - the layer tree item type
@@ -10,14 +12,17 @@ export class MapItemState {
      * @param {MapItemState}        [parentMapGroup] - the parent layer tree group
      */
     constructor(type, layerTreeItemCfg, parentMapGroup) {
+        super();
         this._type = type
         this._layerTreeItemCfg = layerTreeItemCfg;
         this._parentMapGroup = null;
         if (parentMapGroup instanceof MapItemState
             && parentMapGroup.type == 'group') {
             this._parentMapGroup = parentMapGroup;
+            this._parentMapGroup.addListener(this.calculateVisibility.bind(this), 'group.visibility.changed');
         }
         this._checked = this._parentMapGroup == null ? true : false;
+        this._stateVisibility = null;
     }
     /**
      * Config layers
@@ -153,13 +158,19 @@ export class MapItemState {
      * @type {Boolean}
      **/
     set checked(val) {
-        if (this._checked == val) {
+        const newVal = convertBoolean(val);
+        // No changes
+        if (this._checked == newVal) {
             return;
         }
-        this._checked = val;
+        // Set new value
+        this._checked = newVal;
+        // Propagation to parent if checked
         if (this._checked && this._parentMapGroup != null) {
-            this._parentMapGroup.checked = val;
+            this._parentMapGroup.checked = newVal;
         }
+        // Calculate visibility
+        this.calculateVisibility();
     }
 
     /**
@@ -169,18 +180,10 @@ export class MapItemState {
      * @type {Boolean}
      **/
     get visibility() {
-        // if the item has no parent item like root
-        // it is visible
-        if (this._parentMapGroup == null) {
-            return true;
+        if (this._stateVisibility !== null) {
+            return this._stateVisibility;
         }
-        // if the parent layer tree group is visible
-        // the visibility depends if the layer tree item is checked
-        // else the layer tree item is not visible
-        if (this._parentMapGroup.visibility) {
-            return this._checked;
-        }
-        return false;
+        return this.calculateVisibility();
     }
 
     /**
@@ -190,6 +193,38 @@ export class MapItemState {
      **/
     get layerConfig() {
         return this._layerTreeItemCfg.layerConfig;
+    }
+
+    /**
+     * Calculate and save visibility
+     *
+     * @returns {boolean} the calculated visibility
+     **/
+    calculateVisibility() {
+        // Save visibility before changing
+        const oldVisibility = this._stateVisibility;
+        // if the item has no parent item like root
+        // it is visible
+        if (this._parentMapGroup == null) {
+            this._stateVisibility = true;
+        }
+        // if the parent layer tree group is visible
+        // the visibility depends if the layer tree item is checked
+        // else the layer tree item is not visible
+        else if (this._parentMapGroup.visibility) {
+            this._stateVisibility = this._checked;
+        } else {
+            this._stateVisibility = false;
+        }
+        // Only dispatch event if visibility has changed
+        if (oldVisibility !== null && oldVisibility != this.visibility) {
+            this.dispatch({
+                type: this.type+'.visibility.changed',
+                name: this.name,
+                visibility: this.visibility,
+            })
+        }
+        return this._stateVisibility;
     }
 }
 
@@ -237,6 +272,10 @@ export class MapGroupState extends MapItemState {
                     if (group.childrenCount == 0) {
                         continue;
                     }
+                    group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     this._items.push(group);
                     // Group is checked if one child is checked
                     if (group.checked) {
@@ -245,6 +284,9 @@ export class MapGroupState extends MapItemState {
                 } else {
                     // Build group as layer
                     const layer = new MapLayerState(layerTreeItem, layersOrder, this)
+                    layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     this._items.push(layer);
                     // Group is checked if one child is checked
                     if (layer.checked) {
@@ -268,6 +310,9 @@ export class MapGroupState extends MapItemState {
                     this._notInLayerTree.push(layer);
                 } else {
                     this._items.push(layer);
+                    layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     // Group is checked if one child is checked
                     if (layer.checked) {
                         this._checked = true;
@@ -408,6 +453,27 @@ export class MapLayerState extends MapItemState {
     }
 
     /**
+     * Update WMS selected layer style name
+     * based on wmsStyles list
+     *
+     * @param {String} styleName
+     **/
+    set wmsSelectedStyleName(styleName) {
+        if (this._wmsSelectedStyleName == styleName) {
+            return;
+        }
+        if (this.wmsStyles.filter(style => style.wmsName == styleName).length == 0) {
+            throw TypeError('Cannot assign an unknown WMS style name! `'+styleName+'` is not in the layer `'+this.name+'` WMS styles!');
+        }
+        this._wmsSelectedStyleName = styleName;
+        this.dispatch({
+            type: 'layer.style.changed',
+            name: this.name,
+            style: this.wmsSelectedStyleName,
+        })
+    }
+
+    /**
      * WMS layer styles
      *
      * @type {LayerStyleConfig[]}
@@ -440,6 +506,28 @@ export class MapLayerState extends MapItemState {
         let params = {
             'LAYERS': this.wmsName,
             'STYLES': this.wmsSelectedStyleName,
+            'FORMAT': this.layerConfig.imageFormat,
+            'DPI': 96
+        }
+        if (this.symbology instanceof LayerSymbolsSymbology) {
+            let keyChecked = [];
+            let keyUnchecked = [];
+            for (const symbol of this.symbology.getChildren()) {
+                if (symbol.rulekey === '') {
+                    keyChecked = [];
+                    keyUnchecked = [];
+                    break;
+                }
+                if (symbol.checked) {
+                    keyChecked.push(symbol.ruleKey);
+                } else {
+                    keyUnchecked.push(symbol.ruleKey);
+                }
+            }
+            if (keyChecked.length != 0 && keyUnchecked.length != 0) {
+                params['LEGEND_ON'] = this.wmsName+':'+keyChecked.join();
+                params['LEGEND_OFF'] = this.wmsName+':'+keyUnchecked.join();
+            }
         }
         return params;
     }
@@ -466,5 +554,19 @@ export class MapLayerState extends MapItemState {
             throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.wmsName+'`');
         }
         this._symbology = buildLayerSymbology(node);
+        if (this.symbology instanceof LayerSymbolsSymbology) {
+            for (const symbol of this.symbology.getChildren()) {
+                const self = this;
+                symbol.addListener(evt => {
+                    self.dispatch({
+                        type: 'layer.symbol.checked.changed',
+                        name: self.name,
+                        title: evt.title,
+                        ruleKey: evt.ruleKey,
+                        checked: evt.checked,
+                    });
+                }, 'symbol.checked.changed');
+            }
+        }
     }
 }

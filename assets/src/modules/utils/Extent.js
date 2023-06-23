@@ -55,4 +55,13 @@ export class Extent extends Array {
     get ymax() {
         return this[3];
     }
+
+    equals(anOther) {
+        return ( anOther instanceof Array
+            && anOther.length == 4
+            && anOther[0] == this[0]
+            && anOther[1] == this[1]
+            && anOther[2] == this[2]
+            && anOther[3] == this[3])
+    }
 }
