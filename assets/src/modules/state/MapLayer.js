@@ -389,7 +389,7 @@ export class MapGroupState extends MapItemState {
             if (item instanceof MapLayerState) {
                 names.push(item.name);
             } else if (item instanceof MapGroupState) {
-                names = names.concat(item.findTreeLayerNames());
+                names = names.concat(item.findMapLayerNames());
             }
         }
         return names;
@@ -398,7 +398,7 @@ export class MapGroupState extends MapItemState {
     /**
      * Find layer items
      *
-     * @returns {MapItemState[]}
+     * @returns {MapLayerState[]}
      **/
     findMapLayers() {
         let items = []
@@ -406,10 +406,25 @@ export class MapGroupState extends MapItemState {
             if (item instanceof MapLayerState) {
                 items.push(item);
             } else if (item instanceof MapGroupState) {
-                items = items.concat(item.findTreeLayers());
+                items = items.concat(item.findMapLayers());
             }
         }
         return items;
+    }
+
+    /**
+     * Get child by its name
+     *
+     * @param {String} name - the layer name
+     * @returns {MapLayerState} The MapLayerState associated to the name
+     **/
+    getMapLayerByName(name) {
+        for (const layer of this.findMapLayers()) {
+            if(layer.name === name) {
+                return layer;
+            }
+        }
+        throw RangeError(`The layer name ``${name}`` is unknown!`);
     }
 }
 
