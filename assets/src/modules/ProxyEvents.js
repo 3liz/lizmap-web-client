@@ -9,14 +9,24 @@ import { mainEventDispatcher } from '../modules/Globals.js';
 export default class ProxyEvents {
     constructor() {
         lizMap.events.on({
-            layerSelectionChanged: () => {
+            layerSelectionChanged: e => {
                 mainEventDispatcher.dispatch({
-                    type: 'selection.changed'
+                    type: 'selection.changed',
+                    properties : {
+                        'featureType': e.featureType,
+                        'featureIds': e.featureIds,
+                        'updateDrawing': e.updateDrawing
+                    }
                 });
             },
-            layerFilteredFeaturesChanged: () => {
+            layerFilteredFeaturesChanged: e => {
                 mainEventDispatcher.dispatch({
-                    type: 'filteredFeatures.changed'
+                    type: 'filteredFeatures.changed',
+                    properties: {
+                        'featureType': e.featureType,
+                        'featureIds': e.featureIds,
+                        'updateDrawing': e.updateDrawing
+                    }
                 });
             }
         });
