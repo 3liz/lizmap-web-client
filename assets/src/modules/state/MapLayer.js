@@ -78,7 +78,6 @@ export class MapItemState extends EventDispatcher {
         return this._layerItemState.wmsName;
     }
 
-
     /**
      * WMS layer title
      *
@@ -462,6 +461,8 @@ export class MapLayerState extends MapItemState {
             this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
         }
+        // set isLoading to false
+        this._loading = false;
     }
 
     /**
@@ -588,5 +589,35 @@ export class MapLayerState extends MapItemState {
      **/
     set symbology(node) {
         this._layerItemState.symbology = node;
+    }
+
+    /**
+     * Is layer loading?
+     *
+     * @type {Boolean}
+     **/
+    get loading() {
+        return this._loading;
+    }
+
+    /**
+     * Set layer's loading state
+     *
+     * @param {Boolean}
+     **/
+    set loading(loading) {
+        const newVal = convertBoolean(loading);
+        // No changes
+        if (this._loading == newVal) {
+            return;
+        }
+        // Set new value
+        this._loading = newVal;
+
+        this.dispatch({
+            type: 'overlayLayer.loading.changed',
+            name: this.name,
+            loading: this.loading,
+        })
     }
 }
