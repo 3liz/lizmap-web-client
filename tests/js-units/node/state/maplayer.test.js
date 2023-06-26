@@ -194,6 +194,62 @@ describe('MapGroupState', function () {
         expect(areas.visibility).to.be.false
     })
 
+    it('findMapLayerNames', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const root = new MapGroupState(rootCfg, layersOrder);
+        expect(root).to.be.instanceOf(MapGroupState)
+
+        expect(root.findMapLayerNames()).to.have.ordered.members([
+            "points_of_interest",
+            "edition_line",
+            "areas_of_interest",
+            "bus_stops",
+            "bus",
+            //"tramway_ref",
+            //"tramway_pivot",
+            //"tram_stop_work",
+            "tramstop",
+            "tramway",
+            "publicbuildings",
+            //"publicbuildings_tramstop",
+            //"donnes_sociodemo_sous_quartiers",
+            "SousQuartiers",
+            "Quartiers",
+            // "VilleMTP_MTP_Quartiers_2011_4326",
+            // "osm-mapnik",
+            // "osm-stamen-toner"
+        ])
+
+        let names = []
+        for (const layer of root.findMapLayers()) {
+            names.push(layer.name)
+        }
+        expect(names).to.be.deep.equal(root.findMapLayerNames())
+
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(MapGroupState)
+
+        expect(transports.findMapLayerNames()).to.have.ordered.members([
+            "bus_stops",
+            "bus",
+            "tramstop",
+            "tramway",
+            "publicbuildings",
+        ])
+    })
+
     it('Events', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined

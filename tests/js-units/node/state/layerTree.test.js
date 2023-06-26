@@ -329,6 +329,12 @@ describe('LayerTreeGroupState', function () {
             // "osm-stamen-toner"
         ])
 
+        let names = []
+        for (const layer of root.findTreeLayers()) {
+            names.push(layer.name)
+        }
+        expect(names).to.be.deep.equal(root.findTreeLayerNames())
+
         const transports = root.children[1];
         expect(transports).to.be.instanceOf(LayerTreeGroupState)
 
