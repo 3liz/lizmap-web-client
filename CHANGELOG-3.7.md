@@ -13,10 +13,10 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Editing - Better user experience with 1-n relations: the data tables of the related child layers
   now respect the position configured in the QGIS editing drag&drop designer.
 * Popup/Editing - Add a combobox in the popup to allow creating a new child feature for the related
-  layers. This will allow to create child features directly from the parent popup.
+  layers. This will allow creating child features directly from the parent popup.
 * New display for measurements on the map when drawing
 * Better management of **QGIS projects** about versions (desktop, plugin versions, etc.)
-* **Form filter**: Allow to use a second field for the numeric type like it is already possible for dates.
+* **Form filter**: Allow using a second field for the numeric type like it is already possible for dates.
   This is useful when the layer features contain two fields describing a minimum and maximum value of the same property.
 * **Action module**:
   * New support for `project` and `layer` scopes: the actions can now be used outside the popup, for a specific chosen layer or as a generic project action.
@@ -49,11 +49,14 @@ with some extra keywords : backend, tests, test, translation, funders, important
     * set X/Y parameters for the grid
     * set main map rotation
     * set DPI
+* Refactoring of the legend:
+  * `project-background-color`
 * Add a button to paste a geometry
 * Add [MGRS](https://en.wikipedia.org/wiki/Military_Grid_Reference_System) coordinates display on the map
 
 ### Fixed
 
+* The "locate by layer" selector shows the layer title when unselected on mobile
 * Display the reverse geometry button only for linestrings and polygons, not for points
 
 ### Changed
@@ -77,7 +80,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Backend
 
-* Some JavaScript code cleanup
+* A lot of JavaScript code cleanups
 * Update some JavaScript dependencies
 * Remove some old code about QGIS Server 2
 * Update the OpenLayers library to version 7.3.0
@@ -91,3 +94,4 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com)**
 * **[Avignon city](https://www.avignon.fr)**
 * **[Parc naturel régional du Haut-Jura](http://www.parc-haut-jura.fr/)**
+* **[Geolab.re](https://geolab.re/)**
