@@ -6,6 +6,7 @@ import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
+import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 import { MapGroupState } from '../../../../assets/src/modules/state/MapLayer.js';
 
 import { LayerTreeGroupState, LayerTreeLayerState } from '../../../../assets/src/modules/state/LayerTree.js';
@@ -25,7 +26,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root.name).to.be.eq('root')
@@ -33,19 +37,8 @@ describe('LayerTreeGroupState', function () {
         expect(root.level).to.be.eq(0)
         expect(root.wmsName).to.be.eq('Montpellier-Transports')
         expect(root.wmsTitle).to.be.eq('Montpellier - Transports')
-        expect(root.wmsGeographicBoundingBox).to.be.instanceOf(LayerGeographicBoundingBoxConfig)
-        expect(root.wmsGeographicBoundingBox.west).to.be.eq(43.542477)
-        expect(root.wmsGeographicBoundingBox.south).to.be.eq(3.746034)
-        expect(root.wmsGeographicBoundingBox.east).to.be.eq(43.672144)
-        expect(root.wmsGeographicBoundingBox.north).to.be.eq(4.01689)
-        expect(root.wmsBoundingBoxes).to.be.instanceOf(Array)
-        expect(root.wmsBoundingBoxes).to.have.length(3)
-        expect(root.wmsBoundingBoxes[0]).to.be.instanceOf(LayerBoundingBoxConfig)
-        expect(root.wmsBoundingBoxes[0].crs).to.be.eq('EPSG:3857')
-        expect(root.wmsBoundingBoxes[0].xmin).to.be.eq(417006.613)
-        expect(root.wmsBoundingBoxes[0].ymin).to.be.eq(5394910.34)
-        expect(root.wmsBoundingBoxes[0].xmax).to.be.eq(447158.049)
-        expect(root.wmsBoundingBoxes[0].ymax).to.be.eq(5414844.995)
+        expect(root.wmsGeographicBoundingBox).to.be.null
+        expect(root.wmsBoundingBoxes).to.be.an('array').that.have.length(0)
         expect(root.checked).to.be.true
         expect(root.visibility).to.be.true
         expect(root.layerConfig).to.be.null
@@ -130,7 +123,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
@@ -207,7 +203,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
@@ -242,7 +241,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
@@ -331,7 +333,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
@@ -389,7 +394,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
@@ -454,7 +462,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
@@ -646,7 +657,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
@@ -727,7 +741,10 @@ describe('LayerTreeGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
 
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
