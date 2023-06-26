@@ -413,7 +413,7 @@ export class MapGroupState extends MapItemState {
     }
 
     /**
-     * Get child by its name
+     * Get layer item by its name
      *
      * @param {String} name - the layer name
      * @returns {MapLayerState} The MapLayerState associated to the name
@@ -424,7 +424,7 @@ export class MapGroupState extends MapItemState {
                 return layer;
             }
         }
-        throw RangeError(`The layer name ``${name}`` is unknown!`);
+        throw RangeError('The layer name `'+ name +'` is unknown!');
     }
 }
 

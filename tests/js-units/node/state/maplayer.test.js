@@ -250,6 +250,69 @@ describe('MapGroupState', function () {
         ])
     })
 
+    it('getMapLayerByName', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const root = new MapGroupState(rootCfg, layersOrder);
+        expect(root).to.be.instanceOf(MapGroupState)
+
+        const busStops = root.getMapLayerByName('bus_stops')
+        expect(busStops).to.be.instanceOf(MapLayerState)
+        expect(busStops.name).to.be.eq('bus_stops')
+        expect(busStops.type).to.be.eq('layer')
+        expect(busStops.level).to.be.eq(3)
+        expect(busStops.wmsName).to.be.eq('bus_stops')
+        expect(busStops.wmsTitle).to.be.eq('bus_stops')
+        expect(busStops.layerConfig).to.not.be.null
+        expect(busStops.wmsMinScaleDenominator).to.be.eq(0)
+        expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
+
+        const sousquartiers = root.getMapLayerByName('SousQuartiers')
+        expect(sousquartiers).to.be.instanceOf(MapLayerState)
+        expect(sousquartiers.name).to.be.eq('SousQuartiers')
+        expect(sousquartiers.type).to.be.eq('layer')
+        expect(sousquartiers.level).to.be.eq(1)
+        expect(sousquartiers.wmsName).to.be.eq('SousQuartiers')
+        expect(sousquartiers.layerConfig).to.not.be.null;
+        expect(sousquartiers.wmsStyles).to.be.instanceOf(Array)
+        expect(sousquartiers.wmsStyles).to.have.length(1)
+        expect(sousquartiers.wmsStyles[0].wmsName).to.be.eq('default')
+        expect(sousquartiers.wmsStyles[0].wmsTitle).to.be.eq('default')
+        expect(sousquartiers.wmsSelectedStyleName).to.be.eq('default')
+        expect(sousquartiers.wmsAttribution).to.be.null
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'SousQuartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+
+        // Try get an unknown layer
+        try {
+            root.getMapLayerByName('sous-quartiers')
+        } catch (error) {
+            expect(error.name).to.be.eq('RangeError')
+            expect(error.message).to.be.eq('The layer name `sous-quartiers` is unknown!')
+            expect(error).to.be.instanceOf(RangeError)
+        }
+
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(MapGroupState)
+        const busStops2 = root.getMapLayerByName('bus_stops')
+        expect(busStops2).to.be.eq(busStops)
+    })
+
     it('Events', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
