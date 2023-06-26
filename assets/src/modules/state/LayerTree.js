@@ -95,6 +95,30 @@ export class LayerTreeItemState extends EventDispatcher {
     }
 
     /**
+     * WMS Minimum scale denominator
+     * If the minimum scale denominator is not defined: -1 is returned
+     * If the WMS layer is a group, the minimum scale denominator is -1 if only one layer
+     * minimum scale denominator is not defined else the smallest layer minimum scale denominator
+     * in the group
+     *
+     * @type {Number}
+     **/
+    get wmsMinScaleDenominator() {
+        return this._mapItemState.wmsMinScaleDenominator;
+    }
+
+    /**
+     * WMS layer maximum scale denominator
+     * If the maximum scale denominator is not defined: -1 is returned
+     * If the WMS layer is a group, the maximum scale denominator is the largest of the layers in the group
+     *
+     * @type {Number}
+     **/
+    get wmsMaxScaleDenominator() {
+        return this._mapItemState.wmsMaxScaleDenominator;
+    }
+
+    /**
      * Layer tree item is checked
      *
      * @type {Boolean}
