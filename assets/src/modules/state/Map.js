@@ -6,10 +6,12 @@ import { Extent } from './../utils/Extent.js';
 const mapStateProperties = {
     projection: {type: 'string'},
     center: {type: 'array'},
-    resolution: {type: 'number'},
     size: {type: 'array'},
     extent: {type: 'extent'},
+    resolution: {type: 'number'},
     scaleDenominator: {type: 'number'},
+    pointResolution: {type: 'number'},
+    pointScaleDenominator: {type: 'number'},
 };
 
 export class MapState extends EventDispatcher {
@@ -19,10 +21,12 @@ export class MapState extends EventDispatcher {
         // default values
         this._projection = 'EPSG:3857'
         this._center = [0, 0]
-        this._resolution = -1
         this._size = [0, 0]
         this._extent = new Extent(0, 0, 0, 0)
+        this._resolution = -1
         this._scaleDenominator = -1
+        this._pointResolution = -1
+        this._pointScaleDenominator = -1
     }
 
 
@@ -33,6 +37,7 @@ export class MapState extends EventDispatcher {
      *
      **/
     update(evt) {
+        console.log(evt);
         let updatedProperties = {};
         for (const prop in mapStateProperties) {
             if (evt.hasOwnProperty(prop)) {
@@ -113,15 +118,6 @@ export class MapState extends EventDispatcher {
     }
 
     /**
-     * Map resolution (calculate from the center)
-     *
-     * @type {Number}
-     **/
-    get resolution() {
-        return this._resolution;
-    }
-
-    /**
      * Map size
      *
      * @type {Number[]}
@@ -139,13 +135,39 @@ export class MapState extends EventDispatcher {
         return this._extent;
     }
 
+    /**
+     * Map resolution
+     *
+     * @type {Number}
+     **/
+    get resolution() {
+        return this._resolution;
+    }
+
+    /**
+     * Map scale denominator
+     *
+     * @type {Number}
+     **/
+    get scaleDenominator() {
+        return this._scaleDenominator;
+    }
+
+    /**
+     * Map resolution (calculate from the center)
+     *
+     * @type {Number}
+     **/
+    get pointResolution() {
+        return this._pointResolution;
+    }
 
     /**
      * Map scale denominator (calculate from the center)
      *
      * @type {Number}
      **/
-    get scaleDenominator() {
-        return this._scaleDenominator;
+    get pointScaleDenominator() {
+        return this._pointScaleDenominator;
     }
 }

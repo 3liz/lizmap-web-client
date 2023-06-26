@@ -14,20 +14,21 @@ describe('MapState', function () {
         // Initial state
         expect(mapState.projection).to.be.eq('EPSG:3857')
         expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
-        expect(mapState.resolution).to.be.eq(-1)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
         expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
+        expect(mapState.resolution).to.be.eq(-1)
         expect(mapState.scaleDenominator).to.be.eq(-1)
+        expect(mapState.pointResolution).to.be.eq(-1)
+        expect(mapState.pointScaleDenominator).to.be.eq(-1)
 
         // Update all properties
         mapState.update({
-            "type": "map.state.changed",
+            "type": "map.state.changing",
             "projection": "EPSG:3857",
             "center": [
               432082.33132450003,
               5404877.667855
             ],
-            "resolution": 27.673393466176645,
             "size": [
               1822,
               634
@@ -38,14 +39,16 @@ describe('MapState', function () {
               466899.3977035512,
               5416992.936836514
             ],
-            "scaleDenominator": 104592.14407328397
+            "resolution": 38.218514137268066,
+            "scaleDenominator": 144447.63855208742,
+            "pointResolution": 27.673393466176645,
+            "pointScaleDenominator": 104592.14407328397
         });
         expect(mapState.projection).to.be.eq('EPSG:3857')
         expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             432082.33132450003,
             5404877.667855
         ])
-        expect(mapState.resolution).to.be.eq(27.673393466176645)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -56,26 +59,30 @@ describe('MapState', function () {
             466899.3977035512,
             5416992.936836514
         ])
-        expect(mapState.scaleDenominator).to.be.eq(104592.14407328397)
+        expect(mapState.resolution).to.be.eq(38.218514137268066)
+        expect(mapState.scaleDenominator).to.be.eq(144447.63855208742)
+        expect(mapState.pointResolution).to.be.eq(27.673393466176645)
+        expect(mapState.pointScaleDenominator).to.be.eq(104592.14407328397)
 
         // Update some properties
         mapState.update({
             "type": "map.state.changed",
-            "resolution": 13.836702727785784,
             "extent": [
                 414678.25685631623,
                 5398816.026905431,
                 449495.3232353674,
                 5410931.295886946
             ],
-            "scaleDenominator": 52296.09469372093
+            "resolution": 19.109257068634033,
+            "scaleDenominator": 72223.81927604371,
+            "pointResolution": 13.836702727785784,
+            "pointScaleDenominator": 52296.09469372093
         });
         expect(mapState.projection).to.be.eq('EPSG:3857')
         expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             432082.33132450003,
             5404877.667855
         ])
-        expect(mapState.resolution).to.be.eq(13.836702727785784)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -86,7 +93,10 @@ describe('MapState', function () {
             449495.3232353674,
             5410931.295886946
         ])
-        expect(mapState.scaleDenominator).to.be.eq(52296.09469372093)
+        expect(mapState.resolution).to.be.eq(19.109257068634033)
+        expect(mapState.scaleDenominator).to.be.eq(72223.81927604371)
+        expect(mapState.pointResolution).to.be.eq(13.836702727785784)
+        expect(mapState.pointScaleDenominator).to.be.eq(52296.09469372093)
 
         // Update unknown properties - nothing will change
         mapState.update({
@@ -99,7 +109,6 @@ describe('MapState', function () {
             432082.33132450003,
             5404877.667855
         ])
-        expect(mapState.resolution).to.be.eq(13.836702727785784)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -110,7 +119,10 @@ describe('MapState', function () {
             449495.3232353674,
             5410931.295886946
         ])
-        expect(mapState.scaleDenominator).to.be.eq(52296.09469372093)
+        expect(mapState.resolution).to.be.eq(19.109257068634033)
+        expect(mapState.scaleDenominator).to.be.eq(72223.81927604371)
+        expect(mapState.pointResolution).to.be.eq(13.836702727785784)
+        expect(mapState.pointScaleDenominator).to.be.eq(52296.09469372093)
     })
 
     it('Events', function () {
@@ -132,7 +144,6 @@ describe('MapState', function () {
               432082.33132450003,
               5404877.667855
             ],
-            "resolution": 27.673393466176645,
             "size": [
               1822,
               634
@@ -143,7 +154,10 @@ describe('MapState', function () {
               466899.3977035512,
               5416992.936836514
             ],
-            "scaleDenominator": 104592.14407328397
+            "resolution": 38.218514137268066,
+            "scaleDenominator": 144447.63855208742,
+            "pointResolution": 27.673393466176645,
+            "pointScaleDenominator": 104592.14407328397
         });
 
         expect(mapStateChangedEvt).to.not.be.null // event dispatch
@@ -152,7 +166,6 @@ describe('MapState', function () {
             432082.33132450003,
             5404877.667855
         ])
-        expect(mapStateChangedEvt.resolution).to.be.eq(27.673393466176645)
         expect(mapStateChangedEvt.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -163,14 +176,16 @@ describe('MapState', function () {
             466899.3977035512,
             5416992.936836514
         ])
-        expect(mapStateChangedEvt.scaleDenominator).to.be.eq(104592.14407328397)
+        expect(mapStateChangedEvt.resolution).to.be.eq(38.218514137268066)
+        expect(mapStateChangedEvt.scaleDenominator).to.be.eq(144447.63855208742)
+        expect(mapStateChangedEvt.pointResolution).to.be.eq(27.673393466176645)
+        expect(mapStateChangedEvt.pointScaleDenominator).to.be.eq(104592.14407328397)
 
         // Reset object
         mapStateChangedEvt = null
         // Update some properties
         mapState.update({
             "type": "map.state.changing",
-            "resolution": 13.836702727785784,
             "size": [
               1822,
               634
@@ -181,13 +196,15 @@ describe('MapState', function () {
                 449495.3232353674,
                 5410931.295886946
             ],
-            "scaleDenominator": 52296.09469372093
+            "resolution": 19.109257068634033,
+            "scaleDenominator": 72223.81927604371,
+            "pointResolution": 13.836702727785784,
+            "pointScaleDenominator": 52296.09469372093
         });
 
         expect(mapStateChangedEvt).to.not.be.null // event dispatch
         expect(mapStateChangedEvt.projection).to.be.undefined // the projection has not changed
         expect(mapStateChangedEvt.center).to.be.undefined
-        expect(mapState.resolution).to.be.eq(13.836702727785784)
         expect(mapStateChangedEvt.size).to.be.undefined
         expect(mapStateChangedEvt.extent).to.be.an('array').that.have.lengthOf(4).that.deep.equal([
             414678.25685631623,
@@ -195,7 +212,10 @@ describe('MapState', function () {
             449495.3232353674,
             5410931.295886946
         ])
-        expect(mapStateChangedEvt.scaleDenominator).to.be.eq(52296.09469372093)
+        expect(mapStateChangedEvt.resolution).to.be.eq(19.109257068634033)
+        expect(mapStateChangedEvt.scaleDenominator).to.be.eq(72223.81927604371)
+        expect(mapStateChangedEvt.pointResolution).to.be.eq(13.836702727785784)
+        expect(mapStateChangedEvt.pointScaleDenominator).to.be.eq(52296.09469372093)
 
         // Reset object
         mapStateChangedEvt = null
@@ -212,14 +232,16 @@ describe('MapState', function () {
         // Update properties with same values
         mapState.update({
             "type": "map.state.changed",
-            "resolution": 13.836702727785784,
             "extent": [
                 414678.25685631623,
                 5398816.026905431,
                 449495.3232353674,
                 5410931.295886946
             ],
-            "scaleDenominator": 52296.09469372093
+            "resolution": 19.109257068634033,
+            "scaleDenominator": 72223.81927604371,
+            "pointResolution": 13.836702727785784,
+            "pointScaleDenominator": 52296.09469372093
         });
         expect(mapStateChangedEvt).to.be.null // event not dispatch
     })
@@ -231,10 +253,12 @@ describe('MapState', function () {
         // Initial state
         expect(mapState.projection).to.be.eq('EPSG:3857')
         expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
-        expect(mapState.resolution).to.be.eq(-1)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
         expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
+        expect(mapState.resolution).to.be.eq(-1)
         expect(mapState.scaleDenominator).to.be.eq(-1)
+        expect(mapState.pointResolution).to.be.eq(-1)
+        expect(mapState.pointScaleDenominator).to.be.eq(-1)
 
         try {
             mapState.update({
