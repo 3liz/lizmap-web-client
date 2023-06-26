@@ -745,8 +745,9 @@ export class LayerVectorState extends LayerLayerState {
             return;
         }
         // Reset the selection token when selected features changed
+        const dispatchTokenChanged = (this._selectionToken !== null);
         this._selectionToken = null;
-        if (selectIds == null || selectIds.length == 0) {
+        if (selectIds === null || selectIds.length == 0) {
             // set selected features to an empty array
             this._selectedFeatures = [];
         } else {
@@ -755,8 +756,16 @@ export class LayerVectorState extends LayerLayerState {
         this.dispatch({
             type: 'layer.selection.changed',
             name: this.name,
-            selection: this.selection,
+            selectedFeatures: this.selectedFeatures,
         })
+        if (dispatchTokenChanged) {
+            this.dispatch({
+                type: 'layer.selection.token.changed',
+                name: this.name,
+                selectedFeatures: this.selectedFeatures,
+                selectionToken: this.selectionToken,
+            })
+        }
     }
 
     /**
@@ -782,20 +791,37 @@ export class LayerVectorState extends LayerLayerState {
             if (!token.hasOwnProperty('token') || !token.hasOwnProperty('selectedFeatures')) {
                 throw new ValidationError('If the expression filter token is an object, it has to have `token` and `selectedFeatures` properties!');
             }
+            // Validate selectedFeatures
+            if (token.selectedFeatures != null && !(token.selectedFeatures instanceof Array)) {
+                throw new ValidationError('Selection Ids could only be null or an array!');
+            }
+            // Reset selectedFeatures and selectionToken
+            if (token.selectedFeatures === null || token.selectedFeatures.length == 0) {
+                this.selectedFeatures = token.selectedFeatures;
+                return;
+            }
+
             const selectIds = token.selectedFeatures;
             const oldSelectIds = this._selectedFeatures;
             if (this._selectionToken === token.token
-                && selectIds instanceof Array
                 && oldSelectIds.every(item => selectIds.includes(item))
                 && selectIds.every(item => oldSelectIds.includes(item))) {
                 return;
             } else {
-                this.selectedFeatures = token.selectedFeatures;
                 if (token.token == null || token.token === '') {
                     // Set filter token to null and not a string
                     this._selectionToken = null;
                 } else {
                     this._selectionToken = token.token;
+                }
+                if (!(oldSelectIds.every(item => selectIds.includes(item))
+                    && selectIds.every(item => oldSelectIds.includes(item)))) {
+                    this._selectedFeatures = token.selectedFeatures;
+                    this.dispatch({
+                        type: 'layer.selection.changed',
+                        name: this.name,
+                        selectedFeatures: this.selectedFeatures,
+                    })
                 }
             }
         } else {
@@ -812,7 +838,7 @@ export class LayerVectorState extends LayerLayerState {
         this.dispatch({
             type: 'layer.selection.token.changed',
             name: this.name,
-            selection: this.selection,
+            selectedFeatures: this.selectedFeatures,
             selectionToken: this.selectionToken,
         })
     }
@@ -840,6 +866,7 @@ export class LayerVectorState extends LayerLayerState {
             throw new ValidationError('Expression filter could only be null or a string!');
         }
         // Reset the expression filter token when selected expression filter changed
+        const dispatchTokenChanged = (this._filterToken !== null);
         this._filterToken = null;
         if (exp == null || exp === '') {
             // Set expression filter to null and not a string
@@ -852,6 +879,14 @@ export class LayerVectorState extends LayerLayerState {
             name: this.name,
             expressionFilter: this.expressionFilter,
         })
+        if (dispatchTokenChanged) {
+            this.dispatch({
+                type: 'layer.filter.token.changed',
+                name: this.name,
+                expressionFilter: this.expressionFilter,
+                filterToken: this.filterToken,
+            })
+        }
     }
 
     /**
@@ -877,15 +912,32 @@ export class LayerVectorState extends LayerLayerState {
             if (!token.hasOwnProperty('token') || !token.hasOwnProperty('expressionFilter')) {
                 throw new ValidationError('If the expression filter token is an object, it has to have `token` and `expressionFilter` properties!');
             }
+            // Validate expression
+            if (token.expressionFilter != null && typeof(token.expressionFilter) != 'string') {
+                throw new ValidationError('Expression filter could only be null or a string!');
+            }
+            // Reset expressionFilter and filterToken
+            if (token.expressionFilter == null || token.expressionFilter === '') {
+                this.expressionFilter = token.expressionFilter;
+                return;
+            }
+
             if (this._filterToken === token.token && this.expressionFilter === token.expressionFilter) {
                 return;
             } else {
-                this.expressionFilter = token.expressionFilter;
                 if (token.token == null || token.token === '') {
                     // Set filter token to null and not a string
                     this._filterToken = null;
                 } else {
                     this._filterToken = token.token;
+                }
+                if (this._expressionFilter !== token.expressionFilter) {
+                    this._expressionFilter = token.expressionFilter;
+                    this.dispatch({
+                        type: 'layer.filter.changed',
+                        name: this.name,
+                        expressionFilter: this.expressionFilter,
+                    })
                 }
             }
         } else {
@@ -903,7 +955,7 @@ export class LayerVectorState extends LayerLayerState {
             type: 'layer.filter.token.changed',
             name: this.name,
             expressionFilter: this.expressionFilter,
-            expressionFilterToken: this.filterToken,
+            filterToken: this.filterToken,
         })
     }
 

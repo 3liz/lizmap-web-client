@@ -6,6 +6,7 @@ import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
+import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 
 import { MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
 
@@ -24,24 +25,15 @@ describe('MapGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const root = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
         expect(root.level).to.be.eq(0)
         expect(root.wmsName).to.be.eq('Montpellier-Transports')
-        expect(root.wmsGeographicBoundingBox).to.be.instanceOf(LayerGeographicBoundingBoxConfig)
-        expect(root.wmsGeographicBoundingBox.west).to.be.eq(43.542477)
-        expect(root.wmsGeographicBoundingBox.south).to.be.eq(3.746034)
-        expect(root.wmsGeographicBoundingBox.east).to.be.eq(43.672144)
-        expect(root.wmsGeographicBoundingBox.north).to.be.eq(4.01689)
-        expect(root.wmsBoundingBoxes).to.be.instanceOf(Array)
-        expect(root.wmsBoundingBoxes).to.have.length(3)
-        expect(root.wmsBoundingBoxes[0]).to.be.instanceOf(LayerBoundingBoxConfig)
-        expect(root.wmsBoundingBoxes[0].crs).to.be.eq('EPSG:3857')
-        expect(root.wmsBoundingBoxes[0].xmin).to.be.eq(417006.613)
-        expect(root.wmsBoundingBoxes[0].ymin).to.be.eq(5394910.34)
-        expect(root.wmsBoundingBoxes[0].xmax).to.be.eq(447158.049)
-        expect(root.wmsBoundingBoxes[0].ymax).to.be.eq(5414844.995)
+        expect(root.wmsGeographicBoundingBox).to.be.null
+        expect(root.wmsBoundingBoxes).to.be.an('array').that.have.length(0)
         expect(root.wmsMinScaleDenominator).to.be.eq(-1)
         expect(root.wmsMaxScaleDenominator).to.be.eq(-1)
         expect(root.checked).to.be.true
@@ -82,6 +74,8 @@ describe('MapGroupState', function () {
         expect(busStops.name).to.be.eq('bus_stops')
         expect(busStops.type).to.be.eq('layer')
         expect(busStops.level).to.be.eq(3)
+        expect(busStops.layerType).to.be.eq('vector')
+        expect(busStops.layerOrder).to.be.eq(3)
         expect(busStops.wmsName).to.be.eq('bus_stops')
         expect(busStops.wmsTitle).to.be.eq('bus_stops')
         expect(busStops.layerConfig).to.not.be.null
@@ -93,6 +87,8 @@ describe('MapGroupState', function () {
         expect(sousquartiers.name).to.be.eq('SousQuartiers')
         expect(sousquartiers.type).to.be.eq('layer')
         expect(sousquartiers.level).to.be.eq(1)
+        expect(sousquartiers.layerType).to.be.eq('vector')
+        expect(sousquartiers.layerOrder).to.be.eq(8)
         expect(sousquartiers.wmsName).to.be.eq('SousQuartiers')
         expect(sousquartiers.layerConfig).to.not.be.null;
         expect(sousquartiers.wmsStyles).to.be.instanceOf(Array)
@@ -133,7 +129,9 @@ describe('MapGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const root = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
         expect(root).to.be.instanceOf(MapGroupState)
 
         expect(root.checked).to.be.true
@@ -149,6 +147,7 @@ describe('MapGroupState', function () {
         expect(poi).to.be.instanceOf(MapLayerState)
 
         expect(poi.checked).to.be.false
+        expect(poi.itemState.visibility).to.be.false
         expect(poi.visibility).to.be.false
 
         const rides = edition.children[1];
@@ -208,7 +207,9 @@ describe('MapGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const root = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
         expect(root).to.be.instanceOf(MapGroupState)
 
         expect(root.findMapLayerNames()).to.have.ordered.members([
@@ -264,7 +265,9 @@ describe('MapGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const root = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
         expect(root).to.be.instanceOf(MapGroupState)
 
         const busStops = root.getMapLayerByName('bus_stops')
@@ -327,7 +330,9 @@ describe('MapGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const root = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
         expect(root).to.be.instanceOf(MapGroupState)
 
         let rootLayerVisibilityChangedEvt = null;
@@ -517,7 +522,9 @@ describe('MapGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const root = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
         expect(root).to.be.instanceOf(MapGroupState)
 
         const transports = root.children[1];
@@ -596,7 +603,9 @@ describe('MapGroupState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const root = new MapGroupState(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
         expect(root).to.be.instanceOf(MapGroupState)
 
         const legend = JSON.parse(readFileSync('./data/montpellier-legend.json', 'utf8'));

@@ -455,7 +455,7 @@ describe('LayerGroupState', function () {
             "SELECTION": "SousQuartiers:1,3"
         })
 
-        // An object with `expressionFilter` and `token` updates the 2 properties
+        // An object with `selectedFeatures` and `token` updates the 2 properties
         sousquartiers.selectionToken = {
             selectedFeatures: ['1'],
             token: 'token-for-id-1'
