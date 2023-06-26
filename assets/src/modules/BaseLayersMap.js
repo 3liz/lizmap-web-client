@@ -316,8 +316,6 @@ export default class BaseLayersMap extends olMap {
             },
             ['layer.symbol.checked.changed', 'layer.style.changed']
         );
-
-        updateLayerTreeGroupLayersSymbology(mainLizmap.state.layerTree);
     }
 
     get hasEmptyBaseLayer() {
