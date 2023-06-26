@@ -286,8 +286,8 @@ export class LayerItemState extends EventDispatcher {
         // Set new value
         this._checked = newVal;
         // Propagation to parent if checked
-        if (this._checked && this._parentMapGroup != null) {
-            this._parentMapGroup.checked = newVal;
+        if (this._checked && this._parentGroup != null) {
+            this._parentGroup.checked = newVal;
         }
         // Calculate visibility
         this.calculateVisibility();
@@ -385,13 +385,13 @@ export class LayerItemState extends EventDispatcher {
         const oldVisibility = this._visibility;
         // if the item has no parent item like root
         // it is visible
-        if (this._parentMapGroup == null) {
+        if (this._parentGroup == null) {
             this._visibility = true;
         }
         // if the parent layer tree group is visible
         // the visibility depends if the layer tree item is checked
         // else the layer tree item is not visible
-        else if (this._parentMapGroup.visibility) {
+        else if (this._parentGroup.visibility) {
             this._visibility = this._checked;
         } else {
             this._visibility = false;
@@ -985,6 +985,7 @@ export class LayerGroupState extends LayerItemState {
     constructor(layerTreeGroupCfg, layersOrder, parentMapGroup) {
         super('group', layerTreeGroupCfg, parentMapGroup);
         this._items = [];
+        this._layerOrder = -1;
         for (const layerTreeItem of layerTreeGroupCfg.getChildren()) {
             const cfg = layerTreeItem.layerConfig;
             if (cfg == null) {
@@ -999,6 +1000,10 @@ export class LayerGroupState extends LayerItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(group);
                 // Group is checked if one child is checked
                 if (group.checked) {
@@ -1015,6 +1020,10 @@ export class LayerGroupState extends LayerItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(layer);
                 // Group is checked if one child is checked
                 if (layer.checked) {
@@ -1022,6 +1031,23 @@ export class LayerGroupState extends LayerItemState {
                 }
             }
         }
+    }
+
+
+    /**
+     * Layer type from top to bottom
+     *
+     * @type {Number}
+     **/
+    get layerOrder() {
+        if (this._layerOrder == -1) {
+            for (const layer of this.itemState.findLayers()) {
+                if (this._layerOrder == -1 || layer.layerOrder < this._layerOrder) {
+                    this._layerOrder = layer.layerOrder;
+                }
+            }
+        }
+        return this._layerOrder;
     }
 
     /**
