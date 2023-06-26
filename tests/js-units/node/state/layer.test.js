@@ -115,7 +115,7 @@ describe('LayerGroupState', function () {
         expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
         expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
         expect(bus.checked).to.be.false
-        expect(bus.visibility).to.be.true
+        expect(bus.visibility).to.be.false
         expect(bus.baseLayer).to.be.false
         expect(bus.displayInLegend).to.be.true
         expect(bus.imageFormat).to.be.eq('image/png')
@@ -162,7 +162,7 @@ describe('LayerGroupState', function () {
         expect(busStops.wmsMinScaleDenominator).to.be.eq(0)
         expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
         expect(busStops.checked).to.be.false
-        expect(busStops.visibility).to.be.true
+        expect(busStops.visibility).to.be.false
         expect(busStops.baseLayer).to.be.false
         expect(busStops.displayInLegend).to.be.true
         expect(busStops.imageFormat).to.be.eq('image/png')
@@ -769,7 +769,7 @@ describe('LayerGroupState', function () {
         expect(busStops.wmsMinScaleDenominator).to.be.eq(0)
         expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
         expect(busStops.checked).to.be.false
-        expect(busStops.visibility).to.be.true
+        expect(busStops.visibility).to.be.false
         expect(busStops.baseLayer).to.be.false
         expect(busStops.displayInLegend).to.be.true
         expect(busStops.imageFormat).to.be.eq('image/png')
@@ -955,7 +955,7 @@ describe('LayerGroupState', function () {
         expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
         expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
         expect(bus.checked).to.be.false
-        expect(bus.visibility).to.be.true
+        expect(bus.visibility).to.be.false
         expect(bus.baseLayer).to.be.false
         expect(bus.displayInLegend).to.be.true
         expect(bus.imageFormat).to.be.eq('image/png')
