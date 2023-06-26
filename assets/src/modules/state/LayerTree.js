@@ -426,6 +426,15 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     }
 
     /**
+     * Is layer loading?
+     *
+     * @type {Boolean}
+     **/
+    get loading() {
+        return this._mapItemState.loading;
+    }
+
+    /**
      * Layer symbology
      *
      * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}

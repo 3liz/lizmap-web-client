@@ -230,6 +230,10 @@ export default class BaseLayersMap extends olMap {
                     name: node.name
                 });
 
+                layer.getSource().setProperties({
+                    name: node.name
+                });
+
                 this._overlayLayersAndGroups.push(layer);
                 this._statesOlLayersandGroupsMap.set(node.name, [node, layer]);
                 return layer;
@@ -275,21 +279,17 @@ export default class BaseLayersMap extends olMap {
 
             if (source instanceof ImageWMS) {
                 source.on('imageloadstart', event => {
-                    event.target.set('loading', true, true);
-                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = true;
                 });
                 source.on(['imageloadend', 'imageloaderror'], event => {
-                    event.target.set('loading', false, true);
-                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = false;
                 });
             } else if (source instanceof WMTS) {
                 source.on('tileloadstart', event => {
-                    event.target.set('loading', true, true);
-                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = true;
                 });
                 source.on(['tileloadend', 'imageloaderror'], event => {
-                    event.target.set('loading', false, true);
-                    mainEventDispatcher.dispatch('overlayLayer.loading.changed');
+                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = false;
                 });
             }
         }

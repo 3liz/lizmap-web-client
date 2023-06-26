@@ -30,7 +30,7 @@ export default class Treeview extends HTMLElement {
                     : ''
                 }
                 <div class="${item.checked ? 'checked' : ''} ${item instanceof LayerTreeGroupState ? 'group' : ''}">
-                    <!-- <div class="loading ${item?.getSource?.().get('loading') ? 'spinner' : ''}"></div> -->
+                    <div class="loading ${item.loading ? 'spinner' : ''}"></div>
                     <input class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
                     <div class="node ${this._isFiltered(item) ? 'filtered' : ''}">
                         ${!(item instanceof LayerTreeGroupState)
