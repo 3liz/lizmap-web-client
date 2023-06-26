@@ -13,6 +13,15 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.1
 * Minimum QGIS server needed 3.10
 
+### Fixed
+
+* Fix a visibility error for a QGIS preset/theme
+* Warning about "qgsmtime" for an embedded layer
+
+### Funders
+
+* Geolab.re
+
 ## 3.5.13 - 2023-05-30
 
 ### Important
