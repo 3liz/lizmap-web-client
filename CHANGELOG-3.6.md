@@ -8,6 +8,25 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Support for the QGIS widget "number": min, max and step are supported
+
+### Fixed
+
+* Support for [OpenTopoMap](https://opentopomap.org/)
+* Fix a visibility error for a QGIS preset/theme
+* Warning about "qgsmtime" for an embedded layer
+* Improve the checklist when installing Lizmap Web Client about QGIS Server
+
+### Backend
+
+* Some JavaScript cleaning
+
+### Funders
+
+* Geolab.re
+
 ## 3.6.4 - 2023-05-30
 
 ### Added
