@@ -260,6 +260,21 @@ export class LayerTreeGroupState extends LayerTreeItemState {
         }
         return items;
     }
+
+    /**
+     * Get tree layer item by its name
+     *
+     * @param {String} name - the layer name
+     * @returns {LayerTreeLayerState} The LayerTreeLayerState associated to the name
+     **/
+    getTreeLayerByName(name) {
+        for (const layer of this.findTreeLayers()) {
+            if(layer.name === name) {
+                return layer;
+            }
+        }
+        throw RangeError('The layer name `'+ name +'` is unknown!');
+    }
 }
 
 /**
