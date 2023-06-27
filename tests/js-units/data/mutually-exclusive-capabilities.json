@@ -1,0 +1,303 @@
+{
+    "version": "1.3.0",
+    "Service": {
+      "Name": "WMS",
+      "Title": "treeview",
+      "KeywordList": [
+        "infoMapAccessService"
+      ],
+      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=treeview",
+      "Fees": "None",
+      "AccessConstraints": "None",
+      "MaxWidth": 3000,
+      "MaxHeight": 3000
+    },
+    "Capability": {
+      "Request": {
+        "GetCapabilities": {
+          "Format": [
+            "text/xml"
+          ],
+          "DCPType": [
+            {
+              "HTTP": {
+                "Get": {
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=treeview&"
+                }
+              }
+            }
+          ]
+        },
+        "GetMap": {
+          "Format": [
+            "image/jpeg",
+            "image/png",
+            "image/png; mode=16bit",
+            "image/png; mode=8bit",
+            "image/png; mode=1bit",
+            "application/dxf"
+          ],
+          "DCPType": [
+            {
+              "HTTP": {
+                "Get": {
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=treeview&"
+                }
+              }
+            }
+          ]
+        },
+        "GetFeatureInfo": {
+          "Format": [
+            "text/plain",
+            "text/html",
+            "text/xml",
+            "application/vnd.ogc.gml",
+            "application/vnd.ogc.gml/3.1.1",
+            "application/json",
+            "application/geo+json"
+          ],
+          "DCPType": [
+            {
+              "HTTP": {
+                "Get": {
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=treeview&"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Exception": [
+        "XML"
+      ],
+      "Layer": {
+        "Title": "treeview",
+        "KeywordList": [
+          "infoMapAccessService"
+        ],
+        "CRS": [
+          "CRS:84",
+          "EPSG:4326",
+          "EPSG:3857"
+        ],
+        "EX_GeographicBoundingBox": [
+          3.801097,
+          43.564537,
+          3.947304,
+          43.655538
+        ],
+        "BoundingBox": [
+          {
+            "crs": "EPSG:3857",
+            "extent": [
+              423136.201,
+              5398298.799,
+              439411.858,
+              5412289.707
+            ],
+            "res": [
+              null,
+              null
+            ]
+          },
+          {
+            "crs": "EPSG:4326",
+            "extent": [
+              43.564537,
+              3.801097,
+              43.655538,
+              3.947304
+            ],
+            "res": [
+              null,
+              null
+            ]
+          }
+        ],
+        "Layer": [
+          {
+            "Name": "group_with_space_in_name",
+            "Title": "group with space in name and shortname defined",
+            "CRS": [
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857",
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857"
+            ],
+            "EX_GeographicBoundingBox": [
+              3.799863,
+              43.558178,
+              3.949082,
+              43.687649
+            ],
+            "BoundingBox": [
+              {
+                "crs": "EPSG:3857",
+                "extent": [
+                  422998.842,
+                  5397322.006,
+                  439609.759,
+                  5417231.656
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              },
+              {
+                "crs": "EPSG:4326",
+                "extent": [
+                  43.558178,
+                  3.799863,
+                  43.687649,
+                  3.949082
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              }
+            ],
+            "Layer": [
+              {
+                "Name": "quartiers",
+                "Title": "quartiers",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.80707,
+                  43.566704,
+                  3.941331,
+                  43.653372
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      423801.134,
+                      5398631.67,
+                      438746.925,
+                      5411956.343
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.566704,
+                      3.80707,
+                      43.653372,
+                      3.941331
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=treeview&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=quartiers&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              },
+              {
+                "Name": "shop_bakery_pg",
+                "Title": "shop_bakery_pg",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.799863,
+                  43.558178,
+                  3.949082,
+                  43.687649
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      422998.842,
+                      5397322.007,
+                      439609.759,
+                      5417231.655
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.558178,
+                      3.799863,
+                      43.687649,
+                      3.949082
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "défaut",
+                    "Title": "défaut",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=treeview&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=shop_bakery_pg&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              }
+            ],
+            "queryable": true,
+            "opaque": false,
+            "noSubsets": false
+          }
+        ]
+      }
+    }
+  }
