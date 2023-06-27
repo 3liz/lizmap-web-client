@@ -27,6 +27,10 @@ export class LayerTreeItemState extends EventDispatcher {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
         } else if (mapItemState instanceof MapGroupState) {
             mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
         }
@@ -153,6 +157,16 @@ export class LayerTreeItemState extends EventDispatcher {
      **/
     get layerConfig() {
         return this._mapItemState.layerConfig;
+    }
+
+
+    /**
+     * Map item state
+     *
+     * @type {?MapItemState}
+     **/
+    get mapItemState() {
+        return this._mapItemState;
     }
 
     /**

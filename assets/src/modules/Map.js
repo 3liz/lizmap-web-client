@@ -48,21 +48,24 @@ export default class Map extends olMap {
         this._dispatchMapStateChanged = () => {
             const view = this.getView();
             const projection = view.getProjection();
-            // const resolution = view.getResolution()
-            // The Scale line control uses this method to defined scale denominator
             const dpi = ADJUSTED_DPI;
             const inchesPerMeter = 1000 / 25.4;
-            const resolution = getPointResolution(projection, view.getResolution(), view.getCenter(), projection.getUnits());
+            const resolution = view.getResolution();
             const scaleDenominator = resolution * inchesPerMeter * dpi;
+            // The Scale line control uses this method to defined scale denominator
+            const pointResolution = getPointResolution(projection, view.getResolution(), view.getCenter(), projection.getUnits());
+            const pointScaleDenominator = pointResolution * inchesPerMeter * dpi;
 
-            mainEventDispatcher.dispatch({
+            mainLizmap.state.map.update({
                 'type': 'map.state.changing',
                 'projection': projection.getCode(),
                 'center': [...view.getCenter()],
-                'resolution': resolution,
                 'size': [...this.getSize()],
                 'extent': view.calculateExtent(),
+                'resolution': resolution,
                 'scaleDenominator': scaleDenominator,
+                'pointResolution': pointResolution,
+                'pointScaleDenominator': pointScaleDenominator,
             });
         };
 

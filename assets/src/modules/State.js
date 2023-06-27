@@ -1,5 +1,6 @@
 import { mainEventDispatcher } from '../modules/Globals.js';
 import { MapState } from './state/Map.js';
+import { LayersAndGroupsCollection } from './state/Layer.js';
 import { MapGroupState } from './state/MapLayer.js';
 import { LayerTreeGroupState } from './state/LayerTree.js';
 
@@ -10,6 +11,9 @@ export class State {
     constructor(initialCfg) {
         this._initialConfig = initialCfg;
         this._map = new MapState();
+        this._collection = null;
+        this._rootMapGroup = null;
+        this._layerTree = null;
         mainEventDispatcher.addListener(this._map.update.bind(this._map), 'map.state.changing');
     }
 
@@ -23,13 +27,25 @@ export class State {
     }
 
     /**
+     * The map state
+     *
+     * @type {MapState}
+     **/
+    get layersAndGroupsCollection() {
+        if (this._collection == null) {
+            this._collection = new LayersAndGroupsCollection(this._initialConfig.layerTree, this._initialConfig.layersOrder);
+        }
+        return this._collection;
+    }
+
+    /**
      * Root map group
      *
      * @type {MapGroupState}
      **/
     get rootMapGroup() {
         if (this._rootMapGroup == null) {
-            this._rootMapGroup = new MapGroupState(this._initialConfig.layerTree, this._initialConfig.layersOrder);
+            this._rootMapGroup = new MapGroupState(this.layersAndGroupsCollection.root);
         }
         return this._rootMapGroup;
     }
