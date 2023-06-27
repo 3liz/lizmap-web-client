@@ -1060,7 +1060,7 @@ describe('MapGroupState', function () {
         })
     })
 
-    it('Selection & token', function () {
+    it('Filter & token', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
