@@ -1059,4 +1059,357 @@ describe('MapGroupState', function () {
             "DPI": 96
         })
     })
+
+    it('Selection & token', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
+        expect(root).to.be.instanceOf(MapGroupState)
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(MapLayerState)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'SousQuartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+        expect(sousquartiers.symbology).to.be.null
+        expect(sousquartiers.itemState).to.not.be.null
+        expect(sousquartiers.itemState).to.be.instanceOf(LayerVectorState)
+        expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(sousquartiers.itemState.selectionToken).to.be.null
+        expect(sousquartiers.itemState.expressionFilter).to.be.null
+        expect(sousquartiers.itemState.filterToken).to.be.null
+
+        // Checked selection and events
+        let rootFilterChangedEvt = null;
+        let rootFilterTokenChangedEvt = null;
+        let rootOrderedChangedEvt = [];
+        let layerFilterChangedEvt = null;
+        let layerFilterTokenChangedEvt = null;
+        let layerOrderedChangedEvt = [];
+        // Add event listener
+        sousquartiers.addListener(evt => {
+            layerFilterChangedEvt = evt
+            layerOrderedChangedEvt.push(evt)
+        }, 'layer.filter.changed');
+        sousquartiers.addListener(evt => {
+            layerFilterTokenChangedEvt = evt
+            layerOrderedChangedEvt.push(evt)
+        }, 'layer.filter.token.changed');
+        root.addListener(evt => {
+            rootFilterChangedEvt = evt
+            rootOrderedChangedEvt.push(evt)
+        }, 'layer.filter.changed');
+        root.addListener(evt => {
+            rootFilterTokenChangedEvt = evt
+            rootOrderedChangedEvt.push(evt)
+        }, 'layer.filter.token.changed');
+
+        // Set expressionFilter
+        sousquartiers.itemState.expressionFilter = '"QUARTMNO" = \'HO\''
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(layerFilterTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(rootFilterTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTER": "SousQuartiers:\"QUARTMNO\" = 'HO'"
+        })
+
+        //Reset
+        rootFilterChangedEvt = null;
+        rootFilterTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerFilterChangedEvt = null;
+        layerFilterTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set expressionFilter
+        sousquartiers.itemState.expressionFilter = '"QUARTMNO" IN ( \'HO\' , \'PA\' )'
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(layerFilterTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(rootFilterTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTER": "SousQuartiers:\"QUARTMNO\" IN ( 'HO' , 'PA' )"
+        })
+
+        //Reset
+        rootFilterChangedEvt = null;
+        rootFilterTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerFilterChangedEvt = null;
+        layerFilterTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Reset expressionFilter
+        sousquartiers.itemState.expressionFilter = null
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.null
+        expect(layerFilterTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.null
+        expect(rootFilterTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96
+        })
+
+        //Reset
+        rootFilterChangedEvt = null;
+        rootFilterTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerFilterChangedEvt = null;
+        layerFilterTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set expressionFilter and filterToken
+        sousquartiers.itemState.expressionFilter = '"QUARTMNO" = \'HO\''
+        sousquartiers.itemState.filterToken = 'token-for-id-1'
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(layerFilterTokenChangedEvt).to.not.be.null
+        expect(layerFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(layerFilterTokenChangedEvt.filterToken).to.be.eq('token-for-id-1')
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(rootFilterTokenChangedEvt).to.not.be.null
+        expect(rootFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(rootFilterTokenChangedEvt.filterToken).to.be.eq('token-for-id-1')
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTERTOKEN": "token-for-id-1"
+        })
+
+        //Reset
+        rootFilterChangedEvt = null;
+        rootFilterTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerFilterChangedEvt = null;
+        layerFilterTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set filterToken with an object
+        sousquartiers.itemState.filterToken = {
+            expressionFilter: '"QUARTMNO" IN ( \'HO\' , \'PA\' )',
+            token: 'token-for-id-1-3'
+        }
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(layerFilterTokenChangedEvt).to.not.be.null
+        expect(layerFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(layerFilterTokenChangedEvt.filterToken).to.be.eq('token-for-id-1-3')
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(rootFilterTokenChangedEvt).to.not.be.null
+        expect(rootFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(rootFilterTokenChangedEvt.filterToken).to.be.eq('token-for-id-1-3')
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTERTOKEN": "token-for-id-1-3"
+        })
+
+        //Reset
+        rootFilterChangedEvt = null;
+        rootFilterTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerFilterChangedEvt = null;
+        layerFilterTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set expressionFilter
+        sousquartiers.itemState.expressionFilter = '"QUARTMNO" = \'HO\''
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(layerFilterTokenChangedEvt).to.not.be.null
+        expect(layerFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(layerFilterTokenChangedEvt.filterToken).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(rootFilterTokenChangedEvt).to.not.be.null
+        expect(rootFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(rootFilterTokenChangedEvt.filterToken).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTER": "SousQuartiers:\"QUARTMNO\" = 'HO'"
+        })
+
+        //Reset
+        rootFilterChangedEvt = null;
+        rootFilterTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerFilterChangedEvt = null;
+        layerFilterTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set filterToken with an object contains the same expressionFilter
+        sousquartiers.itemState.filterToken = {
+            expressionFilter: '"QUARTMNO" = \'HO\'',
+            token: 'token-for-id-1'
+        }
+        expect(layerFilterChangedEvt).to.be.null
+        expect(layerFilterTokenChangedEvt).to.not.be.null
+        expect(layerFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(layerFilterTokenChangedEvt.filterToken).to.be.eq('token-for-id-1')
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootFilterChangedEvt).to.be.null
+        expect(rootFilterTokenChangedEvt).to.not.be.null
+        expect(rootFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterTokenChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(rootFilterTokenChangedEvt.filterToken).to.be.eq('token-for-id-1')
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTERTOKEN": "token-for-id-1"
+        })
+
+        //Reset
+        rootFilterChangedEvt = null;
+        rootFilterTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerFilterChangedEvt = null;
+        layerFilterTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+
+        try {
+            sousquartiers.itemState.filterToken = 1
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('Expression filter token could only be null, a string or an object!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+        expect(layerFilterChangedEvt).to.be.null
+        expect(layerFilterTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(0)
+        expect(rootFilterChangedEvt).to.be.null
+        expect(rootFilterTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(0)
+        expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTERTOKEN": "token-for-id-1"
+        })
+
+        // Set filterToken with an object contains an empty expressionFilter
+        sousquartiers.itemState.filterToken = {
+            expressionFilter: null,
+            token: 'token-empty'
+        }
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.null
+        expect(layerFilterTokenChangedEvt).to.not.be.null
+        expect(layerFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterTokenChangedEvt.expressionFilter).to.be.null
+        expect(layerFilterTokenChangedEvt.filterToken).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.null
+        expect(rootFilterTokenChangedEvt).to.not.be.null
+        expect(rootFilterTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterTokenChangedEvt.expressionFilter).to.be.null
+        expect(rootFilterTokenChangedEvt.filterToken).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96
+        })
+    })
 })
