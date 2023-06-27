@@ -13,7 +13,7 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
 
     const wms = new WMS();
     const wmsParams = {
-        LAYERS: wmsNames,
+        LAYER: wmsNames,
         STYLES: wmsStyles,
     };
 
