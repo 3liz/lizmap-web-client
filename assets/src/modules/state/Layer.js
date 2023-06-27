@@ -288,6 +288,15 @@ export class LayerItemState extends EventDispatcher {
         // Propagation to parent if checked
         if (this._checked && this._parentGroup != null) {
             this._parentGroup.checked = newVal;
+            // If the parent is mutually exclusive, unchecked other layer
+            if (this._parentGroup.mutuallyExclusive) {
+                for (const child of this._parentGroup.getChildren()) {
+                    if (child.name === this.name) {
+                        continue;
+                    }
+                    child.checked = false;
+                }
+            }
         }
         // Calculate visibility
         this.calculateVisibility();
