@@ -1,0 +1,187 @@
+{
+    "locateByLayer": {},
+    "formFilterLayers": {},
+    "attributeLayers": {},
+    "layers": {
+      "group with space in name and shortname defined": {
+        "id": "group with space in name and shortname defined",
+        "name": "group with space in name and shortname defined",
+        "type": "group",
+        "title": "group with space in name and shortname defined",
+        "abstract": "",
+        "link": "",
+        "minScale": 1,
+        "maxScale": 1000000000000,
+        "toggled": "True",
+        "popup": "False",
+        "popupFrame": null,
+        "popupSource": "auto",
+        "popupTemplate": "",
+        "popupMaxFeatures": 10,
+        "popupDisplayChildren": "False",
+        "popup_allow_download": true,
+        "noLegendImage": "False",
+        "groupAsLayer": "False",
+        "baseLayer": "False",
+        "displayInLegend": "True",
+        "singleTile": "True",
+        "imageFormat": "image/png",
+        "cached": "False",
+        "serverFrame": null,
+        "clientCacheExpiration": 300,
+        "shortname": "group_with_space_in_name",
+        "mutuallyExclusive": "True"
+      },
+      "quartiers": {
+        "id": "quartiers_d4340dfd_5ee8_425d_83b7_2739f413adab",
+        "name": "quartiers",
+        "type": "layer",
+        "geometryType": "polygon",
+        "extent": [
+          3.80707036695971,
+          43.5667040954502,
+          3.94133068060567,
+          43.6533712244929
+        ],
+        "crs": "EPSG:4326",
+        "title": "quartiers",
+        "abstract": "",
+        "link": "",
+        "minScale": 1,
+        "maxScale": 1000000000000,
+        "toggled": "True",
+        "popup": "False",
+        "popupFrame": null,
+        "popupSource": "auto",
+        "popupTemplate": "",
+        "popupMaxFeatures": 10,
+        "popupDisplayChildren": "False",
+        "popup_allow_download": true,
+        "noLegendImage": "False",
+        "groupAsLayer": "False",
+        "baseLayer": "False",
+        "displayInLegend": "True",
+        "singleTile": "True",
+        "imageFormat": "image/png; mode=8bit",
+        "cached": "False",
+        "serverFrame": null,
+        "clientCacheExpiration": 300,
+        "showFeatureCount": "True",
+        "layerType": "vector"
+      },
+      "shop_bakery_pg": {
+        "id": "shop_bakery_pg_e9fe3037_8b88_49d3_bce7_f4937094d451",
+        "name": "shop_bakery_pg",
+        "type": "layer",
+        "geometryType": "point",
+        "extent": [
+          3.79986325786202,
+          43.558178970895,
+          3.94908164824975,
+          43.6876487103493
+        ],
+        "crs": "EPSG:4326",
+        "title": "shop_bakery_pg",
+        "abstract": "",
+        "link": "",
+        "minScale": 1,
+        "maxScale": 1000000000000,
+        "toggled": "False",
+        "popup": "False",
+        "popupFrame": null,
+        "popupSource": "auto",
+        "popupTemplate": "",
+        "popupMaxFeatures": 10,
+        "popupDisplayChildren": "False",
+        "popup_allow_download": true,
+        "noLegendImage": "False",
+        "groupAsLayer": "False",
+        "baseLayer": "False",
+        "displayInLegend": "True",
+        "singleTile": "True",
+        "imageFormat": "image/png; mode=8bit",
+        "cached": "False",
+        "serverFrame": null,
+        "clientCacheExpiration": 300,
+        "layerType": "vector"
+      }
+    },
+    "timemanagerLayers": {},
+    "atlas": {
+      "layers": []
+    },
+    "tooltipLayers": {},
+    "layouts": {},
+    "loginFilteredLayers": {},
+    "filter_by_polygon": {
+      "config": {
+        "polygon_layer_id": "quartiers_d4340dfd_5ee8_425d_83b7_2739f413adab",
+        "group_field": ""
+      },
+      "layers": []
+    },
+    "datavizLayers": {
+      "layers": [],
+      "dataviz": [],
+      "locale": "fr_FR"
+    },
+    "metadata": {
+      "qgis_desktop_version": 32205,
+      "lizmap_plugin_version": "master",
+      "lizmap_web_client_target_version": 30500,
+      "project_valid": true
+    },
+    "options": {
+      "projection": {
+        "proj4": "+proj=longlat +datum=WGS84 +no_defs",
+        "ref": "EPSG:4326"
+      },
+      "bbox": [
+        "3.80109717446101",
+        "43.56453741722414",
+        "3.9473038731043704",
+        "43.65553790271897"
+      ],
+      "mapScales": [
+        10000,
+        25000,
+        50000,
+        100000,
+        250000,
+        500000
+      ],
+      "minScale": 10000,
+      "maxScale": 500000,
+      "initialExtent": [
+        3.80109717446101,
+        43.56453741722414,
+        3.9473038731043704,
+        43.65553790271897
+      ],
+      "popupLocation": "dock",
+      "pointTolerance": 25,
+      "lineTolerance": 10,
+      "polygonTolerance": 5,
+      "tmTimeFrameSize": 10,
+      "tmTimeFrameType": "seconds",
+      "tmAnimationFrameLength": 1000,
+      "datavizLocation": "dock",
+      "theme": "light",
+      "fixed_scale_overview_map": true,
+      "removeCache": "True",
+      "exportLayers": "True",
+      "wmsMaxWidth": "3000",
+      "wmsMaxHeight": "3000",
+      "searches": [
+        {
+          "type": "Fts",
+          "service": "lizmapFts",
+          "url": "/index.php/lizmap/searchFts/get"
+        }
+      ]
+    },
+    "printTemplates": [],
+    "relations": {
+      "pivot": []
+    }
+  }

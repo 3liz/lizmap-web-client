@@ -708,7 +708,75 @@ describe('LayerGroupState', function () {
         })
     })
 
-    it('LayersAndGroupsCollection', function () {
+    it('Mutually exclusive', function () {
+        const capabilities = JSON.parse(readFileSync('./data/mutually-exclusive-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/mutually-exclusive-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const root = new LayerGroupState(rootCfg, layersOrder);
+        expect(root).to.be.instanceOf(LayerGroupState)
+
+        const group = root.children[0]
+        expect(group).to.be.instanceOf(LayerGroupState)
+        expect(group.mutuallyExclusive).to.be.true
+        expect(group.checked).to.be.true
+        expect(group.visibility).to.be.true
+        expect(group.childrenCount).to.be.eq(2)
+
+        const layer1 = group.children[0]
+        expect(layer1).to.be.instanceOf(LayerVectorState)
+        expect(layer1.checked).to.be.true
+        expect(layer1.visibility).to.be.true
+        const layer2 = group.children[1]
+        expect(layer2).to.be.instanceOf(LayerVectorState)
+        expect(layer2.checked).to.be.false
+        expect(layer2.visibility).to.be.false
+
+        layer2.checked = true;
+        expect(group.checked).to.be.true
+        expect(group.visibility).to.be.true
+        expect(layer1.checked).to.be.false
+        expect(layer1.visibility).to.be.false
+        expect(layer2.checked).to.be.true
+        expect(layer2.visibility).to.be.true
+
+        group.checked = false;
+        expect(group.checked).to.be.false
+        expect(group.visibility).to.be.false
+        expect(layer1.checked).to.be.false
+        expect(layer1.visibility).to.be.false
+        expect(layer2.checked).to.be.true
+        expect(layer2.visibility).to.be.false
+
+        layer1.checked = true;
+        expect(group.checked).to.be.true
+        expect(group.visibility).to.be.true
+        expect(layer1.checked).to.be.true
+        expect(layer1.visibility).to.be.true
+        expect(layer2.checked).to.be.false
+        expect(layer2.visibility).to.be.false
+
+        layer1.checked = false;
+        expect(group.checked).to.be.true
+        expect(group.visibility).to.be.true
+        expect(layer1.checked).to.be.false
+        expect(layer1.visibility).to.be.false
+        expect(layer2.checked).to.be.false
+        expect(layer2.visibility).to.be.false
+    })
+})
+
+describe('LayersAndGroupsCollection', function () {
+    it('Valid', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
