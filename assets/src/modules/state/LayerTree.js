@@ -12,8 +12,8 @@ export class LayerTreeItemState extends EventDispatcher {
     /**
      * Instantiate a layer tree item
      *
-     * @param {MapItemState}        mapItemState           - the layer tree item config
-     * @param {LayerTreeItemState}  [parentGroupState] - the parent layer tree group
+     * @param {MapItemState}       mapItemState       - the map item state
+     * @param {LayerTreeItemState} [parentGroupState] - the parent layer tree group
      */
     constructor(mapItemState, parentGroupState) {
         super();
@@ -189,8 +189,8 @@ export class LayerTreeGroupState extends LayerTreeItemState {
     /**
      * Instantiate a layer tree group
      *
-     * @param {MapGroupState}        mapGroupState      - the layer tree group config
-     * @param {LayerTreeGroupState}  [parentGroupState] - the parent layer tree group
+     * @param {MapGroupState}       mapGroupState      - the map layer group state
+     * @param {LayerTreeGroupState} [parentGroupState] - the parent layer tree group
      */
     constructor(mapGroupState, parentGroupState) {
         super(mapGroupState, parentGroupState);
@@ -325,13 +325,33 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * Instantiate a layer tree layer
      *
-     * @param {MapLayerState} mapLayerState       - the layer tree group config
-     * @param {LayerTreeGroupState}                            [parentGroupState] - the parent layer tree group
+     * @param {MapLayerState}       mapLayerState      - the map layer state
+     * @param {LayerTreeGroupState} [parentGroupState] - the parent layer tree group
      */
     constructor(mapLayerState, parentGroupState) {
         super(mapLayerState, parentGroupState);
         // set default icon
         this._icon = getDefaultLayerIcon(this.layerConfig);
+    }
+
+    /**
+     * Vector layer has selected features
+     * The selected features is not empty
+     *
+     * @type {Boolean}
+     **/
+    get hasSelectedFeatures() {
+        return this._mapItemState.hasSelectedFeatures;
+    }
+
+    /**
+     * Vector layer is filtered
+     * The expression filter is not null
+     *
+     * @type {Boolean}
+     **/
+    get isFiltered() {
+        return this._mapItemState.isFiltered;
     }
 
     /**
