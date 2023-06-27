@@ -35,20 +35,26 @@ SERVICE=qgis_test
 # Transfert files with FTP
 
 # Clean existing schema in PG
-PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -n -d qgis_test -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
+# PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -n -d qgis_test -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
 psql service=${SERVICE} -n -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
 
 # Insert users needed for tests, maybe truncate ?
 # Change the LWC version
-sed -i "s#INSERT INTO lizmap\.#INSERT INTO lizmap_lizmap_3_5\.#g" set_tests_respository_rights.sql 
+sed -i "s#INSERT INTO lizmap\.#INSERT INTO lizmap_lizmap_3_6\.#g" set_tests_respository_rights.sql
 
 # Make the PG query
-PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -d DB_NAME -f set_tests_respository_rights.sql
+# PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -d DB_NAME -f set_tests_respository_rights.sql
 psql service=${SERVICE} -f set_tests_respository_rights.sql
 
 # Import data, check there isn't any ACL before
 psql service=${SERVICE} -f tests_dataset.sql
 psql service=${SERVICE} -f set_tests_lizmap_search.sql
+
+# Clean
+find . -name "*.qgs~" -type f -delete
+find . -name "*.bak" -type f -delete
+find . -name "*_attachments.zip" -type f -delete
+# Transfer
 
 git reset --hard
 ```

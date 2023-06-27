@@ -17,8 +17,8 @@ echo "#### Update files ####"
 for file in "$DIR"*.qgs
 do
     echo "$file updated"
-    sed -i "s/source=\"service='lizmapdb'/source=\"service='$2'/g" $file;
-    sed -i "s/<datasource>service='lizmapdb'/<datasource>service='$2'/g" $file;
+    sed -i "s/service='lizmapdb'/service='$2'/g" "$file";
+    sed -i "s/<datasource>service='lizmapdb'/<datasource>service='$2'/g" "$file";
 done
 
 echo "#### End ####"
