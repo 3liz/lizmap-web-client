@@ -18,43 +18,8 @@ The PostgreSQL dump (schema + data) `tests_dataset.sql` contains all data to run
     * Some tables : `pg_dump -d "service=lizmapdb" -t tests_projects.XXX -t tests_projects.YYY --no-owner --no-acl -n tests_projects -f to_merge.sql`
 * Command to restore : `psql service=lizmapdb -f tests_dataset.sql`
 
-## Using another service
-
-*Quick and dirty* process to use these projects on another DB :
-
-* service `qgis_test`
-* Lizmap repository called in the UI `testsrepository`
+## Deploy on snap
 
 ```bash
-# SERVICE from the remote server to be replaced
-SERVICE=qgis_test
-
-# Replace service name in QGIS projects
-./replace_database_connection_qgs_project.sh $PWD/ ${SERVICE}
-
-# Transfert files with FTP
-
-# Clean existing schema in PG
-# PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -n -d qgis_test -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
-psql service=${SERVICE} -n -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
-
-# Insert users needed for tests, maybe truncate ?
-# Change the LWC version
-sed -i "s#INSERT INTO lizmap\.#INSERT INTO lizmap_lizmap_3_6\.#g" set_tests_respository_rights.sql
-
-# Make the PG query
-# PGPASSWORD=PASSWORD psql -h localhost -p 5432 -U USER -d DB_NAME -f set_tests_respository_rights.sql
-psql service=${SERVICE} -f set_tests_respository_rights.sql
-
-# Import data, check there isn't any ACL before
-psql service=${SERVICE} -f tests_dataset.sql
-psql service=${SERVICE} -f set_tests_lizmap_search.sql
-
-# Clean
-find . -name "*.qgs~" -type f -delete
-find . -name "*.bak" -type f -delete
-find . -name "*_attachments.zip" -type f -delete
-# Transfer
-
-git reset --hard
+./deploy_snap.sh $PWD/ ${SERVICE_SNAP_3_6} lizmap_3_6
 ```
