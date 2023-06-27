@@ -312,12 +312,15 @@ describe('LayerGroupState', function () {
         expect(sousquartiers.symbology).to.be.null
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.expressionFilter).to.be.null
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.false
 
         sousquartiers.selectedFeatures = ['1']
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -329,6 +332,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectedFeatures = ['1', '3']
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(2)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -340,6 +344,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectedFeatures = null
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -356,6 +361,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -366,6 +372,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectedFeatures = ['1']
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -377,6 +384,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectionToken = 'token-for-id-1'
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(sousquartiers.selectionToken).to.be.eq('token-for-id-1')
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -388,6 +396,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectionToken = null
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -405,6 +414,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -416,6 +426,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectionToken = 'token-for-id-1'
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(sousquartiers.selectionToken).to.be.eq('token-for-id-1')
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -428,6 +439,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectedFeatures = ['1', '3']
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(2)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -447,6 +459,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(2)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -462,6 +475,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(sousquartiers.selectionToken).to.be.eq('token-for-id-1')
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -473,6 +487,7 @@ describe('LayerGroupState', function () {
         sousquartiers.selectedFeatures = [] // or null
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -509,12 +524,15 @@ describe('LayerGroupState', function () {
         expect(sousquartiers.symbology).to.be.null
         expect(sousquartiers.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.expressionFilter).to.be.null
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.false
 
         sousquartiers.expressionFilter = '"QUARTMNO" = \'HO\''
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" = \'HO\'')
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -526,6 +544,7 @@ describe('LayerGroupState', function () {
         sousquartiers.expressionFilter = '"QUARTMNO" IN ( \'HO\' , \'PA\' )'
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -537,6 +556,7 @@ describe('LayerGroupState', function () {
         sousquartiers.expressionFilter = null
         expect(sousquartiers.expressionFilter).to.be.null
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -553,6 +573,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.expressionFilter).to.be.null
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -563,6 +584,7 @@ describe('LayerGroupState', function () {
         sousquartiers.expressionFilter = '"QUARTMNO" = \'HO\''
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" = \'HO\'')
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -574,6 +596,7 @@ describe('LayerGroupState', function () {
         sousquartiers.filterToken = 'token-for-id-1'
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" = \'HO\'')
         expect(sousquartiers.filterToken).to.be.eq('token-for-id-1')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -585,6 +608,7 @@ describe('LayerGroupState', function () {
         sousquartiers.filterToken = null
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" = \'HO\'')
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -602,6 +626,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" = \'HO\'')
         expect(sousquartiers.selectionToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -613,6 +638,7 @@ describe('LayerGroupState', function () {
         sousquartiers.filterToken = 'token-for-id-1'
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" = \'HO\'')
         expect(sousquartiers.filterToken).to.be.eq('token-for-id-1')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -624,6 +650,7 @@ describe('LayerGroupState', function () {
         sousquartiers.expressionFilter = '"QUARTMNO" IN ( \'HO\' , \'PA\' )'
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -643,6 +670,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -658,6 +686,7 @@ describe('LayerGroupState', function () {
         }
         expect(sousquartiers.expressionFilter).to.be.a('string').that.be.eq('"QUARTMNO" = \'HO\'')
         expect(sousquartiers.filterToken).to.be.eq('token-for-id-1')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -670,6 +699,7 @@ describe('LayerGroupState', function () {
         sousquartiers.expressionFilter = null
         expect(sousquartiers.expressionFilter).to.be.null
         expect(sousquartiers.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",

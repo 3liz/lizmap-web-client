@@ -739,8 +739,10 @@ describe('MapGroupState', function () {
         expect(sousquartiers.itemState).to.be.instanceOf(LayerVectorState)
         expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(sousquartiers.itemState.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.itemState.expressionFilter).to.be.null
         expect(sousquartiers.itemState.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.false
 
         // Checked selection and events
         let rootSelectionChangedEvt = null;
@@ -779,6 +781,7 @@ describe('MapGroupState', function () {
         expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
         expect(rootSelectionTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -807,6 +810,7 @@ describe('MapGroupState', function () {
         expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(2)
         expect(rootSelectionTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -835,6 +839,7 @@ describe('MapGroupState', function () {
         expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(rootSelectionTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -874,6 +879,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
         expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -916,6 +922,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
         expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -955,6 +962,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
         expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -989,6 +997,7 @@ describe('MapGroupState', function () {
         expect(rootSelectionTokenChangedEvt.selectionToken).to.be.eq('token-for-id-1')
         expect(rootOrderedChangedEvt).to.have.length(1)
         expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1019,6 +1028,7 @@ describe('MapGroupState', function () {
         expect(rootSelectionTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(0)
         expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1052,6 +1062,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt).to.have.length(2)
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1092,8 +1103,10 @@ describe('MapGroupState', function () {
         expect(sousquartiers.itemState).to.be.instanceOf(LayerVectorState)
         expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(0)
         expect(sousquartiers.itemState.selectionToken).to.be.null
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
         expect(sousquartiers.itemState.expressionFilter).to.be.null
         expect(sousquartiers.itemState.filterToken).to.be.null
+        expect(sousquartiers.isFiltered).to.be.false
 
         // Checked selection and events
         let rootFilterChangedEvt = null;
@@ -1132,6 +1145,7 @@ describe('MapGroupState', function () {
         expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
         expect(rootFilterTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1160,6 +1174,7 @@ describe('MapGroupState', function () {
         expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
         expect(rootFilterTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1188,6 +1203,7 @@ describe('MapGroupState', function () {
         expect(rootFilterChangedEvt.expressionFilter).to.be.null
         expect(rootFilterTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.isFiltered).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1227,6 +1243,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
         expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1269,6 +1286,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
         expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" IN ( \'HO\' , \'PA\' )')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1307,6 +1325,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt).to.have.length(2)
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1341,6 +1360,7 @@ describe('MapGroupState', function () {
         expect(rootFilterTokenChangedEvt.filterToken).to.be.eq('token-for-id-1')
         expect(rootOrderedChangedEvt).to.have.length(1)
         expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1372,6 +1392,7 @@ describe('MapGroupState', function () {
         expect(rootFilterTokenChangedEvt).to.be.null
         expect(rootOrderedChangedEvt).to.have.length(0)
         expect(sousquartiers.itemState.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(sousquartiers.isFiltered).to.be.true
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",
@@ -1405,6 +1426,7 @@ describe('MapGroupState', function () {
         expect(rootOrderedChangedEvt).to.have.length(2)
         expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.filter.changed')
         expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.filter.token.changed')
+        expect(sousquartiers.isFiltered).to.be.false
         expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
             "LAYERS": "SousQuartiers",
             "STYLES": "default",

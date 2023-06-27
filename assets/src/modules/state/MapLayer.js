@@ -460,6 +460,32 @@ export class MapLayerState extends MapItemState {
     }
 
     /**
+     * Vector layer has selected features
+     * The selected features is not empty
+     *
+     * @type {Boolean}
+     **/
+    get hasSelectedFeatures() {
+        if (this._layerItemState instanceof LayerVectorState) {
+            return this._layerItemState.hasSelectedFeatures;
+        }
+        return false;
+    }
+
+    /**
+     * Vector layer is filtered
+     * The expression filter is not null
+     *
+     * @type {Boolean}
+     **/
+    get isFiltered() {
+        if (this._layerItemState instanceof LayerVectorState) {
+            return this._layerItemState.isFiltered;
+        }
+        return false;
+    }
+
+    /**
      * WMS selected layer style name
      *
      * @type {String}
