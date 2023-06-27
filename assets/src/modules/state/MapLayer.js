@@ -25,7 +25,9 @@ export class MapItemState extends EventDispatcher {
             && parentMapGroup.type == 'group') {
             this._parentMapGroup = parentMapGroup;
         }
-        if (layerItemState instanceof LayerLayerState) {
+        if (layerItemState instanceof LayerGroupState) {
+            layerItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+        } else {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
@@ -33,8 +35,6 @@ export class MapItemState extends EventDispatcher {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
-        } else if (layerItemState instanceof LayerGroupState) {
-            layerItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
         }
     }
     /**
@@ -407,7 +407,7 @@ export class MapLayerState extends MapItemState {
         // The layer is group
         if (this.itemState instanceof LayerGroupState) {
             // Remove the listener for group.visibility.changed to be replaced
-            layerItemState.removeListener(this.dispatch.bind(this), 'group.visibility.changed');
+            this.itemState.removeListener(this.dispatch.bind(this), 'group.visibility.changed');
             // Transform the group.visibility.changed by  layer.visibility.changed
             const self = this;
             layerItemState.addListener(
@@ -422,10 +422,10 @@ export class MapLayerState extends MapItemState {
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
-            layerItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
-            layerItemState.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
-            layerItemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
-            layerItemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
+            this.itemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+            this.itemState.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+            this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+            this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
         }
     }
 
