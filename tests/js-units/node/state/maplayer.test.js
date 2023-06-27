@@ -2,11 +2,12 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
+import { ValidationError } from '../../../../assets/src/modules/Errors.js';
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
-import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
+import { LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 
 import { MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
 
@@ -316,7 +317,7 @@ describe('MapGroupState', function () {
         expect(busStops2).to.be.eq(busStops)
     })
 
-    it('Events', function () {
+    it('Checked & visibility', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
@@ -704,5 +705,358 @@ describe('MapGroupState', function () {
         expect(layerSymbologyChangedEvt.checked).to.be.true
         expect(rootLayerSymbologyChangedEvt).to.not.be.null
         expect(rootLayerSymbologyChangedEvt).to.be.eq(layerSymbologyChangedEvt)
+    })
+
+    it('Selection & token', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
+        expect(root).to.be.instanceOf(MapGroupState)
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(MapLayerState)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'SousQuartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+        expect(sousquartiers.symbology).to.be.null
+        expect(sousquartiers.itemState).to.not.be.null
+        expect(sousquartiers.itemState).to.be.instanceOf(LayerVectorState)
+        expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(sousquartiers.itemState.selectionToken).to.be.null
+        expect(sousquartiers.itemState.expressionFilter).to.be.null
+        expect(sousquartiers.itemState.filterToken).to.be.null
+
+        // Checked selection and events
+        let rootSelectionChangedEvt = null;
+        let rootSelectionTokenChangedEvt = null;
+        let rootOrderedChangedEvt = [];
+        let layerSelectionChangedEvt = null;
+        let layerSelectionTokenChangedEvt = null;
+        let layerOrderedChangedEvt = [];
+        // Add event listener
+        sousquartiers.addListener(evt => {
+            layerSelectionChangedEvt = evt
+            layerOrderedChangedEvt.push(evt)
+        }, 'layer.selection.changed');
+        sousquartiers.addListener(evt => {
+            layerSelectionTokenChangedEvt = evt
+            layerOrderedChangedEvt.push(evt)
+        }, 'layer.selection.token.changed');
+        root.addListener(evt => {
+            rootSelectionChangedEvt = evt
+            rootOrderedChangedEvt.push(evt)
+        }, 'layer.selection.changed');
+        root.addListener(evt => {
+            rootSelectionTokenChangedEvt = evt
+            rootOrderedChangedEvt.push(evt)
+        }, 'layer.selection.token.changed');
+
+        // Set selectedFeatures
+        sousquartiers.itemState.selectedFeatures = ['1']
+        expect(layerSelectionChangedEvt).to.not.be.null
+        expect(layerSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(layerSelectionTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootSelectionChangedEvt).to.not.be.null
+        expect(rootSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(rootSelectionTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "SELECTION": "SousQuartiers:1"
+        })
+
+        //Reset
+        rootSelectionChangedEvt = null;
+        rootSelectionTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerSelectionChangedEvt = null;
+        layerSelectionTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set selectedFeatures
+        sousquartiers.itemState.selectedFeatures = ['1', '3']
+        expect(layerSelectionChangedEvt).to.not.be.null
+        expect(layerSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(layerSelectionTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootSelectionChangedEvt).to.not.be.null
+        expect(rootSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(rootSelectionTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "SELECTION": "SousQuartiers:1,3"
+        })
+
+        //Reset
+        rootSelectionChangedEvt = null;
+        rootSelectionTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerSelectionChangedEvt = null;
+        layerSelectionTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Reset selectedFeatures
+        sousquartiers.itemState.selectedFeatures = null;
+        expect(layerSelectionChangedEvt).to.not.be.null
+        expect(layerSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(layerSelectionTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootSelectionChangedEvt).to.not.be.null
+        expect(rootSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(rootSelectionTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96
+        })
+
+        //Reset
+        rootSelectionChangedEvt = null;
+        rootSelectionTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerSelectionChangedEvt = null;
+        layerSelectionTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // update selectedFeatures and selectionToken
+        sousquartiers.itemState.selectedFeatures = ['1']
+        sousquartiers.itemState.selectionToken = 'token-for-id-1'
+        expect(layerSelectionChangedEvt).to.not.be.null
+        expect(layerSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(layerSelectionTokenChangedEvt).to.not.be.null
+        expect(layerSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(layerSelectionTokenChangedEvt.selectionToken).to.be.eq('token-for-id-1')
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(rootSelectionChangedEvt).to.not.be.null
+        expect(rootSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(rootSelectionTokenChangedEvt).to.not.be.null
+        expect(rootSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(rootSelectionTokenChangedEvt.selectionToken).to.be.eq('token-for-id-1')
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "SELECTIONTOKEN": "token-for-id-1"
+        })
+
+        //Reset
+        rootSelectionChangedEvt = null;
+        rootSelectionTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerSelectionChangedEvt = null;
+        layerSelectionTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Update selectionToken with an object
+        sousquartiers.itemState.selectionToken = {
+            selectedFeatures: ['1', '3'],
+            token: 'token-for-id-1-3'
+        }
+        expect(layerSelectionChangedEvt).to.not.be.null
+        expect(layerSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(layerSelectionTokenChangedEvt).to.not.be.null
+        expect(layerSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(layerSelectionTokenChangedEvt.selectionToken).to.be.eq('token-for-id-1-3')
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(rootSelectionChangedEvt).to.not.be.null
+        expect(rootSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(rootSelectionTokenChangedEvt).to.not.be.null
+        expect(rootSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(rootSelectionTokenChangedEvt.selectionToken).to.be.eq('token-for-id-1-3')
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(2)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "SELECTIONTOKEN": "token-for-id-1-3"
+        })
+
+        //Reset
+        rootSelectionChangedEvt = null;
+        rootSelectionTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerSelectionChangedEvt = null;
+        layerSelectionTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set selectedFeatures
+        sousquartiers.itemState.selectedFeatures = ['1']
+        expect(layerSelectionChangedEvt).to.not.be.null
+        expect(layerSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(layerSelectionTokenChangedEvt).to.not.be.null
+        expect(layerSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(layerSelectionTokenChangedEvt.selectionToken).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(rootSelectionChangedEvt).to.not.be.null
+        expect(rootSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(rootSelectionTokenChangedEvt).to.not.be.null
+        expect(rootSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(rootSelectionTokenChangedEvt.selectionToken).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "SELECTION": "SousQuartiers:1"
+        })
+
+        //Reset
+        rootSelectionChangedEvt = null;
+        rootSelectionTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerSelectionChangedEvt = null;
+        layerSelectionTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        // Set selectionToken with an object contains the same selectedFeatures
+        sousquartiers.itemState.selectionToken = {
+            selectedFeatures: ['1'],
+            token: 'token-for-id-1'
+        }
+        expect(layerSelectionChangedEvt).to.be.null
+        expect(layerSelectionTokenChangedEvt).to.not.be.null
+        expect(layerSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(layerSelectionTokenChangedEvt.selectionToken).to.be.eq('token-for-id-1')
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootSelectionChangedEvt).to.be.null
+        expect(rootSelectionTokenChangedEvt).to.not.be.null
+        expect(rootSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(rootSelectionTokenChangedEvt.selectionToken).to.be.eq('token-for-id-1')
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "SELECTIONTOKEN": "token-for-id-1"
+        })
+
+        //Reset
+        rootSelectionChangedEvt = null;
+        rootSelectionTokenChangedEvt = null;
+        rootOrderedChangedEvt = [];
+        layerSelectionChangedEvt = null;
+        layerSelectionTokenChangedEvt = null;
+        layerOrderedChangedEvt = [];
+
+        try {
+            sousquartiers.itemState.selectionToken = 1
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('Selection token could only be null, a string or an object!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+        expect(layerSelectionChangedEvt).to.be.null
+        expect(layerSelectionTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(0)
+        expect(rootSelectionChangedEvt).to.be.null
+        expect(rootSelectionTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(0)
+        expect(sousquartiers.itemState.selectedFeatures).to.be.an('array').that.have.length(1)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "SELECTIONTOKEN": "token-for-id-1"
+        })
+
+        // Set selectionToken with an object contains an empty selectedFeatures
+        sousquartiers.itemState.selectionToken = {
+            selectedFeatures: [],
+            token: 'token-empty'
+        }
+        expect(layerSelectionChangedEvt).to.not.be.null
+        expect(layerSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(layerSelectionTokenChangedEvt).to.not.be.null
+        expect(layerSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(layerSelectionTokenChangedEvt.selectionToken).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(2)
+        expect(layerOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(layerOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(rootSelectionChangedEvt).to.not.be.null
+        expect(rootSelectionChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionChangedEvt.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(rootSelectionTokenChangedEvt).to.not.be.null
+        expect(rootSelectionTokenChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootSelectionTokenChangedEvt.selectedFeatures).to.be.an('array').that.have.length(0)
+        expect(rootSelectionTokenChangedEvt.selectionToken).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(2)
+        expect(rootOrderedChangedEvt[0].type).to.be.eq('layer.selection.changed')
+        expect(rootOrderedChangedEvt[1].type).to.be.eq('layer.selection.token.changed')
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96
+        })
     })
 })
