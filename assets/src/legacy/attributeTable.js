@@ -1931,6 +1931,9 @@ var lizAttributeTable = function() {
                 config.layers[featureType]['request_params']['exp_filter'] = null;
                 config.layers[featureType]['request_params']['filtertoken'] = null;
 
+                // Update layer state
+                lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(featureType).expressionFilter = null;
+
                 lizMap.events.triggerEvent("layerFilteredFeaturesChanged",
                     {
                         'featureType': featureType,
@@ -2155,6 +2158,9 @@ var lizAttributeTable = function() {
             layerConfig['request_params']['exp_filter'] = null;
             layerConfig['request_params']['filtertoken'] = null;
 
+            // Update layer state
+            lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = null;
+
             if( layer ) {
                 delete layer.params['FILTER'];
                 delete layer.params['FILTERTOKEN'];
@@ -2198,6 +2204,9 @@ var lizAttributeTable = function() {
                 config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = null;
                 config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['exp_filter'] = null;
                 config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filtertoken'] = null;
+
+                // Update layer state
+                lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(pivotParam['otherParentTypeName']).expressionFilter = null;
 
                 typeNameFilter[ pivotParam['otherParentTypeName'] ] = null;
                 typeNamePile.push( pivotParam['otherParentTypeName'] );
@@ -2363,6 +2372,13 @@ var lizAttributeTable = function() {
                             layer.params['FILTERTOKEN'] = result.token;
                             delete layer.params['FILTER'];
                             layerConfig['request_params']['filtertoken'] = result.token;
+
+                            // Update layer state
+                            lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).filterToken = {
+                                expressionFilter: layerConfig['request_params']['exp_filter'],
+                                token: result.token
+                            };
+
                             // Redraw openlayers layer
                             if( layerConfig['geometryType']
                                 && layerConfig.geometryType != 'none'
@@ -2377,7 +2393,13 @@ var lizAttributeTable = function() {
                         delete layer.params['FILTER'];
                         delete layer.params['FILTERTOKEN'];
                         layerConfig['request_params']['filtertoken'] = null;
+
+                        // Update layer state
+                        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = null;
                     }
+                } else {
+                    // Update layer state
+                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = layerConfig['request_params']['exp_filter'];
                 }
 
                 // Redraw openlayers layer
@@ -2433,6 +2455,9 @@ var lizAttributeTable = function() {
                         config.layers[cName]['request_params']['filter'] = cFilter;
                         config.layers[cName]['request_params']['exp_filter'] = cExpFilter;
 
+                        // Update layer state
+                        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(cName).expressionFilter = cExpFilter;
+
                         typeNameFilter[x] = cExpFilter;
                         typeNamePile.push( x );
 
@@ -2477,6 +2502,9 @@ var lizAttributeTable = function() {
                     }
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = cFilter;
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['exp_filter'] = cExpFilter;
+
+                    // Update layer state
+                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(pivotParam['otherParentTypeName']).expressionFilter = cExpFilter;
 
                     // The stored filter in this variable must not be prefixed by the layername
                     // since it is used to build the EXP_FILTER parameter
@@ -2573,6 +2601,13 @@ var lizAttributeTable = function() {
                     };
                     $.post(lizUrls.service, sdata, function(result){
                         lConfig['request_params']['selectiontoken'] = result.token;
+
+                        // Update layer state
+                        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectionToken = {
+                            selectedFeatures: lConfig.selectedFeatures,
+                            token: result.token
+                        };
+
                         if ( layer ) {
                             //layer.params['SELECTION'] = wmsName + ':' + lConfig['selectedFeatures'].join();
                             layer.params['SELECTIONTOKEN'] = result.token;
@@ -2586,6 +2621,8 @@ var lizAttributeTable = function() {
                     }
                     lConfig['request_params']['selection'] = null;
                     lConfig['request_params']['selectiontoken'] = null;
+
+                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectedFeatures = null;
                 }
 
                 // Build data to update layer drawing and other components
@@ -2632,6 +2669,13 @@ var lizAttributeTable = function() {
                         lConfig.request_params['selectiontoken'] = result.token;
                         if ( layer )
                             layer.params['SELECTIONTOKEN'] = result.token;
+
+                        // Update layer state
+                        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectionToken = {
+                            selectedFeatures: lConfig.selectedFeatures,
+                            token: result.token
+                        };
+
                         // Redraw openlayers layer
                         if( lConfig['geometryType']
                             && lConfig.geometryType != 'none'
@@ -2649,6 +2693,10 @@ var lizAttributeTable = function() {
                         lConfig['request_params'] = {};
                     lConfig.request_params['selection'] = null;
                     lConfig.request_params['selectiontoken'] = null;
+
+                    // Update layer state
+                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectedFeatures = null;
+
                     // Redraw openlayers layer
                     if( lConfig['geometryType']
                         && lConfig.geometryType != 'none'
