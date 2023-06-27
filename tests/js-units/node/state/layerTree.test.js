@@ -67,6 +67,8 @@ describe('LayerTreeGroupState', function () {
         expect(busStops.name).to.be.eq('bus_stops')
         expect(busStops.type).to.be.eq('layer')
         expect(busStops.level).to.be.eq(3)
+        expect(busStops.hasSelectedFeatures).to.be.false
+        expect(busStops.isFiltered).to.be.false
         expect(busStops.wmsName).to.be.eq('bus_stops')
         expect(busStops.wmsTitle).to.be.eq('bus_stops')
         expect(busStops.layerConfig).to.not.be.null
@@ -89,6 +91,8 @@ describe('LayerTreeGroupState', function () {
         expect(sousquartiers.name).to.be.eq('SousQuartiers')
         expect(sousquartiers.type).to.be.eq('layer')
         expect(sousquartiers.level).to.be.eq(1)
+        expect(sousquartiers.hasSelectedFeatures).to.be.false
+        expect(sousquartiers.isFiltered).to.be.false
         expect(sousquartiers.wmsName).to.be.eq('SousQuartiers')
         expect(sousquartiers.wmsTitle).to.be.eq('SousQuartiers')
         expect(sousquartiers.layerConfig).to.not.be.null;

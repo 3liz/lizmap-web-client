@@ -719,6 +719,16 @@ export class LayerVectorState extends LayerLayerState {
     }
 
     /**
+     * Vector layer has selected features
+     * The selected features is not empty
+     *
+     * @type {Boolean}
+     **/
+    get hasSelectedFeatures() {
+        return (this._selectedFeatures.length !== 0);
+    }
+
+    /**
      * Vector layer selection
      *
      * @type {?String}
@@ -841,6 +851,16 @@ export class LayerVectorState extends LayerLayerState {
             selectedFeatures: this.selectedFeatures,
             selectionToken: this.selectionToken,
         })
+    }
+
+    /**
+     * Vector layer is filtered
+     * The expression filter is not null
+     *
+     * @type {Boolean}
+     **/
+    get isFiltered() {
+        return (this._expressionFilter !== null && this._expressionFilter !== '');
     }
 
     /**
