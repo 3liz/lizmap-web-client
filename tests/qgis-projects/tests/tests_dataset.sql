@@ -25,8 +25,6 @@ CREATE SCHEMA tests_projects;
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
-
 --
 -- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: -
 --
