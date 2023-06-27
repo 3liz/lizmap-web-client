@@ -3533,7 +3533,13 @@ window.lizMap = function() {
                         typename: lName,
                         filter: lConfig['request_params']['filter']
                     };
-                    $.post(lizUrls.service, sdata, function(){
+                    $.post(lizUrls.service, sdata, function(result){
+                        // Update layer state
+                        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).filterToken = {
+                          expressionFilter: lConfig['request_params']['exp_filter'],
+                          token: result.token
+                        };
+                        // Refresh GetFeatureInfo
                         refreshGetFeatureInfo(evt);
                     });
                 }else{
@@ -4933,6 +4939,12 @@ window.lizMap = function() {
         delete layer.params['FILTER'];
         layer.params['FILTERTOKEN'] = filtertoken
         config.layers[layername]['request_params']['filtertoken'] = filtertoken;
+
+        // Update layer state
+        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername).filterToken = {
+          expressionFilter: config.layers[layername]['request_params']['exp_filter'],
+          token: result.token
+        };
 
         // Redraw openlayers layer
         if( config.layers[layername]['geometryType']
