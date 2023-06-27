@@ -37,7 +37,6 @@ export class MapState extends EventDispatcher {
      *
      **/
     update(evt) {
-        console.log(evt);
         let updatedProperties = {};
         for (const prop in mapStateProperties) {
             if (evt.hasOwnProperty(prop)) {
