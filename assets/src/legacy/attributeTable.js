@@ -1923,13 +1923,6 @@ var lizAttributeTable = function() {
                 lizMap.lizmapLayerFilterActive = null;
 
                 // Empty layer filter
-                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(lizMap.cleanName(featureType));
-                if( layer ) {
-                    const wmsParams = layer.getSource().getParams();
-                    delete wmsParams['FILTER'];
-                    delete wmsParams['FILTERTOKEN'];
-                    layer.getSource().updateParams(wmsParams);
-                }
                 config.layers[featureType]['request_params']['filter'] = null;
                 config.layers[featureType]['request_params']['exp_filter'] = null;
                 config.layers[featureType]['request_params']['filtertoken'] = null;
@@ -2146,22 +2139,12 @@ var lizAttributeTable = function() {
             var pivotParam = getPivotParam( typeNameId, attributeLayerConfig, typeNameDone );
 
             // **3** Apply filter to the typeName and redraw if necessary
-            let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
-
-            if(!layer) {
-                return;
-            }
-
-            const wmsParams = layer.getSource().getParams();
-
             layerConfig['request_params']['filter'] = null;
             layerConfig['request_params']['exp_filter'] = null;
             layerConfig['request_params']['filtertoken'] = null;
 
             // Update layer state
             lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = null;
-
-            layer.getSource().updateParams(wmsParams);
 
             // Refresh attributeTable
             var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
@@ -2367,9 +2350,6 @@ var lizAttributeTable = function() {
                         }).then(response => {
                             return response.json();
                         }).then(result => {
-                            wmsParams['FILTERTOKEN'] = result.token;
-                            delete wmsParams['FILTER'];
-                            layer.getSource().updateParams(wmsParams);
                             layerConfig['request_params']['filtertoken'] = result.token;
 
                             // Update layer state
@@ -2379,9 +2359,6 @@ var lizAttributeTable = function() {
                             };
                         });
                     } else {
-                        delete wmsParams['FILTER'];
-                        delete wmsParams['FILTERTOKEN'];
-                        layer.getSource().updateParams(wmsParams);
                         layerConfig['request_params']['filtertoken'] = null;
 
                         // Update layer state
@@ -2556,7 +2533,6 @@ var lizAttributeTable = function() {
                     cFilter = '$id IN ( ' + lConfig['filteredFeatures'].join( ' , ' ) + ' ) ';
                 }
 
-                const wmsParams = layer.getSource().getParams();
                 const wmsName = lConfig?.['shortname'] || featureType;
 
                 // Build selection parameter from selectedFeatures
@@ -2584,9 +2560,6 @@ var lizAttributeTable = function() {
                     });
                 }
                 else {
-                    delete wmsParams['SELECTIONTOKEN'];
-                    layer.getSource().updateParams(wmsParams);
-
                     lConfig['request_params']['selection'] = null;
                     lConfig['request_params']['selectiontoken'] = null;
 
@@ -2616,7 +2589,6 @@ var lizAttributeTable = function() {
                     return;
                 }
 
-                const wmsParams = layer.getSource().getParams();
                 const wmsName = lConfig?.['shortname'] || featureType;
 
                 // Build selection parameter from selectedFeatures
@@ -2645,10 +2617,8 @@ var lizAttributeTable = function() {
                             token: result.token
                         };
                     });
-                }
-                else {
-                    delete wmsParams['SELECTIONTOKEN'];
-                    layer.getSource().updateParams(wmsParams);
+                } else {
+
                     if (!('request_params' in lConfig)) {
                         lConfig['request_params'] = {};
                     }

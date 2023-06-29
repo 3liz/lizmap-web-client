@@ -313,7 +313,7 @@ export default class BaseLayersMap extends olMap {
 
                 olLayer.getSource().updateParams(wmsParams);
             },
-            ['layer.symbol.checked.changed', 'layer.style.changed']
+            ['layer.symbol.checked.changed', 'layer.style.changed', 'layer.selection.token.changed', 'layer.filter.token.changed']
         );
 
         mainLizmap.state.baseLayers.addListener(

@@ -1,7 +1,5 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import { LayerTreeGroupState } from '../modules/state/LayerTree.js';
 
-import LayerGroup from 'ol/layer/Group.js';
 import { html, render } from 'lit-html';
 import { when } from 'lit-html/directives/when.js';
 
@@ -21,7 +19,7 @@ export default class Treeview extends HTMLElement {
         <ul>
             ${layerTreeGroupState.children.map(item => html`
             <li>
-                ${item instanceof LayerTreeGroupState
+                ${item.type === 'group'
                     ? html`<div class="expandable expanded" @click=${(event) => event.target.classList.toggle('expanded')}></div>`
                     : ''
                 }
@@ -29,11 +27,11 @@ export default class Treeview extends HTMLElement {
                     ? html`<div class="expandable" @click=${(event) => event.target.classList.toggle('expanded')}></div>`
                     : ''
                 }
-                <div class="${item.checked ? 'checked' : ''} ${item instanceof LayerTreeGroupState ? 'group' : ''}">
+                <div class="${item.checked ? 'checked' : ''} ${item.type}">
                     <div class="loading ${item.loading ? 'spinner' : ''}"></div>
                     <input class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
-                    <div class="node ${this._isFiltered(item) ? 'filtered' : ''}">
-                        ${!(item instanceof LayerTreeGroupState)
+                    <div class="node ${item.isFiltered ? 'filtered' : ''}">
+                        ${item.type === 'layer'
                             ? html`<img class="legend" src="${item.icon}">`
                             : ''
                         }
@@ -45,7 +43,7 @@ export default class Treeview extends HTMLElement {
                             <a href="${this._createRemoveCacheLink(item.name)}" target="_blank">
                                 <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${(event) => this._removeCache(event)}></i>
                             </a>
-                            <i class="icon-info-sign" @click=${() => this._toggleMetadata(item.name, item instanceof LayerTreeGroupState)}></i>
+                            <i class="icon-info-sign" @click=${() => this._toggleMetadata(item.name, item.type)}></i>
                         </div>
                     </div>
                 </div>
@@ -64,7 +62,7 @@ export default class Treeview extends HTMLElement {
                         </ul>`
                     : ''
                 }
-                ${when(item instanceof LayerTreeGroupState, () => this._layerTemplate(item))}
+                ${when(item.type === 'group', () => this._layerTemplate(item))}
             </li>`
             )}
         </ul>`;
@@ -82,10 +80,6 @@ export default class Treeview extends HTMLElement {
             this._onChange,
             ['overlayLayers.changed', 'overlayLayer.loading.changed', 'overlayLayer.visibility.changed']
         );
-    }
-
-    _isFiltered(layer) {
-        // return !(layer instanceof LayerGroup) && layer.getSource().getParams?.()?.['FILTERTOKEN'];
     }
 
     _createDocLink(layerName) {
