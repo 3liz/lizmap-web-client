@@ -1,5 +1,4 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import { updateLayerTreeGroupLayersSymbology } from '../modules/action/Symbology.js';
 import Utils from '../modules/Utils.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -61,8 +60,8 @@ export default class BaseLayersMap extends olMap {
                     source: new XYZ({
                         url: baseLayerCfg.url,
                         projection: baseLayerCfg.crs,
-                        minZoom: 0,
-                        maxZoom: baseLayerCfg.numZoomLevels,
+                        minZoom: baseLayerCfg.zmin,
+                        maxZoom: baseLayerCfg.zmax,
                     })
                 });
             } else if (baseLayerCfg.type === 'wms') {
@@ -316,6 +315,13 @@ export default class BaseLayersMap extends olMap {
             },
             ['layer.symbol.checked.changed', 'layer.style.changed']
         );
+
+        mainLizmap.state.baseLayers.addListener(
+            evt => {
+                this.changeBaseLayer(evt.name);
+            },
+            ['baselayers.selection.changed']
+        );
     }
 
     get hasEmptyBaseLayer() {
@@ -355,7 +361,7 @@ export default class BaseLayersMap extends olMap {
         let selectedBaseLayer;
         // Choosen base layer is visible, others not
         this.baseLayersGroup.getLayers().forEach( baseLayer => {
-            if (baseLayer.get('name') == name) {
+            if (baseLayer.get('name') === name) {
                 selectedBaseLayer = baseLayer;
                 baseLayer.set("visible", true, true);
             } else {
@@ -373,8 +379,8 @@ export default class BaseLayersMap extends olMap {
             this.getView().getProjection().setExtent(getProjection(mainLizmap.projection).getExtent());
         }
 
-        // Trigger event
-        lizMap.events.triggerEvent("lizmapbaselayerchanged", { 'layer': name});
+        // Trigger legacy event
+        lizMap.events.triggerEvent("lizmapbaselayerchanged", { 'layer': name });
 
         // Refresh metadatas if sub-dock is visible
         if ( document.getElementById('sub-dock').offsetParent !== null ) {

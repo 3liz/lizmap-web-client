@@ -9,20 +9,21 @@ export default class BaseLayers extends HTMLElement {
 
     connectedCallback() {
 
-        if (mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getLength() === 0) {
+        if (mainLizmap.state.baseLayers.baseLayerNames.length === 0) {
             document.getElementById('switcher-baselayer').classList.add('hide');
             return;
         }
 
         this._template = () => html`
-            ${mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getLength() > 1 
-                ? html`<select @change=${(event) => { mainLizmap.baseLayersMap.changeBaseLayer(event.target.value) }}>
-                        ${mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getArray().slice().reverse().map((layer) => 
-                            html`<option .selected="${layer.getVisible()}" value="${layer.get('name')}">${layer.get('title')}</option>`)}
-                            <option .selected="${mainLizmap.initialConfig.baseLayers.startupBaselayerName === 'empty'}" class="${mainLizmap.baseLayersMap.hasEmptyBaseLayer ? '' : 'hide'}" value="emptyBaselayer">${lizDict['baselayer.empty.title']}</option>
-                        </select>`
-                        : 
-                        html`${mainLizmap.baseLayersMap.baseLayersGroup.getLayers().getArray()[0].get('title')}`
+            ${mainLizmap.state.baseLayers.baseLayerNames.length > 1 
+                ? html`
+                <select @change=${(event) => { mainLizmap.state.baseLayers.selectedBaseLayerName = event.target.value }}>
+                    ${mainLizmap.state.baseLayers.baseLayerConfigs.map((config) => 
+                    html`<option .selected="${mainLizmap.state.baseLayers.selectedBaseLayerName === config.name}" value="${config.name}">${config.title === 'empty' ? lizDict['baselayer.empty.title'] : config.title}</option>`
+                    )}
+                </select>`
+                : 
+                html`${mainLizmap.state.baseLayers.baseLayerNames[0].title}`
             }
         `;
 
@@ -31,7 +32,7 @@ export default class BaseLayers extends HTMLElement {
         mainEventDispatcher.addListener(
             () => {
                 render(this._template(), this);
-            }, ['baseLayers.changed']
+            }, ['baselayers.selection.changed']
         );
     }
 
@@ -39,7 +40,7 @@ export default class BaseLayers extends HTMLElement {
         mainEventDispatcher.removeListener(
             () => {
                 render(this._template(), this);
-            }, ['baseLayers.changed']
+            }, ['baselayers.selection.changed']
         );
     }
 }
