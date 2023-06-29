@@ -4,6 +4,8 @@ import EventDispatcher from './../../utils/EventDispatcher.js';
 import { applyConfig } from './../config/BaseObject.js';
 
 export const base64png = 'data:image/png;base64, ';
+export const base64pngNullData = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
+
 export const base64svg = 'data:image/svg+xml;base64,';
 // https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconPointLayer.svg
 export const base64svgPointLayer = 'PHN2ZyBoZWlnaHQ9IjE2IiB3aWR0aD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iI2VlZWVlYyIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiM4ODhhODUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMTYpIj48cGF0aCBkPSJtNC41IDEyLjVjMCAuNTUyMjg1LS40NDc3MTUzIDEtMSAxcy0xLS40NDc3MTUtMS0xIC40NDc3MTUzLTEgMS0xIDEgLjQ0NzcxNSAxIDF6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIDE2KSIvPjxwYXRoIGQ9Im00LjUgMTIuNWMwIC41NTIyODUtLjQ0NzcxNTMgMS0xIDFzLTEtLjQ0NzcxNS0xLTEgLjQ0NzcxNTMtMSAxLTEgMSAuNDQ3NzE1IDEgMXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIgOSkiLz48cGF0aCBkPSJtNC41IDEyLjVjMCAuNTUyMjg1LS40NDc3MTUzIDEtMSAxcy0xLS40NDc3MTUtMS0xIC40NDc3MTUzLTEgMS0xIDEgLjQ0NzcxNSAxIDF6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5IDYpIi8+PC9nPjwvc3ZnPg=='
@@ -94,6 +96,10 @@ export class BaseIconSymbology extends BaseObjectSymbology {
 
         if (!requiredProperties.hasOwnProperty('icon')) {
             requiredProperties['icon'] = { type: 'string' };
+        }
+        // In case of RuleBasedRenderer the icon could be empty
+        if (!node.hasOwnProperty('icon')) {
+            node.icon = base64pngNullData;
         }
 
         super(node, requiredProperties, optionalProperties)

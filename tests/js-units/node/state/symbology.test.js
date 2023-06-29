@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 
 import { ValidationError } from '../../../../assets/src/modules/Errors.js';
-import { base64png, BaseIconSymbology, LayerIconSymbology, SymbolIconSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from '../../../../assets/src/modules/state/Symbology.js';
+import { base64png, base64pngNullData, BaseIconSymbology, LayerIconSymbology, SymbolIconSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from '../../../../assets/src/modules/state/Symbology.js';
 
 describe('BaseIconSymbology', function () {
-    it('Valid', function () {
+    it('Simple', function () {
         const icon = new BaseIconSymbology({
             "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q9YelkMRC7Zl+I\/LMKyC2AxBGPYIq8uYcLmIVDBEDLp79y5jsO0jkgwiKfphlpBkwyigPgAATTcaN5pMVDUAAAAASUVORK5CYII=",
             "title":"category 1"
@@ -12,6 +12,29 @@ describe('BaseIconSymbology', function () {
         expect(icon).to.be.instanceOf(BaseIconSymbology)
         expect(icon.icon).to.have.string(base64png)
         expect(icon.title).to.be.eq('category 1')
+    })
+
+    it('Null data icon', function () {
+        const icon = new BaseIconSymbology({
+            "title":"Null data"
+        })
+        expect(icon).to.be.instanceOf(BaseIconSymbology)
+        expect(icon.icon).to.have.string(base64png)
+        expect(icon.icon).to.have.string(base64pngNullData)
+        expect(icon.icon).to.be.eq(base64png+base64pngNullData)
+        expect(icon.title).to.be.eq('Null data')
+    })
+
+    it('ValidationError', function () {
+        try {
+            new BaseIconSymbology({
+                "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q9YelkMRC7Zl+I\/LMKyC2AxBGPYIq8uYcLmIVDBEDLp79y5jsO0jkgwiKfphlpBkwyigPgAATTcaN5pMVDUAAAAASUVORK5CYII=",
+            })
+        } catch(error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: icon\n- The required properties: icon,title')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
     })
 })
 
