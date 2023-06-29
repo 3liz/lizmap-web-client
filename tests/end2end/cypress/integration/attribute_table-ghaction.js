@@ -172,7 +172,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 1)
@@ -203,7 +203,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 7)
@@ -316,7 +316,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 3)
@@ -372,7 +372,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 7)
@@ -446,7 +446,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 1)
@@ -470,7 +470,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 7)
@@ -546,7 +546,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 3)
@@ -570,7 +570,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 7)
