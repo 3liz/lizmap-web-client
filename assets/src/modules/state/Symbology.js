@@ -163,8 +163,6 @@ const symbolIconProperties = {
 const symbolIconOptionalProperties = {
     'ruleKey': {type: 'string', default: ''},
     'checked': {type: 'boolean', default: true},
-    'scaleMinDenom': {type: 'number', default: -1},
-    'scaleMaxDenom': {type: 'number', default: -1},
 }
 /**
  * Class representing the symbol icon symbology
@@ -183,6 +181,7 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      **/
     constructor(node) {
         super(node, symbolIconProperties, symbolIconOptionalProperties)
+        this._childrenRules = []
     }
 
     /**
@@ -225,6 +224,74 @@ export class SymbolIconSymbology extends BaseIconSymbology {
     }
 
     /**
+     * Is legend ON ?
+     *
+     * @type {Boolean}
+     **/
+    get legendOn() {
+        return this._checked;
+    }
+}
+
+const symbolRuleProperties = Object.assign(
+    symbolIconProperties,
+    {}
+);
+const symbolRuleOptionalProperties = Object.assign(
+    symbolIconOptionalProperties,
+    {
+        'scaleMinDenom': {type: 'number', default: -1},
+        'scaleMaxDenom': {type: 'number', default: -1},
+        'parentRuleKey': {type: 'string', default: ''},
+    }
+);
+
+/**
+ * Class representing the symbol rule symbology
+ * @class
+ * @augments SymbolIconSymbology
+ */
+export class SymbolRuleSymbology extends SymbolIconSymbology {
+    constructor(node) {
+        super(node, symbolRuleProperties, symbolRuleOptionalProperties)
+        this._parentRule = null;
+        this._childrenRules = []
+    }
+
+    /**
+     * Is legend ON ?
+     *
+     * @type {Boolean}
+     **/
+    get legendOn() {
+        if (this.parentRule === null) {
+            return this._checked;
+        }
+        if (this.parentRule.legendOn) {
+            return this._checked;
+        }
+        return false;
+    }
+
+    /**
+     * The parent rule key
+     *
+     * @type {String}
+     **/
+    get parentRuleKey() {
+        return this._parentRuleKey;
+    }
+
+    /**
+     * The parent rule
+     *
+     * @type {?SymbolRuleSymbology}
+     **/
+    get parentRule() {
+        return this._parentRule;
+    }
+
+    /**
      * The minimum scale denominator
      *
      * @type {Number}
@@ -240,6 +307,36 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      **/
     get maxScaleDenominator() {
         return this._scaleMaxDenom;
+    }
+
+    /**
+     * Children rules count
+     *
+     * @type {Number}
+     **/
+    get childrenCount() {
+        return this._childrenRules.length;
+    }
+
+    /**
+     * The children rule
+     *
+     * @type {BaseIconSymbology[]}
+     **/
+    get children() {
+        return [...this._childrenRules];
+    }
+
+    /**
+     * Iterate through children rules
+     *
+     * @generator
+     * @yields {BaseIconSymbology} The next child icon
+     **/
+    *getChildren() {
+        for (const icon of this._childrenRules) {
+            yield icon;
+        }
     }
 }
 
@@ -260,7 +357,7 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
      * @param {Object} [requiredProperties={}] - the required properties definition
      * @param {Object} [optionalProperties={}] - the optional properties definition
      **/
-    constructor(node, requiredProperties={}, optionalProperties = {}) {
+    constructor(node, requiredProperties={}, optionalProperties = {}, iconClass = BaseIconSymbology) {
 
         if (!node.hasOwnProperty('type') || node.type != 'layer') {
             throw new ValidationError('The layer symbols symbology is only available for layer type!');
@@ -274,7 +371,7 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
 
         this._icons = [];
         for(const symbol of this._symbols) {
-            this._icons.push(new BaseIconSymbology(symbol));
+            this._icons.push(new iconClass(symbol));
         }
     }
 
@@ -336,11 +433,26 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
             throw new ValidationError('The layer symbols symbology is only available for layer type!');
         }
 
-        super(node, layerSymbolsProperties, {})
-
-        this._icons = [];
-        for(const symbol of this._symbols) {
-            this._icons.push(new SymbolIconSymbology(symbol));
+        if (node.symbols[0].hasOwnProperty('ruleKey')
+            && node.symbols[0].ruleKey !== ''
+            && node.symbols[0].hasOwnProperty('parentRuleKey')
+            && node.symbols[0].parentRuleKey !== '') {
+            super(node, layerSymbolsProperties, {}, SymbolRuleSymbology)
+            this._ruleMap = new Map(this._icons.map(i => [i.ruleKey, i]));
+            let root = new Map();
+            for (const icon of this._icons) {
+                const parent = this._ruleMap.get(icon.parentRuleKey);
+                if (parent === undefined) {
+                    root.set(icon.ruleKey, icon);
+                } else {
+                    parent._childrenRules.push(icon)
+                    icon._parentRule = parent;
+                }
+            }
+            this._root = root;
+        } else {
+            super(node, layerSymbolsProperties, {}, SymbolIconSymbology)
+            this._root = null;
         }
     }
 
@@ -354,20 +466,43 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
     }
 
     /**
+     * Is legend ON ?
+     *
+     * @type {Boolean}
+     **/
+    get legendOn() {
+        for (const symbol of this._icons) {
+            if (symbol.rulekey === '') {
+                return true;
+            }
+            if (symbol.legendOn) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Children icons count
      *
      * @type {Number}
      **/
     get childrenCount() {
+        if (this._root !== null) {
+            return this._root.size;
+        }
         return this._icons.length;
     }
 
     /**
      * The children icons
      *
-     * @type {SymbolIconSymbology[]}
+     * @type {Array<SymbolIconSymbology|SymbolRuleSymbology>}
      **/
     get children() {
+        if (this._root !== null) {
+            return [...this._root.values()];
+        }
         return [...this._icons];
     }
 
@@ -375,12 +510,44 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
      * Iterate through children icons
      *
      * @generator
-     * @yields {SymbolIconSymbology} The next child icon
+     * @yields {SymbolIconSymbology|SymbolRuleSymbology} The next child icon
      **/
     *getChildren() {
-        for (const icon of this._icons) {
-            yield icon;
+        for (const child of this.children) {
+            yield child;
         }
+    }
+
+    /**
+     * Parameters for OGC WMS Request
+     *
+     * @param {String} wmsName
+     *
+     * @returns {Object} can contain LEGEND_ON and LEGEND_OFF parameters
+     **/
+    wmsParameters(wmsName) {
+        let params = {
+        }
+        let keyChecked = [];
+        let keyUnchecked = [];
+        for (const symbol of this._icons) {
+            if (symbol.rulekey === '') {
+                keyChecked = [];
+                keyUnchecked = [];
+                break;
+            }
+            if (symbol.legendOn) {
+                keyChecked.push(symbol.ruleKey);
+            } else {
+                keyUnchecked.push(symbol.ruleKey);
+            }
+        }
+        if ((keyChecked.length != 0 || keyUnchecked.length != 0)
+            && keyChecked.length != this._icons.length) {
+            params['LEGEND_ON'] = wmsName+':'+keyChecked.join();
+            params['LEGEND_OFF'] = wmsName+':'+keyUnchecked.join();
+        }
+        return params;
     }
 }
 
