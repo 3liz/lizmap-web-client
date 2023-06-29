@@ -474,10 +474,10 @@ describe('LayerTreeGroupState', function () {
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
-        let rootLayerVisibilityChangedEvt = null;
+        let rootLayerVisibilityChangedEvt = [];
         let rootGroupVisibilityChangedEvt = null;
         root.addListener(evt => {
-            rootLayerVisibilityChangedEvt = evt
+            rootLayerVisibilityChangedEvt.push(evt)
         }, 'layer.visibility.changed');
         root.addListener(evt => {
             rootGroupVisibilityChangedEvt = evt
@@ -504,18 +504,18 @@ describe('LayerTreeGroupState', function () {
         expect(sousquartiers.checked).to.be.true
         expect(sousquartiers.visibility).to.be.true
         // Events dispatched at root level
-        expect(rootLayerVisibilityChangedEvt).to.not.be.null
-        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(1)
+        expect(rootLayerVisibilityChangedEvt[0]).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
         expect(rootGroupVisibilityChangedEvt).to.be.null
 
         // Reset
         sousquartiersVisibilityChangedEvt = null;
-        rootLayerVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = [];
         // Set same value
         sousquartiers.checked = true;
         // Nothing changed
         expect(sousquartiersVisibilityChangedEvt).to.be.null
-        expect(rootLayerVisibilityChangedEvt).to.be.null
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
 
         // Change value
         sousquartiers.checked = false;
@@ -527,13 +527,13 @@ describe('LayerTreeGroupState', function () {
         expect(sousquartiers.checked).to.be.false
         expect(sousquartiers.visibility).to.be.false
         // Events dispatched at root level
-        expect(rootLayerVisibilityChangedEvt).to.not.be.null
-        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(1)
+        expect(rootLayerVisibilityChangedEvt[0]).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
         expect(rootGroupVisibilityChangedEvt).to.be.null
 
         // Reset
         sousquartiersVisibilityChangedEvt = null;
-        rootLayerVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = [];
 
         const edition = root.children[0];
         expect(edition).to.be.instanceOf(LayerTreeGroupState)
@@ -572,13 +572,13 @@ describe('LayerTreeGroupState', function () {
         expect(edition.checked).to.be.true
         expect(edition.visibility).to.be.true
         // Events dispatched at root level
-        expect(rootLayerVisibilityChangedEvt).to.not.be.null
-        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(1)
+        expect(rootLayerVisibilityChangedEvt[0]).to.be.deep.equal(poiVisibilityChangedEvt)
         expect(rootGroupVisibilityChangedEvt).to.be.null
 
         // Reset
         poiVisibilityChangedEvt = null;
-        rootLayerVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = [];
         // Change edition group checked value
         edition.checked = false;
         // edition group event dispatched
@@ -594,15 +594,16 @@ describe('LayerTreeGroupState', function () {
         expect(poi.checked).to.be.true
         expect(poi.visibility).to.be.false
         // Events dispatched at root level
-        expect(rootLayerVisibilityChangedEvt).to.not.be.null
-        expect(rootLayerVisibilityChangedEvt).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(2)
+        expect(rootLayerVisibilityChangedEvt[0]).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootLayerVisibilityChangedEvt[1].name).to.be.eq('edition_line')
         expect(rootGroupVisibilityChangedEvt).to.not.be.null
         expect(rootGroupVisibilityChangedEvt).to.be.deep.equal(editionVisibilityChangedEvt)
 
         // Reset
         editionVisibilityChangedEvt = null;
         poiVisibilityChangedEvt = null;
-        rootLayerVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = [];
         rootGroupVisibilityChangedEvt = null;
 
         // Change poi checked value
@@ -617,7 +618,7 @@ describe('LayerTreeGroupState', function () {
         expect(poi.checked).to.be.false
         expect(poi.visibility).to.be.false
         // Events not dispatched at root level
-        expect(rootLayerVisibilityChangedEvt).to.be.null
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
         expect(rootGroupVisibilityChangedEvt).to.be.null
 
         // Change poi checked value
@@ -632,17 +633,19 @@ describe('LayerTreeGroupState', function () {
         expect(poi.checked).to.be.true
         expect(poi.visibility).to.be.true
         // Events dispatched at root level
-        expect(rootLayerVisibilityChangedEvt).to.not.be.null
+        expect(rootLayerVisibilityChangedEvt).to.have.length(2)
+        expect(rootLayerVisibilityChangedEvt[0]).to.be.deep.equal(poiVisibilityChangedEvt)
+        expect(rootLayerVisibilityChangedEvt[1].name).to.be.eq('edition_line')
         expect(rootGroupVisibilityChangedEvt).to.not.be.null
 
         // Reset root
         //editionVisibilityChangedEvt = null;
         //poiVisibilityChangedEvt = null;
-        rootLayerVisibilityChangedEvt = null;
+        rootLayerVisibilityChangedEvt = [];
         rootGroupVisibilityChangedEvt = null;
         // Do not dispatch already dispatched event
         edition.dispatch(poiVisibilityChangedEvt);
-        expect(rootLayerVisibilityChangedEvt).to.be.null
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
         edition.dispatch(editionVisibilityChangedEvt);
         expect(rootGroupVisibilityChangedEvt).to.be.null
     })

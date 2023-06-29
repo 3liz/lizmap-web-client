@@ -298,6 +298,14 @@ export class LayerItemState extends EventDispatcher {
                 }
             }
         }
+        if (!this._checked && this.type == 'group') {
+            for (const child of this.getChildren()) {
+                if (!child.checked) {
+                    continue;
+                }
+                child.calculateVisibility();
+            }
+        }
         // Calculate visibility
         this.calculateVisibility();
     }
@@ -806,6 +814,7 @@ export class LayerVectorState extends LayerLayerState {
         if (!(token == null || typeof(token) == 'string' || (token != null && typeof(token) == 'object'))) {
             throw new ValidationError('Selection token could only be null, a string or an object!');
         }
+        const oldToken = this._selectionToken;
         if (token != null && typeof(token) == 'object') {
             if (!token.hasOwnProperty('token') || !token.hasOwnProperty('selectedFeatures')) {
                 throw new ValidationError('If the expression filter token is an object, it has to have `token` and `selectedFeatures` properties!');
@@ -854,12 +863,14 @@ export class LayerVectorState extends LayerLayerState {
                 this._selectionToken = token;
             }
         }
-        this.dispatch({
-            type: 'layer.selection.token.changed',
-            name: this.name,
-            selectedFeatures: this.selectedFeatures,
-            selectionToken: this.selectionToken,
-        })
+        if (oldToken !== this._selectionToken) {
+            this.dispatch({
+                type: 'layer.selection.token.changed',
+                name: this.name,
+                selectedFeatures: this.selectedFeatures,
+                selectionToken: this.selectionToken,
+            })
+        }
     }
 
     /**
@@ -937,6 +948,7 @@ export class LayerVectorState extends LayerLayerState {
         if (!(token == null || typeof(token) == 'string' || (token != null && typeof(token) == 'object'))) {
             throw new ValidationError('Expression filter token could only be null, a string or an object!');
         }
+        const oldToken = this._filterToken;
         if (token != null && typeof(token) == 'object') {
             if (!token.hasOwnProperty('token') || !token.hasOwnProperty('expressionFilter')) {
                 throw new ValidationError('If the expression filter token is an object, it has to have `token` and `expressionFilter` properties!');
@@ -980,12 +992,14 @@ export class LayerVectorState extends LayerLayerState {
                 this._filterToken = token;
             }
         }
-        this.dispatch({
-            type: 'layer.filter.token.changed',
-            name: this.name,
-            expressionFilter: this.expressionFilter,
-            filterToken: this.filterToken,
-        })
+        if (oldToken !== this._filterToken) {
+            this.dispatch({
+                type: 'layer.filter.token.changed',
+                name: this.name,
+                expressionFilter: this.expressionFilter,
+                filterToken: this.filterToken,
+            })
+        }
     }
 
     /**
@@ -1286,8 +1300,19 @@ export class LayersAndGroupsCollection extends EventDispatcher {
     constructor(layerTreeGroupCfg, layersOrder) {
         super();
         this._root = new LayerGroupState(layerTreeGroupCfg, layersOrder);
+
         this._layersMap = new Map(this._root.findLayers().map(l => [l.name, l]));
         this._groupsMap = new Map(this._root.findGroups().map(g => [g.name, g]));
+
+        // Dispatch events from groups and layers
+        this._root.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.style.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
     }
 
     /**

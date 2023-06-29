@@ -183,7 +183,10 @@ export default class EventDispatcher {
             });
         }
         if ('*' in this._listeners) {
-            this._listeners['*'].forEach((listener) => listener(event));
+            this._listeners['*'].forEach((item) => {
+                const [listener, ] = item;
+                listener(event);
+            });
         }
     }
 }
