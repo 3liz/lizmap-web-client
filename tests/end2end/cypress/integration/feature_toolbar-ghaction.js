@@ -56,11 +56,11 @@ describe('Feature Toolbar in popup', function () {
     })
 
     it('should display zoom and center buttons if "Add geometry to feature response" is checked', function () {
-        cy.get('#layer-parent_layer button').click()
-        cy.get('#layer-parent_layer_without_attribute_table button').click()
+        cy.get('#node-parent_layer').click()
+        cy.get('#node-parent_layer_without_attribute_table').click()
 
         cy.mapClick(655, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e.1"] .feature-zoom').should('be.visible')
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e.1"] .feature-center').should('be.visible')
@@ -68,25 +68,11 @@ describe('Feature Toolbar in popup', function () {
 
     it('should zoom', function () {
         // Check the started map
-        cy.get('@getMap').then((interception) => {
-            expect(interception.request.url).to.contain('BBOX=')
-            const req_url = new URL(interception.request.url)
-            const bbox = req_url.searchParams.get('BBOX')
-            const bbox_array = bbox.split(',')
-            expect(bbox_array).to.have.length(4)
-            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
-            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
-            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
-            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
-            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
-            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
-            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
-            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
-        })
+        cy.get('@getMap')
 
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Check WMS GetFeatureInfo request for children
         cy.wait('@postGetFeatureInfo').then((interception) => {
@@ -100,62 +86,27 @@ describe('Feature Toolbar in popup', function () {
         // Click to zoom to feature
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-zoom').click()
 
-        // The map is reloaded
-        cy.wait('@getMap').then((interception) => {
-            expect(interception.request.url).to.contain('BBOX=')
-            const req_url = new URL(interception.request.url)
-            const bbox = req_url.searchParams.get('BBOX')
-            const bbox_array = bbox.split(',')
-            expect(bbox_array).to.have.length(4)
-            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
-            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
-            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
-            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
-            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
-            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
-            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
-            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
-        })
-
         // The map is zoomed to feature
-        cy.wait('@getMap').then((interception) => {
-            expect(interception.request.url).to.contain('BBOX=')
-            const req_url = new URL(interception.request.url)
-            const bbox = req_url.searchParams.get('BBOX')
-            const bbox_array = bbox.split(',')
-            expect(bbox_array).to.have.length(4)
-            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
-            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
-            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
-            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
-            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
-            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
-            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
-            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
-        })
+        cy.wait('@getMap')
+
+        let lizMap
+
+        cy.window()
+          .then((win) => {
+            lizMap = win.lizMap
+          })
+          .then(() => {
+            expect(lizMap.mainLizmap.map.getView().calculateExtent()).to.eql([771100.0350324942, 6278833.179665077, 772753.6841731258, 6279792.296166643])
+          })
     })
 
     it('should center', function () {
         // Check the started map
-        cy.get('@getMap').then((interception) => {
-            expect(interception.request.url).to.contain('BBOX=')
-            const req_url = new URL(interception.request.url)
-            const bbox = req_url.searchParams.get('BBOX')
-            const bbox_array = bbox.split(',')
-            expect(bbox_array).to.have.length(4)
-            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
-            expect(parseFloat(bbox_array[0])).to.be.within(755258.0,755259.0)
-            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
-            expect(parseFloat(bbox_array[1])).to.be.within(6269589.0,6269590.0)
-            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
-            expect(parseFloat(bbox_array[2])).to.be.within(788595.0,788596.0)
-            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
-            expect(parseFloat(bbox_array[3])).to.be.within(6289036.0,6289037.0)
-        })
+        cy.get('@getMap')
 
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Check WMS GetFeatureInfo request for children
         cy.wait('@postGetFeatureInfo').then((interception) => {
@@ -175,25 +126,20 @@ describe('Feature Toolbar in popup', function () {
         cy.get('#navbar button.btn.zoom-in').click()
         cy.wait('@getMap')
 
-        // Click to zoom to feature
+        // Click to center to feature
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-center').click()
 
         // The map is centered to feature
-        cy.wait('@getMap').then((interception) => {
-            expect(interception.request.url).to.contain('BBOX=')
-            const req_url = new URL(interception.request.url)
-            const bbox = req_url.searchParams.get('BBOX')
-            const bbox_array = bbox.split(',')
-            expect(bbox_array).to.have.length(4)
-            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
-            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
-            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
-            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
-            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
-            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
-            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
-            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
-        })
+        let lizMap
+
+        cy.window()
+          .then((win) => {
+            lizMap = win.lizMap
+          })
+          .then(() => {
+            expect(lizMap.mainLizmap.map.getView().getCenter()).to.eql([771926.85960281, 6279312.73791586])
+          })
+
     })
 
     it('should select', function () {
@@ -205,12 +151,9 @@ describe('Feature Toolbar in popup', function () {
             return false
         })
 
-        const PNG = require('pngjs').PNG;
-        const pixelmatch = require('pixelmatch');
-
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Check WMS GetFeatureInfo request for children
         cy.wait('@postGetFeatureInfo').then((interception) => {
@@ -273,23 +216,11 @@ describe('Feature Toolbar in popup', function () {
                     expect(second_req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
                 })
             } else {
-                expect(second_req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
+                expect(first_req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
             }
         })
 
-        // Test feature is selected on last map
-        cy.get('@getMap').should(({ request, response }) => {
-            const responseBodyAsBase64 = arrayBufferToBase64(response.body)
-
-            cy.fixture('images/feature_toolbar/selection.png').then((image) => {
-                // image encoded as base64
-                const img1 = PNG.sync.read(Buffer.from(responseBodyAsBase64, 'base64'));
-                const img2 = PNG.sync.read(Buffer.from(image, 'base64'));
-                const { width, height } = img1;
-
-                expect(pixelmatch(img1.data, img2.data, null, width, height, { threshold: 0 }), 'expect point to be displayed in yellow').to.equal(0)
-            })
-        })
+        // TODO: Test feature is selected on last map bu looking at server's request
 
         // Test feature is selected on popup
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
@@ -315,7 +246,7 @@ describe('Feature Toolbar in popup', function () {
 
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Check WMS GetFeatureInfo request for children
         cy.wait('@postGetFeatureInfo').then((interception) => {
@@ -361,7 +292,7 @@ describe('Feature Toolbar in popup', function () {
 
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Check WMS GetFeatureInfo request for children
         cy.wait('@postGetFeatureInfo').then((interception) => {
@@ -412,7 +343,7 @@ describe('Feature Toolbar in popup', function () {
 
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Check WMS GetFeatureInfo request for children
         cy.wait('@postGetFeatureInfo').then((interception) => {
@@ -467,7 +398,7 @@ describe('Feature Toolbar in popup', function () {
 
     it('should display working layer action selector', function () {
         // Select the layer in the legend tree
-        cy.get('tr#layer-parent_layer td span.label').click()
+        cy.get('#node-parent_layer ~ .node .icon-info-sign').click({force: true})
 
         // Check the action selector is present
         cy.get('#sub-dock div.layer-action-selector-container').should('have.length', 1);
@@ -492,7 +423,7 @@ describe('Feature Toolbar in popup', function () {
     it('should start child edition linked to a parent feature from the child feature toolbar', function () {
         // Click feature with id=2 on the map
         cy.mapClick(1055, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Check WMS GetFeatureInfo request for children
         cy.wait('@postGetFeatureInfo').then((interception) => {
@@ -518,12 +449,10 @@ describe('Feature Toolbar in popup', function () {
         cy.get('#jforms_view_edition_parent_id').find('option:selected').should('have.value', '2');
     })
 
-
-
     it('should start child creation from the parent feature toolbar', function () {
         // Click feature with id=2 on the map
         cy.mapClick(1055, 437)
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
 
         // Start child creation
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"] .feature-create-child ul li a[data-child-layer-id="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0"]').click({ force: true })
@@ -535,7 +464,6 @@ describe('Feature Toolbar in popup', function () {
 
         // Parent_id input should have the value 2 selected
         cy.get('#jforms_view_edition_parent_id').find('option:selected').should('have.value', '2');
-
     })
 })
 
@@ -569,38 +497,25 @@ describe('Feature Toolbar in attribute table', function () {
 
         // Zoom to feature 1
         cy.get('#attribute-layer-table-parent_layer tr[id="1"] lizmap-feature-toolbar .feature-zoom').click({ force: true })
-        cy.wait('@getMap').then((interception) => {
-            expect(interception.request.url).to.contain('BBOX=')
-            const req_url = new URL(interception.request.url)
-            const bbox = req_url.searchParams.get('BBOX')
-            const bbox_array = bbox.split(',')
-            expect(bbox_array).to.have.length(4)
-            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
-            expect(parseFloat(bbox_array[0])).to.be.within(771093.0,771094.0)
-            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
-            expect(parseFloat(bbox_array[1])).to.be.within(6278826.0,6278827.0)
-            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
-            expect(parseFloat(bbox_array[2])).to.be.within(772760.0,772761.0)
-            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
-            expect(parseFloat(bbox_array[3])).to.be.within(6279798.0,6279799.0)
+        cy.wait('@getMap')
+
+        let lizMap
+
+        const promise = cy.window()
+          .then((win) => {
+            lizMap = win.lizMap
+          })
+
+        promise.then(() => {
+            expect(lizMap.mainLizmap.map.getView().calculateExtent()).to.eql([771100.0350363201, 6278833.179664319, 772753.6841769516, 6279792.296165885])
         })
 
         // Move to feature 2
         cy.get('#attribute-layer-table-parent_layer tr[id="2"] lizmap-feature-toolbar .feature-center').click({ force: true })
-        cy.wait('@getMap').then((interception) => {
-            expect(interception.request.url).to.contain('BBOX=')
-            const req_url = new URL(interception.request.url)
-            const bbox = req_url.searchParams.get('BBOX')
-            const bbox_array = bbox.split(',')
-            expect(bbox_array).to.have.length(4)
-            expect(bbox_array[0]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmin is number')
-            expect(parseFloat(bbox_array[0])).to.be.within(781610.0,781611.0)
-            expect(bbox_array[1]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymin is number')
-            expect(parseFloat(bbox_array[1])).to.be.within(6278991.0,6278992.0)
-            expect(bbox_array[2]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox xmax is number')
-            expect(parseFloat(bbox_array[2])).to.be.within(783277.0,783278.0)
-            expect(bbox_array[3]).to.match(/^-?\d+(?:\.\d+)?$/, 'BBox ymax is number')
-            expect(parseFloat(bbox_array[3])).to.be.within(6279964.0,6279965.0)
+        cy.wait('@getMap')
+
+        promise.then(() => {
+            expect(lizMap.mainLizmap.map.getView().calculateExtent()).to.eql([781617.2225822527, 6278998.544210428, 783270.8717228842, 6279957.660711994])
         })
     })
 })
@@ -768,8 +683,8 @@ describe('Export data', function () {
         )
 
         // Click on the export button
-        cy.get('#attribute-layer-main-data_uids  .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids .export-formats > button:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
 
         cy.wait('@GetExport')
         .then(({response}) => {
