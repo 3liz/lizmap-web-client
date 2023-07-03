@@ -1,7 +1,6 @@
-// @ts-check
-const { defineConfig } = require('@playwright/test');
+import { defineConfig } from '@playwright/test';
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: './playwright',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
@@ -41,10 +40,15 @@ module.exports = defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'setup',
+      testMatch: 'auth.setup.ts',
+    },
+    {
       name: 'chromium',
       use: {
         browserName: 'chromium',
       },
+      dependencies: ['setup'],
     },
 
     {
@@ -52,6 +56,7 @@ module.exports = defineConfig({
       use: {
         browserName: 'firefox',
       },
+      dependencies: ['setup'],
     },
 
     {
@@ -59,6 +64,7 @@ module.exports = defineConfig({
       use: {
         browserName: 'webkit',
       },
+      dependencies: ['setup'],
     },
 
     {
