@@ -2258,11 +2258,14 @@ window.lizMap = function() {
 
       // Warn user no data has been found
       if( !hasPopupContent ){
-        pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
+        pcontent = '<div class="lizmapPopupContent noContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
         $('#popupcontent div.menu-content').html(pcontent);
         window.setTimeout(function(){
-            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
-                $('#button-popupcontent').click();
+            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && 
+                $('#popupcontent .lizmapPopupContent').hasClass('noContent') && 
+                config.options.popupLocation != 'right-dock'){
+                  $('#button-popupcontent').click();
+                }
         },2000);
       }
 
