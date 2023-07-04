@@ -37,7 +37,12 @@ export default class Popup {
                 candidateLayers = candidateLayers.filter(layer => layer.getVisible());
 
                 // Only request layers with 'popup' checked in plugin
-                candidateLayers = candidateLayers.filter(layer => mainLizmap.initialConfig.layers.getLayerConfigByLayerName(layer.get("name")).popup);
+                // Or some edition capabilities
+                candidateLayers = candidateLayers.filter(layer => {
+                    const layerCfg = mainLizmap.initialConfig.layers.getLayerConfigByLayerName(layer.get("name"));
+                    const editionLayerCapabilities = mainLizmap.initialConfig.editionLayers.getLayerConfigByLayerName(layer.get("name")).capabilities;
+                    return layerCfg.popup || editionLayerCapabilities.modifyAttribute || editionLayerCapabilities.modifyGeometry || editionLayerCapabilities.deleteFeature;
+                });
 
                 if(!candidateLayers.length){
                     return;
