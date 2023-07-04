@@ -53,11 +53,11 @@ export class EditionCapabilitiesConfig extends BaseObjectConfig {
     }
 }
 const requiredProperties = {
-    'geometryType': {type: 'string'},
-    'acl': {type: 'string'}
+    'geometryType': {type: 'string'}
 };
 
 const optionalProperties = {
+    'acl': {type: 'string'}
 };
 
 export class EditionLayerConfig extends BaseObjectLayerConfig {
@@ -96,7 +96,7 @@ export class EditionLayerConfig extends BaseObjectLayerConfig {
     /**
      * Acces control list
      *
-     * @type {String}
+     * @type {?String}
      **/
     get acl() {
         return this._acl;
