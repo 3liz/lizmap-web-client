@@ -293,9 +293,9 @@ export default class BaseLayersMap extends olMap {
             }
         }
 
-        mainEventDispatcher.addListener(
-            evt => this.getLayerOrGroupByName(evt.name).setVisible(evt.checked),
-            ['overlayLayer.visibility.changed']
+        mainLizmap.state.rootMapGroup.addListener(
+            evt => this.getLayerOrGroupByName(evt.name).setVisible(evt.visibility),
+            ['layer.visibility.changed', 'group.visibility.changed']
         );
 
         mainLizmap.state.rootMapGroup.addListener(

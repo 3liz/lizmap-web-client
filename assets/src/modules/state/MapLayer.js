@@ -1,5 +1,3 @@
-import { mainEventDispatcher } from '../../modules/Globals.js';
-import { ValidationError } from './../Errors.js';
 import { convertBoolean } from './../utils/Converters.js';
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { LayerStyleConfig } from './../config/LayerTree.js';
@@ -145,20 +143,7 @@ export class MapItemState extends EventDispatcher {
      * @type {Boolean}
      **/
     set checked(val) {
-        const newVal = convertBoolean(val);
-        // No changes
-        if (this._checked == newVal) {
-            return;
-        }
-        // Set new value
-        this._checked = newVal;
-        // Propagation to parent if checked
-        if (this._checked && this._parentMapGroup != null) {
-            this._parentMapGroup.checked = newVal;
-        }
-        // Calculate visibility
-        this.calculateVisibility();
-        mainEventDispatcher.dispatch({ type: 'overlayLayer.visibility.changed', name: this.name, checked: this._checked});
+        this._layerItemState.checked = val;
     }
 
     /**
