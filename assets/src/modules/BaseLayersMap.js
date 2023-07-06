@@ -299,6 +299,11 @@ export default class BaseLayersMap extends olMap {
         );
 
         mainLizmap.state.rootMapGroup.addListener(
+            evt => this.getLayerOrGroupByName(evt.name).setOpacity(evt.opacity),
+            ['layer.opacity.changed', 'group.opacity.changed']
+        );
+
+        mainLizmap.state.rootMapGroup.addListener(
             evt => {
                 const [state, olLayer] = this._statesOlLayersandGroupsMap.get(evt.name);
                 const wmsParams = olLayer.getSource().getParams();

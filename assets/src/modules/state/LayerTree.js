@@ -26,6 +26,7 @@ export class LayerTreeItemState extends EventDispatcher {
         if (mapItemState instanceof MapLayerState) {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -35,6 +36,7 @@ export class LayerTreeItemState extends EventDispatcher {
         } else if (mapItemState instanceof MapGroupState) {
             mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'group.symbology.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'group.opacity.changed');
         }
     }
     /**
@@ -208,8 +210,10 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 }
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
-                group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'group.opacity.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -225,6 +229,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 const layer = new LayerTreeLayerState(mapItemState, this)
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');

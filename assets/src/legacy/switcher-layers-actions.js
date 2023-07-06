@@ -3,7 +3,6 @@ var lizLayerActionButtons = function() {
     var tooltipControl = null;
     var tooltipLayers = [];
     var featureTypes = null;
-    var opacityLayers = {};
 
     function fillSubDock( html ){
         $('#sub-dock').html( html );
@@ -142,11 +141,9 @@ var lizLayerActionButtons = function() {
             // Opacity
             html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
             html+= '<dd>';
-            var currentOpacity = 1;
-            if( aName in opacityLayers ){
-                currentOpacity = opacityLayers[aName];
-            }
             html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
+
+            const currentOpacity = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(aName).opacity;
             var opacities = lizMap.config.options.layersOpacities;
             if(typeof opacities === 'undefined') {
                 opacities = [0.2, 0.4, 0.6, 0.8, 1];
@@ -456,13 +453,12 @@ var lizLayerActionButtons = function() {
                 if (isBaselayer) {
                     layer = lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer();
                 } else {
-                    layer = lizMap.mainLizmap.baseLayersMap.getLayerOrGroupByName(eName);
+                    layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(eName);
                 }
 
                 // Set opacity
                 if( layer ) {
-                    layer.setOpacity(opacity);
-                    opacityLayers[eName] = opacity;
+                    layer.opacity = opacity;
                     $('a.btn-opacity-layer').removeClass('active');
                     $('a.btn-opacity-layer.' + opacity*100).addClass('active');
                 }

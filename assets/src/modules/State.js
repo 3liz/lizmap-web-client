@@ -53,7 +53,9 @@ export class State extends EventDispatcher {
             this._collection = new LayersAndGroupsCollection(this._initialConfig.layerTree, this._initialConfig.layersOrder);
             // Dispatch events from groups and layers
             this._collection.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+            this._collection.addListener(this.dispatch.bind(this), 'group.opacity.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+            this._collection.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.style.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.selection.changed');
