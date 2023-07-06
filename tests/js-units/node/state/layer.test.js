@@ -43,6 +43,7 @@ describe('LayerGroupState', function () {
         expect(root.wmsMaxScaleDenominator).to.be.eq(-1)
         expect(root.checked).to.be.true
         expect(root.visibility).to.be.true
+        expect(root.opacity).to.be.eq(1)
         expect(root.baseLayer).to.be.false
         expect(root.displayInLegend).to.be.true
         expect(root.imageFormat).to.be.null
@@ -116,6 +117,7 @@ describe('LayerGroupState', function () {
         expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
         expect(bus.checked).to.be.false
         expect(bus.visibility).to.be.false
+        expect(bus.opacity).to.be.eq(1)
         expect(bus.baseLayer).to.be.false
         expect(bus.displayInLegend).to.be.true
         expect(bus.imageFormat).to.be.eq('image/png')
@@ -163,6 +165,7 @@ describe('LayerGroupState', function () {
         expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
         expect(busStops.checked).to.be.false
         expect(busStops.visibility).to.be.false
+        expect(busStops.opacity).to.be.eq(1)
         expect(busStops.baseLayer).to.be.false
         expect(busStops.displayInLegend).to.be.true
         expect(busStops.imageFormat).to.be.eq('image/png')
@@ -872,6 +875,7 @@ describe('LayersAndGroupsCollection', function () {
         expect(busStops.wmsMaxScaleDenominator).to.be.eq(15000)
         expect(busStops.checked).to.be.false
         expect(busStops.visibility).to.be.false
+        expect(busStops.opacity).to.be.eq(1)
         expect(busStops.baseLayer).to.be.false
         expect(busStops.displayInLegend).to.be.true
         expect(busStops.imageFormat).to.be.eq('image/png')
@@ -1062,6 +1066,7 @@ describe('LayersAndGroupsCollection', function () {
         expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
         expect(bus.checked).to.be.false
         expect(bus.visibility).to.be.false
+        expect(bus.opacity).to.be.eq(1)
         expect(bus.baseLayer).to.be.false
         expect(bus.displayInLegend).to.be.true
         expect(bus.imageFormat).to.be.eq('image/png')
