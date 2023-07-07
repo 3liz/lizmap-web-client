@@ -52,7 +52,7 @@ jobs:
         run: phpstan analyse -c ../phpstan.neon
 
       - name: Notify in case of failure
-        uses: thollander/actions-comment-pull-request@v2
+        uses: peter-evans/commit-comment@v2
         if: failure()
         with:
           message: |
@@ -61,10 +61,12 @@ jobs:
 
             > ${{ env.PHPSTAN_VERSION }}
 
+            https://github.com/phpstan/phpstan/releases
+
             Have a look to **your** current version of PHPStan like :
 
             ➡ `docker exec CONTAINER_test_php tests/units/vendor/phpstan/phpstan/phpstan -V`
 
             And update if needed :
 
-            ➡ `./limap-ctl composer-update`
+            ➡ `./lizmap-ctl composer-update`
