@@ -253,8 +253,19 @@ describe('LayerTreeGroupState', function () {
         const root = new LayerTreeGroupState(rootMapGroup);
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
+        let rootLayerSymbologyChangedEvt = null;
+        root.addListener(evt => {
+            rootLayerSymbologyChangedEvt = evt
+        }, 'layer.symbology.changed');
+
         const sousquartiers = root.children[2];
         expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
+
+        let sousquartiersSymbologyChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersSymbologyChangedEvt = evt
+        }, 'layer.symbology.changed');
+
         sousquartiers.symbology = {
             "icon":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAALklEQVQ4jWNkYGD4xYAJ2KA0uhxWcWwGEA2YKNFMFQMGBxjigTgaC4MhECk2AAAHYQX6C8Zs7gAAAABJRU5ErkJggg==",
             "title":"SousQuartiers",
@@ -266,6 +277,11 @@ describe('LayerTreeGroupState', function () {
         expect(sousquartiers.symbologyChildrenCount).to.be.eq(0)
         expect(sousquartiers.symbologyChildren).to.be.an('array').that.have.lengthOf(0)
         expect(sousquartiers.getSymbologyChildren().next().value).to.be.undefined
+        // Event dispatched
+        expect(sousquartiersSymbologyChangedEvt).to.not.be.null
+        expect(sousquartiersSymbologyChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootLayerSymbologyChangedEvt).to.not.be.null
+        expect(rootLayerSymbologyChangedEvt.name).to.be.eq('SousQuartiers')
 
         const quartiers = root.children[3];
         expect(quartiers).to.be.instanceOf(LayerTreeLayerState)
@@ -785,9 +801,9 @@ describe('LayerTreeGroupState', function () {
         })
         expect(quartiers.symbology).to.be.null
 
-        // Set symbologie
+        // Set symbology
         quartiers.symbology = legend.nodes[0]
-        // Check Symbologie
+        // Check symbology
         expect(quartiers.symbology).to.be.instanceOf(LayerSymbolsSymbology)
         expect(quartiers.symbology.childrenCount).to.be.eq(8)
         expect(quartiers.symbology.children[0]).to.be.instanceOf(SymbolIconSymbology)

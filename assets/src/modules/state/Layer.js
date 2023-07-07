@@ -312,6 +312,48 @@ export class LayerItemState extends EventDispatcher {
     }
 
     /**
+     * Item symbology
+     *
+     * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
+     **/
+    get symbology() {
+        return this._symbology;
+    }
+
+    /**
+     * Update Item symbology
+     *
+     * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
+     **/
+    set symbology(node) {
+        if (!node.hasOwnProperty('name')) {
+            throw new ValidationError('Node symbology required `name` property!');
+        }
+        if (node.name != this.wmsName) {
+            throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.wmsName+'`');
+        }
+        this._symbology = buildLayerSymbology(node);
+        if (this.symbology instanceof LayerSymbolsSymbology) {
+            for (const symbol of this.symbology.getChildren()) {
+                const self = this;
+                symbol.addListener(evt => {
+                    self.dispatch({
+                        type: 'layer.symbol.checked.changed',
+                        name: self.name,
+                        title: evt.title,
+                        ruleKey: evt.ruleKey,
+                        checked: evt.checked,
+                    });
+                }, 'symbol.checked.changed');
+            }
+        }
+        this.dispatch({
+            type: this.type + '.symbology.changed',
+            name: this.name,
+        });
+    }
+
+    /**
      * The layer as base layer activation
      *
      * @type {Boolean}
@@ -575,44 +617,6 @@ export class LayerLayerState extends LayerItemState {
      **/
     get wmsAttribution() {
         return this._layerTreeItemCfg.wmsAttribution;
-    }
-
-    /**
-     * Layer symbology
-     *
-     * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
-     **/
-    get symbology() {
-        return this._symbology;
-    }
-
-    /**
-     * Update layer symbology
-     *
-     * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
-     **/
-    set symbology(node) {
-        if (!node.hasOwnProperty('name')) {
-            throw new ValidationError('Node symbology required `name` property!');
-        }
-        if (node.name != this.wmsName) {
-            throw new ValidationError('The node symbology does not correspond to the layer! The node name is `'+node.name+'` != `'+this.wmsName+'`');
-        }
-        this._symbology = buildLayerSymbology(node);
-        if (this.symbology instanceof LayerSymbolsSymbology) {
-            for (const symbol of this.symbology.getChildren()) {
-                const self = this;
-                symbol.addListener(evt => {
-                    self.dispatch({
-                        type: 'layer.symbol.checked.changed',
-                        name: self.name,
-                        title: evt.title,
-                        ruleKey: evt.ruleKey,
-                        checked: evt.checked,
-                    });
-                }, 'symbol.checked.changed');
-            }
-        }
     }
 
     /**
@@ -1129,7 +1133,9 @@ export class LayerGroupState extends LayerItemState {
                 // Build group
                 const group = new LayerGroupState(layerTreeItem, layersOrder, this);
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -1150,6 +1156,7 @@ export class LayerGroupState extends LayerItemState {
                     layer = new LayerRasterState(layerTreeItem, layersOrder, this);
                 }
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -1346,7 +1353,9 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
         // Dispatch events from groups and layers
         this._root.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+        this._root.addListener(this.dispatch.bind(this), 'group.symbology.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.style.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.selection.changed');
