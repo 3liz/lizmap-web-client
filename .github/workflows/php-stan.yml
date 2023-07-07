@@ -55,7 +55,7 @@ jobs:
         uses: peter-evans/commit-comment@v2
         if: failure()
         with:
-          message: |
+          body: |
             The latest run of **PHPStan** has **failed**, maybe it's due to a newer version released recently 😣
             Current version used on CI :
 
