@@ -32,6 +32,7 @@ const optionalProperties = {
     'geometryType': {type: 'string', nullable: true},
     'extent': {type: 'extent', nullable: true},
     'crs': {type: 'string', nullable: true},
+    'opacity': {type: 'number', default:1},
     'noLegendImage': {type: 'boolean', default:false},
     'legend_image_option': {type: 'string', nullable: true},
     'mutuallyExclusive': {type: 'boolean', default: false},
@@ -74,8 +75,9 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {String}   [cfg.geometryType]        - the layer geometry type (layer only)
      * @param {Number[]} [cfg.extent]              - the layer extent (layer only)
      * @param {String}   [cfg.crs]                 - the layer crs (layer only)
+     * @param {Number}   [cfg.opacity]             - the layer opacity defined in QGIS project
      * @param {Boolean}  [cfg.noLegendImage]       - the layer no legend image activation
-     * @param {String}   [cfg.legend_image_option] - the layer no legend image activation
+     * @param {String}   [cfg.legend_image_option] - the layer legend image option
      * @param {Boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
      * @param {Boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
      * @param {Object}   [cfg.externalAccess]      - the layer external access
@@ -307,6 +309,15 @@ export class LayerConfig extends BaseObjectConfig {
      **/
     get cached() {
         return this._cached;
+    }
+
+    /**
+     * The layer opacity defined in QGIS project
+     *
+     * @type {Number}
+     **/
+    get opacity() {
+        return this._opacity;
     }
 
     /**

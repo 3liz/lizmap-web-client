@@ -50,6 +50,7 @@ describe('LayerConfig', function () {
         expect(group.popupMaxFeatures).to.be.eq(10)
         expect(group.popupDisplayChildren).to.be.false
         expect(group.noLegendImage).to.be.false
+        expect(group.opacity).to.be.eq(1)
         expect(group.groupAsLayer).to.be.false
         expect(group.baseLayer).to.be.false
         expect(group.displayInLegend).to.be.true
@@ -117,6 +118,7 @@ describe('LayerConfig', function () {
         expect(layer1.popupTemplate).to.be.eq('')
         expect(layer1.popupMaxFeatures).to.be.eq(10)
         expect(layer1.popupDisplayChildren).to.be.false
+        expect(layer1.opacity).to.be.eq(1)
         expect(layer1.noLegendImage).to.be.false
         expect(layer1.groupAsLayer).to.be.false
         expect(layer1.baseLayer).to.be.false
@@ -184,6 +186,7 @@ describe('LayerConfig', function () {
         expect(layer2.popupTemplate).to.be.eq('')
         expect(layer2.popupMaxFeatures).to.be.eq(10)
         expect(layer2.popupDisplayChildren).to.be.false
+        expect(layer2.opacity).to.be.eq(1)
         expect(layer2.noLegendImage).to.be.false
         expect(layer2.groupAsLayer).to.be.false
         expect(layer2.baseLayer).to.be.false
