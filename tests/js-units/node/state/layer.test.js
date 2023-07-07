@@ -205,6 +205,8 @@ describe('LayerGroupState', function () {
         expect(donneesSocio.level).to.be.eq(1)
         expect(donneesSocio.wmsGeographicBoundingBox).to.be.null
         expect(donneesSocio.wmsBoundingBoxes).to.be.an('array').that.have.length(0)
+        expect(donneesSocio.checked).to.be.false
+        expect(donneesSocio.visibility).to.be.false
         expect(donneesSocio.layerType).to.be.eq('vector')
         expect(donneesSocio.layerOrder).to.be.eq(-1)
         expect(donneesSocio.extent).to.be.null
@@ -219,6 +221,8 @@ describe('LayerGroupState', function () {
         expect(sousquartiers.name).to.be.eq('SousQuartiers')
         expect(sousquartiers.type).to.be.eq('layer')
         expect(sousquartiers.level).to.be.eq(1)
+        expect(sousquartiers.checked).to.be.false
+        expect(sousquartiers.visibility).to.be.false
         expect(sousquartiers.isSpatial).to.be.true
         expect(sousquartiers.geometryType).to.be.eq('polygon')
         expect(sousquartiers.wmsName).to.be.eq('SousQuartiers')
@@ -910,6 +914,8 @@ describe('LayersAndGroupsCollection', function () {
         expect(donneesSocio.level).to.be.eq(1)
         expect(donneesSocio.wmsGeographicBoundingBox).to.be.null
         expect(donneesSocio.wmsBoundingBoxes).to.be.an('array').that.have.length(0)
+        expect(donneesSocio.checked).to.be.false
+        expect(donneesSocio.visibility).to.be.false
         expect(donneesSocio.layerType).to.be.eq('vector')
         expect(donneesSocio.layerOrder).to.be.eq(-1)
         expect(donneesSocio.extent).to.be.null
@@ -924,6 +930,8 @@ describe('LayersAndGroupsCollection', function () {
         expect(sousquartiers.name).to.be.eq('SousQuartiers')
         expect(sousquartiers.type).to.be.eq('layer')
         expect(sousquartiers.level).to.be.eq(1)
+        expect(sousquartiers.checked).to.be.false
+        expect(sousquartiers.visibility).to.be.false
         expect(sousquartiers.isSpatial).to.be.true
         expect(sousquartiers.geometryType).to.be.eq('polygon')
         expect(sousquartiers.wmsName).to.be.eq('SousQuartiers')
@@ -1134,5 +1142,300 @@ describe('LayersAndGroupsCollection', function () {
             expect(error.message).to.be.eq('The WMS Name `sous-quartiers` is unknown!')
             expect(error).to.be.instanceOf(RangeError)
         }
+    })
+
+    it('Checked & visibility', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        let collectionLayerVisibilityChangedEvt = [];
+        let collectionGroupVisibilityChangedEvt = [];
+        collection.addListener(evt => {
+            collectionLayerVisibilityChangedEvt.push(evt)
+        }, 'layer.visibility.changed');
+        collection.addListener(evt => {
+            collectionGroupVisibilityChangedEvt.push(evt)
+        }, 'group.visibility.changed');
+
+        const sousquartiers = collection.getLayerByName('SousQuartiers')
+        expect(sousquartiers).to.be.instanceOf(LayerVectorState)
+
+        expect(sousquartiers.isSpatial).to.be.true
+        expect(sousquartiers.checked).to.be.false
+        expect(sousquartiers.visibility).to.be.false
+
+        let sousquartiersVisibilityChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersVisibilityChangedEvt = evt
+        }, 'layer.visibility.changed');
+
+        // Change value
+        sousquartiers.checked = true;
+        // Event dispatched
+        expect(sousquartiersVisibilityChangedEvt).to.not.be.null
+        expect(sousquartiersVisibilityChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersVisibilityChangedEvt.visibility).to.be.true
+        // Values have changed
+        expect(sousquartiers.checked).to.be.true
+        expect(sousquartiers.visibility).to.be.true
+        // Events dispatched at root level
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(1)
+        expect(collectionLayerVisibilityChangedEvt[0]).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(0)
+
+        // Reset
+        sousquartiersVisibilityChangedEvt = null;
+        collectionLayerVisibilityChangedEvt = [];
+        // Set same value
+        sousquartiers.checked = true;
+        // Nothing changed
+        expect(sousquartiersVisibilityChangedEvt).to.be.null
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(0)
+
+        // Change value
+        sousquartiers.checked = false;
+        // Event dispatched
+        expect(sousquartiersVisibilityChangedEvt).to.not.be.null
+        expect(sousquartiersVisibilityChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersVisibilityChangedEvt.visibility).to.be.false
+        // Values have changed
+        expect(sousquartiers.checked).to.be.false
+        expect(sousquartiers.visibility).to.be.false
+        // Events dispatched at root level
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(1)
+        expect(collectionLayerVisibilityChangedEvt[0]).to.be.deep.equal(sousquartiersVisibilityChangedEvt)
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(0)
+
+        // Reset
+        sousquartiersVisibilityChangedEvt = null;
+        collectionLayerVisibilityChangedEvt = [];
+
+        // Get not spatial vector layer
+        const donneesSocio = collection.getLayerByName('donnes_sociodemo_sous_quartiers')
+        expect(donneesSocio).to.be.instanceOf(LayerVectorState)
+
+        expect(donneesSocio.isSpatial).to.be.false
+        expect(donneesSocio.checked).to.be.false
+        expect(donneesSocio.visibility).to.be.false
+
+        // Try to checked not spatial vector layer
+        donneesSocio.checked = true;
+        // not spatial vector layer checked changed but nothing else
+        expect(donneesSocio.checked).to.be.true
+        expect(donneesSocio.visibility).to.be.false
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(0)
+        // Reset
+        donneesSocio.checked = false;
+        expect(donneesSocio.checked).to.be.false
+        expect(donneesSocio.visibility).to.be.false
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(0)
+
+        // Test through groups
+        const transports = collection.getGroupByName('datalayers');
+        expect(transports).to.be.instanceOf(LayerGroupState)
+
+        expect(transports.checked).to.be.true
+        expect(transports.visibility).to.be.true
+
+        let transportsLayerVisibilityChangedEvt = [];
+        let transportsGroupVisibilityChangedEvt = [];
+        transports.addListener(evt => {
+            transportsLayerVisibilityChangedEvt.push(evt)
+        }, 'layer.visibility.changed');
+        transports.addListener(evt => {
+            transportsGroupVisibilityChangedEvt.push(evt)
+        }, 'group.visibility.changed');
+
+        const tramGroup = collection.getGroupByName('Tramway')
+        expect(tramGroup).to.be.instanceOf(LayerGroupState)
+
+        expect(tramGroup.checked).to.be.true
+        expect(tramGroup.visibility).to.be.true
+
+        let tramGroupLayerVisibilityChangedEvt = [];
+        let tramGroupGroupVisibilityChangedEvt = null;
+        tramGroup.addListener(evt => {
+            tramGroupLayerVisibilityChangedEvt.push(evt)
+        }, 'layer.visibility.changed');
+        tramGroup.addListener(evt => {
+            tramGroupGroupVisibilityChangedEvt = evt
+        }, 'group.visibility.changed');
+
+        const tramStopWork = collection.getLayerByName('tram_stop_work')
+        expect(tramStopWork).to.be.instanceOf(LayerVectorState)
+
+        expect(tramStopWork.isSpatial).to.be.false
+        expect(tramStopWork.checked).to.be.false
+        expect(tramStopWork.visibility).to.be.false
+
+        const tramway = collection.getLayerByName('tramway')
+        expect(tramway).to.be.instanceOf(LayerVectorState)
+
+        expect(tramway.isSpatial).to.be.true
+        expect(tramway.checked).to.be.true
+        expect(tramway.visibility).to.be.true
+
+        let tramwayLayerVisibilityChangedEvt = null;
+        tramway.addListener(evt => {
+            tramwayLayerVisibilityChangedEvt = evt
+        }, 'layer.visibility.changed');
+
+        // Set all in transports not visible
+        transports.checked = false
+        // Events dispatched
+        expect(transportsGroupVisibilityChangedEvt).to.have.length(3)
+        expect(transportsGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
+        expect(transportsGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
+        expect(transportsGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(transportsLayerVisibilityChangedEvt).to.have.length(3)
+        expect(transportsLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
+        expect(transportsLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
+        expect(transportsLayerVisibilityChangedEvt[2].name).to.be.eq('publicbuildings')
+        expect(tramGroupGroupVisibilityChangedEvt).to.not.be.null
+        expect(tramGroupGroupVisibilityChangedEvt.name).to.be.eq('Tramway')
+        expect(tramGroupGroupVisibilityChangedEvt.visibility).to.be.false
+        expect(tramGroupLayerVisibilityChangedEvt).to.have.length(2)
+        expect(tramGroupLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
+        expect(tramGroupLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
+        expect(tramwayLayerVisibilityChangedEvt).to.not.be.null
+        expect(tramwayLayerVisibilityChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayLayerVisibilityChangedEvt.visibility).to.be.false
+        // Visibility has changed not all checked
+        expect(transports.checked).to.be.false
+        expect(transports.visibility).to.be.false
+        expect(tramGroup.checked).to.be.true
+        expect(tramGroup.visibility).to.be.false
+        expect(tramStopWork.checked).to.be.false
+        expect(tramStopWork.visibility).to.be.false
+        expect(tramway.checked).to.be.true
+        expect(tramway.visibility).to.be.false
+        // Events dispatched at collection level
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(3)
+        expect(collectionGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
+        expect(collectionGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
+        expect(collectionGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(3)
+        expect(collectionLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
+        expect(collectionLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
+        expect(collectionLayerVisibilityChangedEvt[2].name).to.be.eq('publicbuildings')
+
+        //Reset
+        collectionLayerVisibilityChangedEvt = [];
+        collectionGroupVisibilityChangedEvt = [];
+        transportsLayerVisibilityChangedEvt = [];
+        transportsGroupVisibilityChangedEvt = [];
+        tramGroupLayerVisibilityChangedEvt = [];
+        tramGroupGroupVisibilityChangedEvt = null;
+        tramwayLayerVisibilityChangedEvt = null;
+
+        // Set tramway layer checked to false - visibilities are not changed
+        tramway.checked = false
+        // No Events dispatched
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(0)
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(0)
+        expect(transportsGroupVisibilityChangedEvt).to.have.length(0)
+        expect(transportsLayerVisibilityChangedEvt).to.have.length(0)
+        expect(tramGroupGroupVisibilityChangedEvt).to.be.null
+        expect(tramGroupLayerVisibilityChangedEvt).to.have.length(0)
+        expect(tramwayLayerVisibilityChangedEvt).to.be.null
+        // Only tramway checked changed
+        expect(transports.checked).to.be.false
+        expect(transports.visibility).to.be.false
+        expect(tramGroup.checked).to.be.true
+        expect(tramGroup.visibility).to.be.false
+        expect(tramStopWork.checked).to.be.false
+        expect(tramStopWork.visibility).to.be.false
+        expect(tramway.checked).to.be.false
+        expect(tramway.visibility).to.be.false
+
+        // Set tram stop work layer (not spatial) checked to false - visibilities are not changed
+        tramStopWork.checked = true
+        // No Events dispatched
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(0)
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(0)
+        expect(transportsGroupVisibilityChangedEvt).to.have.length(0)
+        expect(transportsLayerVisibilityChangedEvt).to.have.length(0)
+        expect(tramGroupGroupVisibilityChangedEvt).to.be.null
+        expect(tramGroupLayerVisibilityChangedEvt).to.have.length(0)
+        expect(tramwayLayerVisibilityChangedEvt).to.be.null
+        // Only tramway checked changed
+        expect(transports.checked).to.be.false
+        expect(transports.visibility).to.be.false
+        expect(tramGroup.checked).to.be.true
+        expect(tramGroup.visibility).to.be.false
+        expect(tramStopWork.checked).to.be.true
+        expect(tramStopWork.visibility).to.be.false
+        expect(tramway.checked).to.be.false
+        expect(tramway.visibility).to.be.false
+        // Reset
+        tramStopWork.checked = false
+        // No Events dispatched
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(0)
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(0)
+        expect(transportsGroupVisibilityChangedEvt).to.have.length(0)
+        expect(transportsLayerVisibilityChangedEvt).to.have.length(0)
+        expect(tramGroupGroupVisibilityChangedEvt).to.be.null
+        expect(tramGroupLayerVisibilityChangedEvt).to.have.length(0)
+        expect(tramwayLayerVisibilityChangedEvt).to.be.null
+        // Only tramway checked changed
+        expect(transports.checked).to.be.false
+        expect(transports.visibility).to.be.false
+        expect(tramGroup.checked).to.be.true
+        expect(tramGroup.visibility).to.be.false
+        expect(tramStopWork.checked).to.be.false
+        expect(tramStopWork.visibility).to.be.false
+        expect(tramway.checked).to.be.false
+        expect(tramway.visibility).to.be.false
+
+        // Set tramway layer checked to true - visibilities are changed
+        tramway.checked = true
+        // Events dispatched
+        expect(transportsGroupVisibilityChangedEvt).to.have.length(3)
+        expect(transportsGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
+        expect(transportsGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
+        expect(transportsGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(transportsLayerVisibilityChangedEvt).to.have.length(3)
+        expect(transportsLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
+        expect(transportsLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
+        expect(transportsLayerVisibilityChangedEvt[2].name).to.be.eq('publicbuildings')
+        expect(tramGroupGroupVisibilityChangedEvt).to.not.be.null
+        expect(tramGroupGroupVisibilityChangedEvt.name).to.be.eq('Tramway')
+        expect(tramGroupGroupVisibilityChangedEvt.visibility).to.be.true
+        expect(tramGroupLayerVisibilityChangedEvt).to.have.length(2)
+        expect(tramGroupLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
+        expect(tramGroupLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
+        expect(tramwayLayerVisibilityChangedEvt).to.not.be.null
+        expect(tramwayLayerVisibilityChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayLayerVisibilityChangedEvt.visibility).to.be.true
+        // Visibility has changed
+        expect(transports.checked).to.be.true
+        expect(transports.visibility).to.be.true
+        expect(tramGroup.checked).to.be.true
+        expect(tramGroup.visibility).to.be.true
+        expect(tramStopWork.checked).to.be.false
+        expect(tramStopWork.visibility).to.be.false
+        expect(tramway.checked).to.be.true
+        expect(tramway.visibility).to.be.true
+        // Events dispatched at collection level
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(3)
+        expect(collectionGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
+        expect(collectionGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
+        expect(collectionGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(collectionLayerVisibilityChangedEvt).to.have.length(3)
+        expect(collectionLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
+        expect(collectionLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
+        expect(collectionLayerVisibilityChangedEvt[2].name).to.be.eq('publicbuildings')
     })
 })
