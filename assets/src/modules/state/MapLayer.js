@@ -27,8 +27,10 @@ export class MapItemState extends EventDispatcher {
         }
         if (layerItemState instanceof LayerGroupState) {
             layerItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+            layerItemState.addListener(this.dispatch.bind(this), 'group.symbology.changed');
         } else {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+            layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -236,7 +238,9 @@ export class MapGroupState extends MapItemState {
                         continue;
                     }
                     group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                    group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -252,6 +256,7 @@ export class MapGroupState extends MapItemState {
                     // Build group as layer
                     const layer = new MapLayerState(layerItem, this)
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -282,6 +287,7 @@ export class MapGroupState extends MapItemState {
                 } else {
                     this._items.push(layer);
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -406,10 +412,10 @@ export class MapLayerState extends MapItemState {
         super('layer', layerItemState, parentMapGroup);
         // The layer is group
         if (this.itemState instanceof LayerGroupState) {
+            const self = this;
             // Remove the listener for group.visibility.changed to be replaced
             this.itemState.removeListener(this.dispatch.bind(this), 'group.visibility.changed');
             // Transform the group.visibility.changed by  layer.visibility.changed
-            const self = this;
             layerItemState.addListener(
                 () => {
                     self.dispatch({
@@ -419,7 +425,20 @@ export class MapLayerState extends MapItemState {
                     });
                 },
                 'group.visibility.changed');
+            // Remove the listener for group.symbology.changed to be replaced
+            this.itemState.removeListener(this.dispatch.bind(this), 'group.symbology.changed');
+            // Transform the group.symbology.changed by  layer.symbology.changed
+            layerItemState.addListener(
+                () => {
+                    self.dispatch({
+                        type: 'layer.symbology.changed',
+                        name: self.name,
+                        visibility: self.visibility,
+                    });
+                },
+                'group.symbology.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+            //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');

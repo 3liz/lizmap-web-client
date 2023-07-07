@@ -25,6 +25,7 @@ export class LayerTreeItemState extends EventDispatcher {
         }
         if (mapItemState instanceof MapLayerState) {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -33,6 +34,7 @@ export class LayerTreeItemState extends EventDispatcher {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
         } else if (mapItemState instanceof MapGroupState) {
             mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'group.symbology.changed');
         }
     }
     /**
@@ -205,7 +207,9 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                     continue;
                 }
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 this._items.push(group);
@@ -216,6 +220,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 // Build layer
                 const layer = new LayerTreeLayerState(mapItemState, this)
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 this._items.push(layer);
