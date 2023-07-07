@@ -1414,7 +1414,8 @@ window.lizMap = function() {
         }
     }
     // create the option list
-    var options = '<option value="-1"></option>';
+    const placeHolder = config.layers[aName].title;
+    var options = '<option value="-1" label="'+placeHolder+'"></option>';
     for (var fid in features) {
       var feat = features[fid];
       options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
@@ -1716,6 +1717,7 @@ window.lizMap = function() {
         }
       });
       $('#locate-layer-'+layerName+' ~ span > input').attr('placeholder', placeHolder).val('');
+      $('#locate-layer-'+layerName+' option[value=-1]').attr('label', placeHolder);
       $('#locate-layer-'+layerName+' ~ span > input').autocomplete('close');
       if ( ('minLength' in locate) && locate.minLength > 0 )
         $('#locate-layer-'+layerName).parent().addClass('no-toggle');
