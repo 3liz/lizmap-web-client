@@ -279,10 +279,6 @@ export class LayerItemState extends EventDispatcher {
      **/
     set checked(val) {
         const newVal = convertBoolean(val);
-        // No changes
-        if (this._checked == newVal) {
-            return;
-        }
         // Set new value
         this._checked = newVal;
         // Propagation to parent if checked
@@ -296,14 +292,6 @@ export class LayerItemState extends EventDispatcher {
                     }
                     child.checked = false;
                 }
-            }
-        }
-        if (!this._checked && this.type == 'group') {
-            for (const child of this.getChildren()) {
-                if (!child.checked) {
-                    continue;
-                }
-                child.calculateVisibility();
             }
         }
         // Calculate visibility
@@ -412,6 +400,14 @@ export class LayerItemState extends EventDispatcher {
             this._visibility = this._checked;
         } else {
             this._visibility = false;
+        }
+        if (!this._visibility && this.type == 'group') {
+            for (const child of this.getChildren()) {
+                if (!child.checked) {
+                    continue;
+                }
+                child.calculateVisibility();
+            }
         }
         // Only dispatch event if visibility has changed
         if (oldVisibility !== null && oldVisibility != this.visibility) {
@@ -674,10 +670,38 @@ export class LayerVectorState extends LayerLayerState {
         if (this.layerType != 'vector') {
             throw new TypeError('A LayerVectorState could not be build for `'+this.layerType+'` type ! The layer `'+ this.name +'` could not be constructed!');
         }
+        if (!this.isSpatial) {
+            this._checked = false;
+        }
         this._selectedFeatures = [];
         this._selectionToken = null;
         this._expressionFilter = null;
         this._filterToken = null;
+    }
+
+
+    /**
+     * Layer tree item is checked
+     *
+     * @type {Boolean}
+     **/
+    get checked() {
+        return super.checked;
+    }
+
+    /**
+     * Set layer tree item is checked
+     *
+     * @type {Boolean}
+     **/
+    set checked(val) {
+        if (!this.isSpatial) {
+            const newVal = convertBoolean(val);
+            // Set new value
+            this._checked = newVal;
+            return;
+        }
+        super.checked = val;
     }
 
     /**
@@ -1021,6 +1045,19 @@ export class LayerVectorState extends LayerLayerState {
         }
         return params;
     }
+
+    /**
+     * Calculate and save visibility
+     *
+     * @returns {boolean} the calculated visibility
+     **/
+    calculateVisibility() {
+        if (!this.isSpatial) {
+            this._visibility = false;
+            return false;
+        }
+        return super.calculateVisibility();
+    }
 }
 
 /**
@@ -1125,6 +1162,9 @@ export class LayerGroupState extends LayerItemState {
                     this._checked = true;
                 }
             }
+        }
+        for (const child of this.getChildren()) {
+            child.calculateVisibility();
         }
     }
 
