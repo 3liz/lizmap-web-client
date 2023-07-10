@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { ValidationError } from '../../../../assets/src/modules/Errors.js';
+import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
@@ -1442,5 +1442,156 @@ describe('LayersAndGroupsCollection', function () {
         expect(collectionLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
         expect(collectionLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
         expect(collectionLayerVisibilityChangedEvt[2].name).to.be.eq('publicbuildings')
+    })
+
+    it('Opacity', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        let collectionLayerOpacityChangedEvt = [];
+        let collectionGroupOpacityChangedEvt = [];
+        collection.addListener(evt => {
+            collectionLayerOpacityChangedEvt.push(evt)
+        }, 'layer.opacity.changed');
+        collection.addListener(evt => {
+            collectionGroupOpacityChangedEvt.push(evt)
+        }, 'group.opacity.changed');
+
+        const sousquartiers = collection.getLayerByName('SousQuartiers')
+        expect(sousquartiers).to.be.instanceOf(LayerVectorState)
+        expect(sousquartiers.opacity).to.be.eq(1)
+
+        let sousquartiersOpacityChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersOpacityChangedEvt = evt
+        }, 'layer.opacity.changed');
+
+        // Change value
+        sousquartiers.opacity = 0.8;
+        // Event dispatched
+        expect(sousquartiersOpacityChangedEvt).to.not.be.null
+        expect(sousquartiersOpacityChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersOpacityChangedEvt.opacity).to.be.eq(0.8)
+        // Values have changed
+        expect(sousquartiers.opacity).to.be.eq(0.8)
+        // Events dispatched at root level
+        expect(collectionLayerOpacityChangedEvt).to.have.length(1)
+        expect(collectionLayerOpacityChangedEvt[0]).to.be.deep.equal(sousquartiersOpacityChangedEvt)
+        expect(collectionGroupOpacityChangedEvt).to.have.length(0)
+
+        //Reset
+        collectionLayerOpacityChangedEvt = [];
+        collectionGroupOpacityChangedEvt = [];
+        sousquartiersOpacityChangedEvt = null;
+
+        // Try set opacity to not a number
+        try {
+            sousquartiers.opacity = 'foobar';
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('`foobar` is not a number!')
+            expect(error).to.be.instanceOf(ConversionError)
+        }
+        // Nothing change
+        expect(sousquartiersOpacityChangedEvt).to.be.null
+        expect(sousquartiers.opacity).to.be.eq(0.8)
+        expect(collectionLayerOpacityChangedEvt).to.have.length(0)
+        expect(collectionGroupOpacityChangedEvt).to.have.length(0)
+
+        // Set to the same value
+        sousquartiers.opacity = '0.8';
+        // Nothing change
+        expect(sousquartiersOpacityChangedEvt).to.be.null
+        expect(sousquartiers.opacity).to.be.eq(0.8)
+        expect(collectionLayerOpacityChangedEvt).to.have.length(0)
+        expect(collectionGroupOpacityChangedEvt).to.have.length(0)
+
+        // Test through groups
+        const transports = collection.getGroupByName('datalayers');
+        expect(transports).to.be.instanceOf(LayerGroupState)
+
+        let transportsLayerOpacityChangedEvt = [];
+        let transportsGroupOpacityChangedEvt = [];
+        transports.addListener(evt => {
+            transportsLayerOpacityChangedEvt.push(evt)
+        }, 'layer.opacity.changed');
+        transports.addListener(evt => {
+            transportsGroupOpacityChangedEvt.push(evt)
+        }, 'group.opacity.changed');
+
+        const tramGroup = collection.getGroupByName('Tramway')
+        expect(tramGroup).to.be.instanceOf(LayerGroupState)
+
+        let tramGroupLayerOpacityChangedEvt = [];
+        let tramGroupGroupOpacityChangedEvt = null;
+        tramGroup.addListener(evt => {
+            tramGroupLayerOpacityChangedEvt.push(evt)
+        }, 'layer.opacity.changed');
+        tramGroup.addListener(evt => {
+            tramGroupGroupOpacityChangedEvt = evt
+        }, 'group.opacity.changed');
+
+        const tramway = collection.getLayerByName('tramway')
+        expect(tramway).to.be.instanceOf(LayerVectorState)
+
+        let tramwayOpacityChangedEvt = null;
+        tramway.addListener(evt => {
+            tramwayOpacityChangedEvt = evt
+        }, 'layer.opacity.changed');
+
+        // Change value
+        tramway.opacity = 0.8;
+        // Event dispatched
+        expect(tramwayOpacityChangedEvt).to.not.be.null
+        expect(tramwayOpacityChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayOpacityChangedEvt.opacity).to.be.eq(0.8)
+        // Values have changed
+        expect(tramway.opacity).to.be.eq(0.8)
+        // Events dispatched at root level
+        expect(tramGroupLayerOpacityChangedEvt).to.have.length(1)
+        expect(tramGroupLayerOpacityChangedEvt[0]).to.be.deep.equal(tramwayOpacityChangedEvt)
+        expect(tramGroupGroupOpacityChangedEvt).to.be.null
+        expect(transportsLayerOpacityChangedEvt).to.have.length(1)
+        expect(transportsLayerOpacityChangedEvt[0]).to.be.deep.equal(tramwayOpacityChangedEvt)
+        expect(transportsGroupOpacityChangedEvt).to.have.length(0)
+        expect(collectionLayerOpacityChangedEvt).to.have.length(1)
+        expect(collectionLayerOpacityChangedEvt[0]).to.be.deep.equal(tramwayOpacityChangedEvt)
+        expect(collectionGroupOpacityChangedEvt).to.have.length(0)
+
+        //Reset
+        collectionLayerOpacityChangedEvt = [];
+        collectionGroupOpacityChangedEvt = [];
+        transportsLayerOpacityChangedEvt = [];
+        transportsGroupOpacityChangedEvt = [];
+        tramGroupLayerOpacityChangedEvt = [];
+        tramGroupGroupOpacityChangedEvt = null;
+        tramwayOpacityChangedEvt = null;
+
+        // Change Group value
+        tramGroup.opacity = 0.9;
+        // Event dispatched
+        expect(tramGroupGroupOpacityChangedEvt).to.not.be.null
+        expect(tramGroupGroupOpacityChangedEvt.name).to.be.eq('Tramway')
+        expect(tramGroupGroupOpacityChangedEvt.opacity).to.be.eq(0.9)
+        // Values have changed
+        expect(tramGroup.opacity).to.be.eq(0.9)
+        expect(transportsLayerOpacityChangedEvt).to.have.length(0)
+        expect(transportsGroupOpacityChangedEvt).to.have.length(1)
+        expect(transportsGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
+        expect(collectionLayerOpacityChangedEvt).to.have.length(0)
+        expect(collectionGroupOpacityChangedEvt).to.have.length(1)
+        expect(collectionGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
     })
 })
