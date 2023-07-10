@@ -27,6 +27,7 @@ export class LayerTreeItemState extends EventDispatcher {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.loading.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -232,6 +233,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.loading.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -248,6 +250,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
