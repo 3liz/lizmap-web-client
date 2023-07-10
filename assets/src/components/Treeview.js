@@ -69,16 +69,16 @@ export default class Treeview extends HTMLElement {
 
         render(this._layerTemplate(mainLizmap.state.layerTree), this);
 
-        mainEventDispatcher.addListener(
+        mainLizmap.state.rootMapGroup.addListener(
             this._onChange,
-            ['overlayLayers.changed', 'overlayLayer.loading.changed', 'overlayLayer.visibility.changed']
+            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed']
         );
     }
 
     disconnectedCallback() {
-        mainEventDispatcher.removeListener(
+        mainLizmap.state.rootMapGroup.removeListener(
             this._onChange,
-            ['overlayLayers.changed', 'overlayLayer.loading.changed', 'overlayLayer.visibility.changed']
+            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed']
         );
     }
 

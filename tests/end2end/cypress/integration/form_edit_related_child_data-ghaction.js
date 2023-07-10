@@ -26,12 +26,24 @@ describe('Editing relational data', function() {
             } else
                 req.alias = 'postToService'
           })
+
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
+
+        // Wait for map displayed
+        cy.wait('@getMap')
     })
 
     it('Check the child table has been moved in the expected div', function () {
-
         // Click on the map to get the popup of District (parent) layer
-        cy.mapClick(708, 555)
+        cy.mapClick(708, 545)
 
         // Wait for popup to appear
         cy.wait('@postGetFeatureInfo')
