@@ -31,24 +31,29 @@ export default class Popup {
                 );
             },
             trigger: evt => {
-                let candidateLayers = lizMap.mainLizmap.baseLayersMap.overlayLayers;
+                let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers();
 
                 // Only request visible layers
-                candidateLayers = candidateLayers.filter(layer => layer.getVisible());
+                candidateLayers = candidateLayers.filter(layer => layer.visibility);
 
                 // Only request layers with 'popup' checked in plugin
                 // Or some edition capabilities
                 candidateLayers = candidateLayers.filter(layer => {
-                    const layerCfg = mainLizmap.initialConfig.layers.getLayerConfigByLayerName(layer.get("name"));
-                    const editionLayerCapabilities = mainLizmap.initialConfig.editionLayers.getLayerConfigByLayerName(layer.get("name")).capabilities;
-                    return layerCfg.popup || editionLayerCapabilities.modifyAttribute || editionLayerCapabilities.modifyGeometry || editionLayerCapabilities.deleteFeature;
+                    const layerCfg = layer.layerConfig;
+
+                    let editionLayerCapabilities;
+
+                    if (mainLizmap.initialConfig?.editionLayers.layerNames.includes(layer.name)) {
+                        editionLayerCapabilities = mainLizmap.initialConfig?.editionLayers?.getLayerConfigByLayerName(layer.name)?.capabilities;
+                    }
+                    return layerCfg.popup || editionLayerCapabilities?.modifyAttribute || editionLayerCapabilities?.modifyGeometry || editionLayerCapabilities?.deleteFeature;
                 });
 
                 if(!candidateLayers.length){
                     return;
                 }
     
-                const layersWMS = candidateLayers.map(layer => layer.getSource().getParams().LAYERS).join();
+                const layersWMS = candidateLayers.map(layer => layer.wmsName).join();
     
                 const wms = new WMS();
     
@@ -77,7 +82,7 @@ export default class Popup {
 
                 const filterTokens = [];
                 candidateLayers.forEach(layer => {
-                    let filterToken = layer.getSource().getParams()?.FILTERTOKEN;
+                    let filterToken = layer.wmsParameters?.FILTERTOKEN;
                     if (filterToken) {
                         filterTokens.push(filterToken);
                     }
