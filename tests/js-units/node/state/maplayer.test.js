@@ -668,6 +668,119 @@ describe('MapGroupState', function () {
         expect(rootGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
     })
 
+    it('Loading', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
+        expect(root).to.be.instanceOf(MapGroupState)
+
+        let rootLayerLoadingChangedEvt = [];
+        root.addListener(evt => {
+            rootLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(MapLayerState)
+        expect(sousquartiers.loading).to.be.false
+
+        let sousquartiersLoadingChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersLoadingChangedEvt = evt
+        }, 'layer.loading.changed');
+
+        // Change value
+        sousquartiers.loading = true;
+        // Event dispatched
+        expect(sousquartiersLoadingChangedEvt).to.not.be.null
+        expect(sousquartiersLoadingChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersLoadingChangedEvt.loading).to.be.true
+        // Values have changed
+        expect(sousquartiers.loading).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerLoadingChangedEvt).to.have.length(1)
+        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(sousquartiersLoadingChangedEvt)
+
+        //Reset
+        rootLayerLoadingChangedEvt = [];
+        sousquartiersLoadingChangedEvt = null;
+
+        // Try set loading to not a boolean
+        try {
+            sousquartiers.loading = 'foobar';
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('`foobar` is not an expected boolean: true, t, yes, y, 1, false, f, no, n, 0 or empty string ``!')
+            expect(error).to.be.instanceOf(ConversionError)
+        }
+        // Nothing change
+        expect(sousquartiersLoadingChangedEvt).to.be.null
+        expect(sousquartiers.loading).to.be.true
+        expect(rootLayerLoadingChangedEvt).to.have.length(0)
+
+        // Set to the same value
+        sousquartiers.loading = 't';
+        // Nothing change
+        expect(sousquartiersLoadingChangedEvt).to.be.null
+        expect(sousquartiers.loading).to.be.true
+        expect(rootLayerLoadingChangedEvt).to.have.length(0)
+
+        // Test through groups
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(MapGroupState)
+
+        let transportsLayerLoadingChangedEvt = [];
+        transports.addListener(evt => {
+            transportsLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const tramGroup = transports.children[1];
+        expect(tramGroup).to.be.instanceOf(MapGroupState)
+        expect(tramGroup.name).to.be.eq('Tramway')
+
+        let tramGroupLayerLoadingChangedEvt = [];
+        tramGroup.addListener(evt => {
+            tramGroupLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const tramway = tramGroup.children[1];
+        expect(tramway).to.be.instanceOf(MapLayerState)
+        expect(tramway.name).to.be.eq('tramway')
+
+        let tramwayLoadingChangedEvt = null;
+        tramway.addListener(evt => {
+            tramwayLoadingChangedEvt = evt
+        }, 'layer.loading.changed');
+
+        // Change value
+        tramway.loading = true;
+        // Event dispatched
+        expect(tramwayLoadingChangedEvt).to.not.be.null
+        expect(tramwayLoadingChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayLoadingChangedEvt.loading).to.be.true
+        // Values have changed
+        expect(tramway.loading).to.be.true
+        // Events dispatched at root level
+        expect(tramGroupLayerLoadingChangedEvt).to.have.length(1)
+        expect(tramGroupLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+        expect(transportsLayerLoadingChangedEvt).to.have.length(1)
+        expect(transportsLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+        expect(rootLayerLoadingChangedEvt).to.have.length(1)
+        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+    })
+
     it('WMS selected styles', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined

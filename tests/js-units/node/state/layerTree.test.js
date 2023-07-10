@@ -826,6 +826,102 @@ describe('LayerTreeGroupState', function () {
         expect(rootGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
     })
 
+    it('Loading', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        let rootLayerLoadingChangedEvt = [];
+        root.addListener(evt => {
+            rootLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
+        expect(sousquartiers.loading).to.be.false
+
+        let sousquartiersLoadingChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersLoadingChangedEvt = evt
+        }, 'layer.loading.changed');
+
+        // Change value
+        sousquartiers.mapItemState.loading = true;
+        // Event dispatched
+        expect(sousquartiersLoadingChangedEvt).to.not.be.null
+        expect(sousquartiersLoadingChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersLoadingChangedEvt.loading).to.be.true
+        // Values have changed
+        expect(sousquartiers.loading).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerLoadingChangedEvt).to.have.length(1)
+        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(sousquartiersLoadingChangedEvt)
+
+        //Reset
+        rootLayerLoadingChangedEvt = [];
+        sousquartiersLoadingChangedEvt = null;
+
+        // Test through groups
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(LayerTreeGroupState)
+
+        let transportsLayerLoadingChangedEvt = [];
+        transports.addListener(evt => {
+            transportsLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const tramGroup = transports.children[1];
+        expect(tramGroup).to.be.instanceOf(LayerTreeGroupState)
+        expect(tramGroup.name).to.be.eq('Tramway')
+
+        let tramGroupLayerLoadingChangedEvt = [];
+        tramGroup.addListener(evt => {
+            tramGroupLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const tramway = tramGroup.children[1];
+        expect(tramway).to.be.instanceOf(LayerTreeLayerState)
+        expect(tramway.name).to.be.eq('tramway')
+
+        let tramwayLoadingChangedEvt = null;
+        tramway.addListener(evt => {
+            tramwayLoadingChangedEvt = evt
+        }, 'layer.loading.changed');
+
+        // Change value
+        tramway.mapItemState.loading = true;
+        // Event dispatched
+        expect(tramwayLoadingChangedEvt).to.not.be.null
+        expect(tramwayLoadingChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayLoadingChangedEvt.loading).to.be.true
+        // Values have changed
+        expect(tramway.loading).to.be.true
+        // Events dispatched at root level
+        expect(tramGroupLayerLoadingChangedEvt).to.have.length(1)
+        expect(tramGroupLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+        expect(transportsLayerLoadingChangedEvt).to.have.length(1)
+        expect(transportsLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+        expect(rootLayerLoadingChangedEvt).to.have.length(1)
+        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+    })
+
     it('WMS selected styles', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
