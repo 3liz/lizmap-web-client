@@ -155,6 +155,24 @@ export class LayerTreeItemState extends EventDispatcher {
     }
 
     /**
+     * Layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    get opacity() {
+        return this._mapItemState.opacity;
+    }
+
+    /**
+     * Set layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    set opacity(val) {
+        this._mapItemState.opacity = val;
+    }
+
+    /**
      * Lizmap layer config
      *
      * @type {?LayerConfig}
