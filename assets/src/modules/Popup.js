@@ -47,7 +47,7 @@ export default class Popup {
 
                     let editionLayerCapabilities;
 
-                    if (mainLizmap.initialConfig?.editionLayers.layerNames.includes(layer.name)) {
+                    if (mainLizmap.initialConfig?.editionLayers?.layerNames.includes(layer.name)) {
                         editionLayerCapabilities = mainLizmap.initialConfig?.editionLayers?.getLayerConfigByLayerName(layer.name)?.capabilities;
                     }
                     return layerCfg.popup || editionLayerCapabilities?.modifyAttribute || editionLayerCapabilities?.modifyGeometry || editionLayerCapabilities?.deleteFeature;

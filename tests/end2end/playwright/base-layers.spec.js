@@ -13,8 +13,8 @@ test.describe('Base layers', () => {
     test('Base layers list', async ({ page }) => {
         await expect(page.locator('lizmap-base-layers select option')).toHaveCount(11);
         await expect(page.locator('lizmap-base-layers select')).toHaveValue('osm-mapnik');
-        await page.locator('lizmap-base-layers select').selectOption('emptyBaselayer');
-        await expect(page.locator('lizmap-base-layers select')).toHaveValue('emptyBaselayer');
+        await page.locator('lizmap-base-layers select').selectOption('empty');
+        await expect(page.locator('lizmap-base-layers select')).toHaveValue('empty');
     });
 
     test('Scales', async ({ page }) => {

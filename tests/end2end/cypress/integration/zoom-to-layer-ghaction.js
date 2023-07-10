@@ -4,7 +4,7 @@ describe('Zoom to layer', function() {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=world-4326')
 
         // Zoom to layer rectangle
-        cy.get('#layer-rectangle > td:first > span.label').click()
+        cy.get('#node-rectangle ~ .node .layer-actions .icon-info-sign').click({force: true})
         cy.get('#sub-dock button.layerActionZoom').click()
 
         // Click on the map to get a popup
@@ -16,7 +16,7 @@ describe('Zoom to layer', function() {
 
         // Zoom to world layer
         cy.get('#button-switcher').click()
-        cy.get('#layer-world > td:first > span.label').click()
+        cy.get('#node-world ~ .node .layer-actions .icon-info-sign').click({force: true})
         cy.get('#sub-dock button.layerActionZoom').click()
 
         // Click on the map to get no popup
@@ -35,7 +35,7 @@ describe('Zoom to layer', function() {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=world-3857')
 
         // Zoom to layer rectangle
-        cy.get('#layer-rectangle > td:first > span.label').click()
+        cy.get('#node-rectangle ~ .node .layer-actions .icon-info-sign').click({force: true})
         cy.get('#sub-dock button.layerActionZoom').click()
 
         // Click on the map to get a popup
@@ -47,7 +47,7 @@ describe('Zoom to layer', function() {
 
         // Zoom to world layer
         cy.get('#button-switcher').click()
-        cy.get('#layer-world > td:first > span.label').click()
+        cy.get('#node-world ~ .node .layer-actions .icon-info-sign').click({force: true})
         cy.get('#sub-dock button.layerActionZoom').click()
 
         // Click on the map to get no popup

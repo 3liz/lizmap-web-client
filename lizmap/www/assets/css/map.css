@@ -3045,6 +3045,7 @@ lizmap-treeview input[type="checkbox"] {
   scale: 1.4;
   align-self: baseline;
   margin-top: 5px;
+  accent-color: #0094D6;
 }
 
 lizmap-treeview input.rounded-checkbox {
