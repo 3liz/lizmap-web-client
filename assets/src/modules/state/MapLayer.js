@@ -173,7 +173,7 @@ export class MapItemState extends EventDispatcher {
      * @type {Number}
      **/
     set opacity(val) {
-        return this._layerItemState.opacity = val;
+        this._layerItemState.opacity = val;
     }
 
     /**
