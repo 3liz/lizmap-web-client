@@ -31,6 +31,10 @@ export default class Popup {
                 );
             },
             trigger: evt => {
+                if(lizMap.editionPending){
+                    return;
+                }
+
                 let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers();
 
                 // Only request visible layers
