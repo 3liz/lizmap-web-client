@@ -409,7 +409,7 @@ export class MapGroupState extends MapItemState {
     /**
      * Find layer and group items
      *
-     * @returns {MapLayerState|MapGroupState[]}
+     * @returns {Array<MapLayerState|MapGroupState>}
      **/
     findMapLayersAndGroups() {
         let items = []
@@ -418,7 +418,7 @@ export class MapGroupState extends MapItemState {
                 items.push(item);
             } else if (item instanceof MapGroupState) {
                 items.push(item);
-                items = items.concat(item.findMapLayers());
+                items = items.concat(item.findMapLayersAndGroups());
             }
         }
         return items;
