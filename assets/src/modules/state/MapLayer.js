@@ -407,6 +407,24 @@ export class MapGroupState extends MapItemState {
     }
 
     /**
+     * Find layer and group items
+     *
+     * @returns {MapLayerState|MapGroupState[]}
+     **/
+    findMapLayersAndGroups() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof MapLayerState) {
+                items.push(item);
+            } else if (item instanceof MapGroupState) {
+                items.push(item);
+                items = items.concat(item.findMapLayers());
+            }
+        }
+        return items;
+    }
+
+    /**
      * Get layer item by its name
      *
      * @param {String} name - the layer name
@@ -419,6 +437,21 @@ export class MapGroupState extends MapItemState {
             }
         }
         throw RangeError('The layer name `'+ name +'` is unknown!');
+    }
+
+    /**
+     * Get layer or group item by its name
+     *
+     * @param {String} name - the layer or group name
+     * @returns {MapLayerState|MapGroupState} The MapLayerState or MapGroupState associated to the name
+     **/
+    getMapLayerOrGroupByName(name) {
+        for (const item of this.findMapLayersAndGroups()) {
+            if(item.name === name) {
+                return item;
+            }
+        }
+        throw RangeError('The layer or group name `'+ name +'` is unknown!');
     }
 }
 
