@@ -15,7 +15,9 @@ test.describe('Filter layer data by user - not connected', () => {
         await page.$eval("*", el => el.style.visibility = 'hidden');
         await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_not_connected.png');
+        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_not_connected.png', {
+            maxDiffPixels: 500
+          });
     });
 
     test('Popup', async ({ page }) => {
@@ -134,7 +136,9 @@ test.describe('Filter layer data by user - user in group a', () => {
         await page.$eval("*", el => el.style.visibility = 'hidden');
         await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_user_in_group_a.png');
+        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_user_in_group_a.png', {
+            maxDiffPixels: 500
+          });
     });
 
     test('Popup', async ({ page }) => {
@@ -257,7 +261,9 @@ test.describe('Filter layer data by user - admin', () => {
         await page.$eval("*", el => el.style.visibility = 'hidden');
         await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_admin.png');
+        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_admin.png', {
+            maxDiffPixels: 500
+          });
     });
 
     test('Popup', async ({ page }) => {

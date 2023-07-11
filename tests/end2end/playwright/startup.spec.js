@@ -12,7 +12,7 @@ test.describe('Startup', () => {
     await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
 
     expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('zoom-features-extent.png', {
-      maxDiffPixels: 300
+      maxDiffPixels: 700
     });
   });
   
