@@ -272,12 +272,6 @@ class Server
             );
         }
 
-        if (\jApp::isModuleEnabled('webdav') && class_exists('\\LizmapDAV\\Server')) {
-            if (\jAcl2::check('lizmap.webdav.access')) {
-                $data['webdav'] = \jServer::getServerURI().\LizmapDAV\Server::serverBaseUri();
-            }
-        }
-
         return $data;
     }
 

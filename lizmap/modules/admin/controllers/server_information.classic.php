@@ -84,11 +84,6 @@ class server_informationCtrl extends jController
             'minimumQgisVersion' => $qgisMinimumVersionRequired,
             'minimumLizmapServer' => $lizmapPluginMinimumVersionRequired,
         );
-        if (\jApp::isModuleEnabled('webdav') && class_exists('\\LizmapDAV\\Server')) {
-            if (\jAcl2::check('lizmap.webdav.access')) {
-                $assign['webdav'] = \jServer::getServerURI().\LizmapDAV\Server::serverBaseUri();
-            }
-        }
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('server_information'));
         $rep->body->assign('selectedMenuItem', 'lizmap_server_information');
