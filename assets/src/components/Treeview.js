@@ -1,4 +1,4 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainLizmap } from '../modules/Globals.js';
 
 import { html, render } from 'lit-html';
 import { when } from 'lit-html/directives/when.js';
@@ -19,12 +19,8 @@ export default class Treeview extends HTMLElement {
         <ul>
             ${layerTreeGroupState.children.map(item => html`
             <li>
-                ${item.type === 'group'
-                    ? html`<div class="expandable expanded" @click=${(event) => event.target.classList.toggle('expanded')}></div>`
-                    : ''
-                }
-                ${item.symbologyChildrenCount
-                    ? html`<div class="expandable" @click=${(event) => event.target.classList.toggle('expanded')}></div>`
+                ${item.type === 'group' || item.symbologyChildrenCount
+                    ? html`<div class="expandable ${item.expanded ? 'expanded' : ''}" @click=${() => item.expanded = !item.expanded}></div>`
                     : ''
                 }
                 <div class="${item.checked ? 'checked' : ''} ${item.type}">
@@ -41,7 +37,7 @@ export default class Treeview extends HTMLElement {
                                 <i class="icon-share"></i>
                             </a>
                             <a href="${this._createRemoveCacheLink(item.name)}" target="_blank">
-                                <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${(event) => this._removeCache(event)}></i>
+                                <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${event => this._removeCache(event)}></i>
                             </a>
                             <i class="icon-info-sign" @click=${() => this._toggleMetadata(item.name, item.type)}></i>
                         </div>
@@ -69,16 +65,16 @@ export default class Treeview extends HTMLElement {
 
         render(this._layerTemplate(mainLizmap.state.layerTree), this);
 
-        mainLizmap.state.rootMapGroup.addListener(
+        mainLizmap.state.layerTree.addListener(
             this._onChange,
-            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed']
+            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
         );
     }
 
     disconnectedCallback() {
-        mainLizmap.state.rootMapGroup.removeListener(
+        mainLizmap.state.layerTree.removeListener(
             this._onChange,
-            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed']
+            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
         );
     }
 
