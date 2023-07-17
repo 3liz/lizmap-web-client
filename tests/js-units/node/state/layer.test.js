@@ -817,6 +817,87 @@ describe('LayerGroupState', function () {
         expect(fond.checked).to.be.true
         expect(fond.visibility).to.be.true
         expect(fond.childrenCount).to.be.eq(2)
+
+        expect(fond.children[0].isInGroupAsLayer).to.be.true
+        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].visibility).to.be.true
+        expect(fond.children[0].displayInLegend).to.be.false
+        expect(fond.children[0]).to.be.instanceOf(LayerGroupState)
+        expect(fond.children[0].childrenCount).to.be.eq(12)
+        expect(fond.children[0].children[0].isInGroupAsLayer).to.be.true
+        expect(fond.children[0].children[0].checked).to.be.false
+        expect(fond.children[0].children[0].visibility).to.be.true
+        expect(fond.children[0].children[0].displayInLegend).to.be.false
+        expect(fond.children[1].isInGroupAsLayer).to.be.true
+        expect(fond.children[1].checked).to.be.true
+        expect(fond.children[1].visibility).to.be.true
+        expect(fond.children[1].displayInLegend).to.be.false
+        expect(fond.children[1]).to.be.instanceOf(LayerGroupState)
+        expect(fond.children[1].childrenCount).to.be.eq(14)
+        expect(fond.children[1].children[0].isInGroupAsLayer).to.be.true
+        expect(fond.children[1].children[0].checked).to.be.false
+        expect(fond.children[1].children[0].visibility).to.be.true
+        expect(fond.children[1].children[0].displayInLegend).to.be.false
+
+        fond.checked = false;
+        expect(fond.checked).to.be.false
+        expect(fond.visibility).to.be.false
+        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].visibility).to.be.false
+        expect(fond.children[0].children[0].checked).to.be.false
+        expect(fond.children[0].children[0].visibility).to.be.false
+        expect(fond.children[1].checked).to.be.true
+        expect(fond.children[1].visibility).to.be.false
+        expect(fond.children[1].children[0].checked).to.be.false
+        expect(fond.children[1].children[0].visibility).to.be.false
+
+        fond.children[1].children[0].checked = true;
+        expect(fond.checked).to.be.false
+        expect(fond.visibility).to.be.false
+        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].visibility).to.be.false
+        expect(fond.children[0].children[0].checked).to.be.false
+        expect(fond.children[0].children[0].visibility).to.be.false
+        expect(fond.children[1].checked).to.be.true
+        expect(fond.children[1].visibility).to.be.false
+        expect(fond.children[1].children[0].checked).to.be.true
+        expect(fond.children[1].children[0].visibility).to.be.false
+
+        fond.children[0].children[0].checked = true;
+        expect(fond.checked).to.be.false
+        expect(fond.visibility).to.be.false
+        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].visibility).to.be.false
+        expect(fond.children[0].children[0].checked).to.be.true
+        expect(fond.children[0].children[0].visibility).to.be.false
+        expect(fond.children[1].checked).to.be.true
+        expect(fond.children[1].visibility).to.be.false
+        expect(fond.children[1].children[0].checked).to.be.true
+        expect(fond.children[1].children[0].visibility).to.be.false
+
+        fond.checked = true;
+        expect(fond.checked).to.be.true
+        expect(fond.visibility).to.be.true
+        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].visibility).to.be.true
+        expect(fond.children[0].children[0].checked).to.be.true
+        expect(fond.children[0].children[0].visibility).to.be.true
+        expect(fond.children[1].checked).to.be.true
+        expect(fond.children[1].visibility).to.be.true
+        expect(fond.children[1].children[0].checked).to.be.true
+        expect(fond.children[1].children[0].visibility).to.be.true
+
+        fond.children[1].checked = false;
+        expect(fond.checked).to.be.true
+        expect(fond.visibility).to.be.true
+        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].visibility).to.be.true
+        expect(fond.children[0].children[0].checked).to.be.true
+        expect(fond.children[0].children[0].visibility).to.be.true
+        expect(fond.children[1].checked).to.be.false
+        expect(fond.children[1].visibility).to.be.true
+        expect(fond.children[1].children[0].checked).to.be.true
+        expect(fond.children[1].children[0].visibility).to.be.true
     })
 })
 
