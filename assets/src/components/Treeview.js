@@ -19,7 +19,7 @@ export default class Treeview extends HTMLElement {
         <ul>
             ${layerTreeGroupState.children.map(item => html`
             <li>
-                ${item.type === 'group' || item.symbologyChildrenCount
+                ${item.type === 'group' || (item.symbologyChildrenCount && item.layerConfig.legendImageOption !== "disabled")
                     ? html`<div class="expandable ${item.expanded ? 'expanded' : ''}" @click=${() => item.expanded = !item.expanded}></div>`
                     : ''
                 }
@@ -43,7 +43,7 @@ export default class Treeview extends HTMLElement {
                         </div>
                     </div>
                 </div>
-                ${item.symbologyChildrenCount
+                ${(item.symbologyChildrenCount && item.layerConfig.legendImageOption !== "disabled")
                     ? html`
                         <ul class="symbols">
                             ${item.symbologyChildren.map(symbol => html`
