@@ -3027,8 +3027,12 @@ lizmap-treeview div.expandable.expanded {
   color: #CE1F2D;
 }
 
-lizmap-treeview div.expandable:not(.expanded) ~ ul {
+lizmap-treeview div.expandable ~ ul {
   display: none;
+}
+
+lizmap-treeview div.expandable.expanded ~ ul {
+  display: block;
 }
 
 lizmap-treeview .node {
