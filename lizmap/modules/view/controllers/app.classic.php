@@ -44,6 +44,13 @@ class appCtrl extends jController
             $data['qgis_server_info'] = array('error' => 'WRONG_CREDENTIALS');
         }
 
+        // retrieves foreign metadata
+        $event = new \Lizmap\Events\LizmapMetadataEvent();
+        \jEvent::notify($event);
+        // merge other foreign metadata with current metadata.
+        // We don't want that foreign metadata overwrite our own metadata.
+        $data = array_merge($event->getMetadata(), $data);
+
         $rep->data = $data;
 
         return $rep;
