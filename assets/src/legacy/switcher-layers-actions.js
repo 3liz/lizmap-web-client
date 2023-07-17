@@ -265,49 +265,29 @@ var lizLayerActionButtons = function() {
 
                 // Handle theme switching
                 $('#theme-selector').on('click', '.theme', function () {
-                // Set theme as selected
+                    // Set theme as selected
                     $('#theme-selector .theme').removeClass('selected');
                     $(this).addClass('selected');
 
-                    var themeNameSelected = $(this).text();
+                    const themeNameSelected = $(this).text();
 
                     if (themeNameSelected in lizMap.config.themes){
-                        var themeSelected = lizMap.config.themes[themeNameSelected];
+                        const themeSelected = lizMap.config.themes[themeNameSelected];
 
-                        // Set every layer's visibility to false then to true if a layer is present in theme
-                        lizMap.mainLizmap.baseLayersMap.overlayLayersAndGroups.forEach(layer => {
-                            layer.set('visible', false, true);
-                        });
-
-                        // Handle layers visibility and style states
-                        for (const layerId in themeSelected?.['layers']) {
-                            const layerName = lizMap.getLayerConfigById(layerId)[0];
-                            const layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(layerName);
-                            if (layer) {
-                                // Visibility
-                                layer.set('visible', true, true);
-
-                                // Style
-                                let layerStyle = themeSelected.layers[layerId]?.['style'];
-                                if (layerStyle) {
-                                    const wmsParams = layer.getSource().getParams();
-                                    if (wmsParams) {
-                                        wmsParams['STYLES'] = layerStyle;
-                                        layer.getSource().updateParams(wmsParams);
-                                    }
+                        // Set checked state
+                        for(const layerOrGroup of lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups()){
+                            if(layerOrGroup.type === "group"){
+                                layerOrGroup.checked = themeSelected?.checkedGroupNode !== undefined && themeSelected.checkedGroupNode.includes(layerOrGroup.name);
+                                layerOrGroup.expanded = themeSelected?.expandedGroupNode !== undefined && themeSelected.expandedGroupNode.includes(layerOrGroup.name);
+                            } else {
+                                layerOrGroup.checked = themeSelected?.layers && Object.hasOwn(themeSelected.layers, layerOrGroup.layerConfig.id);
+                                layerOrGroup.expanded = themeSelected?.layers && Object.hasOwn(themeSelected.layers, layerOrGroup.layerConfig.id) && themeSelected.layers[layerOrGroup.layerConfig.id]?.expanded === "1";
+                                const style = themeSelected?.layers?.[layerOrGroup.layerConfig.id]?.style;
+                                if (style) {
+                                    layerOrGroup.wmsSelectedStyleName = style;
                                 }
                             }
                         }
-
-                        // Handle group's visibility
-                        const checkedGroupNode = themeSelected?.checkedGroupNode;
-                        if (checkedGroupNode) {
-                            checkedGroupNode.forEach(
-                                groupId => lizMap.mainLizmap.baseLayersMap.getLayerOrGroupByName(groupId)?.set('visible', true, true)
-                            );
-                        }
-
-                        lizMap.mainLizmap.baseLayersMap.overlayLayersGroup.changed();
 
                         // Trigger map theme event
                         lizMap.events.triggerEvent("mapthemechanged",
@@ -363,7 +343,6 @@ var lizLayerActionButtons = function() {
                 return false;
             });
 
-
             // Zoom
             $('#content').on('click', 'button.layerActionZoom', function(){
                 var layerName = $(this).val();
@@ -406,7 +385,6 @@ var lizLayerActionButtons = function() {
 
                 return false;
             });
-
 
             // Styles
             $('#content').on('change', 'select.styleLayer', function(){
@@ -468,7 +446,6 @@ var lizLayerActionButtons = function() {
 
                 return false;
             });
-
 
             // Export
             $('#content').on('click', 'button.exportLayer', function(){

@@ -378,6 +378,24 @@ export class LayerTreeGroupState extends LayerTreeItemState {
     }
 
     /**
+     * Find layer and group items
+     *
+     * @returns {LayerTreeLayerState[]}
+     **/
+    findTreeLayersAndGroups() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayerState) {
+                items.push(item);
+            } else if (item instanceof LayerTreeGroupState) {
+                items.push(item);
+                items = items.concat(item.findTreeLayersAndGroups());
+            }
+        }
+        return items;
+    }
+
+    /**
      * Get tree layer item by its name
      *
      * @param {String} name - the layer name
