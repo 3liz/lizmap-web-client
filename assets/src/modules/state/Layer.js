@@ -26,7 +26,10 @@ export class LayerItemState extends EventDispatcher {
         if (parentGroup instanceof LayerItemState
             && parentGroup.type == 'group') {
             this._parentGroup = parentGroup;
-            this._parentGroup.addListener(this.calculateVisibility.bind(this), 'group.visibility.changed');
+            this._parentGroup.addListener(
+                this.calculateVisibility.bind(this),
+                this._parentGroup.mapType+'.visibility.changed'
+            );
         }
         this._geographicBoundingBox = null;
         this._minScaleDenominator = null;
@@ -51,6 +54,15 @@ export class LayerItemState extends EventDispatcher {
      * @type {String}
      **/
     get type() {
+        return this._type;
+    }
+
+    /**
+     * Item map type
+     *
+     * @type {String}
+     **/
+    get mapType() {
         return this._type;
     }
 
@@ -349,7 +361,7 @@ export class LayerItemState extends EventDispatcher {
             }
         }
         this.dispatch({
-            type: this.type + '.symbology.changed',
+            type: this.mapType + '.symbology.changed',
             name: this.name,
         });
     }
@@ -489,7 +501,7 @@ export class LayerItemState extends EventDispatcher {
         // Only dispatch event if visibility has changed
         if (oldVisibility !== null && oldVisibility != this.visibility) {
             this.dispatch({
-                type: this.type + '.visibility.changed',
+                type: this.mapType+'.visibility.changed',
                 name: this.name,
                 visibility: this.visibility,
             });
@@ -1213,6 +1225,17 @@ export class LayerGroupState extends LayerItemState {
         }
     }
 
+    /**
+     * Item map type
+     *
+     * @type {String}
+     **/
+    get mapType() {
+        if (this.groupAsLayer) {
+            return 'layer';
+        }
+        return this._type;
+    }
 
     /**
      * Layer type from top to bottom

@@ -7,7 +7,7 @@ import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
-import { LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
+import { LayerGroupState, LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 
 import { MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
 
@@ -1730,5 +1730,35 @@ describe('MapGroupState', function () {
             "FORMAT": "image/png",
             "DPI": 96
         })
+    })
+
+    it('Group as layer', function () {
+        const capabilities = JSON.parse(readFileSync('./data/cadastre-caen-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/cadastre-caen-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
+        expect(root).to.be.instanceOf(MapGroupState)
+        expect(root.childrenCount).to.be.eq(1)
+
+        const group = root.children[0]
+        expect(group).to.be.instanceOf(MapGroupState)
+        expect(group.childrenCount).to.be.eq(4)
+
+        const fond = group.children[3]
+        expect(fond).to.be.instanceOf(MapLayerState)
+        expect(fond.checked).to.be.true
+        expect(fond.visibility).to.be.true
     })
 })

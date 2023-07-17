@@ -780,6 +780,44 @@ describe('LayerGroupState', function () {
         expect(layer2.checked).to.be.false
         expect(layer2.visibility).to.be.false
     })
+
+    it('Group as layer', function () {
+        const capabilities = JSON.parse(readFileSync('./data/cadastre-caen-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/cadastre-caen-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const root = new LayerGroupState(rootCfg, layersOrder);
+        expect(root).to.be.instanceOf(LayerGroupState)
+        expect(root.childrenCount).to.be.eq(1)
+
+        const group = root.children[0]
+        expect(group).to.be.instanceOf(LayerGroupState)
+        expect(group.groupAsLayer).to.be.false
+        expect(group.type)
+            .to.be.eq('group')
+            .that.be.eq(group.mapType)
+        expect(group.childrenCount).to.be.eq(4)
+
+        const fond = group.children[3]
+        expect(fond).to.be.instanceOf(LayerGroupState)
+        expect(fond.groupAsLayer).to.be.true
+        expect(fond.type)
+            .to.be.eq('group')
+            .that.not.be.eq(fond.mapType)
+        expect(fond.mapType).to.be.eq('layer')
+        expect(fond.checked).to.be.true
+        expect(fond.visibility).to.be.true
+        expect(fond.childrenCount).to.be.eq(2)
+    })
 })
 
 describe('LayersAndGroupsCollection', function () {
