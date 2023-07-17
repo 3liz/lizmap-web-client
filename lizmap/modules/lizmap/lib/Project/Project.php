@@ -1864,6 +1864,7 @@ class Project
             // printTemplates
             $printTemplatesToKeep = array();
             foreach ($configJson->printTemplates as $printTemplate) {
+                /** @var array $printTemplate */
                 if (array_key_exists('atlas', $printTemplate)
                     && array_key_exists('coverageLayer', $printTemplate['atlas'])
                     && $printTemplate['atlas']['coverageLayer'] != $obj->id) {
