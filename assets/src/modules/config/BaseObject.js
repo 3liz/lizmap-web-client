@@ -5,7 +5,7 @@
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
  **/
 
-import { convertNumber, convertBoolean } from './../utils/Converters.js';
+import { convertNumber, convertBoolean, convertArray } from './../utils/Converters.js';
 import { Extent } from './../utils/Extent.js';
 import { getNotContains } from './Tools.js';
 import { ValidationError } from '../Errors.js';
@@ -50,6 +50,9 @@ export function applyConfig(obj, cfg, requiredProperties={}, optionalProperties=
                 break;
             case 'number':
                 obj['_'+prop] = convertNumber(cfg[prop]);
+                break;
+            case 'array':
+                obj['_'+prop] = convertArray(cfg[prop], def.contentType);
                 break;
             case 'extent':
                 obj['_'+prop] = new Extent(...cfg[prop]);

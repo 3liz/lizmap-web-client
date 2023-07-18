@@ -72,6 +72,45 @@ export function convertBoolean(val) {
 }
 
 /**
+ * Convert a value to array
+ * @function
+ *
+ * @param {String|Array} val         - A value to convert to array
+ * @param {String}       contentType - The type of values contained in the array
+ *
+ * @returns {Array} the converting value
+ *
+ * @throws {ConversionError}
+ **/
+export function convertArray(val, contentType) {
+    if (!(Array.isArray(val) || 'string' == typeof val)) {
+        throw new ConversionError(
+            `'${JSON.stringify(
+                val
+            )}' could not be converted to array!`
+        );
+    }
+    let newVal = [];
+    if (Array.isArray(val)) {
+        newVal = [...val];
+    } else {
+        newVal = val.split(',').map(v => v.trim());
+    }
+    switch (contentType){
+        case 'boolean':
+            newVal = newVal.map(v => convertBoolean(v));
+            break;
+        case 'number':
+            newVal = newVal.map(v => convertNumber(v));
+            break;
+        case 'string':
+            newVal = newVal.map(v => v+'');
+            break;
+    }
+    return newVal;
+}
+
+/**
  * Returns a hash code for a string.
  * (Compatible to Java's String.hashCode())
  *

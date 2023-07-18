@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { convertNumber, convertBoolean, hashCode } from '../../../../assets/src/modules/utils/Converters.js';
+import { convertNumber, convertBoolean, convertArray, hashCode } from '../../../../assets/src/modules/utils/Converters.js';
 
 describe('convertNumber', function () {
     it('Valid', function () {
@@ -146,6 +146,72 @@ describe('convertBoolean', function () {
         } catch (error) {
             expect(error.name).to.be.eq('ConversionError')
             expect(error.message).to.be.eq('The Object is not an expected boolean!')
+            expect(error).to.be.instanceOf(ConversionError)
+        }
+    })
+})
+
+describe('convertArray', function () {
+    it('Valid', function () {
+        let arr = convertArray(['a', 'b'])
+        expect(arr).to.be.an('array')
+        expect(arr).to.be.deep.eq(['a', 'b'])
+
+        arr = convertArray([1, 2])
+        expect(arr).to.be.an('array')
+        expect(arr).to.be.deep.eq([1, 2])
+
+        arr = convertArray('a, b')
+        expect(arr).to.be.an('array')
+        expect(arr).to.be.deep.eq(['a', 'b'])
+
+        arr = convertArray('1, 2', 'number')
+        expect(arr).to.be.an('array')
+        expect(arr).to.be.deep.eq([1, 2])
+
+        arr = convertArray('t, f', 'boolean')
+        expect(arr).to.be.an('array')
+        expect(arr).to.be.deep.eq([true, false])
+
+        arr = convertArray([1, true, 'a'], 'string')
+        expect(arr).to.be.an('array')
+        expect(arr).to.be.deep.eq(['1', 'true', 'a'])
+
+        arr = convertArray([1, true, 'a'], undefined)
+        expect(arr).to.be.an('array')
+        expect(arr).to.be.deep.eq([1, true, 'a'])
+    })
+
+    it('ConversionError', function () {
+        try {
+            convertArray(2)
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('\'2\' could not be converted to array!')
+            expect(error).to.be.instanceOf(ConversionError)
+        }
+
+        try {
+            convertArray({})
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('\'{}\' could not be converted to array!')
+            expect(error).to.be.instanceOf(ConversionError)
+        }
+
+        try {
+            convertArray([1, true, 'a'], 'boolean')
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('`a` is not an expected boolean: true, t, yes, y, 1, false, f, no, n, 0 or empty string ``!')
+            expect(error).to.be.instanceOf(ConversionError)
+        }
+
+        try {
+            convertArray([1, true, 'a'], 'number')
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('`a` is not a number!')
             expect(error).to.be.instanceOf(ConversionError)
         }
     })
