@@ -1823,6 +1823,12 @@ class Project
                             && stripos($layerDatasource['url'], 'wmts')) {
                             $layerDatasource['type'] = 'wmts';
                         }
+                        // Add crs if type is xyz
+                        if (array_key_exists('type', $layerDatasource)
+                            && $layerDatasource['type'] == 'xyz'
+                            && !array_key_exists('crs', $layerDatasource)) {
+                            $layerDatasource['crs'] = 'EPSG:3857';
+                        }
                         // if the layer datasource contains type and crs EPSG:3857
                         // external access can be provided
                         if (array_key_exists('type', $layerDatasource)
