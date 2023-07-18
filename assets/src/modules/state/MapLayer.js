@@ -27,9 +27,18 @@ export class MapItemState extends EventDispatcher {
             this._parentMapGroup = parentMapGroup;
         }
         if (layerItemState instanceof LayerGroupState) {
-            layerItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
-            layerItemState.addListener(this.dispatch.bind(this), 'group.symbology.changed');
-            layerItemState.addListener(this.dispatch.bind(this), 'group.opacity.changed');
+            layerItemState.addListener(
+                this.dispatch.bind(this),
+                layerItemState.mapType + '.visibility.changed'
+            );
+            layerItemState.addListener(
+                this.dispatch.bind(this),
+                layerItemState.mapType + '.symbology.changed'
+            );
+            layerItemState.addListener(
+                this.dispatch.bind(this),
+                layerItemState.mapType + '.opacity.changed'
+            );
         } else {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
@@ -472,41 +481,6 @@ export class MapLayerState extends MapItemState {
         super('layer', layerItemState, parentMapGroup);
         // The layer is group
         if (this.itemState instanceof LayerGroupState) {
-            const self = this;
-            // Remove the listener for group.visibility.changed and group.opacity.changed to be replaced
-            this.itemState.removeListener(this.dispatch.bind(this), 'group.visibility.changed');
-            this.itemState.removeListener(this.dispatch.bind(this), 'group.opacity.changed');
-            // Transform the group.visibility.changed by  layer.visibility.changed
-            layerItemState.addListener(
-                () => {
-                    self.dispatch({
-                        type: 'layer.visibility.changed',
-                        name: self.name,
-                        visibility: self.visibility,
-                    });
-                },
-                'group.visibility.changed');
-            // Remove the listener for group.symbology.changed to be replaced
-            this.itemState.removeListener(this.dispatch.bind(this), 'group.symbology.changed');
-            // Transform the group.symbology.changed by  layer.symbology.changed
-            layerItemState.addListener(
-                () => {
-                    self.dispatch({
-                        type: 'layer.symbology.changed',
-                        name: self.name,
-                        visibility: self.visibility,
-                    });
-                },
-                'group.symbology.changed');
-            layerItemState.addListener(
-                () => {
-                    self.dispatch({
-                        type: 'layer.opacity.changed',
-                        name: self.name,
-                        opacity: self.opacity,
-                    });
-                },
-                'group.opacity.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.loading.changed');

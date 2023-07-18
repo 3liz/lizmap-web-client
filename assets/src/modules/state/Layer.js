@@ -26,7 +26,10 @@ export class LayerItemState extends EventDispatcher {
         if (parentGroup instanceof LayerItemState
             && parentGroup.type == 'group') {
             this._parentGroup = parentGroup;
-            this._parentGroup.addListener(this.calculateVisibility.bind(this), 'group.visibility.changed');
+            this._parentGroup.addListener(
+                this.calculateVisibility.bind(this),
+                this._parentGroup.mapType+'.visibility.changed'
+            );
         }
         this._geographicBoundingBox = null;
         this._minScaleDenominator = null;
@@ -34,6 +37,8 @@ export class LayerItemState extends EventDispatcher {
         this._checked = this._parentGroup == null ? true : false;
         this._visibility = null;
         this._opacity = 1;
+        this._inGroupAsLayer = (this._parentGroup !== null
+            && (this._parentGroup.groupAsLayer || this._parentGroup.isInGroupAsLayer)) ? true : false;
     }
 
     /**
@@ -51,6 +56,15 @@ export class LayerItemState extends EventDispatcher {
      * @type {String}
      **/
     get type() {
+        return this._type;
+    }
+
+    /**
+     * Item map type
+     *
+     * @type {String}
+     **/
+    get mapType() {
         return this._type;
     }
 
@@ -283,7 +297,7 @@ export class LayerItemState extends EventDispatcher {
         // Set new value
         this._checked = newVal;
         // Propagation to parent if checked
-        if (this._checked && this._parentGroup != null) {
+        if (this._checked && this._parentGroup != null && !this.isInGroupAsLayer) {
             this._parentGroup.checked = newVal;
             // If the parent is mutually exclusive, unchecked other layer
             if (this._parentGroup.mutuallyExclusive) {
@@ -349,7 +363,7 @@ export class LayerItemState extends EventDispatcher {
             }
         }
         this.dispatch({
-            type: this.type + '.symbology.changed',
+            type: this.mapType + '.symbology.changed',
             name: this.name,
         });
     }
@@ -389,6 +403,15 @@ export class LayerItemState extends EventDispatcher {
     }
 
     /**
+     * The item is in a group as layer
+     *
+     * @type {Boolean}
+     **/
+    get isInGroupAsLayer() {
+        return this._inGroupAsLayer;
+    }
+
+    /**
      * The layer as base layer activation
      *
      * @type {Boolean}
@@ -408,6 +431,9 @@ export class LayerItemState extends EventDispatcher {
     get displayInLegend() {
         if (this.layerConfig == null) {
             return true;
+        }
+        if (this.isInGroupAsLayer) {
+            return false;
         }
         return this.layerConfig.displayInLegend;
     }
@@ -470,6 +496,21 @@ export class LayerItemState extends EventDispatcher {
         if (this._parentGroup == null) {
             this._visibility = true;
         }
+        // if the item is in a group as layer
+        // the visibility is the same as the parent
+        // and the child has to be updated
+        else if (this.isInGroupAsLayer) {
+            this._visibility = this._parentGroup.visibility;
+            if (this.type == 'group') {
+                // Only update child visibility if visibility has changed
+                if (oldVisibility != this.visibility) {
+                    for (const child of this.getChildren()) {
+                        child.calculateVisibility();
+                    }
+                }
+            }
+            return this._visibility;
+        }
         // if the parent layer tree group is visible
         // the visibility depends if the layer tree item is checked
         // else the layer tree item is not visible
@@ -489,7 +530,7 @@ export class LayerItemState extends EventDispatcher {
         // Only dispatch event if visibility has changed
         if (oldVisibility !== null && oldVisibility != this.visibility) {
             this.dispatch({
-                type: this.type + '.visibility.changed',
+                type: this.mapType+'.visibility.changed',
                 name: this.name,
                 visibility: this.visibility,
             });
@@ -1213,6 +1254,17 @@ export class LayerGroupState extends LayerItemState {
         }
     }
 
+    /**
+     * Item map type
+     *
+     * @type {String}
+     **/
+    get mapType() {
+        if (this.groupAsLayer) {
+            return 'layer';
+        }
+        return this._type;
+    }
 
     /**
      * Layer type from top to bottom
