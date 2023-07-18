@@ -45,22 +45,22 @@ describe('External WMS layers', function () {
         // Project base_external_layers
 
         // As PNG
-        cy.get('#layer-png button').click()
+        cy.get('#node-png').click()
         cy.wait('@getMap').then((interception) => {
             expect(interception.response.headers['content-type'], 'expect mime type to be image/png').to.equal('image/png')
             console.log(interception.response)
         })
-        cy.get('#layer-png button').click()
+        cy.get('#node-png').click()
 
         // Wait for all GetMap requests
         cy.wait(4000)
 
         // As JPEG
-        cy.get('#layer-jpeg button').click()
+        cy.get('#node-jpeg').click()
         cy.wait('@getMap').then((interception) => {
             expect(interception.response.headers['content-type'], 'expect mime type to be image/jpeg').to.equal('image/jpeg')
         })
-        cy.get('#layer-jpeg  button').click()
+        cy.get('#node-jpeg').click()
 
     })
 })

@@ -797,6 +797,260 @@ window.lizMap = function() {
   }
 
   /**
+   * PRIVATE function: getLayerTree
+   * get the layer tree
+   * create OpenLayers WMS base or not layer {<OpenLayers.Layer.WMS>}
+   * push these layers in layers or baselayers
+   *
+   * Parameters:
+   * nested - {Object} a capability layer
+   * pNode - {Object} the nested tree node
+   *
+   * Dependencies:
+   * config
+   * layers
+   * baselayers
+   */
+  function getLayerTree(nested,pNode) {
+    pNode.children = [];
+
+    var service = lizUrls.service;
+    if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
+        service = [];
+        for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
+          service.push(
+            OpenLayers.Util.urlAppend(
+              lizUrls.publicUrlList[j],
+              new URLSearchParams(lizUrls.params)
+            )
+          );
+        }
+    }
+
+    var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+
+    for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
+      var serviceUrl = service
+      var layer = nested.nestedLayers[i];
+      var qgisLayerName = layer.name;
+      if ( ('useLayerIDs' in config.options) && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
+      else if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
+      // The found name is not in config
+      if (!(qgisLayerName in config.layers)) {
+        continue;
+      }
+      var layerConfig = config.layers[qgisLayerName];
+      var layerName = cleanName(qgisLayerName);
+      layerCleanNames[layerName] = qgisLayerName;
+
+      if ( qgisLayerName.toLowerCase() == 'hidden' )
+        continue;
+      if ( qgisLayerName == 'Overview' ) {
+        config.options.hasOverview = true;
+        continue;
+      }
+      if ( !layerConfig )
+        continue;
+
+      if ( layerConfig.groupAsLayer == 'True' )
+        layerConfig.type = 'layer';
+
+      var wmsStyles = $.map(layer.styles, function(s){
+          return s.name;
+      });
+      if ( wmsStyles.length != 0 ) {
+          layerConfig.styles = wmsStyles;
+      } else {
+          layerConfig.styles = [''];
+      }
+      // if the layer is not the Overview and had a config
+      // creating the {<OpenLayers.Layer.WMS>} and the tree node
+      var node = {name:layerName,config:layerConfig,parent:pNode};
+      var styles = ('styles' in layerConfig) ? layerConfig.styles[0] : 'default' ;
+      if( !( typeof lizLayerStyles === 'undefined' )
+        && layerName in lizLayerStyles
+        && lizLayerStyles[ layerName ]
+      ){
+        styles = lizLayerStyles[ layerName ];
+      }
+      var layerWmsParams = {
+          layers:layer.name
+          ,styles: styles
+          ,version:'1.3.0'
+          ,exceptions:'application/vnd.ogc.se_inimage'
+          ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
+          ,dpi:96
+      };
+      if (layerWmsParams.format != 'image/jpeg')
+          layerWmsParams['transparent'] = true;
+
+      //Manage attribution
+      if (typeof layer.attribution == "object") {
+          // Update href if needed
+          if ( 'href' in layer.attribution &&
+               layer.attribution.href != '' &&
+               layer.attribution.href.indexOf('://') == -1) {
+            layer.attribution.href = 'http://'+layer.attribution.href;
+          }
+          // Update attribution
+          if ( !('title' in layer.attribution) || layer.attribution.title == '' ) {
+              layer.attribution.title = layer.attribution.href.split('://')[1];
+          } else
+          if ( !('href' in layer.attribution) || layer.attribution.href == '' ) {
+              layer.attribution = layer.attribution.title;
+          }
+      }
+
+      var wmtsLayer = null;
+      if ( layerConfig.cached == 'True' && wmtsCapabilities ) {
+          $.each(wmtsCapabilities.contents.layers, function(i, l) {
+            if ( l.identifier != layer.name)
+              return true;
+            var wmtsOptions = {
+                layer: layer.name,
+                matrixSet: config.options.projection.ref,
+                name: layerName,
+                params: layerWmsParams,
+                attribution:layer.attribution,
+                isBaseLayer: (layerConfig.baseLayer == 'True'),
+                alwaysInRange: false,
+                url: serviceUrl
+            };
+            if ( $.inArray( config.options.projection.ref.toUpperCase(), ['EPSG:3857','EPSG:900913'] ) != -1
+              && ('resolutions' in config.options)
+              && config.options.resolutions.length != 0 ) {
+                var resolutions = config.options.resolutions;
+                var maxRes = resolutions[0];
+                var numZoomLevels = resolutions.length;
+                var zoomOffset = 0;
+                var res = 156543.03390625;
+                while ( res > maxRes ) {
+                    zoomOffset += 1;
+                    res = 156543.03390625 / Math.pow(2, zoomOffset);
+                }
+                wmtsOptions['zoomOffset'] = zoomOffset;
+                wmtsOptions['maxResolution'] = maxRes;
+                wmtsOptions['numZoomLevels'] = numZoomLevels;
+                wmtsOptions['minZoomLevel'] = zoomOffset;
+                wmtsOptions['resolutions'] = resolutions;
+            }
+            wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, wmtsOptions);
+            wmtsLayer.yx = {};
+            wmtsLayer.reverseAxisOrder = function() {
+                var projCode = this.projection.getCode();
+                return parseFloat('1.3.0') >= 1.3 &&
+                    !!(this.yx[projCode] || (OpenLayers.Projection.defaults[projCode] &&
+                    OpenLayers.Projection.defaults[projCode].yx));
+            };
+            return false;
+          });
+      }
+
+      // Override WMS url if external WMS server
+      var extConfig = null;
+      if ('externalAccess' in layerConfig && layerConfig.externalAccess
+       && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess ) {
+          extConfig = layerConfig.externalAccess;
+          extConfig.layers = decodeURI(extConfig.layers);
+          serviceUrl = extConfig.url;
+          layerWmsParams = {
+            layers: extConfig.layers
+            ,styles:(extConfig.styles) ? extConfig.styles : ''
+            ,crs:(extConfig.crs) ? extConfig.crs : 'EPSG:3857'
+            ,format:(extConfig.format) ? extConfig.format : 'image/png'
+            ,transparent:(extConfig.transparent) ? extConfig.transparent : 'true'
+            ,exceptions:'application/vnd.ogc.se_inimage'
+          }
+      }
+
+        // Add optional filter at start
+        if( !( typeof lizLayerFilter === 'undefined' )
+          && qgisLayerName in lizLayerFilter
+          && lizLayerFilter[ qgisLayerName ]
+        ){
+          layerWmsParams['FILTER'] = qgisLayerName+':'+lizLayerFilter[ qgisLayerName ];
+        }
+
+      if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
+          // creating the base layer
+          baselayers.push( wmtsLayer );
+      }
+      else if (layerConfig.type == 'layer' && wmtsLayer != null) {
+          wmtsLayer.options.minScale = layerConfig.maxScale;
+          wmtsLayer.options.maxScale =(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale;
+          if ( layer.nestedLayers.length != 0 ) {
+              var scales = getLayerScale(layer,null,null);
+              wmtsLayer.options.minScale = scales.maxScale;
+              wmtsLayer.options.maxScale = scales.minScale;
+          }
+          wmtsLayer.isVisible = (layerConfig.toggled=='True');
+          wmtsLayer.visibility = false;
+          wmtsLayer.transitionEffect = null;
+          wmtsLayer.removeBackBufferDelay = 250;
+          wmtsLayer.order = getLayerOrder(layer);
+          layers.push( wmtsLayer );
+      }
+      else if (layerConfig.baseLayer == 'True') {
+        // creating the base layer
+          baselayers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
+              ,layerWmsParams
+              ,{isBaseLayer:true
+               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
+               ,buffer:0
+               ,singleTile:(layerConfig.singleTile == 'True')
+               ,ratio:1
+               ,attribution:layer.attribution
+              }));
+      }
+      else if (layerConfig.type == 'layer') {
+          var wmsLayer = new OpenLayers.Layer.WMS(layerName,serviceUrl
+              ,layerWmsParams
+              ,{isBaseLayer:false
+               ,minScale:layerConfig.maxScale
+               ,maxScale:(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale
+               ,isVisible:(layerConfig.toggled=='True')
+               ,visibility:false
+               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
+               ,buffer:0
+               ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
+               ,removeBackBufferDelay:250
+               ,singleTile:(layerConfig.singleTile == 'True' || (layerConfig.cached == 'True' && !wmtsCapabilities))
+               ,ratio:1
+               ,order:getLayerOrder(layer)
+               ,attribution:layer.attribution
+              });
+          if ( layer.nestedLayers.length != 0 ) {
+              var scales = getLayerScale(layer,null,null);
+              wmsLayer.minScale = scales.maxScale;
+              wmsLayer.options.minScale = scales.maxScale;
+              wmsLayer.maxScale = scales.minScale;
+              wmsLayer.options.maxScale = scales.minScale;
+          }
+          // External WMS layers - respect the image format of the WMS source layer
+          // We do not want to respect the configuration layerConfig.imageFormat
+          // to avoid requesting a format not compatible with the external WMS server
+          // Fix the jpeg WMS layers requesting png
+          if (extConfig && 'format' in layerWmsParams && 'params' in wmsLayer
+              && wmsLayer.params['FORMAT'] != layerWmsParams.format) {
+              wmsLayer.params['FORMAT'] = layerWmsParams.format;
+          }
+          layers.push( wmsLayer );
+      }
+      // creating the layer tree because it's a group, has children and is not a base layer
+      if (layerConfig.type == 'group' && layer.nestedLayers.length != 0 && layerConfig.baseLayer == 'False')
+          getLayerTree(layer,node);
+      if (layerConfig.baseLayer != 'True')
+          pNode.children.push(node);
+
+      // Add bbox from WMS data into lizmap configuration (used by switcher-layers-actions
+      layerConfig.bbox = layer.bbox;
+
+    }
+  }
+
+  /**
    * PRIVATE function: analyseNode
    * analyse Node Config
    * define if the node has to be a child of his parent node
@@ -4913,6 +5167,7 @@ window.lizMap = function() {
         beforeLayerTreeCreated();
 
         var firstLayer = capability.nestedLayers[0];
+        getLayerTree(firstLayer, tree);
         analyseNode(tree);
 
         // Re-save the config in self
