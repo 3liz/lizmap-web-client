@@ -7,7 +7,7 @@ import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
-import { LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
+import { LayerGroupState, LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 
 import { MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
 
@@ -1730,5 +1730,140 @@ describe('MapGroupState', function () {
             "FORMAT": "image/png",
             "DPI": 96
         })
+    })
+
+    it('Group as layer', function () {
+        const capabilities = JSON.parse(readFileSync('./data/cadastre-caen-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/cadastre-caen-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const root = new MapGroupState(collection.root);
+        expect(root).to.be.instanceOf(MapGroupState)
+        expect(root.childrenCount).to.be.eq(1)
+
+        const group = root.children[0]
+        expect(group).to.be.instanceOf(MapGroupState)
+        expect(group.childrenCount).to.be.eq(4)
+
+        const fond = group.children[3]
+        expect(fond).to.be.instanceOf(MapLayerState)
+        expect(fond.checked).to.be.true
+        expect(fond.visibility).to.be.true
+
+        // Check the item state
+        expect(fond.itemState).to.be.instanceOf(LayerGroupState)
+        expect(fond.itemState.groupAsLayer).to.be.true
+        expect(fond.itemState.childrenCount).to.be.eq(2)
+        expect(fond.itemState.children[0].isInGroupAsLayer).to.be.true
+        expect(fond.itemState.children[0].checked).to.be.false
+        expect(fond.itemState.children[0].visibility).to.be.true
+        expect(fond.itemState.children[0]).to.be.instanceOf(LayerGroupState)
+        expect(fond.itemState.children[0].childrenCount).to.be.eq(12)
+        expect(fond.itemState.children[0].children[0].isInGroupAsLayer).to.be.true
+        expect(fond.itemState.children[0].children[0].checked).to.be.false
+        expect(fond.itemState.children[0].children[0].visibility).to.be.true
+        expect(fond.itemState.children[1].isInGroupAsLayer).to.be.true
+        expect(fond.itemState.children[1].checked).to.be.true
+        expect(fond.itemState.children[1].visibility).to.be.true
+        expect(fond.itemState.children[1]).to.be.instanceOf(LayerGroupState)
+        expect(fond.itemState.children[1].childrenCount).to.be.eq(14)
+        expect(fond.itemState.children[1].children[0].isInGroupAsLayer).to.be.true
+        expect(fond.itemState.children[1].children[0].checked).to.be.false
+        expect(fond.itemState.children[1].children[0].visibility).to.be.true
+
+        let rootLayerVisibilityChangedEvt = [];
+        let rootGroupVisibilityChangedEvt = [];
+        root.addListener(evt => {
+            rootLayerVisibilityChangedEvt.push(evt)
+        }, 'layer.visibility.changed');
+        root.addListener(evt => {
+            rootGroupVisibilityChangedEvt.push(evt)
+        }, 'group.visibility.changed');
+
+        let fondLayerVisibilityChangedEvt = [];
+        let fondGroupVisibilityChangedEvt = [];
+        fond.addListener(evt => {
+            fondLayerVisibilityChangedEvt.push(evt)
+        }, 'layer.visibility.changed');
+        fond.addListener(evt => {
+            fondGroupVisibilityChangedEvt.push(evt)
+        }, 'group.visibility.changed');
+
+        fond.checked = false;
+        expect(fond.checked).to.be.false
+        expect(fond.visibility).to.be.false
+        // Events dispatched
+        expect(fondLayerVisibilityChangedEvt).to.have.length(1)
+        expect(fondLayerVisibilityChangedEvt[0].name).to.be.eq('Fond')
+        expect(fondLayerVisibilityChangedEvt[0].visibility).to.be.false
+        expect(fondGroupVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(1)
+        expect(rootLayerVisibilityChangedEvt[0]).to.be.deep.eq(fondLayerVisibilityChangedEvt[0])
+        expect(rootGroupVisibilityChangedEvt).to.have.length(0)
+
+        // Reset
+        rootLayerVisibilityChangedEvt = [];
+        rootGroupVisibilityChangedEvt = [];
+        fondLayerVisibilityChangedEvt = [];
+        fondGroupVisibilityChangedEvt = [];
+
+        fond.itemState.children[1].children[0].checked = true;
+        // Nothing changes
+        expect(fond.checked).to.be.false
+        expect(fond.visibility).to.be.false
+        // No Events dispatched
+        expect(fondLayerVisibilityChangedEvt).to.have.length(0)
+        expect(fondGroupVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(rootGroupVisibilityChangedEvt).to.have.length(0)
+
+        fond.itemState.children[0].children[0].checked = true;
+        // Nothing changes
+        expect(fond.checked).to.be.false
+        expect(fond.visibility).to.be.false
+        // No Events dispatched
+        expect(fondLayerVisibilityChangedEvt).to.have.length(0)
+        expect(fondGroupVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(rootGroupVisibilityChangedEvt).to.have.length(0)
+
+        fond.checked = true;
+        expect(fond.checked).to.be.true
+        expect(fond.visibility).to.be.true
+        // Events dispatched
+        expect(fondLayerVisibilityChangedEvt).to.have.length(1)
+        expect(fondLayerVisibilityChangedEvt[0].name).to.be.eq('Fond')
+        expect(fondLayerVisibilityChangedEvt[0].visibility).to.be.true
+        expect(fondGroupVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(1)
+        expect(rootLayerVisibilityChangedEvt[0]).to.be.deep.eq(fondLayerVisibilityChangedEvt[0])
+        expect(rootGroupVisibilityChangedEvt).to.have.length(0)
+
+        // Reset
+        rootLayerVisibilityChangedEvt = [];
+        rootGroupVisibilityChangedEvt = [];
+        fondLayerVisibilityChangedEvt = [];
+        fondGroupVisibilityChangedEvt = [];
+
+        fond.itemState.children[1].checked = false;
+        // Nothing changes
+        expect(fond.checked).to.be.true
+        expect(fond.visibility).to.be.true
+        // No Events dispatched
+        expect(fondLayerVisibilityChangedEvt).to.have.length(0)
+        expect(fondGroupVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(rootGroupVisibilityChangedEvt).to.have.length(0)
     })
 })

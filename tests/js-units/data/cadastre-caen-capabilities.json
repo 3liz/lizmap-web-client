@@ -1,0 +1,1758 @@
+{
+    "version": "1.3.0",
+    "Service": {
+        "Name": "WMS",
+        "Title": "Cadastre Caen",
+        "KeywordList": [
+            "infoMapAccessService"
+        ],
+        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen",
+        "Fees": "conditions unknown",
+        "AccessConstraints": "None",
+        "MaxWidth": 3000,
+        "MaxHeight": 3000
+    },
+    "Capability": {
+        "Request": {
+            "GetCapabilities": {
+                "Format": [
+                    "text/xml"
+                ],
+                "DCPType": [
+                    {
+                        "HTTP": {
+                            "Get": {
+                                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&"
+                            }
+                        }
+                    }
+                ]
+            },
+            "GetMap": {
+                "Format": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/png; mode=16bit",
+                    "image/png; mode=8bit",
+                    "image/png; mode=1bit",
+                    "application/dxf"
+                ],
+                "DCPType": [
+                    {
+                        "HTTP": {
+                            "Get": {
+                                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&"
+                            }
+                        }
+                    }
+                ]
+            },
+            "GetFeatureInfo": {
+                "Format": [
+                    "text/plain",
+                    "text/html",
+                    "text/xml",
+                    "application/vnd.ogc.gml",
+                    "application/vnd.ogc.gml/3.1.1",
+                    "application/json",
+                    "application/geo+json"
+                ],
+                "DCPType": [
+                    {
+                        "HTTP": {
+                            "Get": {
+                                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "Exception": [
+            "XML"
+        ],
+        "Layer": {
+            "Title": "Cadastre Caen",
+            "KeywordList": [
+                "infoMapAccessService"
+            ],
+            "CRS": [
+                "CRS:84",
+                "EPSG:2154"
+            ],
+            "EX_GeographicBoundingBox": [
+                -0.437138,
+                49.148522,
+                -0.307898,
+                49.219853
+            ],
+            "BoundingBox": [
+                {
+                    "crs": "EPSG:2154",
+                    "extent": [
+                        449625,
+                        6899748,
+                        458734,
+                        6907300
+                    ],
+                    "res": [
+                        null,
+                        null
+                    ]
+                }
+            ],
+            "Layer": [
+                {
+                    "Name": "Cadastre",
+                    "Title": "Cadastre",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        -0.437138,
+                        49.148522,
+                        -0.307898,
+                        49.219853
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                449625,
+                                6899748,
+                                458734,
+                                6907300
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "Layer": [
+                        {
+                            "Name": "Parcelles",
+                            "Title": "Parcelles",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.437138,
+                                49.148522,
+                                -0.307898,
+                                49.219853
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        449625,
+                                        6899748,
+                                        458734,
+                                        6907300
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "défaut",
+                                    "Title": "défaut",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Parcelles&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "MinScaleDenominator": 1,
+                            "MaxScaleDenominator": 20100,
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "Sections",
+                            "Title": "Sections",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.437138,
+                                49.148522,
+                                -0.307898,
+                                49.219853
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        449625,
+                                        6899748,
+                                        458734,
+                                        6907300
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "défaut",
+                                    "Title": "défaut",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Sections&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "MinScaleDenominator": 0,
+                            "MaxScaleDenominator": 250100,
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "Communes",
+                            "Title": "Communes",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.437138,
+                                49.148522,
+                                -0.307898,
+                                49.219853
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        449625,
+                                        6899748,
+                                        458734,
+                                        6907300
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "défaut",
+                                    "Title": "défaut",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Communes&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "Fond",
+                            "Title": "Fond",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.437138,
+                                49.148522,
+                                -0.307898,
+                                49.219853
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        449625,
+                                        6899748,
+                                        458734,
+                                        6907300
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Layer": [
+                                {
+                                    "Name": "Étiquettes cadastre",
+                                    "Title": "Étiquettes cadastre",
+                                    "CRS": [
+                                        "CRS:84",
+                                        "EPSG:2154",
+                                        "CRS:84",
+                                        "EPSG:2154"
+                                    ],
+                                    "EX_GeographicBoundingBox": [
+                                        -0.437138,
+                                        49.148522,
+                                        -0.307898,
+                                        49.219853
+                                    ],
+                                    "BoundingBox": [
+                                        {
+                                            "crs": "EPSG:2154",
+                                            "extent": [
+                                                449625,
+                                                6899748,
+                                                458734,
+                                                6907300
+                                            ],
+                                            "res": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ],
+                                    "Layer": [
+                                        {
+                                            "Name": "Établissements publics",
+                                            "Title": "Établissements publics",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Établissements publics&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 2500,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Numéros de voie",
+                                            "Title": "Numéros de voie",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Numéros de voie&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Objets linéaires (étiquettes)",
+                                            "Title": "Objets linéaires (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Objets linéaires (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Objets ponctuels (étiquettes)",
+                                            "Title": "Objets ponctuels (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Objets ponctuels (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Surfaces (étiquettes)",
+                                            "Title": "Surfaces (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Surfaces (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 250000,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Tronçons de route (étiquettes)",
+                                            "Title": "Tronçons de route (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Tronçons de route (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 25100,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Cours d'eau (étiquettes)",
+                                            "Title": "Cours d'eau (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Cours d'eau (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 10000,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Sections (étiquettes)",
+                                            "Title": "Sections (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Sections (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 250100,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Lieux-dits  (étiquettes)",
+                                            "Title": "Lieux-dits  (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Lieux-dits  (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 3000,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Parcelles (étiquettes)",
+                                            "Title": "Parcelles (étiquettes)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Parcelles (étiquettes)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 1100,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Subdivisions fiscales (étiquette)",
+                                            "Title": "Subdivisions fiscales (étiquette)",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Subdivisions fiscales (étiquette)&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Noms de voies",
+                                            "Title": "Noms de voies",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Noms de voies&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        }
+                                    ],
+                                    "queryable": true,
+                                    "opaque": false,
+                                    "noSubsets": false
+                                },
+                                {
+                                    "Name": "Données cadastre",
+                                    "Title": "Données cadastre",
+                                    "CRS": [
+                                        "CRS:84",
+                                        "EPSG:2154",
+                                        "CRS:84",
+                                        "EPSG:2154"
+                                    ],
+                                    "EX_GeographicBoundingBox": [
+                                        -0.437138,
+                                        49.148522,
+                                        -0.307898,
+                                        49.219853
+                                    ],
+                                    "BoundingBox": [
+                                        {
+                                            "crs": "EPSG:2154",
+                                            "extent": [
+                                                449625,
+                                                6899748,
+                                                458734,
+                                                6907300
+                                            ],
+                                            "res": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ],
+                                    "Layer": [
+                                        {
+                                            "Name": "Objets linéaires",
+                                            "Title": "Objets linéaires",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Objets linéaires&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Objets ponctuels",
+                                            "Title": "Objets ponctuels",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Objets ponctuels&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Surfaces",
+                                            "Title": "Surfaces",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Surfaces&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 250000,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Cours d'eau",
+                                            "Title": "Cours d'eau",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Cours d'eau&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 100000,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Murs, fossés, clotûres",
+                                            "Title": "Murs, fossés, clotûres",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Murs, fossés, clotûres&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Repères géodésiques",
+                                            "Title": "Repères géodésiques",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Repères géodésiques&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Croix",
+                                            "Title": "Croix",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Croix&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Bornes",
+                                            "Title": "Bornes",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Bornes&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Lieux-dits",
+                                            "Title": "Lieux-dits",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Lieux-dits&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 2800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Bâti",
+                                            "Title": "Bâti",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Bâti&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 10500,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Subdivisions fiscales",
+                                            "Title": "Subdivisions fiscales",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Subdivisions fiscales&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 10500,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Secteurs",
+                                            "Title": "Secteurs",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Secteurs&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": -4.65661e-10,
+                                            "MaxScaleDenominator": 100000,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Voies, routes et chemins",
+                                            "Title": "Voies, routes et chemins",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Voies, routes et chemins&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 0,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        },
+                                        {
+                                            "Name": "Tronçons de route",
+                                            "Title": "Tronçons de route",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:2154",
+                                                "CRS:84",
+                                                "EPSG:2154"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                -0.437138,
+                                                49.148522,
+                                                -0.307898,
+                                                49.219853
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:2154",
+                                                    "extent": [
+                                                        449625,
+                                                        6899748,
+                                                        458734,
+                                                        6907300
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "défaut",
+                                                    "Title": "défaut",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=cadastre_caen&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Tronçons de route&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "MinScaleDenominator": 1,
+                                            "MaxScaleDenominator": 1800,
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        }
+                                    ],
+                                    "queryable": true,
+                                    "opaque": false,
+                                    "noSubsets": false
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        }
+                    ],
+                    "queryable": true,
+                    "opaque": false,
+                    "noSubsets": false
+                }
+            ]
+        }
+    }
+}
