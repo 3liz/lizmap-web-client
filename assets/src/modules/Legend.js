@@ -5,6 +5,10 @@ export default class Legend {
 
     constructor() {
         // Init all symbologies
+        if(mainLizmap.state.layerTree.childrenCount === 0){
+            return;
+        }
+
         updateLayerTreeGroupLayersSymbology(mainLizmap.state.layerTree);
 
         // Refresh symbology when a layer's style changes
