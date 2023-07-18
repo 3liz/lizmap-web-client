@@ -447,6 +447,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
                 } else {
                     parent._childrenRules.push(icon)
                     icon._parentRule = parent;
+                    icon.addListener(parent.dispatch.bind(parent), 'symbol.checked.changed');
                 }
             }
             this._root = root;

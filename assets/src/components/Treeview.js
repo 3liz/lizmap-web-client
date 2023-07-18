@@ -14,6 +14,23 @@ export default class Treeview extends HTMLElement {
             render(this._layerTemplate(mainLizmap.state.layerTree), this);
         };
 
+        this._symbolTemplate = symbol =>
+        html`
+        <li>
+            <label class="symbol-title">
+                <input type="checkbox" .checked=${symbol.checked} @click=${() => symbol.checked = !symbol.checked}>
+                <img class="legend" src="${symbol.icon}">
+                ${symbol.title}
+            </label>
+            ${(symbol.childrenCount)
+                ? html`
+                        <ul class="symbols">
+                            ${symbol.children.map(s => this._symbolTemplate(s))}
+                        </ul>`
+                    : ''
+            }
+        </li>`
+
         this._layerTemplate = layerTreeGroupState =>
         html`
         <ul>
@@ -46,15 +63,7 @@ export default class Treeview extends HTMLElement {
                 ${(item.symbologyChildrenCount && item.layerConfig.legendImageOption !== "disabled")
                     ? html`
                         <ul class="symbols">
-                            ${item.symbologyChildren.map(symbol => html`
-                            <li>
-                                <label class="symbol-title">
-                                    <input type="checkbox" .checked=${symbol.checked} @click=${() => symbol.checked = !symbol.checked}>
-                                    <img class="legend" src="${symbol.icon}">
-                                    ${symbol.title}
-                                </label>
-                            </li>`
-                            )}
+                            ${item.symbologyChildren.map(symbol => this._symbolTemplate(symbol))}
                         </ul>`
                     : ''
                 }
