@@ -275,7 +275,7 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
      * @type {?AttributionConfig}
      **/
     get wmsAttribution() {
-        if(!this._wmsCapa.hasOwnProperty('Attribution')) {
+        if(!this._wmsCapa?.['Attribution']) {
             return null;
         }
         const attribution = this._wmsCapa.Attribution;
