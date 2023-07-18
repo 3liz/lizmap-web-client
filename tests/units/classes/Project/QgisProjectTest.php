@@ -172,6 +172,9 @@ class QgisProjectTest extends TestCase
               'expandedGroupNode' => array(
                   'group1',
               ),
+              'checkedGroupNode' => array(
+                  'group1',
+            ),
           ),
           'theme1' => array(
               'layers' => array(

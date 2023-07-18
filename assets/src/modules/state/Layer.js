@@ -1,6 +1,6 @@
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { ValidationError } from './../Errors.js';
-import { convertBoolean } from './../utils/Converters.js';
+import { convertBoolean, convertNumber } from './../utils/Converters.js';
 import { LayerGeographicBoundingBoxConfig, LayerTreeGroupConfig } from './../config/LayerTree.js';
 import { buildLayerSymbology, LayerSymbolsSymbology } from './Symbology.js';
 
@@ -33,6 +33,7 @@ export class LayerItemState extends EventDispatcher {
         this._maxScaleDenominator = null;
         this._checked = this._parentGroup == null ? true : false;
         this._visibility = null;
+        this._opacity = 1;
     }
 
     /**
@@ -353,6 +354,40 @@ export class LayerItemState extends EventDispatcher {
         });
     }
 
+    /*
+     * Layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    get opacity() {
+        return this._opacity;
+    }
+
+    /**
+     * Set layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    set opacity(val) {
+        const newVal = convertNumber(val);
+
+        if (newVal < 0 || newVal > 1) {
+            throw new TypeError('Opacity must be in [0-1] interval!');
+        }
+
+        // No changes
+        if (this._opacity === newVal) {
+            return;
+        }
+        this._opacity = newVal;
+
+        this.dispatch({
+            type: this.type + '.opacity.changed',
+            name: this.name,
+            opacity: this.opacity,
+        });
+    }
+
     /**
      * The layer as base layer activation
      *
@@ -454,10 +489,10 @@ export class LayerItemState extends EventDispatcher {
         // Only dispatch event if visibility has changed
         if (oldVisibility !== null && oldVisibility != this.visibility) {
             this.dispatch({
-                type: this.type+'.visibility.changed',
+                type: this.type + '.visibility.changed',
                 name: this.name,
                 visibility: this.visibility,
-            })
+            });
         }
         return this._visibility;
     }
@@ -1134,8 +1169,10 @@ export class LayerGroupState extends LayerItemState {
                 const group = new LayerGroupState(layerTreeItem, layersOrder, this);
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
+                group.addListener(this.dispatch.bind(this), 'group.opacity.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -1157,6 +1194,7 @@ export class LayerGroupState extends LayerItemState {
                 }
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -1354,8 +1392,10 @@ export class LayersAndGroupsCollection extends EventDispatcher {
         // Dispatch events from groups and layers
         this._root.addListener(this.dispatch.bind(this), 'group.visibility.changed');
         this._root.addListener(this.dispatch.bind(this), 'group.symbology.changed');
+        this._root.addListener(this.dispatch.bind(this), 'group.opacity.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.style.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.selection.changed');

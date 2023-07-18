@@ -4,7 +4,30 @@ describe('Editing relational data', function() {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=form_edit_related_child_data')
 
         // Intercept
-        cy.intercept('*REQUEST=GetFeatureInfo*',
+        cy.intercept('POST','*service*', (req) => {
+            if (typeof req.body == 'string') {
+                const req_body = req.body.toLowerCase()
+                if (req_body.includes('service=wms') ) {
+                    if (req_body.includes('request=getfeatureinfo'))
+                        req.alias = 'postGetFeatureInfo'
+                    else if (req_body.includes('request=getselectiontoken'))
+                        req.alias = 'postGetSelectionToken'
+                    else
+                        req.alias = 'postToService'
+                } else if (req_body.includes('service=wfs') ) {
+                    if (req_body.includes('request=getfeature'))
+                        req.alias = 'postGetFeature'
+                    else if (req_body.includes('request=describefeaturetype'))
+                        req.alias = 'postDescribeFeatureType'
+                    else
+                        req.alias = 'postToService'
+                } else
+                    req.alias = 'postToService'
+            } else
+                req.alias = 'postToService'
+          })
+
+        cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
             (req) => {
                 req.on('before:response', (res) => {
@@ -12,16 +35,18 @@ describe('Editing relational data', function() {
                     // It is needed when launching tests multiple time in headed mode
                     res.headers['cache-control'] = 'no-store'
                 })
-            }).as('getFeatureInfo')
+            }).as('getMap')
+
+        // Wait for map displayed
+        cy.wait('@getMap')
     })
 
     it('Check the child table has been moved in the expected div', function () {
-
         // Click on the map to get the popup of District (parent) layer
-        cy.mapClick(708, 505)
+        cy.mapClick(708, 545)
 
         // Wait for popup to appear
-        cy.wait('@getFeatureInfo')
+        cy.wait('@postGetFeatureInfo')
         cy.wait(200)
 
         // Intercept editFeature query to wait for its end

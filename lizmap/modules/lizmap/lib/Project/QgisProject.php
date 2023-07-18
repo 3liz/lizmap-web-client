@@ -1277,6 +1277,14 @@ class QgisProject
                     );
                 }
 
+                // Copy checked group nodes
+                if (isset($theme->{'checked-group-nodes'}->{'checked-group-node'})) {
+                    foreach ($theme->{'checked-group-nodes'}->{'checked-group-node'} as $checkedGroupNode) {
+                        $checkedGroupNodeObj = $checkedGroupNode->attributes();
+                        $themes[(string) $themeObj->name]['checkedGroupNode'][] = (string) $checkedGroupNodeObj->id;
+                    }
+                }
+
                 // Copy expanded group nodes
                 if (isset($theme->{'expanded-group-nodes'}->{'expanded-group-node'})) {
                     foreach ($theme->{'expanded-group-nodes'}->{'expanded-group-node'} as $expandedGroupNode) {

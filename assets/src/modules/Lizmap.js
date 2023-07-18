@@ -1,6 +1,7 @@
 import {Config} from './Config.js';
 import {State} from './State.js';
 import Map from './Map.js';
+import BaseLayersMap from './BaseLayersMap.js';
 import Edition from './Edition.js';
 import Geolocation from './Geolocation.js';
 import GeolocationSurvey from './GeolocationSurvey.js';
@@ -14,6 +15,8 @@ import WMS from './WMS.js';
 import Utils from './Utils.js';
 import Action from './Action.js';
 import FeatureStorage from './FeatureStorage.js';
+import Popup from './Popup.js';
+import Legend from './Legend.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
@@ -37,6 +40,14 @@ export default class Lizmap {
                 this._lizmap3 = lizMap;
 
                 // Register projections if unknown
+                for (const [ref, def] of Object.entries(lizProj4)) {
+                    if (ref !== "" && !getProjection(ref)) {
+                        proj4.defs(ref, def);
+                    }
+                }
+
+                register(proj4);
+
                 if (!getProjection(this.projection)) {
                     const proj = this.config.options.projection;
                     proj4.defs(proj.ref, proj.proj4);
@@ -46,6 +57,7 @@ export default class Lizmap {
                     const proj = this.config.options.qgisProjectProjection;
                     proj4.defs(proj.ref, proj.proj4);
                 }
+
                 register(proj4);
 
                 // Override getPointResolution method to always return resolution
@@ -55,6 +67,7 @@ export default class Lizmap {
 
                 // Create Lizmap modules
                 this.map = new Map();
+                this.baseLayersMap = new BaseLayersMap();
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
@@ -69,6 +82,8 @@ export default class Lizmap {
                 this.utils = Utils;
                 this.action = new Action();
                 this.featureStorage = new FeatureStorage();
+                this.popup = new Popup();
+                this.legend = new Legend();
             }
         });
     }
@@ -134,6 +149,11 @@ export default class Lizmap {
 
     get hasOverview() {
         return this._lizmap3.config.layers.hasOwnProperty('Overview');
+    }
+
+    get center() {
+        const center = this._lizmap3.map.getCenter();
+        return [center.lon, center.lat];
     }
 
     /**

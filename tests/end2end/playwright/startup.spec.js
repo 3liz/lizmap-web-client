@@ -9,21 +9,23 @@ test.describe('Startup', () => {
 
     // Hide all elements but #map and its children
     await page.$eval("*", el => el.style.visibility = 'hidden');
-    await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
+    await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
 
-    expect(await page.locator('#map').screenshot()).toMatchSnapshot('zoom-features-extent.png');
+    expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('zoom-features-extent.png', {
+      maxDiffPixels: 700
+    });
   });
   
   test('Projects with dot or space can load', async ({page}) => {
     const url_dots = '/index.php/view/map/?repository=testsrepository&project=base_layers+with+space';
     await page.goto(url_dots, { waitUntil: 'networkidle' });
     await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
-    await expect( page.locator('#layer-quartiers')).toHaveClass(/liz-layer/);
+    await expect( page.locator('#node-quartiers')).toHaveCount(1);
     
     const url_space = '/index.php/view/map/?repository=testsrepository&project=base_layers.withdot';
     await page.goto(url_space, { waitUntil: 'networkidle' });
     await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
      
-    await expect( page.locator('#layer-quartiers')).toHaveClass(/liz-layer/);
+    await expect( page.locator('#node-quartiers')).toHaveCount(1);
   });
 });

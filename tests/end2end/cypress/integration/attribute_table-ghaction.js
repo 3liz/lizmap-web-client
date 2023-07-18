@@ -153,7 +153,7 @@ describe('Attribute table', () => {
                 .to.contain('service=WMS')
                 .to.contain('request=GETFILTERTOKEN')
                 .to.contain('typename=quartiers')
-                .to.contain('filter=quartiers%3A%22quartier%22+IN+(+2+)')
+                .to.contain('filter=quartiers%3A%22quartier%22+IN+%28+2+%29')
             expect(interception.response.body)
                 .to.have.property('token')
             expect(interception.response.body.token).to.be.not.null
@@ -172,7 +172,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 1)
@@ -203,7 +203,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 7)
@@ -297,7 +297,7 @@ describe('Attribute table', () => {
                 .to.contain('service=WMS')
                 .to.contain('request=GETFILTERTOKEN')
                 .to.contain('typename=quartiers')
-                .to.contain('filter=quartiers%3A%22quartier%22+IN+(+2+%2C+6+%2C+4+)')
+                .to.contain('filter=quartiers%3A%22quartier%22+IN+%28+2+%2C+6+%2C+4+%29')
             expect(interception.response.body)
                 .to.have.property('token')
             expect(interception.response.body.token).to.be.not.null
@@ -316,7 +316,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 3)
@@ -372,7 +372,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 7)
@@ -439,14 +439,14 @@ describe('Attribute table', () => {
                 .to.contain('service=WMS')
                 .to.contain('request=GETFILTERTOKEN')
                 .to.contain('typename=quartiers')
-                .to.contain('filter=quartiers_shp%3A%22quartier%22+IN+(+3+)')
+                .to.contain('filter=quartiers_shp%3A%22quartier%22+IN+%28+3+%29')
             expect(interception.response.body)
                 .to.have.property('token')
             expect(interception.response.body.token).to.be.not.null
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 1)
@@ -470,7 +470,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 7)
@@ -539,14 +539,14 @@ describe('Attribute table', () => {
                 .to.contain('service=WMS')
                 .to.contain('request=GETFILTERTOKEN')
                 .to.contain('typename=quartiers')
-                .to.contain('filter=quartiers_shp%3A%22quartier%22+IN+(+3+%2C+7+%2C+4+)')
+                .to.contain('filter=quartiers_shp%3A%22quartier%22+IN+%28+3+%2C+7+%2C+4+%29')
             expect(interception.response.body)
                 .to.have.property('token')
             expect(interception.response.body.token).to.be.not.null
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 3)
@@ -570,7 +570,7 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#layer-quartiers_shp').should('not.have.css', 'background-color', 'rgba(255, 171, 0, 0.4)')
+        cy.get('#node-quartiers_shp ~ div.node').should('not.have.class', 'filtered')
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 7)

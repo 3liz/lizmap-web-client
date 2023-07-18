@@ -261,9 +261,9 @@ It's available in the CI **Summary page** of the CI job, with a zip called `cypr
 
 ### Mouse coordinates
 
-It's possible to use the [Coords](https://addons.mozilla.org/fr/firefox/addon/coords/) Firefox plugin to get mouse coordinates.
+In Firefox, you can enable and use the [measuring tool](https://firefox-source-docs.mozilla.org/devtools-user/measure_a_portion_of_the_page/index.html).
 
-You need to be sure to use the same viewport size as Cypress : `1280 * 800 DPR 1`. We suggest you to save this configuration as `Cypress`.
+You need to be sure to use the same viewport size as Cypress : `1280 * 800 DPR 1` or Playwright : `900 * 650 DPR 1`. We suggest you to save those configurations in `Settings` => `Emulated Devices` as `Cypress` or `Playwright`.
 
 In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` function using coordinates
 

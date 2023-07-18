@@ -1790,305 +1790,7 @@ window.lizMap = function() {
   /**
    * create the layer switcher
    */
-  function getSwitcherLi(aNode, aLevel) {
-    var nodeConfig = aNode.config;
-    var html = '<li id="'+nodeConfig.type+'-'+aNode.name+'">';
-
-    // add checkbox to display children or legend image
-    html += '<input type="checkbox" id="open'+nodeConfig.type+aNode.name+'" name="open'+nodeConfig.type+aNode.name+'" checked="checked"></input><label for="open'+nodeConfig.type+aNode.name+'">&nbsp;</label>';
-    // add button to manage visibility
-    html += '<button class="checkbox" name="'+nodeConfig.type+'-'+aNode.name+'-visibility" value="0" title="'+lizDict['tree.button.checkbox']+'"></button>';
-    // add layer title
-    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
-
-    // Read the plugin metadata to get the legend options
-    // depending on the configuration version
-    let lizmap_plugin_metadata = getLizmapDesktopPluginMetadata();
-    if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30600) {
-      var legendOption = nodeConfig.legend_image_option;
-    } else {
-      var legendOption = 'hide_at_startup';
-      if (nodeConfig.noLegendImage && nodeConfig.noLegendImage == 'True') {
-        legendOption = 'disabled';
-      }
-    }
-
-    if (('children' in aNode) && aNode['children'].length!=0) {
-      html += getSwitcherUl(aNode, aLevel+1);
-    } else if (nodeConfig.type == 'layer' && legendOption != 'disabled') {
-      var url = getLayerLegendGraphicUrl(aNode.name, false);
-      if ( url != null && url != '' ) {
-          html += '<ul id="legend-layer-'+aNode.name+'">';
-          html += '<li><div><img data-src="'+url+'" src="'+lizUrls.basepath + 'assets/css/images/download_layer.gif' + '"/></div></li>';
-          html += '</ul>';
-      }
-    }
-    html += '</li>';
-    return html;
-  }
-
-  function getSwitcherUl(aNode, aLevel) {
-    var html = '<ul class="level'+aLevel+'">';
-    var children = aNode.children;
-    for (var i=0, len=children.length; i<len; i++) {
-      var child = children[i];
-      html += getSwitcherLi(child,aLevel);
-    }
-    html += '</ul>';
-    return html;
-  }
-
   function createSwitcher() {
-    // set the switcher content
-    $('#switcher-layers').html(getSwitcherNode(tree,0));
-    $('#switcher table.tree').treeTable({
-      stringExpand: lizDict['tree.button.expand'],
-      stringCollapse: lizDict['tree.button.collapse'],
-      onNodeShow: function() {
-        var self = $(this);
-        self.addClass('visible');
-        if (self.find('div.legendGraphics').length != 0) {
-          var name = self.attr('id').replace('legend-','');
-          var url = getLayerLegendGraphicUrl(name, true);
-          if ( url != null && url != '' ) {
-              var limg = self.find('div.legendGraphics img');
-              limg.attr('data-src', url );
-              limg.attr('src', limg.attr('data-src') );
-          }
-        }
-      },
-      onNodeHide: function() {
-        var self = $(this);
-        self.removeClass('visible');
-      }
-    });
-    $("#switcher table.tree tbody").on("mousedown", "tr td span", function(event) {
-      // Only act on left button click
-      if(event.which === 1){
-        var wasSelected = $(this).parents('tr:first').hasClass('selected');
-        var isSelected = !wasSelected;
-        $("#switcher table.tree tbody tr").removeClass('selected');
-        $(this).parents('tr:first').toggleClass("selected", isSelected);
-        $('#switcher-layers-actions').toggleClass('active', isSelected);
-
-        // Trigger event
-        var id = $(this).parents('tr:first').attr('id');
-        var itemType = id.split('-')[0];
-        var itemName = id.split('-')[1];
-        lizMap.events.triggerEvent("lizmapswitcheritemselected",
-          { 'name': itemName, 'type': itemType, 'selected': isSelected}
-        );
-      }
-    });
-
-  // === Private functions
-  var options = {
-    childPrefix : "child-of-"
-  };
-
-  function childrenOf(node) {
-    return $(node).siblings("tr." + options.childPrefix + node[0].id);
-  }
-
-  function descendantsOf(node) {
-    var descendants = [];
-    var children = [];
-    if (node && node[0])
-      children = childrenOf(node);
-    for (var i=0, len=children.length; i<len; i++) {
-      descendants.push(children[i]);
-      descendants = descendants.concat(descendantsOf([children[i]]));
-    }
-    return descendants;
-  }
-
-  function parentOf(node) {
-    if (node.length == 0 )
-      return null;
-
-    var classNames = node[0].className.split(' ');
-
-    for(var key=0; key<classNames.length; key++) {
-      if(classNames[key].match(options.childPrefix)) {
-        return $(node).siblings("#" + classNames[key].substring(options.childPrefix.length));
-      }
-    }
-
-    return null;
-  }
-
-  function ancestorsOf(node) {
-    var ancestors = [];
-    while(node = parentOf(node)) {
-      ancestors[ancestors.length] = node[0];
-    }
-    return ancestors;
-  }
-
-    // activate checkbox buttons
-    $('#switcher button.checkbox')
-    .click(function(){
-      var self = $(this);
-      if (self.hasClass('disabled'))
-        return false;
-
-      // get tr of the button
-      var selfTr = self.parents('tr').first();
-      // get the parent of the tr of the button
-      var parentTr = parentOf( selfTr );
-      // get the siblings of the tr of the button
-      var siblingsTr = [];
-      if ( parentTr && parentTr.length != 0) {
-        for (var c=0, childrenParentTr=childrenOf(parentTr); c<childrenParentTr.length; c++){
-            var siblingTr = $(childrenParentTr[c]);
-            if( siblingTr.attr('id') != selfTr.attr('id') )
-              siblingsTr.push( siblingTr );
-        }
-      }
-      var ancestors = [];
-      if( selfTr.hasClass('liz-layer') ) {
-          // manage the button layer
-          if( !self.hasClass('checked') ) {
-              self.removeClass('partial').addClass('checked');
-              selfTr.find('button.checkbox[name="layer"]').each(function(i,b){
-                var name = $(b).val();
-                var layer = map.getLayersByName(name)[0];
-                if( typeof layer !== 'undefined' )
-                  layer.setVisibility(true);
-              });
-          } else {
-              self.removeClass('partial').removeClass('checked');
-              selfTr.find('button.checkbox[name="layer"]').each(function(i,b){
-                var name = $(b).val();
-                var layer = map.getLayersByName(name)[0];
-                if( typeof layer !== 'undefined' )
-                  layer.setVisibility(false);
-              });
-          }
-          if( selfTr.hasClass('mutually-exclusive') ){
-              if( self.hasClass('checked') ) {
-                  for(var s=0, slen=siblingsTr.length; s<slen; s++) {
-                      var siblingTr = $(siblingsTr[s]);
-                      var siblingButt = siblingTr.find('button.checkbox');
-                      if( siblingButt.hasClass('checked') ){
-                        siblingButt.removeClass('partial').removeClass('checked');
-                        if( siblingButt.attr('name') == 'layer') {
-                            var name = $(siblingButt).val();
-                            var layer = map.getLayersByName(name)[0];
-                            if( typeof layer !== 'undefined' )
-                              layer.setVisibility(false);
-                        }
-                      }
-                  }
-                  if ( parentTr && parentTr.length != 0) {
-                      var parentButt = parentTr.find('button.checkbox');
-                      parentButt.removeClass('partial').addClass('checked');
-                  }
-              } else if ( parentTr && parentTr.length != 0) {
-                  var parentButt = parentTr.find('button.checkbox');
-                  parentButt.removeClass('partial').removeClass('checked');
-              }
-              ancestors = ancestorsOf(parentTr);
-          } else {
-            ancestors = ancestorsOf(selfTr);
-          }
-      } else {
-          // manage the button group
-          var descendants = descendantsOf(selfTr);
-          var mutuallyExclusiveGroups = [];
-          $.each(descendants,function(i,tr) {
-            tr = $(tr);
-            var butt = tr.find('button.checkbox');
-            if( !self.hasClass('checked') ) {
-                butt.removeClass('partial').addClass('checked');
-                if( tr.hasClass('liz-layer') && butt.attr('name') == 'layer') {
-                    if( tr.hasClass('mutually-exclusive') ){
-                        var pTr = parentOf(tr);
-                        var pId = pTr.attr('id');
-                        if( mutuallyExclusiveGroups.indexOf(pId) != -1 ) {
-                            butt.removeClass('partial').removeClass('checked');
-                            return;
-                        }
-                        mutuallyExclusiveGroups.push(pId);
-                    }
-                    var name = $(butt).val();
-                    var layer = map.getLayersByName(name)[0];
-                    if( typeof layer !== 'undefined' )
-                      layer.setVisibility(true);
-                }
-            } else {
-                butt.removeClass('partial').removeClass('checked');
-                if( tr.hasClass('liz-layer') && butt.attr('name') == 'layer') {
-                    var name = $(butt).val();
-                    var layer = map.getLayersByName(name)[0];
-                    if( typeof layer !== 'undefined' )
-                      layer.setVisibility(false);
-                }
-            }
-          });
-          if( !self.hasClass('checked') )
-              self.removeClass('partial').addClass('checked');
-          else
-              self.removeClass('partial').removeClass('checked');
-          ancestors = ancestorsOf(selfTr);
-      }
-      // manage ancestors
-      $.each(ancestors,function(i,tr) {
-        tr = $(tr);
-        var count = 0;
-        var checked = 0;
-        var pchecked = 0;
-        var trDesc = childrenOf(tr);
-        $.each(trDesc,function(j,trd) {
-          $(trd).find('button.checkbox').each(function(i,b){
-            b = $(b);
-            if ( b.hasClass('checked') )
-              checked++;
-            else if ( b.hasClass('partial')&& b.hasClass('checked') )
-              pchecked++;
-            count++;
-          });
-        });
-        var trButt = tr.find('button.checkbox');
-        if (count==checked)
-          trButt.removeClass('partial').addClass('checked');
-        else if (checked==0 && pchecked==0)
-          trButt.removeClass('partial').removeClass('checked');
-        else
-          trButt.addClass('partial').addClass('checked');
-      });
-    });
-
-    // activate link buttons
-    $('#switcher button.link')
-    .click(function(){
-      var self = $(this);
-      if (self.hasClass('disabled'))
-        return false;
-      var windowLink = self.val();
-      // Test if the link is internal
-      var mediaRegex = /^(\/)?media\//;
-      if(mediaRegex.test(windowLink)){
-        var mediaLink = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
-        windowLink = mediaLink+'&path=/'+windowLink;
-      }
-      // Open link in a new window
-      window.open(windowLink);
-    });
-
-    // Activate removeCache button
-    $('#switcher button.removeCache')
-    .click(function(){
-      var self = $(this);
-      if (self.hasClass('disabled'))
-        return false;
-      var removeCacheServerUrl = lizUrls.removeCache + '?' + new URLSearchParams(lizUrls.params);
-      var windowLink = removeCacheServerUrl + '&layer=' + self.val();
-      // Open link in a new window
-      if (confirm(lizDict['tree.button.removeCache'] + ' ?'))
-        window.open(windowLink);
-    });
-
     var projection = map.projection;
 
     //manage WMS max width and height
@@ -2177,7 +1879,6 @@ window.lizMap = function() {
       }
     } else {
       // hide elements for baselayers
-      $('#switcher-baselayer').hide();
       map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
         maxExtent:map.maxExtent
        ,maxScale: map.maxScale
@@ -2392,9 +2093,6 @@ window.lizMap = function() {
       navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.handlers.wheel.activate();
-      if ( ( !('edition' in controls) || !controls.edition.active )
-           && ('featureInfo' in controls) && controls.featureInfo !== null )
-          controls.featureInfo.activate();
     });
     $('#navbar button.zoom').click(function(){
       var self = $(this);
@@ -2402,8 +2100,6 @@ window.lizMap = function() {
         return false;
       $('#navbar button.pan').removeClass('active');
       self.addClass('active');
-      if ( ('featureInfo' in controls) && controls.featureInfo !== null )
-            controls.featureInfo.deactivate();
       var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
       navCtrl.handlers.wheel.deactivate();
       navCtrl.zoomBox.keyMask = null;
@@ -2489,7 +2185,6 @@ window.lizMap = function() {
     var configOptions = config.options;
 
     var info = addFeatureInfo();
-    controls['featureInfo'] = info;
 
     if ( config['tooltipLayers'] && config.tooltipLayers.length != 0)
         addTooltipControl();
@@ -2556,11 +2251,14 @@ window.lizMap = function() {
 
       // Warn user no data has been found
       if( !hasPopupContent ){
-        pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
+        pcontent = '<div class="lizmapPopupContent noContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
         $('#popupcontent div.menu-content').html(pcontent);
         window.setTimeout(function(){
-            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
-                $('#button-popupcontent').click();
+            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && 
+                $('#popupcontent .lizmapPopupContent').hasClass('noContent') && 
+                config.options.popupLocation != 'right-dock'){
+                  $('#button-popupcontent').click();
+                }
         },2000);
       }
 
@@ -4876,38 +4574,35 @@ window.lizMap = function() {
   }
 
   function deactivateMaplayerFilter (layername) {
-    var layerN = layername;
-    var layer = null;
-    var layers = map.getLayersByName( cleanName(layername) );
-    if( layers.length == 1) {
-      layer = layers[0];
-    }
+    let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName(layername));
+
+    if(!layer) return false;
+
+    const wmsParams = layer.getSource().getParams();
 
     // Remove layer filter
-    delete layer.params['FILTER'];
-    delete layer.params['FILTERTOKEN'];
-    delete layer.params['EXP_FILTER'];
+    delete wmsParams['FILTER'];
+    delete wmsParams['FILTERTOKEN'];
+    delete wmsParams['EXP_FILTER'];
     if( !('request_params' in config.layers[layername]) ){
       config.layers[layername]['request_params'] = {};
     }
     config.layers[layername]['request_params']['exp_filter'] = null;
     config.layers[layername]['request_params']['filtertoken'] = null;
     config.layers[layername]['request_params']['filter'] = null;
-    layer.redraw();
+    layer.getSource().updateParams(wmsParams);
   }
 
   function triggerLayerFilter (layername, filter) {
       // Get layer information
       var layerN = layername;
-      var layer = null;
-      var layers = map.getLayersByName( cleanName(layername) );
-      if( layers.length == 1) {
-        layer = layers[0];
-      }
-      if(!layer)
-          return false;
-      if( layer.params) {
-        layerN = layer.params['LAYERS'];
+      let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName(layername));
+
+      if(!layer) return false;
+
+      const wmsParams = layer.getSource().getParams();
+      if( wmsParams) {
+        layerN = wmsParams['LAYERS'];
       }
 
       // Add filter to the layer
@@ -4918,7 +4613,7 @@ window.lizMap = function() {
       }else{
         var lfilter = layerN + ':' + filter;
       }
-      layer.params['FILTER'] = lfilter;
+      wmsParams['FILTER'] = lfilter;
       if( !('request_params' in config.layers[layername]) ){
         config.layers[layername]['request_params'] = {};
       }
@@ -4927,43 +4622,37 @@ window.lizMap = function() {
       config.layers[layername]['request_params']['exp_filter'] = filter;
 
       // Get WMS filter token ( used via GET in GetMap or GetPrint )
-      var sdata = {
-        service: 'WMS',
-        request: 'GETFILTERTOKEN',
-        typename: layername,
-        filter: lfilter
-      };
-      $.post(lizUrls.service, sdata, function(result){
-        var filtertoken = result.token;
-        // Add OpenLayers layer parameter
-        delete layer.params['FILTER'];
-        layer.params['FILTERTOKEN'] = filtertoken
-        config.layers[layername]['request_params']['filtertoken'] = filtertoken;
+      fetch(lizUrls.service, {
+        method: "POST",
+        body: new URLSearchParams({
+            service: 'WMS',
+            request: 'GETFILTERTOKEN',
+            typename: layername,
+            filter: lfilter
+          })
+        }).then(response => {
+            return response.json();
+        }).then(result => {
+          var filtertoken = result.token;
+          // Add OpenLayers layer parameter
+          config.layers[layername]['request_params']['filtertoken'] = filtertoken;
 
-        // Update layer state
-        lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername).filterToken = {
-          expressionFilter: config.layers[layername]['request_params']['exp_filter'],
-          token: result.token
-        };
+          // Update layer state
+          lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername).filterToken = {
+            expressionFilter: config.layers[layername]['request_params']['exp_filter'],
+            token: result.token
+          };
 
-        // Redraw openlayers layer
-        if( config.layers[layername]['geometryType']
-          && config.layers[layername]['geometryType'] != 'none'
-          && config.layers[layername]['geometryType'] != 'unknown'
-        ){
-            //layer.redraw(true);
-          layer.redraw();
-        }
-
-        // Tell popup to be aware of the filter
-        lizMap.events.triggerEvent("layerFilterParamChanged",
-          {
-            'featureType': layername,
-            'filter': lfilter,
-            'updateDrawing': false
-          }
-        );
-      });
+  
+          // Tell popup to be aware of the filter
+          lizMap.events.triggerEvent("layerFilterParamChanged",
+            {
+              'featureType': layername,
+              'filter': lfilter,
+              'updateDrawing': false
+            }
+          );
+        });
 
       return true;
   }
@@ -5429,6 +5118,7 @@ window.lizMap = function() {
           }
           wmtsCapabilities = null;
         }
+        self.wmtsCapabilities = wmtsCapaData;
 
         // Parse WFS capabilities
         wfsCapabilities = domparser.parseFromString(wfsCapaData, "application/xml");
@@ -5806,6 +5496,8 @@ window.lizMap = function() {
         $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
         $('#mapmenu .nav a[rel="tooltip"]').tooltip();
         self.events.triggerEvent("uicreated", self);
+
+        document.getElementById('switcher-layers').insertAdjacentHTML('afterend', '<lizmap-treeview></lizmap-treeview>');
       })
       .catch((error) => {
         console.error(error);
@@ -5854,18 +5546,6 @@ lizMap.events.on({
         layerConfig.title = lizDict['baselayer.empty.title'];
         layerConfig.name = 'emptyBaselayer';
         evt.config.layers['emptyBaselayer'] = layerConfig;
-
-        evt.baselayers.push(new OpenLayers.Layer.Vector('emptyBaselayer',{
-          isBaseLayer: true
-         ,maxExtent: evt.map.maxExtent
-         ,maxScale: evt.map.maxScale
-         ,minScale: evt.map.minScale
-         ,numZoomLevels: evt.map.numZoomLevels
-         ,scales: evt.map.scales
-         ,projection: evt.map.projection
-         ,units: evt.map.projection.proj.units
-        }));
-        evt.map.allOverlays = false;
       }
 
       // Add OpenStreetMap, Google Maps, Bing Maps, IGN Geoportail
@@ -5931,487 +5611,102 @@ lizMap.events.on({
       }
 
       if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
-        evt.map.allOverlays = false;
-        var options = {
-          zoomOffset: 0,
-          maxResolution:156543.03390625,
-          numZoomLevels:23
-        };
-        if (lOptions.zoomOffset != 0) {
-          options.zoomOffset = lOptions.zoomOffset;
-          options.maxResolution = lOptions.maxResolution;
-        }
-        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-          options.numZoomLevels = lOptions.numZoomLevels;
-        else
-          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var osm = new OpenLayers.Layer.OSM('osm',
-            [
-            "https://tile.openstreetmap.org/${z}/${x}/${y}.png",
-            ]
-            ,options
-            );
-        osm.maxExtent = maxExtent;
         var osmCfg = {
              "name":"osm"
             ,"title":"OpenStreetMap"
             ,"type":"baselayer"
         };
-        evt.config.layers['osm'] = osmCfg;
-        evt.baselayers.push(osm);
+        evt.config.layers['osm-mapnik'] = osmCfg;
       }
 
       if (('osmStamenToner' in evt.config.options) && evt.config.options.osmStamenToner == 'True') {
-        evt.map.allOverlays = false;
-        var options = {
-          zoomOffset: 0,
-          maxResolution:156543.03390625,
-          numZoomLevels:23
-        };
-        if (lOptions.zoomOffset != 0) {
-          options.zoomOffset = lOptions.zoomOffset;
-          options.maxResolution = lOptions.maxResolution;
-        }
-        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-          options.numZoomLevels = lOptions.numZoomLevels;
-        else
-          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var stamenToner = new OpenLayers.Layer.OSM('osm-toner',
-            ["https://stamen-tiles-a.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
-            "https://stamen-tiles-b.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
-            "https://stamen-tiles-c.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
-            "https://stamen-tiles-d.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png"]
-            ,options
-            );
-        stamenToner.maxExtent = maxExtent;
         var stamenTonerCfg = {
           "name":"osm-toner"
             ,"title":"OSM Stamen Toner"
             ,"type":"baselayer"
         };
-        evt.config.layers['osm-toner'] = stamenTonerCfg;
-        evt.baselayers.push(stamenToner);
+        evt.config.layers['osm-stamen-toner'] = stamenTonerCfg;
       }
 
       if (('openTopoMap' in evt.config.options) && evt.config.options.openTopoMap == 'True') {
-        evt.map.allOverlays = false;
-        var options = {
-          zoomOffset: 0,
-          maxResolution:156543.03390625,
-          numZoomLevels:23
-        };
-        if (lOptions.zoomOffset != 0) {
-          options.zoomOffset = lOptions.zoomOffset;
-          options.maxResolution = lOptions.maxResolution;
-        }
-        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-          options.numZoomLevels = lOptions.numZoomLevels;
-        else
-          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var openTopoMap = new OpenLayers.Layer.OSM('opentopomap',
-            ["https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
-            "https://b.tile.opentopomap.org/{z}/{x}/{y}.png",
-            "https://c.tile.opentopomap.org/{z}/{x}/{y}.png"]
-            ,options
-            );
-            openTopoMap.maxExtent = maxExtent;
         var openTopoMapCfg = {
           "name":"opentopomap"
             ,"title":"OpenTopoMap"
             ,"type":"baselayer"
         };
-        evt.config.layers['opentopomap'] = openTopoMapCfg;
-        evt.baselayers.push(openTopoMap);
+        evt.config.layers['open-topo-map'] = openTopoMapCfg;
       }
 
       if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in evt.config.options)) {
-        evt.map.allOverlays = false;
-        var options = {
-          zoomOffset: 0,
-          maxResolution:156543.03390625,
-          numZoomLevels:23
-        };
-        if (lOptions.zoomOffset != 0) {
-          options.zoomOffset = lOptions.zoomOffset;
-          options.maxResolution = lOptions.maxResolution;
-        }
-        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-          options.numZoomLevels = lOptions.numZoomLevels;
-        else
-          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap','https://tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apiKey='+evt.config.options.OCMKey,options);
-        cyclemap.maxExtent = maxExtent;
         var cyclemapCfg = {
              "name":"osm-cycle"
             ,"title":"OSM CycleMap"
             ,"type":"baselayer"
         };
         evt.config.layers['osm-cycle'] = cyclemapCfg;
-        evt.baselayers.push(cyclemap);
       }
       try {
-        if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:21
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var gsat = new OpenLayers.Layer.Google(
-              "gsat",
-              {type: google.maps.MapTypeId.SATELLITE
-                , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-              );
-          gsat.maxExtent = maxExtent;
-          var gsatCfg = {
-               "name":"gsat"
-              ,"title":"Google Satellite"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['gsat'] = gsatCfg;
-          evt.baselayers.push(gsat);
-          evt.map.allOverlays = false;
-          evt.map.zoomDuration = 0;
-        }
-        if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:20
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ghyb = new OpenLayers.Layer.Google(
-              "ghyb",
-              {type: google.maps.MapTypeId.HYBRID
-                , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-              );
-          ghyb.maxExtent = maxExtent;
-          var ghybCfg = {
-               "name":"ghyb"
-              ,"title":"Google Hybrid"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['ghyb'] = ghybCfg;
-          evt.baselayers.push(ghyb);
-          evt.map.allOverlays = false;
-          evt.map.zoomDuration = 0;
-        }
-        if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:16
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var gphy = new OpenLayers.Layer.Google(
-              "gphy",
-              {type: google.maps.MapTypeId.TERRAIN
-              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-              );
-          gphy.maxExtent = maxExtent;
-          var gphyCfg = {
-               "name":"gphy"
-              ,"title":"Google Terrain"
-            ,"type":"baselayer"
-          };
-          evt.config.layers['gphy'] = gphyCfg;
-          evt.baselayers.push(gphy);
-          evt.map.allOverlays = false;
-          evt.map.zoomDuration = 0;
-       }
-       if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:20
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-         var gmap = new OpenLayers.Layer.Google(
-             "gmap", // the default
-             {numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
-             );
-         gmap.maxExtent = maxExtent;
-         var gmapCfg = {
-              "name":"gmap"
-             ,"title":"Google Streets"
-             ,"type":"baselayer"
-         };
-         evt.config.layers['gmap'] = gmapCfg;
-         evt.baselayers.push(gmap);
-         evt.map.allOverlays = false;
-         evt.map.zoomDuration = 0;
-       }
        if (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options))  {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:23
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var bmap = new OpenLayers.Layer.Bing({
-             key: evt.config.options.bingKey,
-             type: "Road",
-             name: "Bing Road", // the default
-             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-          });
-          bmap.maxExtent = maxExtent;
           var bmapCfg = {
              "name":"bmap"
             ,"title":"Bing Road"
             ,"type":"baselayer"
           };
-          evt.config.layers['bmap'] = bmapCfg;
-          evt.baselayers.push(bmap);
-          evt.map.allOverlays = false;
+          evt.config.layers['bing-map'] = bmapCfg;
        }
        if (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options))  {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:23
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var baerial = new OpenLayers.Layer.Bing({
-             key: evt.config.options.bingKey,
-             type: "Aerial",
-             name: "Bing Aerial", // the default
-             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-          });
-          baerial.maxExtent = maxExtent;
           var baerialCfg = {
              "name":"baerial"
             ,"title":"Bing Aerial"
             ,"type":"baselayer"
           };
-          evt.config.layers['baerial'] = baerialCfg;
-          evt.baselayers.push(baerial);
-          evt.map.allOverlays = false;
+          evt.config.layers['bing-aerial'] = baerialCfg;
        }
        if (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options))  {
-          var options = {
-            zoomOffset: 0,
-            maxResolution:156543.03390625,
-            numZoomLevels:23
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var bhybrid = new OpenLayers.Layer.Bing({
-             key: evt.config.options.bingKey,
-             type: "AerialWithLabels",
-             name: "Bing Hybrid", // the default
-             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
-          });
-          bhybrid.maxExtent = maxExtent;
           var bhybridCfg = {
              "name":"bhybrid"
             ,"title":"Bing Hybrid"
             ,"type":"baselayer"
           };
-          evt.config.layers['bhybrid'] = bhybridCfg;
-          evt.baselayers.push(bhybrid);
-          evt.map.allOverlays = false;
+          evt.config.layers['bing-hybrid'] = bhybridCfg;
        }
 
-       var ignAttribution = '<a href="http://www.ign.fr" target="_blank"><img width="25" src="https://wxs.ign.fr/static/logos/IGN/IGN.gif" title="Institut national de l\'information géographique et forestière" alt="IGN"></a>';
 
        // IGN base layers
         if ('ignKey' in evt.config.options){
-          var ignKey = evt.config.options.ignKey;
 
           if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') {
-            var options = {
-              zoomOffset: 0,
-              maxResolution: 156543.03390625,
-              numZoomLevels: 18
-            };
-            if (lOptions.zoomOffset != 0) {
-              options.zoomOffset = lOptions.zoomOffset;
-              options.maxResolution = lOptions.maxResolution;
-            }
-            if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-              options.numZoomLevels = lOptions.numZoomLevels;
-            else
-              options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-            var ignmap = new OpenLayers.Layer.WMTS({
-              name: "ignmap",
-              url: "https://wxs.ign.fr/" + ignKey + "/geoportail/wmts",
-              layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
-              matrixSet: "PM",
-              style: "normal",
-              projection: new OpenLayers.Projection("EPSG:3857"),
-              attribution: ignAttribution
-              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-              , zoomOffset: options.zoomOffset
-
-            });
-            ignmap.maxExtent = maxExtent;
             var ignmapCfg = {
-              "name": "ignmap"
+              "name": "ign-map"
               , "title": "IGN Scan"
               , "type": "baselayer"
             };
-            evt.config.layers['ignmap'] = ignmapCfg;
-            evt.baselayers.push(ignmap);
-            evt.map.allOverlays = false;
+            evt.config.layers['ign-map'] = ignmapCfg;
           }
         }
         if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution: 156543.03390625,
-            numZoomLevels: 18
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ignplan = new OpenLayers.Layer.WMTS({
-            name: "ignplan",
-            url: "https://wxs.ign.fr/cartes/geoportail/wmts",
-            layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
-            matrixSet: "PM",
-            style: "normal",
-            format: "image/png",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-            , zoomOffset: options.zoomOffset
-
-          });
-          ignplan.maxExtent = maxExtent;
           var ignplanCfg = {
             "name": "ignplan"
             , "title": "IGN Plan"
             , "type": "baselayer"
           };
-          evt.config.layers['ignplan'] = ignplanCfg;
-          evt.baselayers.push(ignplan);
-          evt.map.allOverlays = false;
+          evt.config.layers['ign-plan'] = ignplanCfg;
         }
         if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution: 156543.03390625,
-            numZoomLevels: 22
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var ignphoto = new OpenLayers.Layer.WMTS({
-            name: "ignphoto",
-            url: "https://wxs.ign.fr/ortho/geoportail/wmts",
-            layer: "ORTHOIMAGERY.ORTHOPHOTOS",
-            matrixSet: "PM",
-            style: "normal",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-            , zoomOffset: options.zoomOffset
-
-          });
-          ignphoto.maxExtent = maxExtent;
           var ignphotoCfg = {
             "name": "ignphoto"
             , "title": "IGN Photos"
             , "type": "baselayer"
           };
-          evt.config.layers['ignphoto'] = ignphotoCfg;
-          evt.baselayers.push(ignphoto);
-          evt.map.allOverlays = false;
+          evt.config.layers['ign-photo'] = ignphotoCfg;
         }
         if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True') {
-          var options = {
-            zoomOffset: 0,
-            maxResolution: 156543.03390625,
-            numZoomLevels: 20
-          };
-          if (lOptions.zoomOffset != 0) {
-            options.zoomOffset = lOptions.zoomOffset;
-            options.maxResolution = lOptions.maxResolution;
-          }
-          if (lOptions.zoomOffset + lOptions.numZoomLevels <= options.numZoomLevels)
-            options.numZoomLevels = lOptions.numZoomLevels;
-          else
-            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-          var igncadastral = new OpenLayers.Layer.WMTS({
-            name: "igncadastral",
-            url: "https://wxs.ign.fr/parcellaire/geoportail/wmts",
-            layer: "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
-            matrixSet: "PM",
-            style: "normal",
-            format: "image/png",
-            projection: new OpenLayers.Projection("EPSG:3857"),
-            attribution: ignAttribution
-            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel: options.zoomOffset
-            , zoomOffset: options.zoomOffset
-
-          });
-          igncadastral.maxExtent = maxExtent;
           var igncadastralCfg = {
             "name": "igncadastral"
             , "title": "IGN Cadastre"
             , "type": "baselayer"
           };
-          evt.config.layers['igncadastral'] = igncadastralCfg;
-          evt.baselayers.push(igncadastral);
-          evt.map.allOverlays = false;
+          evt.config.layers['ign-cadastral'] = igncadastralCfg;
         }
       } catch(e) {
        }
@@ -6419,31 +5714,6 @@ lizMap.events.on({
     }
    ,
    'uicreated': function(evt){
-     var map = evt.map;
-     if ( map.id in OpenLayers.Layer.Google.cache ) {
-        google.maps.event.addListenerOnce(OpenLayers.Layer.Google.cache[map.id].mapObject, 'tilesloaded', function() {
-            var olLayers = map.layers;
-            var gVisibility = false;
-            for (var i=olLayers.length-1; i>=0; --i) {
-                var layer = olLayers[i];
-                if (layer instanceof OpenLayers.Layer.Google &&
-                            layer.visibility === true && layer.inRange === true) {
-                    layer.redraw(true);
-                    gVisibility = true;
-                    break;
-                }
-            }
-            if (!gVisibility) {
-                for (var i=olLayers.length-1; i>=0; --i) {
-                    var layer = olLayers[i];
-                    if (layer instanceof OpenLayers.Layer.Google) {
-                        layer.display(false);
-                        break;
-                    }
-                }
-            }
-        });
-     }
 
       // Update legend if mobile
       if( lizMap.checkMobile() ){
@@ -6455,7 +5725,6 @@ lizMap.events.on({
       $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-dock > a').click(); });
       $('#right-dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-right-dock > a').click(); });
    }
-
 });
 
 $(document).ready(function () {
