@@ -212,6 +212,10 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(group);
             } else if (mapItemState instanceof MapLayerState) {
                 if (!mapItemState.displayInLayerTree) {
@@ -223,6 +227,10 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(layer);
             }
         }

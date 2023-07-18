@@ -869,4 +869,83 @@ describe('LayerTreeGroupState', function () {
         expect(rootLayerSymbologyChangedEvt).to.not.be.null
         expect(rootLayerSymbologyChangedEvt).to.be.eq(layerSymbologyChangedEvt)
     })
+
+    it('Filter & token', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'SousQuartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+
+        expect(sousquartiers.isFiltered).to.be.false
+
+        // Checked filter and events
+        let rootFilterChangedEvt = null;
+        let rootFilterTokenChangedEvt = null;
+        let rootOrderedChangedEvt = [];
+        let layerFilterChangedEvt = null;
+        let layerFilterTokenChangedEvt = null;
+        let layerOrderedChangedEvt = [];
+        // Add event listener
+        sousquartiers.addListener(evt => {
+            layerFilterChangedEvt = evt
+            layerOrderedChangedEvt.push(evt)
+        }, 'layer.filter.changed');
+        sousquartiers.addListener(evt => {
+            layerFilterTokenChangedEvt = evt
+            layerOrderedChangedEvt.push(evt)
+        }, 'layer.filter.token.changed');
+        root.addListener(evt => {
+            rootFilterChangedEvt = evt
+            rootOrderedChangedEvt.push(evt)
+        }, 'layer.filter.changed');
+        root.addListener(evt => {
+            rootFilterTokenChangedEvt = evt
+            rootOrderedChangedEvt.push(evt)
+        }, 'layer.filter.token.changed');
+
+        // Set expressionFilter
+        sousquartiers.mapItemState.itemState.expressionFilter = '"QUARTMNO" = \'HO\''
+        expect(layerFilterChangedEvt).to.not.be.null
+        expect(layerFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(layerFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(layerFilterTokenChangedEvt).to.be.null
+        expect(layerOrderedChangedEvt).to.have.length(1)
+        expect(rootFilterChangedEvt).to.not.be.null
+        expect(rootFilterChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(rootFilterChangedEvt.expressionFilter).to.be.eq('"QUARTMNO" = \'HO\'')
+        expect(rootFilterTokenChangedEvt).to.be.null
+        expect(rootOrderedChangedEvt).to.have.length(1)
+        expect(sousquartiers.isFiltered).to.be.true
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.be.deep.eq({
+            "LAYERS": "SousQuartiers",
+            "STYLES": "default",
+            "FORMAT": "image/png",
+            "DPI": 96,
+            "FILTER": "SousQuartiers:\"QUARTMNO\" = 'HO'"
+        })
+    })
 })

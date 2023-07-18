@@ -1136,7 +1136,7 @@ describe('MapGroupState', function () {
         expect(sousquartiers.itemState.filterToken).to.be.null
         expect(sousquartiers.isFiltered).to.be.false
 
-        // Checked selection and events
+        // Checked filter and events
         let rootFilterChangedEvt = null;
         let rootFilterTokenChangedEvt = null;
         let rootOrderedChangedEvt = [];
