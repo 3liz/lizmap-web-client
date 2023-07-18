@@ -1,0 +1,154 @@
+{
+    "nodes": [
+        {
+            "symbols": [
+                {
+                    "title": "1:25000",
+                    "ruleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "checked": true,
+                    "parentRuleKey": "{a5359e9e-eecc-437d-a636-38237822ea81}",
+                    "scaleMaxDenom": 25000,
+                    "scaleMinDenom": 1,
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAKUlEQVQ4jWNgGPKAUcTI6D8lBrB4JSRR5AIminSPGjBqABRQnJSHAQAA\/s4EEwOIIHMAAAAASUVORK5CYII=",
+                    "title": "Motorway or highway",
+                    "ruleKey": "{1be63a51-ccb6-4c5c-acdf-fdee5f8408c1}",
+                    "checked": true,
+                    "parentRuleKey": "{2df87245-1aca-463a-a8eb-a5f2ea287a44}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIUlEQVQ4jWNgGAUUA8aUpUv\/U2IAE6UuGDVgMBgwCqgAAPXFAr2yVKEzAAAAAElFTkSuQmCC",
+                    "title": "Motorway Link",
+                    "ruleKey": "{a9fac601-7bc7-4150-9783-19d7827b2ef8}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAKUlEQVQ4jWNgGGjA6KPG8J8iA\/6fa6DIACZKNI8aMGrA4DGA4sw08AAAse8GSDAKga8AAAAASUVORK5CYII=",
+                    "title": "Primary road",
+                    "ruleKey": "{e2c3dbec-7274-4149-8b0b-959b2e758b9a}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIUlEQVQ4jWNgGAUUA8b\/5xr+U2IAE6UuGDVgMBgwCqgAAAJHA1zUTHY0AAAAAElFTkSuQmCC",
+                    "title": "Primary link",
+                    "ruleKey": "{78db6f50-70cc-417d-995d-97ad897bf52b}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAMElEQVQ4jWNgGAUUA8Zr1679p8QAJkpdwHKe4zpFBlDsgoE3gMXwh+bAumAUUAEAAL2UBpWoZzLbAAAAAElFTkSuQmCC",
+                    "title": "Tertiary",
+                    "ruleKey": "{26f18044-95a7-4170-9ce3-0137ce4a2232}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAALElEQVQ4jWNgGAUUA8b79+\/\/p8QAJkpdwHLs\/zmKDKDYBQNvwMDHwiigAgAAmkoJ3Kjim3oAAAAASUVORK5CYII=",
+                    "title": "Tertiary link",
+                    "ruleKey": "{f215859b-f963-4872-8f4b-b2e39e5f0c35}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAH0lEQVQ4jWNgGAUDDxj\/n7v8nxIDmCh1wagBo2BwAAAegQOryAULBwAAAABJRU5ErkJggg==",
+                    "title": "Secondary",
+                    "ruleKey": "{aac3fe77-b7ff-4c47-8f28-c33de0dc4b2b}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAALUlEQVQ4jWNgGAUDDxjv37\/\/nxIDWBTef6HIBUwU6R4UBrA8EOSh1IxRMOAAAHjQBqzhew\/aAAAAAElFTkSuQmCC",
+                    "title": "Secondary link",
+                    "ruleKey": "{960d07d3-ac1a-40c8-8f2e-1b499f3ccafc}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAH0lEQVQ4jWNgGAUDDxh\/\/PjxnxIDmCh1wagBo2BwAAD5JQPzwsyIGgAAAABJRU5ErkJggg==",
+                    "title": "Road, residential, living street, etc.",
+                    "ruleKey": "{303a360c-638b-4c9f-adee-eff33d3e95f1}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAMElEQVQ4jWNgGAUUA8b79+\/\/p8QAJkpdwPLr93GKDKDYBQNvAAsbq+XAumAUUAEAACjTBrDEG11BAAAAAElFTkSuQmCC",
+                    "title": "Track",
+                    "ruleKey": "{c63b61f8-f9e5-4a57-9231-9001ffd07bad}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAALUlEQVQ4jWNgGAWjgIGB8f\/\/\/\/9hnNX5\/QwMDAwMoRMLURThE2eitQtHwcgAAHwMC6mBhxP2AAAAAElFTkSuQmCC",
+                    "title": "Cycleway, footpath etc.",
+                    "ruleKey": "{245c23be-e45f-4f80-9ea4-f1676315f178}",
+                    "checked": true,
+                    "parentRuleKey": "{1a0c9345-0ffd-4743-bf78-82ca39f64d40}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADD++PHjPyUGMFHqgoE3YBQMCwAA8goD711BN1YAAAAASUVORK5CYII=",
+                    "scaleMaxDenom": 50000,
+                    "scaleMinDenom": 25001,
+                    "title": "25k to 50k",
+                    "ruleKey": "{b3334f5f-daaf-4dc2-a2dc-f5f8485a1b37}",
+                    "checked": true,
+                    "parentRuleKey": "{a5359e9e-eecc-437d-a636-38237822ea81}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAHklEQVQ4jWNgGAWMcZOm\/KfEACZKXTBqwKgBowACABg5ApcidJEdAAAAAElFTkSuQmCC",
+                    "title": "Motorway or highway",
+                    "ruleKey": "{1be63a51-ccb6-4c5c-acdf-fdee5f8408c1}",
+                    "checked": true,
+                    "parentRuleKey": "{2df87245-1aca-463a-a8eb-a5f2ea287a44}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAKElEQVQ4jWNgGAUUA0YfNYb\/FBnw\/1wDRQYwUaJ51AAIoDgaRwEVAAASvgY8+kLcRgAAAABJRU5ErkJggg==",
+                    "title": "Primary",
+                    "ruleKey": "{97c219cb-9b1a-4a9d-bba5-cfe3006fe48a}",
+                    "checked": true,
+                    "parentRuleKey": "{b3334f5f-daaf-4dc2-a2dc-f5f8485a1b37}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAG0lEQVQ4jWNgGAWjgAqAMSQk5NdAO2IUDH0AAHxdAfgkeO85AAAAAElFTkSuQmCC",
+                    "scaleMaxDenom": 10000000,
+                    "scaleMinDenom": 50001,
+                    "title": "50k +",
+                    "ruleKey": "{2df87245-1aca-463a-a8eb-a5f2ea287a44}",
+                    "checked": true,
+                    "parentRuleKey": "{a5359e9e-eecc-437d-a636-38237822ea81}",
+                    "expression": ""
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADCmLF36nxIDmCh1wcAbMAqGBQAAhxICtTZBYRgAAAAASUVORK5CYII=",
+                    "title": "Motorway or highway",
+                    "ruleKey": "{1be63a51-ccb6-4c5c-acdf-fdee5f8408c1}",
+                    "checked": true,
+                    "parentRuleKey": "{2df87245-1aca-463a-a8eb-a5f2ea287a44}",
+                    "expression": ""
+                }
+            ],
+            "title": "road",
+            "type": "layer",
+            "name": "road",
+            "layerName": "road"
+        }
+    ],
+    "title": ""
+}
