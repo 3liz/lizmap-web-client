@@ -1,3 +1,10 @@
+/**
+ * @module utils/Extent.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { ValidationError } from './../Errors.js';
 import { convertNumber } from './Converters.js';
 
@@ -56,6 +63,13 @@ export class Extent extends Array {
         return this[3];
     }
 
+    /**
+     * Checks equality with an other extent or array
+     *
+     * @param {Extent|Array} anOther - An other extent or array with 4 values
+     *
+     * @return {Boolean} the other extent or array as the same values
+     **/
     equals(anOther) {
         return ( anOther instanceof Array
             && anOther.length == 4

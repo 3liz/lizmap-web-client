@@ -1,3 +1,10 @@
+/**
+ * @module utils/Dataviz.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
@@ -9,8 +16,15 @@ const optionRequiredProperties = {
 const optionOptionalProperties = {
 }
 
+/**
+ * Class representing a dataviz options config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class DatavizOptionsConfig extends BaseObjectConfig {
     /**
+     * Create a dataviz options config instance
+     *
      * @param {Object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
@@ -46,8 +60,15 @@ const traceOptionalProperties = {
     'z_field': {type: 'string'},
 }
 
+/**
+ * Class representing a dataviz trace config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class DatavizTraceConfig extends BaseObjectConfig {
     /**
+     * Create a dataviz trace config instance
+     *
      * @param {Object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
@@ -104,8 +125,15 @@ const plotOptionalProperties = {
     'x_field': {type: 'string'},
 }
 
+/**
+ * Class representing a dataviz plot config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class DatavizPlotConfig extends BaseObjectConfig {
     /**
+     * Create a dataviz plot config instance
+     *
      * @param {Object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
@@ -206,8 +234,15 @@ const optionalProperties = {
     'abstract': {type: 'string', default: ''},
 };
 
+/**
+ * Class representing a dataviz element config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class DatavizElementConfig extends BaseObjectConfig {
     /**
+     * Create a dataviz element config instance
+     *
      * @param {Object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
@@ -284,9 +319,15 @@ export class DatavizElementConfig extends BaseObjectConfig {
     }
 }
 
+/**
+ * Class representing a dataviz layer config
+ * @class
+ */
 export class DatavizLayersConfig {
 
     /**
+     * Create a dataviz layers config instance
+     *
      * @param {Object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {

@@ -1,3 +1,10 @@
+/**
+ * @module config/Locate.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
@@ -12,10 +19,17 @@ const requiredProperties = {
 const optionalProperties = {
 };
 
+/**
+ * Class representing a locate layer config
+ * @class
+ * @augments BaseObjectLayerConfig
+ */
 export class LocateLayerConfig extends BaseObjectLayerConfig {
     /**
+     * Create a locate layer config instance
+     *
      * @param {String} layerName - the layer name
-     * @param {Object} cfg - the lizmap config object for tooltip layer
+     * @param {Object} cfg       - the lizmap config object for tooltip layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -58,10 +72,17 @@ export class LocateLayerConfig extends BaseObjectLayerConfig {
     }
 }
 
+/**
+ * Class representing a locate by layer config
+ * @class
+ * @augments BaseObjectLayersConfig
+ */
 export class LocateByLayerConfig  extends BaseObjectLayersConfig {
 
     /**
-     * @param {Object} cfg - the lizmap tooltipLayers config object
+     * Create a locate by layers config instance
+     *
+     * @param {Object} cfg - the lizmap locateByLayers config object
      */
     constructor(cfg) {
         super(LocateLayerConfig, cfg)

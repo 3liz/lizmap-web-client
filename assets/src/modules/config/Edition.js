@@ -1,3 +1,10 @@
+/**
+ * @module utils/Edition.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig, BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
@@ -8,9 +15,16 @@ const capabilitiesProperties = {
     'deleteFeature': {type: 'boolean'}
 };
 
+/**
+ * Class representing an edition capabilities config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class EditionCapabilitiesConfig extends BaseObjectConfig {
     /**
-     * @param {Object} cfg - the lizmap config object for edition layer
+     * Create an editions capabilities config instance
+     *
+     * @param {Object} cfg - the lizmap config object for edition capabilities
      */
     constructor(cfg) {
         super(cfg, capabilitiesProperties, {})
@@ -60,10 +74,17 @@ const optionalProperties = {
     'acl': {type: 'string'}
 };
 
+/**
+ * Class representing an edition layer config
+ * @class
+ * @augments BaseObjectLayerConfig
+ */
 export class EditionLayerConfig extends BaseObjectLayerConfig {
     /**
+     * Create an edition layer config instance
+     *
      * @param {String} layerName - the layer name
-     * @param {Object} cfg - the lizmap config object for edition layer
+     * @param {Object} cfg       - the lizmap config object for edition layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -103,9 +124,16 @@ export class EditionLayerConfig extends BaseObjectLayerConfig {
     }
 }
 
+/**
+ * Class representing an edition layers config
+ * @class
+ * @augments BaseObjectLayersConfig
+ */
 export class EditionLayersConfig extends BaseObjectLayersConfig {
 
     /**
+     * Create an edition layers config instance
+     *
      * @param {Object} cfg - the lizmap editionLayers config object
      */
     constructor(cfg) {

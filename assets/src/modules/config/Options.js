@@ -1,5 +1,11 @@
+/**
+ * @module config/Options.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig } from './BaseObject.js';
-//import { Extent } from './Tools.mjs';
 import { ValidationError } from './../Errors.js';
 
 const requiredProperties = {
@@ -32,6 +38,7 @@ export class OptionsConfig  extends BaseObjectConfig {
 
     /**
      * Create an options config instance based on a config object
+     *
      * @param {Object}   cfg                                  - the lizmap config object for options
      * @param {Number[]} cfg.bbox                            - the project and web services max extent
      * @param {Number[]} cfg.initialExtent                   - the map extent at the loading page

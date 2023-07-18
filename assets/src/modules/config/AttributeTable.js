@@ -1,3 +1,10 @@
+/**
+ * @module utils/AttributeTable.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
@@ -11,10 +18,17 @@ const optionalProperties = {
     'hiddenFields': {type: 'string', default: ''},
 };
 
+/**
+ * Class representing an attribute layer config
+ * @class
+ * @augments BaseObjectLayerConfig
+ */
 export class AttributeLayerConfig extends BaseObjectLayerConfig {
     /**
+     * Create an attribute layer config instance
+     *
      * @param {String} layerName - the layer name
-     * @param {Object} cfg - the lizmap config object for tooltip layer
+     * @param {Object} cfg       - the lizmap config object for tooltip layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -66,10 +80,17 @@ export class AttributeLayerConfig extends BaseObjectLayerConfig {
     }
 }
 
+/**
+ * Class representing an attribute layers config
+ * @class
+ * @augments BaseObjectLayersConfig
+ */
 export class AttributeLayersConfig extends BaseObjectLayersConfig {
 
     /**
-     * @param {Object} cfg - the lizmap tooltipLayers config object
+     * Create an attribute layers config instance
+     *
+     * @param {Object} cfg - the lizmap attributeLayers config object
      */
     constructor(cfg) {
         super(AttributeLayerConfig, cfg)

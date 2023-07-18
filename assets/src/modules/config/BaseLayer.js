@@ -1,3 +1,9 @@
+/**
+ * @module utils/BaseLayer.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
 
 import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';

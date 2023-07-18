@@ -1,3 +1,10 @@
+/**
+ * @module config/Tooltip.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
@@ -9,10 +16,17 @@ const requiredProperties = {
 const optionalProperties = {
 };
 
+/**
+ * Class representing a tooltip layer config
+ * @class
+ * @augments BaseObjectLayerConfig
+ */
 export class TooltipLayerConfig extends BaseObjectLayerConfig {
     /**
+     * Create a tooltip layer config instance
+     *
      * @param {String} layerName - the layer name
-     * @param {Object} cfg - the lizmap config object for tooltip layer
+     * @param {Object} cfg       - the lizmap config object for tooltip layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -46,9 +60,16 @@ export class TooltipLayerConfig extends BaseObjectLayerConfig {
     }
 }
 
+/**
+ * Class representing a tooltip layers config
+ * @class
+ * @augments BaseObjectLayersConfig
+ */
 export class TooltipLayersConfig extends BaseObjectLayersConfig {
 
     /**
+     * Create a tooltip layers config instance
+     *
      * @param {Object} cfg - the lizmap tooltipLayers config object
      */
     constructor(cfg) {

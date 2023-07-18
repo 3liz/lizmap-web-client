@@ -1,3 +1,10 @@
+/**
+ * @module config/TimeManager.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
@@ -11,10 +18,17 @@ const requiredProperties = {
 const optionalProperties = {
 };
 
+/**
+ * Class representing a time manager layer config
+ * @class
+ * @augments BaseObjectLayerConfig
+ */
 export class TimeManagerLayerConfig extends BaseObjectLayerConfig {
     /**
+     * Create a time manager layer config instance
+     *
      * @param {String} layerName - the layer name
-     * @param {Object} cfg - the lizmap config object for tooltip layer
+     * @param {Object} cfg       - the lizmap config object for tooltip layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -66,9 +80,16 @@ export class TimeManagerLayerConfig extends BaseObjectLayerConfig {
     }
 }
 
+/**
+ * Class representing a time manager layers config
+ * @class
+ * @augments BaseObjectLayersConfig
+ */
 export class TimeManagerLayersConfig extends BaseObjectLayersConfig {
 
     /**
+     * Create a time manager layers config instance
+     *
      * @param {Object} cfg - the lizmap tooltipLayers config object
      */
     constructor(cfg) {

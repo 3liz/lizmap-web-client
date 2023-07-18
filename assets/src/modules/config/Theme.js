@@ -1,3 +1,10 @@
+/**
+ * @module config/Theme.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
@@ -9,9 +16,16 @@ const layerThemeRequiredProperties = {
 const layerThemeOptionalProperties = {
 }
 
+/**
+ * Class representing a layer in theme config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class LayerThemeConfig extends BaseObjectConfig {
 
     /**
+     * Create a layer in theme config instance
+     *
      * @param {Object} cfg - the lizmap config object for a layer in theme
      */
     constructor(layerId, cfg) {
@@ -55,9 +69,16 @@ const themeRequiredProperties = {
 const themeOptionalProperties = {
 }
 
+/**
+ * Class representing a theme config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class ThemeConfig extends BaseObjectConfig {
 
     /**
+     * Create a theme config instance
+     *
      * @param {Object} cfg - the lizmap config object for a theme
      */
     constructor(name, cfg) {
@@ -170,9 +191,15 @@ export class ThemeConfig extends BaseObjectConfig {
     }
 }
 
+/**
+ * Class representing themes config
+ * @class
+ */
 export class ThemesConfig {
 
     /**
+     * Create themes config instance
+     *
      * @param {Object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
