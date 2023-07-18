@@ -1,3 +1,10 @@
+/**
+ * @module config/Metadata.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig } from './BaseObject.js';
 
 const optionalProperties = {
@@ -15,6 +22,7 @@ export class MetadataConfig extends BaseObjectConfig {
 
     /**
      * Create a metadata config instance based on a config object
+     *
      * @param {Object}  cfg                                          - the lizmap config object
      * @param {String}  [cfg.lizmap_plugin_version]                  - the lizmap plugin version as number used to configure the project
      * @param {String}  [cfg.lizmap_plugin_version_str]              - the lizmap plugin version as string used to configure the project

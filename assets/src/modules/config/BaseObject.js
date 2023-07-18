@@ -1,3 +1,10 @@
+/**
+ * @module utils/BaseObject.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { convertNumber, convertBoolean } from './../utils/Converters.js';
 import { Extent } from './../utils/Extent.js';
 import { getNotContains } from './Tools.js';
@@ -6,7 +13,7 @@ import { ValidationError } from '../Errors.js';
 /**
  * The function to update an instance based on required and optional properties description
  * The values of each properties defined in requiredProperties and optionalProperties will be converted to is type:
- * boolean, number, extent ; and will be stored in an _{name} attribute
+ * boolean, number, extent; and will be stored in an _{name} attribute
  * This will help to get values respecting the type defined in getter and to validate the config
  * @param {Object} obj                     - the instance on which apply the config
  * @param {Object} cfg                     - the lizmap config object

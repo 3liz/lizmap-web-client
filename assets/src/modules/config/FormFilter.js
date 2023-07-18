@@ -1,3 +1,10 @@
+/**
+ * @module utils/FormFilter.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
@@ -17,9 +24,16 @@ const optionalProperties = {
     'splitter': {type: 'string'},
 };
 
+/**
+ * Class representing a form filter element config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class FormFilterElementConfig extends BaseObjectConfig {
     /**
-     * @param {Object} cfg - the lizmap config object for layer
+     * Create a form filter element config instance
+     *
+     * @param {Object} cfg - the lizmap config object for form filter element config
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
@@ -116,10 +130,16 @@ export class FormFilterElementConfig extends BaseObjectConfig {
     }
 }
 
+/**
+ * Class representing a form filter config
+ * @class
+ */
 export class FormFilterConfig {
 
     /**
-     * @param {Object} cfg - the lizmap config object for layer
+     * Create a form filter config instance
+     *
+     * @param {Object} cfg - the lizmap config object for form filter
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {

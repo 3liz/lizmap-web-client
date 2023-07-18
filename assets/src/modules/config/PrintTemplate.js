@@ -1,3 +1,10 @@
+/**
+ * @module config/PrintTemplate.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
@@ -6,9 +13,16 @@ const atlasRequiredProperties = {
     'coverageLayer': {type: 'string'},
 }
 
+/**
+ * Class representing a print atlas config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class PrintAtlasConfig extends BaseObjectConfig {
     /**
-     * @param {Object} cfg - the lizmap config object for layer
+     * Create a print atlas config instance
+     *
+     * @param {Object} cfg - the lizmap config object for print atlas
      */
     constructor(cfg) {
         super(cfg, atlasRequiredProperties, {})
@@ -39,9 +53,16 @@ const labelRequiredProperties = {
     'text': {type: 'string'},
 }
 
+/**
+ * Class representing a print label config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class PrintLabelConfig extends BaseObjectConfig {
     /**
-     * @param {Object} cfg - the lizmap config object for layer
+     * Create an print label config instance
+     *
+     * @param {Object} cfg - the lizmap config object for print label
      */
     constructor(cfg) {
         super(cfg, labelRequiredProperties, {})
@@ -82,8 +103,15 @@ const mapRequiredProperties = {
     'height': {type: 'number'},
 }
 
+/**
+ * Class representing a print map config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class PrintMapConfig extends BaseObjectConfig {
     /**
+     * Create a print map config instance
+     *
      * @param {Object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
@@ -136,9 +164,16 @@ const requiredProperties = {
 const optionalProperties = {
 }
 
+/**
+ * Class representing a print template config
+ * @class
+ * @augments BaseObjectConfig
+ */
 export class PrintTemplateConfig extends BaseObjectConfig {
     /**
-     * @param {Object} cfg - the lizmap config object for layer
+     * Create a print template config instance
+     *
+     * @param {Object} cfg - the lizmap config object for print template
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)

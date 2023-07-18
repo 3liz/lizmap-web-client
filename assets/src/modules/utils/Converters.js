@@ -1,7 +1,15 @@
+/**
+ * @module utils/Converters.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { ConversionError } from './../Errors.js';
 
 /**
  * Convert a value to Number
+ * @function
  *
  * @param {*} val - A value to convert to number
  *
@@ -19,6 +27,7 @@ export function convertNumber(val) {
 
 /**
  * Convert a value to boolean
+ * @function
  *
  * @param {*} val - A value to convert to boolean
  *
@@ -72,10 +81,11 @@ export function convertBoolean(val) {
  * of the given string, n is the length of the string,
  * and ^ indicates exponentiation.
  * (The hash value of the empty string is zero.)
+ * @function
  *
- * @param {string} s a string
+ * @param {string} s - A string
  * @return {number} a hash code value for the given string.
- */
+ **/
 export function hashCode(s) {
     let h = 0;
     for(let i = 0; i < s.length; i++) {

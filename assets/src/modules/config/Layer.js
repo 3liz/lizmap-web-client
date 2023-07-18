@@ -1,3 +1,10 @@
+/**
+ * @module config/Layer.js
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ **/
+
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
 
@@ -47,6 +54,7 @@ const optionalProperties = {
 export class LayerConfig extends BaseObjectConfig {
     /**
      * Create a layer config instance based on a config object
+     *
      * @param {Object}   cfg                       - the lizmap config object for layer
      * @param {String}   cfg.id                    - the layer id
      * @param {String}   cfg.name                  - the layer name
@@ -86,7 +94,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer id
+     * The layer id - QGIS layer id
      *
      * @type {String}
      **/
@@ -95,7 +103,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer name
+     * The layer name - QGIS layer name
      *
      * @type {String}
      **/
@@ -113,7 +121,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer short name
+     * The layer short name - will be the WMS/WFS/WMTS name if not null
      *
      * @type {?String}
      **/
@@ -377,13 +385,14 @@ export class LayerConfig extends BaseObjectConfig {
 }
 
 /**
- * Class representing a layers config
+ * Class representing the layers config accessor
  * @class
  */
 export class LayersConfig {
 
     /**
-     * Create a layers config instance based on a config object
+     * Create a layers config accessor instance based on a config object
+     *
      * @param {Object} cfg - the lizmap config object for layers
      */
     constructor(cfg) {
