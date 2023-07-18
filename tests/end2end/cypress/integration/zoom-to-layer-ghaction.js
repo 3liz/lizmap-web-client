@@ -24,7 +24,7 @@ describe('Zoom to layer', function() {
 
         // Check no popup displayed
         cy.get('#mapmenu li.nav-dock.popupcontent').should('have.class', 'active')
-        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('length', 0)
+        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('not.exist')
 
         // The dock with content will be closed
         //cy.wait(5000)
@@ -55,6 +55,6 @@ describe('Zoom to layer', function() {
 
         // Check no popup displayed
         cy.get('#mapmenu li.nav-dock.popupcontent').should('have.class', 'active')
-        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('length', 0)
+        cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('not.exist')
     })
 })
