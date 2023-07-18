@@ -230,34 +230,17 @@ export default class Print extends HTMLElement {
         }
 
         // Add visible layers
-        for (const layer of mainLizmap._lizmap3.map.layers) {
-            if (((layer instanceof OpenLayers.Layer.WMS) || (layer instanceof OpenLayers.Layer.WMTS))
-                && layer.getVisibility() && layer?.params?.LAYERS) {
-                // Get config
-                let configLayer;
-                let layerCleanName = mainLizmap._lizmap3.cleanName(layer.name);
-
-                if (layerCleanName) {
-                    let qgisName = mainLizmap._lizmap3.getLayerNameByCleanName(layerCleanName);
-                    configLayer = mainLizmap.config.layers[qgisName];
-                }
-                if (!configLayer) {
-                    configLayer = mainLizmap.config.layers[layer.params['LAYERS']] || mainLizmap.config.layers[layer.name];
-                }
-                // If the layer has no config or no `id` it is not a QGIS layer or group
-                if (!configLayer || !configLayer?.id) {
-                    return;
-                }
-
+        for (const layer of mainLizmap.state.rootMapGroup.findMapLayers().slice().reverse()) {
+            if (layer.visibility) {
                 // Add layer to the list of printed layers
-                printLayers.push(layer.params['LAYERS']);
+                printLayers.push(layer.wmsName);
 
                 // Optionally add layer style if needed (same order as layers )
-                styleLayers.push(layer.params?.['STYLES'] || '');
+                styleLayers.push(layer.wmsSelectedStyleName);
 
                 // Handle qgis layer opacity otherwise client value override it
-                if (configLayer?.opacity) {
-                    opacityLayers.push(parseInt(255 * layer.opacity * configLayer.opacity));
+                if (layer.layerConfig?.opacity) {
+                    opacityLayers.push(parseInt(255 * layer.opacity * layer.layerConfig.opacity));
                 } else {
                     opacityLayers.push(parseInt(255 * layer.opacity));
                 }

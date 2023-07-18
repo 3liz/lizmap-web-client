@@ -261,20 +261,16 @@ export default class Action {
                 let layerConfig = getLayerConfig[1];
 
                 // Get the corresponding OpenLayers layer instance
-                let getLayer = mainLizmap.lizmap3.map.getLayersByName(layerConfig['cleanname']);
-                if (getLayer.length != 1) {
-                    continue;
-                }
-                let callbackMapLayer = getLayer[0];
+                const layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(layerConfig.name);
 
-                if (!callbackMapLayer) {
+                if(!layer){
                     continue;
                 }
 
                 // Redraw the layer
                 if (callback['method'] == this.CallbackMethods.Redraw) {
                     // Redraw the given layer
-                    callbackMapLayer.redraw(true);
+                    layer.getSource().changed();
                 }
 
                 // Select items in the layer which intersect the returned geometry
@@ -285,8 +281,6 @@ export default class Action {
                     mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, f);
                 }
             }
-
-
         }
     }
 

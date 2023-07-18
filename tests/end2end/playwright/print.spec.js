@@ -119,7 +119,7 @@ test.describe('Print in popup', () => {
         const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
 
         page.on('request', request => {
-            if(request.method() === "POST"){
+            if(request.method() === "POST" && request.postData().includes('GetPrint')){
                 expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=pdf&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=100&TEMPLATE=atlas_quartiers&ATLAS_PK=1&LAYERS=quartiers');
             }
         });

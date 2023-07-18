@@ -1,6 +1,7 @@
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { MapGroupState, MapLayerState } from './MapLayer.js';
 import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology } from './Symbology.js';
+import { convertBoolean } from './../utils/Converters.js';
 
 /**
  * Class representing a layer tree item
@@ -19,6 +20,14 @@ export class LayerTreeItemState extends EventDispatcher {
         super();
         this._mapItemState = mapItemState;
         this._parentGroupState = null;
+
+        this._expanded = false;
+        if (this.type === "group") {
+            this._expanded = true;
+        } else {
+            this._expanded = this.layerConfig.legendImageOption === "expand_at_startup";
+        }
+
         if (parentGroupState instanceof LayerTreeItemState
             && parentGroupState.type == 'group') {
             this._parentGroupState = parentGroupState;
@@ -26,6 +35,8 @@ export class LayerTreeItemState extends EventDispatcher {
         if (mapItemState instanceof MapLayerState) {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.loading.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -35,6 +46,7 @@ export class LayerTreeItemState extends EventDispatcher {
         } else if (mapItemState instanceof MapGroupState) {
             mapItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'group.symbology.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'group.opacity.changed');
         }
     }
     /**
@@ -56,7 +68,7 @@ export class LayerTreeItemState extends EventDispatcher {
     }
 
     /**
-     * the layer tree item level
+     * Layer tree item level
      *
      * @type {Number}
      **/
@@ -153,6 +165,24 @@ export class LayerTreeItemState extends EventDispatcher {
     }
 
     /**
+     * Layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    get opacity() {
+        return this._mapItemState.opacity;
+    }
+
+    /**
+     * Set layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    set opacity(val) {
+        this._mapItemState.opacity = val;
+    }
+
+    /**
      * Lizmap layer config
      *
      * @type {?LayerConfig}
@@ -161,7 +191,6 @@ export class LayerTreeItemState extends EventDispatcher {
         return this._mapItemState.layerConfig;
     }
 
-
     /**
      * Map item state
      *
@@ -169,6 +198,34 @@ export class LayerTreeItemState extends EventDispatcher {
      **/
     get mapItemState() {
         return this._mapItemState;
+    }
+
+    /**
+     * Layer tree item is expanded
+     *
+     * @type {Boolean}
+     **/
+    get expanded() {
+        return this._expanded;
+    }
+
+    /**
+     * Set layer tree item is expanded
+     *
+     * @type {Boolean}
+     **/
+    set expanded(val) {
+        const newVal = convertBoolean(val);
+        if(this._expanded === newVal){
+            return;
+        }
+
+        this._expanded = newVal;
+
+        this.dispatch({
+            type: this.type + '.expanded.changed',
+            name: this.name
+        });
     }
 
     /**
@@ -207,9 +264,14 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                     continue;
                 }
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'group.expanded.changed');
                 group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
-                group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'group.opacity.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.expanded.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.loading.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -224,7 +286,10 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 // Build layer
                 const layer = new LayerTreeLayerState(mapItemState, this)
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.expanded.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -307,6 +372,24 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 items.push(item);
             } else if (item instanceof LayerTreeGroupState) {
                 items = items.concat(item.findTreeLayers());
+            }
+        }
+        return items;
+    }
+
+    /**
+     * Find layer and group items
+     *
+     * @returns {LayerTreeLayerState[]}
+     **/
+    findTreeLayersAndGroups() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof LayerTreeLayerState) {
+                items.push(item);
+            } else if (item instanceof LayerTreeGroupState) {
+                items.push(item);
+                items = items.concat(item.findTreeLayersAndGroups());
             }
         }
         return items;
@@ -423,6 +506,15 @@ export class LayerTreeLayerState extends LayerTreeItemState {
      **/
     get wmsParameters() {
         return this._mapItemState.wmsParameters;
+    }
+
+    /**
+     * Is layer loading?
+     *
+     * @type {Boolean}
+     **/
+    get loading() {
+        return this._mapItemState.loading;
     }
 
     /**

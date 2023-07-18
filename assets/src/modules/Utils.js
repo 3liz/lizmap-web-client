@@ -72,4 +72,9 @@ export default class Utils {
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send($.param(parameters, true));
     }
+
+    static getResolutionFromScale(scale) {
+        const resolution = 1 / ((1/scale) * 39.37 * 96);
+        return resolution;
+    }
 }

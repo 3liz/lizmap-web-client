@@ -45,7 +45,7 @@ export class BaseLayersState extends EventDispatcher {
         this.dispatch({
             type: 'baselayers.selection.changed',
             name: this.selectedBaseLayerName
-        })
+        });
     }
 
     /**
@@ -63,7 +63,7 @@ export class BaseLayersState extends EventDispatcher {
      * @type {String[]}
      **/
     get baseLayerNames() {
-        return [...this._baseLayersMap.keys()]
+        return [...this._baseLayersMap.keys()];
     }
 
     /**
@@ -72,7 +72,7 @@ export class BaseLayersState extends EventDispatcher {
      * @type {BaseLayerConfig[]}
      **/
     get baseLayerConfigs() {
-        return [...this._baseLayersMap.values()]
+        return [...this._baseLayersMap.values()];
     }
 
     /**

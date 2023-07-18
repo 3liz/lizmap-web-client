@@ -1,6 +1,5 @@
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
-//import { Extent } from './Tools.js';
 
 const requiredProperties = {
     'id': {type: 'string'},

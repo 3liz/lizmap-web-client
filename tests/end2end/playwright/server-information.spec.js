@@ -3,24 +3,11 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Server information', () => {
 
+  test.use({ storageState: 'playwright/.auth/admin.json' });
+
   test.beforeEach(async ({ page }) => {
     // Go to admin.php
     await page.goto('admin.php');
-
-    await expect(page).toHaveURL(/admin.php\/auth\/login/);
-
-    // Sign in
-    await page.getByLabel('Username*').click();
-    await page.getByLabel('Username*').fill('admin');
-    await page.getByLabel('Username*').press('Tab');
-    await page.getByLabel('Password*').fill('admin');
-    await page.getByRole('button', { name: 'Sign in' }).click();
-  });
-
-  test.afterEach(async ({ page }) => {
-    // Disconnect
-    await page.getByRole('link', { name: 'admin', exact: true }).click();
-    await page.getByRole('link', { name: 'Disconnect' }).click();
   });
 
   test('Check page', async ({ page }) => {

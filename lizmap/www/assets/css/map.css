@@ -2991,3 +2991,159 @@ lizmap-paste-geom svg {
   display: inline-block;
   vertical-align: text-top;
 }
+
+/* Treeview */
+
+lizmap-treeview .filtered, button#layerActionUnfilter.btn {
+  background-color: rgba(255, 171, 0, 0.4);
+}
+
+lizmap-treeview ul {
+  list-style: none;
+}
+
+lizmap-treeview li {
+  position: relative;
+}
+
+lizmap-treeview li > div {
+  display: flex;
+}
+
+lizmap-treeview div.expandable{
+  display: inline-block;
+  position: absolute;
+  left: -25px;
+  padding: 0 5px;
+}
+
+lizmap-treeview div.expandable::before {
+  content: "▶";
+  cursor: pointer;
+}
+
+lizmap-treeview div.expandable.expanded {
+  transform: rotate(90deg);
+  color: #CE1F2D;
+}
+
+lizmap-treeview div.expandable ~ ul {
+  display: none;
+}
+
+lizmap-treeview div.expandable.expanded ~ ul {
+  display: block;
+}
+
+lizmap-treeview .node {
+  display: inline-flex;
+  flex-grow: 1;
+  padding-left: 2px;
+  align-items: center;
+  column-gap: 2px;
+}
+
+lizmap-treeview input[type="checkbox"] {
+  margin-top: 0;
+  margin-right: 5px;
+  scale: 1.4;
+  align-self: baseline;
+  margin-top: 5px;
+  accent-color: #0094D6;
+}
+
+lizmap-treeview input.rounded-checkbox {
+  width:13px;
+  height: 13px;
+  border-radius: 50%;
+  vertical-align: middle;
+  border: 1px solid #767676;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+lizmap-treeview input.rounded-checkbox[type="checkbox"]:focus{
+  outline: none;
+}
+
+lizmap-treeview input.rounded-checkbox:checked {
+  appearance: auto;
+  clip-path: circle(50% at 50% 50%);
+}
+
+lizmap-treeview .group label {
+  font-weight: bold;
+}
+
+lizmap-treeview label {
+  flex-grow: 1;
+  margin: 0;
+  display: inline;
+}
+
+lizmap-treeview div.group:not(.checked) ~ ul input[type="checkbox"] {
+  accent-color: silver;
+}
+
+lizmap-treeview div.group:not(.checked) ~ ul label {
+  font-style: italic;
+}
+
+lizmap-treeview .layer-actions {
+  display: flex;
+}
+
+lizmap-treeview .layer-actions a {
+  text-decoration: none;
+}
+
+lizmap-treeview .layer-actions > * {
+  padding: 3px;
+}
+
+lizmap-treeview .icon-info-sign,
+lizmap-treeview .icon-remove-sign {
+  cursor: pointer;
+}
+
+lizmap-treeview .icon-remove-sign {
+  filter: invert(26%) sepia(71%) saturate(5158%) hue-rotate(354deg) brightness(91%) contrast(143%);
+}
+
+lizmap-treeview .icon-info-sign {
+  visibility: hidden;
+  margin-left: auto;
+}
+
+lizmap-treeview .node:hover .icon-info-sign {
+  visibility: visible;
+}
+
+lizmap-treeview a[href=""] {
+  visibility: hidden;
+}
+
+lizmap-treeview .loading {
+  position: relative;
+}
+
+lizmap-treeview .spinner::after {
+  border-width: 2px;
+  border-color: black transparent black transparent;
+  right: 8px;
+}
+
+lizmap-treeview img.legend{
+  height: 16px;
+  width: 16px;
+}
+
+lizmap-treeview .symbols img.legend {
+  margin-right: 4px;
+}
+
+lizmap-treeview img.legend[src="data:image/png;base64, "]{
+  visibility: hidden;
+}

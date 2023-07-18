@@ -1,3 +1,4 @@
+import { convertBoolean } from './../utils/Converters.js';
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { LayerStyleConfig } from './../config/LayerTree.js';
 import { LayerGroupState, LayerLayerState, LayerVectorState } from './Layer.js';
@@ -28,9 +29,11 @@ export class MapItemState extends EventDispatcher {
         if (layerItemState instanceof LayerGroupState) {
             layerItemState.addListener(this.dispatch.bind(this), 'group.visibility.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'group.symbology.changed');
+            layerItemState.addListener(this.dispatch.bind(this), 'group.opacity.changed');
         } else {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+            layerItemState.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -74,7 +77,6 @@ export class MapItemState extends EventDispatcher {
     get wmsName() {
         return this._layerItemState.wmsName;
     }
-
 
     /**
      * WMS layer title
@@ -154,6 +156,24 @@ export class MapItemState extends EventDispatcher {
      **/
     get visibility() {
         return this._layerItemState.visibility;
+    }
+
+    /**
+     * Layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    get opacity() {
+        return this._layerItemState.opacity;
+    }
+
+    /**
+     * Set layer tree item opacity
+     *
+     * @type {Number}
+     **/
+    set opacity(val) {
+        this._layerItemState.opacity = val;
     }
 
     /**
@@ -239,8 +259,11 @@ export class MapGroupState extends MapItemState {
                     }
                     group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                     group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
+                    group.addListener(this.dispatch.bind(this), 'group.opacity.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.loading.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -257,6 +280,8 @@ export class MapGroupState extends MapItemState {
                     const layer = new MapLayerState(layerItem, this)
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -288,6 +313,8 @@ export class MapGroupState extends MapItemState {
                     this._items.push(layer);
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -380,6 +407,24 @@ export class MapGroupState extends MapItemState {
     }
 
     /**
+     * Find layer and group items
+     *
+     * @returns {Array<MapLayerState|MapGroupState>}
+     **/
+    findMapLayersAndGroups() {
+        let items = []
+        for(const item of this.getChildren()) {
+            if (item instanceof MapLayerState) {
+                items.push(item);
+            } else if (item instanceof MapGroupState) {
+                items.push(item);
+                items = items.concat(item.findMapLayersAndGroups());
+            }
+        }
+        return items;
+    }
+
+    /**
      * Get layer item by its name
      *
      * @param {String} name - the layer name
@@ -392,6 +437,21 @@ export class MapGroupState extends MapItemState {
             }
         }
         throw RangeError('The layer name `'+ name +'` is unknown!');
+    }
+
+    /**
+     * Get layer or group item by its name
+     *
+     * @param {String} name - the layer or group name
+     * @returns {MapLayerState|MapGroupState} The MapLayerState or MapGroupState associated to the name
+     **/
+    getMapLayerOrGroupByName(name) {
+        for (const item of this.findMapLayersAndGroups()) {
+            if(item.name === name) {
+                return item;
+            }
+        }
+        throw RangeError('The layer or group name `'+ name +'` is unknown!');
     }
 }
 
@@ -413,13 +473,14 @@ export class MapLayerState extends MapItemState {
         // The layer is group
         if (this.itemState instanceof LayerGroupState) {
             const self = this;
-            // Remove the listener for group.visibility.changed to be replaced
+            // Remove the listener for group.visibility.changed and group.opacity.changed to be replaced
             this.itemState.removeListener(this.dispatch.bind(this), 'group.visibility.changed');
+            this.itemState.removeListener(this.dispatch.bind(this), 'group.opacity.changed');
             // Transform the group.visibility.changed by  layer.visibility.changed
             layerItemState.addListener(
                 () => {
                     self.dispatch({
-                        type: 'group.visibility.changed',
+                        type: 'layer.visibility.changed',
                         name: self.name,
                         visibility: self.visibility,
                     });
@@ -437,8 +498,18 @@ export class MapLayerState extends MapItemState {
                     });
                 },
                 'group.symbology.changed');
+            layerItemState.addListener(
+                () => {
+                    self.dispatch({
+                        type: 'layer.opacity.changed',
+                        name: self.name,
+                        opacity: self.opacity,
+                    });
+                },
+                'group.opacity.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+            //layerItemState.addListener(this.dispatch.bind(this), 'layer.loading.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -446,6 +517,8 @@ export class MapLayerState extends MapItemState {
             this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
         }
+        // set isLoading to false
+        this._loading = false;
     }
 
     /**
@@ -572,5 +645,35 @@ export class MapLayerState extends MapItemState {
      **/
     set symbology(node) {
         this._layerItemState.symbology = node;
+    }
+
+    /**
+     * Is layer loading?
+     *
+     * @type {Boolean}
+     **/
+    get loading() {
+        return this._loading;
+    }
+
+    /**
+     * Set layer's loading state
+     *
+     * @param {Boolean}
+     **/
+    set loading(loading) {
+        const newVal = convertBoolean(loading);
+        // No changes
+        if (this._loading == newVal) {
+            return;
+        }
+        // Set new value
+        this._loading = newVal;
+
+        this.dispatch({
+            type: 'layer.loading.changed',
+            name: this.name,
+            loading: this.loading,
+        })
     }
 }

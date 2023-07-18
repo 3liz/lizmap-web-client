@@ -2,6 +2,7 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
+import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
@@ -664,6 +665,261 @@ describe('LayerTreeGroupState', function () {
         expect(rootLayerVisibilityChangedEvt).to.have.length(0)
         edition.dispatch(editionVisibilityChangedEvt);
         expect(rootGroupVisibilityChangedEvt).to.be.null
+    })
+
+    it('Opacity', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        let rootLayerOpacityChangedEvt = [];
+        let rootGroupOpacityChangedEvt = [];
+        root.addListener(evt => {
+            rootLayerOpacityChangedEvt.push(evt)
+        }, 'layer.opacity.changed');
+        root.addListener(evt => {
+            rootGroupOpacityChangedEvt.push(evt)
+        }, 'group.opacity.changed');
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
+        expect(sousquartiers.opacity).to.be.eq(1)
+
+        let sousquartiersOpacityChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersOpacityChangedEvt = evt
+        }, 'layer.opacity.changed');
+
+        // Change value
+        sousquartiers.opacity = 0.8;
+        // Event dispatched
+        expect(sousquartiersOpacityChangedEvt).to.not.be.null
+        expect(sousquartiersOpacityChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersOpacityChangedEvt.opacity).to.be.eq(0.8)
+        // Values have changed
+        expect(sousquartiers.opacity).to.be.eq(0.8)
+        // Events dispatched at root level
+        expect(rootLayerOpacityChangedEvt).to.have.length(1)
+        expect(rootLayerOpacityChangedEvt[0]).to.be.deep.equal(sousquartiersOpacityChangedEvt)
+        expect(rootGroupOpacityChangedEvt).to.have.length(0)
+
+        //Reset
+        rootLayerOpacityChangedEvt = [];
+        rootGroupOpacityChangedEvt = [];
+        sousquartiersOpacityChangedEvt = null;
+
+        // Try set opacity to not a number
+        try {
+            sousquartiers.opacity = 'foobar';
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('`foobar` is not a number!')
+            expect(error).to.be.instanceOf(ConversionError)
+        }
+        // Nothing change
+        expect(sousquartiersOpacityChangedEvt).to.be.null
+        expect(sousquartiers.opacity).to.be.eq(0.8)
+        expect(rootLayerOpacityChangedEvt).to.have.length(0)
+        expect(rootGroupOpacityChangedEvt).to.have.length(0)
+
+        // Set to the same value
+        sousquartiers.opacity = '0.8';
+        // Nothing change
+        expect(sousquartiersOpacityChangedEvt).to.be.null
+        expect(sousquartiers.opacity).to.be.eq(0.8)
+        expect(rootLayerOpacityChangedEvt).to.have.length(0)
+        expect(rootGroupOpacityChangedEvt).to.have.length(0)
+
+        // Test through groups
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(LayerTreeGroupState)
+
+        let transportsLayerOpacityChangedEvt = [];
+        let transportsGroupOpacityChangedEvt = [];
+        transports.addListener(evt => {
+            transportsLayerOpacityChangedEvt.push(evt)
+        }, 'layer.opacity.changed');
+        transports.addListener(evt => {
+            transportsGroupOpacityChangedEvt.push(evt)
+        }, 'group.opacity.changed');
+
+        const tramGroup = transports.children[1];
+        expect(tramGroup).to.be.instanceOf(LayerTreeGroupState)
+        expect(tramGroup.name).to.be.eq('Tramway')
+
+        let tramGroupLayerOpacityChangedEvt = [];
+        let tramGroupGroupOpacityChangedEvt = null;
+        tramGroup.addListener(evt => {
+            tramGroupLayerOpacityChangedEvt.push(evt)
+        }, 'layer.opacity.changed');
+        tramGroup.addListener(evt => {
+            tramGroupGroupOpacityChangedEvt = evt
+        }, 'group.opacity.changed');
+
+        const tramway = tramGroup.children[1];
+        expect(tramway).to.be.instanceOf(LayerTreeLayerState)
+        expect(tramway.name).to.be.eq('tramway')
+
+        let tramwayOpacityChangedEvt = null;
+        tramway.addListener(evt => {
+            tramwayOpacityChangedEvt = evt
+        }, 'layer.opacity.changed');
+
+        // Change value
+        tramway.opacity = 0.8;
+        // Event dispatched
+        expect(tramwayOpacityChangedEvt).to.not.be.null
+        expect(tramwayOpacityChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayOpacityChangedEvt.opacity).to.be.eq(0.8)
+        // Values have changed
+        expect(tramway.opacity).to.be.eq(0.8)
+        // Events dispatched at root level
+        expect(tramGroupLayerOpacityChangedEvt).to.have.length(1)
+        expect(tramGroupLayerOpacityChangedEvt[0]).to.be.deep.equal(tramwayOpacityChangedEvt)
+        expect(tramGroupGroupOpacityChangedEvt).to.be.null
+        expect(transportsLayerOpacityChangedEvt).to.have.length(1)
+        expect(transportsLayerOpacityChangedEvt[0]).to.be.deep.equal(tramwayOpacityChangedEvt)
+        expect(transportsGroupOpacityChangedEvt).to.have.length(0)
+        expect(rootLayerOpacityChangedEvt).to.have.length(1)
+        expect(rootLayerOpacityChangedEvt[0]).to.be.deep.equal(tramwayOpacityChangedEvt)
+        expect(rootGroupOpacityChangedEvt).to.have.length(0)
+
+        //Reset
+        rootLayerOpacityChangedEvt = [];
+        rootGroupOpacityChangedEvt = [];
+        transportsLayerOpacityChangedEvt = [];
+        transportsGroupOpacityChangedEvt = [];
+        tramGroupLayerOpacityChangedEvt = [];
+        tramGroupGroupOpacityChangedEvt = null;
+        tramwayOpacityChangedEvt = null;
+
+        // Change Group value
+        tramGroup.opacity = 0.9;
+        // Event dispatched
+        expect(tramGroupGroupOpacityChangedEvt).to.not.be.null
+        expect(tramGroupGroupOpacityChangedEvt.name).to.be.eq('Tramway')
+        expect(tramGroupGroupOpacityChangedEvt.opacity).to.be.eq(0.9)
+        // Values have changed
+        expect(tramGroup.opacity).to.be.eq(0.9)
+        expect(transportsLayerOpacityChangedEvt).to.have.length(0)
+        expect(transportsGroupOpacityChangedEvt).to.have.length(1)
+        expect(transportsGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
+        expect(rootLayerOpacityChangedEvt).to.have.length(0)
+        expect(rootGroupOpacityChangedEvt).to.have.length(1)
+        expect(rootGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
+    })
+
+    it('Loading', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const rootMapGroup = new MapGroupState(collection.root);
+        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
+
+        const root = new LayerTreeGroupState(rootMapGroup);
+        expect(root).to.be.instanceOf(LayerTreeGroupState)
+
+        let rootLayerLoadingChangedEvt = [];
+        root.addListener(evt => {
+            rootLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState)
+        expect(sousquartiers.loading).to.be.false
+
+        let sousquartiersLoadingChangedEvt = null;
+        sousquartiers.addListener(evt => {
+            sousquartiersLoadingChangedEvt = evt
+        }, 'layer.loading.changed');
+
+        // Change value
+        sousquartiers.mapItemState.loading = true;
+        // Event dispatched
+        expect(sousquartiersLoadingChangedEvt).to.not.be.null
+        expect(sousquartiersLoadingChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersLoadingChangedEvt.loading).to.be.true
+        // Values have changed
+        expect(sousquartiers.loading).to.be.true
+        // Events dispatched at root level
+        expect(rootLayerLoadingChangedEvt).to.have.length(1)
+        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(sousquartiersLoadingChangedEvt)
+
+        //Reset
+        rootLayerLoadingChangedEvt = [];
+        sousquartiersLoadingChangedEvt = null;
+
+        // Test through groups
+        const transports = root.children[1];
+        expect(transports).to.be.instanceOf(LayerTreeGroupState)
+
+        let transportsLayerLoadingChangedEvt = [];
+        transports.addListener(evt => {
+            transportsLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const tramGroup = transports.children[1];
+        expect(tramGroup).to.be.instanceOf(LayerTreeGroupState)
+        expect(tramGroup.name).to.be.eq('Tramway')
+
+        let tramGroupLayerLoadingChangedEvt = [];
+        tramGroup.addListener(evt => {
+            tramGroupLayerLoadingChangedEvt.push(evt)
+        }, 'layer.loading.changed');
+
+        const tramway = tramGroup.children[1];
+        expect(tramway).to.be.instanceOf(LayerTreeLayerState)
+        expect(tramway.name).to.be.eq('tramway')
+
+        let tramwayLoadingChangedEvt = null;
+        tramway.addListener(evt => {
+            tramwayLoadingChangedEvt = evt
+        }, 'layer.loading.changed');
+
+        // Change value
+        tramway.mapItemState.loading = true;
+        // Event dispatched
+        expect(tramwayLoadingChangedEvt).to.not.be.null
+        expect(tramwayLoadingChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayLoadingChangedEvt.loading).to.be.true
+        // Values have changed
+        expect(tramway.loading).to.be.true
+        // Events dispatched at root level
+        expect(tramGroupLayerLoadingChangedEvt).to.have.length(1)
+        expect(tramGroupLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+        expect(transportsLayerLoadingChangedEvt).to.have.length(1)
+        expect(transportsLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+        expect(rootLayerLoadingChangedEvt).to.have.length(1)
+        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
     })
 
     it('WMS selected styles', function () {
