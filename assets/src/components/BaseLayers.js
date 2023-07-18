@@ -9,13 +9,13 @@ export default class BaseLayers extends HTMLElement {
 
     connectedCallback() {
 
-        if (mainLizmap.state.baseLayers.baseLayerNames.length === 0) {
+        if (mainLizmap.state.baseLayers.baseLayerConfigs.length === 0) {
             document.getElementById('switcher-baselayer').classList.add('hide');
             return;
         }
 
         this._template = () => html`
-            ${mainLizmap.state.baseLayers.baseLayerNames.length > 1 
+            ${mainLizmap.state.baseLayers.baseLayerConfigs.length > 1 
                 ? html`
                 <select @change=${(event) => { mainLizmap.state.baseLayers.selectedBaseLayerName = event.target.value }}>
                     ${mainLizmap.state.baseLayers.baseLayerConfigs.map((config) => 
@@ -23,7 +23,7 @@ export default class BaseLayers extends HTMLElement {
                     )}
                 </select>`
                 : 
-                html`${mainLizmap.state.baseLayers.baseLayerNames[0].title}`
+                html`${mainLizmap.state.baseLayers.baseLayerConfigs[0].title}`
             }
         `;
 
