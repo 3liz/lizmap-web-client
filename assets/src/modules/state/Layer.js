@@ -359,6 +359,9 @@ export class LayerItemState extends EventDispatcher {
                         ruleKey: evt.ruleKey,
                         checked: evt.checked,
                     });
+                    if (self.visibility != self.symbology.legendOn) {
+                        self.calculateVisibility();
+                    }
                 }, 'symbol.checked.changed');
             }
         }
@@ -708,26 +711,32 @@ export class LayerLayerState extends LayerItemState {
             'DPI': 96
         }
         if (this.symbology instanceof LayerSymbolsSymbology) {
-            let keyChecked = [];
-            let keyUnchecked = [];
-            for (const symbol of this.symbology.getChildren()) {
-                if (symbol.rulekey === '') {
-                    keyChecked = [];
-                    keyUnchecked = [];
-                    break;
-                }
-                if (symbol.checked) {
-                    keyChecked.push(symbol.ruleKey);
-                } else {
-                    keyUnchecked.push(symbol.ruleKey);
-                }
-            }
-            if (keyChecked.length != 0 && keyUnchecked.length != 0) {
-                params['LEGEND_ON'] = this.wmsName+':'+keyChecked.join();
-                params['LEGEND_OFF'] = this.wmsName+':'+keyUnchecked.join();
-            }
+            params = Object.assign(params, this.symbology.wmsParameters(this.wmsName))
         }
         return params;
+    }
+
+    /**
+     * Calculate and save visibility
+     *
+     * @returns {boolean} the calculated visibility
+     **/
+    calculateVisibility() {
+        if (this.symbology instanceof LayerSymbolsSymbology
+            && !this.symbology.legendOn) {
+            const oldVisibility = this._visibility;
+            this._visibility = false;
+            // Only dispatch event if visibility has changed
+            if (oldVisibility !== null && oldVisibility != this.visibility) {
+                this.dispatch({
+                    type: this.type+'.visibility.changed',
+                    name: this.name,
+                    visibility: this.visibility,
+                })
+            }
+            return false;
+        }
+        return super.calculateVisibility();
     }
 }
 

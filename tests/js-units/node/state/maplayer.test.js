@@ -972,18 +972,26 @@ describe('MapGroupState', function () {
         })
 
         // Checked all rules and events
-        let rootLayerSymbolCheckedChangedEvt = null;
-        let layerSymbolCheckedChangedEvt = null;
+        let rootLayerSymbolCheckedChangedEvt = [];
+        let rootLayerVisibilityChangedEvt = [];
+        let layerSymbolCheckedChangedEvt = [];
+        let layerVisibilityChangedEvt = [];
         let symbolCheckedChangedEvt = null;
         quartiers.symbology.children[6].addListener(evt => {
             symbolCheckedChangedEvt = evt
         }, 'symbol.checked.changed');
         quartiers.addListener(evt => {
-            layerSymbolCheckedChangedEvt = evt
+            layerSymbolCheckedChangedEvt.push(evt)
+        }, 'layer.symbol.checked.changed');
+        quartiers.addListener(evt => {
+            layerVisibilityChangedEvt.push(evt)
+        }, 'layer.visibility.changed');
+        root.addListener(evt => {
+            rootLayerSymbolCheckedChangedEvt.push(evt)
         }, 'layer.symbol.checked.changed');
         root.addListener(evt => {
-            rootLayerSymbolCheckedChangedEvt = evt
-        }, 'layer.symbol.checked.changed');
+            rootLayerVisibilityChangedEvt.push(evt)
+        }, 'layer.visibility.changed');
         quartiers.symbology.children[6].checked = true;
         expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
           'LAYERS': 'Quartiers',
@@ -995,13 +1003,217 @@ describe('MapGroupState', function () {
         expect(symbolCheckedChangedEvt.title).to.be.eq('PRES D\'ARENE')
         expect(symbolCheckedChangedEvt.ruleKey).to.be.eq('6')
         expect(symbolCheckedChangedEvt.checked).to.be.true
-        expect(layerSymbolCheckedChangedEvt).to.not.be.null
-        expect(layerSymbolCheckedChangedEvt.name).to.be.eq('Quartiers')
-        expect(layerSymbolCheckedChangedEvt.title).to.be.eq('PRES D\'ARENE')
-        expect(layerSymbolCheckedChangedEvt.ruleKey).to.be.eq('6')
-        expect(layerSymbolCheckedChangedEvt.checked).to.be.true
-        expect(rootLayerSymbolCheckedChangedEvt).to.not.be.null
-        expect(rootLayerSymbolCheckedChangedEvt).to.be.eq(layerSymbolCheckedChangedEvt)
+        expect(layerSymbolCheckedChangedEvt).to.have.length(1)
+        expect(layerSymbolCheckedChangedEvt[0].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[0].title).to.be.eq('PRES D\'ARENE')
+        expect(layerSymbolCheckedChangedEvt[0].ruleKey).to.be.eq('6')
+        expect(layerSymbolCheckedChangedEvt[0].checked).to.be.true
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(1)
+        expect(rootLayerSymbolCheckedChangedEvt[0]).to.be.deep.eq(layerSymbolCheckedChangedEvt[0])
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+
+        // Reset
+        rootLayerSymbolCheckedChangedEvt = [];
+        rootLayerVisibilityChangedEvt = [];
+        layerSymbolCheckedChangedEvt = [];
+        layerVisibilityChangedEvt = [];
+        symbolCheckedChangedEvt = null;
+
+        // Check layer visibility changed with symbols checked changed
+        // Rule 0
+        quartiers.symbology.children[0].checked = false;
+        expect(symbolCheckedChangedEvt).to.be.null
+        expect(layerSymbolCheckedChangedEvt).to.have.length(1)
+        expect(layerSymbolCheckedChangedEvt[0].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[0].ruleKey).to.be.eq('0')
+        expect(layerSymbolCheckedChangedEvt[0].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(1)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:1,2,3,4,5,6,7',
+          'LEGEND_OFF': 'Quartiers:0',
+          'DPI': 96
+        })
+
+        // Rule 1
+        quartiers.symbology.children[1].checked = false;
+        expect(symbolCheckedChangedEvt).to.be.null
+        expect(layerSymbolCheckedChangedEvt).to.have.length(2)
+        expect(layerSymbolCheckedChangedEvt[1].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[1].ruleKey).to.be.eq('1')
+        expect(layerSymbolCheckedChangedEvt[1].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(2)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:2,3,4,5,6,7',
+          'LEGEND_OFF': 'Quartiers:0,1',
+          'DPI': 96
+        })
+
+        // Rule 2
+        quartiers.symbology.children[2].checked = false;
+        expect(symbolCheckedChangedEvt).to.be.null
+        expect(layerSymbolCheckedChangedEvt).to.have.length(3)
+        expect(layerSymbolCheckedChangedEvt[2].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[2].ruleKey).to.be.eq('2')
+        expect(layerSymbolCheckedChangedEvt[2].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(3)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:3,4,5,6,7',
+          'LEGEND_OFF': 'Quartiers:0,1,2',
+          'DPI': 96
+        })
+
+        // Rule 3
+        quartiers.symbology.children[3].checked = false;
+        expect(symbolCheckedChangedEvt).to.be.null
+        expect(layerSymbolCheckedChangedEvt).to.have.length(4)
+        expect(layerSymbolCheckedChangedEvt[3].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[3].ruleKey).to.be.eq('3')
+        expect(layerSymbolCheckedChangedEvt[3].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(4)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:4,5,6,7',
+          'LEGEND_OFF': 'Quartiers:0,1,2,3',
+          'DPI': 96
+        })
+
+        // Rule 4
+        quartiers.symbology.children[4].checked = false;
+        expect(symbolCheckedChangedEvt).to.be.null
+        expect(layerSymbolCheckedChangedEvt).to.have.length(5)
+        expect(layerSymbolCheckedChangedEvt[4].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[4].ruleKey).to.be.eq('4')
+        expect(layerSymbolCheckedChangedEvt[4].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(5)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:5,6,7',
+          'LEGEND_OFF': 'Quartiers:0,1,2,3,4',
+          'DPI': 96
+        })
+
+        // Rule 5
+        quartiers.symbology.children[5].checked = false;
+        expect(symbolCheckedChangedEvt).to.be.null
+        expect(layerSymbolCheckedChangedEvt).to.have.length(6)
+        expect(layerSymbolCheckedChangedEvt[5].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[5].ruleKey).to.be.eq('5')
+        expect(layerSymbolCheckedChangedEvt[5].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(6)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:6,7',
+          'LEGEND_OFF': 'Quartiers:0,1,2,3,4,5',
+          'DPI': 96
+        })
+
+        // Rule 6
+        quartiers.symbology.children[6].checked = false;
+        expect(symbolCheckedChangedEvt).to.not.be.null
+        expect(symbolCheckedChangedEvt.ruleKey).to.be.eq('6')
+        expect(symbolCheckedChangedEvt.checked).to.be.false
+        expect(layerSymbolCheckedChangedEvt).to.have.length(7)
+        expect(layerSymbolCheckedChangedEvt[6].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[6].ruleKey).to.be.eq('6')
+        expect(layerSymbolCheckedChangedEvt[6].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(0)
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(7)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(0)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:7',
+          'LEGEND_OFF': 'Quartiers:0,1,2,3,4,5,6',
+          'DPI': 96
+        })
+
+        // Reset
+        symbolCheckedChangedEvt = null
+
+        // Rule 7
+        quartiers.symbology.children[7].checked = false;
+        expect(symbolCheckedChangedEvt).to.be.null
+        expect(layerSymbolCheckedChangedEvt).to.have.length(8)
+        expect(layerSymbolCheckedChangedEvt[7].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[7].ruleKey).to.be.eq('7')
+        expect(layerSymbolCheckedChangedEvt[7].checked).to.be.false
+        expect(layerVisibilityChangedEvt).to.have.length(1)
+        expect(layerVisibilityChangedEvt[0].name).to.be.eq('Quartiers')
+        expect(layerVisibilityChangedEvt[0].visibility).to.be.false
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(8)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(1)
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.eq(layerVisibilityChangedEvt)
+        expect(quartiers.visibility).to.be.false
+
+        // Rule 6
+        quartiers.symbology.children[6].checked = true;
+        expect(symbolCheckedChangedEvt).to.not.be.null
+        expect(symbolCheckedChangedEvt.ruleKey).to.be.eq('6')
+        expect(symbolCheckedChangedEvt.checked).to.be.true
+        expect(layerSymbolCheckedChangedEvt).to.have.length(9)
+        expect(layerSymbolCheckedChangedEvt[8].name).to.be.eq('Quartiers')
+        expect(layerSymbolCheckedChangedEvt[8].ruleKey).to.be.eq('6')
+        expect(layerSymbolCheckedChangedEvt[8].checked).to.be.true
+        expect(layerVisibilityChangedEvt).to.have.length(2)
+        expect(layerVisibilityChangedEvt[1].name).to.be.eq('Quartiers')
+        expect(layerVisibilityChangedEvt[1].visibility).to.be.true
+        expect(rootLayerSymbolCheckedChangedEvt).to.have.length(9)
+        expect(rootLayerSymbolCheckedChangedEvt).to.be.deep.eq(layerSymbolCheckedChangedEvt)
+        expect(rootLayerVisibilityChangedEvt).to.have.length(2)
+        expect(rootLayerVisibilityChangedEvt).to.be.deep.eq(layerVisibilityChangedEvt)
+        expect(quartiers.visibility).to.be.true
+        expect(quartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'Quartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'LEGEND_ON': 'Quartiers:6',
+          'LEGEND_OFF': 'Quartiers:0,1,2,3,4,5,7',
+          'DPI': 96
+        })
     })
 
     it('Selection & token', function () {
