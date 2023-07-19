@@ -4,7 +4,7 @@ import EventDispatcher from './../../utils/EventDispatcher.js';
 import { applyConfig } from './../config/BaseObject.js';
 
 export const base64png = 'data:image/png;base64, ';
-export const base64pngNullData = 'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
+export const base64pngNullData = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpUUrDu0g4pChdrIgKuKoVShChVArtOpgcukXNGlIUlwcBdeCgx+LVQcXZ10dXAVB8APE1cVJ0UVK/F9SaBHjwXE/3t173L0D/M0qU82ecUDVLCOTSgq5/KoQfEUQEYTQj7jETH1OFNPwHF/38PH1LsGzvM/9OQaUgskAn0A8y3TDIt4gnt60dM77xFFWlhTic+Ixgy5I/Mh12eU3ziWH/TwzamQz88RRYqHUxXIXs7KhEk8RxxRVo3x/zmWF8xZntVpn7XvyF4YL2soy12mOIIVFLEGEABl1VFCFhQStGikmMrSf9PAPO36RXDK5KmDkWEANKiTHD/4Hv7s1i5MTblI4CfS+2PbHKBDcBVoN2/4+tu3WCRB4Bq60jr/WBGY+SW90tNgRMLgNXFx3NHkPuNwBhp50yZAcKUDTXywC72f0TXkgcgv0rbm9tfdx+gBkqav0DXBwCMRLlL3u8e5Qd2//nmn39wNBG3KTQZt3dAAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+cHEwgMJzC1DiQAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC';
 
 export const base64svg = 'data:image/svg+xml;base64,';
 // https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconPointLayer.svg
