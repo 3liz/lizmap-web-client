@@ -1,9 +1,28 @@
 
 import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';
-import { convertBoolean } from './Tools.js';
+import { convertBoolean } from './../utils/Converters.js';
+import { createEnum } from './../utils/Enums.js';
 import { AttributionConfig } from './Attribution.js';
 import { LayerConfig, LayersConfig } from './Layer.js';
+
+/**
+ * Enum for base layer types
+ * @readonly
+ * @enum {String}
+ * @property {String} Empty  - The base layer type for project background color
+ * @property {String} XYZ    - The base layer type for xyz layers
+ * @property {String} Bing   - The base layer type for Bing layers
+ * @property {String} WMTS   - The base layer type for Web Map Tile Service layers
+ * @property {String} Lizmap - The base layer type for Lizmap layers
+ */
+export const BaseLayerTypes = createEnum({
+    'Empty': 'empty',
+    'XYZ': 'xyz',
+    'Bing': 'bing',
+    'WMTS': 'wmts',
+    'Lizmap': 'lizmap',
+});
 
 /**
  * Class representing a base layer config
@@ -12,18 +31,17 @@ import { LayerConfig, LayersConfig } from './Layer.js';
  */
 export class BaseLayerConfig extends BaseObjectConfig {
     /**
-     * Create a base layer config based on a config object
-     * @param {String}              type                                                           - the base layer type
-     * @param {String}              name                                                           - the base layer name
-     * @param {Object}              cfg                                                            - the base layer lizmap config object
-     * @param {String}              cfg.title                                                      - the base layer title
-     * @param {LayerConfig}         [cfg.layerConfig]                                              - the base layer Lizmap layer config
-     * @param {String}              [cfg.key]                                                      - the base layer key
-     * @param {Object}              [cfg.attribution]                                              - the base layer attribution config object
-     * @param {Object}              [requiredProperties={'title': {type: 'string'}}]               - the required properties definition
-     * @param {Object}              [optionalProperties={'key': {type: 'string', nullable: true}}] - the optional properties definition
+     * Create a base layer config instance based on a config object
+     * @param {String}      name                                                           - the base layer name
+     * @param {Object}      cfg                                                            - the base layer lizmap config object
+     * @param {String}      cfg.title                                                      - the base layer title
+     * @param {LayerConfig} [cfg.layerConfig]                                              - the base layer Lizmap layer config
+     * @param {String}      [cfg.key]                                                      - the base layer key
+     * @param {Object}      [cfg.attribution]                                              - the base layer attribution config object
+     * @param {Object}      [requiredProperties={'title': {type: 'string'}}]               - the required properties definition
+     * @param {Object}      [optionalProperties={'key': {type: 'string', nullable: true}}] - the optional properties definition
      */
-    constructor(type, name, cfg, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'key': { type: 'string', nullable: true } }) {
+    constructor(name, cfg, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'key': { type: 'string', nullable: true } }) {
 
         if (!requiredProperties.hasOwnProperty('title')) {
             requiredProperties['title'] = { type: 'string' };
@@ -34,10 +52,9 @@ export class BaseLayerConfig extends BaseObjectConfig {
         }
 
         super(cfg, requiredProperties, optionalProperties);
+        this._type = BaseLayerTypes.Lizmap;
 
         this._name = name;
-
-        this._type = type;
 
         this._hasLayerConfig = false;
         this._layerConfig = null;
@@ -62,6 +79,7 @@ export class BaseLayerConfig extends BaseObjectConfig {
 
     /**
      * The base layer type
+     * @see BaseLayerTypes
      *
      * @type {String}
      **/
@@ -162,7 +180,8 @@ export class EmptyBaseLayerConfig extends BaseLayerConfig {
         const emptyProperties = {
             'title': { type: 'string' }
         };
-        super('empty', name, emptyCfg, emptyProperties, {});
+        super(name, emptyCfg, emptyProperties, {});
+        this._type = BaseLayerTypes.Empty;
     }
 }
 
@@ -205,7 +224,8 @@ export class XyzBaseLayerConfig extends BaseLayerConfig {
             throw new ValidationError('The `options` in the config is empty!');
         }
 
-        super('xyz', name, cfg, xyzProperties, xyzOptionalProperties);
+        super(name, cfg, xyzProperties, xyzOptionalProperties);
+        this._type = BaseLayerTypes.XYZ;
     }
 
     /**
@@ -277,7 +297,8 @@ export class BingBaseLayerConfig extends BaseLayerConfig {
             throw new ValidationError('The `options` in the config is empty!');
         }
 
-        super('bing', name, cfg, bingProperties, bingOptionalProperties)
+        super(name, cfg, bingProperties, bingOptionalProperties)
+        this._type = BaseLayerTypes.Bing;
     }
 
     /**
@@ -336,7 +357,8 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
             throw new ValidationError('The `options` in the config is empty!');
         }
 
-        super('wmts', name, cfg, wmtsProperties, wmtsOptionalProperties);
+        super(name, cfg, wmtsProperties, wmtsOptionalProperties);
+        this._type = BaseLayerTypes.WMTS;
 
         // Remove unnecessary parameters
         let wmtsUrl = new URL(this._url);
@@ -727,7 +749,7 @@ export class BaseLayersConfig {
                     extendedCfg[layerCfg.name] = structuredClone(defaultCompleteBaseLayersCfg[layerCfg.externalAccess]);
                 } else {
                     extendedCfg[layerCfg.name] = {
-                        "type": "lizmap",
+                        "type": BaseLayerTypes.Lizmap,
                         "title": layerCfg.title,
                     }
                 }
@@ -766,20 +788,20 @@ export class BaseLayersConfig {
                 throw new ValidationError('No `type` in the baseLayer cfg object!');
             }
             switch (blCfg.type) {
-                case 'xyz':
+                case BaseLayerTypes.XYZ:
                     this._configs.push(new XyzBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
-                case 'bing':
+                case BaseLayerTypes.Bing:
                     this._configs.push(new BingBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
-                case 'wmts':
+                case BaseLayerTypes.WMTS:
                     this._configs.push(new WmtsBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
                 default:
-                    this._configs.push(new BaseLayerConfig(blCfg.type, key, blCfg));
+                    this._configs.push(new BaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
             }
