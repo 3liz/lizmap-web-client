@@ -1,4 +1,5 @@
 import WMS from './../WMS.js';
+import {LayerTreeLayerState, LayerTreeGroupState} from './../state/LayerTree.js'
 
 /**
  * @param {LayerTreeLayerState[]} treeLayers - The tree layer group in which tree layers will be updated
@@ -6,6 +7,16 @@ import WMS from './../WMS.js';
  * @returns {Promise} Promise object represents the tree layers updated
  */
 export async function updateLayerTreeLayersSymbology(treeLayers) {
+    if (!Array.isArray(treeLayers)) {
+        throw new TypeError('`updateLayerTreeLayersSymbology` method required an array as parameter!');
+    }
+
+    // If the tree layers is empty
+    // nothing to do
+    if (treeLayers.length == 0) {
+        return treeLayers;
+    }
+
     const wmsNames = treeLayers.map(layer => layer.wmsName);
     const wmsStyles = treeLayers.map(layer => layer.wmsSelectedStyleName);
     let treeLayersByName = {};
@@ -30,6 +41,9 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
  * @returns {Promise} Promise object represents the tree layer updated
  */
 export async function updateLayerTreeLayerSymbology(treeLayer) {
+    if (!(treeLayer instanceof LayerTreeLayerState)) {
+        throw new TypeError('`updateLayerTreeLayerSymbology` method required a LayerTreeLayerState as parameter!');
+    }
     return updateLayerTreeLayersSymbology([treeLayer])[0];
 }
 
@@ -39,5 +53,8 @@ export async function updateLayerTreeLayerSymbology(treeLayer) {
  * @returns {Promise} Promise object represents the tree layers updated
  */
 export async function updateLayerTreeGroupLayersSymbology(treeGroup) {
+    if (!(treeGroup instanceof LayerTreeGroupState)) {
+        throw new TypeError('`updateLayerTreeGroupLayersSymbology` method required a LayerTreeGroupState as parameter!');
+    }
     return updateLayerTreeLayersSymbology(treeGroup.findTreeLayers());
 }
