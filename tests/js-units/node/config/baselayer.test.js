@@ -6,13 +6,13 @@ import { ValidationError, ConversionError } from '../../../../assets/src/modules
 import { AttributionConfig } from '../../../../assets/src/modules/config/Attribution.js';
 import { LayerConfig, LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
+import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
 
 describe('BaseLayerConfig', function () {
     it('simple', function () {
-        const baselayer = new BaseLayerConfig('type', 'name', {'title': 'title'})
+        const baselayer = new BaseLayerConfig('name', {'title': 'title'})
         expect(baselayer).to.be.instanceOf(BaseLayerConfig)
-        expect(baselayer.type).to.be.eq('type')
+        expect(baselayer.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(baselayer.name).to.be.eq('name')
         expect(baselayer.title).to.be.eq('title')
         expect(baselayer.hasKey).to.be.false
@@ -22,9 +22,9 @@ describe('BaseLayerConfig', function () {
     })
 
     it('simple with key', function () {
-        const blWithKey = new BaseLayerConfig('type', 'name', {'title': 'title', 'key': 'key'})
+        const blWithKey = new BaseLayerConfig('name', {'title': 'title', 'key': 'key'})
         expect(blWithKey).to.be.instanceOf(BaseLayerConfig)
-        expect(blWithKey.type).to.be.eq('type')
+        expect(blWithKey.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(blWithKey.name).to.be.eq('name')
         expect(blWithKey.title).to.be.eq('title')
         expect(blWithKey.hasKey).to.be.true
@@ -33,9 +33,9 @@ describe('BaseLayerConfig', function () {
         expect(blWithKey.hasAttribution).to.be.false
         expect(blWithKey.attribution).to.be.null
 
-        const blWithEmptyKey = new BaseLayerConfig('type', 'name', {'title': 'title', 'key': ''})
+        const blWithEmptyKey = new BaseLayerConfig('name', {'title': 'title', 'key': ''})
         expect(blWithEmptyKey).to.be.instanceOf(BaseLayerConfig)
-        expect(blWithEmptyKey.type).to.be.eq('type')
+        expect(blWithEmptyKey.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(blWithEmptyKey.name).to.be.eq('name')
         expect(blWithEmptyKey.title).to.be.eq('title')
         expect(blWithEmptyKey.hasKey).to.be.false
@@ -45,9 +45,9 @@ describe('BaseLayerConfig', function () {
     })
 
     it('simple with attribution', function () {
-        const blWithAttribution = new BaseLayerConfig('type', 'name', {'title': 'title', 'attribution': {'title': 'title', 'url': 'url'}})
+        const blWithAttribution = new BaseLayerConfig('name', {'title': 'title', 'attribution': {'title': 'title', 'url': 'url'}})
         expect(blWithAttribution).to.be.instanceOf(BaseLayerConfig)
-        expect(blWithAttribution.type).to.be.eq('type')
+        expect(blWithAttribution.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(blWithAttribution.name).to.be.eq('name')
         expect(blWithAttribution.title).to.be.eq('title')
         expect(blWithAttribution.hasKey).to.be.false
@@ -57,9 +57,9 @@ describe('BaseLayerConfig', function () {
         expect(blWithAttribution.attribution.title).to.be.eq('title')
         expect(blWithAttribution.attribution.url).to.be.eq('url')
 
-        const blWithEmptyAttribution = new BaseLayerConfig('type', 'name', {'title': 'title', 'attribution': {}})
+        const blWithEmptyAttribution = new BaseLayerConfig('name', {'title': 'title', 'attribution': {}})
         expect(blWithEmptyAttribution).to.be.instanceOf(BaseLayerConfig)
-        expect(blWithEmptyAttribution.type).to.be.eq('type')
+        expect(blWithEmptyAttribution.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(blWithEmptyAttribution.name).to.be.eq('name')
         expect(blWithEmptyAttribution.title).to.be.eq('title')
         expect(blWithEmptyAttribution.hasKey).to.be.false
@@ -70,7 +70,7 @@ describe('BaseLayerConfig', function () {
 
     it('Validation Error: title mandatory', function () {
         try {
-            new BaseLayerConfig('type', 'name', {})
+            new BaseLayerConfig('name', {})
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: \n- The required properties: title')
@@ -80,7 +80,7 @@ describe('BaseLayerConfig', function () {
 
     it('Validation Error: invalid attribution', function () {
         try {
-            new BaseLayerConfig('type', 'name', {'title': 'title', 'attribution': {'name': 'name'}})
+            new BaseLayerConfig('name', {'title': 'title', 'attribution': {'name': 'name'}})
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: name\n- The required properties: title,url')
@@ -107,7 +107,7 @@ describe('WmtsBaseLayerConfig', function () {
             }
         })
         expect(ignPhotoBl).to.be.instanceOf(BaseLayerConfig)
-        expect(ignPhotoBl.type).to.be.eq('wmts')
+        expect(ignPhotoBl.type).to.be.eq(BaseLayerTypes.WMTS)
         expect(ignPhotoBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(ignPhotoBl.name).to.be.eq('ign-photo')
         expect(ignPhotoBl.title).to.be.eq('IGN Orthophoto')
@@ -139,7 +139,7 @@ describe('WmtsBaseLayerConfig', function () {
             "numZoomLevels": 16
         })
         expect(lizmapBl).to.be.instanceOf(BaseLayerConfig)
-        expect(lizmapBl.type).to.be.eq('wmts')
+        expect(lizmapBl.type).to.be.eq(BaseLayerTypes.WMTS)
         expect(lizmapBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(lizmapBl.name).to.be.eq('Quartiers')
         expect(lizmapBl.title).to.be.eq('Quartiers')
@@ -207,7 +207,7 @@ describe('BaseLayersConfig', function () {
 
         const emptyBl = baseLayers.getBaseLayerConfigByBaseLayerName('empty')
         expect(emptyBl).to.be.instanceOf(BaseLayerConfig)
-        expect(emptyBl.type).to.be.eq('empty')
+        expect(emptyBl.type).to.be.eq(BaseLayerTypes.Empty)
         expect(emptyBl).to.be.instanceOf(EmptyBaseLayerConfig)
         expect(emptyBl.name).to.be.eq('empty')
         expect(emptyBl.title).to.be.eq('empty')
@@ -216,7 +216,7 @@ describe('BaseLayersConfig', function () {
 
         const osmMapnikBl = baseLayers.getBaseLayerConfigByBaseLayerName('osm-mapnik')
         expect(osmMapnikBl).to.be.instanceOf(BaseLayerConfig)
-        expect(osmMapnikBl.type).to.be.eq('xyz')
+        expect(osmMapnikBl.type).to.be.eq(BaseLayerTypes.XYZ)
         expect(osmMapnikBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(osmMapnikBl.name).to.be.eq('osm-mapnik')
         expect(osmMapnikBl.title).to.be.eq('OpenStreetMap')
@@ -235,7 +235,7 @@ describe('BaseLayersConfig', function () {
 
         const osmCycleBl = baseLayers.getBaseLayerConfigByBaseLayerName('osm-cyclemap')
         expect(osmCycleBl).to.be.instanceOf(BaseLayerConfig)
-        expect(osmCycleBl.type).to.be.eq('xyz')
+        expect(osmCycleBl.type).to.be.eq(BaseLayerTypes.XYZ)
         expect(osmCycleBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(osmCycleBl.name).to.be.eq('osm-cyclemap')
         expect(osmCycleBl.title).to.be.eq('OSM CycleMap')
@@ -255,7 +255,7 @@ describe('BaseLayersConfig', function () {
 
         const googleSatBl = baseLayers.getBaseLayerConfigByBaseLayerName('google-satellite')
         expect(googleSatBl).to.be.instanceOf(BaseLayerConfig)
-        expect(googleSatBl.type).to.be.eq('xyz')
+        expect(googleSatBl.type).to.be.eq(BaseLayerTypes.XYZ)
         expect(googleSatBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(googleSatBl.name).to.be.eq('google-satellite')
         expect(googleSatBl.title).to.be.eq('Google Satellite')
@@ -274,7 +274,7 @@ describe('BaseLayersConfig', function () {
 
         const bingAerialBl = baseLayers.getBaseLayerConfigByBaseLayerName('bing-aerial')
         expect(bingAerialBl).to.be.instanceOf(BaseLayerConfig)
-        expect(bingAerialBl.type).to.be.eq('bing')
+        expect(bingAerialBl.type).to.be.eq(BaseLayerTypes.Bing)
         expect(bingAerialBl).to.be.instanceOf(BingBaseLayerConfig)
         expect(bingAerialBl.name).to.be.eq('bing-aerial')
         expect(bingAerialBl.title).to.be.eq('Bing Satellite')
@@ -287,7 +287,7 @@ describe('BaseLayersConfig', function () {
 
         const ignPhotoBl = baseLayers.getBaseLayerConfigByBaseLayerName('ign-photo')
         expect(ignPhotoBl).to.be.instanceOf(BaseLayerConfig)
-        expect(ignPhotoBl.type).to.be.eq('wmts')
+        expect(ignPhotoBl.type).to.be.eq(BaseLayerTypes.WMTS)
         expect(ignPhotoBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(ignPhotoBl.name).to.be.eq('ign-photo')
         expect(ignPhotoBl.title).to.be.eq('IGN Orthophoto')
@@ -308,7 +308,7 @@ describe('BaseLayersConfig', function () {
 
         const ignScanBl = baseLayers.getBaseLayerConfigByBaseLayerName('ign-scan')
         expect(ignScanBl).to.be.instanceOf(BaseLayerConfig)
-        expect(ignScanBl.type).to.be.eq('wmts')
+        expect(ignScanBl.type).to.be.eq(BaseLayerTypes.WMTS)
         expect(ignScanBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(ignScanBl.name).to.be.eq('ign-scan')
         expect(ignScanBl.title).to.be.eq('IGN Scans')
@@ -451,7 +451,7 @@ describe('BaseLayersConfig', function () {
 
         const osmBl = baseLayers.baseLayerConfigs[0]
         expect(osmBl).to.be.instanceOf(BaseLayerConfig)
-        expect(osmBl.type).to.be.eq('lizmap')
+        expect(osmBl.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(osmBl.name).to.be.eq('OpenStreetMap')
         expect(osmBl.title).to.be.eq('OpenStreetMap')
         expect(osmBl.hasLayerConfig).to.be.true
@@ -593,7 +593,7 @@ describe('BaseLayersConfig', function () {
 
         const osmBl = baseLayers.baseLayerConfigs[5]
         expect(osmBl).to.be.instanceOf(BaseLayerConfig)
-        expect(osmBl.type).to.be.eq('lizmap')
+        expect(osmBl.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(osmBl.name).to.be.eq('OpenStreetMap')
         expect(osmBl.title).to.be.eq('OpenStreetMap')
         expect(osmBl.hasLayerConfig).to.be.true
@@ -648,7 +648,7 @@ describe('BaseLayersConfig', function () {
 
         const osmBl = baseLayers.baseLayerConfigs[0]
         expect(osmBl).to.be.instanceOf(BaseLayerConfig)
-        expect(osmBl.type).to.be.eq('xyz')
+        expect(osmBl.type).to.be.eq(BaseLayerTypes.XYZ)
         expect(osmBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(osmBl.name).to.be.eq('osm-mapnik')
         expect(osmBl.title).to.be.eq('osm-mapnik')
@@ -699,14 +699,14 @@ describe('BaseLayersConfig', function () {
 
         const projectBackgroundColorBl = baseLayers.baseLayerConfigs[0]
         expect(projectBackgroundColorBl).to.be.instanceOf(BaseLayerConfig)
-        expect(projectBackgroundColorBl.type).to.be.eq('empty')
+        expect(projectBackgroundColorBl.type).to.be.eq(BaseLayerTypes.Empty)
         expect(projectBackgroundColorBl).to.be.instanceOf(EmptyBaseLayerConfig)
         expect(projectBackgroundColorBl.name).to.be.eq('project-background-color')
         expect(projectBackgroundColorBl.title).to.be.eq('project-background-color')
 
         const osmBl = baseLayers.baseLayerConfigs[1]
         expect(osmBl).to.be.instanceOf(BaseLayerConfig)
-        expect(osmBl.type).to.be.eq('xyz')
+        expect(osmBl.type).to.be.eq(BaseLayerTypes.XYZ)
         expect(osmBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(osmBl.name).to.be.eq('OpenStreetMap')
         expect(osmBl.title).to.be.eq('OpenStreetMap')
@@ -729,7 +729,7 @@ describe('BaseLayersConfig', function () {
 
         const watercolorBl = baseLayers.baseLayerConfigs[2]
         expect(watercolorBl).to.be.instanceOf(BaseLayerConfig)
-        expect(watercolorBl.type).to.be.eq('xyz')
+        expect(watercolorBl.type).to.be.eq(BaseLayerTypes.XYZ)
         expect(watercolorBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(watercolorBl.name).to.be.eq('Stamen Watercolor')
         expect(watercolorBl.title).to.be.eq('Stamen Watercolor')
@@ -752,7 +752,7 @@ describe('BaseLayersConfig', function () {
 
         const groupBl = baseLayers.baseLayerConfigs[3]
         expect(groupBl).to.be.instanceOf(BaseLayerConfig)
-        expect(groupBl.type).to.be.eq('lizmap')
+        expect(groupBl.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(groupBl)
             .to.not.be.instanceOf(EmptyBaseLayerConfig)
             .that.not.be.instanceOf(XyzBaseLayerConfig)
@@ -765,7 +765,7 @@ describe('BaseLayersConfig', function () {
 
         const vectorBl = baseLayers.baseLayerConfigs[4]
         expect(vectorBl).to.be.instanceOf(BaseLayerConfig)
-        expect(vectorBl.type).to.be.eq('lizmap')
+        expect(vectorBl.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(vectorBl)
             .to.not.be.instanceOf(EmptyBaseLayerConfig)
             .that.not.be.instanceOf(XyzBaseLayerConfig)
