@@ -700,8 +700,8 @@ export class BaseLayersConfig {
                 if ( !extendedCfg.hasOwnProperty(layerTreeItem.name) ) {
                     if ( defaultCompleteBaseLayersCfg.hasOwnProperty(layerTreeItem.name) ) {
                         extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.name]);
-                    } else if ( layerTreeItem.layerCfg.externalWmsToggle ){
-                        extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.layerCfg.externalAccess]);
+                    } else if ( layerTreeItem.layerConfig.externalWmsToggle ){
+                        extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
                     } else {
                         extendedCfg[layerTreeItem.name] = {
                             "type": "lizmap",
