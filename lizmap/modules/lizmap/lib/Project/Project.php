@@ -1820,7 +1820,7 @@ class Project
                         // Add wmts type if type is not already defined (it is for xyz)
                         // and the url contains wmts and the CRS is EPSG:3857
                         if (!array_key_exists('type', $layerDatasource)
-                            && stripos($layerDatasource['url'], 'wmts')) {
+                            && stripos($layerDatasource['url'], 'service=wmts')) {
                             $layerDatasource['type'] = 'wmts';
                         }
                         // Add crs if type is xyz
