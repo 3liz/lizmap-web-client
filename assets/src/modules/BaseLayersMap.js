@@ -217,6 +217,7 @@ export default class BaseLayersMap extends olMap {
                             params: {
                                 LAYERS: node.wmsName,
                                 FORMAT: node.layerConfig.imageFormat,
+                                STYLES: node.wmsSelectedStyleName,
                                 DPI: 96
                             },
                         })
