@@ -35,7 +35,7 @@ export default class Treeview extends HTMLElement {
         html`
         <ul>
             ${layerTreeGroupState.children.map(item => html`
-            <li>
+            <li data-testid="${item.name}">
                 ${item.type === 'group' || (item.symbologyChildrenCount && item.layerConfig.legendImageOption !== "disabled")
                     ? html`<div class="expandable ${item.expanded ? 'expanded' : ''}" @click=${() => item.expanded = !item.expanded}></div>`
                     : ''
