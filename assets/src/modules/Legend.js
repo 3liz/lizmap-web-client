@@ -14,9 +14,8 @@ export default class Legend {
         // Refresh symbology when a layer's style changes
         mainLizmap.state.rootMapGroup.addListener(
             evt => {
-                updateLayerTreeLayerSymbology(mainLizmap.state.rootMapGroup.getMapLayerByName(evt.name));
-            },
-            ['layer.style.changed']
+                updateLayerTreeLayerSymbology(mainLizmap.state.layerTree.getTreeLayerByName(evt.name));
+            },['layer.style.changed']
         );
     }
 }
