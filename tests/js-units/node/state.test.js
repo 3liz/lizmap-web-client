@@ -81,8 +81,8 @@ describe('State', function () {
             'osm-stamen-toner',
         ])
         expect(state.baseLayers.selectedBaseLayerName).to.be.eq('osm-stamen-toner')
-        expect(state.baseLayers.selectedBaseLayerConfig).to.not.be.undefined
-        expect(state.baseLayers.selectedBaseLayerConfig.name).to.be.eq('osm-stamen-toner')
+        expect(state.baseLayers.selectedBaseLayer).to.not.be.undefined
+        expect(state.baseLayers.selectedBaseLayer.name).to.be.eq('osm-stamen-toner')
 
         eventLogs = []
         // Update selected base layer

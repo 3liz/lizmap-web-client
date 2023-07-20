@@ -1,5 +1,6 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
+import { BaseLayerTypes } from '../modules/config/BaseLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
 import { transformExtent, get as getProjection } from 'ol/proj.js';
@@ -53,35 +54,35 @@ export default class BaseLayersMap extends olMap {
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
 
-        for (const baseLayerCfg of mainLizmap.initialConfig.baseLayers.getBaseLayerConfigs()) {
+        for (const baseLayerState of mainLizmap.state.baseLayers.getBaseLayers()) {
             let baseLayer;
-            if (baseLayerCfg.type === 'xyz') {
+            if (baseLayerState.type === BaseLayerTypes.XYZ) {
                 baseLayer = new TileLayer({
                     source: new XYZ({
-                        url: baseLayerCfg.url,
-                        projection: baseLayerCfg.crs,
-                        minZoom: baseLayerCfg.zmin,
-                        maxZoom: baseLayerCfg.zmax,
+                        url: baseLayerState.url,
+                        projection: baseLayerState.crs,
+                        minZoom: baseLayerState.zmin,
+                        maxZoom: baseLayerState.zmax,
                     })
                 });
-            } else if (baseLayerCfg.type === 'wms') {
+            } else if (baseLayerState.type === 'wms') {
                 baseLayer = new ImageLayer({
                     source: new ImageWMS({
-                        url: baseLayerCfg.url,
-                        projection: baseLayerCfg.crs,
+                        url: baseLayerState.url,
+                        projection: baseLayerState.crs,
                         params: {
-                            LAYERS: baseLayerCfg.layer,
-                            FORMAT: baseLayerCfg.format
+                            LAYERS: baseLayerState.layer,
+                            FORMAT: baseLayerState.format
                         },
                     })
                 });
-            } else if (baseLayerCfg.type === 'wmts') {
+            } else if (baseLayerState.type === BaseLayerTypes.WMTS) {
                 const proj3857 = getProjection('EPSG:3857');
                 const maxResolution = getWidth(proj3857.getExtent()) / 256;
                 const resolutions = [];
                 const matrixIds = [];
 
-                for (let i = 0; i < baseLayerCfg.numZoomLevels; i++) {
+                for (let i = 0; i < baseLayerState.numZoomLevels; i++) {
                   matrixIds[i] = i.toString();
                   resolutions[i] = maxResolution / Math.pow(2, i);
                 }
@@ -92,34 +93,52 @@ export default class BaseLayersMap extends olMap {
                   matrixIds: matrixIds,
                 });
 
-                let url = baseLayerCfg.url;
-                if(baseLayerCfg.key && url.includes('{key}')){
-                    url = url.replaceAll('{key}', baseLayerCfg.key);
+                let url = baseLayerState.url;
+                if(baseLayerState.key && url.includes('{key}')){
+                    url = url.replaceAll('{key}', baseLayerState.key);
                 }
 
                 baseLayer = new TileLayer({
                     source: new WMTS({
                         url: url,
-                        layer: baseLayerCfg.layer,
-                        matrixSet: baseLayerCfg.matrixSet,
-                        format: baseLayerCfg.format,
-                        projection: baseLayerCfg.crs,
+                        layer: baseLayerState.layer,
+                        matrixSet: baseLayerState.matrixSet,
+                        format: baseLayerState.format,
+                        projection: baseLayerState.crs,
                         tileGrid: tileGrid,
-                        style: baseLayerCfg.style
+                        style: baseLayerState.style
                     })
                 });
-            } else if (baseLayerCfg.type === 'bing') {
+            } else if (baseLayerState.type === BaseLayerTypes.Bing) {
                 baseLayer = new TileLayer({
                     preload: Infinity,
                     source: new BingMaps({
-                        key: baseLayerCfg.key,
-                        imagerySet: baseLayerCfg.imagerySet,
+                        key: baseLayerState.key,
+                        imagerySet: baseLayerState.imagerySet,
                     // use maxZoom 19 to see stretched tiles instead of the BingMaps
                     // "no photos at this zoom level" tiles
                     // maxZoom: 19
                     }),
                 });
-            } else if (baseLayerCfg.type === 'empty') {
+            } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
+                let minResolution = baseLayerState.layerConfig.minScale === 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale);
+                let maxResolution = baseLayerState.layerConfig.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale);
+                baseLayer = new ImageLayer({
+                    // extent: extent,
+                    minResolution: minResolution,
+                    maxResolution: maxResolution,
+                    source: new ImageWMS({
+                        url: mainLizmap.serviceURL,
+                        projection: qgisProjectProjection,
+                        serverType: 'qgis',
+                        params: {
+                            LAYERS: baseLayerState.itemState.wmsName,
+                            FORMAT: baseLayerState.layerConfig.imageFormat,
+                            DPI: 96
+                        },
+                    })
+                });
+            } else if (baseLayerState.type === BaseLayerTypes.Empty) {
                 this._hasEmptyBaseLayer = true;
             }
 
@@ -127,17 +146,17 @@ export default class BaseLayersMap extends olMap {
                 continue;
             }
 
-            const visible = mainLizmap.initialConfig.baseLayers.startupBaselayerName === baseLayerCfg.name;
+            const visible = mainLizmap.initialConfig.baseLayers.startupBaselayerName === baseLayerState.name;
 
             baseLayer.setProperties({
-                name: baseLayerCfg.name,
-                title: baseLayerCfg.title,
+                name: baseLayerState.name,
+                title: baseLayerState.title,
                 visible: visible
             });
 
             baseLayers.push(baseLayer);
 
-            if (visible && baseLayerCfg.crs !== qgisProjectProjection) {
+            if (visible && baseLayer.getSource().getProjection().getCode() !== qgisProjectProjection) {
                 this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
             }
         }
