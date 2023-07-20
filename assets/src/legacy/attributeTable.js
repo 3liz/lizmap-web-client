@@ -1,7 +1,7 @@
 var lizAttributeTable = function() {
 
     lizMap.events.on({
-        'uicreated':function(evt){
+        'uicreated':function(){
 
             // Attributes
             var config = lizMap.config;
@@ -83,12 +83,10 @@ var lizAttributeTable = function() {
                     };
 
                     // Get existing filter if exists (via permalink)
-                    const layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
+                    const layer = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername);
 
-                    const wmsParams = layer?.getSource?.().getParams?.();
-
-                    if (wmsParams?.['FILTER']) {
-                        config.layers[configLayerName]['request_params']['filter'] = wmsParams['FILTER'];
+                    if (layer.isFiltered) {
+                        config.layers[configLayerName]['request_params']['filter'] = layer.expressionFilter;
 
                         // Send signal so that getFeatureInfo takes it into account
                         lizMap.events.triggerEvent("layerFilterParamChanged",
@@ -165,7 +163,7 @@ var lizAttributeTable = function() {
 
                         // Disable attribute table if limitDataToBbox and layer not visible in map
                         if(limitDataToBbox){
-                            let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
+                            let layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
                             if( layer ) {
                                 if(warnResolution(layer)){
                                     return false;
@@ -628,7 +626,7 @@ var lizAttributeTable = function() {
                         .removeClass('btn-warning');
 
                         // Disable if the layer is not visible
-                        let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
+                        let layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
                         if( layer ) {
                             if(warnResolution(layer)){
                                 return false;
@@ -2414,8 +2412,8 @@ var lizAttributeTable = function() {
                     var cExpFilter = null;
                     var orObj = null;
                     // Get WMS layer name
-                    let pwlayer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(lizMap.cleanName(pwmsName));
-                    let pwmsName = pwlayer.getSource?.().getParams?.()?.['LAYERS'] || pivotParam['otherParentTypeName'];
+                    let pwlayer = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name);
+                    let pwmsName = pwlayer.wmsName;
 
                     if( aFilter  ){
                         if( pivotParam['otherParentValues'].length > 0 ){
@@ -2505,10 +2503,6 @@ var lizAttributeTable = function() {
                     return;
                 }
 
-                // Get OL layer to update params if it exists
-                var cleanName = lizMap.cleanName(featureType);
-                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
-
                 // Build filter from filteredFeatures
                 var cFilter = null;
                 if (lConfig?.['filteredFeatures']?.length) {
@@ -2562,14 +2556,6 @@ var lizAttributeTable = function() {
                 // Get layer config
                 var lConfig = config.layers[featureType];
                 if (!lConfig){
-                    return;
-                }
-
-                // Get OL layer to be redrawn
-                var cleanName = lizMap.cleanName(featureType);
-                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName);
-
-                if (!layer) {
                     return;
                 }
 

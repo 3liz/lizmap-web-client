@@ -116,13 +116,11 @@ var lizLayerActionButtons = function() {
 
             // Styles
             if( metadatas.styles ){
-                let typeName = layerConfig?.shortname || layerConfig?.typename || lizMap.cleanName(aName);
-                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(typeName);
-                let selectedStyle = layer?.getSource().getParams()?.['STYLES'];
+                const layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(aName);
                 options = '';
                 for( var st in metadatas.styles ){
                     st = metadatas.styles[st];
-                    if( st == selectedStyle )
+                    if( st == layer.wmsSelectedStyleName )
                         options += '<option value="'+st+'" selected>'+st+'</option>';
                     else
                         options += '<option value="'+st+'">'+st+'</option>';

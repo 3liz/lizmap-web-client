@@ -4574,36 +4574,22 @@ window.lizMap = function() {
   }
 
   function deactivateMaplayerFilter (layername) {
-    let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName(layername));
-
-    if(!layer) return false;
-
-    const wmsParams = layer.getSource().getParams();
+    let layer = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername);
+    layer.expressionFilter = null;
 
     // Remove layer filter
-    delete wmsParams['FILTER'];
-    delete wmsParams['FILTERTOKEN'];
-    delete wmsParams['EXP_FILTER'];
     if( !('request_params' in config.layers[layername]) ){
       config.layers[layername]['request_params'] = {};
     }
     config.layers[layername]['request_params']['exp_filter'] = null;
     config.layers[layername]['request_params']['filtertoken'] = null;
     config.layers[layername]['request_params']['filter'] = null;
-    layer.getSource().updateParams(wmsParams);
   }
 
   function triggerLayerFilter (layername, filter) {
       // Get layer information
-      var layerN = layername;
-      let layer = lizMap.mainLizmap.baseLayersMap.getLayerByTypeName(cleanName(layername));
-
-      if(!layer) return false;
-
-      const wmsParams = layer.getSource().getParams();
-      if( wmsParams) {
-        layerN = wmsParams['LAYERS'];
-      }
+      const layer = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername);
+      const layerWmsName = layer.wmsName;
 
       // Add filter to the layer
       if( !filter || filter == ''){
@@ -4611,7 +4597,7 @@ window.lizMap = function() {
         var lfilter = null;
 
       }else{
-        var lfilter = layerN + ':' + filter;
+        var lfilter = layerWmsName + ':' + filter;
       }
       wmsParams['FILTER'] = lfilter;
       if( !('request_params' in config.layers[layername]) ){

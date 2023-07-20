@@ -34,8 +34,5 @@ test.describe('Legend tests', () => {
 
         await expect(page.getByTestId('tramway_lines').locator('.symbols .legend').first()).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAan9//nxIDmCh1wcAbMAqGBQAAu7ICyNmWVC0AAAAASUVORK5CYII=');
         await expect(page.getByTestId('tramway_lines').locator('.symbols .legend').nth(1)).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADC+uSbynxIDmCh1wcAbMAqGBQAA95MC3blCR58AAAAASUVORK5CYII=');
-
-
-
     });
 });

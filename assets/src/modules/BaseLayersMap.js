@@ -421,13 +421,4 @@ export default class BaseLayersMap extends olMap {
             layer => layer.get('name') === name
         );
     }
-
-    /**
-     * Return overlay layer if `typeName` matches
-     */
-    getLayerByTypeName(typeName){
-        return this.overlayLayers.find(
-            layer => layer.getSource().getParams?.()?.LAYERS === typeName
-        );
-    }
 }
