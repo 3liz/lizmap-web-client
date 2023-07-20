@@ -254,6 +254,7 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
      */
     constructor(name, level, wmsCapaLayer, layerCfg) {
         super(name, 'layer', level, wmsCapaLayer, layerCfg);
+        this._wmsStyles = null;
     }
 
     /**
@@ -262,11 +263,19 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
      * @type {LayerStyleConfig[]}
      **/
     get wmsStyles() {
-        let wmsStyles = [];
-        for(const wmsStyle of this._wmsCapa.Style) {
-            wmsStyles.push(new LayerStyleConfig(wmsStyle.Name, wmsStyle.Title))
+        if (this._wmsStyles !== null) {
+            return this._wmsStyles;
         }
-        return [...wmsStyles];
+        if(!this._wmsCapa?.['Style']) {
+            this._wmsStyles = [new LayerStyleConfig('', 'Default')];
+        } else {
+            let wmsStyles = [];
+            for(const wmsStyle of this._wmsCapa.Style) {
+                wmsStyles.push(new LayerStyleConfig(wmsStyle.Name, wmsStyle.Title))
+            }
+            this._wmsStyles = wmsStyles;
+        }
+        return [...this._wmsStyles];
     }
 
     /**
@@ -345,7 +354,7 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
             if (item instanceof LayerTreeLayerConfig) {
                 names.push(item.name);
             } else if (item instanceof LayerTreeGroupConfig) {
-                names = names.concat(item.findTreeLayerNames());
+                names = names.concat(item.findTreeLayerConfigNames());
             }
         }
         return names;
