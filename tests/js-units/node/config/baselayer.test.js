@@ -211,6 +211,7 @@ describe('BaseLayersConfig', function () {
         expect(emptyBl).to.be.instanceOf(EmptyBaseLayerConfig)
         expect(emptyBl.name).to.be.eq('empty')
         expect(emptyBl.title).to.be.eq('empty')
+        expect(emptyBl.hasLayerConfig).to.be.false
         expect(emptyBl.layerConfig).to.be.null
 
         const osmMapnikBl = baseLayers.getBaseLayerConfigByBaseLayerName('osm-mapnik')
@@ -230,6 +231,7 @@ describe('BaseLayersConfig', function () {
         expect(osmMapnikBl.attribution).to.be.instanceOf(AttributionConfig)
         expect(osmMapnikBl.attribution.title).to.be.eq('© OpenStreetMap contributors, CC-BY-SA')
         expect(osmMapnikBl.attribution.url).to.be.eq('https://www.openstreetmap.org/copyright')
+        expect(osmMapnikBl.hasLayerConfig).to.be.false
 
         const osmCycleBl = baseLayers.getBaseLayerConfigByBaseLayerName('osm-cyclemap')
         expect(osmCycleBl).to.be.instanceOf(BaseLayerConfig)
@@ -249,6 +251,7 @@ describe('BaseLayersConfig', function () {
         expect(osmCycleBl.attribution).to.be.instanceOf(AttributionConfig)
         expect(osmCycleBl.attribution.title).to.be.eq('Thunderforest')
         expect(osmCycleBl.attribution.url).to.be.eq('https://www.thunderforest.com/')
+        expect(osmCycleBl.hasLayerConfig).to.be.false
 
         const googleSatBl = baseLayers.getBaseLayerConfigByBaseLayerName('google-satellite')
         expect(googleSatBl).to.be.instanceOf(BaseLayerConfig)
@@ -267,6 +270,7 @@ describe('BaseLayersConfig', function () {
         expect(googleSatBl.attribution).to.be.instanceOf(AttributionConfig)
         expect(googleSatBl.attribution.title).to.be.eq('Map data ©2019 Google')
         expect(googleSatBl.attribution.url).to.be.eq('https://about.google/brand-resource-center/products-and-services/geo-guidelines/#required-attribution')
+        expect(googleSatBl.hasLayerConfig).to.be.false
 
         const bingAerialBl = baseLayers.getBaseLayerConfigByBaseLayerName('bing-aerial')
         expect(bingAerialBl).to.be.instanceOf(BaseLayerConfig)
@@ -279,6 +283,7 @@ describe('BaseLayersConfig', function () {
         expect(bingAerialBl.hasKey).to.be.true
         expect(bingAerialBl.key).to.not.be.null
         expect(bingAerialBl.key).to.be.eq('bing-key')
+        expect(bingAerialBl.hasLayerConfig).to.be.false
 
         const ignPhotoBl = baseLayers.getBaseLayerConfigByBaseLayerName('ign-photo')
         expect(ignPhotoBl).to.be.instanceOf(BaseLayerConfig)
@@ -449,6 +454,7 @@ describe('BaseLayersConfig', function () {
         expect(osmBl.type).to.be.eq('lizmap')
         expect(osmBl.name).to.be.eq('OpenStreetMap')
         expect(osmBl.title).to.be.eq('OpenStreetMap')
+        expect(osmBl.hasLayerConfig).to.be.true
         expect(osmBl.layerConfig).to.not.be.null
         expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
     })
@@ -590,6 +596,7 @@ describe('BaseLayersConfig', function () {
         expect(osmBl.type).to.be.eq('lizmap')
         expect(osmBl.name).to.be.eq('OpenStreetMap')
         expect(osmBl.title).to.be.eq('OpenStreetMap')
+        expect(osmBl.hasLayerConfig).to.be.true
         expect(osmBl.layerConfig).to.not.be.null
         expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
     })
@@ -645,9 +652,129 @@ describe('BaseLayersConfig', function () {
         expect(osmBl).to.be.instanceOf(XyzBaseLayerConfig)
         expect(osmBl.name).to.be.eq('osm-mapnik')
         expect(osmBl.title).to.be.eq('osm-mapnik')
+        expect(osmBl.hasLayerConfig).to.be.true
         expect(osmBl.layerConfig).to.not.be.null
         expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
+    })
 
+    it('From baselayers user defined', function () {
+        const capabilities = JSON.parse(readFileSync('./data/backgrounds-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/backgrounds-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+
+        expect(root).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(root.name).to.be.eq('root')
+        expect(root.type).to.be.eq('group')
+        expect(root.level).to.be.eq(0)
+        expect(root.childrenCount).to.be.eq(2)
+
+        const blGroup = root.children[1];
+        expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(blGroup.name).to.be.eq('baselayers')
+        expect(blGroup.type).to.be.eq('group')
+        expect(blGroup.level).to.be.eq(1)
+
+        const baseLayers = new BaseLayersConfig({}, {}, layers, blGroup)
+        expect(baseLayers.baseLayerNames)
+            .to.have.length(9)
+            .that.be.deep.eq([
+                "project-background-color",
+                //"empty group",
+                "OpenStreetMap",
+                "Stamen Watercolor",
+                "group with many layers",
+                "local vector layer",
+                "local raster layer",
+                "WMTS demo.lizmap.com grouped",
+                "WMTS demo.lizmap.com communes",
+                "WMS demo.lizmap.com communes",
+            ]);
+
+        expect(baseLayers.startupBaselayerName).to.be.eq('project-background-color')
+
+        const projectBackgroundColorBl = baseLayers.baseLayerConfigs[0]
+        expect(projectBackgroundColorBl).to.be.instanceOf(BaseLayerConfig)
+        expect(projectBackgroundColorBl.type).to.be.eq('empty')
+        expect(projectBackgroundColorBl).to.be.instanceOf(EmptyBaseLayerConfig)
+        expect(projectBackgroundColorBl.name).to.be.eq('project-background-color')
+        expect(projectBackgroundColorBl.title).to.be.eq('project-background-color')
+
+        const osmBl = baseLayers.baseLayerConfigs[1]
+        expect(osmBl).to.be.instanceOf(BaseLayerConfig)
+        expect(osmBl.type).to.be.eq('xyz')
+        expect(osmBl).to.be.instanceOf(XyzBaseLayerConfig)
+        expect(osmBl.name).to.be.eq('OpenStreetMap')
+        expect(osmBl.title).to.be.eq('OpenStreetMap')
+        expect(osmBl.url).to.be.eq('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
+        expect(osmBl.zmin).to.be.eq(0)
+        expect(osmBl.zmax).to.be.eq(19)
+        expect(osmBl.crs).to.be.eq('EPSG:3857')
+        expect(osmBl.hasLayerConfig).to.be.true
+        expect(osmBl.layerConfig).to.not.be.null
+        expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
+        expect(osmBl.layerConfig.externalWmsToggle).to.be.true
+        expect(osmBl.layerConfig.externalAccess).to.be.deep.eq({
+            "crs": "EPSG:3857",
+            "format": "",
+            "type": "xyz",
+            "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "zmax": "19",
+            "zmin": "0"
+        })
+
+        const watercolorBl = baseLayers.baseLayerConfigs[2]
+        expect(watercolorBl).to.be.instanceOf(BaseLayerConfig)
+        expect(watercolorBl.type).to.be.eq('xyz')
+        expect(watercolorBl).to.be.instanceOf(XyzBaseLayerConfig)
+        expect(watercolorBl.name).to.be.eq('Stamen Watercolor')
+        expect(watercolorBl.title).to.be.eq('Stamen Watercolor')
+        expect(watercolorBl.url).to.be.eq('https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg')
+        expect(watercolorBl.zmin).to.be.eq(0)
+        expect(watercolorBl.zmax).to.be.eq(18)
+        expect(watercolorBl.crs).to.be.eq('EPSG:3857')
+        expect(watercolorBl.hasLayerConfig).to.be.true
+        expect(watercolorBl.layerConfig).to.not.be.null
+        expect(watercolorBl.layerConfig).to.be.instanceOf(LayerConfig)
+        expect(watercolorBl.layerConfig.externalWmsToggle).to.be.true
+        expect(watercolorBl.layerConfig.externalAccess).to.be.deep.eq({
+            "crs": "EPSG:3857",
+            "format": "",
+            "type": "xyz",
+            "url": "https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg",
+            "zmax": "18",
+            "zmin": "0"
+        })
+
+        const groupBl = baseLayers.baseLayerConfigs[3]
+        expect(groupBl).to.be.instanceOf(BaseLayerConfig)
+        expect(groupBl.type).to.be.eq('lizmap')
+        expect(groupBl)
+            .to.not.be.instanceOf(EmptyBaseLayerConfig)
+            .that.not.be.instanceOf(XyzBaseLayerConfig)
+            .that.not.be.instanceOf(BingBaseLayerConfig)
+            .that.not.be.instanceOf(WmtsBaseLayerConfig)
+        expect(groupBl.name).to.be.eq('group with many layers')
+        expect(groupBl.title).to.be.eq('group with many layers')
+        expect(groupBl.hasLayerConfig).to.be.true
+        expect(groupBl.layerConfig).to.not.be.null
+
+        const vectorBl = baseLayers.baseLayerConfigs[4]
+        expect(vectorBl).to.be.instanceOf(BaseLayerConfig)
+        expect(vectorBl.type).to.be.eq('lizmap')
+        expect(vectorBl)
+            .to.not.be.instanceOf(EmptyBaseLayerConfig)
+            .that.not.be.instanceOf(XyzBaseLayerConfig)
+            .that.not.be.instanceOf(BingBaseLayerConfig)
+            .that.not.be.instanceOf(WmtsBaseLayerConfig)
+        expect(vectorBl.name).to.be.eq('local vector layer')
+        expect(vectorBl.title).to.be.eq('local vector layer')
+        expect(vectorBl.hasLayerConfig).to.be.true
+        expect(vectorBl.layerConfig).to.not.be.null
     })
 
     it('startupBaseLayer', function () {
