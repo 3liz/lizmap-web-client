@@ -100,8 +100,10 @@ export default class SelectionTool {
                         mainLizmap.digitizing.saveFeatureDrawn();
 
                         const oldTooltips = mainLizmap.digitizing._measureTooltips[mainLizmap.digitizing._measureTooltips.length - 2];
-                        mainLizmap.map.removeOverlay(oldTooltips[0]);
-                        mainLizmap.map.removeOverlay(oldTooltips[1]);
+                        if (oldTooltips) {
+                            mainLizmap.map.removeOverlay(oldTooltips[0]);
+                            mainLizmap.map.removeOverlay(oldTooltips[1]);
+                        }
 
                         // addFeature will provoke a new call of this callack
                         // so we return to avoid two calls
