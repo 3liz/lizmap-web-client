@@ -2254,8 +2254,8 @@ window.lizMap = function() {
         pcontent = '<div class="lizmapPopupContent noContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
         $('#popupcontent div.menu-content').html(pcontent);
         window.setTimeout(function(){
-            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && 
-                $('#popupcontent .lizmapPopupContent').hasClass('noContent') && 
+            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') &&
+                $('#popupcontent .lizmapPopupContent').hasClass('noContent') &&
                 config.options.popupLocation != 'right-dock'){
                   $('#button-popupcontent').click();
                 }
@@ -4599,7 +4599,7 @@ window.lizMap = function() {
       }else{
         var lfilter = layerWmsName + ':' + filter;
       }
-      wmsParams['FILTER'] = lfilter;
+
       if( !('request_params' in config.layers[layername]) ){
         config.layers[layername]['request_params'] = {};
       }
@@ -4629,7 +4629,7 @@ window.lizMap = function() {
             token: result.token
           };
 
-  
+
           // Tell popup to be aware of the filter
           lizMap.events.triggerEvent("layerFilterParamChanged",
             {
