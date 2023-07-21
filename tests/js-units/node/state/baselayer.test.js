@@ -137,32 +137,26 @@ describe('BaseLayersState', function () {
                 "WMS grouped external",
             ])
         expect(baseLayers.baseLayers).to.be.an('array').that.have.length(11)
-        expect(baseLayers.baseLayers.map(l => l.name)).to.be.an('array').that.have.length(11).that.ordered.members([
-            "Stamen Watercolor",
-            "OSM TMS internal",
-            "OSM TMS external",
-            "project-background-color",
-            "group with many layers and shortname",
-            "group with sub",
-            "local vector layer",
-            "local raster layer",
-            "WMTS single external",
-            "WMS single internal",
-            "WMS grouped external",
-        ])
-        expect(baseLayers.baseLayers.map(l => l.type)).to.be.an('array').that.have.length(11).that.ordered.members([
-            BaseLayerTypes.XYZ,
-            BaseLayerTypes.XYZ,
-            BaseLayerTypes.XYZ,
-            BaseLayerTypes.Empty,
-            BaseLayerTypes.Lizmap,
-            BaseLayerTypes.Lizmap,
-            BaseLayerTypes.Lizmap,
-            BaseLayerTypes.Lizmap,
-            BaseLayerTypes.WMTS,
-            BaseLayerTypes.Lizmap,
-            BaseLayerTypes.Lizmap,
-        ])
+        expect(baseLayers.baseLayers.map(l => l.name))
+            .to.be.an('array')
+            .that.have.length(11)
+            .that.ordered.members(baseLayers.baseLayerNames)
+        expect(baseLayers.baseLayers.map(l => l.type))
+            .to.be.an('array')
+            .that.have.length(11)
+            .that.ordered.members([
+                BaseLayerTypes.XYZ,
+                BaseLayerTypes.XYZ,
+                BaseLayerTypes.XYZ,
+                BaseLayerTypes.Empty,
+                BaseLayerTypes.Lizmap,
+                BaseLayerTypes.Lizmap,
+                BaseLayerTypes.Lizmap,
+                BaseLayerTypes.Lizmap,
+                BaseLayerTypes.WMTS,
+                BaseLayerTypes.Lizmap,
+                BaseLayerTypes.WMS,
+            ])
     });
 
 })

@@ -6,7 +6,7 @@ import { ValidationError, ConversionError } from '../../../../assets/src/modules
 import { AttributionConfig } from '../../../../assets/src/modules/config/Attribution.js';
 import { LayerConfig, LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
+import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, WmsBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
 
 describe('BaseLayerConfig', function () {
     it('simple', function () {
@@ -764,6 +764,7 @@ describe('BaseLayersConfig', function () {
             .that.not.be.instanceOf(XyzBaseLayerConfig)
             .that.not.be.instanceOf(BingBaseLayerConfig)
             .that.not.be.instanceOf(WmtsBaseLayerConfig)
+            .that.not.be.instanceOf(WmsBaseLayerConfig)
         expect(groupBl.name).to.be.eq('group with many layers and shortname')
         expect(groupBl.title).to.be.eq('This is a nice group')
         expect(groupBl.hasLayerConfig).to.be.true
@@ -777,10 +778,63 @@ describe('BaseLayersConfig', function () {
             .that.not.be.instanceOf(XyzBaseLayerConfig)
             .that.not.be.instanceOf(BingBaseLayerConfig)
             .that.not.be.instanceOf(WmtsBaseLayerConfig)
+            .that.not.be.instanceOf(WmsBaseLayerConfig)
         expect(vectorBl.name).to.be.eq('local vector layer')
         expect(vectorBl.title).to.be.eq('local vector layer')
         expect(vectorBl.hasLayerConfig).to.be.true
         expect(vectorBl.layerConfig).to.not.be.null
+
+        const wmtsBl = baseLayers.baseLayerConfigs[8]
+        expect(wmtsBl).to.be.instanceOf(BaseLayerConfig)
+        expect(wmtsBl.type).to.be.eq(BaseLayerTypes.WMTS)
+        expect(wmtsBl).to.be.instanceOf(WmtsBaseLayerConfig)
+        expect(wmtsBl.name).to.be.eq('WMTS single external')
+        expect(wmtsBl.title).to.be.eq('WMTS single external')
+        expect(wmtsBl.url).to.be.eq('https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=cypress&project=wmts')
+        expect(wmtsBl.layer).to.be.eq('Communes')
+        expect(wmtsBl.format).to.be.eq('image/png')
+        expect(wmtsBl.style).to.be.eq('default')
+        expect(wmtsBl.matrixSet).to.be.eq('EPSG:3857')
+        expect(wmtsBl.crs).to.be.eq('EPSG:3857')
+        expect(wmtsBl.numZoomLevels).to.be.eq(19)
+        expect(wmtsBl.hasLayerConfig).to.be.true
+        expect(wmtsBl.layerConfig).to.not.be.null
+        expect(wmtsBl.layerConfig.externalWmsToggle).to.be.true
+        expect(wmtsBl.layerConfig.externalAccess).to.be.deep.eq({
+            "crs": "EPSG:3857",
+            "dpiMode": "7",
+            "format": "image/png",
+            "layers": "Communes",
+            "styles": "default",
+            "tileMatrixSet": "EPSG:3857",
+            "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=cypress&project=wmts&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            "type": "wmts"
+        })
+
+        const wmsBl = baseLayers.baseLayerConfigs[10]
+        expect(wmsBl).to.be.instanceOf(BaseLayerConfig)
+        expect(wmsBl.type).to.be.eq(BaseLayerTypes.WMS)
+        expect(wmsBl).to.be.instanceOf(WmsBaseLayerConfig)
+        expect(wmsBl.name).to.be.eq('WMS grouped external')
+        expect(wmsBl.title).to.be.eq('WMS grouped external')
+        expect(wmsBl.url).to.be.eq('https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf')
+        expect(wmsBl.layers).to.be.eq('commune')
+        expect(wmsBl.format).to.be.eq('image/png; mode=8bit')
+        expect(wmsBl.styles).to.be.eq('défaut')
+        expect(wmsBl.crs).to.be.eq('EPSG:3857')
+        expect(wmsBl.hasLayerConfig).to.be.true
+        expect(wmsBl.layerConfig).to.not.be.null
+        expect(wmsBl.layerConfig.externalWmsToggle).to.be.true
+        expect(wmsBl.layerConfig.externalAccess).to.be.deep.eq({
+            "contextualWMSLegend": "0",
+            "crs": "EPSG:3857",
+            "dpiMode": "7",
+            "featureCount": "10",
+            "format": "image/png;%20mode%3D8bit",
+            "layers": "commune",
+            "styles": "d%C3%A9faut",
+            "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf&VERSION=1.3.0"
+        })
     })
 
     it('startupBaseLayer', function () {
