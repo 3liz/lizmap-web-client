@@ -2589,7 +2589,6 @@ lizmap-selection-invert svg {
 
 .digitizing{
   min-width: 260px;
-  margin-bottom: 2em;
 }
 
 .digitizing .hide{
@@ -2612,7 +2611,7 @@ lizmap-selection-invert svg {
   padding: 3px;
   position: absolute;
   left: 60px;
-  top: -1px;
+  top: -6px;
 }
 
 .digitizing svg {

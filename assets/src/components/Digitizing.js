@@ -69,7 +69,6 @@ export default class Digitizing extends HTMLElement {
                             <use xlink:href="#polygon"></use>
                         </svg>
                     </li>
-                    <br>
                     <li class="digitizing-box btn ${mainLizmap.digitizing.toolSelected === 'box' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'box'} data-original-title="${lizDict['digitizing.toolbar.box']}">
                         <svg>
                             <use xlink:href="#box"></use>
@@ -88,7 +87,7 @@ export default class Digitizing extends HTMLElement {
                 </ul>
             </div>
             <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing._userChangedColor(event.target.value)} data-original-title="${lizDict['digitizing.toolbar.color']}">
-            <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()} data-original-title="${lizDict['attributeLayers.btn.edit.title']}">
+            <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()} data-original-title="${lizDict['digitizing.toolbar.edit']}">
                 <svg>
                     <use xlink:href="#edit"/>
                 </svg>
