@@ -95,10 +95,10 @@ describe('WmtsBaseLayerConfig', function () {
             "type": "wmts",
             "title": "IGN Orthophoto",
             "url": "https://wxs.ign.fr/ortho/geoportail/wmts",
-            "layer": "ORTHOIMAGERY.ORTHOPHOTOS",
+            "layers": "ORTHOIMAGERY.ORTHOPHOTOS",
             "format": "image/jpeg",
-            "style": "normal",
-            "matrixSet": "PM",
+            "styles": "normal",
+            "tileMatrixSet": "PM",
             "crs": "EPSG:3857",
             "numZoomLevels": 22,
             "attribution": {
@@ -131,10 +131,10 @@ describe('WmtsBaseLayerConfig', function () {
             "type": "wmts",
             "title": "Quartiers",
             "url": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=cache&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
-            "layer": "Quartiers",
+            "layers": "Quartiers",
             "format": "image/png",
-            "style": "default",
-            "matrixSet": "EPSG:3857",
+            "styles": "default",
+            "tileMatrixSet": "EPSG:3857",
             "crs": "EPSG:3857",
             "numZoomLevels": 16
         })
@@ -671,9 +671,9 @@ describe('BaseLayersConfig', function () {
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
         expect(root.level).to.be.eq(0)
-        expect(root.childrenCount).to.be.eq(2)
+        expect(root.childrenCount).to.be.eq(3)
 
-        const blGroup = root.children[1];
+        const blGroup = root.children[2];
         expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
         expect(blGroup.name).to.be.eq('baselayers')
         expect(blGroup.type).to.be.eq('group')
@@ -681,53 +681,29 @@ describe('BaseLayersConfig', function () {
 
         const baseLayers = new BaseLayersConfig({}, {}, layers, blGroup)
         expect(baseLayers.baseLayerNames)
-            .to.have.length(9)
+            .to.have.length(11)
             .that.be.deep.eq([
+                //"=== TMS ===",
+                "Stamen Watercolor",
+                "OSM TMS internal",
+                "OSM TMS external",
+                //"=== GROUPS ===",
                 "project-background-color",
                 //"empty group",
-                "OpenStreetMap",
-                "Stamen Watercolor",
-                "group with many layers",
+                "group with many layers and shortname",
+                "group with sub",
+                //"=== LOCAL LAYERS ===",
                 "local vector layer",
                 "local raster layer",
-                "WMTS demo.lizmap.com grouped",
-                "WMTS demo.lizmap.com communes",
-                "WMS demo.lizmap.com communes",
+                //"=== WM[T]S are on demo.lizmap.com ===",
+                "WMTS single external",
+                "WMS single internal",
+                "WMS grouped external",
             ]);
 
-        expect(baseLayers.startupBaselayerName).to.be.eq('project-background-color')
+        expect(baseLayers.startupBaselayerName).to.be.eq('Stamen Watercolor')
 
-        const projectBackgroundColorBl = baseLayers.baseLayerConfigs[0]
-        expect(projectBackgroundColorBl).to.be.instanceOf(BaseLayerConfig)
-        expect(projectBackgroundColorBl.type).to.be.eq(BaseLayerTypes.Empty)
-        expect(projectBackgroundColorBl).to.be.instanceOf(EmptyBaseLayerConfig)
-        expect(projectBackgroundColorBl.name).to.be.eq('project-background-color')
-        expect(projectBackgroundColorBl.title).to.be.eq('project-background-color')
-
-        const osmBl = baseLayers.baseLayerConfigs[1]
-        expect(osmBl).to.be.instanceOf(BaseLayerConfig)
-        expect(osmBl.type).to.be.eq(BaseLayerTypes.XYZ)
-        expect(osmBl).to.be.instanceOf(XyzBaseLayerConfig)
-        expect(osmBl.name).to.be.eq('OpenStreetMap')
-        expect(osmBl.title).to.be.eq('OpenStreetMap')
-        expect(osmBl.url).to.be.eq('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
-        expect(osmBl.zmin).to.be.eq(0)
-        expect(osmBl.zmax).to.be.eq(19)
-        expect(osmBl.crs).to.be.eq('EPSG:3857')
-        expect(osmBl.hasLayerConfig).to.be.true
-        expect(osmBl.layerConfig).to.not.be.null
-        expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
-        expect(osmBl.layerConfig.externalWmsToggle).to.be.true
-        expect(osmBl.layerConfig.externalAccess).to.be.deep.eq({
-            "crs": "EPSG:3857",
-            "format": "",
-            "type": "xyz",
-            "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-            "zmax": "19",
-            "zmin": "0"
-        })
-
-        const watercolorBl = baseLayers.baseLayerConfigs[2]
+        const watercolorBl = baseLayers.baseLayerConfigs[0]
         expect(watercolorBl).to.be.instanceOf(BaseLayerConfig)
         expect(watercolorBl.type).to.be.eq(BaseLayerTypes.XYZ)
         expect(watercolorBl).to.be.instanceOf(XyzBaseLayerConfig)
@@ -750,7 +726,37 @@ describe('BaseLayersConfig', function () {
             "zmin": "0"
         })
 
-        const groupBl = baseLayers.baseLayerConfigs[3]
+        const osmBl = baseLayers.baseLayerConfigs[2]
+        expect(osmBl).to.be.instanceOf(BaseLayerConfig)
+        expect(osmBl.type).to.be.eq(BaseLayerTypes.XYZ)
+        expect(osmBl).to.be.instanceOf(XyzBaseLayerConfig)
+        expect(osmBl.name).to.be.eq('OSM TMS external')
+        expect(osmBl.title).to.be.eq('OSM TMS external')
+        expect(osmBl.url).to.be.eq('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
+        expect(osmBl.zmin).to.be.eq(0)
+        expect(osmBl.zmax).to.be.eq(19)
+        expect(osmBl.crs).to.be.eq('EPSG:3857')
+        expect(osmBl.hasLayerConfig).to.be.true
+        expect(osmBl.layerConfig).to.not.be.null
+        expect(osmBl.layerConfig).to.be.instanceOf(LayerConfig)
+        expect(osmBl.layerConfig.externalWmsToggle).to.be.true
+        expect(osmBl.layerConfig.externalAccess).to.be.deep.eq({
+            "crs": "EPSG:3857",
+            "format": "",
+            "type": "xyz",
+            "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "zmax": "19",
+            "zmin": "0"
+        })
+
+        const projectBackgroundColorBl = baseLayers.baseLayerConfigs[3]
+        expect(projectBackgroundColorBl).to.be.instanceOf(BaseLayerConfig)
+        expect(projectBackgroundColorBl.type).to.be.eq(BaseLayerTypes.Empty)
+        expect(projectBackgroundColorBl).to.be.instanceOf(EmptyBaseLayerConfig)
+        expect(projectBackgroundColorBl.name).to.be.eq('project-background-color')
+        expect(projectBackgroundColorBl.title).to.be.eq('project-background-color')
+
+        const groupBl = baseLayers.baseLayerConfigs[4]
         expect(groupBl).to.be.instanceOf(BaseLayerConfig)
         expect(groupBl.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(groupBl)
@@ -758,12 +764,12 @@ describe('BaseLayersConfig', function () {
             .that.not.be.instanceOf(XyzBaseLayerConfig)
             .that.not.be.instanceOf(BingBaseLayerConfig)
             .that.not.be.instanceOf(WmtsBaseLayerConfig)
-        expect(groupBl.name).to.be.eq('group with many layers')
-        expect(groupBl.title).to.be.eq('group with many layers')
+        expect(groupBl.name).to.be.eq('group with many layers and shortname')
+        expect(groupBl.title).to.be.eq('This is a nice group')
         expect(groupBl.hasLayerConfig).to.be.true
         expect(groupBl.layerConfig).to.not.be.null
 
-        const vectorBl = baseLayers.baseLayerConfigs[4]
+        const vectorBl = baseLayers.baseLayerConfigs[6]
         expect(vectorBl).to.be.instanceOf(BaseLayerConfig)
         expect(vectorBl.type).to.be.eq(BaseLayerTypes.Lizmap)
         expect(vectorBl)

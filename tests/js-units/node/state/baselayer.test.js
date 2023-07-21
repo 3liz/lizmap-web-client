@@ -107,7 +107,7 @@ describe('BaseLayersState', function () {
         const layers = new LayersConfig(config.layers);
         const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
 
-        const blGroup = rootCfg.children[1];
+        const blGroup = rootCfg.children[2];
         expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
 
         const baseLayersConfig = new BaseLayersConfig({}, {}, layers, blGroup)
@@ -117,43 +117,49 @@ describe('BaseLayersState', function () {
         const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
 
         const baseLayers = new BaseLayersState(baseLayersConfig, collection)
-        expect(baseLayers.selectedBaseLayerName).to.be.eq('project-background-color')
+        expect(baseLayers.selectedBaseLayerName).to.be.eq('Stamen Watercolor')
         expect(baseLayers.selectedBaseLayer).to.not.be.undefined
-        expect(baseLayers.selectedBaseLayer.name).to.be.eq('project-background-color')
+        expect(baseLayers.selectedBaseLayer.name).to.be.eq('Stamen Watercolor')
         expect(baseLayers.baseLayerNames)
             .to.be.an('array')
-            .that.have.length(9)
+            .that.have.length(11)
             .that.be.deep.eq([
-                "project-background-color",
-                "OpenStreetMap",
                 "Stamen Watercolor",
-                "group with many layers",
+                "OSM TMS internal",
+                "OSM TMS external",
+                "project-background-color",
+                "group with many layers and shortname",
+                "group with sub",
                 "local vector layer",
                 "local raster layer",
-                "WMTS demo.lizmap.com grouped",
-                "WMTS demo.lizmap.com communes",
-                "WMS demo.lizmap.com communes",
+                "WMTS single external",
+                "WMS single internal",
+                "WMS grouped external",
             ])
-        expect(baseLayers.baseLayers).to.be.an('array').that.have.length(9)
-        expect(baseLayers.baseLayers.map(l => l.name)).to.be.an('array').that.have.length(9).that.ordered.members([
-            "project-background-color",
-            "OpenStreetMap",
+        expect(baseLayers.baseLayers).to.be.an('array').that.have.length(11)
+        expect(baseLayers.baseLayers.map(l => l.name)).to.be.an('array').that.have.length(11).that.ordered.members([
             "Stamen Watercolor",
-            "group with many layers",
+            "OSM TMS internal",
+            "OSM TMS external",
+            "project-background-color",
+            "group with many layers and shortname",
+            "group with sub",
             "local vector layer",
             "local raster layer",
-            "WMTS demo.lizmap.com grouped",
-            "WMTS demo.lizmap.com communes",
-            "WMS demo.lizmap.com communes",
+            "WMTS single external",
+            "WMS single internal",
+            "WMS grouped external",
         ])
-        expect(baseLayers.baseLayers.map(l => l.type)).to.be.an('array').that.have.length(9).that.ordered.members([
+        expect(baseLayers.baseLayers.map(l => l.type)).to.be.an('array').that.have.length(11).that.ordered.members([
+            BaseLayerTypes.XYZ,
+            BaseLayerTypes.XYZ,
+            BaseLayerTypes.XYZ,
             BaseLayerTypes.Empty,
-            BaseLayerTypes.XYZ,
-            BaseLayerTypes.XYZ,
             BaseLayerTypes.Lizmap,
             BaseLayerTypes.Lizmap,
             BaseLayerTypes.Lizmap,
             BaseLayerTypes.Lizmap,
+            BaseLayerTypes.WMTS,
             BaseLayerTypes.Lizmap,
             BaseLayerTypes.Lizmap,
         ])
