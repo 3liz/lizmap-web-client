@@ -51,7 +51,7 @@
     <tbody>
 
     <!-- colors for warnings and errors -->
-    {assign $colors = array('warning'=>'lightyellow', 'error'=>'lightcoral')}
+    {assign $colors = array('warning'=>'lightyellow', 'error'=>'lightcoral', 'blocker'=>'red')}
     {assign $warningLayerCount = 100}
     {assign $errorLayerCount = 200}
     {assign $warningLoadingTime = 30.0}
@@ -186,7 +186,7 @@
             {assign $style = ''}
             {assign $title = ''}
             {if $p['needs_update_error']}
-                {assign $style = 'background-color: '.$colors['error'].';'}
+                {assign $style = 'background-color: '.$colors['blocker'].';'}
                 {assign $title = @admin.project.list.column.update.in.qgis.desktop@}
             {/if}
             {if $p['needs_update_warning']}
@@ -240,49 +240,73 @@
     <p>
         {jlocale "admin.project.rules.list.description.html", array($lizmapVersion, ($serverVersions['qgis_server_version_human_readable']))}
     </p>
+    <style type="text/css" scoped>
+        {literal}
+        ul > .rules {
+            list-style: none;
+        }
+        ul > .rules li::before {
+          content: '■';
+          font-weight: bold;
+          display: inline-block;
+          width: 1em;
+          margin-left: -1em;
+          font-size: 2.5em;
+        }
+        .warning::before {
+            color: {/literal}{$colors['warning']};{literal}
+        }
+        .error::before {
+            color: {/literal}{$colors['error']};{literal}
+        }
+        .blocker::before {
+            color: {/literal}{$colors['blocker']};{literal}
+        }
+        {/literal}
+    </style>
     <ul>
         <li>{@admin.project.rules.list.warnings.html@}</li>
         <ul>
             <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
-            <ul>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.yellow.html", array($serverVersions['qgis_server_version_old'])}</li>
-                <li>{jlocale "admin.project.rules.list.qgis.version.light.coral.html", array( $serverVersions['qgis_server_version_next'])}</li>
+            <ul class="rules">
+                <li class="warning">{jlocale "admin.project.rules.list.qgis.version.warning.html", array($serverVersions['qgis_server_version_old'])}</li>
+                <li class="error">{jlocale "admin.project.rules.list.qgis.version.error.html", array( $serverVersions['qgis_server_version_next'])}</li>
             </ul>
             <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
-            <ul>
-                <li>{jlocale "admin.project.rules.list.target.version.html", array($minimumLizmapTargetVersionRequired)}</li>
+            <ul class="rules">
+                <li class="warning">{jlocale "admin.project.rules.list.target.version.html", array($minimumLizmapTargetVersionRequired)}</li>
             </ul>
             <li>{@admin.project.list.column.layers.count.label.longer@}</li>
-            <ul>
-                <li>{jlocale "admin.project.rules.list.important.count.layers.html", array($warningLayerCount)}</li>
-                <li>{jlocale "admin.project.rules.list.very.important.count.layers.html", array(($errorLayerCount))}</li>
+            <ul class="rules">
+                <li class="warning">{jlocale "admin.project.rules.list.important.count.layers.html", array($warningLayerCount)}</li>
+                <li class="error">{jlocale "admin.project.rules.list.very.important.count.layers.html", array(($errorLayerCount))}</li>
             </ul>
             <li>{@admin.project.list.column.crs.label@}</li>
-            <ul>
-                <li>{@admin.project.rules.list.custom.projection@}</li>
+            <ul class="rules">
+                <li class="warning">{@admin.project.rules.list.custom.projection@}</li>
             </ul>
 
             {if $hasInspectionData}
             <li>{@admin.project.list.column.invalid.layers.count.label@}</li>
-            <ul>
-                <li>{@admin.project.rules.list.invalid.datasource.html@}</li>
+            <ul class="rules">
+                <li class="warning">{@admin.project.rules.list.invalid.datasource.html@}</li>
             </ul>
             <li>{@admin.project.list.column.loading.time.label.alt@}</li>
-            <ul>
-                <li>{jlocale "admin.project.rules.list.warning.loading.html", array($warningLoadingTime)}</li>
-                <li>{jlocale "admin.project.rules.list.error.loading.html", array($errorLoadingTime)}</li>
+            <ul class="rules">
+                <li class="warning">{jlocale "admin.project.rules.list.warning.loading.html", array($warningLoadingTime)}</li>
+                <li class="error">{jlocale "admin.project.rules.list.error.loading.html", array($errorLoadingTime)}</li>
             </ul>
             <li>{@admin.project.list.column.memory.usage.label.alt@}</li>
-            <ul>
-                <li>{jlocale "admin.project.rules.list.warning.memory.html", array($warningMemory)}</li>
-                <li>{jlocale "admin.project.rules.list.error.memory.html", array($errorMemory)}</li>
+            <ul class="rules">
+                <li class="warning">{jlocale "admin.project.rules.list.warning.memory.html", array($warningMemory)}</li>
+                <li class="error">{jlocale "admin.project.rules.list.error.memory.html", array($errorMemory)}</li>
             </ul>
             {/if}
 
         </ul>
-    <li>{@admin.project.rules.list.blocking.html@}</li>
-        <ul>
-            <li>{jlocale "admin.project.rules.list.blocking.target.html", array($minimumLizmapTargetVersionRequired - 0.1)}</li>
+        <li>{@admin.project.rules.list.blocking.html@}</li>
+        <ul class="rules">
+            <li class="blocker">{jlocale "admin.project.rules.list.blocking.target.html", array($minimumLizmapTargetVersionRequired - 0.1)}</li>
         </ul>
     </ul>
 </div>
