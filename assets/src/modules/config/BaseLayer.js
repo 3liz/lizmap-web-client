@@ -1,9 +1,29 @@
 
 import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';
-import { convertBoolean } from './Tools.js';
+import { convertBoolean } from './../utils/Converters.js';
+import { createEnum } from './../utils/Enums.js';
 import { AttributionConfig } from './Attribution.js';
 import { LayerConfig, LayersConfig } from './Layer.js';
+
+/**
+ * Enum for base layer types
+ * @readonly
+ * @enum {String}
+ * @property {String} Empty  - The base layer type for project background color
+ * @property {String} XYZ    - The base layer type for xyz layers
+ * @property {String} Bing   - The base layer type for Bing layers
+ * @property {String} WMTS   - The base layer type for Web Map Tile Service layers
+ * @property {String} Lizmap - The base layer type for Lizmap layers
+ */
+export const BaseLayerTypes = createEnum({
+    'Empty': 'empty',
+    'XYZ': 'xyz',
+    'Bing': 'bing',
+    'WMTS': 'wmts',
+    'WMS': 'wms',
+    'Lizmap': 'lizmap',
+});
 
 /**
  * Class representing a base layer config
@@ -12,8 +32,7 @@ import { LayerConfig, LayersConfig } from './Layer.js';
  */
 export class BaseLayerConfig extends BaseObjectConfig {
     /**
-     * Create a base layer config based on a config object
-     * @param {String}      type                                                           - the base layer type
+     * Create a base layer config instance based on a config object
      * @param {String}      name                                                           - the base layer name
      * @param {Object}      cfg                                                            - the base layer lizmap config object
      * @param {String}      cfg.title                                                      - the base layer title
@@ -23,7 +42,7 @@ export class BaseLayerConfig extends BaseObjectConfig {
      * @param {Object}      [requiredProperties={'title': {type: 'string'}}]               - the required properties definition
      * @param {Object}      [optionalProperties={'key': {type: 'string', nullable: true}}] - the optional properties definition
      */
-    constructor(type, name, cfg, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'key': { type: 'string', nullable: true } }) {
+    constructor(name, cfg, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'key': { type: 'string', nullable: true } }) {
 
         if (!requiredProperties.hasOwnProperty('title')) {
             requiredProperties['title'] = { type: 'string' };
@@ -34,10 +53,9 @@ export class BaseLayerConfig extends BaseObjectConfig {
         }
 
         super(cfg, requiredProperties, optionalProperties);
+        this._type = BaseLayerTypes.Lizmap;
 
         this._name = name;
-
-        this._type = type;
 
         this._hasLayerConfig = false;
         this._layerConfig = null;
@@ -62,6 +80,7 @@ export class BaseLayerConfig extends BaseObjectConfig {
 
     /**
      * The base layer type
+     * @see BaseLayerTypes
      *
      * @type {String}
      **/
@@ -152,17 +171,18 @@ export class EmptyBaseLayerConfig extends BaseLayerConfig {
      * Create an empty base layer config based on a config object (it can be empty)
      * @param {Object} cfg - an object for empty base layer
      */
-    constructor(cfg) {
+    constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
             throw new ValidationError('The cfg parameter is not an Object!');
         }
-        const emptyCfg = {
-            title: 'empty'
-        };
+        const emptyCfg = Object.assign({
+            title: name
+        }, cfg);
         const emptyProperties = {
             'title': { type: 'string' }
         };
-        super('empty', 'empty', emptyCfg, emptyProperties, {});
+        super(name, emptyCfg, emptyProperties, {});
+        this._type = BaseLayerTypes.Empty;
     }
 }
 
@@ -202,10 +222,11 @@ export class XyzBaseLayerConfig extends BaseLayerConfig {
         }
 
         if (Object.getOwnPropertyNames(cfg).length == 0) {
-            throw new ValidationError('The `options` in the config is empty!');
+            throw new ValidationError('The cfg parameter is empty!');
         }
 
-        super('xyz', name, cfg, xyzProperties, xyzOptionalProperties);
+        super(name, cfg, xyzProperties, xyzOptionalProperties);
+        this._type = BaseLayerTypes.XYZ;
     }
 
     /**
@@ -215,26 +236,6 @@ export class XyzBaseLayerConfig extends BaseLayerConfig {
      **/
     get url() {
         return this._url;
-    }
-
-    /**
-     * The base layer key is defined
-     *
-     * @type {boolean}
-     **/
-    get hasKey() {
-        return (this._key != null && typeof this._key == 'string' && this._key != '');
-    }
-
-    /**
-     * The base layer key
-     *
-     * @type {?String}
-     **/
-    get key() {
-        if (this.hasKey)
-            return this._key;
-        return null;
     }
 
     /**
@@ -294,10 +295,11 @@ export class BingBaseLayerConfig extends BaseLayerConfig {
         }
 
         if (Object.getOwnPropertyNames(cfg).length == 0) {
-            throw new ValidationError('The `options` in the config is empty!');
+            throw new ValidationError('The cfg parameter is empty!');
         }
 
-        super('bing', name, cfg, bingProperties, bingOptionalProperties)
+        super(name, cfg, bingProperties, bingOptionalProperties)
+        this._type = BaseLayerTypes.Bing;
     }
 
     /**
@@ -314,10 +316,10 @@ export class BingBaseLayerConfig extends BaseLayerConfig {
 const wmtsProperties = {
     'title': { type: 'string' },
     'url': { type: 'string' },
-    'layer': { type: 'string' },
+    'layers': { type: 'string' },
     'format': { type: 'string' },
-    'style': { type: 'string' },
-    'matrixSet': { type: 'string' },
+    'styles': { type: 'string' },
+    'tileMatrixSet': { type: 'string' },
     'crs': { type: 'string' }
 }
 
@@ -338,10 +340,10 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @param {Object} cfg                 - the lizmap config object for WMTS base layer
      * @param {String} cfg.title           - the base layer title
      * @param {String} cfg.url             - the base layer url
-     * @param {String} cfg.layer           - the base layer layer
+     * @param {String} cfg.layers          - the base layer layer
      * @param {String} cfg.format          - the base layer format
-     * @param {String} cfg.style           - the base layer style
-     * @param {String} cfg.matrixSet       - the base layer matrixSet
+     * @param {String} cfg.styles          - the base layer style
+     * @param {String} cfg.tileMatrixSet   - the base layer matrixSet
      * @param {String} cfg.crs             - the base layer crs
      * @param {Number} [cfg.numZoomLevels] - the base layer numZoomLevels
      * @param {String} [cfg.key]           - the base layer key
@@ -353,10 +355,11 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
         }
 
         if (Object.getOwnPropertyNames(cfg).length == 0) {
-            throw new ValidationError('The `options` in the config is empty!');
+            throw new ValidationError('The cfg parameter is empty!');
         }
 
-        super('wmts', name, cfg, wmtsProperties, wmtsOptionalProperties);
+        super(name, cfg, wmtsProperties, wmtsOptionalProperties);
+        this._type = BaseLayerTypes.WMTS;
 
         // Remove unnecessary parameters
         let wmtsUrl = new URL(this._url);
@@ -391,7 +394,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get layer() {
-        return this._layer;
+        return decodeURIComponent(this._layers);
     }
 
     /**
@@ -400,7 +403,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get format() {
-        return this._format;
+        return decodeURIComponent(this._format);
     }
 
     /**
@@ -409,7 +412,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get style() {
-        return this._style;
+        return decodeURIComponent(this._styles);
     }
 
     /**
@@ -418,7 +421,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get matrixSet() {
-        return this._matrixSet;
+        return decodeURIComponent(this._tileMatrixSet);
     }
 
     /**
@@ -439,13 +442,112 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
         return this._numZoomLevels;
     }
 
+}
+
+const wmsProperties = {
+    'title': { type: 'string' },
+    'url': { type: 'string' },
+    'layers': { type: 'string' },
+    'format': { type: 'string' },
+    'styles': { type: 'string' },
+    'crs': { type: 'string' }
+}
+
+const wmsOptionalProperties = {
+    'key': { type: 'string', nullable: true }
+}
+
+/**
+ * Class representing a WMS base layer config
+ * @class
+ * @augments BaseLayerConfig
+ */
+export class WmsBaseLayerConfig extends BaseLayerConfig {
     /**
-     * The base layer zmax
+     * Create a WMS base layer config based on a config object
+     * @param {String} name                - the base layer name
+     * @param {Object} cfg                 - the lizmap config object for WMTS base layer
+     * @param {String} cfg.title           - the base layer title
+     * @param {String} cfg.url             - the base layer url
+     * @param {String} cfg.layers          - the base layer layer
+     * @param {String} cfg.format          - the base layer format
+     * @param {String} cfg.styles          - the base layer style
+     * @param {String} cfg.crs             - the base layer crs
+     * @param {String} [cfg.key]           - the base layer key
+     */
+    constructor(name, cfg) {
+        if (!cfg || typeof cfg !== "object") {
+            throw new ValidationError('The cfg parameter is not an Object!');
+        }
+
+        if (Object.getOwnPropertyNames(cfg).length == 0) {
+            throw new ValidationError('The cfg parameter is empty!');
+        }
+
+        super(name, cfg, wmsProperties, wmsOptionalProperties);
+        this._type = BaseLayerTypes.WMS;
+
+        // Remove unnecessary parameters
+        let wmtsUrl = new URL(this._url);
+        let keysToRemove = []
+        for (const [key, ] of wmtsUrl.searchParams) {
+            if (key.toLowerCase() == 'service'
+                || key.toLowerCase() == 'version'
+                || key.toLowerCase() == 'request') {
+                keysToRemove.push(key);
+            }
+        }
+        if (keysToRemove.length != 0) {
+            for (const key of keysToRemove) {
+                wmtsUrl.searchParams.delete(key);
+            }
+            this._url = wmtsUrl.toString();
+        }
+    }
+
+    /**
+     * The base layer url
      *
-     * @type {Number}
+     * @type {String}
      **/
-    get zmax() {
-        return this._zmax;
+    get url() {
+        return this._url;
+    }
+
+    /**
+     * The base layer wms layers
+     *
+     * @type {String}
+     **/
+    get layers() {
+        return decodeURIComponent(this._layers);
+    }
+
+    /**
+     * The base layer wms format
+     *
+     * @type {String}
+     **/
+    get format() {
+        return decodeURIComponent(this._format);
+    }
+
+    /**
+     * The base layer wms styles
+     *
+     * @type {String}
+     **/
+    get styles() {
+        return decodeURIComponent(this._styles);
+    }
+
+    /**
+     * The base layer crs
+     *
+     * @type {String}
+     **/
+    get crs() {
+        return this._crs;
     }
 }
 
@@ -578,10 +680,10 @@ const defaultCompleteBaseLayersCfg = {
         "type": "wmts",
         "title": "IGN Plan",
         "url": "https://wxs.ign.fr/cartes/geoportail/wmts",
-        "layer": "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
+        "layers": "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
         "format": "image/png",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 20,
         "attribution": {
@@ -593,10 +695,10 @@ const defaultCompleteBaseLayersCfg = {
         "type": "wmts",
         "title": "IGN Orthophoto",
         "url": "https://wxs.ign.fr/ortho/geoportail/wmts",
-        "layer": "ORTHOIMAGERY.ORTHOPHOTOS",
+        "layers": "ORTHOIMAGERY.ORTHOPHOTOS",
         "format": "image/jpeg",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 22,
         "attribution": {
@@ -609,10 +711,10 @@ const defaultCompleteBaseLayersCfg = {
         "title": "IGN Scans",
         "url": "https://wxs.ign.fr/{key}/geoportail/wmts",
         "key": "",
-        "layer": "GEOGRAPHICALGRIDSYSTEMS.MAPS",
+        "layers": "GEOGRAPHICALGRIDSYSTEMS.MAPS",
         "format": "image/jpeg",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 18,
         "attribution": {
@@ -624,10 +726,10 @@ const defaultCompleteBaseLayersCfg = {
         "type": "wmts",
         "title": "IGN Cadastre",
         "url": "https://wxs.ign.fr/parcellaire/geoportail/wmts",
-        "layer": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
+        "layers": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
         "format": "image/png",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 20,
         "attribution": {
@@ -699,10 +801,31 @@ export class BaseLayersConfig {
             for (const layerTreeItem of baseLayersTreeGroup.getChildren()) {
                 if ( !extendedCfg.hasOwnProperty(layerTreeItem.name) ) {
                     if ( defaultCompleteBaseLayersCfg.hasOwnProperty(layerTreeItem.name) ) {
+                        // The name is known has a default base layer
                         extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.name]);
                     } else if ( layerTreeItem.layerConfig.externalWmsToggle ){
-                        extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
+                        // The layer config has external access parameters
+                        if (layerTreeItem.layerConfig.externalAccess.hasOwnProperty('type')) {
+                            // layer could be converted to XYZ or WMTS background layers
+                            extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
+                        } else {
+                            extendedCfg[layerTreeItem.name] = Object.assign(
+                                structuredClone(layerTreeItem.layerConfig.externalAccess),
+                                {type: BaseLayerTypes.WMS}
+                            );
+                        }
                     } else {
+                        // If the tree item is a layer associated to QGIS group do not keep
+                        // we already keep empty or project-background-color QGIS group
+                        if (layerTreeItem.type === 'layer' && layerTreeItem.layerConfig.type === 'group') {
+                            continue;
+                        }
+                        // If the tree item is a group without any QGIS layer do not keep
+                        if (layerTreeItem.type === 'group'
+                            && layerTreeItem.findTreeLayerConfigs().filter(l => l.layerConfig.type === 'layer').length == 0) {
+                            continue;
+                        }
+                        // It is a lizmap layer
                         extendedCfg[layerTreeItem.name] = {
                             "type": "lizmap",
                         }
@@ -733,7 +856,7 @@ export class BaseLayersConfig {
                     extendedCfg[layerCfg.name] = structuredClone(defaultCompleteBaseLayersCfg[layerCfg.externalAccess]);
                 } else {
                     extendedCfg[layerCfg.name] = {
-                        "type": "lizmap",
+                        "type": BaseLayerTypes.Lizmap,
                         "title": layerCfg.title,
                     }
                 }
@@ -759,7 +882,11 @@ export class BaseLayersConfig {
         this._configs = [];
         for (const key of names) {
             if (key == 'empty' || key == 'project-background-color') {
-                this._configs.push(new EmptyBaseLayerConfig({}));
+                if (extendedCfg.hasOwnProperty(key)) {
+                    this._configs.push(new EmptyBaseLayerConfig(key, extendedCfg[key]));
+                } else {
+                    this._configs.push(new EmptyBaseLayerConfig(key, {}));
+                }
                 this._names.push(key);
                 continue;
             }
@@ -768,20 +895,24 @@ export class BaseLayersConfig {
                 throw new ValidationError('No `type` in the baseLayer cfg object!');
             }
             switch (blCfg.type) {
-                case 'xyz':
+                case BaseLayerTypes.XYZ:
                     this._configs.push(new XyzBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
-                case 'bing':
+                case BaseLayerTypes.Bing:
                     this._configs.push(new BingBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
-                case 'wmts':
+                case BaseLayerTypes.WMTS:
                     this._configs.push(new WmtsBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
+                case BaseLayerTypes.WMS:
+                    this._configs.push(new WmsBaseLayerConfig(key, blCfg));
+                    this._names.push(key);
+                    break;
                 default:
-                    this._configs.push(new BaseLayerConfig(blCfg.type, key, blCfg));
+                    this._configs.push(new BaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
             }

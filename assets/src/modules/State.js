@@ -36,7 +36,7 @@ export class State extends EventDispatcher {
      **/
     get baseLayers() {
         if (this._baseLayers == null) {
-            this._baseLayers = new BaseLayersState(this._initialConfig.baseLayers);
+            this._baseLayers = new BaseLayersState(this._initialConfig.baseLayers, this.layersAndGroupsCollection);
             // Dispatch events from base layers
             this._baseLayers.addListener(this.dispatch.bind(this), 'baselayers.selection.changed');
         }

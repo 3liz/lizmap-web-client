@@ -167,7 +167,7 @@ describe('LayerTreeItemConfig', function () {
 })
 
 describe('buildLayerTreeConfig', function () {
-    it('Valid', function () {
+    it('Montpellier', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
@@ -199,6 +199,8 @@ describe('buildLayerTreeConfig', function () {
         expect(root.wmsBoundingBoxes[0].ymax).to.be.eq(5414844.995)
         expect(root.layerConfig).to.be.null;
         expect(root.childrenCount).to.be.eq(7)
+        expect(root.findTreeLayerConfigNames()).to.have.length(18)
+        expect(root.findTreeLayerConfigs()).to.have.length(18)
 
         const edition = root.children[0];
         expect(edition).to.be.instanceOf(LayerTreeGroupConfig)
@@ -210,9 +212,18 @@ describe('buildLayerTreeConfig', function () {
         expect(edition.wmsAbstract).to.be.null
         expect(edition.layerConfig).to.not.be.null;
         expect(edition.childrenCount).to.be.eq(3)
+        expect(edition.findTreeLayerConfigNames()).to.have.length(3).that.be.deep.eq([
+            "points_of_interest",
+            "edition_line",
+            "areas_of_interest"
+        ])
+        expect(edition.findTreeLayerConfigs()).to.have.length(3)
 
         const transports = root.children[1];
         expect(transports).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(transports.childrenCount).to.be.eq(3)
+        expect(transports.findTreeLayerConfigNames()).to.have.length(9)
+        expect(transports.findTreeLayerConfigs()).to.have.length(9)
 
         const bus = transports.children[0];
         expect(bus).to.be.instanceOf(LayerTreeGroupConfig)
@@ -222,10 +233,15 @@ describe('buildLayerTreeConfig', function () {
         expect(bus.wmsName).to.be.eq('Bus')
         expect(bus.wmsTitle).to.be.eq('Bus')
         expect(bus.wmsAbstract).to.be.null
-        expect(bus.layerConfig).to.not.be.null;
-        expect(bus.childrenCount).to.be.eq(2)
         expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
         expect(bus.wmsMaxScaleDenominator).to.be.eq(-1)
+        expect(bus.layerConfig).to.not.be.null
+        expect(bus.childrenCount).to.be.eq(2)
+        expect(bus.findTreeLayerConfigNames()).to.have.length(2).that.be.deep.eq([
+          "bus_stops",
+          "bus"
+      ])
+        expect(bus.findTreeLayerConfigs()).to.have.length(2)
 
         const busStops = bus.children[0];
         expect(busStops).to.be.instanceOf(LayerTreeLayerConfig)
@@ -274,5 +290,184 @@ describe('buildLayerTreeConfig', function () {
         const child7 = rootGetChildren.next().value;
         expect(child7).to.be.instanceOf(LayerTreeGroupConfig)
         expect(child7.name).to.be.eq('Hidden')
+    })
+
+    it('Backgrounds', function () {
+      const capabilities = JSON.parse(readFileSync('./data/backgrounds-capabilities.json', 'utf8'));
+      expect(capabilities).to.not.be.undefined
+      expect(capabilities.Capability).to.not.be.undefined
+      const config = JSON.parse(readFileSync('./data/backgrounds-config.json', 'utf8'));
+      expect(config).to.not.be.undefined
+
+      const layers = new LayersConfig(config.layers);
+
+      const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+      expect(root).to.be.instanceOf(LayerTreeGroupConfig)
+      expect(root.name).to.be.eq('root')
+      expect(root.type).to.be.eq('group')
+      expect(root.level).to.be.eq(0)
+      expect(root.layerConfig).to.be.null;
+      expect(root.childrenCount).to.be.eq(3)
+      expect(root.findTreeLayerConfigNames()).to.have.length(20)
+      expect(root.findTreeLayerConfigs()).to.have.length(20)
+
+      const layer = root.children[0]
+      expect(layer).to.be.instanceOf(LayerTreeLayerConfig)
+      expect(layer.type).to.be.eq('layer')
+      expect(layer.name).to.be.eq('OpenTopoMap')
+
+      const baselayers = root.children[2]
+      expect(baselayers).to.be.instanceOf(LayerTreeGroupConfig)
+      expect(baselayers.type).to.be.eq('group')
+      expect(baselayers.name).to.be.eq('baselayers')
+      expect(baselayers.childrenCount).to.be.eq(16)
+      expect(baselayers.findTreeLayerConfigNames()).to.have.length(18)
+      expect(baselayers.findTreeLayerConfigs()).to.have.length(18)
+
+      const baselayersGetChildren = baselayers.getChildren()
+
+      const tms = baselayersGetChildren.next().value;
+      expect(tms.type).to.be.eq('layer')
+      expect(tms.name).to.be.eq('=== TMS ===')
+      expect(tms.layerConfig.type).to.be.eq('group')
+      expect(tms.wmsName).to.be.eq('TMS')
+      expect(tms.wmsStyles).to.have.length(1)
+      expect(tms.wmsStyles[0].wmsName).to.be.eq('')
+      expect(tms.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
+      const watercolor = baselayersGetChildren.next().value;
+      expect(watercolor.type).to.be.eq('layer')
+      expect(watercolor.name).to.be.eq('Stamen Watercolor')
+      expect(watercolor.layerConfig.type).to.be.eq('layer')
+      expect(watercolor.wmsName).to.be.eq('Stamen_Watercolor')
+      expect(watercolor.wmsStyles).to.have.length(1)
+      expect(watercolor.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(watercolor.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const osm = baselayersGetChildren.next().value;
+      expect(osm.type).to.be.eq('layer')
+      expect(osm.name).to.be.eq('OSM TMS internal')
+      expect(osm.layerConfig.type).to.be.eq('layer')
+      expect(osm.wmsName).to.be.eq('OpenStreetMap_1')
+      expect(osm.wmsStyles).to.have.length(1)
+      expect(osm.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(osm.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const osm2 = baselayersGetChildren.next().value;
+      expect(osm2.type).to.be.eq('layer')
+      expect(osm2.name).to.be.eq('OSM TMS external')
+      expect(osm2.layerConfig.type).to.be.eq('layer')
+      expect(osm2.wmsName).to.be.eq('OpenStreetMap_2')
+      expect(osm2.wmsStyles).to.have.length(1)
+      expect(osm2.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(osm2.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const groups = baselayersGetChildren.next().value;
+      expect(groups.type).to.be.eq('layer')
+      expect(groups.name).to.be.eq('=== GROUPS ===')
+      expect(groups.layerConfig.type).to.be.eq('group')
+      expect(groups.wmsName).to.be.eq('GROUPS')
+      expect(groups.wmsStyles).to.have.length(1)
+      expect(groups.wmsStyles[0].wmsName).to.be.eq('')
+      expect(groups.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
+      const projectBackgroundColor = baselayersGetChildren.next().value;
+      expect(projectBackgroundColor.type).to.be.eq('layer')
+      expect(projectBackgroundColor.name).to.be.eq('project-background-color')
+      expect(projectBackgroundColor.layerConfig.type).to.be.eq('group')
+      expect(projectBackgroundColor.wmsName).to.be.eq('project-background-color')
+      expect(projectBackgroundColor.wmsStyles).to.have.length(1)
+      expect(projectBackgroundColor.wmsStyles[0].wmsName).to.be.eq('')
+      expect(projectBackgroundColor.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
+      const emptyGroup = baselayersGetChildren.next().value;
+      expect(emptyGroup.type).to.be.eq('layer')
+      expect(emptyGroup.name).to.be.eq('empty group')
+      expect(emptyGroup.layerConfig.type).to.be.eq('group')
+      expect(emptyGroup.wmsName).to.be.eq('empty_group')
+      expect(emptyGroup.wmsStyles).to.have.length(1)
+      expect(emptyGroup.wmsStyles[0].wmsName).to.be.eq('')
+      expect(emptyGroup.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
+      const group = baselayersGetChildren.next().value;
+      expect(group.type).to.be.eq('group')
+      expect(group.name).to.be.eq('group with many layers and shortname')
+      expect(group.layerConfig.type).to.be.eq('group')
+      expect(group.wmsName).to.be.eq('group_with_many_layers_shortname')
+      expect(group.childrenCount).to.be.eq(3)
+      expect(group.findTreeLayerConfigNames()).to.have.length(3)
+      expect(group.findTreeLayerConfigs()).to.have.length(3)
+
+      const groupSub = baselayersGetChildren.next().value;
+      expect(groupSub.type).to.be.eq('group')
+      expect(groupSub.name).to.be.eq('group with sub')
+      expect(groupSub.layerConfig.type).to.be.eq('group')
+      expect(groupSub.wmsName).to.be.eq('group_with_sub')
+      expect(groupSub.childrenCount).to.be.eq(1)
+      expect(groupSub.findTreeLayerConfigNames()).to.have.length(1)
+      expect(groupSub.findTreeLayerConfigs()).to.have.length(1)
+
+      const localLayers = baselayersGetChildren.next().value;
+      expect(localLayers.type).to.be.eq('layer')
+      expect(localLayers.name).to.be.eq('=== LOCAL LAYERS ===')
+      expect(localLayers.layerConfig.type).to.be.eq('group')
+      expect(localLayers.wmsName).to.be.eq('LOCAL_LAYERS')
+      expect(localLayers.wmsStyles).to.have.length(1)
+      expect(localLayers.wmsStyles[0].wmsName).to.be.eq('')
+      expect(localLayers.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
+      const vector = baselayersGetChildren.next().value;
+      expect(vector.type).to.be.eq('layer')
+      expect(vector.name).to.be.eq('local vector layer')
+      expect(vector.layerConfig.type).to.be.eq('layer')
+      expect(vector.wmsName).to.be.eq('vector_layer')
+      expect(vector.wmsStyles).to.have.length(1)
+      expect(vector.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(vector.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const raster = baselayersGetChildren.next().value;
+      expect(raster.type).to.be.eq('layer')
+      expect(raster.name).to.be.eq('local raster layer')
+      expect(raster.layerConfig.type).to.be.eq('layer')
+      expect(raster.wmsName).to.be.eq('local_raster')
+      expect(raster.wmsStyles).to.have.length(1)
+      expect(raster.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(raster.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const wmts = baselayersGetChildren.next().value;
+      expect(wmts.type).to.be.eq('layer')
+      expect(wmts.name).to.be.eq('=== WM[T]S are on demo.lizmap.com ===')
+      expect(wmts.layerConfig.type).to.be.eq('group')
+      expect(wmts.wmsName).to.be.eq('WM_T_S_are_on_demo_lizmap_com')
+      expect(wmts.wmsStyles).to.have.length(1)
+      expect(wmts.wmsStyles[0].wmsName).to.be.eq('')
+      expect(wmts.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
+      const wmtsSingle = baselayersGetChildren.next().value;
+      expect(wmtsSingle.type).to.be.eq('layer')
+      expect(wmtsSingle.name).to.be.eq('WMTS single external')
+      expect(wmtsSingle.layerConfig.type).to.be.eq('layer')
+      expect(wmtsSingle.wmsName).to.be.eq('WMTS_demo_lizmap_com_communes')
+      expect(wmtsSingle.wmsStyles).to.have.length(1)
+      expect(wmtsSingle.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(wmtsSingle.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const wmsSingle = baselayersGetChildren.next().value;
+      expect(wmsSingle.type).to.be.eq('layer')
+      expect(wmsSingle.name).to.be.eq('WMS single internal')
+      expect(wmsSingle.layerConfig.type).to.be.eq('layer')
+      expect(wmsSingle.wmsName).to.be.eq('WMST_lizmap_com_MTP_1')
+      expect(wmsSingle.wmsStyles).to.have.length(1)
+      expect(wmsSingle.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(wmsSingle.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const wmsGrouped = baselayersGetChildren.next().value;
+      expect(wmsGrouped.type).to.be.eq('layer')
+      expect(wmsGrouped.name).to.be.eq('WMS grouped external')
+      expect(wmsGrouped.layerConfig.type).to.be.eq('layer')
+      expect(wmsGrouped.wmsName).to.be.eq('WMST_lizmap_com_MTP')
+      expect(wmsGrouped.wmsStyles).to.have.length(1)
+      expect(wmsGrouped.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(wmsGrouped.wmsStyles[0].wmsTitle).to.be.eq('default')
     })
 })
