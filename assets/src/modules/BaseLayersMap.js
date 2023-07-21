@@ -65,13 +65,18 @@ export default class BaseLayersMap extends olMap {
                         maxZoom: baseLayerState.zmax,
                     })
                 });
-            } else if (baseLayerState.type === 'wms') {
+            } else if (baseLayerState.type === BaseLayerTypes.WMS) {
+                let minResolution = baseLayerState.layerConfig.minScale === 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale);
+                let maxResolution = baseLayerState.layerConfig.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale);
                 baseLayer = new ImageLayer({
+                    minResolution: minResolution,
+                    maxResolution: maxResolution,
                     source: new ImageWMS({
                         url: baseLayerState.url,
                         projection: baseLayerState.crs,
                         params: {
-                            LAYERS: baseLayerState.layer,
+                            LAYERS: baseLayerState.layers,
+                            STYLES: baseLayerState.styles,
                             FORMAT: baseLayerState.format
                         },
                     })
@@ -83,14 +88,14 @@ export default class BaseLayersMap extends olMap {
                 const matrixIds = [];
 
                 for (let i = 0; i < baseLayerState.numZoomLevels; i++) {
-                  matrixIds[i] = i.toString();
-                  resolutions[i] = maxResolution / Math.pow(2, i);
+                    matrixIds[i] = i.toString();
+                    resolutions[i] = maxResolution / Math.pow(2, i);
                 }
 
                 const tileGrid = new WMTSTileGrid({
-                  origin: [-20037508, 20037508],
-                  resolutions: resolutions,
-                  matrixIds: matrixIds,
+                    origin: [-20037508, 20037508],
+                    resolutions: resolutions,
+                    matrixIds: matrixIds,
                 });
 
                 let url = baseLayerState.url;
@@ -203,10 +208,12 @@ export default class BaseLayersMap extends olMap {
                     return;
                 }
 
+                /* Sometimes throw an Error and extent is not used
                 let extent = node.layerConfig.extent;
                 if(node.layerConfig.crs !== "" && node.layerConfig.crs !== mainLizmap.projection){
                     extent = transformExtent(extent, node.layerConfig.crs, mainLizmap.projection);
                 }
+                */
 
                 // Set min/max resolution only if different from default
                 let minResolution = node.layerConfig.minScale === 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale);

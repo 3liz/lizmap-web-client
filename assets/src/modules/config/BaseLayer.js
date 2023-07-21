@@ -21,6 +21,7 @@ export const BaseLayerTypes = createEnum({
     'XYZ': 'xyz',
     'Bing': 'bing',
     'WMTS': 'wmts',
+    'WMS': 'wms',
     'Lizmap': 'lizmap',
 });
 
@@ -221,7 +222,7 @@ export class XyzBaseLayerConfig extends BaseLayerConfig {
         }
 
         if (Object.getOwnPropertyNames(cfg).length == 0) {
-            throw new ValidationError('The `options` in the config is empty!');
+            throw new ValidationError('The cfg parameter is empty!');
         }
 
         super(name, cfg, xyzProperties, xyzOptionalProperties);
@@ -294,7 +295,7 @@ export class BingBaseLayerConfig extends BaseLayerConfig {
         }
 
         if (Object.getOwnPropertyNames(cfg).length == 0) {
-            throw new ValidationError('The `options` in the config is empty!');
+            throw new ValidationError('The cfg parameter is empty!');
         }
 
         super(name, cfg, bingProperties, bingOptionalProperties)
@@ -354,7 +355,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
         }
 
         if (Object.getOwnPropertyNames(cfg).length == 0) {
-            throw new ValidationError('The `options` in the config is empty!');
+            throw new ValidationError('The cfg parameter is empty!');
         }
 
         super(name, cfg, wmtsProperties, wmtsOptionalProperties);
@@ -393,7 +394,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get layer() {
-        return this._layers;
+        return decodeURIComponent(this._layers);
     }
 
     /**
@@ -402,7 +403,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get format() {
-        return this._format;
+        return decodeURIComponent(this._format);
     }
 
     /**
@@ -411,7 +412,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get style() {
-        return this._styles;
+        return decodeURIComponent(this._styles);
     }
 
     /**
@@ -420,7 +421,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get matrixSet() {
-        return this._tileMatrixSet;
+        return decodeURIComponent(this._tileMatrixSet);
     }
 
     /**
@@ -441,13 +442,112 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
         return this._numZoomLevels;
     }
 
+}
+
+const wmsProperties = {
+    'title': { type: 'string' },
+    'url': { type: 'string' },
+    'layers': { type: 'string' },
+    'format': { type: 'string' },
+    'styles': { type: 'string' },
+    'crs': { type: 'string' }
+}
+
+const wmsOptionalProperties = {
+    'key': { type: 'string', nullable: true }
+}
+
+/**
+ * Class representing a WMS base layer config
+ * @class
+ * @augments BaseLayerConfig
+ */
+export class WmsBaseLayerConfig extends BaseLayerConfig {
     /**
-     * The base layer zmax
+     * Create a WMS base layer config based on a config object
+     * @param {String} name                - the base layer name
+     * @param {Object} cfg                 - the lizmap config object for WMTS base layer
+     * @param {String} cfg.title           - the base layer title
+     * @param {String} cfg.url             - the base layer url
+     * @param {String} cfg.layers          - the base layer layer
+     * @param {String} cfg.format          - the base layer format
+     * @param {String} cfg.styles          - the base layer style
+     * @param {String} cfg.crs             - the base layer crs
+     * @param {String} [cfg.key]           - the base layer key
+     */
+    constructor(name, cfg) {
+        if (!cfg || typeof cfg !== "object") {
+            throw new ValidationError('The cfg parameter is not an Object!');
+        }
+
+        if (Object.getOwnPropertyNames(cfg).length == 0) {
+            throw new ValidationError('The cfg parameter is empty!');
+        }
+
+        super(name, cfg, wmsProperties, wmsOptionalProperties);
+        this._type = BaseLayerTypes.WMS;
+
+        // Remove unnecessary parameters
+        let wmtsUrl = new URL(this._url);
+        let keysToRemove = []
+        for (const [key, ] of wmtsUrl.searchParams) {
+            if (key.toLowerCase() == 'service'
+                || key.toLowerCase() == 'version'
+                || key.toLowerCase() == 'request') {
+                keysToRemove.push(key);
+            }
+        }
+        if (keysToRemove.length != 0) {
+            for (const key of keysToRemove) {
+                wmtsUrl.searchParams.delete(key);
+            }
+            this._url = wmtsUrl.toString();
+        }
+    }
+
+    /**
+     * The base layer url
      *
-     * @type {Number}
+     * @type {String}
      **/
-    get zmax() {
-        return this._zmax;
+    get url() {
+        return this._url;
+    }
+
+    /**
+     * The base layer wms layers
+     *
+     * @type {String}
+     **/
+    get layers() {
+        return decodeURIComponent(this._layers);
+    }
+
+    /**
+     * The base layer wms format
+     *
+     * @type {String}
+     **/
+    get format() {
+        return decodeURIComponent(this._format);
+    }
+
+    /**
+     * The base layer wms styles
+     *
+     * @type {String}
+     **/
+    get styles() {
+        return decodeURIComponent(this._styles);
+    }
+
+    /**
+     * The base layer crs
+     *
+     * @type {String}
+     **/
+    get crs() {
+        return this._crs;
     }
 }
 
@@ -705,8 +805,15 @@ export class BaseLayersConfig {
                         extendedCfg[layerTreeItem.name] = structuredClone(defaultCompleteBaseLayersCfg[layerTreeItem.name]);
                     } else if ( layerTreeItem.layerConfig.externalWmsToggle ){
                         // The layer config has external access parameters
-                        // layer could be converted to XYZ or WMTS background layers
-                        extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
+                        if (layerTreeItem.layerConfig.externalAccess.hasOwnProperty('type')) {
+                            // layer could be converted to XYZ or WMTS background layers
+                            extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
+                        } else {
+                            extendedCfg[layerTreeItem.name] = Object.assign(
+                                structuredClone(layerTreeItem.layerConfig.externalAccess),
+                                {type: BaseLayerTypes.WMS}
+                            );
+                        }
                     } else {
                         // If the tree item is a layer associated to QGIS group do not keep
                         // we already keep empty or project-background-color QGIS group
@@ -798,6 +905,10 @@ export class BaseLayersConfig {
                     break;
                 case BaseLayerTypes.WMTS:
                     this._configs.push(new WmtsBaseLayerConfig(key, blCfg));
+                    this._names.push(key);
+                    break;
+                case BaseLayerTypes.WMS:
+                    this._configs.push(new WmsBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
                 default:

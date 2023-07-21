@@ -335,14 +335,70 @@ export class WmtsBaseLayerState extends BaseLayerState {
     get numZoomLevels() {
         return this._baseLayerConfig.numZoomLevels;
     }
+}
+
+/**
+ * Class representing an WMS base layer state
+ * @class
+ * @augments BaseLayerState
+ */
+export class WmsBaseLayerState extends BaseLayerState {
+    /**
+     * Create a base layers WMS state based on the WMS base layer config
+     *
+     * @param {EmptyBaseLayersConfig} baseLayersCfg - the lizmap WMS base layer config object
+     * @param {LayerRasterState}      [itemState]   - the lizmap WMS layer layer state
+     */
+    constructor(baseLayerCfg, itemState = null ) {
+        if (baseLayerCfg.type !== BaseLayerTypes.WMS) {
+            throw new TypeError('Not an `' + BaseLayerTypes.WMS + '` base layer config. Get `' + baseLayerCfg.type + '` for `' + baseLayerCfg.name + '`!');
+        }
+        super(baseLayerCfg, itemState)
+    }
 
     /**
-     * The base layer zmax
+     * The base layer url
      *
-     * @type {Number}
+     * @type {String}
      **/
-    get zmax() {
-        return this._baseLayerConfig.zmax;
+    get url() {
+        return this._baseLayerConfig.url;
+    }
+
+    /**
+     * The base layer wms layer
+     *
+     * @type {String}
+     **/
+    get layers() {
+        return this._baseLayerConfig.layers;
+    }
+
+    /**
+     * The base layer wms format
+     *
+     * @type {String}
+     **/
+    get format() {
+        return this._baseLayerConfig.format;
+    }
+
+    /**
+     * The base layer wms style
+     *
+     * @type {String}
+     **/
+    get styles() {
+        return this._baseLayerConfig.styles;
+    }
+
+    /**
+     * The base layer crs
+     *
+     * @type {String}
+     **/
+    get crs() {
+        return this._baseLayerConfig.crs;
     }
 }
 
@@ -380,6 +436,9 @@ export class BaseLayersState extends EventDispatcher {
                     break;
                 case BaseLayerTypes.WMTS:
                     this._baseLayersMap.set(blConfig.name, new WmtsBaseLayerState(blConfig, itemState));
+                    break;
+                case BaseLayerTypes.WMS:
+                    this._baseLayersMap.set(blConfig.name, new WmsBaseLayerState(blConfig, itemState));
                     break;
                 default:
                     this._baseLayersMap.set(blConfig.name, new BaseLayerState(blConfig, itemState));
