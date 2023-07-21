@@ -315,10 +315,10 @@ export class BingBaseLayerConfig extends BaseLayerConfig {
 const wmtsProperties = {
     'title': { type: 'string' },
     'url': { type: 'string' },
-    'layer': { type: 'string' },
+    'layers': { type: 'string' },
     'format': { type: 'string' },
-    'style': { type: 'string' },
-    'matrixSet': { type: 'string' },
+    'styles': { type: 'string' },
+    'tileMatrixSet': { type: 'string' },
     'crs': { type: 'string' }
 }
 
@@ -339,10 +339,10 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @param {Object} cfg                 - the lizmap config object for WMTS base layer
      * @param {String} cfg.title           - the base layer title
      * @param {String} cfg.url             - the base layer url
-     * @param {String} cfg.layer           - the base layer layer
+     * @param {String} cfg.layers          - the base layer layer
      * @param {String} cfg.format          - the base layer format
-     * @param {String} cfg.style           - the base layer style
-     * @param {String} cfg.matrixSet       - the base layer matrixSet
+     * @param {String} cfg.styles          - the base layer style
+     * @param {String} cfg.tileMatrixSet   - the base layer matrixSet
      * @param {String} cfg.crs             - the base layer crs
      * @param {Number} [cfg.numZoomLevels] - the base layer numZoomLevels
      * @param {String} [cfg.key]           - the base layer key
@@ -393,7 +393,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get layer() {
-        return this._layer;
+        return this._layers;
     }
 
     /**
@@ -411,7 +411,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get style() {
-        return this._style;
+        return this._styles;
     }
 
     /**
@@ -420,7 +420,7 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @type {String}
      **/
     get matrixSet() {
-        return this._matrixSet;
+        return this._tileMatrixSet;
     }
 
     /**
@@ -580,10 +580,10 @@ const defaultCompleteBaseLayersCfg = {
         "type": "wmts",
         "title": "IGN Plan",
         "url": "https://wxs.ign.fr/cartes/geoportail/wmts",
-        "layer": "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
+        "layers": "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
         "format": "image/png",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 20,
         "attribution": {
@@ -595,10 +595,10 @@ const defaultCompleteBaseLayersCfg = {
         "type": "wmts",
         "title": "IGN Orthophoto",
         "url": "https://wxs.ign.fr/ortho/geoportail/wmts",
-        "layer": "ORTHOIMAGERY.ORTHOPHOTOS",
+        "layers": "ORTHOIMAGERY.ORTHOPHOTOS",
         "format": "image/jpeg",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 22,
         "attribution": {
@@ -611,10 +611,10 @@ const defaultCompleteBaseLayersCfg = {
         "title": "IGN Scans",
         "url": "https://wxs.ign.fr/{key}/geoportail/wmts",
         "key": "",
-        "layer": "GEOGRAPHICALGRIDSYSTEMS.MAPS",
+        "layers": "GEOGRAPHICALGRIDSYSTEMS.MAPS",
         "format": "image/jpeg",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 18,
         "attribution": {
@@ -626,10 +626,10 @@ const defaultCompleteBaseLayersCfg = {
         "type": "wmts",
         "title": "IGN Cadastre",
         "url": "https://wxs.ign.fr/parcellaire/geoportail/wmts",
-        "layer": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
+        "layers": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
         "format": "image/png",
-        "style": "normal",
-        "matrixSet": "PM",
+        "styles": "normal",
+        "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
         "numZoomLevels": 20,
         "attribution": {
