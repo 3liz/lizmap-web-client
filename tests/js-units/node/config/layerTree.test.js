@@ -307,24 +307,70 @@ describe('buildLayerTreeConfig', function () {
       expect(root.type).to.be.eq('group')
       expect(root.level).to.be.eq(0)
       expect(root.layerConfig).to.be.null;
-      expect(root.childrenCount).to.be.eq(2)
-      expect(root.findTreeLayerConfigNames()).to.have.length(13)
-      expect(root.findTreeLayerConfigs()).to.have.length(13)
+      expect(root.childrenCount).to.be.eq(3)
+      expect(root.findTreeLayerConfigNames()).to.have.length(20)
+      expect(root.findTreeLayerConfigs()).to.have.length(20)
 
       const layer = root.children[0]
       expect(layer).to.be.instanceOf(LayerTreeLayerConfig)
       expect(layer.type).to.be.eq('layer')
       expect(layer.name).to.be.eq('OpenTopoMap')
 
-      const baselayers = root.children[1]
+      const baselayers = root.children[2]
       expect(baselayers).to.be.instanceOf(LayerTreeGroupConfig)
       expect(baselayers.type).to.be.eq('group')
       expect(baselayers.name).to.be.eq('baselayers')
-      expect(baselayers.childrenCount).to.be.eq(10)
-      expect(baselayers.findTreeLayerConfigNames()).to.have.length(12)
-      expect(baselayers.findTreeLayerConfigs()).to.have.length(12)
+      expect(baselayers.childrenCount).to.be.eq(16)
+      expect(baselayers.findTreeLayerConfigNames()).to.have.length(18)
+      expect(baselayers.findTreeLayerConfigs()).to.have.length(18)
 
       const baselayersGetChildren = baselayers.getChildren()
+
+      const tms = baselayersGetChildren.next().value;
+      expect(tms.type).to.be.eq('layer')
+      expect(tms.name).to.be.eq('=== TMS ===')
+      expect(tms.layerConfig.type).to.be.eq('group')
+      expect(tms.wmsName).to.be.eq('TMS')
+      expect(tms.wmsStyles).to.have.length(1)
+      expect(tms.wmsStyles[0].wmsName).to.be.eq('')
+      expect(tms.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
+      const watercolor = baselayersGetChildren.next().value;
+      expect(watercolor.type).to.be.eq('layer')
+      expect(watercolor.name).to.be.eq('Stamen Watercolor')
+      expect(watercolor.layerConfig.type).to.be.eq('layer')
+      expect(watercolor.wmsName).to.be.eq('Stamen_Watercolor')
+      expect(watercolor.wmsStyles).to.have.length(1)
+      expect(watercolor.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(watercolor.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const osm = baselayersGetChildren.next().value;
+      expect(osm.type).to.be.eq('layer')
+      expect(osm.name).to.be.eq('OSM TMS internal')
+      expect(osm.layerConfig.type).to.be.eq('layer')
+      expect(osm.wmsName).to.be.eq('OpenStreetMap_1')
+      expect(osm.wmsStyles).to.have.length(1)
+      expect(osm.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(osm.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const osm2 = baselayersGetChildren.next().value;
+      expect(osm2.type).to.be.eq('layer')
+      expect(osm2.name).to.be.eq('OSM TMS external')
+      expect(osm2.layerConfig.type).to.be.eq('layer')
+      expect(osm2.wmsName).to.be.eq('OpenStreetMap_2')
+      expect(osm2.wmsStyles).to.have.length(1)
+      expect(osm2.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(osm2.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const groups = baselayersGetChildren.next().value;
+      expect(groups.type).to.be.eq('layer')
+      expect(groups.name).to.be.eq('=== GROUPS ===')
+      expect(groups.layerConfig.type).to.be.eq('group')
+      expect(groups.wmsName).to.be.eq('GROUPS')
+      expect(groups.wmsStyles).to.have.length(1)
+      expect(groups.wmsStyles[0].wmsName).to.be.eq('')
+      expect(groups.wmsStyles[0].wmsTitle).to.be.eq('Default')
+
       const projectBackgroundColor = baselayersGetChildren.next().value;
       expect(projectBackgroundColor.type).to.be.eq('layer')
       expect(projectBackgroundColor.name).to.be.eq('project-background-color')
@@ -338,37 +384,37 @@ describe('buildLayerTreeConfig', function () {
       expect(emptyGroup.type).to.be.eq('layer')
       expect(emptyGroup.name).to.be.eq('empty group')
       expect(emptyGroup.layerConfig.type).to.be.eq('group')
-      expect(emptyGroup.wmsName).to.be.eq('missing_content')
+      expect(emptyGroup.wmsName).to.be.eq('empty_group')
       expect(emptyGroup.wmsStyles).to.have.length(1)
       expect(emptyGroup.wmsStyles[0].wmsName).to.be.eq('')
       expect(emptyGroup.wmsStyles[0].wmsTitle).to.be.eq('Default')
 
-      const osm = baselayersGetChildren.next().value;
-      expect(osm.type).to.be.eq('layer')
-      expect(osm.name).to.be.eq('OpenStreetMap')
-      expect(osm.layerConfig.type).to.be.eq('layer')
-      expect(osm.wmsName).to.be.eq('OpenStreetMap')
-      expect(osm.wmsStyles).to.have.length(1)
-      expect(osm.wmsStyles[0].wmsName).to.be.eq('default')
-      expect(osm.wmsStyles[0].wmsTitle).to.be.eq('default')
-
-      const watercolor = baselayersGetChildren.next().value;
-      expect(watercolor.type).to.be.eq('layer')
-      expect(watercolor.name).to.be.eq('Stamen Watercolor')
-      expect(watercolor.layerConfig.type).to.be.eq('layer')
-      expect(watercolor.wmsName).to.be.eq('Stamen_Watercolor')
-      expect(watercolor.wmsStyles).to.have.length(1)
-      expect(watercolor.wmsStyles[0].wmsName).to.be.eq('default')
-      expect(watercolor.wmsStyles[0].wmsTitle).to.be.eq('default')
-
       const group = baselayersGetChildren.next().value;
       expect(group.type).to.be.eq('group')
-      expect(group.name).to.be.eq('group with many layers')
+      expect(group.name).to.be.eq('group with many layers and shortname')
       expect(group.layerConfig.type).to.be.eq('group')
-      expect(group.wmsName).to.be.eq('group_with_many_layers')
+      expect(group.wmsName).to.be.eq('group_with_many_layers_shortname')
       expect(group.childrenCount).to.be.eq(3)
       expect(group.findTreeLayerConfigNames()).to.have.length(3)
       expect(group.findTreeLayerConfigs()).to.have.length(3)
+
+      const groupSub = baselayersGetChildren.next().value;
+      expect(groupSub.type).to.be.eq('group')
+      expect(groupSub.name).to.be.eq('group with sub')
+      expect(groupSub.layerConfig.type).to.be.eq('group')
+      expect(groupSub.wmsName).to.be.eq('group_with_sub')
+      expect(groupSub.childrenCount).to.be.eq(1)
+      expect(groupSub.findTreeLayerConfigNames()).to.have.length(1)
+      expect(groupSub.findTreeLayerConfigs()).to.have.length(1)
+
+      const localLayers = baselayersGetChildren.next().value;
+      expect(localLayers.type).to.be.eq('layer')
+      expect(localLayers.name).to.be.eq('=== LOCAL LAYERS ===')
+      expect(localLayers.layerConfig.type).to.be.eq('group')
+      expect(localLayers.wmsName).to.be.eq('LOCAL_LAYERS')
+      expect(localLayers.wmsStyles).to.have.length(1)
+      expect(localLayers.wmsStyles[0].wmsName).to.be.eq('')
+      expect(localLayers.wmsStyles[0].wmsTitle).to.be.eq('Default')
 
       const vector = baselayersGetChildren.next().value;
       expect(vector.type).to.be.eq('layer')
@@ -388,31 +434,40 @@ describe('buildLayerTreeConfig', function () {
       expect(raster.wmsStyles[0].wmsName).to.be.eq('default')
       expect(raster.wmsStyles[0].wmsTitle).to.be.eq('default')
 
-      const wmtsGrouped = baselayersGetChildren.next().value;
-      expect(wmtsGrouped.type).to.be.eq('layer')
-      expect(wmtsGrouped.name).to.be.eq('WMTS demo.lizmap.com grouped')
-      expect(wmtsGrouped.layerConfig.type).to.be.eq('layer')
-      expect(wmtsGrouped.wmsName).to.be.eq('WMTS_demo_lizmap_com_grouped')
-      expect(wmtsGrouped.wmsStyles).to.have.length(1)
-      expect(wmtsGrouped.wmsStyles[0].wmsName).to.be.eq('default')
-      expect(wmtsGrouped.wmsStyles[0].wmsTitle).to.be.eq('default')
+      const wmts = baselayersGetChildren.next().value;
+      expect(wmts.type).to.be.eq('layer')
+      expect(wmts.name).to.be.eq('=== WM[T]S are on demo.lizmap.com ===')
+      expect(wmts.layerConfig.type).to.be.eq('group')
+      expect(wmts.wmsName).to.be.eq('WM_T_S_are_on_demo_lizmap_com')
+      expect(wmts.wmsStyles).to.have.length(1)
+      expect(wmts.wmsStyles[0].wmsName).to.be.eq('')
+      expect(wmts.wmsStyles[0].wmsTitle).to.be.eq('Default')
 
-      const wmtsCommunes = baselayersGetChildren.next().value;
-      expect(wmtsCommunes.type).to.be.eq('layer')
-      expect(wmtsCommunes.name).to.be.eq('WMTS demo.lizmap.com communes')
-      expect(wmtsCommunes.layerConfig.type).to.be.eq('layer')
-      expect(wmtsCommunes.wmsName).to.be.eq('WMTS_demo_lizmap_com_communes')
-      expect(wmtsCommunes.wmsStyles).to.have.length(1)
-      expect(wmtsCommunes.wmsStyles[0].wmsName).to.be.eq('default')
-      expect(wmtsCommunes.wmsStyles[0].wmsTitle).to.be.eq('default')
+      const wmtsSingle = baselayersGetChildren.next().value;
+      expect(wmtsSingle.type).to.be.eq('layer')
+      expect(wmtsSingle.name).to.be.eq('WMTS single external')
+      expect(wmtsSingle.layerConfig.type).to.be.eq('layer')
+      expect(wmtsSingle.wmsName).to.be.eq('WMTS_demo_lizmap_com_communes')
+      expect(wmtsSingle.wmsStyles).to.have.length(1)
+      expect(wmtsSingle.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(wmtsSingle.wmsStyles[0].wmsTitle).to.be.eq('default')
 
-      const wmsCommunes = baselayersGetChildren.next().value;
-      expect(wmsCommunes.type).to.be.eq('layer')
-      expect(wmsCommunes.name).to.be.eq('WMS demo.lizmap.com communes')
-      expect(wmsCommunes.layerConfig.type).to.be.eq('layer')
-      expect(wmsCommunes.wmsName).to.be.eq('WMST_lizmap_com_MTP')
-      expect(wmsCommunes.wmsStyles).to.have.length(1)
-      expect(wmsCommunes.wmsStyles[0].wmsName).to.be.eq('default')
-      expect(wmsCommunes.wmsStyles[0].wmsTitle).to.be.eq('default')
+      const wmsSingle = baselayersGetChildren.next().value;
+      expect(wmsSingle.type).to.be.eq('layer')
+      expect(wmsSingle.name).to.be.eq('WMS single internal')
+      expect(wmsSingle.layerConfig.type).to.be.eq('layer')
+      expect(wmsSingle.wmsName).to.be.eq('WMST_lizmap_com_MTP_1')
+      expect(wmsSingle.wmsStyles).to.have.length(1)
+      expect(wmsSingle.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(wmsSingle.wmsStyles[0].wmsTitle).to.be.eq('default')
+
+      const wmsGrouped = baselayersGetChildren.next().value;
+      expect(wmsGrouped.type).to.be.eq('layer')
+      expect(wmsGrouped.name).to.be.eq('WMS grouped external')
+      expect(wmsGrouped.layerConfig.type).to.be.eq('layer')
+      expect(wmsGrouped.wmsName).to.be.eq('WMST_lizmap_com_MTP')
+      expect(wmsGrouped.wmsStyles).to.have.length(1)
+      expect(wmsGrouped.wmsStyles[0].wmsName).to.be.eq('default')
+      expect(wmsGrouped.wmsStyles[0].wmsTitle).to.be.eq('default')
     })
 })

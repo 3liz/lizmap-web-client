@@ -187,6 +187,55 @@
                     "noSubsets": false
                 },
                 {
+                    "Name": "GROUPS_are_used_to_comment_the_legend",
+                    "Title": "GROUPS are used to comment the legend",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:3857",
+                        "EPSG:4326",
+                        "CRS:84",
+                        "EPSG:3857",
+                        "EPSG:4326"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        -0.000001,
+                        -0.000001,
+                        0.000001,
+                        0.000001
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                -0.000001,
+                                -0.000001,
+                                0.000001,
+                                0.000001
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                -0.001,
+                                -0.001,
+                                0.001,
+                                0.001
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "queryable": false,
+                    "opaque": false,
+                    "noSubsets": false
+                },
+                {
                     "Name": "baselayers",
                     "Title": "baselayers",
                     "CRS": [
@@ -233,8 +282,8 @@
                     ],
                     "Layer": [
                         {
-                            "Name": "project-background-color",
-                            "Title": "project-background-color",
+                            "Name": "TMS",
+                            "Title": "=== TMS ===",
                             "CRS": [
                                 "CRS:84",
                                 "EPSG:3857",
@@ -278,120 +327,6 @@
                                 }
                             ],
                             "queryable": false,
-                            "opaque": false,
-                            "noSubsets": false
-                        },
-                        {
-                            "Name": "missing_content",
-                            "Title": "empty group",
-                            "CRS": [
-                                "CRS:84",
-                                "EPSG:3857",
-                                "EPSG:4326",
-                                "CRS:84",
-                                "EPSG:3857",
-                                "EPSG:4326"
-                            ],
-                            "EX_GeographicBoundingBox": [
-                                -0.000001,
-                                -0.000001,
-                                0.000001,
-                                0.000001
-                            ],
-                            "BoundingBox": [
-                                {
-                                    "crs": "EPSG:4326",
-                                    "extent": [
-                                        -0.000001,
-                                        -0.000001,
-                                        0.000001,
-                                        0.000001
-                                    ],
-                                    "res": [
-                                        null,
-                                        null
-                                    ]
-                                },
-                                {
-                                    "crs": "EPSG:3857",
-                                    "extent": [
-                                        -0.001,
-                                        -0.001,
-                                        0.001,
-                                        0.001
-                                    ],
-                                    "res": [
-                                        null,
-                                        null
-                                    ]
-                                }
-                            ],
-                            "queryable": false,
-                            "opaque": false,
-                            "noSubsets": false
-                        },
-                        {
-                            "Name": "OpenStreetMap",
-                            "Title": "OpenStreetMap",
-                            "CRS": [
-                                "CRS:84",
-                                "EPSG:3857",
-                                "EPSG:4326",
-                                "CRS:84",
-                                "EPSG:3857",
-                                "EPSG:4326"
-                            ],
-                            "EX_GeographicBoundingBox": [
-                                -180,
-                                -85.051129,
-                                180,
-                                85.051129
-                            ],
-                            "BoundingBox": [
-                                {
-                                    "crs": "EPSG:4326",
-                                    "extent": [
-                                        -85.051129,
-                                        -180,
-                                        85.051129,
-                                        180
-                                    ],
-                                    "res": [
-                                        null,
-                                        null
-                                    ]
-                                },
-                                {
-                                    "crs": "EPSG:3857",
-                                    "extent": [
-                                        -20037508.343,
-                                        -20037508.343,
-                                        20037508.343,
-                                        20037508.343
-                                    ],
-                                    "res": [
-                                        null,
-                                        null
-                                    ]
-                                }
-                            ],
-                            "Style": [
-                                {
-                                    "Name": "default",
-                                    "Title": "default",
-                                    "LegendURL": [
-                                        {
-                                            "Format": "image/png",
-                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=OpenStreetMap&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
-                                            "size": [
-                                                null,
-                                                null
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ],
-                            "queryable": true,
                             "opaque": false,
                             "noSubsets": false
                         },
@@ -465,8 +400,285 @@
                             "noSubsets": false
                         },
                         {
-                            "Name": "group_with_many_layers",
-                            "Title": "group with many layers",
+                            "Name": "OpenStreetMap_1",
+                            "Title": "OSM TMS internal",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -180,
+                                -85.051129,
+                                180,
+                                85.051129
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        -85.051129,
+                                        -180,
+                                        85.051129,
+                                        180
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        -20037508.343,
+                                        -20037508.343,
+                                        20037508.343,
+                                        20037508.343
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "default",
+                                    "Title": "default",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=OpenStreetMap_1&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "OpenStreetMap_2",
+                            "Title": "OSM TMS external",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -180,
+                                -85.051129,
+                                180,
+                                85.051129
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        -85.051129,
+                                        -180,
+                                        85.051129,
+                                        180
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        -20037508.343,
+                                        -20037508.343,
+                                        20037508.343,
+                                        20037508.343
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "default",
+                                    "Title": "default",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=OpenStreetMap_2&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "GROUPS",
+                            "Title": "=== GROUPS ===",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.000001,
+                                -0.000001,
+                                0.000001,
+                                0.000001
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        -0.000001,
+                                        -0.000001,
+                                        0.000001,
+                                        0.000001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        -0.001,
+                                        -0.001,
+                                        0.001,
+                                        0.001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "queryable": false,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "project-background-color",
+                            "Title": "project-background-color",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.000001,
+                                -0.000001,
+                                0.000001,
+                                0.000001
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        -0.000001,
+                                        -0.000001,
+                                        0.000001,
+                                        0.000001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        -0.001,
+                                        -0.001,
+                                        0.001,
+                                        0.001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "queryable": false,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "empty_group",
+                            "Title": "empty group",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.000001,
+                                -0.000001,
+                                0.000001,
+                                0.000001
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        -0.000001,
+                                        -0.000001,
+                                        0.000001,
+                                        0.000001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        -0.001,
+                                        -0.001,
+                                        0.001,
+                                        0.001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "queryable": false,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "group_with_many_layers_shortname",
+                            "Title": "This is a nice group",
                             "CRS": [
                                 "CRS:84",
                                 "EPSG:3857",
@@ -711,6 +923,222 @@
                             "noSubsets": false
                         },
                         {
+                            "Name": "group_with_sub",
+                            "Title": "group with sub",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                3.740174,
+                                43.538224,
+                                3.950359,
+                                43.687665
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        43.538224,
+                                        3.740174,
+                                        43.687665,
+                                        3.950359
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        416354.376,
+                                        5394257.326,
+                                        439751.953,
+                                        5417234.009
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Layer": [
+                                {
+                                    "Name": "sub-group",
+                                    "Title": "sub-group",
+                                    "CRS": [
+                                        "CRS:84",
+                                        "EPSG:3857",
+                                        "EPSG:4326",
+                                        "CRS:84",
+                                        "EPSG:3857",
+                                        "EPSG:4326"
+                                    ],
+                                    "EX_GeographicBoundingBox": [
+                                        3.740175,
+                                        43.538225,
+                                        3.950359,
+                                        43.687664
+                                    ],
+                                    "BoundingBox": [
+                                        {
+                                            "crs": "EPSG:4326",
+                                            "extent": [
+                                                43.538225,
+                                                3.740175,
+                                                43.687664,
+                                                3.950359
+                                            ],
+                                            "res": [
+                                                null,
+                                                null
+                                            ]
+                                        },
+                                        {
+                                            "crs": "EPSG:3857",
+                                            "extent": [
+                                                416354.487,
+                                                5394257.479,
+                                                439751.842,
+                                                5417234.009
+                                            ],
+                                            "res": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ],
+                                    "Layer": [
+                                        {
+                                            "Name": "polygons_sub",
+                                            "Title": "polygons-sub",
+                                            "CRS": [
+                                                "CRS:84",
+                                                "EPSG:3857",
+                                                "EPSG:4326",
+                                                "CRS:84",
+                                                "EPSG:3857",
+                                                "EPSG:4326"
+                                            ],
+                                            "EX_GeographicBoundingBox": [
+                                                3.740176,
+                                                43.538226,
+                                                3.950358,
+                                                43.687664
+                                            ],
+                                            "BoundingBox": [
+                                                {
+                                                    "crs": "EPSG:4326",
+                                                    "extent": [
+                                                        43.538226,
+                                                        3.740176,
+                                                        43.687664,
+                                                        3.950358
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                },
+                                                {
+                                                    "crs": "EPSG:3857",
+                                                    "extent": [
+                                                        416354.498,
+                                                        5394257.51,
+                                                        439751.819,
+                                                        5417234.009
+                                                    ],
+                                                    "res": [
+                                                        null,
+                                                        null
+                                                    ]
+                                                }
+                                            ],
+                                            "Style": [
+                                                {
+                                                    "Name": "default",
+                                                    "Title": "default",
+                                                    "LegendURL": [
+                                                        {
+                                                            "Format": "image/png",
+                                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=polygons_sub&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                                                            "size": [
+                                                                null,
+                                                                null
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "queryable": true,
+                                            "opaque": false,
+                                            "noSubsets": false
+                                        }
+                                    ],
+                                    "queryable": true,
+                                    "opaque": false,
+                                    "noSubsets": false
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "LOCAL_LAYERS",
+                            "Title": "=== LOCAL LAYERS ===",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                -0.000001,
+                                -0.000001,
+                                0.000001,
+                                0.000001
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        -0.000001,
+                                        -0.000001,
+                                        0.000001,
+                                        0.000001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        -0.001,
+                                        -0.001,
+                                        0.001,
+                                        0.001
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "queryable": false,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
                             "Name": "vector_layer",
                             "Title": "local vector layer",
                             "CRS": [
@@ -841,8 +1269,8 @@
                             "noSubsets": false
                         },
                         {
-                            "Name": "WMTS_demo_lizmap_com_grouped",
-                            "Title": "WMTS demo.lizmap.com grouped",
+                            "Name": "WM_T_S_are_on_demo_lizmap_com",
+                            "Title": "=== WM[T]S are on demo.lizmap.com ===",
                             "CRS": [
                                 "CRS:84",
                                 "EPSG:3857",
@@ -852,19 +1280,19 @@
                                 "EPSG:4326"
                             ],
                             "EX_GeographicBoundingBox": [
-                                3.806121,
-                                43.566038,
-                                3.942233,
-                                43.65375
+                                -0.000001,
+                                -0.000001,
+                                0.000001,
+                                0.000001
                             ],
                             "BoundingBox": [
                                 {
                                     "crs": "EPSG:4326",
                                     "extent": [
-                                        43.566038,
-                                        3.806121,
-                                        43.65375,
-                                        3.942233
+                                        -0.000001,
+                                        -0.000001,
+                                        0.000001,
+                                        0.000001
                                     ],
                                     "res": [
                                         null,
@@ -874,10 +1302,10 @@
                                 {
                                     "crs": "EPSG:3857",
                                     "extent": [
-                                        423695.48,
-                                        5398529.406,
-                                        438847.294,
-                                        5412014.61
+                                        -0.001,
+                                        -0.001,
+                                        0.001,
+                                        0.001
                                     ],
                                     "res": [
                                         null,
@@ -885,29 +1313,13 @@
                                     ]
                                 }
                             ],
-                            "Style": [
-                                {
-                                    "Name": "default",
-                                    "Title": "default",
-                                    "LegendURL": [
-                                        {
-                                            "Format": "image/png",
-                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=WMTS_demo_lizmap_com_grouped&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
-                                            "size": [
-                                                null,
-                                                null
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ],
-                            "queryable": true,
+                            "queryable": false,
                             "opaque": false,
                             "noSubsets": false
                         },
                         {
                             "Name": "WMTS_demo_lizmap_com_communes",
-                            "Title": "WMTS demo.lizmap.com communes",
+                            "Title": "WMTS single external",
                             "CRS": [
                                 "CRS:84",
                                 "EPSG:3857",
@@ -917,18 +1329,18 @@
                                 "EPSG:4326"
                             ],
                             "EX_GeographicBoundingBox": [
-                                3.806121,
-                                43.566038,
+                                3.80612,
+                                43.566037,
                                 3.942233,
-                                43.65375
+                                43.653751
                             ],
                             "BoundingBox": [
                                 {
                                     "crs": "EPSG:4326",
                                     "extent": [
-                                        43.566038,
-                                        3.806121,
-                                        43.65375,
+                                        43.566037,
+                                        3.80612,
+                                        43.653751,
                                         3.942233
                                     ],
                                     "res": [
@@ -939,10 +1351,10 @@
                                 {
                                     "crs": "EPSG:3857",
                                     "extent": [
-                                        423695.48,
-                                        5398529.406,
-                                        438847.294,
-                                        5412014.61
+                                        423695.451,
+                                        5398529.335,
+                                        438847.371,
+                                        5412014.621
                                     ],
                                     "res": [
                                         null,
@@ -971,8 +1383,73 @@
                             "noSubsets": false
                         },
                         {
+                            "Name": "WMST_lizmap_com_MTP_1",
+                            "Title": "WMS single internal",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326",
+                                "CRS:84",
+                                "EPSG:3857",
+                                "EPSG:4326"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                3.806121,
+                                43.566038,
+                                3.942233,
+                                43.65375
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        43.566038,
+                                        3.806121,
+                                        43.65375,
+                                        3.942233
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        423695.48,
+                                        5398529.406,
+                                        438847.294,
+                                        5412014.61
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "default",
+                                    "Title": "default",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=WMST_lizmap_com_MTP_1&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
                             "Name": "WMST_lizmap_com_MTP",
-                            "Title": "WMS demo.lizmap.com communes",
+                            "Title": "WMS grouped external",
                             "CRS": [
                                 "CRS:84",
                                 "EPSG:3857",
