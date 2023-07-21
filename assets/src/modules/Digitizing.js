@@ -42,6 +42,7 @@ export default class Digitizing {
         this._isEdited = false;
         this._hasMeasureVisible = false;
         this._isSaved = false;
+        this._isErasing = false;
 
         this._drawInteraction;
 
@@ -51,41 +52,89 @@ export default class Digitizing {
         // Array with pair of tooltips
         // First is for current segment measure
         // Second is for total geom measure
-        this._measureTooltips = [];
+        this._measureTooltips = new Set();
+
+        this._pointRadius = 8;
+        this._fillOpacity = 0.2;
+        this._strokeWidth = 2;
 
         this._selectInteraction = new Select({
             wrapX: false,
+            style: (feature) => {
+                const color = feature.get('color') || this._drawColor;
+                return [
+                    new Style({
+                        image: new Circle({
+                            fill: new Fill({
+                                color: color,
+                            }),
+                            stroke: new Stroke({
+                                color: 'rgba(255, 255, 255, 0.5)',
+                                width: this._strokeWidth + 4
+                            }),
+                            radius: this._pointRadius,
+                        }),
+                        fill: new Fill({
+                            color: color + '33', // Opacity: 0.2
+                        }),
+                        stroke: new Stroke({
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            width: this._strokeWidth + 8
+                        }),
+                    }),
+                    new Style({
+                        stroke: new Stroke({
+                            color: color,
+                            width: this._strokeWidth
+                        }),
+                    }),
+                ];
+            }
+        });
+
+        // Set draw color from selected feature color
+        this._selectInteraction.on('select', (event) => {
+            if (event.selected.length) {
+                this.drawColor = event.selected[0].get('color');
+            } else {
+                // When a feature is deselected, set the color from the first selected feature if any
+                const selectedFeatures = this._selectInteraction.getFeatures().getArray();
+                if (selectedFeatures.length) {
+                    this.drawColor = selectedFeatures[0].get('color');
+                }
+            }
         });
 
         this._modifyInteraction = new Modify({
             features: this._selectInteraction.getFeatures(),
         });
 
-        this._pointRadius = 6;
-        this._fillOpacity = 0.2;
-        this._strokeWidth = 2;
-
-        this._drawStyleFunction = () => {
+        this._drawStyleFunction = (feature) => {
+            const color = feature.get('color') || this._drawColor;
             return new Style({
                 image: new Circle({
                     fill: new Fill({
-                        color: this._drawColor,
+                        color: color,
                     }),
                     radius: this._pointRadius,
                 }),
                 fill: new Fill({
-                    color: this._drawColor + '33', // Opacity: 0.2
+                    color: color + '33', // Opacity: 0.2
                 }),
                 stroke: new Stroke({
-                    color: this._drawColor,
+                    color: color,
                     width: this._strokeWidth
                 }),
             });
-        }
+        };
 
         this._drawSource = new VectorSource({ wrapX: false });
 
-        this._drawSource.on('addfeature', () => {
+        this._drawSource.on('addfeature', (event) => {
+            // Set main color if feature does not have one
+            if(!event.feature.get('color')){
+                event.feature.set('color', this._drawColor);
+            }
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
@@ -252,7 +301,7 @@ export default class Digitizing {
 
                     // Attach total overlay to its geom to update
                     // content when the geom is modified
-                    geom.set('totalOverlay', this._measureTooltips[this._measureTooltips.length - 1][1], true);
+                    geom.set('totalOverlay', Array.from(this._measureTooltips).pop()[1], true);
                     geom.on('change', (e) => {
                         const geom = e.target;
                         if (geom instanceof Polygon) {
@@ -279,8 +328,9 @@ export default class Digitizing {
 
                 this._toolSelected = tool;
 
-                // Disable edition when tool changes
+                // Disable edition and erasing when tool changes
                 this.isEdited = false;
+                this.isErasing = false;
             }
 
             mainEventDispatcher.dispatch('digitizing.toolSelected');
@@ -293,13 +343,8 @@ export default class Digitizing {
 
     set drawColor(color) {
         this._drawColor = color;
-
-        // Refresh draw layer
-        this._drawLayer.changed();
-
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
-
         mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
@@ -323,6 +368,7 @@ export default class Digitizing {
                 // Automatically edit the feature if unique
                 if (this.featureDrawn.length === 1) {
                     this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
+                    this.drawColor = this.featureDrawn[0].get('color');
                 }
 
                 mainLizmap.map.removeInteraction(this._drawInteraction);
@@ -331,6 +377,7 @@ export default class Digitizing {
                 mainLizmap.map.addInteraction(this._modifyInteraction);
 
                 this.toolSelected = 'deactivate';
+                this.isErasing = false;
 
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
@@ -342,6 +389,65 @@ export default class Digitizing {
                 this.saveFeatureDrawn();
 
                 mainEventDispatcher.dispatch('digitizing.editionEnds');
+            }
+        }
+    }
+
+    get isErasing() {
+        return this._isErasing;
+    }
+
+    set isErasing(isErasing) {
+        if (this._isErasing !== isErasing) {
+            this._isErasing = isErasing;
+
+            if (this._isErasing) {
+                // deactivate draw and edition
+                this.toolSelected = 'deactivate';
+                this.isEdited = false;
+
+                this._erasingCallBack = event => {
+                    const features = mainLizmap.map.getFeaturesAtPixel(event.pixel, {
+                        layerFilter: layer => {
+                            return layer === this._drawLayer;
+                        },
+                        hitTolerance: 8
+                    });
+                    if(features.length){
+                        if (!confirm(lizDict['digitizing.confirme.erase'])) {
+                            return false;
+                        }
+
+                        const totalOverlay = features[0].getGeometry().get('totalOverlay');
+                        if (totalOverlay) {
+                            this._measureTooltips.forEach((measureTooltip) => {
+                                if(measureTooltip[1] === totalOverlay){
+                                    mainLizmap.map.removeOverlay(measureTooltip[0]);
+                                    mainLizmap.map.removeOverlay(measureTooltip[1]);
+                                    this._measureTooltips.delete(measureTooltip);
+                                    return;
+                                }
+                            });
+                        }
+                        
+                        this._drawSource.removeFeature(features[0]);
+
+                        // Stop erasing mode when no features left
+                        if(this._drawSource.getFeatures().length === 0){
+                            this.isErasing = false;
+                        }
+
+                        this.saveFeatureDrawn();
+                
+                        mainEventDispatcher.dispatch('digitizing.erase');
+                    }
+                };
+
+                mainLizmap.map.on('singleclick', this._erasingCallBack );
+                mainEventDispatcher.dispatch('digitizing.erasingBegins');
+            } else {
+                mainLizmap.map.un('singleclick', this._erasingCallBack );
+                mainEventDispatcher.dispatch('digitizing.erasingEnds');
             }
         }
     }
@@ -369,6 +475,19 @@ export default class Digitizing {
 
     set angleConstraint(angleConstraint){
         this._angleConstraint = parseInt(angleConstraint)
+    }
+
+    _userChangedColor(color) {
+        this._drawColor = color;
+
+        this._selectInteraction.getFeatures().forEach(feature => {
+            feature.set('color', color);
+        });
+
+        // Save color
+        localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
+
+        mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
     _contraintsHandler(coords, geom, geomType) {
@@ -495,7 +614,7 @@ export default class Digitizing {
         // Total length for LineStrings
         // Perimeter and area for Polygons
         if (coords.length > 2) {
-            this._updateTotalMeasureTooltip(coords, geom, geomType, this._measureTooltips[this._measureTooltips.length - 1][1]);
+            this._updateTotalMeasureTooltip(coords, geom, geomType, Array.from(this._measureTooltips).pop()[1]);
 
             // Display angle ABC between three points. B is center
             const A = coords[coords.length - 1];
@@ -518,7 +637,7 @@ export default class Digitizing {
         // Display current segment measure only when drawing lines, polygons or circles
         if (['line', 'polygon', 'circle'].includes(this.toolSelected)) {
             this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
-            this._measureTooltips[this._measureTooltips.length - 1][0].setPosition(geom.getLastCoordinate());
+            Array.from(this._measureTooltips).pop()[0].setPosition(geom.getLastCoordinate());
         }
     }
 
@@ -604,7 +723,7 @@ export default class Digitizing {
             insertFirst: false,
         });
 
-        this._measureTooltips.push([segmentOverlay, totalOverlay]);
+        this._measureTooltips.add([segmentOverlay, totalOverlay]);
         mainLizmap.map.addOverlay(segmentOverlay);
         mainLizmap.map.addOverlay(totalOverlay);
     }
@@ -614,15 +733,16 @@ export default class Digitizing {
         if (!this.featureDrawn[index]) {
             return null;
         }
+        const color = this.featureDrawn[index].get('color') || this._drawColor;
         let symbolizer = '';
         let strokeAndFill =
         `<Stroke>
-            <SvgParameter name="stroke">${this._drawColor}</SvgParameter>
+            <SvgParameter name="stroke">${color}</SvgParameter>
             <SvgParameter name="stroke-opacity">1</SvgParameter>
             <SvgParameter name="stroke-width">${this._strokeWidth}</SvgParameter>
         </Stroke>
         <Fill>
-            <SvgParameter name="fill">${this._drawColor}</SvgParameter>
+            <SvgParameter name="fill">${color}</SvgParameter>
             <SvgParameter name="fill-opacity">${this._fillOpacity}</SvgParameter>
         </Fill>`;
 
@@ -687,24 +807,8 @@ export default class Digitizing {
         this.hasMeasureVisible = !this.hasMeasureVisible;
     }
 
-    erase() {
-        if (!confirm(lizDict['digitizing.confirme.erase'])) {
-            return false;
-        }
-        this._drawSource.clear(true);
-
-        localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
-
-        this.isEdited = false;
-
-        // Remove overlays
-        for (const overlays of this._measureTooltips) {
-            mainLizmap.map.removeOverlay(overlays[0]);
-            mainLizmap.map.removeOverlay(overlays[1]);
-        }
-
-        this._measureTooltips = [];
-        mainEventDispatcher.dispatch('digitizing.erase');
+    toggleErasing() {
+        this.isErasing = !this._isErasing;
     }
 
     toggleSave() {
@@ -719,25 +823,31 @@ export default class Digitizing {
      * Save all drawn features in local storage
      */
     saveFeatureDrawn() {
-        if (this.featureDrawn && this._isSaved) {
-            const savedFeatures = [];
-            for(const feature of this.featureDrawn){
-                const geomType = feature.getGeometry().getType();
-
-                if( geomType === 'Circle'){
-                    savedFeatures.push({
-                        type: geomType,
-                        center: feature.getGeometry().getCenter(),
-                        radius: feature.getGeometry().getRadius()
-                    });
-                } else {
-                    savedFeatures.push({
-                        type: geomType,
-                        coords: feature.getGeometry().getCoordinates()
-                    });
+        if (this._isSaved) {
+            if(this.featureDrawn){
+                const savedFeatures = [];
+                for(const feature of this.featureDrawn){
+                    const geomType = feature.getGeometry().getType();
+    
+                    if( geomType === 'Circle'){
+                        savedFeatures.push({
+                            type: geomType,
+                            color: feature.get('color'),
+                            center: feature.getGeometry().getCenter(),
+                            radius: feature.getGeometry().getRadius()
+                        });
+                    } else {
+                        savedFeatures.push({
+                            type: geomType,
+                            color: feature.get('color'),
+                            coords: feature.getGeometry().getCoordinates()
+                        });
+                    }
                 }
+                localStorage.setItem(this._repoAndProjectString + '_' + this._context + '_drawLayer', JSON.stringify(savedFeatures));
+            } else {
+                localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
             }
-            localStorage.setItem(this._repoAndProjectString + '_' + this._context + '_drawLayer', JSON.stringify(savedFeatures));
         }
     }
 
@@ -751,6 +861,7 @@ export default class Digitizing {
 
         if (savedGeomJSON) {
             const savedFeatures = JSON.parse(savedGeomJSON);
+            const loadedFeatures = [];
             for(const feature of savedFeatures){
                 let loadedGeom;
                 if(feature.type === 'Point'){
@@ -764,9 +875,12 @@ export default class Digitizing {
                 }
 
                 if(loadedGeom){
-                    this._drawSource.addFeature(new Feature(loadedGeom));
+                    const loadedFeature = new Feature(loadedGeom);
+                    loadedFeature.set('color', feature.color);
+                    loadedFeatures.push(loadedFeature);
                 }
             }
+            this._drawSource.addFeatures(loadedFeatures);
         }
     }
 
