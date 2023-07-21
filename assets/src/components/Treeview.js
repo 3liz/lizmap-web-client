@@ -53,9 +53,13 @@ export default class Treeview extends HTMLElement {
                             <a href="${this._createDocLink(item.name)}" target="_blank" title="${lizDict['tree.button.link']}">
                                 <i class="icon-share"></i>
                             </a>
-                            <a href="${this._createRemoveCacheLink(item.name)}" target="_blank">
-                                <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${event => this._removeCache(event)}></i>
-                            </a>
+                            ${item.layerConfig.cached
+                                ? html`
+                                    <a href="${this._createRemoveCacheLink(item.name)}" target="_blank">
+                                        <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${event => this._removeCache(event)}></i>
+                                    </a>`
+                                : ''
+                            }
                             <i class="icon-info-sign" @click=${() => this._toggleMetadata(item.name, item.type)}></i>
                         </div>
                     </div>
