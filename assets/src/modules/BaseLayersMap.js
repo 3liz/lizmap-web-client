@@ -48,6 +48,9 @@ export default class BaseLayersMap extends olMap {
             target: 'baseLayersOlMap'
         });
 
+        // Ratio between WMS single tiles and map viewport
+        this._WMSRatio = 1.1;
+
         // Mapping between states and OL layers and groups
         this._statesOlLayersandGroupsMap = new Map();
 
@@ -74,6 +77,7 @@ export default class BaseLayersMap extends olMap {
                     source: new ImageWMS({
                         url: baseLayerState.url,
                         projection: baseLayerState.crs,
+                        ratio: this._WMSRatio,
                         params: {
                             LAYERS: baseLayerState.layers,
                             STYLES: baseLayerState.styles,
@@ -136,6 +140,7 @@ export default class BaseLayersMap extends olMap {
                         url: mainLizmap.serviceURL,
                         projection: qgisProjectProjection,
                         serverType: 'qgis',
+                        ratio: this._WMSRatio,
                         params: {
                             LAYERS: baseLayerState.itemState.wmsName,
                             FORMAT: baseLayerState.layerConfig.imageFormat,
@@ -240,6 +245,7 @@ export default class BaseLayersMap extends olMap {
                         source: new ImageWMS({
                             url: mainLizmap.serviceURL,
                             serverType: 'qgis',
+                            ratio: this._WMSRatio,
                             params: {
                                 LAYERS: node.wmsName,
                                 FORMAT: node.layerConfig.imageFormat,
@@ -385,7 +391,7 @@ export default class BaseLayersMap extends olMap {
         this.getView().animate({
             center: mainLizmap.center,
             zoom: mainLizmap.lizmap3.map.getZoom(),
-            duration: 0
+            duration: 50
         });
     }
 
