@@ -12,27 +12,44 @@ import { MapGroupState } from '../../../../assets/src/modules/state/MapLayer.js'
 
 import { LayerTreeGroupState, LayerTreeLayerState } from '../../../../assets/src/modules/state/LayerTree.js';
 
+/**
+ * Returns the root LayerTreeGroupState for the project
+ *
+ * The files for building it are stored in js-units/data/ and are
+ * - name +'-capabilities.json': the WMS capabilities parsed by OpenLayers
+ * - name +'-config.json': the Lizmap config send by lizmap web client
+ *
+ * @param {String} name - The project name
+ *
+ * @return {LayerTreeGroupState}
+ **/
+function getRootLayerTreeGroupState(name) {
+    const capabilities = JSON.parse(readFileSync('./data/'+ name +'-capabilities.json', 'utf8'));
+    expect(capabilities).to.not.be.undefined
+    expect(capabilities.Capability).to.not.be.undefined
+    const config = JSON.parse(readFileSync('./data/'+ name +'-config.json', 'utf8'));
+    expect(config).to.not.be.undefined
+
+    const layers = new LayersConfig(config.layers);
+
+    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+    const layersOrder = buildLayersOrder(config, rootCfg);
+
+    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+    const rootMapGroup = new MapGroupState(collection.root);
+    expect(rootMapGroup).to.be.instanceOf(MapGroupState)
+
+    const root = new LayerTreeGroupState(rootMapGroup);
+    expect(root).to.be.instanceOf(LayerTreeGroupState)
+    return root;
+}
+
 describe('LayerTreeGroupState', function () {
     it('Valid', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
         expect(root.level).to.be.eq(0)
@@ -115,25 +132,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Check && visibility', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         expect(root.checked).to.be.true
@@ -195,25 +194,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Icon', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         const edition = root.children[0];
@@ -233,25 +214,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Symbology', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         let rootLayerSymbologyChangedEvt = null;
@@ -341,25 +304,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('findTreeLayerNames', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         expect(root.findTreeLayerNames()).to.have.ordered.members([
@@ -402,25 +347,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('getTreeLayerByName', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         const busStops = root.getTreeLayerByName('bus_stops')
@@ -470,25 +397,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Events', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         let rootLayerVisibilityChangedEvt = [];
@@ -668,25 +577,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Opacity', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         let rootLayerOpacityChangedEvt = [];
@@ -827,25 +718,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Loading', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         let rootLayerLoadingChangedEvt = [];
@@ -923,25 +796,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('WMS selected styles', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         const transports = root.children[1];
@@ -1007,25 +862,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Legend on/off', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-        //const rootMapGroup = new MapGroupState(rootCfg, layersOrder);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         const legend = JSON.parse(readFileSync('./data/montpellier-legend.json', 'utf8'));
@@ -1275,24 +1112,7 @@ describe('LayerTreeGroupState', function () {
     })
 
     it('Filter & token', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const rootMapGroup = new MapGroupState(collection.root);
-
-        const root = new LayerTreeGroupState(rootMapGroup);
+        const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
         const sousquartiers = root.children[2];
