@@ -610,102 +610,118 @@ describe('MapGroupState', function () {
         expect(rootGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
     })
 
-    it('Loading', function () {
+    it('LoadStatus', function () {
         const root = getRootMapGroupState('montpellier');
         expect(root).to.be.instanceOf(MapGroupState)
 
-        let rootLayerLoadingChangedEvt = [];
+        let rootLayerLoadStatusChangedEvt = [];
         root.addListener(evt => {
-            rootLayerLoadingChangedEvt.push(evt)
-        }, 'layer.loading.changed');
+            rootLayerLoadStatusChangedEvt.push(evt)
+        }, 'layer.load.status.changed');
 
         const sousquartiers = root.children[2];
         expect(sousquartiers).to.be.instanceOf(MapLayerState)
-        expect(sousquartiers.loading).to.be.false
+        expect(sousquartiers.loadStatus).to.be.eq(MapLayerLoadStatus.Undefined).that.be.eq('undefined')
 
-        let sousquartiersLoadingChangedEvt = null;
+        let sousquartiersLoadStatusChangedEvt = null;
         sousquartiers.addListener(evt => {
-            sousquartiersLoadingChangedEvt = evt
-        }, 'layer.loading.changed');
+            sousquartiersLoadStatusChangedEvt = evt
+        }, 'layer.load.status.changed');
 
         // Change value
-        sousquartiers.loading = true;
+        sousquartiers.loadStatus = MapLayerLoadStatus.Loading
         // Event dispatched
-        expect(sousquartiersLoadingChangedEvt).to.not.be.null
-        expect(sousquartiersLoadingChangedEvt.name).to.be.eq('SousQuartiers')
-        expect(sousquartiersLoadingChangedEvt.loading).to.be.true
+        expect(sousquartiersLoadStatusChangedEvt).to.not.be.null
+        expect(sousquartiersLoadStatusChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersLoadStatusChangedEvt.loadStatus).to.be.eq(MapLayerLoadStatus.Loading).that.be.eq('loading')
         // Values have changed
-        expect(sousquartiers.loading).to.be.true
+        expect(sousquartiers.loadStatus).to.be.eq(MapLayerLoadStatus.Loading).that.to.be.eq('loading')
         // Events dispatched at root level
-        expect(rootLayerLoadingChangedEvt).to.have.length(1)
-        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(sousquartiersLoadingChangedEvt)
+        expect(rootLayerLoadStatusChangedEvt).to.have.length(1)
+        expect(rootLayerLoadStatusChangedEvt[0]).to.be.deep.equal(sousquartiersLoadStatusChangedEvt)
 
         //Reset
-        rootLayerLoadingChangedEvt = [];
-        sousquartiersLoadingChangedEvt = null;
+        rootLayerLoadStatusChangedEvt = [];
+        sousquartiersLoadStatusChangedEvt = null;
 
-        // Try set loading to not a boolean
+        // Try set load status to not in enum
         try {
-            sousquartiers.loading = 'foobar';
+            sousquartiers.loadStatus = 'loaded'
         } catch (error) {
-            expect(error.name).to.be.eq('ConversionError')
-            expect(error.message).to.be.eq('`foobar` is not an expected boolean: true, t, yes, y, 1, false, f, no, n, 0 or empty string ``!')
-            expect(error).to.be.instanceOf(ConversionError)
+            expect(error.name).to.be.eq('TypeError')
+            expect(error.message).to.be.eq('Unkonw status: `loaded`!')
+            expect(error).to.be.instanceOf(TypeError)
         }
         // Nothing change
-        expect(sousquartiersLoadingChangedEvt).to.be.null
-        expect(sousquartiers.loading).to.be.true
-        expect(rootLayerLoadingChangedEvt).to.have.length(0)
+        expect(sousquartiersLoadStatusChangedEvt).to.be.null
+        expect(sousquartiers.loadStatus).to.be.eq(MapLayerLoadStatus.Loading).that.to.be.eq('loading')
+        expect(rootLayerLoadStatusChangedEvt).to.have.length(0)
 
-        // Set to the same value
-        sousquartiers.loading = 't';
+        // Change value
+        sousquartiers.loadStatus = MapLayerLoadStatus.Ready
+        // Event dispatched
+        expect(sousquartiersLoadStatusChangedEvt).to.not.be.null
+        expect(sousquartiersLoadStatusChangedEvt.name).to.be.eq('SousQuartiers')
+        expect(sousquartiersLoadStatusChangedEvt.loadStatus).to.be.eq(MapLayerLoadStatus.Ready).that.be.eq('ready')
+        // Values have changed
+        expect(sousquartiers.loadStatus).to.be.eq(MapLayerLoadStatus.Ready).that.to.be.eq('ready')
+        // Events dispatched at root level
+        expect(rootLayerLoadStatusChangedEvt).to.have.length(1)
+        expect(rootLayerLoadStatusChangedEvt[0]).to.be.deep.equal(sousquartiersLoadStatusChangedEvt)
+
+        //Reset
+        rootLayerLoadStatusChangedEvt = [];
+        sousquartiersLoadStatusChangedEvt = null;
+
+        // Reapply value
+        sousquartiers.loadStatus = 'ready'
         // Nothing change
-        expect(sousquartiersLoadingChangedEvt).to.be.null
-        expect(sousquartiers.loading).to.be.true
-        expect(rootLayerLoadingChangedEvt).to.have.length(0)
+        expect(sousquartiersLoadStatusChangedEvt).to.be.null
+        expect(sousquartiers.loadStatus).to.be.eq(MapLayerLoadStatus.Ready).that.to.be.eq('ready')
+        expect(rootLayerLoadStatusChangedEvt).to.have.length(0)
 
         // Test through groups
         const transports = root.children[1];
         expect(transports).to.be.instanceOf(MapGroupState)
 
-        let transportsLayerLoadingChangedEvt = [];
+        let transportsLayerLoadStatusChangedEvt = [];
         transports.addListener(evt => {
-            transportsLayerLoadingChangedEvt.push(evt)
-        }, 'layer.loading.changed');
+            transportsLayerLoadStatusChangedEvt.push(evt)
+        }, 'layer.load.status.changed');
 
         const tramGroup = transports.children[1];
         expect(tramGroup).to.be.instanceOf(MapGroupState)
         expect(tramGroup.name).to.be.eq('Tramway')
 
-        let tramGroupLayerLoadingChangedEvt = [];
+        let tramGroupLayerLoadStatusChangedEvt = [];
         tramGroup.addListener(evt => {
-            tramGroupLayerLoadingChangedEvt.push(evt)
-        }, 'layer.loading.changed');
+            tramGroupLayerLoadStatusChangedEvt.push(evt)
+        }, 'layer.load.status.changed');
 
         const tramway = tramGroup.children[1];
         expect(tramway).to.be.instanceOf(MapLayerState)
         expect(tramway.name).to.be.eq('tramway')
 
-        let tramwayLoadingChangedEvt = null;
+        let tramwayLoadStatusChangedEvt = null;
         tramway.addListener(evt => {
-            tramwayLoadingChangedEvt = evt
-        }, 'layer.loading.changed');
+            tramwayLoadStatusChangedEvt = evt
+        }, 'layer.load.status.changed');
 
         // Change value
-        tramway.loading = true;
+        tramway.loadStatus = MapLayerLoadStatus.Loading;
         // Event dispatched
-        expect(tramwayLoadingChangedEvt).to.not.be.null
-        expect(tramwayLoadingChangedEvt.name).to.be.eq('tramway')
-        expect(tramwayLoadingChangedEvt.loading).to.be.true
+        expect(tramwayLoadStatusChangedEvt).to.not.be.null
+        expect(tramwayLoadStatusChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayLoadStatusChangedEvt.loadStatus).to.be.eq(MapLayerLoadStatus.Loading).that.to.be.eq('loading')
         // Values have changed
-        expect(tramway.loading).to.be.true
+        expect(tramway.loadStatus).to.be.eq(MapLayerLoadStatus.Loading).that.to.be.eq('loading')
         // Events dispatched at root level
-        expect(tramGroupLayerLoadingChangedEvt).to.have.length(1)
-        expect(tramGroupLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
-        expect(transportsLayerLoadingChangedEvt).to.have.length(1)
-        expect(transportsLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
-        expect(rootLayerLoadingChangedEvt).to.have.length(1)
-        expect(rootLayerLoadingChangedEvt[0]).to.be.deep.equal(tramwayLoadingChangedEvt)
+        expect(tramGroupLayerLoadStatusChangedEvt).to.have.length(1)
+        expect(tramGroupLayerLoadStatusChangedEvt[0]).to.be.deep.equal(tramwayLoadStatusChangedEvt)
+        expect(transportsLayerLoadStatusChangedEvt).to.have.length(1)
+        expect(transportsLayerLoadStatusChangedEvt[0]).to.be.deep.equal(tramwayLoadStatusChangedEvt)
+        expect(rootLayerLoadStatusChangedEvt).to.have.length(1)
+        expect(rootLayerLoadStatusChangedEvt[0]).to.be.deep.equal(tramwayLoadStatusChangedEvt)
     })
 
     it('WMS selected styles', function () {

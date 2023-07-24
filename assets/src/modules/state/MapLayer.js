@@ -1,7 +1,24 @@
-import { convertBoolean } from './../utils/Converters.js';
 import EventDispatcher from './../../utils/EventDispatcher.js';
+import { createEnum } from './../utils/Enums.js';
 import { LayerStyleConfig } from './../config/LayerTree.js';
 import { LayerGroupState, LayerLayerState, LayerVectorState } from './Layer.js';
+
+/**
+ * Enum for map layer load status
+ * @readonly
+ * @enum {String}
+ * @property {String} Undefined - The map layer's load status is undefined (not yet loading, ready or error)
+ * @property {String} Loading   - The map layer is loading
+ * @property {String} Ready     - The map layer is ready
+ * @property {String} Error     - The map layer's load status is error (an error has been raised during loading)
+ * @see {@link https://openlayers.org/en/latest/apidoc/module-ol_source_Source.html#~State|OpenLayer Source State}
+ */
+export const MapLayerLoadStatus = createEnum({
+    'Undefined': 'undefined',
+    'Loading': 'loading',
+    'Ready': 'ready',
+    'Error': 'error',
+});
 
 /**
  * Class representing a map item: could be a group or a layer
@@ -273,6 +290,7 @@ export class MapGroupState extends MapItemState {
                     group.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.loading.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -291,6 +309,7 @@ export class MapGroupState extends MapItemState {
                     layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -324,6 +343,7 @@ export class MapGroupState extends MapItemState {
                     layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -493,6 +513,7 @@ export class MapLayerState extends MapItemState {
         }
         // set isLoading to false
         this._loading = false;
+        this._loadStatus = MapLayerLoadStatus.Undefined;
     }
 
     /**
@@ -622,32 +643,39 @@ export class MapLayerState extends MapItemState {
     }
 
     /**
-     * Is layer loading?
+     * The layer load status
+     * @see MapLayerLoadStatus
      *
-     * @type {Boolean}
+     * @type {String}
      **/
-    get loading() {
-        return this._loading;
+    get loadStatus() {
+        return this._loadStatus;
     }
 
+
     /**
-     * Set layer's loading state
+     * Set layer load status
+     * @see MapLayerLoadStatus
      *
-     * @param {Boolean}
+     * @param {String} status - Expected values provided by the map layer load status enum
      **/
-    set loading(loading) {
-        const newVal = convertBoolean(loading);
+    set loadStatus(status) {
+        const statusKeys = Object.keys(MapLayerLoadStatus).filter(key => MapLayerLoadStatus[key] === status);
+        if (statusKeys.length != 1) {
+            throw new TypeError('Unkonw status: `'+status+'`!');
+        }
+
         // No changes
-        if (this._loading == newVal) {
+        if (this._loadStatus == status) {
             return;
         }
         // Set new value
-        this._loading = newVal;
+        this._loadStatus = status;
 
         this.dispatch({
-            type: 'layer.loading.changed',
+            type: 'layer.load.status.changed',
             name: this.name,
-            loading: this.loading,
+            loadStatus: this.loadStatus,
         })
     }
 }
