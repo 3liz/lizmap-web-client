@@ -1,6 +1,7 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import { BaseLayerTypes } from '../modules/config/BaseLayer.js';
+import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
 import { transformExtent, get as getProjection } from 'ol/proj.js';
@@ -311,17 +312,29 @@ export default class BaseLayersMap extends olMap {
 
             if (source instanceof ImageWMS) {
                 source.on('imageloadstart', event => {
-                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = true;
+                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    mapLayer.loadStatus = MapLayerLoadStatus.Loading;
                 });
-                source.on(['imageloadend', 'imageloaderror'], event => {
-                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = false;
+                source.on('imageloadend', event => {
+                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                });
+                source.on('imageloaderror', event => {
+                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    mapLayer.loadStatus = MapLayerLoadStatus.Error;
                 });
             } else if (source instanceof WMTS) {
                 source.on('tileloadstart', event => {
-                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = true;
+                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    mapLayer.loadStatus = MapLayerLoadStatus.Loading;
                 });
-                source.on(['tileloadend', 'imageloaderror'], event => {
-                    mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name')).loading = false;
+                source.on('tileloadend', event => {
+                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                });
+                source.on('tileloaderror', event => {
+                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    mapLayer.loadStatus = MapLayerLoadStatus.Error;
                 });
             }
         }
