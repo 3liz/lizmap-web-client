@@ -2,7 +2,44 @@ import {arrayBufferToBase64} from '../support/function.js'
 
 describe('Selection tool', function () {
     beforeEach(function () {
+        cy.intercept('POST','*service*', (req) => {
+            if (typeof req.body == 'string') {
+                const req_body = req.body.toLowerCase()
+                if (req_body.includes('service=wms') ) {
+                    if (req_body.includes('request=getfeatureinfo'))
+                        req.alias = 'postGetFeatureInfo'
+                    else if (req_body.includes('request=getselectiontoken'))
+                        req.alias = 'postGetSelectionToken'
+                    else
+                        req.alias = 'postToService'
+                } else if (req_body.includes('service=wfs') ) {
+                    if (req_body.includes('request=getfeature'))
+                        req.alias = 'postGetFeature'
+                    else if (req_body.includes('request=describefeaturetype'))
+                        req.alias = 'postDescribeFeatureType'
+                    else
+                        req.alias = 'postToService'
+                } else
+                    req.alias = 'postToService'
+            } else
+                req.alias = 'postToService'
+          })
+
+        cy.intercept('*REQUEST=GetMap*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
+
+        // Go to the web map
         cy.visit('/index.php/view/map/?repository=testsrepository&project=selection')
+
+        // Wait for map displayed
+        cy.wait('@getMap')
     })
 
     it('should toggle selection tool', function () {
@@ -34,6 +71,10 @@ describe('Selection tool', function () {
             .click(850, 350)
             .dblclick(550, 650)
 
+        // WFS GetFeature request
+        // WMS GetSelectionToken request
+        cy.wait(['@postGetFeature', '@postGetSelectionToken'])
+
         cy.get('.selectiontool-results').should(($div) => {
             const text = $div.text()
 
@@ -45,6 +86,93 @@ describe('Selection tool', function () {
             .click(750, 350)
             .click(700, 400)
             .dblclick(700, 350)
+
+        // WFS GetFeature request
+        cy.wait(['@postGetFeature'])
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).not.to.match(/^[0-9]/)
+        })
+    })
+
+    it('selects features intersecting a line', function () {
+        cy.get('#button-selectiontool').click()
+
+        // Activate polygon tool
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-line').click()
+
+        // Select single layer and intersects geom operator
+        cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection_polygon')
+        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+
+
+        // It should select two features
+        cy.get('#newOlMap')
+            .click(300, 350)
+            .dblclick(850, 350)
+
+        // WFS GetFeature request
+        // WMS GetSelectionToken request
+        cy.wait(['@postGetFeature', '@postGetSelectionToken'])
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).to.match(/^2/)
+        })
+
+        // It should not select any features
+        cy.get('#newOlMap')
+            .click(750, 350)
+            .dblclick(700, 400)
+
+        // WFS GetFeature request
+        // WMS GetSelectionToken request
+        cy.wait(['@postGetFeature'])
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).not.to.match(/^[0-9]/)
+        })
+    })
+
+    it('selects features intersecting a point', function () {
+        cy.get('#button-selectiontool').click()
+
+        // Activate polygon tool
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-point').click()
+
+        // Select single layer and intersects geom operator
+        cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection_polygon')
+        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+
+
+        // It should select one feature
+        cy.get('#newOlMap')
+            .click(850, 350)
+
+        // WFS GetFeature request
+        // WMS GetSelectionToken request
+        cy.wait(['@postGetFeature', '@postGetSelectionToken'])
+
+        cy.get('.selectiontool-results').should(($div) => {
+            const text = $div.text()
+
+            expect(text).to.match(/^1/)
+        })
+
+        // It should not select any features
+        cy.get('#newOlMap')
+            .click(750, 350)
+
+        // WFS GetFeature request
+        // WMS GetSelectionToken request
+        cy.wait(['@postGetFeature'])
 
         cy.get('.selectiontool-results').should(($div) => {
             const text = $div.text()

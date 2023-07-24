@@ -4420,7 +4420,16 @@ window.lizMap = function() {
           // add BBox to restrict to geom bbox but not with some geometry operator
           if (geomOperator !== 'disjoint'){
             var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(), aProj).getBounds();
+            if (geomBounds.getWidth() == 0 || geomBounds.getHeight() == 0) {
+              geomBounds.extend(new OpenLayers.Bounds(
+                  geomBounds.left - 0.000001,
+                  geomBounds.bottom - 0.000001,
+                  geomBounds.right + 0.000001,
+                  geomBounds.top + 0.000001
+              ));
+            }
             getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+            getFeatureUrlData['options']['SRSNAME'] = lConfig.crs;
           }
 
           // get features
