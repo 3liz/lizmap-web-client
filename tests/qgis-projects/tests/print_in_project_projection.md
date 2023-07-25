@@ -6,7 +6,6 @@
 
 ### Test with the QGIS project with an external IGN base layer
 
-* [ ] Check that the project in Pseudo-Mercator: scale must be like `1:4 514` and not like `1:1 000`
 * [ ] Click on print tool in the left menu
 * [ ] Choose the scale `1000`, keep the other fields as default
 * [ ] Launch the print by clicking on the blue button
