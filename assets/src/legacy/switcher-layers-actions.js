@@ -496,15 +496,8 @@ var lizLayerActionButtons = function() {
                 if( layerName ){
                     itemName = layerName;
                 }
-            }else{
-                var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(itemName) );
-                if( layerName ){
-                    itemName = layerName;
-                    itemConfig = lizMap.config.layers[layerName];
-                }
-                else{
-                    return false;
-                }
+            } else {
+                itemConfig = lizMap.config.layers[itemName];
             }
 
             // Change action buttons values
