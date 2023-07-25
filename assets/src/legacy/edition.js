@@ -528,18 +528,17 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             if( !('geometryType' in childLayerConfig) || childLayerConfig.geometryType == 'none' )
                 continue;
 
-            var olLayer = map.getLayersByName( qgisName );
-            if( olLayer.length == 0 )
-                olLayer = map.getLayersByName( lizMap.cleanName( qgisName ) );
-            if( olLayer.length == 0 )
-                continue;
+            const olLayer = lizMap.mainLizmap.baseLayersMap.getLayerByName(qgisName);
 
-            olLayer = olLayer[0];
-            if( !olLayer.getVisibility() )
+            if( olLayer.length == 0 ){
                 continue;
+            }
 
-            redrawnLayerIds.push(childLayerConfig.id);
-            olLayer.redraw(true);
+            if( !olLayer.getVisible() ){
+                continue;
+            }
+
+            olLayer.getSource().changed();
         }
         return redrawnLayerIds;
     }
