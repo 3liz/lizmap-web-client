@@ -334,7 +334,7 @@ export default class BaseLayersMap extends olMap {
         mainLizmap.state.layersAndGroupsCollection.addListener(
             evt => {
                 const activeBaseLayer = this.getActiveBaseLayer();
-                if (activeBaseLayer.get("name") === evt.name) {
+                if (activeBaseLayer && activeBaseLayer.get("name") === evt.name) {
                     activeBaseLayer.setOpacity(evt.opacity);
                 } else {
                     this.getLayerOrGroupByName(evt.name).setOpacity(evt.opacity);

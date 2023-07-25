@@ -46,7 +46,7 @@ var lizLayerActionButtons = function() {
                 { 'name': itemName, 'type': itemType, 'selected': false}
             );
 
-            $('#switcher tr.selected').removeClass('selected');
+            document.querySelector('lizmap-treeview').itemNameSelected = undefined;
         });
     }
 
