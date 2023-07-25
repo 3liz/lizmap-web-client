@@ -18,7 +18,10 @@ export default class Treeview extends HTMLElement {
         html`
         <li>
             <label class="symbol-title">
-                <input type="checkbox" .checked=${symbol.checked} @click=${() => symbol.checked = !symbol.checked}>
+                ${symbol.ruleKey
+                    ? html`<input type="checkbox" .checked=${symbol.checked} @click=${() => symbol.checked = !symbol.checked}>`
+                    : ''
+                }
                 <img class="legend" src="${symbol.icon}">
                 ${symbol.title}
             </label>
