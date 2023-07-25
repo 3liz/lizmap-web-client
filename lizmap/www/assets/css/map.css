@@ -3008,6 +3008,12 @@ lizmap-treeview li {
 
 lizmap-treeview li > div {
   display: flex;
+  border: 1px solid transparent;
+  padding-left: 4px;
+}
+
+lizmap-treeview li > div.selected {
+  border-color: #0094D6;
 }
 
 lizmap-treeview div.expandable{

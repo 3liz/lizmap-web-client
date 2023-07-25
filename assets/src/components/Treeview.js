@@ -6,6 +6,7 @@ import { when } from 'lit-html/directives/when.js';
 export default class Treeview extends HTMLElement {
     constructor() {
         super();
+        this._itemNameSelected;
     }
 
     connectedCallback() {
@@ -43,7 +44,7 @@ export default class Treeview extends HTMLElement {
                     ? html`<div class="expandable ${item.expanded ? 'expanded' : ''}" @click=${() => item.expanded = !item.expanded}></div>`
                     : ''
                 }
-                <div class="${item.checked ? 'checked' : ''} ${item.type}">
+                <div class="${item.checked ? 'checked' : ''} ${item.type} ${item.name === this._itemNameSelected ? 'selected' : ''}">
                     <div class="loading ${item.loading ? 'spinner' : ''}"></div>
                     <input class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
                     <div class="node ${item.isFiltered ? 'filtered' : ''}">
@@ -63,7 +64,7 @@ export default class Treeview extends HTMLElement {
                                     </a>`
                                 : ''
                             }
-                            <i class="icon-info-sign" @click=${() => this._toggleMetadata(item.name, item.type)}></i>
+                            <i class="icon-info-sign" @click=${() => this.itemNameSelected = item.name}></i>
                         </div>
                     </div>
                 </div>
@@ -94,6 +95,20 @@ export default class Treeview extends HTMLElement {
         );
     }
 
+    set itemNameSelected(itemName) {
+        if (this._itemNameSelected === itemName) {
+            this._itemNameSelected = undefined;
+        } else {
+            this._itemNameSelected = itemName;
+        }
+
+        lizMap.events.triggerEvent("lizmapswitcheritemselected",
+            { 'name': itemName, 'selected': this._itemNameSelected !== undefined }
+        );
+
+        this._onChange();
+    }
+
     _createDocLink(layerName) {
         let url = lizMap.config.layers?.[layerName]?.link;
 
@@ -118,11 +133,5 @@ export default class Treeview extends HTMLElement {
         if (! confirm(lizDict['tree.button.removeCache.confirmation'])){
             event.preventDefault();
         }
-    }
-
-    _toggleMetadata (layerName, isGroup){
-        lizMap.events.triggerEvent("lizmapswitcheritemselected",
-          { 'name': layerName, 'type': isGroup ? "group" : "layer", 'selected': true}
-        )
     }
 }
