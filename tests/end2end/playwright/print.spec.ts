@@ -1,5 +1,4 @@
-// @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test.describe('Print', () => {
 
@@ -36,13 +35,12 @@ test.describe('Print', () => {
         expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
         // 200 DPI is default
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
-
     });
 
     test('Print requests', async ({ page }) => {
         // Test `print_labels` template
         page.once('request', request => {
-            expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=pdf&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=100&TEMPLATE=print_labels&map0%3AEXTENT=759249.549002605%2C6271892.11637865%2C781949.549002605%2C6286892.11637865&map0%3ASCALE=100000&map0%3ALAYERS=quartiers%2Csousquartiers&map0%3ASTYLES=d%C3%A9faut%2Cd%C3%A9faut&map0%3AOPACITIES=255%2C255&simple_label=simple%20label&multiline_label=Multiline%20label');
+            expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=pdf&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=100&TEMPLATE=print_labels&map0%3AEXTENT=759249.549002605%2C6271892.11637865%2C781949.549002605%2C6286892.11637865&map0%3ASCALE=100000&map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers&map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut&map0%3AOPACITIES=255%2C255%2C255&simple_label=simple%20label&multiline_label=Multiline%20label');
         });
         await page.locator('#print-launch').click();
 
@@ -50,14 +48,14 @@ test.describe('Print', () => {
         await page.locator('#print-template').selectOption('1');
 
         page.once('request', request => {
-            expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=jpeg&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=200&TEMPLATE=print_map&map0%3AEXTENT=765699.549002605%2C6271792.11637865%2C775499.549002605%2C6286992.11637865&map0%3ASCALE=100000&map0%3ALAYERS=quartiers%2Csousquartiers&map0%3ASTYLES=d%C3%A9faut%2Cd%C3%A9faut&map0%3AOPACITIES=255%2C255');
+            expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=jpeg&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=200&TEMPLATE=print_map&map0%3AEXTENT=765699.549002605%2C6271792.11637865%2C775499.549002605%2C6286992.11637865&map0%3ASCALE=100000&map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers&map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut&map0%3AOPACITIES=255%2C255%2C255');
         });
 
         await page.locator('#print-launch').click();
 
         // Redlining with circle
         page.once('request', request => {
-            expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=pdf&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=100&TEMPLATE=print_labels&map0%3AEXTENT=759249.549002605%2C6271892.11637865%2C781949.549002605%2C6286892.11637865&map0%3ASCALE=100000&map0%3ALAYERS=quartiers%2Csousquartiers&map0%3ASTYLES=d%C3%A9faut%2Cd%C3%A9faut&map0%3AOPACITIES=255%2C255&map0%3AHIGHLIGHT_GEOM=CIRCULARSTRING(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20772265.9549028379%206279008.469778025%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20775229.7665963736%206281972.281471561%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20778193.5782899094%206279008.469778025%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20775229.7665963736%206276044.6580844885%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20772265.9549028379%206279008.469778025)&map0%3AHIGHLIGHT_SYMBOL=%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%20%20%20%20%3CStyledLayerDescriptor%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%22%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%20xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%20version%3D%221.1.0%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20xsi%3AschemaLocation%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%20http%3A%2F%2Fschemas.opengis.net%2Fsld%2F1.1.0%2FStyledLayerDescriptor.xsd%22%20xmlns%3Ase%3D%22http%3A%2F%2Fwww.opengis.net%2Fse%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CUserStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CStroke%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-opacity%22%3E1%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-width%22%3E2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FStroke%3E%0A%20%20%20%20%20%20%20%20%3CFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill-opacity%22%3E0.2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FUserStyle%3E%0A%20%20%20%20%20%20%20%20%3C%2FStyledLayerDescriptor%3E&simple_label=simple%20label&multiline_label=Multiline%20label');
+            expect(request.postData()).toBe('SERVICE=WMS&REQUEST=GetPrint&VERSION=1.3.0&FORMAT=pdf&TRANSPARENT=true&SRS=EPSG%3A2154&DPI=100&TEMPLATE=print_labels&map0%3AEXTENT=759249.549002605%2C6271892.11637865%2C781949.549002605%2C6286892.11637865&map0%3ASCALE=100000&map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers&map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut&map0%3AOPACITIES=255%2C255%2C255&map0%3AHIGHLIGHT_GEOM=CIRCULARSTRING(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20772265.9549028379%206279008.469778025%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20775229.7665963736%206281972.281471561%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20778193.5782899094%206279008.469778025%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20775229.7665963736%206276044.6580844885%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20772265.9549028379%206279008.469778025)&map0%3AHIGHLIGHT_SYMBOL=%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%20%20%20%20%3CStyledLayerDescriptor%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%22%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%20xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%20version%3D%221.1.0%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20xsi%3AschemaLocation%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%20http%3A%2F%2Fschemas.opengis.net%2Fsld%2F1.1.0%2FStyledLayerDescriptor.xsd%22%20xmlns%3Ase%3D%22http%3A%2F%2Fwww.opengis.net%2Fse%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CUserStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CStroke%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-opacity%22%3E1%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-width%22%3E2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FStroke%3E%0A%20%20%20%20%20%20%20%20%3CFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill-opacity%22%3E0.2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FUserStyle%3E%0A%20%20%20%20%20%20%20%20%3C%2FStyledLayerDescriptor%3E&simple_label=simple%20label&multiline_label=Multiline%20label');
         });
 
         await page.locator('#button-draw').click();
@@ -80,7 +78,6 @@ test.describe('Print', () => {
         await page.locator('#button-print').click();
         await page.locator('#print-scale').selectOption('100000');
         await page.locator('#print-launch').click();
-
     });
 });
 
@@ -89,7 +86,6 @@ test.describe('Print in popup', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.locator('#map').click({ position: { x: 409, y: 186 } });
-
     });
 
     test('Popup content print', async ({ page }) => {
@@ -132,7 +128,5 @@ test.describe('Print in popup', () => {
 
         expect(response.headers()['content-type']).toBe('application/pdf');
         expect(response.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
-
     });
-
 });

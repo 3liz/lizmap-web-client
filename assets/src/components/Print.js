@@ -229,6 +229,11 @@ export default class Print extends HTMLElement {
             opacityLayers.push(255);
         }
 
+        // Add selected base layer
+        printLayers.push(lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.layerConfig.shortname);
+        styleLayers.push(lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.itemState.wmsSelectedStyleName);
+        opacityLayers.push(parseInt(255 * lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.itemState.opacity * lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.layerConfig.opacity));
+
         // Add visible layers
         for (const layer of mainLizmap.state.rootMapGroup.findMapLayers().slice().reverse()) {
             if (layer.visibility) {
@@ -409,8 +414,9 @@ export default class Print extends HTMLElement {
 
         // Change mask size. Only main map mask is shown
         // Width/height are in mm by default. Convert to pixels
-        this._maskWidth = templateMaps.filter(map => map.id == this._mainMapID)?.[0]?.width / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
-        this._maskHeight = templateMaps.filter(map => map.id == this._mainMapID)?.[0]?.height / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
+        const templateMap = templateMaps.filter(map => map.id == this._mainMapID)?.[0]
+        this._maskWidth = templateMap?.width / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
+        this._maskHeight = templateMap?.height / 1000 * INCHES_PER_METER * DOTS_PER_INCH;
 
         mainLizmap.map.getView().changed();
 
