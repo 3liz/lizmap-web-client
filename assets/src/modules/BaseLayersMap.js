@@ -331,8 +331,15 @@ export default class BaseLayersMap extends olMap {
             ['layer.visibility.changed', 'group.visibility.changed']
         );
 
-        mainLizmap.state.rootMapGroup.addListener(
-            evt => this.getLayerOrGroupByName(evt.name).setOpacity(evt.opacity),
+        mainLizmap.state.layersAndGroupsCollection.addListener(
+            evt => {
+                const activeBaseLayer = this.getActiveBaseLayer();
+                if (activeBaseLayer.get("name") === evt.name) {
+                    activeBaseLayer.setOpacity(evt.opacity);
+                } else {
+                    this.getLayerOrGroupByName(evt.name).setOpacity(evt.opacity);
+                }
+            },
             ['layer.opacity.changed', 'group.opacity.changed']
         );
 
