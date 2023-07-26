@@ -112,7 +112,6 @@ class editionCtrl extends jController
      */
     private function getEditionParameters($save = false)
     {
-
         // Get the project
         if ($save) {
             $project = $this->param('liz_project');
@@ -386,7 +385,6 @@ class editionCtrl extends jController
      */
     public function createFeature()
     {
-
         // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
@@ -434,7 +432,6 @@ class editionCtrl extends jController
      */
     public function modifyFeature()
     {
-
         // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
@@ -492,7 +489,6 @@ class editionCtrl extends jController
      */
     public function editFeature()
     {
-
         // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
@@ -618,7 +614,6 @@ class editionCtrl extends jController
      */
     public function saveFeature()
     {
-
         // Get repository, project data and do some right checking
         $save = true;
         if (!$this->getEditionParameters($save)) {
@@ -792,7 +787,6 @@ class editionCtrl extends jController
      */
     public function closeFeature()
     {
-
         // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
