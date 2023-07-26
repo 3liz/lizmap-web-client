@@ -82,8 +82,10 @@ class qgisExpressionUtils
     /**
      * Returns the expression used to filter by login the layer.
      *
+     * This method combines the attribute and the spatial filter expressions.
+     *
      * @param qgisVectorLayer $layer   A QGIS vector layer
-     * @param bool            $edition It's for editon
+     * @param bool            $edition It's for editing
      *
      * @return string the expression to filter by login the layer
      */
@@ -140,6 +142,50 @@ class qgisExpressionUtils
         }
 
         return '('.$expression.') AND ('.$expByUser.')';
+    }
+
+    /**
+     * Request QGIS Server and the lizmap plugin calculate virtual fields
+     * for the features of a given vector layer.
+     *
+     * A filter can be used to retrieve the virtual fields values only
+     * for a subset of features.
+     *
+     * @param qgisVectorLayer $layer         A QGIS vector layer
+     * @param array           $virtualFields The expressions' list to evaluate as key
+     * @param string          $filter        A filter to restrict virtual fields creation
+     *
+     * @return null|array the features with virtual fields
+     */
+    public static function virtualFields($layer, $virtualFields, $filter = null)
+    {
+        // Evaluate the expression by qgis
+        $project = $layer->getProject();
+        $params = array(
+            'service' => 'EXPRESSION',
+            'request' => 'VirtualFields',
+            'map' => $project->getRelativeQgisPath(),
+            'layer' => $layer->getName(),
+            'virtuals' => json_encode($virtualFields),
+            'with_geometry' => 'true',
+        );
+        if ($filter) {
+            $params['filter'] = $filter;
+        }
+
+        // Request virtual fields
+        $json = self::request($params, $project);
+        if (!$json) {
+            return null;
+        }
+        if (property_exists($json, 'type')
+            && $json->type == 'FeatureCollection'
+            && property_exists($json, 'features')) {
+            // Get results
+            return $json->features;
+        }
+
+        return null;
     }
 
     /**
@@ -319,7 +365,8 @@ class qgisExpressionUtils
 
         // Request evaluate constraint expressions
         $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
-        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
+        $options = array('method' => 'post');
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url, $options);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
@@ -378,7 +425,9 @@ class qgisExpressionUtils
             ));
         }
         $url = \Lizmap\Request\Proxy::constructUrl($merged_params, lizmap::getServices());
-        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
+        // Use POST method as the expressions can be heavy (polygon filter)
+        $options = array('method' => 'post');
+        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url, $options);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
