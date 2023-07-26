@@ -311,7 +311,7 @@ class qgisVectorLayer extends qgisMapLayer
             return $this->connection;
         }
 
-        if ($this->provider != 'spatialite' && $this->provider != 'postgres' and !(preg_match('#layername=#', $this->datasource))) {
+        if ($this->provider != 'spatialite' && $this->provider != 'postgres' and !preg_match('#layername=#', $this->datasource)) {
             jLog::log('Unknown provider "'.$this->provider.'" to get connection!', 'error');
 
             return null;
@@ -568,7 +568,6 @@ class qgisVectorLayer extends qgisMapLayer
 
     public function getGeometryAsSql($value)
     {
-
         // Get database connection object
         $cnx = $this->getDatasourceConnection();
         $dbFieldsInfo = $this->getDbFieldsInfo();
@@ -994,18 +993,42 @@ class qgisVectorLayer extends qgisMapLayer
      */
     public function isFeatureEditable($feature)
     {
-        // Get filter by login
+        // Get the full expression usable to filter the layer data for the authenticated user
+        // This combines the attribute and spatial filter
         $expByUser = qgisExpressionUtils::getExpressionByUser($this, true);
         if ($expByUser !== '') {
-            $results = qgisExpressionUtils::evaluateExpressions(
+            // Build an expression filter based on the feature primary key(s) value(s)
+            $pkVals = $this->getPrimaryKeyValues($feature);
+            $exp_filters = array();
+            foreach ($pkVals as $key => $val) {
+                $val = (string) $val;
+                $exp = '"'.$key.'" = ';
+                if (ctype_digit($val)) {
+                    $exp .= $val;
+                } else {
+                    $exp .= "'".addslashes($val)."'";
+                }
+                $exp_filters[] = $exp;
+            }
+
+            // Use Lizmap server plugin to calculate a boolean virtual field "filterByLogin"
+            // containing the evaluation of the user expression filter
+            // against the feature corresponding to the $feature primary keys
+            $results = qgisExpressionUtils::virtualFields(
                 $this,
                 array('filterByLogin' => $expByUser),
-                $feature
+                implode(' AND ', $exp_filters)
             );
 
-            if ($results
-                && property_exists($results, 'filterByLogin')
-                && $results->filterByLogin !== 1) {
+            // Return true or false depending of the resulting evaluation
+            if ($results && count($results) == 1) {
+                $result = $results[0];
+                if (property_exists($result, 'properties')
+                    && property_exists($result->properties, 'filterByLogin')
+                    && $result->properties->filterByLogin === 1) {
+                    return true;
+                }
+
                 return false;
             }
         }
