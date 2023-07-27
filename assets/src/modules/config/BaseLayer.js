@@ -859,7 +859,16 @@ export class BaseLayersConfig {
                     // Override title
                     extendedCfg[layerCfg.name].title = layerCfg.title;
                 } else if ( layerCfg.externalWmsToggle ){
-                    extendedCfg[layerCfg.name] = structuredClone(defaultCompleteBaseLayersCfg[layerCfg.externalAccess]);
+                    // The layer config has external access parameters
+                    if (layerCfg.externalAccess.hasOwnProperty('type')) {
+                        // layer could be converted to XYZ or WMTS background layers
+                        extendedCfg[layerCfg.name] = structuredClone(layerCfg.externalAccess);
+                    } else {
+                        extendedCfg[layerCfg.name] = Object.assign(
+                            structuredClone(layerCfg.externalAccess),
+                            {type: BaseLayerTypes.WMS}
+                        );
+                    }
                 } else {
                     extendedCfg[layerCfg.name] = {
                         "type": BaseLayerTypes.Lizmap,
