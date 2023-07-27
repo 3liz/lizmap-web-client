@@ -55,6 +55,8 @@ mapCSPHeader=
 ; CSP header for the admin interface
 adminCSPHeader=
 
+setAdminContactEmailAsReplyTo=off
+
 [modules]
 jelix.enabled=on
 jelix.installparam[wwwfiles]=copy
