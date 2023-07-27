@@ -301,7 +301,7 @@ class WMSRequest extends OGCRequest
                     $layer = $this->project->findLayerByAnyName($lName);
                     $nodes = json_decode($result->data)->nodes;
                     // Rework nodes
-                    if ($layer->type == 'group') {
+                    if ($layer->groupAsLayer == 'True') {
                         // Create a dedicated node for group
                         $legends['nodes'] = array(array(
                             'nodes' => $nodes,
