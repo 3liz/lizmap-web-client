@@ -869,6 +869,8 @@ export class BaseLayersConfig {
                             {type: BaseLayerTypes.WMS}
                         );
                     }
+                    // set title
+                    extendedCfg[layerCfg.name].title = layerCfg.title;
                 } else {
                     extendedCfg[layerCfg.name] = {
                         "type": BaseLayerTypes.Lizmap,
