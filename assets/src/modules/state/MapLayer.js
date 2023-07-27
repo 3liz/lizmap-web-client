@@ -303,7 +303,7 @@ export class MapGroupState extends MapItemState {
                         this._checked = true;
                     }
                 }
-            } else if (layerItem instanceof LayerLayerState && !layerItem.baseLayer) {
+            } else if (layerItem instanceof LayerLayerState && !layerItem.layerConfig.baseLayer) {
                 // layer with geometry type equal to 'none' or 'unknown' cannot be displayed
                 if (layerItem instanceof LayerVectorState
                     && !layerItem.isSpatial) {
