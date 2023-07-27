@@ -147,10 +147,6 @@ export default class Lizmap {
         return lizUrls.media + '?' + (new URLSearchParams(lizUrls.params).toString());
     }
 
-    get hasOverview() {
-        return this._lizmap3.config.layers.hasOwnProperty('Overview');
-    }
-
     get center() {
         const center = this._lizmap3.map.getCenter();
         return [center.lon, center.lat];

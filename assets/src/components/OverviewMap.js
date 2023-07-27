@@ -12,11 +12,20 @@ export default class OverviewMap extends HTMLElement {
 
     connectedCallback() {
 
+        let overviewInCfg = mainLizmap.state.layersAndGroupsCollection.groups
+            .find(group => group.name.toLowerCase() === 'overview' && group.level === 1);
+
+        if (!overviewInCfg) {
+            return;
+        }
+
         const overviewLayer = new ImageLayer({
             source: new ImageWMS({
                 url: mainLizmap.serviceURL,
-                params: { 'LAYERS': 'Overview' },
-                ratio: 1,
+                params: {
+                    LAYERS: overviewInCfg.wmsName
+                },
+                ratio: 1.1,
                 serverType: 'qgis',
             }),
         });
