@@ -30,7 +30,10 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
 
     const response = await wms.getLegendGraphic(wmsParams);
     for (const node of response.nodes) {
-        treeLayersByName[node.name].symbology = node;
+        // If the layer has no symbology, there is no type property
+        if (node.hasOwnProperty('type')) {
+            treeLayersByName[node.name].symbology = node;
+        }
     }
     return treeLayers;
 }
