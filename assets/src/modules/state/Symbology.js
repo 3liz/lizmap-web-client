@@ -22,8 +22,8 @@ export const base64svgRasterLayer = 'PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA
  * @returns {?String}
  **/
 export function getDefaultLayerIcon(layerCfg) {
-    if (layerCfg.type == 'group') {
-        return null;
+    if (layerCfg.type == 'group' || layerCfg.groupAsLayer) {
+        return base64png + base64pngNullData;
     }
     if (layerCfg.layerType == 'raster' || layerCfg.geometryType == null) {
         return base64svg + base64svgRasterLayer;
