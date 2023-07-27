@@ -525,16 +525,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             var qgisName = childLayerConfig[0];
             var childLayerConfig = childLayerConfig[1];
 
-            if( !('geometryType' in childLayerConfig) || childLayerConfig.geometryType == 'none' )
+            if (!('geometryType' in childLayerConfig) || childLayerConfig.geometryType == 'none')
                 continue;
 
             const olLayer = lizMap.mainLizmap.baseLayersMap.getLayerByName(qgisName);
 
-            if( olLayer.length == 0 ){
-                continue;
-            }
-
-            if( !olLayer.getVisible() ){
+            if (!olLayer.getVisible()) {
                 continue;
             }
 
