@@ -847,7 +847,7 @@ window.lizMap = function() {
 
       if ( qgisLayerName.toLowerCase() == 'hidden' )
         continue;
-      if ( qgisLayerName == 'Overview' ) {
+      if ( qgisLayerName.toLowerCase() == 'overview' ) {
         config.options.hasOverview = true;
         continue;
       }
