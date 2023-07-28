@@ -4,7 +4,7 @@ import { BaseLayerTypes } from '../modules/config/BaseLayer.js';
 import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
-import { transformExtent, get as getProjection } from 'ol/proj.js';
+import { get as getProjection } from 'ol/proj.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
@@ -255,6 +255,13 @@ export default class BaseLayersMap extends olMap {
                             },
                         })
                     });
+
+                    // Force no cache w/ Firefox
+                    if(navigator.userAgent.includes("Firefox")){
+                        layer.getSource().setImageLoadFunction((image, src) => {
+                            (image.getImage()).src = src + '&ts=' + Date.now();
+                        });
+                    }
                 }
 
                 layer.setVisible(node.visibility);
