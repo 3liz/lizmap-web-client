@@ -1819,10 +1819,8 @@ window.lizMap = function() {
 
     // get the baselayer select content
     // and adding baselayers to the map
-    var select = [];
     baselayers.reverse();
-    for (var i=0,len=baselayers.length; i<len; i++) {
-      var baselayer = baselayers[i]
+    for (const baselayer of baselayers) {
       baselayer.units = projection.proj.units;
       // Update singleTile layers
       if( removeSingleTile && (baselayer instanceof OpenLayers.Layer.WMS) && baselayer.singleTile ) {
@@ -1830,15 +1828,7 @@ window.lizMap = function() {
       }
       try{ // because google maps layer can be created but not added
           map.addLayer(baselayer);
-          var qgisName = baselayer.name;
-          if ( baselayer.name in cleanNameMap )
-              qgisName = getLayerNameByCleanName(baselayer.name);
-          var blConfig = config.layers[qgisName];
-          if (blConfig)
-            select += '<option value="'+baselayer.name+'">'+blConfig.title+'</option>';
-          else
-            select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
-
+          map.baseLayer.setVisibility(false);
       } catch(e) {
           var qgisName = baselayer.name;
           if ( baselayer.name in cleanNameMap )
@@ -1847,37 +1837,7 @@ window.lizMap = function() {
       }
     }
 
-    if (baselayers.length!=0) {
-      // active the select element for baselayers
-      $('#switcher-baselayer-select').append(select);
-      $('#switcher-baselayer-select')
-        .change(function() {
-          var val = $(this).val();
-          var blName = map.getLayersByName(val)[0];
-          map.setBaseLayer( blName );
-
-          // Trigger event
-          lizMap.events.triggerEvent("lizmapbaselayerchanged",
-            { 'layer': blName}
-          );
-
-          $(this).blur();
-        });
-      // Hide switcher-baselayer if only one base layer inside
-      if (baselayers.length==1){
-        $('#switcher-baselayer').hide();
-      }
-      else if ( 'startupBaselayer' in config.options ) {
-          var startupBaselayer = config.options['startupBaselayer'];
-          if ( startupBaselayer in startupBaselayersReplacement )
-            startupBaselayer = startupBaselayersReplacement[startupBaselayer];
-          else if ( startupBaselayer in config.layers )
-            startupBaselayer = cleanName(startupBaselayer);
-
-          if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0)
-            $('#switcher-baselayer-select').val(startupBaselayer).change();
-      }
-    } else {
+    if (baselayers.length === 0) {
       // hide elements for baselayers
       map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
         maxExtent:map.maxExtent
