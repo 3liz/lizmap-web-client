@@ -1927,7 +1927,7 @@ class QgisProject
             $fieldEditOptions = $this->getFieldConfigurationOptions($options);
 
             // editable
-            $editableFieldXml = $layerXml->xpath("editable/field[@name='${fieldName}']");
+            $editableFieldXml = $layerXml->xpath("editable/field[@name='{$fieldName}']");
             if ($editableFieldXml && is_array($editableFieldXml)) {
                 $editable = (int) $editableFieldXml[0]->attributes()->editable;
             } else {
