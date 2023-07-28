@@ -237,7 +237,7 @@ class jMailer extends PHPMailer {
             $addr = $address;
         }
         if ($kind) {
-            $this->addAnAddress($kind, $addr, $name);
+            $this->addOrEnqueueAnAddress($kind, $addr, $name);
         }
         return array($addr, $name);
     }
@@ -314,6 +314,15 @@ class jMailer extends PHPMailer {
                 $this->setFrom($adr[0], $adr[1]);
             }
 
+            $config = \jApp::config();
+            if (count($this->ReplyToQueue) == 0
+                && count($this->ReplyTo) == 0
+                && $config->mailer['replyTo']
+            ) {   // Set default Reply-To header
+                $this->addOrEnqueueAnAddress('Reply-To', $config->mailer['replyTo'], '');
+                $mailtpl->assign('ReplyTo', $config->mailer['replyTo']);
+            }
+
             $mailtpl->assign('From', $this->From );
             $mailtpl->assign('FromName', $this->FromName );
 
@@ -323,6 +332,15 @@ class jMailer extends PHPMailer {
             }
             else
                 $this->Body = $mailtpl->fetch( $this->bodyTpl, 'text');
+        }
+        else {
+            $config = \jApp::config();
+            if (count($this->ReplyToQueue) == 0
+                && count($this->ReplyTo) == 0
+                && $config->mailer['replyTo'])
+            {   // Set default Reply-To header
+                $this->addOrEnqueueAnAddress('Reply-To', $config->mailer['replyTo'], '');
+            }
         }
 
         if ($this->debugReceiversEnabled) {
@@ -364,10 +382,10 @@ class jMailer extends PHPMailer {
                 foreach($this->debugOriginalValues[$recipientType] as $email) {
                     if (in_array($email[0], $this->debugReceiversWhiteList)) {
                         if (empty($email[1])) {
-                            $this->addAnAddress($recipientType, $email[0]);
+                            $this->addOrEnqueueAnAddress($recipientType, $email[0], '');
                         }
                         else {
-                            $this->addAnAddress($recipientType, $email[0], $email[1]);
+                            $this->addOrEnqueueAnAddress($recipientType, $email[0], $email[1]);
                         }
                     }
                 }

@@ -8,8 +8,6 @@
  * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
 
-require_once(__DIR__.'/jFormsControlUpload2.class.php');
-
 /**
  *
  * @package     jelix
