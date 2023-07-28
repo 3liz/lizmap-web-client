@@ -28,9 +28,7 @@ lizMap.events.on({
         window.customElements.define('lizmap-scaleline', Scaleline);
         window.customElements.define('lizmap-mouse-position', MousePosition);
         window.customElements.define('lizmap-digitizing', Digitizing);
-        if(mainLizmap.hasOverview){
-            window.customElements.define('lizmap-overviewmap', OverviewMap);
-        }
+        window.customElements.define('lizmap-overviewmap', OverviewMap);
         window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
         window.customElements.define('lizmap-reverse-geom', ReverseGeom);
         window.customElements.define('lizmap-paste-geom', PasteGeom);
