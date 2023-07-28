@@ -1,6 +1,6 @@
 import EventDispatcher from './../../utils/EventDispatcher.js';
-import { convertBoolean } from './../utils/Converters.js';
 import { BaseLayerTypes } from './../config/BaseLayer.js';
+import { MapLayerLoadStatus } from './MapLayer.js';
 
 /**
  * Class representing a base layer state
@@ -20,6 +20,7 @@ export class BaseLayerState extends EventDispatcher {
         super()
         this._baseLayerConfig = baseLayerCfg;
         this._itemState = itemState;
+        this._loadStatus = MapLayerLoadStatus.Undefined;
     }
 
     /**
@@ -119,32 +120,39 @@ export class BaseLayerState extends EventDispatcher {
     }
 
     /**
-     * Is base layer loading?
+     * The layer load status
+     * @see MapLayerLoadStatus
      *
-     * @type {Boolean}
+     * @type {String}
      **/
-    get loading() {
-        return this._loading;
+    get loadStatus() {
+        return this._loadStatus;
     }
 
+
     /**
-     * Set base layer's loading state
+     * Set layer load status
+     * @see MapLayerLoadStatus
      *
-     * @param {Boolean}
+     * @param {String} status - Expected values provided by the map layer load status enum
      **/
-    set loading(loading) {
-        const newVal = convertBoolean(loading);
+    set loadStatus(status) {
+        const statusKeys = Object.keys(MapLayerLoadStatus).filter(key => MapLayerLoadStatus[key] === status);
+        if (statusKeys.length != 1) {
+            throw new TypeError('Unkonw status: `'+status+'`!');
+        }
+
         // No changes
-        if (this._loading == newVal) {
+        if (this._loadStatus == status) {
             return;
         }
         // Set new value
-        this._loading = newVal;
+        this._loadStatus = status;
 
         this.dispatch({
-            type: 'baselayer.loading.changed',
+            type: 'layer.load.status.changed',
             name: this.name,
-            loading: this.loading,
+            loadStatus: this.loadStatus,
         })
     }
 }
@@ -163,7 +171,7 @@ export class EmptyBaseLayerState extends BaseLayerState {
      */
     constructor(baseLayerCfg, itemState = null ) {
         if (baseLayerCfg.type !== BaseLayerTypes.Empty) {
-            throw new TypeError('Not an `' + BaseLayerTypes.Empty + '` base layer config. Get `' + baseLayerCfg.type + '` for `' + baseLayerCfg.name + '`!');
+            throw new TypeError('Not an `' + BaseLayerTypes.Empty + '` base layer config. Get `' + baseLayerCfg.type + '` type for `' + baseLayerCfg.name + '` base layer!');
         }
         super(baseLayerCfg, itemState)
     }
@@ -183,7 +191,7 @@ export class XyzBaseLayerState extends BaseLayerState {
      */
     constructor(baseLayerCfg, itemState = null ) {
         if (baseLayerCfg.type !== BaseLayerTypes.XYZ) {
-            throw new TypeError('Not an `' + BaseLayerTypes.XYZ + '` base layer config. Get `' + baseLayerCfg.type + '` for `' + baseLayerCfg.name + '`!');
+            throw new TypeError('Not an `' + BaseLayerTypes.XYZ + '` base layer config. Get `' + baseLayerCfg.type + '` type for `' + baseLayerCfg.name + '` base layer!');
         }
         super(baseLayerCfg, itemState)
     }
@@ -239,7 +247,7 @@ export class BingBaseLayerState extends BaseLayerState {
      */
     constructor(baseLayerCfg, itemState = null ) {
         if (baseLayerCfg.type !== BaseLayerTypes.Bing) {
-            throw new TypeError('Not an `' + BaseLayerTypes.Bing + '` base layer config. Get `' + baseLayerCfg.type + '` for `' + baseLayerCfg.name + '`!');
+            throw new TypeError('Not an `' + BaseLayerTypes.Bing + '` base layer config. Get `' + baseLayerCfg.type + '` type for `' + baseLayerCfg.name + '` base layer!');
         }
         super(baseLayerCfg, itemState)
     }
@@ -268,7 +276,7 @@ export class WmtsBaseLayerState extends BaseLayerState {
      */
     constructor(baseLayerCfg, itemState = null ) {
         if (baseLayerCfg.type !== BaseLayerTypes.WMTS) {
-            throw new TypeError('Not an `' + BaseLayerTypes.WMTS + '` base layer config. Get `' + baseLayerCfg.type + '` for `' + baseLayerCfg.name + '`!');
+            throw new TypeError('Not an `' + BaseLayerTypes.WMTS + '` base layer config. Get `' + baseLayerCfg.type + '` type for `' + baseLayerCfg.name + '` base layer!');
         }
         super(baseLayerCfg, itemState)
     }
@@ -351,7 +359,7 @@ export class WmsBaseLayerState extends BaseLayerState {
      */
     constructor(baseLayerCfg, itemState = null ) {
         if (baseLayerCfg.type !== BaseLayerTypes.WMS) {
-            throw new TypeError('Not an `' + BaseLayerTypes.WMS + '` base layer config. Get `' + baseLayerCfg.type + '` for `' + baseLayerCfg.name + '`!');
+            throw new TypeError('Not an `' + BaseLayerTypes.WMS + '` base layer config. Get `' + baseLayerCfg.type + '` type for `' + baseLayerCfg.name + '` base layer!');
         }
         super(baseLayerCfg, itemState)
     }
