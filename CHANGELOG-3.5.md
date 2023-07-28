@@ -13,6 +13,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Minimum [Lizmap server plugin](https://github.com/3liz/qgis-lizmap-server-plugin) needed 2.7.1
 * Minimum QGIS server needed 3.10
 
+### Added
+
+* Emails sent by Lizmap when an admin user creates an account or reset the password of a user,
+  have now a Reply-To header set with the email of this admin user
+
 ### Fixed
 
 * Fix a visibility error for a QGIS preset/theme
