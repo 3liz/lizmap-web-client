@@ -795,10 +795,10 @@ class WMSRequest extends OGCRequest
         // Create HTML response
         $layerTitle = $configLayer->title;
 
-        $HTMLResponse = "<h4>${layerTitle}</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
+        $HTMLResponse = "<h4>{$layerTitle}</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
 
         foreach ($xmlFeature->children() as $key => $value) {
-            $HTMLResponse .= "<tr><td>${key}&nbsp;:&nbsp;</td><td>${value}</td></tr>";
+            $HTMLResponse .= "<tr><td>{$key}&nbsp;:&nbsp;</td><td>{$value}</td></tr>";
         }
         $HTMLResponse .= '</table></div>';
 
@@ -964,7 +964,7 @@ class WMSRequest extends OGCRequest
         $xmax = $bbox2 + $xFactor * $width + $metatileBuffer * $width / $param_width;
         $ymax = $bbox3 + $yFactor * $height + $metatileBuffer * $height / $param_height;
         // Replace request bbox by metatile bbox
-        $params['bbox'] = "${xmin},${ymin},${xmax},${ymax}";
+        $params['bbox'] = "{$xmin},{$ymin},{$xmax},{$ymax}";
 
         // Keep original param value
         $originalParams = array('width' => $param_width, 'height' => $param_height);
