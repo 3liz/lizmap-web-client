@@ -4,19 +4,139 @@ import { readFileSync } from 'fs';
 
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { BaseLayerTypes, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
+import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 
-import { BaseLayersState } from '../../../../assets/src/modules/state/BaseLayer.js';
+import { BaseLayerState, EmptyBaseLayerState, BaseLayersState } from '../../../../assets/src/modules/state/BaseLayer.js';
+
+/**
+ * Returns the BaseLayersState for the project
+ *
+ * The files for building it are stored in js-units/data/ and are
+ * - name +'-capabilities.json': the WMS capabilities parsed by OpenLayers
+ * - name +'-config.json': the Lizmap config send by lizmap web client
+ *
+ * @param {String} name - The project name
+ *
+ * @return {BaseLayersState}
+ **/
+function getBaseLayersState(name) {
+    const capabilities = JSON.parse(readFileSync('./data/'+ name +'-capabilities.json', 'utf8'));
+    expect(capabilities).to.not.be.undefined
+    expect(capabilities.Capability).to.not.be.undefined
+    const config = JSON.parse(readFileSync('./data/'+ name +'-config.json', 'utf8'));
+    expect(config).to.not.be.undefined
+
+    const layers = new LayersConfig(config.layers);
+    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+
+    let baseLayerTreeItem = null;
+    for (const layerTreeItem of rootCfg.getChildren()) {
+        if ( layerTreeItem.name.toLowerCase() == 'baselayers') {
+            baseLayerTreeItem = layerTreeItem;
+            break;
+        }
+    }
+
+    const baseLayersConfig = new BaseLayersConfig({}, config.options, layers, baseLayerTreeItem)
+
+    const layersOrder = buildLayersOrder(config, rootCfg);
+
+    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+    const baseLayers = new BaseLayersState(baseLayersConfig, collection)
+    expect(baseLayers).to.be.instanceOf(BaseLayersState)
+    return baseLayers;
+}
 
 describe('BaseLayerState', function () {
 
-    it('From options and layers tree', function () {
+    it('simple', function () {
+        const blConfig = new BaseLayerConfig('name', {'title': 'title'})
+        const baselayer = new BaseLayerState(blConfig)
+        expect(baselayer).to.be.instanceOf(BaseLayerState)
+        expect(baselayer.type).to.be.eq(BaseLayerTypes.Lizmap)
+        expect(baselayer.name).to.be.eq('name')
+        expect(baselayer.title).to.be.eq('title')
+        expect(baselayer.hasKey).to.be.false
+        expect(baselayer.key).to.be.null
+        expect(baselayer.hasAttribution).to.be.false
+        expect(baselayer.attribution).to.be.null
+        expect(baselayer.hasItemState).to.be.false
+        expect(baselayer.itemState).to.be.null
+    })
+
+    it('Error name', function () {
+        const baseLayers = getBaseLayersState('backgrounds')
+        const blConfig = new BaseLayerConfig('name', {'title': 'title'})
+        let baselayer = null;
+        try {
+            baselayer = new BaseLayerState(blConfig, baseLayers.selectedBaseLayer.itemState)
+        } catch (error) {
+            expect(error.name).to.be.eq('TypeError')
+            expect(error.message).to.be.eq('Base layer config and layer item sate have not the same name!\n- `name` for base layer config\n- `Stamen Watercolor` for layer item state')
+            expect(error).to.be.instanceOf(TypeError)
+        }
+        expect(baselayer).to.be.null
+    })
+})
+
+describe('EmptyBaseLayerState', function () {
+
+    it('simple', function () {
+        const blConfig = new EmptyBaseLayerConfig('name', {'title': 'title'})
+        const baselayer = new EmptyBaseLayerState(blConfig)
+        expect(baselayer).to.be.instanceOf(BaseLayerState)
+        expect(baselayer.type).to.be.eq(BaseLayerTypes.Empty)
+        expect(baselayer.name).to.be.eq('name')
+        expect(baselayer.title).to.be.eq('title')
+        expect(baselayer.hasKey).to.be.false
+        expect(baselayer.key).to.be.null
+        expect(baselayer.hasAttribution).to.be.false
+        expect(baselayer.attribution).to.be.null
+        expect(baselayer.hasItemState).to.be.false
+        expect(baselayer.itemState).to.be.null
+    })
+
+    it('Error type', function () {
+        const blConfig = new BaseLayerConfig('name', {'title': 'title'})
+        let baselayer = null;
+        try {
+            baselayer = new EmptyBaseLayerState(blConfig)
+        } catch (error) {
+            expect(error.name).to.be.eq('TypeError')
+            expect(error.message).to.be.eq('Not an `empty` base layer config. Get `lizmap` type for `name` base layer!')
+            expect(error).to.be.instanceOf(TypeError)
+        }
+        expect(baselayer).to.be.null
     })
 })
 
 describe('BaseLayersState', function () {
+
+    it('From options', function () {
+        const baseLayers = getBaseLayersState('montpellier')
+        expect(baseLayers.selectedBaseLayerName).to.be.eq('osm-stamen-toner')
+        expect(baseLayers.selectedBaseLayer).to.not.be.undefined
+        expect(baseLayers.selectedBaseLayer.name).to.be.eq('osm-stamen-toner')
+        expect(baseLayers.baseLayerNames).to.be.an('array').that.have.length(3).that.ordered.members([
+            'empty',
+            'osm-mapnik',
+            'osm-stamen-toner'
+        ])
+        expect(baseLayers.baseLayers).to.be.an('array').that.have.length(3)
+        expect(baseLayers.baseLayers.map(l => l.name)).to.be.an('array').that.have.length(3).that.ordered.members([
+            'empty',
+            'osm-mapnik',
+            'osm-stamen-toner'
+        ])
+        expect(baseLayers.baseLayers.map(l => l.type)).to.be.an('array').that.have.length(3).that.ordered.members([
+            BaseLayerTypes.Empty,
+            BaseLayerTypes.XYZ,
+            BaseLayerTypes.XYZ
+        ])
+    })
 
     it('From options and layers tree', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
@@ -98,25 +218,7 @@ describe('BaseLayersState', function () {
     })
 
     it('From baselayers user defined', function () {
-        const capabilities = JSON.parse(readFileSync('./data/backgrounds-capabilities.json', 'utf8'));
-        expect(capabilities).to.not.be.undefined
-        expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/backgrounds-config.json', 'utf8'));
-        expect(config).to.not.be.undefined
-
-        const layers = new LayersConfig(config.layers);
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-
-        const blGroup = rootCfg.children[2];
-        expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
-
-        const baseLayersConfig = new BaseLayersConfig({}, {}, layers, blGroup)
-
-        const layersOrder = buildLayersOrder(config, rootCfg);
-
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
-
-        const baseLayers = new BaseLayersState(baseLayersConfig, collection)
+        const baseLayers = getBaseLayersState('backgrounds')
         expect(baseLayers.selectedBaseLayerName).to.be.eq('Stamen Watercolor')
         expect(baseLayers.selectedBaseLayer).to.not.be.undefined
         expect(baseLayers.selectedBaseLayer.name).to.be.eq('Stamen Watercolor')

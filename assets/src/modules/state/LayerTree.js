@@ -37,6 +37,7 @@ export class LayerTreeItemState extends EventDispatcher {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.loading.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -272,6 +273,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.expanded.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.loading.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -290,6 +292,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
@@ -509,12 +512,13 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     }
 
     /**
-     * Is layer loading?
+     * The layer load status
+     * @see MapLayerLoadStatus
      *
-     * @type {Boolean}
+     * @type {String}
      **/
-    get loading() {
-        return this._mapItemState.loading;
+    get loadStatus() {
+        return this._mapItemState.loadStatus;
     }
 
     /**

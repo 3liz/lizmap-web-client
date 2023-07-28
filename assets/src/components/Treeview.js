@@ -1,4 +1,5 @@
 import { mainLizmap } from '../modules/Globals.js';
+import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 
 import { html, render } from 'lit-html';
 import { when } from 'lit-html/directives/when.js';
@@ -45,7 +46,10 @@ export default class Treeview extends HTMLElement {
                     : ''
                 }
                 <div class="${item.checked ? 'checked' : ''} ${item.type} ${item.name === this._itemNameSelected ? 'selected' : ''}">
-                    <div class="loading ${item.loading ? 'spinner' : ''}"></div>
+                    ${item.type === 'layer'
+                        ? html`<div class="loading ${item.loadStatus === MapLayerLoadStatus.Loading ? 'spinner' : ''}"></div>`
+                        : ''
+                    }
                     <input class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
                     <div class="node ${item.isFiltered ? 'filtered' : ''}">
                         ${item.type === 'layer'
@@ -84,14 +88,14 @@ export default class Treeview extends HTMLElement {
 
         mainLizmap.state.layerTree.addListener(
             this._onChange,
-            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
+            ['layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
         );
     }
 
     disconnectedCallback() {
         mainLizmap.state.layerTree.removeListener(
             this._onChange,
-            ['layer.loading.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
+            ['layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
         );
     }
 
