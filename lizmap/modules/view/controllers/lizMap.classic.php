@@ -265,8 +265,8 @@ class lizMapCtrl extends jController
             // Add CSS
             $atlasWidth = $lproj->getOption('atlasMaxWidth');
             $cssContent = '';
-            $cssContent .= "#content.atlas-visible:not(.mobile) #right-dock {width: ${atlasWidth}%; max-width: ${atlasWidth}%;}";
-            $cssContent .= "#content.atlas-visible:not(.mobile) #map-content {margin-right: ${atlasWidth}%;}";
+            $cssContent .= "#content.atlas-visible:not(.mobile) #right-dock {width: {$atlasWidth}%; max-width: {$atlasWidth}%;}";
+            $cssContent .= "#content.atlas-visible:not(.mobile) #map-content {margin-right: {$atlasWidth}%;}";
             $css = '<style type="text/css">'.$cssContent.'</style>';
             $rep->addHeadContent($css);
         }
