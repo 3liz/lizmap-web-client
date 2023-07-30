@@ -384,7 +384,7 @@ class mediaCtrl extends jController
         );
         $pattern = 'url\((.+)\)';
         $replacement = 'url('.$baseUrl.'/\1)';
-        $content = preg_replace("#${pattern}#", $replacement, $content);
+        $content = preg_replace("#{$pattern}#", $replacement, $content);
         $content = str_replace('"', '', $content);
         $rep->content = $content;
 

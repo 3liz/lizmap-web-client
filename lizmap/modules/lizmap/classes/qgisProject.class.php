@@ -377,10 +377,10 @@ class qgisProject
         if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
             $qgsProj = new qgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']));
 
-            return $qgsProj->getXml()->xpath("//maplayer[id='${layerId}']");
+            return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
         }
 
-        return $this->getXml()->xpath("//maplayer[id='${layerId}']");
+        return $this->getXml()->xpath("//maplayer[id='{$layerId}']");
     }
 
     /**
@@ -396,7 +396,7 @@ class qgisProject
      */
     public function getXmlLayerByKeyword($key)
     {
-        return $this->getXml()->xpath("//maplayer/keywordList[value='${key}']/parent::*");
+        return $this->getXml()->xpath("//maplayer/keywordList[value='{$key}']/parent::*");
     }
 
     /**
@@ -412,7 +412,7 @@ class qgisProject
      */
     public function getXmlRelation($relationId)
     {
-        return $this->getXml()->xpath("//relation[@id='${relationId}']");
+        return $this->getXml()->xpath("//relation[@id='{$relationId}']");
     }
 
     /**
