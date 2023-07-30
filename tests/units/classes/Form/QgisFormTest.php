@@ -502,7 +502,7 @@ class QgisFormTest extends TestCase
         $dbFieldValues = array('foo', 'bar');
         $form = new QgisFormForTests();
         $control = $this->getMockBuilder(QgisFormControl::class)->disableOriginalConstructor()->getMock();
-        $control->ctrl = $this->getMockBuilder(jFormsControlInput::class)->setMethods(array('setAttribute'))->disableOriginalConstructor()->getMock();
+        $control->ctrl = $this->getMockBuilder(jFormsControlListbox::class)->setMethods(array('setAttribute'))->disableOriginalConstructor()->getMock();
         if ($setAttribute) {
             $control->ctrl->expects($this->once())->method('setAttribute');
         }
