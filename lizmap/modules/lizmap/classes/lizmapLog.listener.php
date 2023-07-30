@@ -110,7 +110,7 @@ class lizmapLogListener extends jEventListener
         // Build subject and body
         $subject = '['.$services->appName.'] '.jLocale::get('admin~admin.logs.email.subject');
 
-        $body = jLocale::get("admin~admin.logs.email.${key}.body");
+        $body = jLocale::get("admin~admin.logs.email.{$key}.body");
 
         foreach ($data as $k => $v) {
             if (empty($v)) {
@@ -130,7 +130,7 @@ class lizmapLogListener extends jEventListener
                     }
                 }
             } else {
-                $body .= "\r\n"."  * ${k} = ${v}";
+                $body .= "\r\n"."  * {$k} = {$v}";
             }
         }
 

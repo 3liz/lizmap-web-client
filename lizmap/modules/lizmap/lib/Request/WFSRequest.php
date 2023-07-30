@@ -139,7 +139,7 @@ class WFSRequest extends OGCRequest
         // Update propertyname parameter
         $propertyName = $this->param('propertyname', '');
         if (!empty($propertyName)) {
-            $propertyName = trim($propertyName).",${attribute}";
+            $propertyName = trim($propertyName).",{$attribute}";
             $params['propertyname'] = $propertyName;
         }
 
