@@ -323,7 +323,14 @@ class lizmapServicesTest extends TestCase
             'cacheRedisPort',
         );
 
-        $testLizmapServices = new LizmapServices(array('hideSensitiveServicesProperties' => $hide), (object) array(), false, '', null);
+        $testLizmapServices = new LizmapServices(
+            array('hideSensitiveServicesProperties' => $hide),
+            (object) array(
+                'lizmap' => [
+                    'setAdminContactEmailAsReplyTo' => false
+                ]
+            ),
+            false, '', null);
 
         foreach ($defaultPropList as $prop) {
             $testLizmapServices->{$prop} = '';
