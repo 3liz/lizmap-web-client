@@ -48,13 +48,13 @@ class lizmapdemoModuleInstaller extends jInstallerModule
                 $user->street = '';
                 $user->postcode = '';
                 $user->city = '';
-                $user->nickname = $user->login = 'lizadmin';
+                $user->login = 'lizadmin';
                 $user->password = $passwordHash1;
                 $user->email = 'lizadmin@nomail.nomail';
                 $user->status = 1;
                 $dao->insert($user);
 
-                $user->nickname = $user->login = 'logintranet';
+                $user->login = 'logintranet';
                 $user->password = $passwordHash2;
                 $user->email = 'logintranet@nomail.nomail';
                 $dao->insert($user);
