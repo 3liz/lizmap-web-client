@@ -219,9 +219,7 @@ class lizmapTiler
             $rootExtent[3] = $geoExtent[3];
         }
 
-        $scales = array_merge(array(), $project->getOption('mapScales'));
-        rsort($scales);
-
+        $scales = self::normalizeProjectScales($project);
         $projection = $project->getOption('projection');
 
         $tileMatrixSetList = array();
@@ -421,8 +419,7 @@ class lizmapTiler
             $rootExtent[3] = $geoExtent[3];
         }
 
-        $scales = array_merge(array(), $project->getOption('mapScales'));
-        rsort($scales);
+        $scales = self::normalizeProjectScales($project);
 
         $layers = $project->getLayers();
         $layer = $layers->{$layerName};
@@ -600,5 +597,17 @@ class lizmapTiler
         $maxy = $tileMatrix->top - ((int) $tileRow + 1) * ($tileHeight * $res);
 
         return (string) $minx.','.(string) $miny.','.(string) $maxx.','.(string) $maxy;
+    }
+
+    private static function normalizeProjectScales($project)
+    {
+        $scales = array_merge(array(), $project->getOption('mapScales'));
+        if ($scales[0] == 0) {
+            $scales[0] = 1;
+            trigger_error('The minimum scale cannot have a value of 0, redefined as 1.', E_USER_NOTICE);
+        }
+        rsort($scales);
+
+        return $scales;
     }
 }
