@@ -602,7 +602,7 @@ class lizmapTiler
     private static function normalizeProjectScales($project)
     {
         $scales = array_merge(array(), $project->getOption('mapScales'));
-        if (reset($scales) == 0) {
+        if ($scales[0] == 0) {
             $scales[0] = 1;
             trigger_error('The minimum scale cannot have a value of 0, redefined as 1.', E_USER_NOTICE);
         }
