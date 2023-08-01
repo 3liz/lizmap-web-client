@@ -19,11 +19,6 @@ class memberCtrl extends jController
 
         $accessToken = $_SESSION['at'];
 
-        $rep = $this->getResponse('json');
-        $rep->data = array(
-            'accessToken' => $accessToken
-        );
-
         $url = "{$GLOBALS['SAGTA_URL']}/can-download-map/";
         $headers = array(
                 "Authorization: Bearer {$accessToken}",
