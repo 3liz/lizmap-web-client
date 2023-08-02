@@ -1,7 +1,10 @@
 
 {meta_html css $basePath.'assets/css/dataTables.bootstrap.min.css'}
+{meta_html css $basePath.'assets/css/responsive.dataTables.min.css'}
 {meta_html js $basePath.'assets/js/jquery.dataTables.min.js'}
+{meta_html js $basePath.'assets/js/dataTables.responsive.min.js'}
 {meta_html js $basePath.'assets/js/admin/activate_datatable.js'}
+
 {assign $tableClass=''}
 {if $hasInspectionData}
     {assign $tableClass='has_inspection_data'}
@@ -15,35 +18,43 @@
 </div>
 {/if}
 
-{if $hasSomeProjectsNotDisplayed}
-<div>
-    {@admin.project.not.displayed@}
-</div>
-{/if}
 
+<!-- Help button about the colours used in the table -->
+<a href="#lizmap_project_list_help" role="button" class="btn pull-right" data-toggle="modal">{@admin.project.modal.title@}</a>
+<!-- The modal div code is at the bottom of this file -->
+
+<!-- Sentence displayed when the user clicks on a line of the projects table
+to view the hidden columns data and when there is no data for these columns -->
+<span id="lizmap_project_list_no_data_label" style="display: none;">{@admin.project.list.no.hidden.column.content@}</span>
+
+<!-- The table contains the projects data. Datatables is used to improve the UX -->
 <table class="lizmap_project_list table table-condensed table-bordered {$tableClass}" style="width:100%">
     <thead>
         <tr>
+            <th></th>
             <th>{@admin.project.list.column.repository.label@}</th>
             <th>{@admin.project.list.column.project.label@}</th>
-            <th>{@admin.project.list.column.project.abstract.label@}</th>
-            <th>{@admin.menu.lizmap.project.image.label@}</th>
             <th>{@admin.project.list.column.layers.count.label@}</th>
             {if $hasInspectionData}
                 <th>{@admin.project.list.column.invalid.layers.count.label@}</th>
-                <th>{@admin.project.list.column.invalid.layers.list.label@}</th>
                 <th>{@admin.project.list.column.project.has.log.label@}</th>
-                <th>{@admin.project.list.column.project.qgis.log.label@}</th>
                 <th>{@admin.project.list.column.loading.time.label@}</th>
                 <th>{@admin.project.list.column.memory.usage.label@}</th>
             {/if}
             <th>{@admin.project.list.column.qgis.desktop.version.label@}</th>
-            <th class='lzmplugv'>{@admin.project.list.column.lizmap.plugin.version.label@}</th>
             <th>{@admin.project.list.column.target.lizmap.version.label@}</th>
-            <th>{@admin.project.list.column.authorized.groups.label@}</th>
+            <!-- <th class='lizmap_plugin_version'>{@admin.project.list.column.lizmap.plugin.version.label@}</th> -->
             <th>{@admin.project.list.column.hidden.project.label@}</th>
+            <th>{@admin.project.list.column.authorized.groups.label@}</th>
             <th>{@admin.project.list.column.project.file.time.label@}</th>
+            {if $hasInspectionData}
+                <th>{@admin.project.list.column.inspection.file.time.label@}</th>
+            {/if}
             <th>{@admin.project.list.column.crs.label@}</th>
+            {if $hasInspectionData}
+                <th>{@admin.project.list.column.invalid.layers.list.label@}</th>
+                <th>{@admin.project.list.column.project.qgis.log.label@}</th>
+            {/if}
 
         </tr>
     </thead>
@@ -51,7 +62,6 @@
     <tbody>
 
     <!-- colors for warnings and errors -->
-    {assign $colors = array('warning'=>'lightyellow', 'error'=>'lightcoral', 'blocker'=>'red')}
     {assign $warningLayerCount = 100}
     {assign $errorLayerCount = 200}
     {assign $warningLoadingTime = 30.0}
@@ -63,144 +73,124 @@
     {if $mi->type == 'rep'}
         {foreach $mi->childItems as $p}
         <tr>
+            <!-- Empty first column to use with the responsive (contains the triangle to open line details) -->
+            <td title="{@admin.project.list.column.show.line.hidden.columns@}">
+            </td>
+
             <!-- repository -->
-            <td title="{$mi->title|strip_tags|eschtml:ENT_QUOTES}">
+            <td title="{if !empty($mi->title)}{$mi->title|strip_tags|eschtml}{/if}">
                 {$mi->id}
             </td>
 
             <!-- project - KEEP the line break after the title to improve the tooltip readability-->
-            <td title="{$p['title']|strip_tags|eschtml:ENT_QUOTES}
-{$p['abstract']|strip_tags|eschtml:ENT_QUOTES|truncate:150}">
+            <td title="{if !empty($p['title'])}{$p['title']|strip_tags|eschtml}{/if}
+{if !empty($p['abstract'])}{$p['abstract']|strip_tags|eschtml|truncate:150}{/if}">
                 <a target="_blank" href="{$p['url']}">{$p['id']}</a>
             </td>
 
-            <!-- Hidden QGIS project abstract -->
-            <td>{$p['abstract']|strip_tags|eschtml:ENT_QUOTES}</td>
-
-            <!-- Hidden QGIS project image -->
-            <td>{$p['image']}</td>
-
             <!-- Layer count -->
-            {assign $style = ''}
+            {assign $class = ''}
             {assign $title = ''}
             {if $p['layer_count'] > $warningLayerCount}
-                {assign $style = 'background-color: '.$colors['warning'].';'}
+                {assign $class = 'liz-warning'}
                 {assign $title = @admin.project.list.column.layers.count.warning.label@}
             {/if}
             {if $p['layer_count'] > $errorLayerCount}
-                {assign $style = 'background-color: '.$colors['error'].';'}
+                {assign $class = 'liz-error'}
                 {assign $title = @admin.project.list.column.layers.count.error.label@}
             {/if}
-            <td title="{$title}" style="{$style}">
+            <td title="{$title}" class="{$class}">
                 {$p['layer_count']}
             </td>
 
         {if $hasInspectionData}
 
             <!-- Invalid layers count -->
-            {assign $style = ''}
+            {assign $class = ''}
             {assign $title = ''}
             {if $p['invalid_layers_count'] > 0}
-                {assign $style = 'background-color: '.$colors['error'].';'}
+                {assign $class = 'liz-error'}
                 {assign $title = @admin.project.list.column.invalid.layers.count.error.label@}
             {/if}
-            <td title="{$title}" style="{$style}">
+            <td title="{$title}" class="{$class}">
                 {$p['invalid_layers_count']}
             </td>
 
-            <!-- Hidden invalid layers list -->
-            {if $p['invalid_layers_count'] > 0}
-            <td>
-                <ul>
-                {foreach $p['invalid_layers'] as $id=>$properties}
-                    <li style="cursor: help;" title="{$properties['source']|strip_tags|escxml:ENT_QUOTES}">
-                        {$properties['name']}
-                    </li>
-                {/foreach}
-                </ul>
-            </td>
-            {else}
-            <td></td>
-            {/if}
-
-
             <!-- A QGIS log exists -->
-            <td>{if !empty(trim($p['qgis_log']))}🔴{/if}</td>
-
-            <!-- Hidden QGIS logs -->
-            <td>{$p['qgis_log']|strip_tags|eschtml:ENT_QUOTES|nl2br}</td>
+            <td>{if !empty($p['qgis_log']) && !empty(trim($p['qgis_log']))}🔴{/if}</td>
 
             <!-- loading time -->
-            {assign $style = ''}
+            {assign $class = ''}
             {assign $title = ''}
             {if $p['loading_time'] > $warningLoadingTime}
-                {assign $style = 'background-color: '.$colors['warning'].';'}
+                {assign $class = 'liz-warning'}
                 {assign $title = @admin.project.list.column.loading.time.warning.label@}
             {/if}
             {if $p['loading_time'] > $errorLoadingTime}
-                {assign $style = 'background-color: '.$colors['error'].';'}
+                {assign $class = 'liz-error'}
                 {assign $title = @admin.project.list.column.loading.time.error.label@}
             {/if}
-            <td title="{$title}" style="{$style}">
+            <td title="{$title}" class="{$class}">
+                {if !empty($p['loading_time'])}
                 {$p['loading_time']|number_format:2:'.':' '}
+                {/if}
             </td>
 
             <!-- Memory usage -->
-            {assign $style = ''}
+            {assign $class = ''}
             {assign $title = ''}
             {if $p['memory_usage'] > $warningMemory }
-                {assign $style = 'background-color: '.$colors['warning'].';'}
+                {assign $class = 'liz-warning'}
                 {assign $title = @admin.project.list.column.memory.usage.warning.label@}
             {/if}
             {if $p['memory_usage'] > $errorMemory }
-                {assign $style = 'background-color: '.$colors['error'].';'}
+                {assign $class = 'liz-error'}
                 {assign $title = @admin.project.list.column.memory.usage.error.label@}
             {/if}
-            <td title="{$title}" style="{$style}">
+            <td title="{$title}" class="{$class}">
+                {if !empty($p['memory_usage'])}
                 {$p['memory_usage']|number_format:2:'.':' '}
+                {/if}
             </td>
 
         {/if}
 
             <!-- QGIS project version -->
-            {assign $style = ''}
+            {assign $class = ''}
             {assign $title = ''}
             {if $serverVersions['qgis_server_version_int'] && $serverVersions['qgis_server_version_int'] - $p['qgis_version_int'] > $oldQgisVersionDiff }
-                {assign $style = 'background-color: '.$colors['warning'].';'}
+                {assign $class = 'liz-warning'}
                 {assign $title = @admin.project.list.column.qgis.desktop.version.too.old@.' ('.@admin.form.admin_services.qgisServerVersion.label@.': '.$serverVersions['qgis_server_version'].')'}
             {/if}
             {if $serverVersions['qgis_server_version_int'] && $p['qgis_version_int'] > $serverVersions['qgis_server_version_int']}
-                {assign $style = 'background-color: '.$colors['error'].';'}
+                {assign $class = 'liz-error'}
                 {assign $title = @admin.project.list.column.qgis.desktop.version.above.server@ .' ('.$serverVersions['qgis_server_version'].')'}
             {/if}
-            <td title="{$title}" style="{$style}">
+            <td title="{$title}" class="{$class}">
                 {$p['qgis_version']}
             </td>
 
-            <!-- Version of Lizmap plugin for QGIS Desktop -->
-            <td>
-                {$p['lizmap_plugin_version']}
-            </td>
-
             <!-- Target version of Lizmap Web Client -->
-            {assign $style = ''}
+            {assign $class = ''}
             {assign $title = ''}
             {if $p['needs_update_error']}
-                {assign $style = 'background-color: '.$colors['blocker'].';'}
+                {assign $class = 'liz-blocker'}
                 {assign $title = @admin.project.list.column.update.in.qgis.desktop@}
             {/if}
             {if $p['needs_update_warning']}
-                {assign $style = 'background-color: '.$colors['warning'].';'}
+                {assign $class = 'liz-warning'}
                 {assign $title = @admin.project.list.column.update.soon.in.qgis.desktop@}
             {/if}
-            <td title="{$title}" style="{$style}">
+            <td title="{$title}" class="{$class}">
                 {$p['lizmap_web_client_target_version_display']}
             </td>
 
-            <!-- Authorized groups -->
-            <td>
-                {$p['acl_groups']|strip_tags|eschtml:ENT_QUOTES}
-            </td>
+
+            <!-- Version of Lizmap plugin for QGIS Desktop -->
+            <!-- <td>
+                {$p['lizmap_plugin_version']}
+            </td> -->
+
 
             <!-- Project hidden -->
             <td>
@@ -211,21 +201,65 @@
                 {/if}
             </td>
 
+            <!-- Authorized groups -->
+            <td>
+                {if !empty($p['acl_groups'])}
+                {$p['acl_groups']|strip_tags|eschtml}
+                {/if}
+            </td>
+
             <!-- File time -->
             <td>
                 {$p['file_time']|jdatetime:'timestamp':'Y-m-d H:i:s'}
             </td>
 
+            {if $hasInspectionData}
+                <!-- Inspection file time -->
+                <td>
+                    {if !empty($p['inspection_timestamp'])}
+                    {$p['inspection_timestamp']|jdatetime:'timestamp':'Y-m-d H:i:s'}
+                    {/if}
+                </td>
+            {/if}
+
             <!-- Projection -->
-            {assign $style = ''}
+            {assign $class = ''}
             {assign $title = ''}
             {if substr($p['projection'], 0, 4) == 'USER'}
-                {assign $style = 'background-color: '.$colors['warning'].';'}
+                {assign $class = 'liz-warning'}
                 {assign $title = @admin.project.list.column.crs.user.warning.label@}
             {/if}
-            <td title="{$title}" style="{$style}">
-                {$p['projection']|strip_tags|eschtml:ENT_QUOTES}
+            <td title="{$title}" class="{$class}">
+                {if !empty($p['projection'])}
+                {$p['projection']|strip_tags|eschtml}
+                {/if}
             </td>
+
+        {if $hasInspectionData}
+            <!-- List of invalid layers -->
+            {if $p['invalid_layers_count'] > 0}
+            <td>
+                <ul>
+                {foreach $p['invalid_layers'] as $id=>$properties}
+                    <li style="cursor: help;" title="{$properties['source']|strip_tags|escxml}">
+                        {$properties['name']}
+                    </li>
+                {/foreach}
+                </ul>
+            </td>
+            {else}
+            <td></td>
+            {/if}
+
+            <!-- QGIS logs -->
+            <td class="lizmap-project-qgis-log">
+                {if !empty($p['qgis_log'])}
+                <pre>
+                {$p['qgis_log']|strip_tags|eschtml|nl2br}
+                </pre>
+                {/if}
+            </td>
+        {/if}
 
         </tr>
         {/foreach}
@@ -234,79 +268,6 @@
     </tbody>
 </table>
 
-<div>
-    <br>
-    <strong>{@admin.project.rules.list.introduction@}</strong>
-    <p>
-        {jlocale "admin.project.rules.list.description.html", array($lizmapVersion, ($serverVersions['qgis_server_version_human_readable']))}
-    </p>
-    <style type="text/css" scoped>
-        {literal}
-        ul > .rules {
-            list-style: none;
-        }
-        ul > .rules li::before {
-          content: '■';
-          font-weight: bold;
-          display: inline-block;
-          width: 1em;
-          margin-left: -1em;
-          font-size: 2.5em;
-        }
-        .warning::before {
-            color: {/literal}{$colors['warning']};{literal}
-        }
-        .error::before {
-            color: {/literal}{$colors['error']};{literal}
-        }
-        .blocker::before {
-            color: {/literal}{$colors['blocker']};{literal}
-        }
-        {/literal}
-    </style>
-    <ul>
-        <li>{@admin.project.rules.list.warnings.html@}</li>
-        <ul>
-            <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
-            <ul class="rules">
-                <li class="warning">{jlocale "admin.project.rules.list.qgis.version.warning.html", array($serverVersions['qgis_server_version_old'])}</li>
-                <li class="error">{jlocale "admin.project.rules.list.qgis.version.error.html", array( $serverVersions['qgis_server_version_next'])}</li>
-            </ul>
-            <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
-            <ul class="rules">
-                <li class="warning">{jlocale "admin.project.rules.list.target.version.html", array($minimumLizmapTargetVersionRequired)}</li>
-            </ul>
-            <li>{@admin.project.list.column.layers.count.label.longer@}</li>
-            <ul class="rules">
-                <li class="warning">{jlocale "admin.project.rules.list.important.count.layers.html", array($warningLayerCount)}</li>
-                <li class="error">{jlocale "admin.project.rules.list.very.important.count.layers.html", array(($errorLayerCount))}</li>
-            </ul>
-            <li>{@admin.project.list.column.crs.label@}</li>
-            <ul class="rules">
-                <li class="warning">{@admin.project.rules.list.custom.projection@}</li>
-            </ul>
 
-            {if $hasInspectionData}
-            <li>{@admin.project.list.column.invalid.layers.count.label@}</li>
-            <ul class="rules">
-                <li class="warning">{@admin.project.rules.list.invalid.datasource.html@}</li>
-            </ul>
-            <li>{@admin.project.list.column.loading.time.label.alt@}</li>
-            <ul class="rules">
-                <li class="warning">{jlocale "admin.project.rules.list.warning.loading.html", array($warningLoadingTime)}</li>
-                <li class="error">{jlocale "admin.project.rules.list.error.loading.html", array($errorLoadingTime)}</li>
-            </ul>
-            <li>{@admin.project.list.column.memory.usage.label.alt@}</li>
-            <ul class="rules">
-                <li class="warning">{jlocale "admin.project.rules.list.warning.memory.html", array($warningMemory)}</li>
-                <li class="error">{jlocale "admin.project.rules.list.error.memory.html", array($errorMemory)}</li>
-            </ul>
-            {/if}
-
-        </ul>
-        <li>{@admin.project.rules.list.blocking.html@}</li>
-        <ul class="rules">
-            <li class="blocker">{jlocale "admin.project.rules.list.blocking.target.html", array($minimumLizmapTargetVersionRequired - 0.1)}</li>
-        </ul>
-    </ul>
-</div>
+<!-- Help guide -->
+{include 'admin~project_list_help'}
