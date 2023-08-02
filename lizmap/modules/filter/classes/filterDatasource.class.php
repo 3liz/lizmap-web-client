@@ -89,7 +89,7 @@ class filterDatasource
         $block_items = array();
 
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
+            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items), 'lizmapadmin');
 
             return null;
         }
@@ -112,7 +112,7 @@ class filterDatasource
         try {
             $q = $this->cnx->query($sql);
         } catch (Exception $e) {
-            jLog::log($e->getMessage(), 'error');
+            jLog::log($e->getMessage(), 'lizmapadmin');
 
             $this->errors = array(
                 'status' => 'error',

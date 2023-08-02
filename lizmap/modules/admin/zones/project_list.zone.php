@@ -253,7 +253,7 @@ class project_listZone extends jZone
                 );
             }
         } catch (Exception $e) {
-            \jLog::log($e->getMessage());
+            \jLog::logEx($e, 'error');
 
             return $inspectionData;
         }

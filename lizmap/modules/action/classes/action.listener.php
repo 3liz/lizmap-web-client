@@ -52,7 +52,7 @@ class actionListener extends jEventListener
                 }
             );
             ";
-            \jLog::log("$event->repository/$event->project : action module - " . strip_tags($message));
+            \jLog::log("$event->repository/$event->project : action module - " . strip_tags($message), 'lizmapadmin');
         }
 
         $event->add(
