@@ -613,11 +613,11 @@ class QgisProject
 
         $xml = App\XmlTools::xmlFromFile($qgs_path);
         if (!is_object($xml)) {
-            $errormsg = '\n'.$qgs_path.'\n'.$xml;
+            $errormsg = '\n'.basename($qgs_path).'\n'.$xml;
             $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'lizmapadmin');
 
-            throw new \Exception('The QGIS project '.$qgs_path.' has invalid content!');
+            throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }
         $this->xml = $xml;
 
@@ -1138,9 +1138,9 @@ class QgisProject
 
         $qgsXml = App\XmlTools::xmlFromFile($qgs_path);
         if (!is_object($qgsXml)) {
-            $errormsg = '\n'.$qgs_path.'\n'.$qgsXml;
+            $errormsg = '\n'.basename($qgs_path).'\n'.$qgsXml;
             $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'lizmapadmin');
 
             throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }
@@ -1857,7 +1857,7 @@ class QgisProject
 
             // Option + Attributes
             if (count((array) $options) > 2) {
-                \jLog::log('More than one Option found in the Qgis File for field '.$fieldName.', only the first will be read.', 'warning');
+                \jLog::log('Project '.basename($this->path).': More than one Option found in the Qgis File for field '.$fieldName.', only the first will be read.', 'lizmapadmin');
             }
             $fieldEditOptions = $this->getFieldConfigurationOptions($options);
 

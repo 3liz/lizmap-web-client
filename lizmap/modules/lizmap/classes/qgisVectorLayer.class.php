@@ -312,7 +312,7 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         if ($this->provider != 'spatialite' && $this->provider != 'postgres' and !(preg_match('#layername=#', $this->datasource))) {
-            jLog::log('Unknown provider "'.$this->provider.'" to get connection!', 'error');
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': Unknown provider "'.$this->provider.'" to get connection!', 'lizmapadmin');
 
             return null;
         }
@@ -362,14 +362,14 @@ class qgisVectorLayer extends qgisMapLayer
 
         $dtParams = $this->getDatasourceParameters();
         if (!$dtParams) {
-            jLog::log('Cant get datasource params for the layer "'.$this->name.'"', 'error');
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': Can\'t get datasource params for the layer "'.$this->name.'"', 'lizmapadmin');
 
             return null;
         }
 
         $cnx = $this->getDatasourceConnection();
         if (!$cnx) {
-            jLog::log('Cant get datasource connection for the layer "'.$this->name.'"', 'error');
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': Can\'t get datasource connection for the layer "'.$this->name.'"', 'lizmapadmin');
 
             return null;
         }
@@ -700,7 +700,7 @@ class qgisVectorLayer extends qgisMapLayer
 
             return false;
         } catch (Exception $e) {
-            jLog::log('SQL = '.$sql);
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': bad SQL query to check feature against polygon filter : '.$sql, 'lizmapadmin');
 
             throw $e;
         }
@@ -803,7 +803,7 @@ class qgisVectorLayer extends qgisMapLayer
 
             return $pkvals;
         } catch (Exception $e) {
-            jLog::log('SQL = '.$sql);
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': bad SQL query to insert a feature :'.$sql, 'lizmapadmin');
 
             throw $e;
         }
@@ -915,7 +915,7 @@ class qgisVectorLayer extends qgisMapLayer
 
             return $pkvals;
         } catch (Exception $e) {
-            jLog::log('SQL = '.$sql, 'error');
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': bad SQL query to update a feature :'.$sql, 'lizmapadmin');
 
             throw $e;
         }
@@ -971,7 +971,7 @@ class qgisVectorLayer extends qgisMapLayer
 
             return $rs;
         } catch (Exception $e) {
-            jLog::log('SQL = '.$sql);
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': bad SQL query to delete a feature :'.$sql, 'lizmapadmin');
 
             throw $e;
         }
@@ -1232,7 +1232,7 @@ class qgisVectorLayer extends qgisMapLayer
             try {
                 $results[] = $cnx->exec($sql);
             } catch (Exception $e) {
-                jLog::log('SQL = '.$sql);
+                jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': bad SQL query to link children feature :'.$sql, 'lizmapadmin');
 
                 throw $e;
             }
@@ -1291,7 +1291,7 @@ class qgisVectorLayer extends qgisMapLayer
                 try {
                     $results[] = $cnx->exec($sql);
                 } catch (Exception $e) {
-                    jLog::log('SQL = '.$sql);
+                    jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': bad SQL query to insert relations :'.$sql, 'lizmapadmin');
 
                     throw $e;
                 }
@@ -1319,7 +1319,7 @@ class qgisVectorLayer extends qgisMapLayer
         try {
             return $cnx->exec($sql);
         } catch (Exception $e) {
-            jLog::log('SQL = '.$sql);
+            jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': bad SQL query to unlink children relations :'.$sql, 'lizmapadmin');
 
             throw $e;
         }
@@ -1434,7 +1434,7 @@ class qgisVectorLayer extends qgisMapLayer
         // No filter if Lizmap plugin is not installed server side
         $plugins = $this->project->getQgisServerPlugins();
         if (!array_key_exists('Lizmap', $plugins)) {
-            \jLog::log('requestPolygonFilter: no lizmap plugin installed for QGIS Server');
+            \jLog::log('requestPolygonFilter: no lizmap plugin installed for QGIS Server', 'lizmapdmin');
 
             return $no_data_array;
         }
@@ -1516,14 +1516,14 @@ class qgisVectorLayer extends qgisMapLayer
 
             // No success or no filter
             if (property_exists($json, 'message')) {
-                jLog::log('LIZMAP GetSubString from QGIS Server error: '.$json->message, 'error');
+                jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': LIZMAP GetSubString from QGIS Server error: '.$json->message, 'lizmapadmin');
             }
 
             return $no_data_array;
         }
 
         // Wrong output format from QGIS Sever Lizmap plugin
-        jLog::log('LIZMAP GetSubString JSON response is not well formed - Layer: '.$this->name, 'error');
+        jLog::log('Project '.$this->project->getKey().' layer '.$this->name.': LIZMAP GetSubString JSON response is not well formed', 'lizmapadmin');
 
         return $no_data_array;
     }

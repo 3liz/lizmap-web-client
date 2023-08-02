@@ -135,6 +135,7 @@ strict=file
 ;sql=syslog
 metric=syslog
 auth=
+lizmapadmin=file
 
 [fileLogger]
 default=messages.log
@@ -144,6 +145,7 @@ notice=errors.log
 strict=errors.log
 ;metric=time.log
 auth=messages.log
+lizmapadmin=lizmap-admin.log
 
 [mailer]
 webmasterEmail="root@localhost"

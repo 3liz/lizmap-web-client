@@ -37,7 +37,7 @@ class logsCtrl extends jController
         $detailNumber = $dao->countBy($conditions);
 
         // Get last error log
-        $logPath = jApp::logPath('errors.log');
+        $logPath = jApp::logPath('lizmap-admin.log');
         $errorLog = '';
         $lines = 50;
         if (is_file($logPath)) {
@@ -107,7 +107,7 @@ class logsCtrl extends jController
             $cnx->exec('DELETE FROM log_counter;');
             jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_counter')));
         } catch (Exception $e) {
-            jLog::log('Error while emptying table log_counter ');
+            jLog::log('Error while emptying table log_counter', 'error');
         }
 
         $rep->action = 'admin~logs:index';
@@ -234,7 +234,7 @@ class logsCtrl extends jController
             $cnx->exec('DELETE FROM log_detail;');
             jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_detail')));
         } catch (Exception $e) {
-            jLog::log('Error while emptying table log_detail ');
+            jLog::log('Error while emptying table log_detail', 'error');
         }
 
         $rep->action = 'admin~logs:index';
@@ -253,11 +253,11 @@ class logsCtrl extends jController
 
         // Erase the log file
         try {
-            $logPath = jApp::varPath('log/errors.log');
+            $logPath = jApp::logPath('lizmap-admin.log');
             jFile::write($logPath, '');
             jMessage::add(jLocale::get('admin~admin.logs.error.file.erase.ok', array('log_detail')));
         } catch (Exception $e) {
-            jLog::log('Error while emptying the error log file');
+            jLog::log('Error while emptying the error log file', 'error');
         }
 
         $rep->action = 'admin~logs:index';

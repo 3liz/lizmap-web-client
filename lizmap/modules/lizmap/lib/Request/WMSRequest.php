@@ -116,9 +116,9 @@ class WMSRequest extends OGCRequest
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                \jLog::log('GetCapabilities empty data', 'error');
+                \jLog::log('Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities empty data', 'lizmapadmin');
             } else {
-                \jLog::log('GetCapabilities result code: '.$result->code, 'error');
+                \jLog::log('Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities result code: '.$result->code, 'lizmapadmin');
             }
             \jMessage::add('Server Error !', 'Error');
 

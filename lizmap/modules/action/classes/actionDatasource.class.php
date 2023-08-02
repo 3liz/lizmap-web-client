@@ -76,7 +76,7 @@ class actionDatasource
                 $data[] = $d;
             }
         } catch (Exception $e) {
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
             $this->errors = array(
                 'status' => 'error',
                 'title' => 'Invalid Query',
