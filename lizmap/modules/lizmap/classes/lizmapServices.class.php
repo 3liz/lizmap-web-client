@@ -456,15 +456,16 @@ class lizmapServices
             try {
                 $mail->Send();
             } catch (Exception $e) {
-                jLog::log('error while sending email to admin: '.$e->getMessage(), 'error');
+                jLog::log('error while sending email to admin: '.$e->getMessage(), 'lizmapadmin');
+                jLog::logEx($e, 'error');
             }
         } else {
             if (!$sender && !$email) {
-                jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'warning');
+                jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'lizmapadmin');
             } elseif (!$email) {
-                jLog::log('Notification cannot be send: no notification email has been configured', 'warning');
+                jLog::log('Notification cannot be send: no notification email has been configured', 'lizmapadmin');
             } else {
-                jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
+                jLog::log('Notification cannot be send: no sender email has been configured', 'lizmapadmin');
             }
         }
     }

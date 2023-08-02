@@ -25,17 +25,29 @@ class mapCtrl extends jController
         $params = jApp::coord()->request->params;
         $rep->params = $params;
 
-        // Redirect to normal map if no suitable parameters
-        if (!$params['dlsourcelayer'] or !$params['dlexpression']) {
-            jLog::log('Dynamic layers - no parameters DLSOURCELAYER or DLEXPRESSION');
+        $project = $this->param('project');
+        $repository = $this->param('repository');
+        if (!$project || $repository) {
+            jLog::log('Dynamic layers - no parameters project or repository', 'lizmapadmin');
 
             return $rep;
         }
 
         // Get project path
-        $project = $params['project'];
-        $repository = $params['repository'];
         $lrep = lizmap::getRepository($repository);
+        if (!$lrep) {
+            jLog::log('Dynamic layers - bad repository '.$repository, 'lizmapadmin');
+
+            return $rep;
+        }
+
+        // Redirect to normal map if no suitable parameters
+        if (!$params['dlsourcelayer'] or !$params['dlexpression']) {
+            jLog::log('Dynamic layers - project '.$repository.'/'.$project.': no parameters DLSOURCELAYER or DLEXPRESSION', 'lizmapadmin');
+
+            return $rep;
+        }
+
         $projectTemplatePath = realpath($lrep->getPath()).'/'.$project.'.qgs';
 
         // Use QGIS python plugins dynamicLayers to get child project
@@ -55,13 +67,14 @@ class mapCtrl extends jController
         // Get returned response and redirect to appropriate project page
         $json = json_decode($data);
         if ($json->status == 0) {
-            jLog::log('DynamicLayers error : '.$json->message);
+            jLog::log('DynamicLayers error : '.$json->message, 'lizmapadmin');
         } else {
             $params['project'] = preg_replace('#\.qgs$#', '', $json->childProject);
             unset($params['dlsourcelayer'] , $params['dlexpression']);
 
             $rep->params = $params;
-            jLog::log('DynamicLayers message : '.$json->message.' - '.$json->childProject);
+
+            jLog::log('DynamicLayers message : '.$json->message.' - '.$json->childProject, 'lizadmin');
         }
 
         return $rep;

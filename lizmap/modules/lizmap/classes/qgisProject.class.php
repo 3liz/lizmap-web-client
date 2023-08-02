@@ -435,9 +435,9 @@ class qgisProject
 
         $xml = \Lizmap\App\XmlTools::xmlFromFile($qgs_path);
         if (!is_object($xml)) {
-            $errormsg = '\n'.$qgs_path.'\n'.$xml;
+            $errormsg = '\n'.basename($qgs_path).'\n'.$xml;
             $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'lizmapadmin');
 
             throw new Exception('The QGIS project '.$qgs_path.' has invalid content!');
         }
@@ -461,9 +461,9 @@ class qgisProject
 
         $qgs_xml = \Lizmap\App\XmlTools::xmlFromFile($qgs_path);
         if (!is_object($qgs_xml)) {
-            $errormsg = '\n'.$qgs_path.'\n'.$qgs_xml;
+            $errormsg = '\n'.basename($qgs_path).'\n'.$qgs_xml;
             $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'lizmapadmin');
 
             throw new Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }

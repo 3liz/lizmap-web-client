@@ -118,7 +118,7 @@ class Proxy
             if (!is_object($xml)) {
                 $errormsg = '\n'.$requestXml.'\n'.$xml;
                 $errormsg = 'An error has been raised when loading requestXml:'.$errormsg;
-                \jLog::log($errormsg, 'error');
+                \jLog::log($errormsg, 'lizmapadmin');
                 $requestXml = null;
             } else {
                 $request = $xml->getName();
@@ -475,9 +475,9 @@ class Proxy
         }
         // optional debug
         if ($options['debug'] && ($http_code >= 400)) {
-            \jLog::log('getRemoteData, bad response for '.$url);
-            \jLog::dump($opts, 'getRemoteData, bad response, options');
-            \jLog::dump($http_response_header, 'getRemoteData, bad response, response headers');
+            \jLog::log('getRemoteData, bad response for '.$url, 'error');
+            \jLog::dump($opts, 'getRemoteData, bad response, options', 'error');
+            \jLog::dump($http_response_header, 'getRemoteData, bad response, response headers', 'error');
         }
 
         return array($data, $mime, $http_code);
@@ -757,7 +757,7 @@ class Proxy
         $cacheRootDirectory = $ser->cacheRootDirectory;
         if ($cacheStorageType != 'redis') {
             if (!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)) {
-                \jLog::log('cacheRootDirectory "'.$cacheRootDirectory.'" is not a directory or is not writable!', 'error');
+                \jLog::log('cacheRootDirectory "'.$cacheRootDirectory.'" is not a directory or is not writable!', 'lizmapadmin');
                 $cacheRootDirectory = sys_get_temp_dir();
             }
         }
@@ -1013,7 +1013,7 @@ class Proxy
         // md5 hash to search in the file
         $md5ToSearch = md5($url.'|'.str_replace($encodedEchoParam, '', $body));
 
-        $logPath = \jApp::varPath('log/echoproxy.log');
+        $logPath = \jApp::logPath('echoproxy.log');
         if (is_file($logPath)) {
             // Only display content if the file is small to avoid memory issues
             if (filesize($logPath) > 512000) {

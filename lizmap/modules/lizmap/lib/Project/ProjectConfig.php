@@ -509,12 +509,14 @@ class ProjectConfig
      * and override the original datavizTemplate configuration option.
      *
      * @since Lizmap 3.7.
+     *
+     * @param mixed $debug
      */
-    public function setDatavizTemplateFromDragAndDropLayout()
+    public function setDatavizTemplateFromDragAndDropLayout($debug = false)
     {
         $tree = $this->getOption('dataviz_drag_drop');
         if ($tree) {
-            $html = $this->parseDatavizTreeNode($tree, 0);
+            $html = $this->parseDatavizTreeNode($tree, 0, $debug);
             $this->setOption('datavizTemplate', $html);
         }
     }
@@ -531,10 +533,11 @@ class ProjectConfig
      *
      * @param object $node  Tree node
      * @param int    $level Tree node level
+     * @param mixed  $debug
      *
      * @return string $html Built HTML content
      */
-    private function parseDatavizTreeNode($node, $level)
+    private function parseDatavizTreeNode($node, $level, $debug)
     {
         // Get the correspondance between the plot uid & the plot ID (integer)
         $plotUidToId = array();
@@ -588,7 +591,10 @@ class ProjectConfig
                     continue;
                 }
                 $active = ($n == 0) ? 'active' : '';
-                \jLog::log("Node {$subNode->name} - n = {$n} ET active = {$active}");
+
+                if ($debug) {
+                    \jLog::log("Node {$subNode->name} - n = {$n} ET active = {$active}");
+                }
                 $item = $prefix.'    <li class="'.$active.'">';
                 $item .= $prefix.'    <a href="#dataviz-dnd-'.$level.'-'.md5($subNode->name);
                 $item .= '" data-toggle="tab">'.$subNode->name.'</a>';
@@ -641,7 +647,7 @@ class ProjectConfig
             // Process the children only if the current node has content
             if (property_exists($subNode, 'content')) {
                 // Build the container content
-                $html .= $this->parseDatavizTreeNode($subNode->content, $level + 1);
+                $html .= $this->parseDatavizTreeNode($subNode->content, $level + 1, $debug);
             }
 
             // Close the HTML fieldset for the groups

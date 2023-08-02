@@ -224,6 +224,7 @@ class qgisExpressionUtils
             // Get results
             return $json->results[0];
         }
+
         if (property_exists($json, 'data')) {
             // TODO parse errors
             // if (property_exists($json, 'errors')) {
