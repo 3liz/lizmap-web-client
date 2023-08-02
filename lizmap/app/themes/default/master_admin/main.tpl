@@ -23,14 +23,14 @@
 
 <div id="content" class="container-fluid">
   <div class="row-fluid">
-    <div id="menu" class="span3">
+    <div id="menu" class="span2">
       <div class="well sidebar-nav">
         <ul class="nav nav-list">
          {$MENU}
         </ul>
       </div>
     </div>
-    <div class="span9">
+    <div class="span10">
       <div class="row-fluid">
         <div id="admin-message">{jmessage_bootstrap}</div>
        {$MAIN}
