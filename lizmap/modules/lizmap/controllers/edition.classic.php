@@ -899,7 +899,7 @@ class editionCtrl extends jController
                 $eventParams['success'] = false;
             }
         } catch (Exception $e) {
-            jLog::log('An error has been raised when saving form data edition to db:', 'error');
+            jLog::log('An error has been raised when saving form data edition to db:'.$e->getMessage(), 'lizmapadmin');
             jLog::logEx($e, 'error');
             jMessage::add(jLocale::get('view~edition.message.error.delete'), 'error');
             $eventParams['success'] = false;
@@ -1272,7 +1272,7 @@ class editionCtrl extends jController
                 $layer->linkChildren($foreign_key_column, $parent_id_value, $child_pkey_column, $child_ids);
                 jMessage::add(jLocale::get('view~edition.link.success'), 'success');
             } catch (Exception $e) {
-                jLog::log('An error has been raised when create linked data:', 'error');
+                jLog::log('An error has been raised when create linked data: '.$e->getMessage(), 'lizmapadmin');
                 jLog::logEx($e, 'error');
                 jMessage::add(jLocale::get('view~edition.link.error.sql'), 'error');
             }
@@ -1283,7 +1283,7 @@ class editionCtrl extends jController
                 $layer->insertRelations($key2, $ids2, $key1, $ids1);
                 jMessage::add(jLocale::get('view~edition.link.success'), 'success');
             } catch (Exception $e) {
-                jLog::log('An error has been raised when create linked data:', 'error');
+                jLog::log('An error has been raised when create linked data: '.$e->getMessage(), 'lizmapadmin');
                 jLog::logEx($e, 'error');
                 jMessage::add(jLocale::get('view~edition.link.error.sql'), 'error');
             }
@@ -1375,7 +1375,7 @@ class editionCtrl extends jController
             $layer->unlinkChild($fkey, $pkey, $pkeyval);
             jMessage::add(jLocale::get('view~edition.unlink.success'), 'success');
         } catch (Exception $e) {
-            jLog::log('An error has been raised when unlink child: ', 'error');
+            jLog::log('An error has been raised when unlink child: '.$e->getMessage(), 'lizmapadmin');
             jLog::logEx($e, 'error');
             jMessage::add(jLocale::get('view~edition.unlink.error.sql'), 'error');
         }

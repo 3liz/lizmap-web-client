@@ -194,9 +194,9 @@ class WFSRequest extends OGCRequest
         $data = $result->data;
         if (empty($data) || floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                $this->appContext->logMessage('GetCapabilities empty data', 'error');
+                $this->appContext->logMessage('GetCapabilities empty data', 'lizmapadmin');
             } else {
-                $this->appContext->logMessage('GetCapabilities result code: '.$result->code, 'error');
+                $this->appContext->logMessage('GetCapabilities result code: '.$result->code, 'lizmapadmin');
             }
             \jMessage::add('Server Error !', 'Error');
 
@@ -863,7 +863,7 @@ class WFSRequest extends OGCRequest
         try {
             $q = $cnx->query($sql);
         } catch (\Exception $e) {
-            $this->appContext->logException($e, 'error');
+            $this->appContext->logException($e, 'lizmapadmin');
 
             return $this->getfeatureQgis();
         }
@@ -891,7 +891,7 @@ class WFSRequest extends OGCRequest
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            $this->appContext->logMessage('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
+            $this->appContext->logMessage('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items), 'lizmadmin');
 
             return false;
         }

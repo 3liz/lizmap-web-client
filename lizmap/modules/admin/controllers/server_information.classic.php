@@ -47,7 +47,7 @@ class server_informationCtrl extends jController
             jLog::log(jLocale::get(
                 'admin.server.information.qgis.unknown',
                 array($qgisMinimumVersionRequired, $lizmapPluginMinimumVersionRequired, \lizmap::getServices()->wmsServerURL)
-            ), 'error');
+            ), 'lizmapadmin');
         }
 
         $qgisServerNeedsUpdate = $server->versionCompare(
@@ -56,7 +56,7 @@ class server_informationCtrl extends jController
         );
         $updateQgisServer = jLocale::get('admin.server.information.qgis.update', array($qgisMinimumVersionRequired));
         if (!is_null($currentQgisVersion) && $qgisServerNeedsUpdate) {
-            jLog::log($updateQgisServer, 'error');
+            jLog::log($updateQgisServer, 'lizmapadmin');
         }
 
         $displayPluginActionColumn = false;
@@ -67,7 +67,7 @@ class server_informationCtrl extends jController
         $updateLizmapPlugin = jLocale::get('admin.server.information.plugin.update', array('lizmap_server'));
         if (!is_null($currentQgisVersion) && $lizmapQgisServerNeedsUpdate) {
             // lizmap_server is required to use LWC
-            jLog::log($updateLizmapPlugin, 'error');
+            jLog::log($updateLizmapPlugin, 'lizmapadmin');
             $displayPluginActionColumn = true;
         }
 

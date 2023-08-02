@@ -329,7 +329,7 @@ abstract class OGCRequest
             $errormsg = '\n'.$xmldata.'\n'.$xml;
             $errormsg = '\n'.http_build_query($this->params).$errormsg;
             $errormsg = 'An error has been raised when loading '.$name.':'.$errormsg;
-            \jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'lizmapadmin');
 
             return null;
         }
