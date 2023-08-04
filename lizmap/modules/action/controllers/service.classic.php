@@ -201,7 +201,7 @@ class serviceCtrl extends jController
                 $data = json_decode($r->data);
             }
         } catch (Exception $e) {
-            jLog::log('Error while running the query : '.$sql);
+            jLog::log('Error in project '.$repository. '/'.$project.', layer '.$layerId.', while running the query : '.$sql, 'lizmapadmin');
             $errors = array(
                 'title' => 'An error occurred while running the PostgreSQL query !',
                 'detail' => $e->getMessage(),

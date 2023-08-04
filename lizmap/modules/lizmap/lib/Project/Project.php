@@ -1351,7 +1351,7 @@ class Project
     {
         if (!property_exists($config, 'layerId')) {
             if ($this->services->debugMode == '1') {
-                \jLog::log('Dataviz - layerId not found ! No plot configuration found.');
+                \jLog::log('Dataviz - layerId not found ! No plot configuration found.', 'lizmapadmin');
             }
 
             return null;
@@ -1359,7 +1359,7 @@ class Project
         $layer = $this->cfg->findLayerByAnyName($config->layerId);
         if (!$layer) {
             if ($this->services->debugMode == '1') {
-                \jLog::log('Dataviz - layer not found, id   = '.$config->layerId);
+                \jLog::log('Dataviz - layer not found, id   = '.$config->layerId, 'lizmapadmin');
             }
 
             return null;

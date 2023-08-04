@@ -701,7 +701,7 @@ class mapsCtrl extends jController
             return $rep;
         } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
-            jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
+            jMessage::add('The lizmap project '.$project.' does not exist !', 'error');
 
             return $rep;
         }
