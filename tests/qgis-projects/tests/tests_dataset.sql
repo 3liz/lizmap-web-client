@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.7 (Debian 14.7-1.pgdg110+1)
--- Dumped by pg_dump version 14.7 (Ubuntu 14.7-0ubuntu0.22.04.1)
+-- Dumped from database version 14.8 (Debian 14.8-1.pgdg110+1)
+-- Dumped by pg_dump version 14.8 (Ubuntu 14.8-1.pgdg22.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1102,6 +1102,54 @@ ALTER SEQUENCE tests_projects.layer_with_no_filter_gid_seq OWNED BY tests_projec
 
 
 --
+-- Name: many_date_formats; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.many_date_formats (
+    id integer NOT NULL,
+    field_date date,
+    field_time time without time zone,
+    field_timestamp timestamp without time zone,
+    field_date_auto_cast date DEFAULT (now())::date,
+    field_time_auto_cast time without time zone DEFAULT (now())::time without time zone,
+    field_timestamp_auto_cast timestamp without time zone DEFAULT (now())::timestamp(0) without time zone,
+    field_date_auto date DEFAULT now(),
+    field_time_auto time without time zone DEFAULT now(),
+    field_timestamp_auto timestamp without time zone DEFAULT now(),
+    field_date_expr_now date,
+    field_time_expr_now time without time zone,
+    field_timestamp_expr_now timestamp without time zone,
+    field_date_expr_now_auto date DEFAULT now(),
+    field_time_expr_now_auto time without time zone DEFAULT now(),
+    field_timestamp_expr_now_auto timestamp without time zone DEFAULT now(),
+    field_timestamp_date_only timestamp without time zone,
+    field_timestamp_date_only_auto timestamp without time zone DEFAULT now(),
+    field_timestamp_date_only_expr_now timestamp without time zone,
+    field_timestamp_date_only_expr_now_auto timestamp without time zone DEFAULT now()
+);
+
+
+--
+-- Name: many_date_formats_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.many_date_formats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: many_date_formats_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.many_date_formats_id_seq OWNED BY tests_projects.many_date_formats.id;
+
+
+--
 -- Name: parent_layer; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -1718,6 +1766,13 @@ ALTER TABLE ONLY tests_projects.layer_with_no_filter ALTER COLUMN gid SET DEFAUL
 
 
 --
+-- Name: many_date_formats id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.many_date_formats ALTER COLUMN id SET DEFAULT nextval('tests_projects.many_date_formats_id_seq'::regclass);
+
+
+--
 -- Name: parent_layer id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -1939,7 +1994,7 @@ COPY tests_projects.form_advanced_point (id, geom, has_photo, website, quartier,
 -- Data for Name: form_edition_all_fields_types; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, integer_array, text, uids, value_map_integer, html_text, multiline_text) FROM stdin;
+COPY tests_projects.form_edition_all_fields_types (id, integer_field, boolean_nullable, boolean_notnull_for_checkbox, boolean_readonly, integer_array, text, uids, value_map_integer, html_text, multiline_text) FROM stdin;
 \.
 
 
@@ -2109,6 +2164,14 @@ COPY tests_projects.layer_legend_single_symbol (id, geom) FROM stdin;
 
 COPY tests_projects.layer_with_no_filter (gid, geom) FROM stdin;
 1	01010000206A08000040787D23418CE540D5BEAF2CA4D43041
+\.
+
+
+--
+-- Data for Name: many_date_formats; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.many_date_formats (id, field_date, field_time, field_timestamp, field_date_auto_cast, field_time_auto_cast, field_timestamp_auto_cast, field_date_auto, field_time_auto, field_timestamp_auto, field_date_expr_now, field_time_expr_now, field_timestamp_expr_now, field_date_expr_now_auto, field_time_expr_now_auto, field_timestamp_expr_now_auto, field_timestamp_date_only, field_timestamp_date_only_auto, field_timestamp_date_only_expr_now, field_timestamp_date_only_expr_now_auto) FROM stdin;
 \.
 
 
@@ -2554,6 +2617,13 @@ SELECT pg_catalog.setval('tests_projects.layer_with_no_filter_gid_seq', 1, true)
 
 
 --
+-- Name: many_date_formats_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.many_date_formats_id_seq', 1, false);
+
+
+--
 -- Name: parent_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -2922,6 +2992,14 @@ ALTER TABLE ONLY tests_projects.layer_legend_single_symbol
 
 ALTER TABLE ONLY tests_projects.layer_with_no_filter
     ADD CONSTRAINT layer_with_no_filter_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: many_date_formats many_date_formats_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.many_date_formats
+    ADD CONSTRAINT many_date_formats_pkey PRIMARY KEY (id);
 
 
 --
