@@ -46,7 +46,7 @@ class logsCtrl extends jController
         $detailNumber = $dao->countBy($conditions);
 
         // Get last error log
-        $logPath = jApp::varPath('log/errors.log');
+        $logPath = jApp::logPath('errors.log');
         $errorLog = '';
         $lines = 50;
         if (is_file($logPath)) {
