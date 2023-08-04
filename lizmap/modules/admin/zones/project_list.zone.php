@@ -72,7 +72,17 @@ class project_listZone extends jZone
         $this->_tpl->assign('mapItems', $maps);
         $this->_tpl->assign('hasInspectionData', $hasInspectionData);
         $this->_tpl->assign('minimumLizmapTargetVersionRequired', $humanLizmapTargetVersion);
-        $this->_tpl->assign('hasSomeProjectsNotDisplayed', $hasSomeProjectsNotDisplayed);
+
+        // Add an warning message when some projects cannot be displayed in LWC
+        if ($hasSomeProjectsNotDisplayed) {
+            \jMessage::add(
+                jLocale::get(
+                    'admin~admin.project.error.some.projects.not.displayed',
+                    array(jLocale::get('admin~admin.project.modal.title'))
+                ),
+                'warning'
+            );
+        }
 
         // Get the server metadata
         $server = new \Lizmap\Server\Server();
@@ -150,10 +160,6 @@ class project_listZone extends jZone
                 'view~map:index',
                 array('repository' => $projectMetadata->getRepository(), 'project' => $projectMetadata->getId())
             ),
-            'image' => jUrl::get(
-                'view~media:illustration',
-                array('repository' => $projectMetadata->getRepository(), 'project' => $projectMetadata->getId())
-            ),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             // convert int to string orderable
             'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
@@ -215,6 +221,7 @@ class project_listZone extends jZone
     {
         // Default empty values
         $inspectionData = array(
+            'inspection_timestamp' => null,
             'has_inspection_data' => false,
             'loading_time' => 0,
             'memory_usage' => null,
@@ -251,8 +258,10 @@ class project_listZone extends jZone
             return $inspectionData;
         }
 
-        // Add the information
+        // Add inspection data
         $inspectionData['has_inspection_data'] = true;
+
+        $inspectionData['inspection_timestamp'] = filemtime($jsonPath);
         if (property_exists($inspection, 'loading_infos')) {
             $inspectionData['loading_time'] = $inspection->loading_infos->loading_time_ms / 1000;
             $inspectionData['memory_usage'] = $inspection->loading_infos->memory_footprint / 1024 / 2024;
