@@ -49,7 +49,7 @@ class searchFtsCtrl extends jController
         // Check repository
         $lrep = lizmap::getRepository($repository);
         if ($lrep == null) {
-            jLog::log('The repository '.strtoupper($repository).' does not exist !', 'errors');
+            jLog::log('The repository '.$repository.' does not exist !', 'lizmapadmin');
 
             return $rep;
         }
@@ -60,13 +60,13 @@ class searchFtsCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if ($lproj == null) {
-                jLog::log('The lizmap project '.strtoupper($project).' does not exist !', 'errors');
+                jLog::log('The lizmap project '.$project.' does not exist !', 'lizmapadmin');
 
                 return $rep;
             }
         } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
-            jLog::log('The lizmap project '.strtoupper($project).' does not exist !', 'errors');
+            jLog::log('The lizmap project '.$project.' does not exist !', 'lizmapadmin');
 
             return $rep;
         }
