@@ -89,65 +89,120 @@ fieldset {
     }
 }
 
-/* Admin QGIS project lists */
+
+/*
+======
+Admin QGIS project lists
+======
+*/
 div#lizmap_project_list_container {
-    display: flex;
-    flex-wrap: wrap;
     height: 80%;
     width: 100%;
     margin: auto;
+
+    /* Colors */
+    --warning-bg-color: lightyellow;
+    --error-bg-color: lightcoral;
+    --blocker-bg-color: red;
+    --highlighted-line-bg-color: #0088cc;
  }
 
 #lizmap_project_list {
-    flex-basis: 0;
-    flex-grow: 999;
     min-inline-size: 60%;
     border: 1px solid lightgray;
     padding: 5px;
 }
-#lizmap_project_list_sidebar {
+div.lizmap_project_list_details {
     background-color: lightgray;
     padding: 5px;
-    flex-basis: 30%;
-    flex-grow: 1;
-}
-#lizmap_project_list_sidebar.collapsed {
-    display: none;
-}
-table.lizmap_project_list tr {
-    cursor: pointer;
-}
-table.lizmap_project_list tr.selected {
-    background-color: lightskyblue;
-}
-table.lizmap_project_list tr.active a,
-table.lizmap_project_list tr.active a:hover,
-table.lizmap_project_list tr.selected a,
-table.lizmap_project_list tr.selected a:hover{
-  color: white;
-  text-decoration: underline dotted;
 }
 
-#lizmap_project_list_sidebar dt {
+/* Cursor pointer only if the table has hidden columns (responsive datatable extension) */
+table.lizmap_project_list tr {
+    cursor: default;
+}
+table.lizmap_project_list tr.has_hidden_columns {
+    cursor: pointer;
+}
+
+/* hovered line  */
+/* Blue left border when hovering a line */
+table.lizmap_project_list tr td:first-child {
+    border-left: 3px solid transparent;
+}
+table.lizmap_project_list tr:not(.child):hover td:first-child
+{
+    border-left: 3px solid var(--highlighted-line-bg-color);
+}
+
+table.lizmap_project_list tr .liz-warning{
+    background-color: var(--warning-bg-color);
+}
+table.lizmap_project_list tr .liz-error{
+    background-color: var(--error-bg-color);
+}
+table.lizmap_project_list tr .liz-blocker{
+    background-color: var(--blocker-bg-color);
+}
+
+/* When the width of the window is not big enough, some columns are hidden
+by the responsive extension of datatable.
+Style the div which will contain the details */
+div.lizmap_project_list_details dt {
     margin-top: 5px;
 }
-#lizmap_project_list_sidebar dd {
+div.lizmap_project_list_details dd {
     padding: 5px;
     max-height: 250px;
     overflow: auto;
     background-color: #efefef;
 }
-dd#dd_image_value {
-    background-color: transparent;
+table.lizmap_project_list tr dd.lizmap-project-qgis-log pre {
+    font-size: 0.9em;
+    line-height: 10px;
 }
-dd#dd_image_value img {
-    height: 150px;
-}
-dd#dd_qgis_logs_value {
+table.lizmap_project_list tr td.lizmap-project-qgis-log pre {
     font-size: 0.8em;
-    line-height: 15px;
+    line-height: 10px;
+    max-height: 80px;
+    max-width: 300px;
+    overflow: auto;
+}
+/* End of project list page */
+
+/* Project list help with colours and legend */
+#lizmap_project_list_help div.modal-body {
+    background-color: rgb(239, 239, 239);
+}
+#lizmap_project_list_help ul ul li {
+    font-weight: bold;
+}
+#lizmap_project_list_help ul ul ul.rules li {
+    font-weight: normal;
+}
+#lizmap_project_list_help ul > .rules {
+    list-style: none;
+}
+#lizmap_project_list_help ul > .rules li::before {
+  content: '■';
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+  font-size: 2.5em;
+}
+#lizmap_project_list_help .warning::before {
+    color: var(--warning-bg-color);
+}
+#lizmap_project_list_help .error::before {
+    color: var(--error-bg-color);
+}
+#lizmap_project_list_help .blocker::before {
+    color: var(--blocker-bg-color);
 }
 
+
+/* List of users and groups */
 .jacl2-list.jacl2-list-sticky-heads thead,
 .jacl2-list-user.jacl2-list-sticky-heads thead
 {
