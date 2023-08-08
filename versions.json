@@ -11,8 +11,8 @@
     {
         "branch": "3.6",
         "first_release_date": "2022-12-09",
-        "latest_release_date": "2023-05-30",
-        "latest_release_version": "3.6.4",
+        "latest_release_date": "2023-08-08",
+        "latest_release_version": "3.6.5",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 31000,
         "status": "stable"
