@@ -23,7 +23,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Warning about "qgsmtime" for an embedded layer
 * Improve the checklist when installing Lizmap Web Client about QGIS Server
 
-## Changed
+### Changed
 
 * Better backend log management, especially when updating a layer has failed
 * Improve the QGIS project panel in the administration :
