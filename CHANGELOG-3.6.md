@@ -10,22 +10,44 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Added
 
-* Support for the QGIS widget "number": min, max and step are supported
+* Support for the QGIS widget "number": min, max and step are supported from QGIS desktop
 
 ### Fixed
 
+* Use layer name as option label for locate-by-layer selector in mobile
 * Support for [OpenTopoMap](https://opentopomap.org/)
+* Editing & Filter - Fix editing right access from popup
 * Fix a visibility error for a QGIS preset/theme
 * Warning about "qgsmtime" for an embedded layer
 * Improve the checklist when installing Lizmap Web Client about QGIS Server
 
+## Changed
+
+* Better backend log management, especially when updating a layer has failed
+* Improve the QGIS project panel in the administration :
+  * Add some colours in the legend
+  * Improve the display, better UX
+
 ### Backend
 
 * Some JavaScript cleaning
+* Fix some PHP notice when running PHP 8, contribution from @Antoviscomi
+
+### Translations
+
+* Improve an English sentence, contribution from @gioman
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Tests
+
+* Add PHP 8.2 to the matrix for PHP tests
+* Improvements to the Playwright stack
 
 ### Funders
 
-* Geolab.re
+* [Geolab.re](https://geolab.re/)
 
 ## 3.6.4 - 2023-05-30
 
