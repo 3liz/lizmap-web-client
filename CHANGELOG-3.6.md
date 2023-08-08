@@ -8,6 +8,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.5 - 2023-08-08
+
 ### Added
 
 * Support for the QGIS widget "number": min, max and step are supported from QGIS desktop
