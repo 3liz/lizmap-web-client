@@ -179,7 +179,7 @@ only screen and (                   max-device-height : 640px) {
   }
 }
 /* smartphones, touchscreens */
-@media (hover: none) and (pointer: coarse) {
+@media (pointer: coarse) {
   #navbar button.btn{
     height : 40px;
     width : 40px;
@@ -429,7 +429,7 @@ only screen and (                   max-device-height : 640px) {
   }
 }
 
-@media (hover: none) and (pointer: coarse) and (orientation: portrait){
+@media (pointer: coarse) and (orientation: portrait){
   #docks-wrapper{
     flex-direction: column;
   }
