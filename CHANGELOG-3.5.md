@@ -8,6 +8,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+- Fix address search when results of the query to api-adresse.data.gouv.fr are empty 
+
+
 ## 3.5.14 - 2023-07-31
 
 ### Important
