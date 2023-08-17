@@ -56,7 +56,7 @@ export default class Treeview extends HTMLElement {
                             ? html`<img class="legend" src="${item.icon}">`
                             : ''
                         }
-                        <label for="node-${item.name}">${item.name}</label>
+                        <label for="node-${item.name}">${item.layerConfig.title}</label>
                         <div class="layer-actions">
                             <a href="${this._createDocLink(item.name)}" target="_blank" title="${lizDict['tree.button.link']}">
                                 <i class="icon-share"></i>
