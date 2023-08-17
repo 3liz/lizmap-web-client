@@ -1,4 +1,4 @@
-var lizAtlas = function () {
+(function () {
 
     lizMap.events.on({
         'uicreated': function () {
@@ -34,7 +34,7 @@ var lizAtlas = function () {
             else if ('atlas' in lizMap.config && 'layers' in lizMap.config.atlas && Array.isArray(lizMap.config.atlas['layers']) && lizMap.config.atlas['layers'].length > 0){
                 var atlasLayers = {};
                 for (var index = 0; index < lizMap.config.atlas.layers.length; index++) {
-                    var layerConfig = lizMap.config.atlas.layers[index];
+                    const layerConfig = lizMap.config.atlas.layers[index];
 
                     atlasLayers[layerConfig.layer] = {
                         atlasDuration: layerConfig.duration,
@@ -84,7 +84,7 @@ var lizAtlas = function () {
                     lizAtlasLayersCount--;
                     continue;
                 }
-                var layerConfig = getLayerConfig[1];
+                const layerConfig = getLayerConfig[1];
                 var featureType = getLayerConfig[0];
 
                 var atlasLayerOptions = lizAtlasLayers.layerOptions[layerId];
@@ -513,7 +513,7 @@ var lizAtlas = function () {
                 // Draw feature geometry
                 var getLayer = lizMap.map.getLayersByName('locatelayer');
                 if (lizAtlasConfig.drawFeatureGeom && getLayer.length > 0) {
-                    alayer = getLayer[0];
+                    const alayer = getLayer[0];
                     alayer.destroyFeatures();
                     alayer.addFeatures([f]);
                 }
@@ -600,4 +600,4 @@ var lizAtlas = function () {
 
         } // uicreated
     });
-}();
+})();
