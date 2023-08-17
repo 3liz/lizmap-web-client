@@ -229,10 +229,13 @@ export default class Print extends HTMLElement {
             opacityLayers.push(255);
         }
 
-        // Add selected base layer
-        printLayers.push(lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.layerConfig.shortname);
-        styleLayers.push(lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.itemState.wmsSelectedStyleName);
-        opacityLayers.push(parseInt(255 * lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.itemState.opacity * lizMap.mainLizmap.state.baseLayers.selectedBaseLayer.layerConfig.opacity));
+        // Add selected base layer if any
+        const selectedBaseLayer = lizMap.mainLizmap.state.baseLayers.selectedBaseLayer;
+        if (selectedBaseLayer) {
+            printLayers.push(selectedBaseLayer.layerConfig.shortname);
+            styleLayers.push(selectedBaseLayer.itemState.wmsSelectedStyleName);
+            opacityLayers.push(parseInt(255 * selectedBaseLayer.itemState.opacity * selectedBaseLayer.layerConfig.opacity));
+        }
 
         // Add visible layers
         for (const layer of mainLizmap.state.rootMapGroup.findMapLayers().slice().reverse()) {
