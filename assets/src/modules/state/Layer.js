@@ -1282,7 +1282,7 @@ export class LayerGroupState extends LayerItemState {
      **/
     get layerOrder() {
         if (this._layerOrder == -1) {
-            for (const layer of this.itemState.findLayers()) {
+            for (const layer of this.findLayers()) {
                 if (this._layerOrder == -1 || layer.layerOrder < this._layerOrder) {
                     this._layerOrder = layer.layerOrder;
                 }

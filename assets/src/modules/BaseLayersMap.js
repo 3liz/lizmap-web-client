@@ -185,6 +185,8 @@ export default class BaseLayersMap extends olMap {
         // Array of layers and groups in overlayLayerGroup
         this._overlayLayersAndGroups = [];
 
+        const layersCount = mainLizmap.state.rootMapGroup.findMapLayers().length;
+
         // Returns a layer or a layerGroup depending of the node type
         const createNode = (node) => {
             if(node.type === 'group'){
@@ -273,6 +275,9 @@ export default class BaseLayersMap extends olMap {
                 layer.getSource().setProperties({
                     name: node.name
                 });
+
+                // OL layers zIndex is the reverse of layer's order given by cfg
+                layer.setZIndex(layersCount - 1 - node.layerOrder);
 
                 this._overlayLayersAndGroups.push(layer);
                 this._statesOlLayersandGroupsMap.set(node.name, [node, layer]);
