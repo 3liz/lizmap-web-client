@@ -86,6 +86,7 @@
                 }
                 const layerConfig = getLayerConfig[1];
                 var featureType = getLayerConfig[0];
+                const wmsName = layerConfig?.shortname || featureType;
 
                 var atlasLayerOptions = lizAtlasLayers.layerOptions[layerId];
 
@@ -100,6 +101,7 @@
                 var lizAtlasConfig = {
                     'layername': featureType,
                     'layerId': layerConfig.id,
+                    'wmsName': wmsName,
                     'displayLayerDescription': atlasLayerOptions['atlasDisplayLayerDescription'] == 'True' ? true : false,
                     'primaryKey': primaryKey,
                     'titleField': titleField,
@@ -520,7 +522,7 @@
 
                 // Display popup
                 if (lizAtlasConfig['atlasDisplayPopup']) {
-                    lizMap.getFeaturePopupContent(lizAtlasConfig.featureType, feature, function (data) {
+                    lizMap.getFeaturePopupContent(lizAtlasConfig.wmsName, feature, function (data) {
                         var popupContainerId = 'liz-atlas-item-detail';
                         // Add class to table
                         var popupReg = new RegExp('lizmapPopupTable', 'g');
