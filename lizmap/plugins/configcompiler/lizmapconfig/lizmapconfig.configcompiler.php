@@ -27,6 +27,13 @@ class lizmapconfigConfigCompilerPlugin implements \jelix\core\ConfigCompilerPlug
 
     public function onModule($config, $moduleName, $modulePath, $xml)
     {
+        if ($moduleName == 'lizmap') {
+            // we store the version into the configuration file, it avoids
+            // to read it from the project.xml file, as it is an heavy process.
+            if (property_exists($config, 'lizmap')) {
+                $config->lizmap['version'] = (string) $xml->info->version;
+            }
+        }
     }
 
     public function atEnd($config)

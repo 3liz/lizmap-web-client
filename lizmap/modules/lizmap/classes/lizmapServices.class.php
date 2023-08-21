@@ -281,14 +281,17 @@ class lizmapServices
             $this->allowUserAccountRequests = false;
         }
 
-        // set it for external requests, needed for file_get_contents
-        $userAgent = 'Lizmap';
+        // set user_agent for external requests, needed for file_get_contents
         if (isset($readConfigPath['services']['userAgent'])) {
             // may be set to false if already set in the php.ini
             $userAgent = $readConfigPath['services']['userAgent'];
+        } elseif (property_exists($globalConfig, 'lizmap')) {
+            $userAgent = $globalConfig->lizmap['version'];
+        } else {
+            $userAgent = 'lizmap';
         }
-        if ($userAgent) {
-            ini_set('user_agent', 'Lizmap');
+        if ($userAgent && !ini_get('user_agent')) {
+            ini_set('user_agent', $userAgent);
         }
     }
 
@@ -323,7 +326,7 @@ class lizmapServices
     {
         if (isset($this->data['hideSensitiveServicesProperties'])
           && $this->data['hideSensitiveServicesProperties'] != '0'
-      ) {
+        ) {
             return true;
         }
 

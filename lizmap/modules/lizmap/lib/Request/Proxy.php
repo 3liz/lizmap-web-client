@@ -298,7 +298,7 @@ class Proxy
 
         $options['headers'] = array_merge(array(
             'Connection' => 'close',
-            'User-Agent' => ini_get('user_agent') ?: 'Lizmap',
+            'User-Agent' => ini_get('user_agent'),
             'Accept' => '*/*',
         ), $options['headers']);
 
