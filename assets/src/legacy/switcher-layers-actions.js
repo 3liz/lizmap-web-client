@@ -165,26 +165,12 @@ var lizLayerActionButtons = function() {
                   && featureTypes.length != 0 ) {
                     var exportFormats = lizMap.getVectorLayerResultFormat();
                     var options = '';
-                    for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-                        var format = exportFormats[i];
+                    for ( const format of exportFormats ) {
                         options += '<option value="'+format+'">'+format+'</option>';
                     }
                     // Export layer
                     // Only if layer is in attribute table
-                    var showExport = false;
-                    if( options != '' ) {
-                        for (const featureType of featureTypes) {
-                            var typeName = featureType.getElementsByTagName('Name')[0].textContent;
-                            if ( typeName == aName ) {
-                                showExport = true;
-                                continue;
-                            } else if (typeName == aName.split(' ').join('_') ) {
-                                showExport = true;
-                                continue;
-                            }
-                        }
-                    }
-                    if( showExport ) {
+                    if( options != '' && layerConfig.typename != undefined) {
                         html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
                         html+= '<dd>';
                         html+= '<select class="exportLayer '+isBaselayer+'">';
