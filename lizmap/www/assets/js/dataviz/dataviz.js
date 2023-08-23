@@ -342,7 +342,7 @@ let lizDataviz = function () {
      * @param {string} target_id The ID of the target dom element.
      *
      */
-    function getPlot(plot_id, exp_filter, target_id) {
+    async function getPlot(plot_id, exp_filter, target_id) {
 
         if ($('#' + target_id).length == 0) {
             return;
@@ -387,52 +387,70 @@ let lizDataviz = function () {
         }
 
         // No cache -> get data
-        $.getJSON(datavizConfig.url,
-            lparams,
-            function (json) {
-                if ('errors' in json) {
-                    console.log('Dataviz configuration error');
-                    console.log(json.errors);
-                }
+        try {
+            const response = await fetch(datavizConfig.url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(lparams),
+            });
 
-                // Store json only if no filter
-                // Because we use cache for the full data
-                // and we do not want to override it
-                if (!exp_filter && !('errors' in json)) {
-                    dv.plots[plot_id]['cache'] = json;
-                    dv.plots[plot_id]['json'] = json;
-                }
+            // Check content type
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new TypeError("Wrong content-type. JSON Expected !");
+            }
 
-                // Store filter
-                dv.plots[plot_id]['filter'] = exp_filter;
+            // Get the JSON response
+            const jsonData = await response.json();
 
-                // Hide container if no data
-                if (!json.data || json.data.length < 1) {
-                    // hide the full container
-                    $('#' + target_id + '_container').hide();
-                    // Hide the infinite progress bar
-                    $('#' + target_id).prev('.dataviz-waiter:first').hide();
-                    $('#' + target_id).parents('div.lizdataviz.lizmapPopupChildren:first').hide();
+            // Process the JSON data
+            if ('errors' in jsonData) {
+                console.log('Dataviz error');
+                console.log(jsonData.errors);
+            }
 
-                    return false;
-                }
+            // Store json only if no filter
+            // Because we use cache for the full data
+            // and we do not want to override it
+            if (!exp_filter && !('errors' in jsonData)) {
+                dv.plots[plot_id]['cache'] = jsonData;
+                dv.plots[plot_id]['json'] = jsonData;
+            }
 
-                // Show container if needed
-                if (dv.plots[plot_id]['show_plot']) {
-                    $('#' + target_id + '_container').show();
-                }
+            // Store filter
+            dv.plots[plot_id]['filter'] = exp_filter;
 
-                // The data has been successfully fetched
-                dv.plots[plot_id]['data_fetched'] = true;
-
-                // Build plot
-                // Pass plot_id to inherit custom configurations in child charts
-                buildPlot(target_id, json, plot_id);
-
+            // Hide container if no data
+            if (!jsonData.data || jsonData.data.length < 1) {
+                // hide the full container
+                $('#' + target_id + '_container').hide();
                 // Hide the infinite progress bar
                 $('#' + target_id).prev('.dataviz-waiter:first').hide();
+                $('#' + target_id).parents('div.lizdataviz.lizmapPopupChildren:first').hide();
+
+                return false;
             }
-        );
+
+            // Show container if needed
+            if (dv.plots[plot_id]['show_plot']) {
+                $('#' + target_id + '_container').show();
+            }
+
+            // The data has been successfully fetched
+            dv.plots[plot_id]['data_fetched'] = true;
+
+            // Build plot
+            // Pass plot_id to inherit custom configurations in child charts
+            buildPlot(target_id, jsonData, plot_id);
+
+            // Hide the infinite progress bar
+            $('#' + target_id).prev('.dataviz-waiter:first').hide();
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
     }
 
 
