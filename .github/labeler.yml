@@ -1,34 +1,48 @@
 "administration pages":
-  - any: ['lizmap/modules/admin/**/*']
+  - any: [
+      'lizmap/modules/admin/**',
+    ]
 
 "CI & packages":
-  - any: ['.github/**/*', '.gitlab-ci.yml', 'Makefile']
+  - any: [
+      '.github/**',
+      '.gitlab-ci.yml',
+      'Makefile',
+    ]
 
 "data editor":
-  - any: ['lizmap/modules/lizmap/lib/Form/**/*']
+  - any: [
+      'lizmap/modules/lizmap/lib/Form/**',
+    ]
 
 "dataviz":
   - any: [
-    'lizmap/modules/dataviz/**/*',
-    'lizmap/www/assets/js/dataviz/',
+    'lizmap/modules/dataviz/**',
+    'lizmap/www/assets/js/dataviz/**',
   ]
 
 "docker":
-  - any: ['docker/**/*']
+  - any: [
+      'docker/**',
+    ]
 
 "javascript":
   - any: [
-    'assets/**/*',
-    'assets/src/modules/**/*',
-    'lizmap/www/assets/js/**/*',
-    'tests/js-units/**/*',
+    'assets/**',
+    'lizmap/www/assets/js/**',
+    'assets/src/modules/**',
+    'tests/js-units/**',
   ]
 
 #"run cypress":
 #  - any: ['tests/end2end/**/*']
 
 "QGIS Server":
-  - any: ['lizmap/modules/lizmap/lib/Request/**/*']
+  - any: [
+      'lizmap/modules/lizmap/lib/Request/**',
+    ]
 
 "tests":
-  - any: ['tests/**/*']
+  - any: [
+      'tests/**',
+    ]
