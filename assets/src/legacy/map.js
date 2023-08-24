@@ -1281,6 +1281,18 @@ window.lizMap = function() {
 
     var restrictedExtent = extent.scale(3);
 
+    let initialExtentPermalink;
+    for (const keyValue of window.location.hash.substring(1).split('|')) {
+      const [key, value] = keyValue.split('=');
+      if (key === 'bbox') {
+        initialExtentPermalink = value.split(',');
+      }
+    }
+
+    if(initialExtentPermalink){
+      initialExtent = initialExtentPermalink;
+    }
+
     if(initialExtent){
         initialExtent = new OpenLayers.Bounds(initialExtent);
         initialExtent.transform(new OpenLayers.Projection('EPSG:4326'), projection);
@@ -5186,7 +5198,7 @@ window.lizMap = function() {
               }
             }
           } else {
-            map.zoomToExtent(map.initialExtent);
+            map.zoomToExtent(map.initialExtent, true);
           }
           if(featuresExtent){
             var format = new OpenLayers.Format.GeoJSON({
