@@ -16,7 +16,24 @@ import DOMPurify from 'dompurify';
  * @name Popup
  */
 export default class Popup {
-    constructor() {
+
+    /**
+     * Create a popup instance
+     *
+     * @param {Config} initialConfig - The lizmap initial config instance
+     * @param {State}  lizmapState   - The lizmap user interface state
+     * @param {Map}    map           - OpenLayers map
+     */
+    constructor(initialConfig, lizmapState, map) {
+
+        this._initialConfig = initialConfig;
+        this._lizmapState = lizmapState;
+        this._map = map;
+
+        this._pointTolerance = initialConfig.options?.pointTolerance || 25;
+        this._lineTolerance = initialConfig.options?.lineTolerance || 10;
+        this._polygonTolerance = initialConfig.options?.polygonTolerance || 5;
+
         // Allow toggling of active state
         this.active = true;
 
@@ -57,7 +74,7 @@ export default class Popup {
         */
         document.getElementById('liz_layer_popup_closer').onclick = () => {
             this._overlay.setPosition(undefined);
-            mainLizmap.map.clearHighlightFeatures();
+            this._map.clearHighlightFeatures();
             return false;
         };
         this._overlay = new Overlay({
@@ -69,8 +86,8 @@ export default class Popup {
             },
         });
 
-        mainLizmap.map.addOverlay(this._overlay);
-        mainLizmap.map.on('singleclick', evt => this.handleClickOnMap(evt));
+        this._map.addOverlay(this._overlay);
+        this._map.on('singleclick', evt => this.handleClickOnMap(evt));
     }
 
     get mapPopup() {
@@ -78,9 +95,9 @@ export default class Popup {
     }
 
     handleClickOnMap(evt) {
-        const pointTolerance = mainLizmap.config.options?.pointTolerance || 25;
-        const lineTolerance = mainLizmap.config.options?.lineTolerance || 10;
-        const polygonTolerance = mainLizmap.config.options?.polygonTolerance || 5;
+        const pointTolerance = this._pointTolerance;
+        const lineTolerance = this._lineTolerance;
+        const polygonTolerance = this._polygonTolerance;
 
         if (!this.active || lizMap.editionPending || mainLizmap.digitizing.toolSelected != 'deactivate' || mainLizmap.digitizing.isEdited || mainLizmap.digitizing.isErasing) {
             return;
@@ -89,7 +106,7 @@ export default class Popup {
         const xCoord = evt?.xy?.x || evt?.pixel?.[0];
         const yCoord = evt?.xy?.y || evt?.pixel?.[1];
 
-        let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers().reverse();
+        let candidateLayers = this._lizmapState.rootMapGroup.findMapLayers().reverse();
 
         // Only request visible layers
         candidateLayers = candidateLayers.filter(layer => layer.visibility);
@@ -101,8 +118,8 @@ export default class Popup {
 
             let editionLayerCapabilities;
 
-            if (mainLizmap.initialConfig?.editionLayers?.layerNames.includes(layer.name)) {
-                editionLayerCapabilities = mainLizmap.initialConfig?.editionLayers?.getLayerConfigByLayerName(layer.name)?.capabilities;
+            if (this._initialConfig?.editionLayers?.layerNames.includes(layer.name)) {
+                editionLayerCapabilities = this._initialConfig?.editionLayers?.getLayerConfigByLayerName(layer.name)?.capabilities;
             }
             return layerCfg.popup || editionLayerCapabilities?.modifyAttribute || editionLayerCapabilities?.modifyGeometry || editionLayerCapabilities?.deleteFeature;
         });
@@ -141,11 +158,11 @@ export default class Popup {
 
         const wms = new WMS();
 
-        const [width, height] = lizMap.mainLizmap.map.getSize();
+        const [width, height] = this._map.getSize();
 
-        let bbox = mainLizmap.map.getView().calculateExtent();
+        let bbox = this._map.getView().calculateExtent();
 
-        if (mainLizmap.map.getView().getProjection().getAxisOrientation().substring(0, 2) === 'ne') {
+        if (this._map.getView().getProjection().getAxisOrientation().substring(0, 2) === 'ne') {
             bbox = [bbox[1], bbox[0], bbox[3], bbox[2]];
         }
 
