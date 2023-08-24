@@ -10,15 +10,15 @@ describe('Dataviz tests', function () {
                 })
             }).as('getMap')
 
-            cy.intercept('*request=getPlot*',
-                { middleware: true },
-                (req) => {
-                    req.on('before:response', (res) => {
-                        // force all API responses to not be cached
-                        // It is needed when launching tests multiple time in headed mode
-                        res.headers['cache-control'] = 'no-store'
-                    })
-                }).as('getPlot')
+        cy.intercept('*/dataviz/service*',
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
+                    // force all API responses to not be cached
+                    // It is needed when launching tests multiple time in headed mode
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getPlot')
     })
 
     it('Test dataviz plots are rendered', function () {
@@ -28,6 +28,7 @@ describe('Dataviz tests', function () {
         // Wait for map displayed 2 layers are displayed
         cy.wait(['@getMap', '@getMap'])
 
+        // Click on the dataviz menu
         cy.get('#button-dataviz').click()
 
         // Check the plots are organized as configured in plugin (HTML Drag & drop layout)
@@ -43,10 +44,6 @@ describe('Dataviz tests', function () {
             .should('have.text', 'Sub-Tab X')
         cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1)')
             .should('have.text', 'Sub-tab Y')
-
-
-        // Click on the dataviz menu to trigger the visible plots data to be fetched
-        //cy.get('a#button-dataviz').click()
 
         // Click on the other tabs to make the other plots visible
         // Sub tab Y
