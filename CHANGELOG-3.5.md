@@ -10,8 +10,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Fixed
 
-- Fix address search when results of the query to api-adresse.data.gouv.fr are empty 
-
+* Improve the display on mobile about the menu
+* Improve logs displayed in the administration panel
+* Fix address search when results of the query to api-adresse.data.gouv.fr are empty
+* Fix popup when opened from a Lizmap Atlas when the layer has a shortname
+* Fix the export of a layer when the layer has an accent
 
 ## 3.5.14 - 2023-07-31
 
