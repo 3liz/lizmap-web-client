@@ -8,6 +8,43 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Use the layer name defined in the Lizmap CFG file if defined instead of the one in the legend
+* Editing & Filter - Fix editing right access from popup
+* Refresh WMS layer after edition follow up
+* Fix some regressions about the new legend : 
+  * Option "Group as layer"
+  * External layer
+  * Handle QGIS `Control rendering order`
+* Check if the scale is `0` in the Lizmap CFG file before doing a division
+* Use layer name as option label for locate-by-layer selector in mobile
+* Support for [OpenTopoMap](https://opentopomap.org/)
+* Editing & Filter - Fix editing right access from popup
+* Fix a visibility error for a QGIS preset/theme
+* Warning about "qgsmtime" for an embedded layer
+* Improve the checklist when installing Lizmap Web Client about QGIS Server
+
+### Changed
+
+* The keyword `overview` for a group in the legend is not case-sensitive
+* Improve the QGIS project panel in the administration :
+  * Add some colours in the legend
+  * Improve the display, better UX
+
+### Removed
+
+* Some code about OpenLayers 2
+
+### Backend
+
+* Upgrade OpenLayers to version 7.5.1
+* Fix some PHP notice when running PHP 8, contribution from @Antoviscomi
+
+### Translations
+
+* Update translated strings from the Transifex website
+
 ## 3.7.0-alpha.1 - 2023-07-25
 
 ### Added
