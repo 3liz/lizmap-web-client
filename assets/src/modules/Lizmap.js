@@ -83,7 +83,7 @@ export default class Lizmap {
                 this.action = new Action();
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup();
-                this.legend = new Legend();
+                this.legend = new Legend(this.state.layerTree);
             }
         });
     }
