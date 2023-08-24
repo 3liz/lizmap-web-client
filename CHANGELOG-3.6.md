@@ -8,6 +8,19 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Improve the display on mobile about the menu
+* Improve logs displayed in the administration panel
+* Fix address search when results of the query to api-adresse.data.gouv.fr are empty
+* Fix popup when opened from a Lizmap Atlas when the layer has a shortname
+* Fix the export of a layer when the layer has an accent
+* Do not display child plot in popup when there is no data
+
+### Funders
+
+* [Faunalia](https://www.faunalia.eu/fr)
+
 ## 3.6.5 - 2023-08-08
 
 ### Added
