@@ -67,6 +67,7 @@ export default class Lizmap {
                 (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
 
                 // Create Lizmap modules
+                this.permalink = new Permalink();
                 this.map = new Map();
                 this.baseLayersMap = new BaseLayersMap();
                 this.edition = new Edition();
@@ -85,7 +86,6 @@ export default class Lizmap {
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup();
                 this.legend = new Legend();
-                this.permalink = new Permalink();
             }
         });
     }
