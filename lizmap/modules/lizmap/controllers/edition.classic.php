@@ -319,6 +319,22 @@ class editionCtrl extends jController
     }
 
     /**
+     * Generate the jForms form identifier
+     * depending on the action (creation or modification)
+     * and the source layer and optional existing feature.
+     *
+     * @return string the form ID to be used when creating/getting the form
+     */
+    protected function formId()
+    {
+        if ($this->featureId) {
+            return $this->layerId.'||'.$this->featureId;
+        }
+
+        return $this->layerId.'||____new__feature___';
+    }
+
+    /**
      * @param jFormsBase $form
      * @param mixed      $forCreation
      */
@@ -398,9 +414,11 @@ class editionCtrl extends jController
             return $this->serviceAnswer();
         }
 
-        jForms::destroy('view~edition', $this->featureId);
+        // Destroy existing form
+        jForms::destroy('view~edition', $this->formId());
+
         // Create form instance
-        $form = jForms::create('view~edition', $this->featureId);
+        $form = jForms::create('view~edition', $this->formId());
 
         if (!$this->initializeForm($form)) {
             return $this->serviceAnswer();
@@ -455,7 +473,7 @@ class editionCtrl extends jController
         }
 
         // Create form instance
-        $form = jForms::create('view~edition', $this->featureId);
+        $form = jForms::create('view~edition', $this->formId());
         if (!$form) {
             jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'formNotDefined');
 
@@ -514,7 +532,7 @@ class editionCtrl extends jController
         }
 
         // Get the form instance
-        $form = jForms::get('view~edition', $this->featureId);
+        $form = jForms::get('view~edition', $this->formId());
         if (!$form) {
             jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'formNotDefined');
 
@@ -603,6 +621,110 @@ class editionCtrl extends jController
     }
 
     /**
+     * Validate the edition form (output as JSON).
+     *
+     * This will not try to save the data in the database
+     * but will only run the jForms and QGIS/Lizmap checks
+     * for the given form.
+     *
+     * If this is a child form with an empty foreign key,
+     * override the notnull attribute to return OK even if this fk
+     * value is not given.
+     *
+     * @urlparam string $repository Lizmap Repository
+     * @urlparam string $project Name of the project
+     * @urlparam string $layerId Qgis id of the layer
+     * @urlparam integer $featureId Id of the feature.
+     *
+     * @return jResponseJson JSON content with the validation status and errors
+     */
+    public function validateFeature()
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+        $rep->data = array(
+            'status' => false,
+            'message' => 'An unknown error occurred',
+            'errors' => array(),
+        );
+
+        // Get repository, project data and do some right checking
+        $save = true;
+        if (!$this->getEditionParameters($save)) {
+            $rep->data['message'] = 'An error occurred while initializing the context (repository, project, etc.)';
+
+            return $rep;
+        }
+
+        // Get the form instance
+        $form = jForms::get('view~edition', $this->formId());
+
+        if (!$form) {
+            $rep->data['message'] = jLocale::get('view~edition.message.error.form.get');
+
+            return $rep;
+        }
+
+        // Get the data via a WFS request
+        $this->getWfsFeature();
+
+        // event to add custom field into the jForms form before setting data in it
+        $eventParams = array(
+            'form' => $form,
+            'project' => $this->project,
+            'repository' => $this->repository,
+            'layer' => $this->layer,
+            'featureId' => $this->featureId,
+            'featureData' => $this->featureData,
+            'status' => $this->param('status', 0),
+        );
+        jEvent::notify('LizmapEditionSaveGetForm', $eventParams);
+
+        // Dynamically add form controls based on QGIS layer information
+        // And save data into the edition table (insert or update line)
+
+        try {
+            $qgisForm = new Form\QgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride, lizmap::getAppContext());
+        } catch (Exception $e) {
+            $rep->data['message'] = $e->getMessage();
+
+            return $rep;
+        }
+
+        // event to add or modify some control after QgisForm has added its own controls
+        $eventParams['qgisForm'] = $qgisForm;
+        jEvent::notify('LizmapEditionSaveGetQgisForm', $eventParams);
+
+        // Get data from the request and set the form controls data accordingly
+        $form->initFromRequest();
+
+        // Check the form data and redirect if needed
+        $feature = null;
+        if ($this->featureId || $this->featureId === 0 || $this->featureId === '0') {
+            $feature = $this->featureData->features[0];
+        }
+        list($check, $errors) = $qgisForm->check($feature);
+
+        // event to add additional checks
+        $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('check') === false) {
+            $check = false;
+            $rep->data['message'] = 'Additional check returns an error ';
+        }
+
+        // @var boolean $check
+        $rep->data['status'] = $check;
+        // @var array $errors
+        $rep->data['errors'] = $errors;
+        $rep->data['message'] = 'The form data are valid';
+        if (count($errors) > 0) {
+            $rep->data['message'] = 'The form data are not valid. Some fields do not have the expected values';
+        }
+
+        return $rep;
+    }
+
+    /**
      * Save the edition form (output as html fragment).
      *
      * @urlparam string $repository Lizmap Repository
@@ -621,7 +743,7 @@ class editionCtrl extends jController
         }
 
         // Get the form instance
-        $form = jForms::get('view~edition', $this->featureId);
+        $form = jForms::get('view~edition', $this->formId());
 
         if (!$form) {
             jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'formNotDefined');
@@ -667,7 +789,7 @@ class editionCtrl extends jController
         if ($this->featureId || $this->featureId === 0 || $this->featureId === '0') {
             $feature = $this->featureData->features[0];
         }
-        $check = $qgisForm->check($feature);
+        list($check, $errors) = $qgisForm->check($feature);
 
         // event to add additional checks
         $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
@@ -709,7 +831,7 @@ class editionCtrl extends jController
 
         // Redirect to the edition form or to the validate message
         $next_action = $form->getData('liz_future_action');
-        jForms::destroy('view~edition', $this->featureId);
+        jForms::destroy('view~edition', $this->formId());
         $form = null;
 
         if ($next_action == 'close') {
@@ -793,7 +915,7 @@ class editionCtrl extends jController
         }
 
         // Destroy the form
-        jForms::destroy('view~edition', $this->featureId);
+        jForms::destroy('view~edition', $this->formId());
 
         // Return html fragment response
         jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
@@ -849,7 +971,7 @@ class editionCtrl extends jController
         }
 
         // Create form instance to get uploads file
-        $form = jForms::create('view~edition', $this->featureId);
+        $form = jForms::create('view~edition', $this->formId());
         if (!$form) {
             jMessage::add('An error has been raised when creating the form', 'formNotDefined');
 
@@ -934,7 +1056,7 @@ class editionCtrl extends jController
         }
 
         // Get the form instance
-        $form = jForms::create('view~edition', '____new__feature___');
+        $form = jForms::create('view~edition', $this->formId());
         if (!$form) {
             $rep->data['success'] = false;
             $rep->data['message'] = jLocale::get('view~edition.message.error.form.get');
@@ -1003,7 +1125,7 @@ class editionCtrl extends jController
         }
         $pkvals = $qgisForm->saveToDb($feature);
 
-        jForms::destroy('view~edition', '____new__feature___');
+        jForms::destroy('view~edition', $this->formId());
 
         // Some errors where encoutered
         if (!$check || !$pkvals) {
@@ -1404,6 +1526,7 @@ class editionCtrl extends jController
                 throw new Exception('dummy');
             }
         } catch (Exception $e) {
+            /** @var \jResponseText */
             $rep = $this->getResponse('text', true);
             $rep->setHttpStatus('422', 'Unprocessable entity');
             $rep->content = 'invalid form selector';
@@ -1414,6 +1537,7 @@ class editionCtrl extends jController
         // check CSRF
         if ($form->securityLevel == jFormsBase::SECURITY_CSRF) {
             if ($form->getContainer()->token !== $this->param('__JFORMS_TOKEN__')) {
+                /** @var \jResponseText */
                 $rep = $this->getResponse('text', true);
                 $rep->setHttpStatus('422', 'Unprocessable entity');
                 $rep->content = 'invalid token';

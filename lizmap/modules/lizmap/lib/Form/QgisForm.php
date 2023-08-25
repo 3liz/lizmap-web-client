@@ -535,6 +535,19 @@ class QgisForm implements QgisFormControlsInterface
         return $form;
     }
 
+    /**
+     * Check the QGIS form data.
+     *
+     * A first jForms check is done
+     * Then some QGIS and Lizmap specific checks are run
+     * such as the upload target path,
+     * the QGIS expression constraints,
+     * the polygon and attribute filter, etc.
+     *
+     * @param mixed $feature The optional original feature
+     *
+     * @return array An array containing a boolean status and an array with fields errors if any
+     */
     public function check($feature = null)
     {
         $form = $this->form;
@@ -551,6 +564,10 @@ class QgisForm implements QgisFormControlsInterface
             $check = false;
             $form->setErrorOn($geometryColumn, $this->appContext->getLocale('view~edition.message.error.no.geometry'));
         }
+
+        // Test
+        $check = false;
+        $form->setErrorOn('liz_srid', 'Mauvais SRID');
 
         // Get values and form fields
         $values = array();
@@ -624,7 +641,7 @@ class QgisForm implements QgisFormControlsInterface
 
             if (!$results) {
                 // Evaluation failed
-                return $check;
+                return array($check, $form->getErrors());
             }
             $results = (array) $results;
             foreach ($results as $fieldName => $result) {
@@ -649,7 +666,7 @@ class QgisForm implements QgisFormControlsInterface
             }
         }
 
-        return $check;
+        return array($check, $form->getErrors());
     }
 
     public function getFieldValue($fieldName, $form)
