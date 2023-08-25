@@ -1281,15 +1281,8 @@ window.lizMap = function() {
 
     var restrictedExtent = extent.scale(3);
 
-    let initialExtentPermalink;
-    for (const keyValue of window.location.hash.substring(1).split('|')) {
-      const [key, value] = keyValue.split('=');
-      if (key === 'bbox') {
-        initialExtentPermalink = value.split(',');
-      }
-    }
-
-    if(initialExtentPermalink){
+    let initialExtentPermalink = window.location.hash.substring(1).split('|')[0].split(',');
+    if (initialExtentPermalink.length === 4) {
       initialExtent = initialExtentPermalink;
     }
 

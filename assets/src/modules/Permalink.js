@@ -5,16 +5,19 @@ export default class Permalink {
 
     constructor() {
 
-        // Change states based on URL fragment
+        // Change `checked`, `style` states based on URL fragment
         if (window.location.hash) {
-            for (const keyValue of window.location.hash.substring(1).split('|')) {
-                const [key, value] = keyValue.split('=');
-                if (key === 'item') {
-                    const itemsInURL = value.split(',');
-                    const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups)
-                    for (const item of items){
-                        item.checked = itemsInURL.includes(encodeURIComponent(item.name));
+            const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
+            const [, itemsInURL, stylesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
+            for (const item of items){
+                if(itemsInURL.includes(encodeURIComponent(item.name))){
+                    item.checked = true;
+                    if(item.type === 'layer'){
+                        const styleIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
+                        item.wmsSelectedStyleName = decodeURIComponent(stylesInURL[styleIndex]);
                     }
+                } else {
+                    item.checked = false;
                 }
             }
         }
@@ -28,7 +31,7 @@ export default class Permalink {
 
         mainLizmap.state.rootMapGroup.addListener(
             () => this._writeURLFragment(),
-            ['layer.visibility.changed', 'group.visibility.changed']
+            ['layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'group.style.changed']
         );
     }
 
@@ -44,21 +47,26 @@ export default class Permalink {
                 'EPSG:4326'
             );
         }
-        hash = 'bbox=' + bbox.join();
+        hash = bbox.join();
 
         // Item's visibility
         // Only write layer's name when visible
-        hash += '|item='
         let visibleItems = [];
+        let styleItems = [];
 
         for (const item of lizMap.mainLizmap.state.rootMapGroup.findMapLayersAndGroups()) {
             if (item.checked){
                 visibleItems.push(item.name);
+                styleItems.push(item.wmsSelectedStyleName);
             }
         }
 
         if (visibleItems.length) {
-            hash += visibleItems.join();
+            hash += '|' + visibleItems.join();
+        }
+
+        if (styleItems.length) {
+            hash += '|' + styleItems.join();
         }
 
         // Finally override URL fragment
