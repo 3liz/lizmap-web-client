@@ -14,8 +14,15 @@ const mapStateProperties = {
     pointScaleDenominator: {type: 'number'},
 };
 
+/**
+ * Class representing the lizmap Map State
+ * @class
+ * @augments EventDispatcher
+ */
 export class MapState extends EventDispatcher {
-
+    /**
+     * Create a lizmap Map State instance
+     */
     constructor() {
         super()
         // default values
@@ -28,7 +35,6 @@ export class MapState extends EventDispatcher {
         this._pointResolution = -1
         this._pointScaleDenominator = -1
     }
-
 
     /**
      * Update the map state

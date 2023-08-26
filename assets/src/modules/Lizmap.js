@@ -113,7 +113,7 @@ export default class Lizmap {
     /**
      * The lizmap user interface state
      *
-     * @type {Config}
+     * @type {State}
      **/
     get state() {
         return this._state;
