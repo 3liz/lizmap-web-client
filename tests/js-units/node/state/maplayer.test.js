@@ -289,6 +289,70 @@ describe('MapGroupState', function () {
         expect(busStops2).to.be.eq(busStops)
     })
 
+    it('layerOrder', function () {
+        const root = getRootMapGroupState('layer_order');
+        expect(root).to.be.instanceOf(MapGroupState)
+
+        const mapLayers = root.findMapLayers();
+        expect(mapLayers).to.be.an('array').that.have.length(4)
+
+        const quartiers = mapLayers[0]
+        expect(quartiers).to.be.instanceOf(MapLayerState)
+        expect(quartiers.name).to.be.eq('quartiers')
+        expect(quartiers.layerOrder).to.be.eq(3)
+
+        const sousquartiers = mapLayers[1]
+        expect(sousquartiers).to.be.instanceOf(MapLayerState)
+        expect(sousquartiers.name).to.be.eq('sousquartiers')
+        expect(sousquartiers.layerOrder).to.be.eq(2)
+
+        const tramway_lines = mapLayers[2]
+        expect(tramway_lines).to.be.instanceOf(MapLayerState)
+        expect(tramway_lines.name).to.be.eq('tramway_lines')
+        expect(tramway_lines.layerOrder).to.be.eq(1)
+
+        const tramway_stops = mapLayers[3]
+        expect(tramway_stops).to.be.instanceOf(MapLayerState)
+        expect(tramway_stops.name).to.be.eq('tramway_stops')
+        expect(tramway_stops.layerOrder).to.be.eq(0)
+
+        const tramway_group = root.children[2]
+        expect(tramway_group).to.be.instanceOf(MapGroupState)
+        expect(tramway_group.name).to.be.eq('tramway')
+        expect(tramway_group.layerOrder).to.be.undefined
+        expect(tramway_group.itemState.layerOrder).to.be.eq(0)
+
+
+        const cadastre = getRootMapGroupState('cadastre-caen');
+        expect(cadastre).to.be.instanceOf(MapGroupState)
+        expect(cadastre.childrenCount).to.be.eq(1)
+
+        const group = cadastre.children[0]
+        expect(group).to.be.instanceOf(MapGroupState)
+        expect(group.name).to.be.eq('Cadastre')
+        expect(group.childrenCount).to.be.eq(4)
+
+        const parcelles = group.children[0]
+        expect(parcelles).to.be.instanceOf(MapLayerState)
+        expect(parcelles.name).to.be.eq('Parcelles')
+        expect(parcelles.layerOrder).to.be.eq(0)
+
+        const sections = group.children[1]
+        expect(sections).to.be.instanceOf(MapLayerState)
+        expect(sections.name).to.be.eq('Sections')
+        expect(sections.layerOrder).to.be.eq(1)
+
+        const communes = group.children[2]
+        expect(communes).to.be.instanceOf(MapLayerState)
+        expect(communes.name).to.be.eq('Communes')
+        expect(communes.layerOrder).to.be.eq(2)
+
+        const fond = group.children[3]
+        expect(fond).to.be.instanceOf(MapLayerState)
+        expect(fond.name).to.be.eq('Fond')
+        expect(fond.layerOrder).to.be.eq(3)
+    })
+
     it('Checked & visibility', function () {
         const root = getRootMapGroupState('montpellier');
         expect(root).to.be.instanceOf(MapGroupState)
@@ -1840,6 +1904,7 @@ describe('MapGroupState', function () {
         expect(fond).to.be.instanceOf(MapLayerState)
         expect(fond.checked).to.be.true
         expect(fond.visibility).to.be.true
+        expect(fond.layerOrder).to.be.eq(3)
 
         // Check the item state
         expect(fond.itemState).to.be.instanceOf(LayerGroupState)
