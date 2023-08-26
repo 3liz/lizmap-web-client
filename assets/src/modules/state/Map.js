@@ -116,14 +116,14 @@ const mapStateProperties = {
  */
 
 /**
- * Class representing the map state
+ * Class representing the lizmap Map State
  * @class
  * @augments EventDispatcher
  */
 export class MapState extends EventDispatcher {
 
     /**
-     * Creating the map state
+     * Create a lizmap Map State instance
      * @param {OptionsConfig}     [options]         - main configuration options
      * @param {string|undefined} [startupFeatures] - The features to highlight at startup in GeoJSON
      */
