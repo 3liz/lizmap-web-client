@@ -66,7 +66,7 @@ export default class Lizmap {
                 (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
 
                 // Create Lizmap modules
-                this.map = new Map();
+                this.map = new Map('newOlMap', this.state.map, this.lizmap3);
                 this.baseLayersMap = new BaseLayersMap();
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();

@@ -1,4 +1,4 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainEventDispatcher } from '../modules/Globals.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
 import { ADJUSTED_DPI } from '../utils/Constants.js';
@@ -12,7 +12,14 @@ import { defaults as defaultInteractions } from 'ol/interaction.js';
 /** Class initializing Openlayers Map. */
 export default class Map extends olMap {
 
-    constructor() {
+    /**
+     * Create the OpenLayers Map
+     *
+     * @param {String}   mapTarget - The id of the container element for the OpenLayers Map
+     * @param {MapState} mapState  - The lizmap map state
+     * @param {Object}   lizmap3   - The old lizmap object
+     */
+    constructor(mapTarget, mapState, lizmap3) {
         super({
             controls: [], // disable default controls
             interactions: defaultInteractions({
@@ -24,22 +31,23 @@ export default class Map extends olMap {
                 new DoubleClickZoom({ duration: 0 })
             ]),
             view: new View({
-                resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
+                resolutions: lizmap3.map.resolutions ? lizmap3.map.resolutions : lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
-                center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
-                projection: mainLizmap.projection === 'EPSG:900913' ? 'EPSG:3857' : mainLizmap.projection,
+                center: [lizmap3.map.getCenter().lon, lizmap3.map.getCenter().lat],
+                projection: lizmap3.map.getProjection() === 'EPSG:900913' ? 'EPSG:3857' : lizmap3.map.getProjection(),
                 enableRotation: false,
-                extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+                extent: lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
-            target: 'newOlMap'
+            target: mapTarget
         });
 
+        this._lizmap3 = lizmap3;
         this._newOlMap = false;
 
         this._refreshOL2View = () => {
             // This refresh OL2 view and layers
-            mainLizmap.lizmap3.map.setCenter(
+            lizmap3.map.setCenter(
                 this.getView().getCenter(),
                 this.getView().getZoom()
             );
@@ -56,7 +64,7 @@ export default class Map extends olMap {
             const pointResolution = getPointResolution(projection, view.getResolution(), view.getCenter(), projection.getUnits());
             const pointScaleDenominator = pointResolution * inchesPerMeter * dpi;
 
-            mainLizmap.state.map.update({
+            mapState.update({
                 'type': 'map.state.changing',
                 'projection': projection.getCode(),
                 'center': [...view.getCenter()],
@@ -70,7 +78,7 @@ export default class Map extends olMap {
         };
 
         // Sync new OL view with OL2 view
-        mainLizmap.lizmap3.map.events.on({
+        lizmap3.map.events.on({
             moveend: () => {
                 // Remove moveend listener and add it after animate ends
                 // to avoid extra sync
@@ -79,7 +87,7 @@ export default class Map extends olMap {
                 // Sync center
                 this.getView().animate({
                     center: this._lizmap3Center,
-                    zoom: mainLizmap.lizmap3.map.getZoom(),
+                    zoom: lizmap3.map.getZoom(),
                     duration: 0
                 }, setTimeout(() => this.on('moveend', this._refreshOL2View), 500));
 
@@ -107,7 +115,7 @@ export default class Map extends olMap {
 
         // Sync OL2 view with new OL view
         this.on('pointerdrag', () => {
-            mainLizmap.lizmap3.map.setCenter(
+            lizmap3.map.setCenter(
                 this.getView().getCenter(),
                 null,
                 true // avoid many WMS request in OL2 map and also movestart/end events.
@@ -130,7 +138,7 @@ export default class Map extends olMap {
      * @return {[number, number]} lon, lat coords
      */
     get _lizmap3Center(){
-        return [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat];
+        return [this._lizmap3.map.getCenter().lon, this._lizmap3.map.getCenter().lat];
     }
 
     /**
@@ -140,7 +148,7 @@ export default class Map extends olMap {
     syncNewOLwithOL2View(){
         this.getView().animate({
             center: this._lizmap3Center,
-            zoom: mainLizmap.lizmap3.map.getZoom(),
+            zoom: this._lizmap3.map.getZoom(),
             duration: 0
         });
 
