@@ -2,8 +2,6 @@
 
 **Project : form_edition_value_relation_field**
 
-Lizmap plugin installed for QGIS Server is needed
-
 ## Procedure
 
 ### Check the field available values filtered by geometry
