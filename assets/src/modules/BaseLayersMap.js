@@ -23,8 +23,14 @@ import { defaults as defaultInteractions } from 'ol/interaction.js';
 /** Class initializing Openlayers Map. */
 export default class BaseLayersMap extends olMap {
 
-    constructor() {
-        const qgisProjectProjection = mainLizmap.projection;
+    /**
+     * Create the OpenLayers Map
+     *
+     * @param {String}   mapTarget - The id of the container element for the OpenLayers Map
+     * @param {Object}   lizmap3   - The old lizmap object
+     */
+    constructor(mapTarget, lizmap3) {
+        const qgisProjectProjection = lizmap3.map.getProjection();
         const mapProjection = getProjection(qgisProjectProjection);
 
         super({
@@ -38,16 +44,18 @@ export default class BaseLayersMap extends olMap {
                 new DoubleClickZoom({ duration: 0 })
             ]),
             view: new View({
-                resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
+                resolutions: lizmap3.map.resolutions ? lizmap3.map.resolutions : lizmap3.map.baseLayer.resolutions,
                 constrainResolution: true,
-                center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
+                center: [lizmap3.map.getCenter().lon, lizmap3.map.getCenter().lat],
                 projection: mapProjection,
                 enableRotation: false,
-                extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+                extent: lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
             target: 'baseLayersOlMap'
         });
+
+        this._lizmap3 = lizmap3;
 
         // Ratio between WMS single tiles and map viewport
         this._WMSRatio = 1.1;
@@ -168,7 +176,7 @@ export default class BaseLayersMap extends olMap {
             baseLayers.push(baseLayer);
 
             if (visible && baseLayer.getSource().getProjection().getCode() !== qgisProjectProjection) {
-                this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
+                this.getView().getProjection().setExtent(lizmap3.map.restrictedExtent.toArray());
             }
         }
 
@@ -297,7 +305,7 @@ export default class BaseLayersMap extends olMap {
         }));
 
         // Sync new OL view with OL2 view
-        mainLizmap.lizmap3.map.events.on({
+        lizmap3.map.events.on({
             move: () => {
                 this.syncNewOLwithOL2View();
             }
@@ -416,13 +424,23 @@ export default class BaseLayersMap extends olMap {
     }
 
     /**
+     * Returns Lizmap 3 map center
+     * @readonly
+     * @memberof Map
+     * @return {[number, number]} lon, lat coords
+     */
+    get _lizmap3Center(){
+        return [this._lizmap3.map.getCenter().lon, this._lizmap3.map.getCenter().lat];
+    }
+
+    /**
      * Synchronize new OL view with OL2 one
      * @memberof Map
      */
     syncNewOLwithOL2View(){
         this.getView().animate({
-            center: mainLizmap.center,
-            zoom: mainLizmap.lizmap3.map.getZoom(),
+            center: this._lizmap3Center,
+            zoom: this._lizmap3.map.getZoom(),
             duration: 50
         });
     }
@@ -444,7 +462,7 @@ export default class BaseLayersMap extends olMap {
         // If base layer projection is different from project projection
         // We must set the project extent to the View to reproject nicely
         if (selectedBaseLayer?.getSource().getProjection().getCode() !== mainLizmap.projection) {
-            this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
+            this.getView().getProjection().setExtent(this._lizmap3.map.restrictedExtent.toArray());
         } else {
             this.getView().getProjection().setExtent(getProjection(mainLizmap.projection).getExtent());
         }

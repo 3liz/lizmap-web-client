@@ -1,13 +1,19 @@
-import { mainLizmap } from '../modules/Globals.js';
 import WMS from '../modules/WMS.js';
 
 export default class Popup {
 
-    constructor() {
+    /**
+     * Create a popup instance
+     *
+     * @param {Config} initialConfig - The lizmap initial config instance
+     * @param {State}  lizmapState   - The lizmap user interface state
+     * @param {Map}    map           - OpenLayers map
+     */
+    constructor(initialConfig, lizmapState, map) {
 
-        this._pointTolerance = mainLizmap.config.options?.pointTolerance || 25;
-        this._lineTolerance = mainLizmap.config.options?.lineTolerance || 10;
-        this._polygonTolerance = mainLizmap.config.options?.polygonTolerance || 5;
+        this._pointTolerance = initialConfig.options.pointTolerance;
+        this._lineTolerance = initialConfig.options.lineTolerance;
+        this._polygonTolerance = initialConfig.options.polygonTolerance;
 
         OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             defaultHandlerOptions: {
@@ -26,8 +32,8 @@ export default class Popup {
                 );
                 this.handler = new OpenLayers.Handler.Click(
                     this, {
-                    'click': this.trigger
-                }, this.handlerOptions
+                        'click': this.trigger
+                    }, this.handlerOptions
                 );
             },
             trigger: evt => {
@@ -35,7 +41,7 @@ export default class Popup {
                     return;
                 }
 
-                let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers();
+                let candidateLayers = lizmapState.rootMapGroup.findMapLayers();
 
                 // Only request visible layers
                 candidateLayers = candidateLayers.filter(layer => layer.visibility);
@@ -47,8 +53,8 @@ export default class Popup {
 
                     let editionLayerCapabilities;
 
-                    if (mainLizmap.initialConfig?.editionLayers?.layerNames.includes(layer.name)) {
-                        editionLayerCapabilities = mainLizmap.initialConfig?.editionLayers?.getLayerConfigByLayerName(layer.name)?.capabilities;
+                    if (initialConfig.editionLayers?.layerNames.includes(layer.name)) {
+                        editionLayerCapabilities = initialConfig.editionLayers?.getLayerConfigByLayerName(layer.name)?.capabilities;
                     }
                     return layerCfg.popup || editionLayerCapabilities?.modifyAttribute || editionLayerCapabilities?.modifyGeometry || editionLayerCapabilities?.deleteFeature;
                 });
@@ -56,23 +62,23 @@ export default class Popup {
                 if(!candidateLayers.length){
                     return;
                 }
-    
+
                 const layersWMS = candidateLayers.map(layer => layer.wmsName).join();
-    
+
                 const wms = new WMS();
-    
-                const [width, height] = lizMap.mainLizmap.map.getSize();
 
-                let bbox = mainLizmap.map.getView().calculateExtent();
+                const [width, height] = map.getSize();
 
-                if (mainLizmap.map.getView().getProjection().getAxisOrientation().substring(0, 2) === 'ne') {
+                let bbox = map.getView().calculateExtent();
+
+                if (map.getView().getProjection().getAxisOrientation().substring(0, 2) === 'ne') {
                     bbox = [bbox[1], bbox[0], bbox[3], bbox[2]];
                 }
 
                 const wmsParams = {
                     QUERY_LAYERS: layersWMS,
                     LAYERS: layersWMS,
-                    CRS: mainLizmap.projection,
+                    CRS: map.getView().getProjection().getCode(),
                     BBOX: bbox,
                     FEATURE_COUNT: 10,
                     WIDTH: width,
@@ -95,9 +101,9 @@ export default class Popup {
                 if (filterTokens.length) {
                     wmsParams['FILTERTOKEN'] = filterTokens.join(';');
                 }
-    
+
                 document.querySelector('body').style.cursor = 'wait'
-    
+
                 wms.getFeatureInfo(wmsParams).then(response => {
                     lizMap.displayGetFeatureInfo(response, evt.xy);
                 }).finally(() => {
@@ -105,7 +111,7 @@ export default class Popup {
                 });
             }
         });
-        
+
         var click = new OpenLayers.Control.Click();
         lizMap.map.addControl(click);
         click.activate();

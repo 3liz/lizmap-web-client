@@ -66,8 +66,8 @@ export default class Lizmap {
                 (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
 
                 // Create Lizmap modules
-                this.map = new Map();
-                this.baseLayersMap = new BaseLayersMap();
+                this.map = new Map('newOlMap', this.state.map, this.lizmap3);
+                this.baseLayersMap = new BaseLayersMap('baseLayersOlMap', this.lizmap3);
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
@@ -82,8 +82,8 @@ export default class Lizmap {
                 this.utils = Utils;
                 this.action = new Action();
                 this.featureStorage = new FeatureStorage();
-                this.popup = new Popup();
-                this.legend = new Legend();
+                this.popup = new Popup(this.initialConfig, this.state, this.map);
+                this.legend = new Legend(this.state.layerTree);
             }
         });
     }
@@ -113,7 +113,7 @@ export default class Lizmap {
     /**
      * The lizmap user interface state
      *
-     * @type {Config}
+     * @type {State}
      **/
     get state() {
         return this._state;

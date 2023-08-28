@@ -1,20 +1,24 @@
-import { mainLizmap } from './Globals.js';
 import { updateLayerTreeLayerSymbology, updateLayerTreeGroupLayersSymbology } from '../modules/action/Symbology.js';
 
 export default class Legend {
 
-    constructor() {
+    /**
+     * Create a legend instance
+     *
+     * @param {LayerTreeGroupState} layerTree - Root tree layer group
+     */
+    constructor(layerTree) {
         // Init all symbologies
-        if(mainLizmap.state.layerTree.childrenCount === 0){
+        if(layerTree.childrenCount === 0){
             return;
         }
 
-        updateLayerTreeGroupLayersSymbology(mainLizmap.state.layerTree);
+        updateLayerTreeGroupLayersSymbology(layerTree);
 
         // Refresh symbology when a layer's style changes
-        mainLizmap.state.rootMapGroup.addListener(
+        layerTree.addListener(
             evt => {
-                updateLayerTreeLayerSymbology(mainLizmap.state.layerTree.getTreeLayerByName(evt.name));
+                updateLayerTreeLayerSymbology(layerTree.getTreeLayerByName(evt.name));
             },['layer.style.changed']
         );
     }
