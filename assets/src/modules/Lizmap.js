@@ -17,6 +17,7 @@ import Action from './Action.js';
 import FeatureStorage from './FeatureStorage.js';
 import Popup from './Popup.js';
 import Legend from './Legend.js';
+import Permalink from './Permalink.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
@@ -66,6 +67,7 @@ export default class Lizmap {
                 (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
 
                 // Create Lizmap modules
+                this.permalink = new Permalink();
                 this.map = new Map();
                 this.baseLayersMap = new BaseLayersMap();
                 this.edition = new Edition();

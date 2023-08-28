@@ -1281,6 +1281,11 @@ window.lizMap = function() {
 
     var restrictedExtent = extent.scale(3);
 
+    let initialExtentPermalink = window.location.hash.substring(1).split('|')[0].split(',');
+    if (initialExtentPermalink.length === 4) {
+      initialExtent = initialExtentPermalink;
+    }
+
     if(initialExtent){
         initialExtent = new OpenLayers.Bounds(initialExtent);
         initialExtent.transform(new OpenLayers.Projection('EPSG:4326'), projection);
@@ -5159,35 +5164,8 @@ window.lizMap = function() {
         var verifyingVisibility = true;
         var hrefParam = OpenLayers.Util.getParameters(window.location.href);
         if (!map.getCenter()) {
-          if (hrefParam.bbox || hrefParam.BBOX) {
-            var hrefBbox = null;
-            if (hrefParam.bbox)
-              hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.bbox);
-            if (hrefParam.BBOX)
-              hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.BBOX);
-
-            if (hrefParam.crs && hrefParam.crs != map.getProjection())
-              hrefBbox.transform(hrefParam.crs, map.getProjection())
-            if (hrefParam.CRS && hrefParam.CRS != map.getProjection())
-              hrefBbox.transform(hrefParam.CRS, map.getProjection())
-            if (map.restrictedExtent.containsBounds(hrefBbox))
-              map.zoomToExtent(hrefBbox, true);
-            else {
-              var projBbox = $('#metadata .bbox').text();
-              projBbox = OpenLayers.Bounds.fromString(projBbox);
-              if (projBbox.containsBounds(hrefBbox)) {
-                var projProj = $('#metadata .proj').text();
-                loadProjDefinition(projProj, function (aProj) {
-                  hrefBbox.transform(aProj, map.getProjection());
-                  map.zoomToExtent(hrefBbox, true);
-                });
-              } else {
-                map.zoomToExtent(map.initialExtent);
-              }
-            }
-          } else {
-            map.zoomToExtent(map.initialExtent);
-          }
+          const zoomToClosest = window.location.hash.substring(1).split('|')[0].split(',').length === 4;
+          map.zoomToExtent(map.initialExtent, zoomToClosest);
           if(featuresExtent){
             var format = new OpenLayers.Format.GeoJSON({
                 ignoreExtraDims: true
