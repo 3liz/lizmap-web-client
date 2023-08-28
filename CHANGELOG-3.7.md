@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.0-alpha.2 - 2023-08-28
+
 ### Fixed
 
 * Use the layer name defined in the Lizmap CFG file if defined instead of the one in the legend
@@ -24,6 +26,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix a visibility error for a QGIS preset/theme
 * Warning about "qgsmtime" for an embedded layer
 * Improve the checklist when installing Lizmap Web Client about QGIS Server
+* Do not display child plot in popup when there is no data
 
 ### Changed
 
@@ -43,7 +46,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Translations
 
-* Update translated strings from the Transifex website
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ## 3.7.0-alpha.1 - 2023-07-25
 
