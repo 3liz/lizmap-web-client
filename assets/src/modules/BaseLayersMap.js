@@ -268,6 +268,8 @@ export default class BaseLayersMap extends olMap {
 
                 layer.setVisible(node.visibility);
 
+                layer.setOpacity(node.opacity);
+
                 layer.setProperties({
                     name: node.name
                 });
