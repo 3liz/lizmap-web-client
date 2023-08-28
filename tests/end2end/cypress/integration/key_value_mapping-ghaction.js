@@ -200,7 +200,7 @@ describe('Key/value in attribute table', function () {
         })
     })
 
-    it.only('As children layers are not published in WFS, it must display keys and not values in attribute table shortname', function () {
+    it('As children layers are not published in WFS, it must display keys and not values in attribute table shortname', function () {
 
         cy.get('button[value="attribute_table_shortname"].btn-open-attribute-layer').click({ force: true })
 
