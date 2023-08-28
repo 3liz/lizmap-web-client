@@ -101,7 +101,7 @@ test.describe('Maps management', () => {
     await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
     // Check message
     await expect(page.locator('div.alert.alert-block')).toHaveClass(/alert-info/);
-    await expect(page.locator('div.alert.alert-block.alert-info')).toContainText('The repository data have been saved.');
+    await expect(page.locator('div.alert.alert-block.alert-info')).toContainText('The repository data has been saved.');
 
     // Check selected admin menu item
     await expect(page.locator('#menu li.active')).toHaveText('Maps management');
