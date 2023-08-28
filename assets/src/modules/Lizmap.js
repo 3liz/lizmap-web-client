@@ -67,7 +67,7 @@ export default class Lizmap {
 
                 // Create Lizmap modules
                 this.map = new Map('newOlMap', this.state.map, this.lizmap3);
-                this.baseLayersMap = new BaseLayersMap();
+                this.baseLayersMap = new BaseLayersMap('baseLayersOlMap', this.lizmap3);
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
