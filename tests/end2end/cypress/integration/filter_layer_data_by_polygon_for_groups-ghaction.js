@@ -91,7 +91,7 @@ describe('Filter layer data by polygon for groups', function () {
         cy.logout()
     })
 
-    it.only('not connected', function () {
+    it('not connected', function () {
         // Runs before each tests in the block
         cy.visit('/index.php/view/map/?repository=testsrepository&project=filter_layer_data_by_polygon_for_groups')
         // cy.wait('@getMap')
