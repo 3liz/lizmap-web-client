@@ -26,3 +26,7 @@
 ;; to send email via SMTP, uncomment this line, and fill the section smtp:mailer into profiles.ini.php
 ;mailerType=smtp
 
+
+[auth_db]
+; uncomment to enable authentication with the login or the email
+;authenticateWith=login-email

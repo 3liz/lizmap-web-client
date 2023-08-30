@@ -57,6 +57,15 @@
             </conditions>
         </method>
 
+        <method name="getByLoginOrEmail" type="selectfirst">
+            <parameter name="login" />
+
+            <conditions logic="or">
+                <eq property="login" expr="$login" />
+                <eq property="email" expr="$login" />
+            </conditions>
+        </method>
+
         <method name="updatePassword" type="update">
             <parameter name="login" />
             <parameter name="password" />
