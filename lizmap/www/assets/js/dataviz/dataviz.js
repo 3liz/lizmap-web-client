@@ -124,6 +124,12 @@ var lizDataviz = function() {
      *
      */
     async function getPlot(plot_id, exp_filter, target_id) {
+         if ($('#' + target_id).length == 0) {
+                  return;
+              }
+      
+              // Show the infinite progress bar
+         $('#' + target_id).prev('.dataviz-waiter:first').show();
 
         exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
         target_id = typeof target_id !== 'undefined' ?  target_id : new Date().valueOf()+btoa(Math.random()).substring(0,12);
@@ -154,8 +160,8 @@ var lizDataviz = function() {
             }
 
             // Build plot
-            var plot = buildPlot(target_id, dv.plots[plot_id]['cache']);
-            $('#'+target_id).prev('.dataviz-waiter:first').hide();
+            buildPlot(target_id, dv.plots[plot_id]['cache']);
+            $('#' + target_id).prev('.dataviz-waiter:first').hide();
 
             return true;
         }

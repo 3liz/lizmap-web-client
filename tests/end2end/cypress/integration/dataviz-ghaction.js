@@ -10,7 +10,7 @@ describe('Dataviz tests', function () {
                      })
                  }).as('getMap')
      
-                 cy.intercept('*request=getPlot*',
+                 cy.intercept('*/dataviz/service*',
                      { middleware: true },
                      (req) => {
                          req.on('before:response', (res) => {
