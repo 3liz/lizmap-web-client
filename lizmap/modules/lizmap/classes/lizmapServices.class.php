@@ -437,8 +437,12 @@ class lizmapServices
                 $liveIni->setValue($key, $this->{$prop}, $section);
             } elseif ($this->{$prop} != '') {
                 $ini->setValue($prop, $this->{$prop}, 'services');
-                if ($prop == 'adminContactEmail' && $this->globalConfig->lizmap['setAdminContactEmailAsReplyTo']) {
-                    $liveIni->setValue('replyTo', $this->{$prop}, 'mailer');
+                if ($prop == 'adminContactEmail') {
+                    if ($this->globalConfig->lizmap['setAdminContactEmailAsReplyTo']) {
+                        $liveIni->setValue('replyTo', $this->{$prop}, 'mailer');
+                    }
+                    // for jCommunity 1.4+
+                    $liveIni->setValue('notificationReceiverEmail', $this->{$prop}, 'jcommunity');
                 }
             } else {
                 $ini->removeValue($prop, 'services');
