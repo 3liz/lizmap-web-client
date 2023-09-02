@@ -56,7 +56,7 @@
                 <li>{jlocale "admin.server.information.qgis.error.fetching.information.qgis.version.html", array($minimumQgisVersion)}</li>
                 <li>{jlocale "admin.server.information.qgis.error.fetching.information.plugin.version.html", array($minimumLizmapServer)}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.qgis.url.html@}</li>
-                <li>{@admin.server.information.qgis.error.fetching.information.lizmap.url.html@}</li>
+                <li>{@admin.server.information.qgis.error.fetching.information.qgis.lizmap.html@}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.lizmap.logs.html@}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.environment.variable@}</li>
                 <li>{@admin.server.information.qgis.error.fetching.information.help@}</li>
