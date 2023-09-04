@@ -8,6 +8,21 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Review of the permalink feature
+* Add the possibility to authenticate with the email
+
+### Fixed
+
+* Review the popup order according to the list of layers
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
 ## 3.7.0-alpha.2 - 2023-08-28
 
 ### Fixed
