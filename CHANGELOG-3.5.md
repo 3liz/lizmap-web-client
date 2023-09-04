@@ -15,6 +15,13 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Fix address search when results of the query to api-adresse.data.gouv.fr are empty
 * Fix popup when opened from a Lizmap Atlas when the layer has a shortname
 * Fix the export of a layer when the layer has an accent
+* Fix some grammar
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ## 3.5.14 - 2023-07-31
 
