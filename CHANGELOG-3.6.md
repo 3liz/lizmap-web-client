@@ -16,6 +16,15 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Fix popup when opened from a Lizmap Atlas when the layer has a shortname
 * Fix the export of a layer when the layer has an accent
 * Do not display child plot in popup when there is no data
+* Fix some grammar
+* Allow import/export in selection tool
+* Fix 500 error in the administration panel when the "Lizmap server" plugin was not found
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ### Funders
 
