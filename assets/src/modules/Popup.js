@@ -35,7 +35,7 @@ export default class Popup {
                     return;
                 }
 
-                let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers();
+                let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers().reverse();
 
                 // Only request visible layers
                 candidateLayers = candidateLayers.filter(layer => layer.visibility);
