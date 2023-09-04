@@ -114,8 +114,22 @@ var lizDataviz = function() {
         }
     }
 
-    function getPlot(plot_id, exp_filter, target_id){
-        if ( $('#'+target_id).length == 0) return;
+    /**
+     * Get the plot data from the backend
+     * and draw the plot with the buildPlot method
+     *
+     * @param {integer} plot_id The id of the plot.
+     * @param {string} exp_filter The optional data filter.
+     * @param {string} target_id The ID of the target dom element.
+     *
+     */
+    async function getPlot(plot_id, exp_filter, target_id) {
+         if ($('#' + target_id).length == 0) {
+                  return;
+              }
+      
+              // Show the infinite progress bar
+         $('#' + target_id).prev('.dataviz-waiter:first').show();
 
         exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
         target_id = typeof target_id !== 'undefined' ?  target_id : new Date().valueOf()+btoa(Math.random()).substring(0,12);
@@ -146,51 +160,77 @@ var lizDataviz = function() {
             }
 
             // Build plot
-            var plot = buildPlot(target_id, dv.plots[plot_id]['cache']);
-            $('#'+target_id).prev('.dataviz-waiter:first').hide();
+            buildPlot(target_id, dv.plots[plot_id]['cache']);
+            $('#' + target_id).prev('.dataviz-waiter:first').hide();
 
             return true;
         }
 
         // No cache -> get data
-        $.getJSON(datavizConfig.url,
-            lparams,
-            function(json){
-                if( 'errors' in json ){
-                    console.log('Dataviz configuration error');
-                    console.log(json.errors);
-                    return false;
-                }
-                // Store json only if no filter
-                // Because we use cache for the full data
-                // and we do not want to override it
-                if (!exp_filter) {
-                    dv.plots[plot_id]['cache'] = json;
-                }
-                dv.plots[plot_id]['json'] = json;
+        try {
+            const response = await fetch(datavizConfig.url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(lparams),
+            });
 
-                // Store filter
-                dv.plots[plot_id]['filter'] = exp_filter;
-
-                // Hide container if no data
-                if( !json.data || json.data.length < 1){
-                    // hide full container
-                    $('#' + target_id + '_container').hide();
-                    $('#'+target_id).prev('.dataviz-waiter:first').hide();
-                    $('#'+target_id).parents('div.lizdataviz.lizmapPopupChildren:first').hide();
-                    return false;
-                }
-                // Show container if needed
-                if (dv.plots[plot_id]['show_plot']) {
-                    $('#' + target_id + '_container').show();
-                }
-
-                // Build plot
-                // Pass plot_id to inherit custom configurations in child charts
-                var plot = buildPlot(target_id, json, plot_id);
-                $('#'+target_id).prev('.dataviz-waiter:first').hide();
+            // Check content type
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new TypeError("Wrong content-type. JSON Expected !");
             }
-        );
+
+            // Get the JSON response
+            const jsonData = await response.json();
+
+            // Process the JSON data
+            if ('errors' in jsonData) {
+                console.log('Dataviz error');
+                console.log(jsonData.errors);
+            }
+
+            // Store json only if no filter
+            // Because we use cache for the full data
+            // and we do not want to override it
+            if (!exp_filter && !('errors' in jsonData)) {
+                dv.plots[plot_id]['cache'] = jsonData;
+                dv.plots[plot_id]['json'] = jsonData;
+            }
+
+            // Store filter
+            dv.plots[plot_id]['filter'] = exp_filter;
+
+            // Hide container if no data
+            if (!jsonData.data || jsonData.data.length < 1) {
+                // hide the full container
+                $('#' + target_id + '_container').hide();
+                // Hide the infinite progress bar
+                $('#' + target_id).prev('.dataviz-waiter:first').hide();
+                $('#' + target_id).parents('div.lizdataviz.lizmapPopupChildren:first').hide();
+
+                return false;
+            }
+
+            // Show container if needed
+            if (dv.plots[plot_id]['show_plot']) {
+                $('#' + target_id + '_container').show();
+            }
+
+            // The data has been successfully fetched
+            dv.plots[plot_id]['data_fetched'] = true;
+
+            // Build plot
+            // Pass plot_id to inherit custom configurations in child charts
+            buildPlot(target_id, jsonData, plot_id);
+
+            // Hide the infinite progress bar
+            $('#' + target_id).prev('.dataviz-waiter:first').hide();
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
     }
 
     function buildHtmlPlot(id, data, layout) {
