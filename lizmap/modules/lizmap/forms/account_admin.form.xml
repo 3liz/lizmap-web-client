@@ -6,7 +6,7 @@
      -->
 
 
-    <input ref="login" required="true" minlength="3" maxlength="50">
+    <input ref="login" required="true" minlength="3" maxlength="255">
         <label locale="jcommunity~account.form.login"/>
     </input>
 
