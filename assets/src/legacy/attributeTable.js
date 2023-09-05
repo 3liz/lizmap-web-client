@@ -2340,7 +2340,7 @@ var lizAttributeTable = function() {
 
                         // Update layer state
                         lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).filterToken = {
-                            expressionFilter: layerConfig['request_params']['exp_filter'],
+                            expressionFilter: lFilter.split(':')[1],
                             token: result.token
                         };
                     });

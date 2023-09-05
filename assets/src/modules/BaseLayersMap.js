@@ -252,12 +252,7 @@ export default class BaseLayersMap extends olMap {
                             url: mainLizmap.serviceURL,
                             serverType: 'qgis',
                             ratio: this._WMSRatio,
-                            params: {
-                                LAYERS: node.wmsName,
-                                FORMAT: node.layerConfig.imageFormat,
-                                STYLES: node.wmsSelectedStyleName,
-                                DPI: 96
-                            },
+                            params: node.wmsParameters
                         })
                     });
 
