@@ -140,6 +140,8 @@ COMMENT ON FUNCTION tests_projects.query_to_geojson(datasource text) IS 'Generat
 
 SET default_tablespace = '';
 
+SET default_table_access_method = heap;
+
 --
 -- Name: quartiers; Type: TABLE; Schema: tests_projects; Owner: -
 --
@@ -1217,6 +1219,95 @@ ALTER SEQUENCE tests_projects.layer_with_no_filter_gid_seq OWNED BY tests_projec
 
 
 --
+-- Name: many_bool_formats; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.many_bool_formats (
+    id integer NOT NULL,
+    bool_simple_null_cb boolean,
+    bool_not_nullable_cb boolean NOT NULL,
+    bool_simple_null_vm boolean,
+    bool_not_nullable_vm boolean NOT NULL,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: TABLE many_bool_formats; Type: COMMENT; Schema: tests_projects; Owner: -
+--
+
+COMMENT ON TABLE tests_projects.many_bool_formats IS 'CB for CheckBox, VM for ValueMap';
+
+
+--
+-- Name: many_bool_formats_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.many_bool_formats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: many_bool_formats_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.many_bool_formats_id_seq OWNED BY tests_projects.many_bool_formats.id;
+
+
+--
+-- Name: many_date_formats; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.many_date_formats (
+    id integer NOT NULL,
+    field_date date,
+    field_time time without time zone,
+    field_timestamp timestamp without time zone,
+    field_date_auto_cast date DEFAULT (now())::date,
+    field_time_auto_cast time without time zone DEFAULT (now())::time without time zone,
+    field_timestamp_auto_cast timestamp without time zone DEFAULT (now())::timestamp(0) without time zone,
+    field_date_auto date DEFAULT now(),
+    field_time_auto time without time zone DEFAULT now(),
+    field_timestamp_auto timestamp without time zone DEFAULT now(),
+    field_date_expr_now date,
+    field_time_expr_now time without time zone,
+    field_timestamp_expr_now timestamp without time zone,
+    field_date_expr_now_auto date DEFAULT now(),
+    field_time_expr_now_auto time without time zone DEFAULT now(),
+    field_timestamp_expr_now_auto timestamp without time zone DEFAULT now(),
+    field_timestamp_date_only timestamp without time zone,
+    field_timestamp_date_only_auto timestamp without time zone DEFAULT now(),
+    field_timestamp_date_only_expr_now timestamp without time zone,
+    field_timestamp_date_only_expr_now_auto timestamp without time zone DEFAULT now()
+);
+
+
+--
+-- Name: many_date_formats_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.many_date_formats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: many_date_formats_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.many_date_formats_id_seq OWNED BY tests_projects.many_date_formats.id;
+
+
+--
 -- Name: parent_layer; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -1833,6 +1924,20 @@ ALTER TABLE ONLY tests_projects.layer_with_no_filter ALTER COLUMN gid SET DEFAUL
 
 
 --
+-- Name: many_bool_formats id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.many_bool_formats ALTER COLUMN id SET DEFAULT nextval('tests_projects.many_bool_formats_id_seq'::regclass);
+
+
+--
+-- Name: many_date_formats id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.many_date_formats ALTER COLUMN id SET DEFAULT nextval('tests_projects.many_date_formats_id_seq'::regclass);
+
+
+--
 -- Name: parent_layer id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -2216,6 +2321,23 @@ COPY tests_projects.layer_legend_single_symbol (id, geom) FROM stdin;
 
 COPY tests_projects.layer_with_no_filter (gid, geom) FROM stdin;
 1	01010000206A08000040787D23418CE540D5BEAF2CA4D43041
+\.
+
+
+--
+-- Data for Name: many_bool_formats; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.many_bool_formats (id, bool_simple_null_cb, bool_not_nullable_cb, bool_simple_null_vm, bool_not_nullable_vm, geom) FROM stdin;
+1	t	t	f	f	0101000020E6100000AD1BE53121E42140A1F508C59F304540
+\.
+
+
+--
+-- Data for Name: many_date_formats; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.many_date_formats (id, field_date, field_time, field_timestamp, field_date_auto_cast, field_time_auto_cast, field_timestamp_auto_cast, field_date_auto, field_time_auto, field_timestamp_auto, field_date_expr_now, field_time_expr_now, field_timestamp_expr_now, field_date_expr_now_auto, field_time_expr_now_auto, field_timestamp_expr_now_auto, field_timestamp_date_only, field_timestamp_date_only_auto, field_timestamp_date_only_expr_now, field_timestamp_date_only_expr_now_auto) FROM stdin;
 \.
 
 
@@ -2661,6 +2783,20 @@ SELECT pg_catalog.setval('tests_projects.layer_with_no_filter_gid_seq', 1, true)
 
 
 --
+-- Name: many_bool_formats_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.many_bool_formats_id_seq', 1, true);
+
+
+--
+-- Name: many_date_formats_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.many_date_formats_id_seq', 1, false);
+
+
+--
 -- Name: parent_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -3029,6 +3165,22 @@ ALTER TABLE ONLY tests_projects.layer_legend_single_symbol
 
 ALTER TABLE ONLY tests_projects.layer_with_no_filter
     ADD CONSTRAINT layer_with_no_filter_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: many_bool_formats many_bool_formats_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.many_bool_formats
+    ADD CONSTRAINT many_bool_formats_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: many_date_formats many_date_formats_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.many_date_formats
+    ADD CONSTRAINT many_date_formats_pkey PRIMARY KEY (id);
 
 
 --
