@@ -467,12 +467,12 @@ var lizAttributeTable = function() {
                 // Unselect button
                 html+= '    <button class="btn-unselect-attributeTable btn btn-mini' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
 
-                // Move selected to Top button
+                // 'Move selected to top' button
                 html+= '    <button class="btn-moveselectedtotop-attributeTable btn btn-mini' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.moveselectedtotop.title']+'"><i class="icon-arrow-up"></i></button>';
 
                 // Filter button : only if no filter applied at startup
                 if( !startupFilter
-                    && ( !lizMap.lizmapLayerFilterActive || lizMap.lizmapLayerFilterActive == cleanName )
+                    && ( !lizMap.lizmapLayerFilterActive || lizMap.lizmapLayerFilterActive == lname )
                 ){
                     html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
                 }
@@ -2207,6 +2207,7 @@ var lizAttributeTable = function() {
                 var layerConfig = config.layers[typeName];
                 layerConfig['features'] = {};
                 var foundFeatures = {};
+                const wmsName = layerConfig?.shortname || layerConfig.name;
 
                 // **1** Get children info
                 var cFeatures = aNameFeatures;
@@ -2293,7 +2294,6 @@ var lizAttributeTable = function() {
                 // **3** Apply filter to the typeName and redraw if necessary
                 layerConfig['features'] = foundFeatures;
                 layerConfig['alias'] = aNameAliases;
-                var layerN = attributeLayersDic[lizMap.cleanName(typeName)];
 
                 var lFilter = null;
 
@@ -2304,7 +2304,7 @@ var lizAttributeTable = function() {
                 if( aFilter ){
                     // The values must be separated by comma AND spaces
                     // since QGIS controls the syntax for the FILTER parameter
-                    lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
+                    lFilter = wmsName + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
 
                     // Try to use the simple filter ( for example myforeignkey = 4 )
                     // instead of the full list of pkeys we got from wfs
@@ -2312,8 +2312,8 @@ var lizAttributeTable = function() {
                     // NB : we should improve this by using server side filters
                     if( !aFilter.startsWith('$id') ){
                         var simpleFilter = aFilter;
-                        if( !aFilter.startsWith(layerN) ){
-                            simpleFilter = layerN + ':' + aFilter ;
+                        if( !aFilter.startsWith(wmsName) ){
+                            simpleFilter = wmsName + ':' + aFilter ;
                         }
                         lFilter = simpleFilter;
                     }
@@ -2330,7 +2330,7 @@ var lizAttributeTable = function() {
                         body: new URLSearchParams({
                             service: 'WMS',
                             request: 'GETFILTERTOKEN',
-                            typename: typeName,
+                            typename: wmsName,
                             filter: lFilter
                         })
                     }).then(response => {
@@ -2373,9 +2373,6 @@ var lizAttributeTable = function() {
                         var cData = typeNameChildren[x];
                         var cFilter = null;
                         var cExpFilter = null;
-                        // Get WMS layer name (can be different depending on QGIS Server version)
-                        let layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(lizMap.cleanName(cName));
-                        var wmsCname = layer?.getSource?.().getParams?.()?.['LAYERS'] || cName;
 
                         // Build filter for children
                         // and add child to the typeNameFilter and typeNamePile objects
@@ -2388,7 +2385,7 @@ var lizAttributeTable = function() {
                         else if( aFilter && cascade != 'removeChildrenFilter' ) {
                             cExpFilter = '"' + cData['fieldToFilter'] + '" IN ( -99999 )';
                         }
-                        cFilter = wmsCname + ':' + cExpFilter;
+                        cFilter = wmsName + ':' + cExpFilter;
 
                         config.layers[cName]['request_params']['filter'] = cFilter;
                         config.layers[cName]['request_params']['exp_filter'] = cExpFilter;
@@ -2411,9 +2408,6 @@ var lizAttributeTable = function() {
                     // the cFilter will be based on this value but with the layer name as prefix
                     var cExpFilter = null;
                     var orObj = null;
-                    // Get WMS layer name
-                    let pwlayer = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name);
-                    let pwmsName = pwlayer.wmsName;
 
                     if( aFilter  ){
                         if( pivotParam['otherParentValues'].length > 0 ){
@@ -2421,7 +2415,7 @@ var lizAttributeTable = function() {
                             // The values must be separated by comma AND spaces
                             // since QGIS controls the syntax for the FILTER parameter
                             cExpFilter+= ' IN ( ' + pivotParam['otherParentValues'].join( ' , ' ) + ' )';
-                            cFilter = pwmsName + ':' + cExpFilter;
+                            cFilter = wmsName + ':' + cExpFilter;
                             orObj = {
                                 field: pivotParam['otherParentRelation'].referencedField,
                                 values: pivotParam['otherParentValues']
@@ -2429,7 +2423,7 @@ var lizAttributeTable = function() {
                         }
                         else {
                             cExpFilter = '"' + pivotParam['otherParentRelation'].referencedField + '" IN ( ' + "'-999999'" + ' )';
-                            cFilter = pwmsName + ':' + cExpFilter;
+                            cFilter = wmsName + ':' + cExpFilter;
                             orObj = {
                                 field: pivotParam['otherParentRelation'].referencedField,
                                 values: ['-999999']
