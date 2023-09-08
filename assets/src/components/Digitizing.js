@@ -163,6 +163,9 @@ export default class Digitizing extends HTMLElement {
                     <span class="add-on">°</span>
                 </div>
             </div>
+            <div class="digitizing-text-tools ${mainLizmap.digitizing.isEdited ? '' : 'hide'}">
+                <textarea placeholder="${lizDict['digitizing.toolbar.newText']}" .value=${mainLizmap.digitizing.editedFeatureText} @input=${ event=> mainLizmap.digitizing.editedFeatureText = event.target.value}></textarea>
+            </div>
         </div>`;
 
         render(mainTemplate(), this);
@@ -176,7 +179,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure']
+            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.featureText']
         );
     }
 

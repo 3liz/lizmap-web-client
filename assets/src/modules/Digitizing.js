@@ -8,7 +8,7 @@ import KML from 'ol/format/KML.js';
 import { Draw, Modify, Select } from 'ol/interaction.js';
 import { createBox } from 'ol/interaction/Draw.js';
 
-import { Circle, Fill, Stroke, RegularShape, Style } from 'ol/style.js';
+import { Circle, Fill, Stroke, RegularShape, Style, Text } from 'ol/style.js';
 
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
@@ -62,6 +62,7 @@ export default class Digitizing {
             wrapX: false,
             style: (feature) => {
                 const color = feature.get('color') || this._drawColor;
+                const featureText = feature.get('text') || '';
                 return [
                     new Style({
                         image: new Circle({
@@ -81,6 +82,17 @@ export default class Digitizing {
                             color: 'rgba(255, 255, 255, 0.5)',
                             width: this._strokeWidth + 8
                         }),
+                        text: new Text({
+                            text: featureText,
+                            font: '13px Calibri,sans-serif',
+                            fill: new Fill({
+                                color: '#000',
+                            }),
+                            stroke: new Stroke({
+                                color: '#fff',
+                                width: 4,
+                            }),
+                        })
                     }),
                     new Style({
                         stroke: new Stroke({
@@ -95,6 +107,13 @@ export default class Digitizing {
         // Set draw color from selected feature color
         this._selectInteraction.on('select', (event) => {
             if (event.selected.length) {
+                // Refresh textarea value when a feature is selected
+                // Note: it should have been done w/ lit-html but it was buggy
+                const textarea = document.querySelector('#draw.active .digitizing-text-tools textarea');
+                if (textarea) {
+                    const selectedFeatureText = event.selected[0].get('text') || '';
+                    textarea.value = selectedFeatureText;
+                }
                 this.drawColor = event.selected[0].get('color');
             } else {
                 // When a feature is deselected, set the color from the first selected feature if any
@@ -111,7 +130,10 @@ export default class Digitizing {
 
         this._drawStyleFunction = (feature) => {
             const color = feature.get('color') || this._drawColor;
-            return new Style({
+
+            const featureText = feature.get('text') || '';
+
+            const style = new Style({
                 image: new Circle({
                     fill: new Fill({
                         color: color,
@@ -125,7 +147,20 @@ export default class Digitizing {
                     color: color,
                     width: this._strokeWidth
                 }),
+                text: new Text({
+                    text: featureText,
+                    font: '13px Calibri,sans-serif',
+                    fill: new Fill({
+                        color: '#000',
+                    }),
+                    stroke: new Stroke({
+                        color: '#fff',
+                        width: 4,
+                    }),
+                })
             });
+
+            return style;
         };
 
         this._drawSource = new VectorSource({ wrapX: false });
@@ -206,6 +241,22 @@ export default class Digitizing {
 
     get context() {
         return this._context;
+    }
+
+    get editedFeatureText() {
+        const editedFeatureArray = this._selectInteraction.getFeatures().getArray();
+        if (this._isEdited && editedFeatureArray.length !== 0) {
+            return editedFeatureArray[0].get('text') || '';
+        }
+        return '';
+    }
+
+    set editedFeatureText(text) {
+        const editedFeatureArray = this._selectInteraction.getFeatures().getArray();
+        if (this._isEdited && editedFeatureArray.length !== 0) {
+            editedFeatureArray[0].set('text', text);
+        }
+        mainEventDispatcher.dispatch('digitizing.featureText');
     }
 
     set context(aContext) {
