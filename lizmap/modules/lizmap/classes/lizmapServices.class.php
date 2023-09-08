@@ -125,6 +125,8 @@ class lizmapServices
 
     // Wms map server
     public $appName = 'Lizmap';
+    // QGIS Server version
+    public $qgisServerVersion = '3.0';
     // Wms map server
     public $wmsServerURL = '';
     // headers to send to Wms map server
