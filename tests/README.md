@@ -21,7 +21,9 @@ mkdir GIT
 cd GIT && git clone https://github.com/3liz/lizmap-web-client.git --config core.autocrlf=input
 # Go to tests repository
 cd lizmap-web-client/tests/
-# Download Lizmap plugin for QGIS Server (https://packages.3liz.org/pub/lizmap-qgis-plugin/master/lizmap-qgis-plugin.master.zip) and unzip the content in `qgis-server-plugins/` directory
+# Download Lizmap plugin for QGIS Server
+# https://packages.3liz.org/pub/lizmap-qgis-plugin/master/lizmap-qgis-plugin.master.zip
+# and unzip the content in `qgis-server-plugins/` directory
 # Launch Lizmap Web Client with docker compose
 docker compose --env-file .env.windows up
 # You can now go to http://localhost:8130 and test!
@@ -47,7 +49,7 @@ Then:
 ```bash
 ./run-docker
 ./lizmap-ctl install
-./qgis-projects/tests/load_sql.sh # to populate postgreSQL database with testing data
+./qgis-projects/tests/load_sql.sh # to populate PostgreSQL database with testing data
 ```
 
 Then, in your browser, go to `http://localhost:8130/`. (see below to change the port)
@@ -87,7 +89,7 @@ Available commands :
 * `composer-update` and `composer-install`: to update PHP packages
 * `clean-tmp`: to delete temp files
 * `install`: to launch the Jelix installer
-* `script`: to launch lizmap command line like wmts
+* `script`: to launch lizmap command line like `wmts`
 * `docker-exec` : exec command into the php container
 * `shell` and `shell-root` : to enter into the php container
 * `ldap-reset` to reset the ldap content, and `ldap-users` to store some users for tests
@@ -126,11 +128,13 @@ password=lizmap1234!
 
 ## Admin User Account Setup
 
-Default admin credentials are `admin`/`admin`, to modify it, set these variables in your environment, default values are provided in `run-docker` :
+Default admin credentials are `admin`/`admin`, to modify it, set these variables in your environment,
+default values are provided in `run-docker` :
 - `LIZMAP_ADMIN_LOGIN`: Login of the admin user
 - `LIZMAP_ADMIN_EMAIL`: Email address of the admin user, it will be used by the password reset process.
 - `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password source to user for the admin user, it can either be:
-    - `__reset`: It will initiate a password reset process, an email will be sent to `LIZMAP_ADMIN_EMAIL` with a link to choose a new password.
+    - `__reset`: It will initiate a password reset process.
+      An email will be sent to `LIZMAP_ADMIN_EMAIL` with a link to choose a new password.
     - `__random`: Will set a random password that will be report into the command line (see `docker logs` to access it).
     - `/path/to/pass/file`: The path to a file containing your password. The file must be used as a volume for docker to access it.
 
@@ -160,7 +164,8 @@ some environment variables:
 
 - `PHP_VERSION` to set the PHP version
 - `LZMQGSRVVERSION` to set the QGIS version
-- `LZMPOSTGISVERSION` to set the Postgresql/Postgis version (the format is `X-Y` where `X` is the major version of postgresql, and `Y` the major version of Postgis)
+- `LZMPOSTGISVERSION` to set the PostgreSQL/PostGIS version
+  (the format is `X-Y` where `X` is the major version of postgresql, and `Y` the major version of PostGIS)
 
 You must set these (optional) environment variables, **before** building the stack.
 
@@ -170,7 +175,6 @@ export LZMQGSRVVERSION=3.24
 export LZMPOSTGISVERSION=14-3
 ./run-docker build
 ```
-
 
 ## Running different docker stack for each branch
 
@@ -207,7 +211,7 @@ To launch PHP tests:
 
 ## Testing data
 
-You must execute `tests/qgis-projects/tests/load_sql.sh` to populate postgreSQL database with testing data.
+You must execute `tests/qgis-projects/tests/load_sql.sh` to populate PostgreSQL database with testing data.
 
 ## Automatic End-to-End tests
 
@@ -217,6 +221,7 @@ The `end2end` directory contains some end-to-end tests made for Cypress and Play
 Go in `end2end` directory and execute `npm install` to install Cypress and Playwright (only the first time).
 
 ### Cypress
+
 You can then :
 - execute `npm run cy:open` to open Cypress window.
 - select the target browser then click one of the integration tests or 'Run n integration specs' to run all.
@@ -229,14 +234,17 @@ You can also use GNU Parallel to parallelize Cypress tests execution on 8 cores 
 
 `find cypress/integration/ -name '*.js' | parallel -j8 --group  npx cypress run --spec {}`
 
-Output colors can be kept with `--tty` parameter but it won't work with `--group` which is useful to not mix outputs from different tests.
+Output colors can be kept with `--tty` parameter, but it won't work with `--group` which is useful to not mix outputs from different tests.
 
 ### Playwright
+
+You have to install the browsers with `npx playwright install` (only the first time or after an update)
 You can then :
-- execute `npx playwright test --ui` to open a UI as in Cypress which ease testing
+- execute `npx playwright test --ui --project=chromium` to open a UI as in Cypress which ease testing
 - execute `npx playwright test` to execute all tests with all browsers
-- execute `npx playwright test --project=chromium` to execute all tests with the chromium browser
-- execute `npx playwright test mytest.spec.js --project=chromium` to execute one test with the chromium browser
+- execute `npx playwright test --project=chromium` to execute all tests with the Chromium browser
+- execute `npx playwright test mytest.spec.js --project=chromium` to execute one test with the Chromium browser
+- execute `npx playwright test mytest.spec.js --project=chromium --debug` to execute one test with the Chromium browser in debug mode
 - other command line : https://playwright.dev/docs/intro#command-line
 
 You can also install the handy Visual Studio Code extension : https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
@@ -250,7 +258,8 @@ It's available in the CI **Summary page** of the CI job, with a zip called `cypr
 
 It's possible to use the [Coords](https://addons.mozilla.org/fr/firefox/addon/coords/) Firefox plugin to get mouse coordinates.
 
-You need to be sure to use the same viewport size as Cypress : `1280 * 800 DPR 1`. We suggest you to save this configuration as `Cypress`.
+You need to be sure to use the same viewport size as Cypress : `1280 * 800 DPR 1` or Playwright : `900 * 650 DPR 1`.
+We suggest you to save those configurations in `Settings` => `Emulated Devices` as `Cypress` or `Playwright`.
 
 In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` function using coordinates
 
@@ -284,8 +293,8 @@ php lizmap/install/configurator.php ldapdao
 php lizmap/install/installer.php
 ```
 
-You should then be able to connect yourself into lizmap with login jane (password: passjane) or
-login john (password: passjohn).
+You should then be able to connect yourself into lizmap with login `jane` (password: `passjane`) or
+login `john` (password: `passjohn`).
 
 ## Using Redis for cache
 
