@@ -63,6 +63,7 @@ export default class Digitizing {
             style: (feature) => {
                 const color = feature.get('color') || this._drawColor;
                 const featureText = feature.get('text') || '';
+                const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
                 return [
                     new Style({
                         image: new Circle({
@@ -84,6 +85,7 @@ export default class Digitizing {
                         }),
                         text: new Text({
                             text: featureText,
+                            rotation: featureTextRotation,
                             font: '13px Calibri,sans-serif',
                             fill: new Fill({
                                 color: '#000',
@@ -107,13 +109,6 @@ export default class Digitizing {
         // Set draw color from selected feature color
         this._selectInteraction.on('select', (event) => {
             if (event.selected.length) {
-                // Refresh textarea value when a feature is selected
-                // Note: it should have been done w/ lit-html but it was buggy
-                const textarea = document.querySelector('#draw.active .digitizing-text-tools textarea');
-                if (textarea) {
-                    const selectedFeatureText = event.selected[0].get('text') || '';
-                    textarea.value = selectedFeatureText;
-                }
                 this.drawColor = event.selected[0].get('color');
             } else {
                 // When a feature is deselected, set the color from the first selected feature if any
@@ -132,6 +127,7 @@ export default class Digitizing {
             const color = feature.get('color') || this._drawColor;
 
             const featureText = feature.get('text') || '';
+            const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
 
             const style = new Style({
                 image: new Circle({
@@ -149,6 +145,7 @@ export default class Digitizing {
                 }),
                 text: new Text({
                     text: featureText,
+                    rotation: featureTextRotation,
                     font: '13px Calibri,sans-serif',
                     fill: new Fill({
                         color: '#000',
@@ -243,20 +240,36 @@ export default class Digitizing {
         return this._context;
     }
 
+    get editedFeatures() {
+        return this._selectInteraction.getFeatures().getArray();
+    }
+
     get editedFeatureText() {
-        const editedFeatureArray = this._selectInteraction.getFeatures().getArray();
-        if (this._isEdited && editedFeatureArray.length !== 0) {
-            return editedFeatureArray[0].get('text') || '';
+        if (this.editedFeatures.length === 1) {
+            return this.editedFeatures[0].get('text') || '';
         }
         return '';
     }
 
     set editedFeatureText(text) {
-        const editedFeatureArray = this._selectInteraction.getFeatures().getArray();
-        if (this._isEdited && editedFeatureArray.length !== 0) {
-            editedFeatureArray[0].set('text', text);
+        if (this.editedFeatures.length !== 0) {
+            this.editedFeatures.forEach(feature => feature.set('text', text));
+            mainEventDispatcher.dispatch('digitizing.editedFeatureText');
         }
-        mainEventDispatcher.dispatch('digitizing.featureText');
+    }
+
+    get editedFeatureTextRotation() {
+        if (this.editedFeatures.length === 1) {
+            return this.editedFeatures[0].get('rotation') || '';
+        }
+        return '';
+    }
+
+    set editedFeatureTextRotation(rotation) {
+        if (this.editedFeatures.length !== 0) {
+            this.editedFeatures.forEach(feature => feature.set('rotation', rotation));
+            mainEventDispatcher.dispatch('digitizing.editedFeatureRotation');
+        }
     }
 
     set context(aContext) {
