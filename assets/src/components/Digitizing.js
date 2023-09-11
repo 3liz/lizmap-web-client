@@ -163,8 +163,14 @@ export default class Digitizing extends HTMLElement {
                     <span class="add-on">°</span>
                 </div>
             </div>
-            <div class="digitizing-text-tools ${mainLizmap.digitizing.isEdited ? '' : 'hide'}">
+            <div class="digitizing-text-tools ${mainLizmap.digitizing.editedFeatures.length ? '' : 'hide'}">
                 <textarea placeholder="${lizDict['digitizing.toolbar.newText']}" .value=${mainLizmap.digitizing.editedFeatureText} @input=${ event=> mainLizmap.digitizing.editedFeatureText = event.target.value}></textarea>
+                <div class='digitizing-text-rotation'>
+                    <div class="input-append">
+                        <input type="number" class="input-small" placeholder="${lizDict['print.rotation']}" .value=${mainLizmap.digitizing.editedFeatureTextRotation} @input=${ event => { mainLizmap.digitizing.editedFeatureTextRotation = parseInt(event.target.value) }}>
+                        <span class="add-on">°</span>
+                    </div>
+                </div>
             </div>
         </div>`;
 
@@ -179,7 +185,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.featureText']
+            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.editedFeatureText', 'digitizing.editedFeatureRotation']
         );
     }
 
