@@ -1060,7 +1060,14 @@ class WMSRequest extends OGCRequest
                 \jMessage::add('The SRS parameter is missing.', 'MissingParameterValue');
             }
 
-            return $this->serviceException();
+            $except = $this->serviceException();
+
+            return array(
+                $except->data,
+                $except->mime,
+                $except->code,
+                $except->cached,
+            );
         }
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $crs);
 
