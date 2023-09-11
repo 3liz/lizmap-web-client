@@ -62,8 +62,9 @@ export default class Digitizing {
             wrapX: false,
             style: (feature) => {
                 const color = feature.get('color') || this._drawColor;
-                const featureText = feature.get('text') || '';
+                const featureText = feature.get('text');
                 const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
+                const featureTextScale = feature.get('scale');
                 return [
                     new Style({
                         image: new Circle({
@@ -86,7 +87,8 @@ export default class Digitizing {
                         text: new Text({
                             text: featureText,
                             rotation: featureTextRotation,
-                            font: '13px Calibri,sans-serif',
+                            scale: featureTextScale,
+                            overflow: true,
                             fill: new Fill({
                                 color: '#000',
                             }),
@@ -126,8 +128,9 @@ export default class Digitizing {
         this._drawStyleFunction = (feature) => {
             const color = feature.get('color') || this._drawColor;
 
-            const featureText = feature.get('text') || '';
+            const featureText = feature.get('text');
             const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
+            const featureTextScale = feature.get('scale');
 
             const style = new Style({
                 image: new Circle({
@@ -146,7 +149,8 @@ export default class Digitizing {
                 text: new Text({
                     text: featureText,
                     rotation: featureTextRotation,
-                    font: '13px Calibri,sans-serif',
+                    scale: featureTextScale,
+                    overflow: true,
                     fill: new Fill({
                         color: '#000',
                     }),
@@ -269,6 +273,20 @@ export default class Digitizing {
         if (this.editedFeatures.length !== 0) {
             this.editedFeatures.forEach(feature => feature.set('rotation', rotation));
             mainEventDispatcher.dispatch('digitizing.editedFeatureRotation');
+        }
+    }
+
+    get editedFeatureTextScale() {
+        if (this.editedFeatures.length !== 0) {
+            return this.editedFeatures[0].get('scale') || 1;
+        }
+        return 1;
+    }
+
+    set editedFeatureTextScale(scale) {
+        if (this.editedFeatures.length !== 0) {
+            this.editedFeatures.forEach(feature => feature.set('scale', scale));
+            mainEventDispatcher.dispatch('digitizing.editedFeatureScale');
         }
     }
 
