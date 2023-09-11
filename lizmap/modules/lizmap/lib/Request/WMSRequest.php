@@ -1131,7 +1131,24 @@ class WMSRequest extends OGCRequest
     protected function getMapData($project, $params, $forced = false)
     {
         $layers = str_replace(',', '_', $params['layers']);
-        $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
+        // The CRS value is provided by the SRS parameter or the CRS parameter for VERSION 1.3.0
+        $crs = null;
+        if (version_compare($params['version'], '1.3.0') >= 0 && array_key_exists('crs', $params)) {
+            $crs = $params['crs'];
+        } elseif (array_key_exists('srs', $params)) {
+            $crs = $params['srs'];
+        }
+        if (!$crs) {
+            // SRS or CRS is mandatory
+            if (version_compare($params['version'], '1.3.0') >= 0) {
+                \jMessage::add('The CRS parameter is missing.', 'MissingParameterValue');
+            } else {
+                \jMessage::add('The SRS parameter is missing.', 'MissingParameterValue');
+            }
+
+            return $this->serviceException();
+        }
+        $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $crs);
 
         // Get repository data
         $lrep = $project->getRepository();
