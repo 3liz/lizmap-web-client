@@ -149,7 +149,7 @@ export default class Lizmap {
                 this.map = new map('newOlMap', this.initialConfig, this.serviceURL, this.state.map, this.state.baseLayers, this.state.rootMapGroup, this.lizmap3);
                 this.edition = new Edition(this.lizmap3);
                 this.featuresTable = new FeaturesTable();
-                this.geolocation = new Geolocation();
+                this.geolocation = new Geolocation(this.map, this.lizmap3);
                 this.geolocationSurvey = new GeolocationSurvey();
                 this.selectionTool = new SelectionTool();
                 this.digitizing = new Digitizing();
