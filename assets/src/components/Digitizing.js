@@ -84,6 +84,7 @@ export default class Digitizing extends HTMLElement {
                             <use xlink:href="#freehand"></use>
                         </svg>
                     </li>
+                    <li class="digitizing-text btn ${mainLizmap.digitizing.toolSelected === 'text' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'text'} data-original-title="${lizDict['digitizing.toolbar.text']}">Abc</li>
                 </ul>
             </div>
             <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing._userChangedColor(event.target.value)} data-original-title="${lizDict['digitizing.toolbar.color']}">

@@ -31,7 +31,7 @@ export default class Digitizing {
         this._context = 'draw';
         this._contextFeatures = {};
 
-        this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
+        this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand', 'text'];
         this._toolSelected = this._tools[0];
 
         this._repoAndProjectString = lizUrls.params.repository + '_' + lizUrls.params.project;
@@ -61,7 +61,11 @@ export default class Digitizing {
         this._selectInteraction = new Select({
             wrapX: false,
             style: (feature) => {
-                const color = feature.get('color') || this._drawColor;
+                let color = feature.get('color') || this._drawColor;
+
+                if (feature.get('mode') === 'textonly') {
+                    color = '#FFF0';
+                }
                 const featureText = feature.get('text');
                 const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
                 const featureTextScale = feature.get('scale');
@@ -126,7 +130,11 @@ export default class Digitizing {
         });
 
         this._drawStyleFunction = (feature) => {
-            const color = feature.get('color') || this._drawColor;
+            let color = feature.get('color') || this._drawColor;
+
+            if (feature.get('mode') === 'textonly') {
+                color = '#FFF0';
+            }
 
             const featureText = feature.get('text');
             const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
@@ -171,6 +179,15 @@ export default class Digitizing {
             if(!event.feature.get('color')){
                 event.feature.set('color', this._drawColor);
             }
+
+            // Launch edition mode when text tool is selected
+            if (this._toolSelected === 'text') {
+                event.feature.set('text', lizDict['digitizing.toolbar.newText']);
+                // Set mode 'textonly' to not display point geometry
+                event.feature.set('mode', 'textonly');
+                this.isEdited = true;
+            }
+
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
@@ -350,6 +367,21 @@ export default class Digitizing {
                     case this._tools[6]:
                         drawOptions.type = 'Polygon';
                         drawOptions.freehand = true;
+                        break;
+                    case this._tools[7]:
+                        drawOptions.type = 'Point';
+                        drawOptions.style = new Style({
+                            text: new Text({
+                                text: lizDict['digitizing.toolbar.newText'],
+                                fill: new Fill({
+                                    color: '#000',
+                                }),
+                                stroke: new Stroke({
+                                    color: '#fff',
+                                    width: 4,
+                                }),
+                            })
+                        });
                         break;
                 }
 
