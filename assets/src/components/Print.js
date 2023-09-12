@@ -283,8 +283,13 @@ export default class Print extends HTMLElement {
         const formatWKT = new WKT();
         const highlightGeom = [];
         const highlightSymbol = [];
+        const highlightLabelString = [];
+        const highlightLabelSize = [];
+        const highlightLabelBufferColor = [];
+        const highlightLabelBufferSize = [];
+        const highlightLabelRotation = [];
 
-        mainLizmap.digitizing.featureDrawn?.map((featureDrawn, index) => {
+        mainLizmap.digitizing.featureDrawn?.forEach((featureDrawn, index) => {
 
             // Translate circle coords to WKT
             if (featureDrawn.getGeometry().getType() === 'Circle') {
@@ -303,11 +308,34 @@ export default class Print extends HTMLElement {
             }
 
             highlightSymbol.push(mainLizmap.digitizing.getFeatureDrawnSLD(index));
+
+            // Labels
+            const label = featureDrawn.get('text') ? featureDrawn.get('text') : ' ';
+            highlightLabelString.push(label);
+            // Font size is 10px by default (https://github.com/openlayers/openlayers/blob/v8.1.0/src/ol/style/Text.js#L30)
+            let scale = featureDrawn.get('scale');
+            if (scale) {
+                scale = scale * 10;
+            }
+            highlightLabelSize.push(scale);
+
+            highlightLabelBufferColor.push('#FFFFFF');
+            highlightLabelBufferSize.push(1.5);
+
+            highlightLabelRotation.push(featureDrawn.get('rotation'));
         });
 
         if (highlightGeom.length && highlightSymbol.length) {
             wmsParams[this._mainMapID + ':HIGHLIGHT_GEOM'] = highlightGeom.join(';');
             wmsParams[this._mainMapID + ':HIGHLIGHT_SYMBOL'] = highlightSymbol.join(';');
+        }
+
+        if (!highlightLabelString.every(label => label === ' ')){
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABELSTRING'] = highlightLabelString.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABELSIZE'] = highlightLabelSize.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABELBUFFERCOLOR'] = highlightLabelBufferColor.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABELBUFFERSIZE'] = highlightLabelBufferSize.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABEL_ROTATION'] = highlightLabelRotation.join(';');
         }
 
         // Grid
