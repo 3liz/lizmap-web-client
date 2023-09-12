@@ -295,12 +295,15 @@ export default class Digitizing {
 
     get editedFeatureTextScale() {
         if (this.editedFeatures.length !== 0) {
-            return this.editedFeatures[0].get('scale') || 1;
+            return this.editedFeatures[0].get('scale') || '';
         }
-        return 1;
+        return '';
     }
 
     set editedFeatureTextScale(scale) {
+        if(isNaN(scale)){
+            scale = 1;
+        }
         if (this.editedFeatures.length !== 0) {
             this.editedFeatures.forEach(feature => feature.set('scale', scale));
             mainEventDispatcher.dispatch('digitizing.editedFeatureScale');
