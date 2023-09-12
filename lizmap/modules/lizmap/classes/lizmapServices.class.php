@@ -126,6 +126,8 @@ class lizmapServices
     // Wms map server
     public $appName = 'Lizmap';
     // QGIS Server version
+    // For external modules only, which are still using the variable
+    // See https://github.com/3liz/lizmap-cadastre-module/issues/94
     public $qgisServerVersion = '3.0';
     // Wms map server
     public $wmsServerURL = '';
