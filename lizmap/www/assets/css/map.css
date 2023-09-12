@@ -2672,6 +2672,10 @@ input[type="color"].digitizing-color{
   font-size: x-large;
 }
 
+.digitizing-text{
+  font-weight: bold;
+}
+
 .ol-tooltip {
   position: relative;
   background: rgba(0, 0, 0, 0.5);
