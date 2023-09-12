@@ -2672,6 +2672,14 @@ input[type="color"].digitizing-color{
   font-size: x-large;
 }
 
+.digitizing-text{
+  font-weight: bold;
+}
+
+.digitizing-text-tools{
+  margin-top: 5px;
+}
+
 .ol-tooltip {
   position: relative;
   background: rgba(0, 0, 0, 0.5);

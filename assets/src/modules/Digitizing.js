@@ -8,7 +8,7 @@ import KML from 'ol/format/KML.js';
 import { Draw, Modify, Select } from 'ol/interaction.js';
 import { createBox } from 'ol/interaction/Draw.js';
 
-import { Circle, Fill, Stroke, RegularShape, Style } from 'ol/style.js';
+import { Circle, Fill, Stroke, RegularShape, Style, Text } from 'ol/style.js';
 
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
@@ -31,7 +31,7 @@ export default class Digitizing {
         this._context = 'draw';
         this._contextFeatures = {};
 
-        this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
+        this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand', 'text'];
         this._toolSelected = this._tools[0];
 
         this._repoAndProjectString = lizUrls.params.repository + '_' + lizUrls.params.project;
@@ -61,7 +61,14 @@ export default class Digitizing {
         this._selectInteraction = new Select({
             wrapX: false,
             style: (feature) => {
-                const color = feature.get('color') || this._drawColor;
+                let color = feature.get('color') || this._drawColor;
+
+                if (feature.get('mode') === 'textonly') {
+                    color = '#FFF0';
+                }
+                const featureText = feature.get('text');
+                const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
+                const featureTextScale = feature.get('scale');
                 return [
                     new Style({
                         image: new Circle({
@@ -81,6 +88,19 @@ export default class Digitizing {
                             color: 'rgba(255, 255, 255, 0.5)',
                             width: this._strokeWidth + 8
                         }),
+                        text: new Text({
+                            text: featureText,
+                            rotation: featureTextRotation,
+                            scale: featureTextScale,
+                            overflow: true,
+                            fill: new Fill({
+                                color: '#000',
+                            }),
+                            stroke: new Stroke({
+                                color: '#fff',
+                                width: 4,
+                            }),
+                        })
                     }),
                     new Style({
                         stroke: new Stroke({
@@ -110,8 +130,17 @@ export default class Digitizing {
         });
 
         this._drawStyleFunction = (feature) => {
-            const color = feature.get('color') || this._drawColor;
-            return new Style({
+            let color = feature.get('color') || this._drawColor;
+
+            if (feature.get('mode') === 'textonly') {
+                color = '#FFF0';
+            }
+
+            const featureText = feature.get('text');
+            const featureTextRotation = feature.get('rotation') * (Math.PI / 180.0) || null;
+            const featureTextScale = feature.get('scale');
+
+            const style = new Style({
                 image: new Circle({
                     fill: new Fill({
                         color: color,
@@ -125,7 +154,22 @@ export default class Digitizing {
                     color: color,
                     width: this._strokeWidth
                 }),
+                text: new Text({
+                    text: featureText,
+                    rotation: featureTextRotation,
+                    scale: featureTextScale,
+                    overflow: true,
+                    fill: new Fill({
+                        color: '#000',
+                    }),
+                    stroke: new Stroke({
+                        color: '#fff',
+                        width: 4,
+                    }),
+                })
             });
+
+            return style;
         };
 
         this._drawSource = new VectorSource({ wrapX: false });
@@ -135,6 +179,15 @@ export default class Digitizing {
             if(!event.feature.get('color')){
                 event.feature.set('color', this._drawColor);
             }
+
+            // Launch edition mode when text tool is selected
+            if (this._toolSelected === 'text') {
+                event.feature.set('text', lizDict['digitizing.toolbar.newText']);
+                // Set mode 'textonly' to not display point geometry
+                event.feature.set('mode', 'textonly');
+                this.isEdited = true;
+            }
+
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
@@ -208,6 +261,55 @@ export default class Digitizing {
         return this._context;
     }
 
+    get editedFeatures() {
+        return this._selectInteraction.getFeatures().getArray();
+    }
+
+    get editedFeatureText() {
+        if (this.editedFeatures.length === 1) {
+            return this.editedFeatures[0].get('text') || '';
+        }
+        return '';
+    }
+
+    set editedFeatureText(text) {
+        if (this.editedFeatures.length !== 0) {
+            this.editedFeatures.forEach(feature => feature.set('text', text));
+            mainEventDispatcher.dispatch('digitizing.editedFeatureText');
+        }
+    }
+
+    get editedFeatureTextRotation() {
+        if (this.editedFeatures.length === 1) {
+            return this.editedFeatures[0].get('rotation') || '';
+        }
+        return '';
+    }
+
+    set editedFeatureTextRotation(rotation) {
+        if (this.editedFeatures.length !== 0) {
+            this.editedFeatures.forEach(feature => feature.set('rotation', rotation));
+            mainEventDispatcher.dispatch('digitizing.editedFeatureRotation');
+        }
+    }
+
+    get editedFeatureTextScale() {
+        if (this.editedFeatures.length !== 0) {
+            return this.editedFeatures[0].get('scale') || '';
+        }
+        return '';
+    }
+
+    set editedFeatureTextScale(scale) {
+        if(isNaN(scale)){
+            scale = 1;
+        }
+        if (this.editedFeatures.length !== 0) {
+            this.editedFeatures.forEach(feature => feature.set('scale', scale));
+            mainEventDispatcher.dispatch('digitizing.editedFeatureScale');
+        }
+    }
+
     set context(aContext) {
         if (this.featureDrawn) {
             this._contextFeatures[this._context] = this.featureDrawn;
@@ -268,6 +370,21 @@ export default class Digitizing {
                     case this._tools[6]:
                         drawOptions.type = 'Polygon';
                         drawOptions.freehand = true;
+                        break;
+                    case this._tools[7]:
+                        drawOptions.type = 'Point';
+                        drawOptions.style = new Style({
+                            text: new Text({
+                                text: lizDict['digitizing.toolbar.newText'],
+                                fill: new Fill({
+                                    color: '#000',
+                                }),
+                                stroke: new Stroke({
+                                    color: '#fff',
+                                    width: 4,
+                                }),
+                            })
+                        });
                         break;
                 }
 
