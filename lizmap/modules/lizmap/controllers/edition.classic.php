@@ -698,7 +698,7 @@ class editionCtrl extends jController
             }
         }
 
-        // Some errors where encoutered
+        // Some errors where encountered
         if (!$check || !$pkvals) {
             // Redirect to the display action
             $rep->params['status'] = '1';
@@ -715,6 +715,11 @@ class editionCtrl extends jController
         if ($next_action == 'close') {
             // Redirect to the close action
             $rep->action = 'lizmap~edition:closeFeature';
+
+            // Add the generated primary keys for the newly created feature
+            if (is_array($pkvals)) {
+                $rep->params['pkVals'] = json_encode($pkvals);
+            }
 
             return $rep;
         }
@@ -738,6 +743,7 @@ class editionCtrl extends jController
 
             return $rep;
         }
+
         // REOPEN THE FORM FOR THE EDITED FEATURE
         // If there is a single integer primary key
         // This is the featureid, we can redirect to the edition form
@@ -778,10 +784,15 @@ class editionCtrl extends jController
     /**
      * Form close : destroy it and display a message.
      *
+     * This function does not use the serviceAnswer method
+     * which depends on jMessage and cannot be used to return
+     * a more complex HTML fragment with hidden data.
+     *
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project
      * @urlparam string $layerId Qgis id of the layer
      * @urlparam integer $featureId Id of the feature.
+     * @urlparam string $pkVals A JSON representation of the primary key values of the new or modified feature.
      *
      * @return jResponseHtmlFragment confirmation message that the form has been saved
      */
@@ -796,9 +807,21 @@ class editionCtrl extends jController
         jForms::destroy('view~edition', $this->featureId);
 
         // Return html fragment response
-        jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+        /** @var jResponseHtmlFragment $rep */
+        $rep = $this->getResponse('htmlfragment');
+        $tpl = new jTpl();
 
-        return $this->serviceAnswer();
+        $closeFeatureMessage = jLocale::get('view~edition.form.data.saved');
+        $pkValsJson = $this->param('pkVals', '');
+
+        $tpl->assign('closeFeatureMessage', $closeFeatureMessage);
+        $tpl->assign('pkValsJson', $pkValsJson);
+        $content = $tpl->fetch('view~edition_close_feature_data');
+        $rep->addContent($content);
+
+        jMessage::clearAll();
+
+        return $rep;
     }
 
     /**
