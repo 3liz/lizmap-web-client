@@ -1268,7 +1268,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             layerId: editionLayer['id'],
             featureId: featureId
         }, function(data){
-
             // Activate some controls
             if( !editCtrls )
                 return false;
@@ -1375,7 +1374,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         var formContainer = $('#edition-form-container');
         formContainer.html(data);
         // the new form
-        var form = $('#edition-form-container form');
+        var form = $('#edition-form-container form#jforms_view_edition');
 
         // Response contains a form
         if ( form.length != 0 ) {
@@ -1570,27 +1569,59 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Else it means no form has been sent back
         // We consider it was a successful edition with no option to reopen the form
+        // Or an error has been raised and sent back
         if ( form.length == 0 ) {
             controls['edition'].deactivate();
             controls['edition'].activate();
-            var layerId = editionLayer['id'];
+            let layerId = editionLayer['id'];
+            let returnedMessage = '';
+            let pkVals = null;
+
+            // Get the newly created or updated feature primary key(s) value(s)
+            if ( data != '' ) {
+                // Get the hidden fields values
+                const hiddenForm = document.querySelector('#edition-form-container form.liz_close_feature_form');
+                if (hiddenForm) {
+                    const closeFeaturePkValsJson = hiddenForm.querySelector('input#liz_close_feature_pk_vals').value;
+
+                    // Parse the JSON containing the primary key(s) value(s)
+                    try {
+                        pkVals = JSON.parse(closeFeaturePkValsJson);
+                        hiddenForm.parentNode.removeChild(hiddenForm);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+
+                // Get the Jelix message if the response data contains one
+                // Only if not already taken from the hidden form
+                // For example when having the error "Feature not editable"
+                // TODO: we should not rely on this content to known when to display a message
+                if (data.includes('<ul class="jelix-msg">')) {
+                    returnedMessage = data;
+                }
+            }
 
             // Trigger event
             var ev = 'lizmapeditionfeaturecreated';
-            if( editionType == 'modifyFeature' )
+            if( editionType == 'modifyFeature' ) {
                 ev = 'lizmapeditionfeaturemodified';
+            }
             lizMap.events.triggerEvent(ev,
-                { 'layerId': layerId}
+                { 'layerId': layerId, 'primaryKeys': pkVals}
             );
 
             // Redraw layers
             redrawLayers( layerId );
+
             // Deactivate edition
             finishEdition();
 
-            // Display message via JS
-            if ( data != '' )
-                addEditionMessage( data, 'info', true);
+            // Display the message in JS
+            if ( returnedMessage != '' ) {
+                // Display the message
+                addEditionMessage( returnedMessage, 'info', true);
+            }
 
         }
 
