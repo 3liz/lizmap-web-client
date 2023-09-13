@@ -321,7 +321,10 @@ class QgisForm implements QgisFormControlsInterface
     }
 
     /**
-     * @param $ref
+     * Get the storage path of QGIS form control
+     * for a given form input.
+     *
+     * @param string $ref Name of the form input
      *
      * @return null|string[]
      */
@@ -765,7 +768,6 @@ class QgisForm implements QgisFormControlsInterface
             throw new \Exception('Save to database can\'t be done for the layer "'.$this->layer->getName().'"!');
         }
 
-        $cnx = $this->layer->getDatasourceConnection();
         // Update or Insert
         $updateAction = false;
         $insertAction = false;
@@ -929,14 +931,14 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         switch ($this->formControls[$ref]->fieldDataType) {
-                case 'geometry':
-                    try {
-                        $value = $this->layer->getGeometryAsSql($value);
-                    } catch (\Exception $e) {
-                        $form->setErrorOn($geometryColumn, $e->getMessage());
+            case 'geometry':
+                try {
+                    $value = $this->layer->getGeometryAsSql($value);
+                } catch (\Exception $e) {
+                    $form->setErrorOn($geometryColumn, $e->getMessage());
 
-                        return false;
-                    }
+                    return false;
+                }
 
                 break;
 
@@ -1238,7 +1240,6 @@ class QgisForm implements QgisFormControlsInterface
      */
     private function fillControlFromValueRelationLayer($fieldName, $formControl)
     {
-
         // required
         if (array_key_exists('notNull', $formControl->valueRelationData)
                 and $formControl->valueRelationData['notNull']
