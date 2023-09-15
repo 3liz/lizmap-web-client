@@ -237,6 +237,23 @@ export class LayerTreeItemState extends EventDispatcher {
     calculateVisibility() {
         return this._mapItemState.calculateVisibility();
     }
+
+    /**
+     * Get item visibility taking care of this.visibility and scale
+     *
+     * @returns {boolean} the item visibility
+     **/
+    isVisible(scaleDenominator) {
+        if (this.type === 'group') {
+            return this.visibility;
+        }
+
+        if(this._mapItemState.wmsMinScaleDenominator !== undefined && this._mapItemState.wmsMaxScaleDenominator !== undefined){
+            return this.visibility && this._mapItemState.wmsMinScaleDenominator < scaleDenominator 
+            && scaleDenominator < this._mapItemState.wmsMaxScaleDenominator;
+        }
+        return this.visibility;
+    }
 }
 
 /**

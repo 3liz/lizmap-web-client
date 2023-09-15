@@ -70,8 +70,9 @@ export default class BaseLayersMap extends olMap {
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMS) {
-                let minResolution = baseLayerState.layerConfig.minScale === 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale);
-                let maxResolution = baseLayerState.layerConfig.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale);
+                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+                let minResolution = baseLayerState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
+                let maxResolution = baseLayerState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
                 baseLayer = new ImageLayer({
                     minResolution: minResolution,
                     maxResolution: maxResolution,
@@ -131,8 +132,9 @@ export default class BaseLayersMap extends olMap {
                     }),
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
-                let minResolution = baseLayerState.layerConfig.minScale === 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale);
-                let maxResolution = baseLayerState.layerConfig.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale);
+                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+                let minResolution = baseLayerState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
+                let maxResolution = baseLayerState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
                 baseLayer = new ImageLayer({
                     // extent: extent,
                     minResolution: minResolution,
@@ -224,8 +226,9 @@ export default class BaseLayersMap extends olMap {
                 */
 
                 // Set min/max resolution only if different from default
-                let minResolution = node.layerConfig.minScale === 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale);
-                let maxResolution = node.layerConfig.maxScale === 1000000000000 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale);
+                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+                let minResolution = node.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale, metersPerUnit);
+                let maxResolution = node.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale, metersPerUnit);
 
                 if (node.layerConfig.cached) {
                     const parser = new WMTSCapabilities();
