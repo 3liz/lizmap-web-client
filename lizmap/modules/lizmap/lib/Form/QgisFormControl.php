@@ -514,14 +514,35 @@ class QgisFormControl
             case 'ValueMap':
                 $valueMap = $this->properties->getValueMap();
                 if (is_array($valueMap)) {
-                    // remove the QGIS null value if the control value is not
-                    // required, as the widget will have a possibility to choose
-                    // no value (so null value... ?)
-                    if (!$this->required
-                        && $this->fieldDataType == 'boolean'
-                        && isset($valueMap[self::QGIS_NULL_VALUE])
-                    ) {
-                        unset($valueMap[self::QGIS_NULL_VALUE]);
+                    // Override values for boolean
+                    if ($this->fieldDataType == 'boolean') {
+                        // remove the QGIS null value if the control value is not
+                        // required, as the widget will have a possibility to choose
+                        // no value (so null value... ?)
+                        if (!$this->required
+                            && isset($valueMap[self::QGIS_NULL_VALUE])
+                        ) {
+                            unset($valueMap[self::QGIS_NULL_VALUE]);
+                        }
+                        // transform values from QGIS ValueMap to Postgres Boolean
+                        $booleanValues = array();
+                        foreach ($valueMap as $v => $label) {
+                            $strV = strtolower($v);
+                            if ($v === self::QGIS_NULL_VALUE) {
+                                $booleanValues[self::QGIS_NULL_VALUE] = $label;
+                            } elseif ($strV === 'true' || $strV === 't'
+                                || intval($v) === 1 || $strV === 'on') {
+                                // Postgres true
+                                $booleanValues['t'] = $label;
+                            } elseif ($strV === 'false' || $strV === 'f'
+                                || intval($v) === 0 || $strV === 'off') {
+                                // Postgres false
+                                $booleanValues['f'] = $label;
+                            } else {
+                                $booleanValues[$strV] = $label;
+                            }
+                        }
+                        $valueMap = $booleanValues;
                     }
                     // we don't use array_merge, because this function reindexes keys if they are
                     // numerical values, and this is not what we want.
