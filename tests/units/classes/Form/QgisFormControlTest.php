@@ -367,9 +367,9 @@ class QgisFormControlTest extends TestCase
         $this->assertEquals($control->fieldDataType, 'boolean');
         $this->assertEquals($control->fieldEditType, 'CheckBox');
         $this->assertEquals($control->ctrl->getWidgetType(), 'checkbox');
-        $this->assertEquals($control->ctrl->valueOnCheck, 'true');
+        $this->assertEquals($control->ctrl->valueOnCheck, 't');
         $this->assertEquals($control->ctrl->valueLabelOnCheck, 'Yes');
-        $this->assertEquals($control->ctrl->valueOnUncheck, 'false');
+        $this->assertEquals($control->ctrl->valueOnUncheck, 'f');
         $this->assertEquals($control->ctrl->valueLabelOnUncheck, 'No');
     }
 }
