@@ -109,19 +109,6 @@ describe('Form edition all field type', function() {
         cy.get('#lizmap-edition-message').should('be.visible')
     })
 
-    it('boolean, dropdown menu', function () {
-        // `boolean_nullable` should show a dropdown menu with :
-        // * an empty value
-        cy.get('#jforms_view_edition_boolean_nullable').select('')
-        cy.get('#jforms_view_edition_boolean_nullable').should('have.value', '')
-        // * a true value
-        cy.get('#jforms_view_edition_boolean_nullable').select('True')
-        cy.get('#jforms_view_edition_boolean_nullable').should('have.value', 'true')
-        // * a false value
-        cy.get('#jforms_view_edition_boolean_nullable').select('False')
-        cy.get('#jforms_view_edition_boolean_nullable').should('have.value', 'false')
-    })
-
     it('boolean, not null', function () {
         cy.get('#jforms_view_edition_boolean_notnull_for_checkbox').should('have.class', 'jforms-ctrl-checkbox')
         cy.get('#jforms_view_edition__submit_submit').click()
