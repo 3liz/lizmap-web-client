@@ -73,8 +73,18 @@ export default class Utils {
         xhr.send($.param(parameters, true));
     }
 
-    static getResolutionFromScale(scale) {
-        const resolution = 1 / ((1/scale) * 39.37 * 96);
+    // Source: https://github.com/openlayers/ol2/blob/master/lib/OpenLayers/Util.js#L1101
+    static getResolutionFromScale(scale, metersPerUnit) {
+        const inchesPerMeter = 1000 / 25.4;
+        const DPI = 96;
+        const resolution = scale / (inchesPerMeter * DPI * metersPerUnit);
         return resolution;
+    }
+
+    static getScaleFromResolution(resolution, metersPerUnit) {
+        const inchesPerMeter = 1000 / 25.4;
+        const DPI = 96;
+        const scale = resolution * inchesPerMeter * DPI * metersPerUnit;
+        return scale;
     }
 }

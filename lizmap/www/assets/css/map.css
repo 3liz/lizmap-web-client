@@ -3097,12 +3097,13 @@ lizmap-treeview label {
   display: inline;
 }
 
-lizmap-treeview div.group:not(.checked) ~ ul input[type="checkbox"] {
-  accent-color: silver;
+lizmap-treeview li.not-visible > div input[type="checkbox"] {
+  accent-color: #7F7F80;
 }
 
-lizmap-treeview div.group:not(.checked) ~ ul label {
+lizmap-treeview li.not-visible > div label {
   font-style: italic;
+  color: #7F7F80;
 }
 
 lizmap-treeview .layer-actions {
