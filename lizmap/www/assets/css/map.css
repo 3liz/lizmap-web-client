@@ -3067,8 +3067,8 @@ lizmap-treeview input[type="checkbox"] {
 }
 
 lizmap-treeview input.rounded-checkbox {
-  width:13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   vertical-align: middle;
   border: 1px solid #767676;
