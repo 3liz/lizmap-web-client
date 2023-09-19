@@ -7,6 +7,29 @@ test.describe('Treeview', () => {
         await page.goto(url, { waitUntil: 'networkidle' });
     });
 
+    test('layer/group visibility UI', async ({ page }) => {
+        await expect(page.getByTestId('subdistricts')).toHaveClass('not-visible');
+
+        // zoom to display 'subdistricts' layer defined with scale dependent visibility (minimum 1:51000)
+        await page.locator('.zoom-in').click();
+        await expect(page.getByTestId('subdistricts')).not.toHaveClass('not-visible');
+
+        // Disable root group visibility
+        await page.getByTestId('group1').locator('> div input').click();
+        await expect(page.getByTestId('sub-group1')).toHaveClass('not-visible');
+        await expect(page.getByTestId('subdistricts')).toHaveClass('not-visible');
+
+        // Disable parent group visibility
+        await page.getByTestId('group1').locator('> div input').click();
+        await page.getByTestId('sub-group1').locator('> div input').click();
+        await expect(page.getByTestId('subdistricts')).toHaveClass('not-visible');
+
+        // Disable layer visibility
+        await page.getByTestId('sub-group1').locator('> div input').click();
+        await page.getByTestId('subdistricts').locator('> div input').click();
+        await expect(page.getByTestId('subdistricts')).toHaveClass('not-visible');
+    });
+
     test('displays mutually exclusive group', async ({ page }) => {
         await expect(page.getByText('group with space in name and shortname defined')).toHaveCount(1);
         

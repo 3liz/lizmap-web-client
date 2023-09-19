@@ -1,4 +1,5 @@
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import Utils from '../modules/Utils.js';
 import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 
 import { html, render } from 'lit-html';
@@ -40,7 +41,7 @@ export default class Treeview extends HTMLElement {
         html`
         <ul>
             ${layerTreeGroupState.children.map(item => html`
-            <li data-testid="${item.name}">
+            <li data-testid="${item.name}" class="${this._isVisible(item) ? '' : 'not-visible'}">
                 ${item.type === 'group' || (item.symbologyChildrenCount && item.layerConfig.legendImageOption !== "disabled")
                     ? html`<div class="expandable ${item.expanded ? 'expanded' : ''}" @click=${() => item.expanded = !item.expanded}></div>`
                     : ''
@@ -50,7 +51,7 @@ export default class Treeview extends HTMLElement {
                         ? html`<div class="loading ${item.loadStatus === MapLayerLoadStatus.Loading ? 'spinner' : ''}"></div>`
                         : ''
                     }
-                    <input class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" type="checkbox" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
+                    <input type="checkbox" class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
                     <div class="node ${item.isFiltered ? 'filtered' : ''}">
                         ${item.type === 'layer'
                             ? html`<img class="legend" src="${item.icon}">`
@@ -90,12 +91,20 @@ export default class Treeview extends HTMLElement {
             this._onChange,
             ['layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
         );
+
+        mainEventDispatcher.addListener(
+            this._onChange, ['resolution.changed']
+        );
     }
 
     disconnectedCallback() {
         mainLizmap.state.layerTree.removeListener(
             this._onChange,
             ['layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed']
+        );
+
+        mainEventDispatcher.removeListener(
+            this._onChange, ['resolution.changed']
         );
     }
 
@@ -111,6 +120,16 @@ export default class Treeview extends HTMLElement {
         );
 
         this._onChange();
+    }
+
+    _isVisible(item) {
+        if (item.type === 'group') {
+            return item.visibility;
+        }
+        const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+        const scale = Utils.getScaleFromResolution(mainLizmap.map.getView().getResolution(), metersPerUnit);
+        const visibility = item.isVisible(scale);
+        return visibility;
     }
 
     _createDocLink(layerName) {
