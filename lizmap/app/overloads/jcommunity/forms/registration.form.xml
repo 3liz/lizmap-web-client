@@ -9,11 +9,11 @@
     @link         http://jelix.org
     @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
     -->
-    <input ref="reg_login" required="true">
+    <input ref="reg_login" required="true" minlength="3" maxlength="255">
         <label locale="jcommunity~account.form.login"/>
     </input>
 
-    <input ref="reg_email"  required="true" type="email">
+    <input ref="reg_email"  required="true" type="email" maxlength="255">
         <label locale="jcommunity~account.form.email"/>
     </input>
 
@@ -29,7 +29,7 @@
         <label locale="view~user.form.organization.label"/>
     </input>
 
-    <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
+    <secret ref="reg_password"  required="true" minlength="12" maxlength="120">
         <label locale="jcommunity~account.form.password"/>
         <help locale="jcommunity~account.form.password.help"/>
         <confirm locale="jcommunity~account.form.password.confirm" />

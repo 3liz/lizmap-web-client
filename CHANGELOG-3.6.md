@@ -19,6 +19,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Fix some grammar
 * Allow import/export in selection tool
 * Fix 500 error in the administration panel when the "Lizmap server" plugin was not found
+* Fix increase the login length in the database in order to use email as logins
+* the minimal length of password is now 12 characters to improve the security
 
 ### Translations
 
