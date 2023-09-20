@@ -6,7 +6,7 @@
      -->
 
 
-    <input ref="login" required="true" minlength="3" maxlength="50">
+    <input ref="login" required="true" minlength="3" maxlength="255">
         <label locale="jcommunity~account.form.login"/>
     </input>
 
@@ -14,7 +14,7 @@
         <label locale="jcommunity~account.form.email"/>
     </input>
 
-    <secret ref="password" minlength="8" maxlength="120">
+    <secret ref="password" minlength="12" maxlength="120">
         <label locale="jcommunity~account.form.password"/>
         <help locale="jcommunity~account.form.password.help"/>
         <confirm locale="jcommunity~account.form.password.confirm"/>
@@ -70,11 +70,11 @@
         <label locale="jcommunity~account.form.keyactivate"/>
     </output>
 
-    <output ref="request_date">
+    <output ref="request_date" type="localedatetime">
         <label locale="jcommunity~account.form.requestdate"/>
     </output>
 
-    <output ref="create_date">
+    <output ref="create_date" type="localedatetime">
         <label locale="jcommunity~account.form.createdate"/>
     </output>
 
