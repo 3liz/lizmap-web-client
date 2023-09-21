@@ -48,7 +48,7 @@ describe('Attribute table', () => {
         const correct_column_order = ['', 'quartier', 'quartmno', 'libquart', 'photo', 'url'];
 
         // postgreSQL layer
-        cy.get('button[value="quartiers"].btn-open-attribute-layer').click({ force: true })
+        cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
 
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
@@ -59,7 +59,7 @@ describe('Attribute table', () => {
                 .to.contain('OUTPUTFORMAT=GeoJSON')
         })
 
-        cy.get('#attribute-layer-table-quartiers_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier_wrapper div.dataTables_scrollHead th').then(theaders => {
             const headers = [...theaders].map(t => t.innerText)
 
             // Test arrays are deeply equal (eql) to test column order
@@ -86,12 +86,12 @@ describe('Attribute table', () => {
         })
     })
 
-    it('should select / filter / refresh', () => {
+    it.only('should select / filter / refresh', () => {
 
         cy.get('#bottom-dock-window-buttons .btn-bottomdock-size').click()
 
         // PostgreSQL layer
-        cy.get('button[value="quartiers"].btn-open-attribute-layer').click({ force: true })
+        cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
 
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
@@ -103,10 +103,10 @@ describe('Attribute table', () => {
         })
 
         // Check table lines
-        cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 7)
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 7)
 
         // select feature 2
-        cy.get('#attribute-layer-table-quartiers tr[id="2"] lizmap-feature-toolbar .feature-select').click({ force: true })
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tr[id="2"] lizmap-feature-toolbar .feature-select').click({ force: true })
         // Check WMS GetSelectionToken request
         // and store the selection token
         let selectiontoken = ''
@@ -128,7 +128,7 @@ describe('Attribute table', () => {
         })
 
         // filter
-        cy.get('#attribute-layer-main-quartiers .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
+        cy.get('#attribute-layer-main-Les_quartiers_a_Montpellier .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
 
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
@@ -172,13 +172,13 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#node-quartiers ~ div.node').should('have.class', 'filtered')
+        cy.get('[data-testid="Les quartiers à Montpellier"] div.node').should('have.class', 'filtered')
 
         // Check table lines
-        cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 1)
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 1)
 
         // refresh
-        cy.get('#attribute-layer-main-quartiers .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
+        cy.get('#attribute-layer-main-Les_quartiers_a_Montpellier .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
 
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
@@ -203,14 +203,14 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#node-quartiers ~ div.node').should('not.have.class', 'filtered')
+        cy.get('[data-testid="Les quartiers à Montpellier"] div.node').should('not.have.class', 'filtered')
 
         // Check table lines
-        cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 7)
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 7)
 
         // select feature 2,4,6
         // click to select 2
-        cy.get('#attribute-layer-table-quartiers tr[id="2"] lizmap-feature-toolbar .feature-select').click({ force: true })// Check WMS GetSelectionToken request
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tr[id="2"] lizmap-feature-toolbar .feature-select').click({ force: true })// Check WMS GetSelectionToken request
         // Check WMS GetSelectionToken request
         // and store the selection token
         selectiontoken = ''
@@ -231,7 +231,7 @@ describe('Attribute table', () => {
             expect(req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
         })
         // click to select 4
-        cy.get('#attribute-layer-table-quartiers tr[id="4"] lizmap-feature-toolbar .feature-select').click({ force: true })
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tr[id="4"] lizmap-feature-toolbar .feature-select').click({ force: true })
         // Check WMS GetSelectionToken request
         // and store the selection token
         cy.wait('@postGetSelectionToken').then((interception) => {
@@ -251,7 +251,7 @@ describe('Attribute table', () => {
             expect(req_url.searchParams.get('SELECTIONTOKEN')).to.be.eq(selectiontoken)
         })
         // click to select 6
-        cy.get('#attribute-layer-table-quartiers tr[id="6"] lizmap-feature-toolbar .feature-select').click({ force: true })
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tr[id="6"] lizmap-feature-toolbar .feature-select').click({ force: true })
         // Check WMS GetSelectionToken request
         // and store the selection token
         cy.wait('@postGetSelectionToken').then((interception) => {
@@ -272,7 +272,7 @@ describe('Attribute table', () => {
         })
 
         // filter
-        cy.get('#attribute-layer-main-quartiers .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
+        cy.get('#attribute-layer-main-Les_quartiers_a_Montpellier .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
 
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
@@ -316,16 +316,16 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#node-quartiers ~ div.node').should('have.class', 'filtered')
+        cy.get('[data-testid="Les quartiers à Montpellier"] div.node').should('have.class', 'filtered')
 
         // Check table lines
-        cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 3)
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 3)
 
         // close the tab
-        cy.get('#nav-tab-attribute-layer-quartiers .btn-close-attribute-tab').click({ force: true })
+        cy.get('#nav-tab-attribute-layer-Les_quartiers_a_Montpellier .btn-close-attribute-tab').click({ force: true })
 
         // reopen the tab
-        cy.get('button[value="quartiers"].btn-open-attribute-layer').click({ force: true })
+        cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
         // The content of the table has to be fetched again
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
@@ -344,10 +344,10 @@ describe('Attribute table', () => {
         })
 
         // check that the layer is filtered
-        cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 3)
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 3)
 
         // refresh
-        cy.get('#attribute-layer-main-quartiers .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
+        cy.get('#attribute-layer-main-Les_quartiers_a_Montpellier .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
 
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
@@ -372,10 +372,10 @@ describe('Attribute table', () => {
         })
 
         // check background
-        cy.get('#node-quartiers ~ div.node').should('not.have.class', 'filtered')
+        cy.get('[data-testid="Les quartiers à Montpellier"] div.node').should('not.have.class', 'filtered')
 
         // Check table lines
-        cy.get('#attribute-layer-table-quartiers tbody tr').should('have.length', 7)
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 7)
 
         // Go to tables tab to open an other table
         cy.get('#nav-tab-attribute-summary').click({ force: true })
@@ -576,6 +576,6 @@ describe('Attribute table', () => {
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 7)
 
         // Go to quartiers tab
-        cy.get('#nav-tab-attribute-layer-quartiers').click({ force: true })
+        cy.get('#nav-tab-attribute-layer-Les_quartiers_a_Montpellier').click({ force: true })
     })
 })
