@@ -9,8 +9,9 @@ export default class Permalink {
         if (window.location.hash) {
             const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
             const [, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
+
             for (const item of items){
-                if(itemsInURL.includes(encodeURIComponent(item.name))){
+                if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
                     const itemIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
                     item.checked = true;
                     if(item.type === 'layer'){
