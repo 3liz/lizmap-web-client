@@ -27,6 +27,11 @@ jobs:
         working-directory: tests
     env:
       CYPRESS_CI: TRUE
+    # Cypress Docker image from https://hub.docker.com/r/cypress
+    # with browsers pre-installed
+    container:
+      image: cypress/browsers:latest
+      options: --user 1001
     steps:
 
 #      - name: Debug
