@@ -134,7 +134,6 @@ jobs:
         if: always()
         uses: cypress-io/github-action@v5.8.3
         with:
-          browser: chrome
           working-directory: tests/end2end
           spec: cypress/integration/*-ghaction.js
           wait-on: http://localhost:8130
