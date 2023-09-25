@@ -941,7 +941,11 @@ export class BaseLayersConfig {
                 if (optionsProperties.hasOwnProperty(startupBlName)) {
                     startupBlName = optionsProperties[startupBlName].name;
                 }
-                if (this._names.indexOf(startupBlName) == -1) {
+
+                // If there is a single baselayer defined, it is the startup one
+                if (this._names.length === 1) {
+                    this._startupBaselayer = this._names[0];
+                } else if (this._names.indexOf(startupBlName) == -1) {
                     this._startupBaselayer = null;
                 } else {
                     this._startupBaselayer = startupBlName;
