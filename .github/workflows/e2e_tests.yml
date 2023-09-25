@@ -94,7 +94,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5.0.0
         with:
-          browser: chrome
           working-directory: tests/end2end
           spec: cypress/integration/*-ghaction.js
           wait-on: http://localhost:8130
