@@ -12,10 +12,14 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 * Improve the display on mobile about the menu
 * Improve logs displayed in the administration panel
+* Fix loading of the editing form having a nullable checkbox
 * Fix address search when results of the query to api-adresse.data.gouv.fr are empty
 * Fix popup when opened from a Lizmap Atlas when the layer has a shortname
-* Fix the export of a layer when the layer has an accent
+* When the layer has an accent :
+  * Fix the export of the layer
+  * Fix filtered features disappear from map
 * Fix some grammar
+* Fix PHP notice about CRS variable
 
 ### Translations
 
