@@ -12,15 +12,18 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 * Improve the display on mobile about the menu
 * Improve logs displayed in the administration panel
+* Fix loading of the editing form having a nullable checkbox
 * Fix address search when results of the query to api-adresse.data.gouv.fr are empty
 * Fix popup when opened from a Lizmap Atlas when the layer has a shortname
-* Fix the export of a layer when the layer has an accent
-* Do not display child plot in popup when there is no data
+* When the layer has an accent :
+  * Fix the export of the layer
+  * Fix filtered features disappear from map* Do not display child plot in popup when there is no data
 * Fix some grammar
 * Allow import/export in selection tool
 * Fix 500 error in the administration panel when the "Lizmap server" plugin was not found
 * Fix increase the login length in the database in order to use email as logins
-* the minimal length of password is now 12 characters to improve the security
+* The minimal length of password is now 12 characters to improve the security
+* Fix PHP notice about CRS variable
 
 ### Translations
 
