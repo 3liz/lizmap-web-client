@@ -33,7 +33,7 @@ test.describe('Edition Form Validation', () => {
     let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
     await page.locator('#button-edition').click();
-    await page.locator('#edition-layer').selectOption('many_bool_formats_7aa4cb8a_09ae_4a5b_92e4_189a42ca3a2f');
+    await page.locator('#edition-layer').selectOption({label: 'many_bool_formats'});
     await page.locator('#edition-draw').click();
     await page.locator('#jforms_view_edition_liz_future_action').selectOption('edit');
     await page.getByLabel('bool_simple_null_vm').selectOption('t');
