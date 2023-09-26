@@ -12,16 +12,35 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Review of the permalink feature
 * Add the possibility to authenticate with the email
+* Draw text on the map canvas :
+  * Rotation
+  * Scaling
+
+### Changed
+
+* Treeview: scale dependent visibility of legend items
+* Fix increase the login length in the database in order to use email as logins
+* The minimal length of password is now 12 characters to improve the security
 
 ### Fixed
 
+* When the layer has an accent :
+  * Fix the export of the layer
+  * Fix filtered features disappear from map* Do not display child plot in popup when there is no data
+* Fix loading of the editing form having a nullable checkbox
 * Review the popup order according to the list of layers
+* Fix PHP notice about CRS variable
+* Fix permalink generation when there isn't any layer checked
 
 ### Translations
 
 * Update translated strings from the Transifex website :
   * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
   * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Backend
+
+* Upgrade OpenLayers to version 8.1
 
 ## 3.7.0-alpha.2 - 2023-08-28
 
