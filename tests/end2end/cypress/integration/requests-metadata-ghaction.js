@@ -27,7 +27,8 @@ describe('Request JSON metadata', function () {
             expect(response.headers['content-type']).to.eq('application/json');
             expect(response.body.qgis_server.test).to.eq("OK")
 
-            expect(response.body.qgis_server_info.metadata.py_qgis_server).to.eq(true)
+            expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
+            expect(response.body.qgis_server_info.py_qgis_server.version).to.contain('.')
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
             expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\.|master|dev)/i)
         });
