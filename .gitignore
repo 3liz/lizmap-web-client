@@ -109,6 +109,7 @@ tests/end2end/cypress/downloads/
 tests/end2end/cypress/screenshots/
 tests/.env
 tests/end2end/playwright-report/
+tests/end2end/playwright/.auth
 tests/end2end/test-results
 
 /.composer
