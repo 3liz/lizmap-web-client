@@ -4,7 +4,7 @@
   "description": "Test Lizmap JavaScript",
   "main": "index.js",
   "devDependencies": {
-    "@playwright/test": "^1.32.2",
+    "@playwright/test": "^1.38.1",
     "cypress": "^9.7.0",
     "cypress-file-upload": "^5.0.8"
   },
