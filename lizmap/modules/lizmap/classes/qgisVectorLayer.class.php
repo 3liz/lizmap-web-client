@@ -1416,10 +1416,11 @@ class qgisVectorLayer extends qgisMapLayer
      * @param bool $editing_context If we are in a editing context or no. Default false
      * @param int  $ttl             Cache TTL in seconds. Default 60. Use -1 to deactivate the cache.
      * @param bool $get_expression  If we need the expression and not the SQL
+     * @param bool $use_cache       If we need to not use cache
      *
      * @return array associative array containing the keys 'expression' and 'polygon'
      */
-    protected function requestPolygonFilter($editing_context = false, $ttl = 60, $get_expression = false)
+    protected function requestPolygonFilter($editing_context = false, $ttl = 60, $get_expression = false, $use_cache = true)
     {
         // No filter response
         $no_filter_array = array(
@@ -1469,17 +1470,12 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         // Get cached filter for this repository, project, layer, login and editing context
-        // TODO: Use the project cache tools
-        $use_cache = false;
-        // $use_cache = ($ttl > 0);
-        // $key = $this->project->getKey().'_'.$repository->getKey();
-        // $key .= '_'.$this->id.'_'.$user_key;
-        // $key .= '_'.(string) $editing_context;
-        // $cache_key = md5($key);
-        // $cached_filter = jCache::get($cache_key);
-        // if ($cached_filter && $use_cache) {
-        //     return json_decode($cached_filter);
-        // }
+        $cache_key = session_id().'-lizmap-polygon-filter';
+        $cache_key .= '-'.$this->name; // layer
+        $cache_key .= '-'.$user_key; // login
+        if ($editing_context) {
+            $cache_key .= '-editing';
+        }
 
         // Request the "polygon filter" string from QGIS Server lizmap plugin
         $params = array(
@@ -1490,6 +1486,25 @@ class qgisVectorLayer extends qgisMapLayer
         );
         if ($get_expression) {
             $params['filter_type'] = 'expression';
+            $cache_key .= '-expression';
+        }
+        $cache_key = 'getsubsetstring-'.sha1($cache_key);
+        $cached = false;
+
+        if ($use_cache) {
+            try {
+                $cached = $this->project->getCacheHandler()->getProjectRelatedDataCache($cache_key);
+            } catch (\Exception $e) {
+                // if qgisprojects profile does not exist, or if there is an
+                // other error about the cache, let's log it
+                \jLog::logEx($e, 'error');
+                $use_cache = false;
+            }
+        }
+
+        // return cached data
+        if ($cached !== false) {
+            return $cached;
         }
 
         // Add user and groups in parameters
@@ -1530,8 +1545,7 @@ class qgisVectorLayer extends qgisMapLayer
                 );
 
                 if ($use_cache) {
-                    // Todo: use the project cache tools
-                    // jCache::set($cache_key, json_encode($polygon_filter_data), $ttl);
+                    $cached = $this->project->getCacheHandler()->setProjectRelatedDataCache($cache_key, $polygon_filter_data, 3600);
                 }
 
                 return $polygon_filter_data;
