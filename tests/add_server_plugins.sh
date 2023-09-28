@@ -5,7 +5,7 @@ set -e
 echo "QGIS Server Lizmap plugin"
 
 # Latest commit on alpha release
-VERSION=1.1.2
+VERSION=2.8.1
 wget https://packages.3liz.org/pub/lizmap_server-qgis-plugin/unstable/lizmap_server.${VERSION}-alpha.zip -O lizmap_server.master.zip
 
 # Latest release
