@@ -97,8 +97,8 @@ describe('Request JSON metadata', function () {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
 
-            expect(response.body.qgis_server_info.metadata.py_qgis_server).to.eq(true)
-            expect(response.body.qgis_server_info.metadata.py_qgis_server_version).to.contain('.')
+            expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
+            expect(response.body.qgis_server_info.py_qgis_server.version).to.contain('.')
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
             expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\.|master|dev)/i)
         });
@@ -129,7 +129,7 @@ describe('Request JSON metadata', function () {
         }).then((response) => {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
-            expect(response.body.qgis_server_info.metadata.py_qgis_server).to.eq(true)
+            expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
 
             // check the repositories
             expect(response.body.repositories.testsrepository.label).to.eq("Tests repository");
