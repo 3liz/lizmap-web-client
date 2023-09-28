@@ -279,6 +279,65 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedFields, $relationsFields);
     }
 
+    public function testEmbeddedRelation()
+    {
+         $file = __DIR__.'/Ressources/relations_project_embed.qgs';
+         $testQgis = new qgisProjectForTests();
+         $testQgis->setPath($file);
+         $testQgis->readXMLProjectTest($file);
+
+         //check layers
+         foreach ($testQgis->getLayers() as $layers){
+                  $this->assertEquals($layers["embedded"],1);
+                  $this->assertEquals($layers["projectPath"],'./relations_project.qgs');
+         }
+
+         //check relation on embedded project
+         $expectedRelationsOnEmbeddedLayers = array(
+                  'father_layer_79f5a996_39db_4a1f_b270_dfe21d3e44ff' => array(
+                      array('referencingLayer' => 'child_layer_8dec6d75_eeed_494b_b97f_5f2c7e16fd00',
+                          'referencedField' => 'ref_id',
+                          'referencingField' => 'father_id',
+                          'previewField'=>'fid',
+                          'relationName' => 'fk_father_child_relation',
+                          'relationId' => 'child_laye_father_id_father_lay_ref_id_1',
+      
+                      ),
+                  ),
+                  'pivot' => array(),
+         );
+
+         $expectedFieldsOnEmbeddedLayers = array(
+                  array (
+                      'id' => 'child_laye_father_id_father_lay_ref_id_1',
+                      'layerName' => 'father_layer',
+                      'typeName' => 'father_layer',
+                      'propertyName' => 'ref_id,fid',
+                      'filterExpression' => '',
+                      'referencedField' => 'ref_id',
+                      'referencingField' => 'father_id',
+                      'previewField' => 'fid',
+                  )
+         );
+         
+         $relations = $testQgis->getRelations(); 
+         $relationFields = $testQgis->getRelationsFields();
+         $this->assertEquals($expectedRelationsOnEmbeddedLayers, $relations);
+         $this->assertEquals($expectedFieldsOnEmbeddedLayers, $relationFields);
+         
+         // check relations identity on main project
+         $file = __DIR__.'/Ressources/relations_project.qgs';
+         $testQgisParent = new qgisProjectForTests();
+         $testQgisParent->setPath($file);
+         $testQgisParent->readXMLProjectTest($file);
+
+         $parentRelations = $testQgisParent->getRelations();
+         $parentRelationFields = $testQgisParent->getRelationsFields();
+         $this->assertEquals($relations,$parentRelations);
+         $this->assertEquals($relationFields,$parentRelationFields);
+
+    }
+
     public function testCacheConstruct()
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
