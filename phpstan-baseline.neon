@@ -336,11 +336,6 @@ parameters:
 			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
 
 		-
-			message: "#^If condition is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
 			message: "#^Method qgisVectorLayer\\:\\:getConstraints\\(\\) should return array\\<string\\> but returns array\\<string, int\\|false\\>\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
