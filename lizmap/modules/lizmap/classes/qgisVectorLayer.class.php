@@ -1360,11 +1360,11 @@ class qgisVectorLayer extends qgisMapLayer
     public function isEditable()
     {
         $layerName = $this->name;
-        $eLayer = $this->project->getEditionLayerByName($layerName);
-        if ($eLayer->capabilities->modifyGeometry != 'True'
-           && $eLayer->capabilities->modifyAttribute != 'True'
-           && $eLayer->capabilities->deleteFeature != 'True'
-           && $eLayer->capabilities->createFeature != 'True'
+        $capabilities = $this->getRealEditionCapabilities();
+        if ($capabilities->modifyGeometry != 'True'
+           && $capabilities->modifyAttribute != 'True'
+           && $capabilities->deleteFeature != 'True'
+           && $capabilities->createFeature != 'True'
         ) {
             return false;
         }
