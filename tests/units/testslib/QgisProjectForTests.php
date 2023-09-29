@@ -11,6 +11,23 @@ class QgisProjectForTests extends QgisProject
         }
     }
 
+    public function readXMLProjectTest($file)
+    {
+         return $this->readXMLProject($file);
+    }
+
+    public function getLayers()
+    {
+         return $this->layers;
+    }
+    public function getRelations()
+    {
+         return $this->relations;
+    }
+    public function getRelationsFields()
+    {
+         return $this->relationsFields;
+    }
     public function readWMSInfoTest($xml)
     {
         return $this->readWMSInformation($xml);
@@ -68,6 +85,12 @@ class QgisProjectForTests extends QgisProject
     public function setXml($xml)
     {
         $this->xml = $xml;
+    }
+
+
+    public function setPath($path)
+    {
+        $this->path = $path;
     }
 
     public function setLayers($layers)
