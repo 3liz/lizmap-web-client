@@ -1401,7 +1401,7 @@ class qgisVectorLayer extends qgisMapLayer
     public function getRealEditionCapabilities()
     {
         $eLayer = $this->project->getEditionLayerByName($this->name);
-        if (property_exists($eLayer, 'capabilities')) {
+        if ($eLayer && property_exists($eLayer, 'capabilities')) {
             return $eLayer->capabilities;
         }
 
