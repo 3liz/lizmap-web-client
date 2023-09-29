@@ -1118,6 +1118,25 @@ class qgisVectorLayer extends qgisMapLayer
      */
     public function editableFeatures()
     {
+        // Editable features are a restricted list
+        $restricted_empty_data = array(
+            'status' => 'restricted',
+            'features' => array(),
+        );
+
+        if (!$this->isEditable()) {
+            return $restricted_empty_data;
+        }
+
+        // Get editLayer capabilities
+        $capabilities = $this->getRealEditionCapabilities();
+        if ($capabilities->modifyAttribute != 'True'
+            && $capabilities->modifyGeometry != 'True'
+            && $capabilities->deleteFeature != 'True') {
+            return $restricted_empty_data;
+        }
+
+        // All features are editable
         $unrestricted_empty_data = array(
             'status' => 'unrestricted',
             'features' => array(),
@@ -1148,12 +1167,6 @@ class qgisVectorLayer extends qgisMapLayer
         if (!$loginRestricted && !$polygonRestricted) {
             return $unrestricted_empty_data;
         }
-
-        // Editable features are a restricted list
-        $restricted_empty_data = array(
-            'status' => 'restricted',
-            'features' => array(),
-        );
 
         // Get layer WFS typename
         $typename = $this->getWfsTypeName();
