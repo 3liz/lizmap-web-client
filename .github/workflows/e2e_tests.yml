@@ -108,7 +108,7 @@ jobs:
         run: cd end2end && npx playwright test --project=chromium
 
       - name: Notify in case of playwright failure, from mainstream branches only
-        uses: peter-evans/commit-comment@v2
+        uses: peter-evans/commit-comment@v3
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-playwright.outcome != 'success' && github.event_name == 'repository_dispatch'
         with:
           token: ${{ secrets.BOT_HUB_TOKEN }}
@@ -139,7 +139,7 @@ jobs:
           wait-on: http://localhost:8130
 
       - name: Notify in case of cypress failure, from mainstream branches only
-        uses: peter-evans/commit-comment@v2
+        uses: peter-evans/commit-comment@v3
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-cypress.outcome != 'success' && github.event_name == 'repository_dispatch'
         with:
           token: ${{ secrets.BOT_HUB_TOKEN }}
