@@ -52,7 +52,7 @@ jobs:
         run: phpstan analyse -c ../phpstan.neon
 
       - name: Notify in case of failure
-        uses: peter-evans/commit-comment@v2
+        uses: peter-evans/commit-comment@v3
         if: failure()
         with:
           body: |
