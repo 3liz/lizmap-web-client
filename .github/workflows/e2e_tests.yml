@@ -58,7 +58,7 @@ jobs:
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH }}
           token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
