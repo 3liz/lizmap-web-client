@@ -1479,6 +1479,8 @@ class QgisProject
                     'referencedField' => $relationField['referencedField'],
                     'referencingField' => $relationField['referencingField'],
                     'previewField' => $relationField['previewField'],
+                    'relationName' => (string) $relationObj->name,
+                    'relationId' => (string) $relationObj->id,
                 );
 
                 if (!array_key_exists($referencingLayerId, $pivotGather)) {
