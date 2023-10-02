@@ -993,6 +993,18 @@ class qgisVectorLayer extends qgisMapLayer
      */
     public function isFeatureEditable($feature)
     {
+        if (!$this->isEditable()) {
+            return false;
+        }
+
+        // Get editLayer capabilities
+        $capabilities = $this->getRealEditionCapabilities();
+        if ($capabilities->modifyAttribute != 'True'
+            && $capabilities->modifyGeometry != 'True'
+            && $capabilities->deleteFeature != 'True') {
+            return false;
+        }
+
         // Get the full expression usable to filter the layer data for the authenticated user
         // This combines the attribute and spatial filter
         $expByUser = qgisExpressionUtils::getExpressionByUser($this, true);
