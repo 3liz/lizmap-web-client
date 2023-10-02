@@ -1096,6 +1096,25 @@ class qgisVectorLayer extends qgisMapLayer
      */
     public function editableFeatures()
     {
+        // Editable features are a restricted list
+        $restricted_empty_data = array(
+            'status' => 'restricted',
+            'features' => array(),
+        );
+
+        if (!$this->isEditable()) {
+            return $restricted_empty_data;
+        }
+
+        // Get editLayer capabilities
+        $capabilities = $this->getRealEditionCapabilities();
+        if ($capabilities->modifyAttribute != 'True'
+            && $capabilities->modifyGeometry != 'True'
+            && $capabilities->deleteFeature != 'True') {
+            return $restricted_empty_data;
+        }
+
+        // All features are editable
         $unrestricted_empty_data = array(
             'status' => 'unrestricted',
             'features' => array(),
@@ -1126,12 +1145,6 @@ class qgisVectorLayer extends qgisMapLayer
         if (!$loginRestricted && !$polygonRestricted) {
             return $unrestricted_empty_data;
         }
-
-        // Editable features are a restricted list
-        $restricted_empty_data = array(
-            'status' => 'restricted',
-            'features' => array(),
-        );
 
         // Get layer WFS typename
         $typename = $this->getWfsTypeName();
@@ -1328,11 +1341,11 @@ class qgisVectorLayer extends qgisMapLayer
     public function isEditable()
     {
         $layerName = $this->name;
-        $eLayer = $this->project->getEditionLayerByName($layerName);
-        if ($eLayer->capabilities->modifyGeometry != 'True'
-           && $eLayer->capabilities->modifyAttribute != 'True'
-           && $eLayer->capabilities->deleteFeature != 'True'
-           && $eLayer->capabilities->createFeature != 'True'
+        $capabilities = $this->getRealEditionCapabilities();
+        if ($capabilities->modifyGeometry != 'True'
+           && $capabilities->modifyAttribute != 'True'
+           && $capabilities->deleteFeature != 'True'
+           && $capabilities->createFeature != 'True'
         ) {
             return false;
         }
@@ -1369,7 +1382,7 @@ class qgisVectorLayer extends qgisMapLayer
     public function getRealEditionCapabilities()
     {
         $eLayer = $this->project->getEditionLayerByName($this->name);
-        if (property_exists($eLayer, 'capabilities')) {
+        if ($eLayer && property_exists($eLayer, 'capabilities')) {
             return $eLayer->capabilities;
         }
 
