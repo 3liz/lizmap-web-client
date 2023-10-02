@@ -1,5 +1,16 @@
-{meta_html js $j_jelixwww.'js/authdb_admin.js'}
+{meta_html assets 'jauthdb_admin'}
+
 <h1>{@jauthdb_admin~crud.title.list@}</h1>
+
+{if $showfilter}
+    <form action="{formurl 'jauthdb_admin~default:index'}" method="get">
+        <div>
+            <!--<label for="user-list-filter">{@jauthdb_admin~crud.search.form.keyword.label@}</label>-->
+            <input type="text" name="filter" value="{$filter|eschtml}" id="user-list-filter" />
+            <button type="submit" class="btn btn-small">{@jauthdb_admin~crud.search.button.label@}</button>
+        </div>
+    </form>
+{/if}
 
 {if $canview}
 <form action="{formurl 'jauthdb_admin~default:view'}" method="get" class="form-inline">

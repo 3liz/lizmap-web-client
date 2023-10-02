@@ -5,7 +5,10 @@
 {else}
     {@jcommunity~password.form.change.text.html@}
 
-    {formfull $form,'jcommunity~password_reset:save', array(), 'htmlbootstrap'}
+    {formfull $form,'jcommunity~password_reset:save', array(), 'htmlbootstrap', array(
+        'plugins' => array(
+            'pchg_password' => $passwordWidget
+    ))}
 {/if}
 
     <p><a href="{jurl 'jcommunity~login:index'}"  class="btn">{@jcommunity~login.cancel.and.back.to.login@}</a></p>

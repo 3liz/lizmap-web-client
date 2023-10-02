@@ -62,3 +62,36 @@ table.jforms-table th {
 table.jforms-table th.jforms-group {
     text-align: center;
 }
+
+.jforms-password-editor {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+.jforms-password-buttons {
+    margin-left: -1px;
+    display: flex;
+}
+
+.jforms-password-score {
+    display:inline-block;
+    padding: 0 0.5em;
+}
+
+.jforms-password-score.score-strong {
+    color: green;
+}
+
+.jforms-password-score.score-good {
+    color: cadetblue;
+}
+.jforms-password-score.score-weak {
+    color: darkorange;
+}
+.jforms-password-score.score-poor,
+.jforms-password-score.score-badpass
+{
+    color: red;
+}
