@@ -11,6 +11,14 @@
   <div id="headermenu" class="navbar navbar-fixed-top">
     <div id="auth" class="navbar-inner">
       <ul class="nav pull-right">
+        {if $showHomeLink}
+        <li class="home">
+          <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.home.title@}" data-placement="bottom">
+            <span class="icon"></span>
+            <span class="text"><b>{@view~default.home.title@}</b></span>
+          </a>
+        </li>
+        {/if}
         {include 'lizmap~user_menu'}
       </ul>
     </div>

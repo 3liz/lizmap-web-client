@@ -176,6 +176,7 @@ class defaultCtrl extends jController
                 $rep->addHeadContent($css);
             }
         }
+        $rep->body->assign('showHomeLink', false);
 
         return $rep;
     }
