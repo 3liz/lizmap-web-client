@@ -3,7 +3,10 @@
 
     <p>{@jcommunity~register.form.create.text.html@}</p>
 
-    {formfull $form,'jcommunity~registration:save', array(), 'htmlbootstrap'}
+    {formfull $form,'jcommunity~registration:save', array(), 'htmlbootstrap', array(
+        'plugins'=> array(
+            'reg_password'=> $passwordWidget
+    ))}
 
     <p><a href="{jurl 'jcommunity~login:index'}"  class="btn">{@jcommunity~login.cancel.and.back.to.login@}</a></p>
 </div>
