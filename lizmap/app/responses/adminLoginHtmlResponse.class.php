@@ -38,5 +38,6 @@ class adminLoginHtmlResponse extends AbstractLizmapHtmlResponse
         // main template, the settings of the response etc..
         $this->title .= ($this->title != '' ? ' - ' : '').'Administration';
         $this->body->assignIfNone('MAIN', '');
+        $this->body->assignIfNone('page_title', jLocale::get('jcommunity~login.login.title'));
     }
 }

@@ -16,14 +16,14 @@
   <div id="logo">
   </div>
   <div id="title">
-    <h1>{@jcommunity~login.login.title@}</h1>
+    <h1>{$page_title|eschtml}</h1>
   </div>
 
   <div id="headermenu" class="navbar navbar-fixed-top">
     <div id="auth" class="navbar-inner">
       <ul class="nav pull-right">
         <li class="home">
-          <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
+          <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom">
             <span class="icon"></span>
             <span class="text"><b>{@view~default.repository.list.title@}</b></span>
           </a>
