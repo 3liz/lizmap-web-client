@@ -8,6 +8,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.5.15 - 2023-10-03
+
 ### Fixed
 
 * Improve the display on mobile about the menu
@@ -15,6 +17,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Fix loading of the editing form having a nullable checkbox
 * Fix address search when results of the query to api-adresse.data.gouv.fr are empty
 * Fix popup when opened from a Lizmap Atlas when the layer has a shortname
+* Fix some issues about editing capabilities
+* Improve the polygon filtering to get the computed polygon from the cache
 * When the layer has an accent :
   * Fix the export of the layer
   * Fix filtered features disappear from map
