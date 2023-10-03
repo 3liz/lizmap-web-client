@@ -12,8 +12,8 @@
     {
         "branch": "3.6",
         "changelog": {
-            "fr": "https://www.3liz.com/news/lizmap-web-client-3-6.html",
-            "en": "https://www.3liz.com/en/news/lizmap-web-client-3-6.html"
+            "en": "https://www.3liz.com/en/news/lizmap-web-client-3-6.html",
+            "fr": "https://www.3liz.com/news/lizmap-web-client-3-6.html"
         },
         "first_release_date": "2022-12-09",
         "latest_release_date": "2023-08-08",
@@ -25,12 +25,12 @@
     {
         "branch": "3.5",
         "changelog": {
-            "fr": "https://www.3liz.com/news/lizmap-web-client-3-5.html",
-            "en": "https://www.3liz.com/en/news/lizmap-web-client-3-5.html"
+            "en": "https://www.3liz.com/en/news/lizmap-web-client-3-5.html",
+            "fr": "https://www.3liz.com/news/lizmap-web-client-3-5.html"
         },
         "first_release_date": "2021-12-15",
-        "latest_release_date": "2023-07-31",
-        "latest_release_version": "3.5.14",
+        "latest_release_date": "2023-10-03",
+        "latest_release_version": "3.5.15",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 31000,
         "status": "stable"
