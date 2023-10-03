@@ -6,7 +6,10 @@
 
     {@jcommunity~password.form.create.text.html@}
 
-    {formfull $form,'jcommunity~password_confirm_registration:save', array(), 'htmlbootstrap'}
+    {formfull $form,'jcommunity~password_confirm_registration:save', array(), 'htmlbootstrap', array(
+        'plugins' => array(
+            'pchg_password' => $passwordWidget
+    ))}
 
 {/if}
 

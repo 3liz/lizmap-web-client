@@ -13,7 +13,7 @@
         <label locale="jcommunity~account.form.login"/>
     </input>
 
-    <input ref="reg_email"  required="true" type="email" maxlength="255">
+    <input ref="reg_email"  required="true" type="email">
         <label locale="jcommunity~account.form.email"/>
     </input>
 

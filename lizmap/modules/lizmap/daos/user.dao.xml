@@ -66,6 +66,13 @@
             </conditions>
         </method>
 
+        <method name="getByEmail" type="select">
+            <parameter name="email" />
+            <conditions>
+                <eq property="email" expr="$email" />
+            </conditions>
+        </method>
+
         <method name="updatePassword" type="update">
             <parameter name="login" />
             <parameter name="password" />
