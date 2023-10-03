@@ -1,7 +1,7 @@
 {if $id === null}
 
 <h1>{@jauthdb_admin~crud.title.create@}</h1>
-{formfull $form, 'default:savecreate', array(), 'htmlbootstrap'}
+{formfull $form, 'default:savecreate', array(), 'htmlbootstrap', $formOptions}
     {if $randomPwd}
         <p>{@jauthdb_admin~crud.form.random.password@} {$randomPwd}</p>
     {/if}
@@ -16,7 +16,7 @@
 
 <h1>{@jauthdb_admin~crud.title.update@}</h1>
 
-{formfull $form, 'default:saveupdate', array('j_user_login'=>$id), 'htmlbootstrap'}
+{formfull $form, 'default:saveupdate', array('j_user_login'=>$id), 'htmlbootstrap', $formOptions}
 
     {foreach $otherInfo as $info}
         {$info}

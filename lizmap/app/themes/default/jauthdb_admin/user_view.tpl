@@ -3,7 +3,7 @@
 <h2>{@jauthdb_admin~user.view.primaryinfo@}</h2>
 {/if}
 
-{formdatafull_bootstrap $form}
+{formdatafull_bootstrap $form, 'htmlbootstrap', $formOptions}
 
 <ul class="crud-links-list unstyled">
     {if $canUpdate}<li><a href="{jurl 'jauthdb_admin~user:preupdate', array('j_user_login'=>$id)}" class="crud-link btn">{@jauthdb_admin~user.link.edit.record@}</a></li>{/if}
