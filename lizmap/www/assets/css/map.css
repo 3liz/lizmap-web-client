@@ -3060,15 +3060,14 @@ lizmap-treeview .node {
 lizmap-treeview input[type="checkbox"] {
   margin-top: 0;
   margin-right: 5px;
-  scale: 1.4;
   align-self: baseline;
   margin-top: 5px;
   accent-color: #0094D6;
+  width: 18px;
+  height: 18px;
 }
 
 lizmap-treeview input.rounded-checkbox {
-  width: 14px;
-  height: 14px;
   border-radius: 50%;
   vertical-align: middle;
   border: 1px solid #767676;
