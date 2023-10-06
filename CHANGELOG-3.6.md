@@ -8,6 +8,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+- A locale for the account registration was missing, generating a 500 error.
+
+
 ## 3.6.6 - 2023-10-04
 
 ### Added
