@@ -425,7 +425,7 @@ var lizLayerActionButtons = function() {
             });
 
             // Export
-            $('#content').on('click', 'button.exportLayer', function(){
+            $('#sub-dock').on('click', 'button.exportLayer', function(){
                 var eName = $(this).val();
                 var eFormat = $(this).parent().find('select.exportLayer').val();
                 lizMap.exportVectorLayer( eName, eFormat );
