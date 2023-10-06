@@ -3893,7 +3893,12 @@ window.lizMap = function() {
       getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
 
       // Download file
-      Utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options']);
+      document.querySelectorAll('.exportLayer').forEach(el => el.disabled = true);
+      mAddMessage(lizDict['layer.export.started'], 'info', true).addClass('export-in-progress');
+      Utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options'], () => {
+        document.querySelectorAll('.exportLayer').forEach(el => el.disabled = false);
+        document.querySelector('#message .export-in-progress a').click();
+      });
 
       return false;
   }
