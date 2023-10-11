@@ -589,6 +589,10 @@ class QgisForm implements QgisFormControlsInterface
                 $constraintExpressions[$fieldName] = $constraints['exp_value'];
             }
         }
+        // Get geometry from form if already set
+        if ($geometryColumn != '' && $values[$geometryColumn] == null) {
+            $values[$geometryColumn] = $form->getData($geometryColumn);
+        }
 
         // Check the geometry is inside the filtering polygons, if relevant
         $geomInPolygon = $this->layer->checkFeatureAgainstPolygonFilter($values);
