@@ -29,3 +29,8 @@ do
     sed -i "s@<version date=\"[0-9-]\+\">[a-z.0-9-]\+</version>@<version date=\"$1\">$2</version>@g" "$file"
     echo "$file"
 done
+
+git add README.md
+git add lizmap/project.xml
+git add lizmap/modules/*/module.xml
+git commit -m "Bump to version $2"
