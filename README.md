@@ -1,4 +1,4 @@
-# [![logo](icon.png "3Liz")][3liz]Lizmap Web Client 3.5.15
+# [![logo](icon.png "3Liz")][3liz]Lizmap Web Client 3.5.16
 
 ![Unit tests](https://github.com/3liz/lizmap-web-client/workflows/Unit%20tests%20%F0%9F%8E%B3/badge.svg)
 ![Lint](https://github.com/3liz/lizmap-web-client/workflows/Lint/badge.svg)
