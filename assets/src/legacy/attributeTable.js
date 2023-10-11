@@ -2691,10 +2691,12 @@ var lizAttributeTable = function() {
                         else if( aFilter && cascade != 'removeChildrenFilter' ) {
                             cExpFilter = '"' + cData['fieldToFilter'] + '" IN ( -99999 )';
                         }
-                        cFilter = wmsName + ':' + cExpFilter;
+                        const cLayerConfig = config.layers[cName];
+                        const cWmsName = cLayerConfig?.shortname || cLayerConfig.name;
+                        cFilter = cWmsName + ':' + cExpFilter;
 
-                        config.layers[cName]['request_params']['filter'] = cFilter;
-                        config.layers[cName]['request_params']['exp_filter'] = cExpFilter;
+                        cLayerConfig['request_params']['filter'] = cFilter;
+                        cLayerConfig['request_params']['exp_filter'] = cExpFilter;
 
                         typeNameFilter[x] = cExpFilter;
                         typeNamePile.push( x );
