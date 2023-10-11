@@ -8,6 +8,12 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.5.16 - 2023-10-11
+
+### Fixed
+
+* Fix cascade layer's filter to use the parent WMS name instead of the layer name
+
 ## 3.5.15 - 2023-10-03
 
 ### Fixed
