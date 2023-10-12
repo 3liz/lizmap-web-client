@@ -29,7 +29,7 @@ class qgisVectorLayerDatasource
         'type' => 'type=([a-zA-Z]+) ',
         'checkPrimaryKeyUnicity' => "checkPrimaryKeyUnicity='([0-1]+)' ",
         'table' => 'table="(.+?)"($|\s)',
-        'geocol' => '\(([^ ]+)\)',
+        'geocol' => '\(([^ >]+)\)',
         'sql' => ' sql=(.*)$',
     );
 
@@ -87,25 +87,40 @@ class qgisVectorLayerDatasource
         // For other parameters, use specific parameter regex
         $regex = $this->datasourceRegexes[$param];
 
-        preg_match(
-            '#'.$regex.'#s',
-            $this->datasource,
-            $result
-        );
+        // Specific preg_match for the table, which can be very complex
+        $result = array();
+        $backSlashedQuoteReplacement = null;
+        if ($param == 'table') {
+            // We need to replace the \" in the datasource to avoid issues for complex sub-queries in table=()
+            $backSlashedQuoteReplacement = '@@@LIZMAP@@@';
+            preg_match(
+                '#'.$regex.'#s',
+                str_replace('\\"', $backSlashedQuoteReplacement, $this->datasource),
+                $result
+            );
+        } else {
+            preg_match(
+                '#'.$regex.'#s',
+                $this->datasource,
+                $result
+            );
+        }
 
         $nb_result = count($result);
         if ((2 <= $nb_result) and ($nb_result <= 3) and strlen($result[1])) {
+            // We replace back the backslahsed quote replacement in the value by double-quotes
             $value = $result[1];
+            if ($param == 'table') {
+                $value = str_replace($backSlashedQuoteReplacement, '"', $result[1]);
+            }
 
             // Specific parsing for complex table parameter
             if ($param == 'table') {
                 $table = $value;
 
-                // Complex subquery
+                // Complex sub-query
                 if (substr($table, 0, 1) == '(' and substr($table, -1) == ')') {
                     $table = $table.' fooliz';
-                    // remove \" which escapes table and schema names in QGIS WML within subquery
-                    $table = str_replace('\"', '"', $table);
                 }
                 // Simple "schemaname"."table_name"
                 elseif (preg_match('#"."#', $table)) {
