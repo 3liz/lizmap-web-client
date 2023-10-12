@@ -8,10 +8,27 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.7 - 2023-10-12
+
+### Added
+
+* Add a message about exporting data is in on progress
+
 ### Fixed
 
 - A locale for the account registration was missing, generating a 500 error.
 
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Funders
+
+* [WPD](https://www.wpd.fr/)
+* [Calvados province in France](https://www.calvados.fr/) 
+* [Vaucluse province in France](https://www.vaucluse.fr/)
 
 ## 3.6.6 - 2023-10-04
 
