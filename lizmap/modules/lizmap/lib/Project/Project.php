@@ -1685,9 +1685,6 @@ class Project
             $configJson->layersOrder = $this->layersOrder;
         }
 
-        // set printTemplates in config
-        $configJson->printTemplates = $this->printCapabilities;
-
         // Remove FTP remote directory
         if (property_exists($configJson->options, 'remoteDir')) {
             unset($configJson->options->remoteDir);
@@ -1791,11 +1788,60 @@ class Project
             }
         }
 
-        // Get user groups to check layers visibility
+        // Get user groups to check layouts and layers visibility
         $userGroups = array('');
         if ($this->appContext->userIsConnected()) {
             $userGroups = $this->appContext->aclUserGroupsId();
         }
+
+        // set printTemplates in config
+        $layoutsList = array();
+        if (property_exists($configJson, 'layouts')
+            && property_exists($configJson->layouts, 'list')) {
+            $layoutsList = $configJson->layouts->list;
+        }
+        $enabledLayoutNames = array();
+        $enabledLayouts = array();
+        foreach ($layoutsList as $layoutCfg) {
+            if (!$layoutCfg->enabled) {
+                continue;
+            }
+            $layoutName = $layoutCfg->layout;
+            if (!property_exists($layoutCfg, 'allowed_groups')
+                || empty($layoutCfg->allowed_groups)) {
+                $enabledLayoutNames[] = $layoutName;
+                if (property_exists($layoutCfg, 'allowed_groups')) {
+                    unset($layoutCfg->allowed_groups);
+                }
+                $enabledLayouts[] = $layoutCfg;
+
+                continue;
+            }
+            $allowed_groups = $layoutCfg->allowed_groups;
+            if (!is_array($allowed_groups)) {
+                $allowed_groups = explode(',', $allowed_groups);
+            }
+            $allowed_groups = array_map('trim', $allowed_groups);
+            foreach ($userGroups as $group) {
+                if (!in_array($group, $allowed_groups)) {
+                    continue;
+                }
+
+                $enabledLayoutNames[] = $layoutName;
+                unset($layoutCfg->allowed_groups);
+                $enabledLayouts[] = $layoutCfg;
+
+                break;
+            }
+        }
+        $configJson->layouts->list = $enabledLayouts;
+        $configJson->printTemplates = array();
+        foreach ($this->printCapabilities as $printCapabilities) {
+            if (in_array($printCapabilities['title'], $enabledLayoutNames)) {
+                $configJson->printTemplates[] = $printCapabilities;
+            }
+        }
+
         // Check layers visibility
         // and update the layers info
         $layersToRemove = array();

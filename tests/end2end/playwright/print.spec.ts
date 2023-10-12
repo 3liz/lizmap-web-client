@@ -130,3 +130,95 @@ test.describe('Print in popup', () => {
         expect(response.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
     });
 });
+
+test.describe('Print - user in group a', () => {
+    test.use({ storageState: 'playwright/.auth/user_in_group_a.json' });
+
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=print';
+        await page.goto(url, { waitUntil: 'networkidle' });
+
+        await page.locator('#button-print').click();
+
+        await page.locator('#print-scale').selectOption('100000');
+    });
+
+    test('Print UI', async ({ page }) => {
+        // Templates
+        await expect(page.locator('#print-template > option')).toHaveCount(2);
+        await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
+
+        // Test `print_labels` template
+
+        // Format and DPI are not displayed as there is only one value
+        await expect(page.locator('#print-format')).toHaveCount(0);
+        await expect(page.locator('.print-dpi')).toHaveCount(0);
+
+        // Test `print_map` template
+        await page.locator('#print-template').selectOption('1');
+
+        // Format and DPI lists exist as there are multiple values
+        await expect(page.locator('#print-format > option')).toHaveCount(2);
+        await expect(page.locator('#print-format > option')).toContainText(['JPEG', 'PNG']);
+        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
+        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
+
+        // PNG is default
+        expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
+        // 200 DPI is default
+        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
+    });
+});
+
+test.describe('Print - admin', () => {
+    test.use({ storageState: 'playwright/.auth/admin.json' });
+
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=print';
+        await page.goto(url, { waitUntil: 'networkidle' });
+
+        await page.locator('#button-print').click();
+
+        await page.locator('#print-scale').selectOption('100000');
+    });
+
+    test('Print UI', async ({ page }) => {
+        // Templates
+        await expect(page.locator('#print-template > option')).toHaveCount(3);
+        await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map', 'print_allowed_groups']);
+
+        // Test `print_labels` template
+
+        // Format and DPI are not displayed as there is only one value
+        await expect(page.locator('#print-format')).toHaveCount(0);
+        await expect(page.locator('.print-dpi')).toHaveCount(0);
+
+        // Test `print_map` template
+        await page.locator('#print-template').selectOption('1');
+
+        // Format and DPI lists exist as there are multiple values
+        await expect(page.locator('#print-format > option')).toHaveCount(2);
+        await expect(page.locator('#print-format > option')).toContainText(['JPEG', 'PNG']);
+        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
+        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
+
+        // PNG is default
+        expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
+        // 200 DPI is default
+        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
+
+        // Test `print_allowed_groups` template
+        await page.locator('#print-template').selectOption('2');
+
+        // Format and DPI lists exist as there are multiple values
+        await expect(page.locator('#print-format > option')).toHaveCount(4);
+        await expect(page.locator('#print-format > option')).toContainText(['PDF', 'SVG', 'PNG', 'JPEG']);
+        await expect(page.locator('.btn-print-dpis > option')).toHaveCount(3);
+        await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200', '300']);
+
+        // PNG is default
+        expect(await page.locator('#print-format').inputValue()).toBe('pdf');
+        // 200 DPI is default
+        expect(await page.locator('.btn-print-dpis').inputValue()).toBe('100');
+    });
+});
