@@ -16,7 +16,10 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Fixed
 
-- A locale for the account registration was missing, generating a 500 error.
+* When creating/editing a geometry, check the spatial constraint 
+* Fix an error about GetFeatureInfo and GetFilterToken requests to QGIS server
+* Fix cascade layer's filter to use the parent WMS name instead of the layer name
+* A locale for the account registration was missing, generating a 500 error
 
 ### Translations
 
