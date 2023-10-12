@@ -38,15 +38,19 @@ export default class Print extends HTMLElement {
                     }
 
                     // Lizmap >= 3.7
-                    this._layouts = mainLizmap.config?.layouts;
+                    const layouts = mainLizmap.config?.layouts;
+                    this._layouts = [];
 
                     this._printTemplates = [];
 
+                    // Filtering printTemplates by atlas enabled
+                    // and since 3.7 by layout enabled
                     mainLizmap.config?.printTemplates.map((template, index) => {
                         if (template?.atlas?.enabled === '0'){
                             // Lizmap >= 3.7
-                            if (this._layouts?.list) {
-                                if(this._layouts.list?.[index]?.enabled){
+                            if (layouts?.list) {
+                                if(layouts.list?.[index]?.enabled){
+                                    this._layouts.push(layouts.list[index]);
                                     this._printTemplates.push(template);
                                 }
                                 // Lizmap < 3.7
@@ -389,8 +393,8 @@ export default class Print extends HTMLElement {
     }
 
     get printFormats() {
-        let formats = this._layouts?.list?.[this._printTemplate]?.formats_available;
-        const defaultFormat = this._layouts?.list?.[this._printTemplate]?.default_format;
+        let formats = this._layouts?.[this._printTemplate]?.formats_available;
+        const defaultFormat = this._layouts?.[this._printTemplate]?.default_format;
 
         // Put default format on top
         if (formats && defaultFormat) {
@@ -402,17 +406,17 @@ export default class Print extends HTMLElement {
     }
 
     get defaultFormat() {
-        const defaultFormat = this._layouts?.list?.[this._printTemplate]?.default_format;
+        const defaultFormat = this._layouts?.[this._printTemplate]?.default_format;
         return defaultFormat || 'pdf';
     }
 
     get printDPIs() {
-        let DPIs = this._layouts?.list?.[this._printTemplate]?.dpi_available;
+        let DPIs = this._layouts?.[this._printTemplate]?.dpi_available;
         return DPIs || ['100', '200', '300'];
     }
 
     get defaultDPI() {
-        const defaultDPI = this._layouts?.list?.[this._printTemplate]?.default_dpi;
+        const defaultDPI = this._layouts?.[this._printTemplate]?.default_dpi;
         return defaultDPI || '100';
     }
 
