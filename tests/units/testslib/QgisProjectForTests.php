@@ -10,7 +10,23 @@ class QgisProjectForTests extends QgisProject
             parent::__construct(null, new lizmapServices(null, null, false, '', ''), new ContextForTests(), $data);
         }
     }
+    public function readXMLProjectTest($file)
+    {
+         return $this->readXMLProject($file);
+    }
 
+    public function getLayers()
+    {
+         return $this->layers;
+    }
+    public function getRelations()
+    {
+         return $this->relations;
+    }
+    public function getRelationsFields()
+    {
+         return $this->relationsFields;
+    }
     public function readWMSInfoTest($xml)
     {
         return $this->readWMSInformation($xml);
@@ -70,6 +86,11 @@ class QgisProjectForTests extends QgisProject
         $this->xml = $xml;
     }
 
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+    
     public function setLayers($layers)
     {
         $this->layers = $layers;

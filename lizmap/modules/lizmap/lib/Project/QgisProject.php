@@ -1258,11 +1258,11 @@ class QgisProject
         $this->WMSInformation = $this->readWMSInformation($qgsXml);
         $this->canvasColor = $this->readCanvasColor($qgsXml);
         $this->allProj4 = $this->readAllProj4($qgsXml);
-        list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
         $this->themes = $this->readThemes($qgsXml);
         $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
         $this->layers = $this->readLayers($qgsXml);
+        list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
     }
 
     protected function readWMSInformation($qgsLoad)
@@ -1479,6 +1479,8 @@ class QgisProject
                     'referencedField' => $relationField['referencedField'],
                     'referencingField' => $relationField['referencingField'],
                     'previewField' => $relationField['previewField'],
+                    'relationName' => (string) $relationObj->name,
+                    'relationId' => (string) $relationObj->id,
                 );
 
                 if (!array_key_exists($referencingLayerId, $pivotGather)) {

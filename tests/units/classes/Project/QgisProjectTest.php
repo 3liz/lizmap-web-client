@@ -236,6 +236,8 @@ class QgisProjectTest extends TestCase
                     'referencedField' => 'QUARTMNO',
                     'referencingField' => 'QUARTMNO',
                     'previewField' => 'LIBQUART',
+                    'relationName' => 'Subdistricts by district',
+                    'relationId' => 'SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO'
                 ),
             ),
             'tramstop20150328114203878' => array(
@@ -243,6 +245,8 @@ class QgisProjectTest extends TestCase
                     'referencedField' => 'osm_id',
                     'referencingField' => 'stop_id',
                     'previewField' => 'unique_name',
+                    'relationName' => 'Tram stop -> pivot tram stop/tram line',
+                    'relationId' => 'jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id'
                 ),
             ),
             'pivot' => array(),
@@ -277,6 +281,65 @@ class QgisProjectTest extends TestCase
         list($relations, $relationsFields) = $testQgis->readRelationsForTests($xml);
         $this->assertEquals($expectedRelations, $relations);
         $this->assertEquals($expectedFields, $relationsFields);
+    }
+
+    public function testEmbeddedRelation()
+    {
+         $file = __DIR__.'/Ressources/relations_project_embed.qgs';
+         $testQgis = new qgisProjectForTests();
+         $testQgis->setPath($file);
+         $testQgis->readXMLProjectTest($file);
+
+         //check layers
+         foreach ($testQgis->getLayers() as $layers){
+                  $this->assertEquals($layers["embedded"],1);
+                  $this->assertEquals($layers["projectPath"],'./relations_project.qgs');
+         }
+
+         //check relation on embedded project
+         $expectedRelationsOnEmbeddedLayers = array(
+                  'father_layer_79f5a996_39db_4a1f_b270_dfe21d3e44ff' => array(
+                      array('referencingLayer' => 'child_layer_8dec6d75_eeed_494b_b97f_5f2c7e16fd00',
+                          'referencedField' => 'ref_id',
+                          'referencingField' => 'father_id',
+                          'previewField'=>'fid',
+                          'relationName' => 'fk_father_child_relation',
+                          'relationId' => 'child_laye_father_id_father_lay_ref_id_1',
+
+                      ),
+                  ),
+                  'pivot' => array(),
+         );
+
+         $expectedFieldsOnEmbeddedLayers = array(
+                  array (
+                      'id' => 'child_laye_father_id_father_lay_ref_id_1',
+                      'layerName' => 'father_layer',
+                      'typeName' => 'father_layer',
+                      'propertyName' => 'ref_id,fid',
+                      'filterExpression' => '',
+                      'referencedField' => 'ref_id',
+                      'referencingField' => 'father_id',
+                      'previewField' => 'fid',
+                  )
+         );
+
+         $relations = $testQgis->getRelations(); 
+         $relationFields = $testQgis->getRelationsFields();
+         $this->assertEquals($expectedRelationsOnEmbeddedLayers, $relations);
+         $this->assertEquals($expectedFieldsOnEmbeddedLayers, $relationFields);
+
+         // check relations identity on main project
+         $file = __DIR__.'/Ressources/relations_project.qgs';
+         $testQgisParent = new qgisProjectForTests();
+         $testQgisParent->setPath($file);
+         $testQgisParent->readXMLProjectTest($file);
+
+         $parentRelations = $testQgisParent->getRelations();
+         $parentRelationFields = $testQgisParent->getRelationsFields();
+         $this->assertEquals($relations,$parentRelations);
+         $this->assertEquals($relationFields,$parentRelationFields);
+
     }
 
     public function testCacheConstruct()
