@@ -19,7 +19,7 @@ echo "Date    : "$1
 echo "Version : "$2
 
 echo "README.md"
-sed -i "1 s/[.0-9-]\+$/$2/" README.md
+sed -i "1 s/[a-z.0-9-]\+$/$2/" README.md
 
 echo "lizmap/project.xml"
 sed -i "s@<version date=\"[0-9-]\+\">[a-z.0-9-]\+</version>@<version date=\"$1\">$2</version>@g" lizmap/project.xml
