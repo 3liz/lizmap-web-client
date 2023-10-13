@@ -12,7 +12,7 @@
   "devDependencies": {
     "eslint": "^8.45.0",
     "jsts": "^2.10.0",
-    "lit-html": "^2.7.5",
+    "lit-html": "^3.0.0",
     "ol": "^8.1.0",
     "proj4": "^2.9.0",
     "svg-sprite-loader": "^6.0.11",
