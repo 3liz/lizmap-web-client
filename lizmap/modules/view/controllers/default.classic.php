@@ -3,7 +3,7 @@
  * Displays a list of project for a given repository.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2023 3liz
  *
  * @see      http://3liz.com
  *
@@ -136,8 +136,16 @@ class defaultCtrl extends jController
         if (file_exists($HTMLContentFile)) {
             $HTMLContent = jFile::read($HTMLContentFile);
             if ($HTMLContent) {
-                $tpl = new jTpl();
-                $rep->body->assign('landing_page_content', $tpl->fetchFromString($HTMLContent, 'html'));
+                $rep->body->assign('landing_page_content', $HTMLContent);
+            }
+        }
+
+        // Add custom HTML content at bottom of page
+        $HTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content_bottom.html');
+        if (file_exists($HTMLContentFile)) {
+            $HTMLContent = jFile::read($HTMLContentFile);
+            if ($HTMLContent) {
+                $rep->body->assign('landing_page_content_bottom', $HTMLContent);
             }
         }
 

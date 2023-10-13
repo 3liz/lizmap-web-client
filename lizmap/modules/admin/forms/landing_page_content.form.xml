@@ -2,7 +2,11 @@
 <form xmlns="http://jelix.org/ns/forms/1.1">
 
     <htmleditor ref="HTMLContent" config="ckfullandmedia">
-        <label></label>
+        <label locale="admin~admin.landingPageContent.top"/>
+    </htmleditor>
+
+    <htmleditor ref="BottomHTMLContent" config="ckfullandmedia">
+        <label locale="admin~admin.landingPageContent.bottom"/>
     </htmleditor>
 
     <submit ref="_submit">
