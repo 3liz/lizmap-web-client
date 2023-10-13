@@ -51,6 +51,11 @@
   </div>
   {/if}
   {$MAIN}
+    {if isset($landing_page_content_bottom)}
+        <div id="landingPageContentBottom">
+            {$landing_page_content_bottom}
+        </div>
+    {/if}
   <footer class="footer">
     <p class="pull-right">
       <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
