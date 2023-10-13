@@ -12,6 +12,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Added
 
+* Add some content in the footer of the main landing page. It's set in the administration interface, then "Landing page"
 * New password security checker
 * Add possibility to log with an email
 * Review of the permalink feature
