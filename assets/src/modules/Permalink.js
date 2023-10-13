@@ -24,6 +24,28 @@ export default class Permalink {
             }
         }
 
+        this._refreshURLsInPermalinkComponent();
+
+        // Handle events on permalink component
+        const btnPermalinkClear = document.querySelector('.btn-permalink-clear');
+
+        if (btnPermalinkClear) {
+            btnPermalinkClear.addEventListener('click', () => document.getElementById('button-permaLink').click());
+        }
+
+        const selectEmbedPermalink = document.getElementById('select-embed-permalink');
+
+        if (selectEmbedPermalink) {
+            selectEmbedPermalink.addEventListener('change', event => {
+                document.getElementById('span-embed-personalized-permalink').classList.toggle('hide', event.target.value !== 'p')
+                this._refreshURLsInPermalinkComponent();
+            });
+        }
+
+        document.querySelectorAll('#input-embed-width-permalink, #input-embed-height-permalink').forEach(input => 
+            input.addEventListener('input', this._refreshURLsInPermalinkComponent)
+        );
+
         // Refresh bbox parameter on moveend
         lizMap.map.events.on({
             moveend: () => {
@@ -35,6 +57,44 @@ export default class Permalink {
             () => this._writeURLFragment(),
             ['layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'group.style.changed', 'layer.opacity.changed', 'group.opacity.changed']
         );
+    }
+
+    // Set URL in permalink component's input
+    _refreshURLsInPermalinkComponent() {
+        const inputSharePermalink = document.getElementById('input-share-permalink');
+        const permalink = document.getElementById('permalink');
+        const selectEmbedPermalink = document.getElementById('select-embed-permalink');
+        const inputEmbedPermalink = document.getElementById('input-embed-permalink');
+
+        if (inputSharePermalink) {
+            inputSharePermalink.value = window.location.href;
+        }
+        if (permalink) {
+            permalink.href = window.location.href;
+        }
+        if (selectEmbedPermalink) {
+            const iframeSize = selectEmbedPermalink.value;
+            let width = 0;
+            let height = 0;
+
+            if ( iframeSize === 's' ) {
+                width = 400;
+                height = 300;
+            } else if ( iframeSize === 'm' ) {
+                width = 600;
+                height = 450;
+            } else if (iframeSize === 'l') {
+                width = 800;
+                height = 600;
+            } else if (iframeSize === 'p') {
+                width = document.getElementById('input-embed-width-permalink').value;
+                height = document.getElementById('input-embed-height-permalink').value;
+            }
+
+            const embedURL = window.location.href.replace('/map?','/embed?');
+
+            inputEmbedPermalink.value = `<iframe width="${width}" height="${height}" frameborder="0" style="border:0" src="${embedURL}" allowfullscreen></iframe>`;
+        }
     }
 
     _writeURLFragment() {
@@ -79,5 +139,7 @@ export default class Permalink {
 
         // Finally override URL fragment
         window.location.hash = hash;
+
+        this._refreshURLsInPermalinkComponent();
     }
 };
