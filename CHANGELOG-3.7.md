@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.0-beta.1 - 2023-10-13
+
 ### Added
 
 * New password security checker
