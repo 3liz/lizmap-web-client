@@ -10,6 +10,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Added
 
+* New password security checker
+* Add possibility to log with an email
 * Review of the permalink feature
 * Add the possibility to authenticate with the email
 * Draw text on the map canvas :
@@ -31,6 +33,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Review the popup order according to the list of layers
 * Fix PHP notice about CRS variable
 * Fix permalink generation when there isn't any layer checked
+* Fix loading relations from embedded layers in a project
+* Fix home page title in the top bar of the UI
+* When creating/editing a geometry, check the spatial constraint 
+* Fix an error about GetFeatureInfo and GetFilterToken requests to QGIS server
+* Fix cascade layer's filter to use the parent WMS name instead of the layer name
+* Fix latest features about QGIS layouts : groups allowed, order etc
+* Fix getting the table for sub-queries with escaped double-quotes
 
 ### Translations
 
@@ -41,6 +50,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Backend
 
 * Upgrade OpenLayers to version 8.1
+
+### Funders
+
+* [WPD](https://www.wpd.fr/)
+* [Calvados province in France](https://www.calvados.fr/) 
+* [Vaucluse province in France](https://www.vaucluse.fr/)
+* [Faunalia](https://www.faunalia.eu/fr)
 
 ## 3.7.0-alpha.2 - 2023-08-28
 
