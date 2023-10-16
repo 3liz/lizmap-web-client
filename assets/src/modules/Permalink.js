@@ -5,13 +5,23 @@ export default class Permalink {
 
     constructor() {
 
+        // Used to behave diffently when hash is changed
+        // programmatically or by users in URL
+        this._ignoreHashChange = false;
+
         // Change `checked`, `style` states based on URL fragment
         if (window.location.hash) {
-            this._runPermalink();
+            this._runPermalink(false);
         }
 
         window.addEventListener(
-            "hashchange", this._runPermalink
+            "hashchange", () => {
+                if (this._ignoreHashChange) {
+                    this._ignoreHashChange = false;
+                    return;
+                }
+                this._runPermalink()
+            }
         );
 
         this._refreshURLsInPermalinkComponent();
@@ -36,6 +46,36 @@ export default class Permalink {
             input.addEventListener('input', this._refreshURLsInPermalinkComponent)
         );
 
+        // Geobookmarks (only for logged in users)
+        const geobookmarkForm = document.getElementById('geobookmark-form');
+
+        if (geobookmarkForm) {
+            this._bindGeobookmarkEvents();
+
+            geobookmarkForm.addEventListener('submit', event => {
+                event.preventDefault();
+                const bname = document.querySelector('#geobookmark-form input[name="bname"]').value;
+                if (bname == '') {
+                    mAddMessage(lizDict['geobookmark.name.required'], 'error', true);
+                    return false;
+                }
+                const gbparams = {};
+                gbparams['project'] = lizUrls.params.project;
+                gbparams['repository'] = lizUrls.params.repository;
+                gbparams['hash'] = window.location.hash;
+                gbparams['name'] = bname;
+                gbparams['q'] = 'add';
+                fetch(lizUrls.geobookmark, {
+                    method: "POST",
+                    body: new URLSearchParams(gbparams)
+                }).then(response => {
+                    return response.text();
+                }).then( data => {
+                    this._setGeobookmarkContent(data);
+                });
+            });
+        }
+
         // Refresh bbox parameter on moveend
         lizMap.map.events.on({
             moveend: () => {
@@ -49,9 +89,55 @@ export default class Permalink {
         );
     }
 
-    _runPermalink() {
+    _setGeobookmarkContent(gbData) {
+        // set content
+        $('div#geobookmark-container').html(gbData);
+        // unbind previous click events
+        $('div#geobookmark-container button').unbind('click');
+        // Bind events
+        this._bindGeobookmarkEvents();
+        // Remove bname val
+        $('#geobookmark-form input[name="bname"]').val('').blur();
+    }
+
+    _bindGeobookmarkEvents() {
+        document.querySelectorAll('.btn-geobookmark-del').forEach(button => {
+            button.addEventListener('click', () => {
+                if (confirm(lizDict['geobookmark.confirm.delete'])) {
+                    var gbid = button.value;
+                    this._removeGeoBookmark(gbid);
+                }
+            });
+        });
+    }
+
+    _removeGeoBookmark(id) {
+        var gbparams = {
+            id: id,
+            q: 'del',
+            repository: lizUrls.params.repository,
+            project: lizUrls.params.project
+        };
+
+        fetch(lizUrls.geobookmark + '?' + new URLSearchParams(gbparams)).then(response => {
+            return response.text();
+        }).then( data => {
+            this._setGeobookmarkContent(data);
+        });
+    }
+
+    _runPermalink(setExtent = true) {
         const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
-        const [, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
+        const [extent4326, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
+
+        if (setExtent) {
+            const mapExtent = transformExtent(
+                extent4326.map(coord => parseFloat(coord)),
+                'EPSG:4326',
+                lizMap.map.projection.projCode
+            );
+            mainLizmap.extent = mapExtent;
+        }
 
         for (const item of items){
             if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
@@ -146,6 +232,7 @@ export default class Permalink {
         }
 
         // Finally override URL fragment
+        this._ignoreHashChange = true;
         window.location.hash = hash;
 
         this._refreshURLsInPermalinkComponent();
