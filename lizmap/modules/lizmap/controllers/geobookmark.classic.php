@@ -18,11 +18,7 @@ class geobookmarkCtrl extends jController
         $this->whiteParams = array(
             'repository',
             'project',
-            'bbox',
-            'layers',
-            'crs',
-            'layerStyles',
-            'filter',
+            'hash',
         );
 
         parent::__construct($request);
