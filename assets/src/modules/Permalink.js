@@ -7,22 +7,12 @@ export default class Permalink {
 
         // Change `checked`, `style` states based on URL fragment
         if (window.location.hash) {
-            const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
-            const [, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
-
-            for (const item of items){
-                if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
-                    const itemIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
-                    item.checked = true;
-                    if(item.type === 'layer'){
-                        item.wmsSelectedStyleName = decodeURIComponent(stylesInURL[itemIndex]);
-                    }
-                    item.opacity = parseFloat(opacitiesInURL[itemIndex]);
-                } else {
-                    item.checked = false;
-                }
-            }
+            this._runPermalink();
         }
+
+        window.addEventListener(
+            "hashchange", this._runPermalink
+        );
 
         this._refreshURLsInPermalinkComponent();
 
@@ -57,6 +47,24 @@ export default class Permalink {
             () => this._writeURLFragment(),
             ['layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'group.style.changed', 'layer.opacity.changed', 'group.opacity.changed']
         );
+    }
+
+    _runPermalink() {
+        const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
+        const [, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
+
+        for (const item of items){
+            if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
+                const itemIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
+                item.checked = true;
+                if(item.type === 'layer'){
+                    item.wmsSelectedStyleName = decodeURIComponent(stylesInURL[itemIndex]);
+                }
+                item.opacity = parseFloat(opacitiesInURL[itemIndex]);
+            } else {
+                item.checked = false;
+            }
+        }
     }
 
     // Set URL in permalink component's input
