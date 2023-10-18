@@ -817,6 +817,16 @@ ALTER SEQUENCE tests_projects.form_edition_snap_id_seq OWNED BY tests_projects.f
 
 
 --
+-- Name: form_edition_snap_polygon; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_polygon (
+    id integer NOT NULL,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
 -- Name: form_edition_upload; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -2131,6 +2141,15 @@ COPY tests_projects.form_edition_snap (id, geom) FROM stdin;
 
 
 --
+-- Data for Name: form_edition_snap_polygon; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_snap_polygon (id, geom) FROM stdin;
+1	0103000020E61000000100000006000000EC9DA8506E870E40B53E1364CED6454080E5F8FCF9DD0E40B53E1364CED645405FD0864658DF0E40187E6987B3D24540A3180CE3C5870E40C10E1D95A8D24540A3180CE3C5870E40C10E1D95A8D24540EC9DA8506E870E40B53E1364CED64540
+\.
+
+
+--
 -- Data for Name: form_edition_upload; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -2974,6 +2993,14 @@ ALTER TABLE ONLY tests_projects.form_edition_snap
 
 
 --
+-- Name: form_edition_snap_polygon form_edition_snap_polygon_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_polygon
+    ADD CONSTRAINT form_edition_snap_polygon_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: form_edition_upload form_edition_upload_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
@@ -3215,6 +3242,13 @@ CREATE INDEX fki_stop_fkey ON tests_projects.tramway_pivot USING btree (id_stop)
 --
 
 CREATE INDEX sidx_form_edition_snap_geom ON tests_projects.form_edition_snap USING gist (geom);
+
+
+--
+-- Name: sidx_form_edition_snap_polygon_geom; Type: INDEX; Schema: tests_projects; Owner: -
+--
+
+CREATE INDEX sidx_form_edition_snap_polygon_geom ON tests_projects.form_edition_snap_polygon USING gist (geom);
 
 
 --
