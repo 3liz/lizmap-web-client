@@ -951,6 +951,41 @@ ALTER SEQUENCE tests_projects.form_edition_vr_point_id_seq OWNED BY tests_projec
 
 
 --
+-- Name: form_edition_vr_polygon; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_vr_polygon (
+    id integer NOT NULL,
+    code_without_exp text,
+    code_with_simple_exp text,
+    code_for_drill_down_exp text,
+    code_with_drill_down_exp text,
+    code_with_geom_exp text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: form_edition_vr_polygon_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_vr_polygon_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_vr_polygon_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_vr_polygon_id_seq OWNED BY tests_projects.form_edition_vr_polygon.id;
+
+
+--
 -- Name: form_filter; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -1774,6 +1809,13 @@ ALTER TABLE ONLY tests_projects.form_edition_vr_point ALTER COLUMN id SET DEFAUL
 
 
 --
+-- Name: form_edition_vr_polygon id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_vr_polygon ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_vr_polygon_id_seq'::regclass);
+
+
+--
 -- Name: form_filter id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -2165,6 +2207,14 @@ COPY tests_projects.form_edition_vr_list (id, code, label, code_parent, geom) FR
 --
 
 COPY tests_projects.form_edition_vr_point (id, code_without_exp, code_with_simple_exp, code_for_drill_down_exp, code_with_drill_down_exp, code_with_geom_exp, geom) FROM stdin;
+\.
+
+
+--
+-- Data for Name: form_edition_vr_polygon; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_vr_polygon (id, code_without_exp, code_with_simple_exp, code_for_drill_down_exp, code_with_drill_down_exp, code_with_geom_exp, geom) FROM stdin;
 \.
 
 
@@ -2641,6 +2691,13 @@ SELECT pg_catalog.setval('tests_projects.form_edition_vr_point_id_seq', 1, false
 
 
 --
+-- Name: form_edition_vr_polygon_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_vr_polygon_id_seq', 1, false);
+
+
+--
 -- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -3018,6 +3075,14 @@ ALTER TABLE ONLY tests_projects.form_edition_vr_list
 
 ALTER TABLE ONLY tests_projects.form_edition_vr_point
     ADD CONSTRAINT form_edition_vr_point_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_vr_polygon form_edition_vr_polygon_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_vr_polygon
+    ADD CONSTRAINT form_edition_vr_polygon_pkey PRIMARY KEY (id);
 
 
 --
