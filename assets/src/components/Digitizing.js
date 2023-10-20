@@ -169,12 +169,14 @@ export default class Digitizing extends HTMLElement {
                     <legend>${lizDict['digitizing.toolbar.text']}</legend>
                     <textarea placeholder="${lizDict['digitizing.toolbar.newText']}" .value=${mainLizmap.digitizing.editedFeatureText} @input=${ event=> mainLizmap.digitizing.editedFeatureText = event.target.value}></textarea>
                     <div class='digitizing-text-rotation'>
+                        <label for="textRotation">${lizDict['digitizing.toolbar.textRotation']}</label>
                         <div class="input-append">
-                            <input type="number" class="input-small" placeholder="${lizDict['digitizing.toolbar.textRotation']}" .value=${mainLizmap.digitizing.editedFeatureTextRotation} @input=${ event => { mainLizmap.digitizing.editedFeatureTextRotation = parseInt(event.target.value) }}>
+                            <input id="textRotation" type="number" class="input-mini" .value=${mainLizmap.digitizing.editedFeatureTextRotation} @input=${ event => { mainLizmap.digitizing.editedFeatureTextRotation = parseInt(event.target.value) }}>
                             <span class="add-on">°</span>
                         </div>
                     </div>
-                    <input type="number" min="1" class="input-small" placeholder="${lizDict['digitizing.toolbar.textScale']}" .value=${mainLizmap.digitizing.editedFeatureTextScale} @input=${ event => { mainLizmap.digitizing.editedFeatureTextScale = parseInt(event.target.value) }}>
+                    <label for="textScale">${lizDict['digitizing.toolbar.textScale']}</label>
+                    <input id="textScale" type="number" min="1" class="input-mini" .value=${mainLizmap.digitizing.editedFeatureTextScale} @input=${ event => { mainLizmap.digitizing.editedFeatureTextScale = parseInt(event.target.value) }}>
                 </fieldset>
             </form>
         </div>`;

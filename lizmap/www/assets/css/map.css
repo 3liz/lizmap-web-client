@@ -2680,6 +2680,12 @@ input[type="color"].digitizing-color{
   margin-top: 5px;
 }
 
+.digitizing-text-tools label{
+  display: inline-block;
+  width: 50px;
+  text-align: right;
+}
+
 .ol-tooltip {
   position: relative;
   background: rgba(0, 0, 0, 0.5);
