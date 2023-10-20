@@ -1569,6 +1569,15 @@ CREATE SEQUENCE tests_projects.tramway_stops_id_stop_seq
     NO MAXVALUE
     CACHE 1;
 
+--
+-- Name: form_edition_upload_webdav; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav (
+    id SERIAL PRIMARY KEY,
+    remote_path text,
+    local_path text
+);
 
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
@@ -2135,6 +2144,13 @@ COPY tests_projects.form_edition_snap (id, geom) FROM stdin;
 --
 
 COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file, text_file_mandatory, image_file_mandatory, image_file_specific_root_folder) FROM stdin;
+\.
+
+--
+-- Data for Name: form_edition_upload_webdav; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_upload_webdav (id, remote_path, local_path) FROM stdin;
 \.
 
 

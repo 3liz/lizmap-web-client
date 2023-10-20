@@ -1911,7 +1911,35 @@ class QgisProjectTest extends TestCase
                 </config>
               </editWidget>
             </field>
-
+            <field name="remote_path" configurationFlags="None">
+            <editWidget type="ExternalResource">
+              <config>
+                <Option type="Map">
+                  <Option type="int" value="0" name="DocumentViewer"/>
+                  <Option type="int" value="0" name="DocumentViewerHeight"/>
+                  <Option type="int" value="0" name="DocumentViewerWidth"/>
+                  <Option type="bool" value="true" name="FileWidget"/>
+                  <Option type="bool" value="true" name="FileWidgetButton"/>
+                  <Option type="QString" value="" name="FileWidgetFilter"/>
+                  <Option type="Map" name="PropertyCollection">
+                    <Option type="QString" value="" name="name"/>
+                    <Option type="Map" name="properties">
+                      <Option type="Map" name="storageUrl">
+                        <Option type="bool" value="true" name="active"/>
+                        <Option type="QString" value="\'http://webdav/\'|| file_name(@selected_file_path)" name="expression"/>
+                        <Option type="int" value="3" name="type"/>
+                      </Option>
+                    </Option>
+                    <Option type="QString" value="collection" name="type"/>
+                  </Option>
+                  <Option type="int" value="0" name="RelativeStorage"/>
+                  <Option type="QString" value="yenntsb" name="StorageAuthConfigId"/>
+                  <Option type="int" value="0" name="StorageMode"/>
+                  <Option type="QString" value="WebDAV" name="StorageType"/>
+                </Option>
+              </config>
+            </editWidget>
+          </field>
           </fieldConfiguration>
         </maplayer>
         ';
@@ -1972,6 +2000,17 @@ class QgisProjectTest extends TestCase
         $this->assertEquals('.png, .jpg', $imageFile->getUploadAccept());
         $this->assertEquals(array('image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg'), $imageFile->getMimeTypes());
         $this->assertTrue($imageFile->isImageUpload());
+
+        $this->assertTrue(array_key_exists('remote_path', $props));
+        $remotePath = $props['remote_path'];
+        $this->assertEquals('WebDAV',$remotePath->getEditAttribute("StorageType"));
+        $this->assertEquals("'http://webdav/'|| file_name(@selected_file_path)",$remotePath->getEditAttribute("webDAVStorageUrl"));
+        $this->assertEquals('upload', $remotePath->getMarkup());
+        $this->assertEquals('', $remotePath->getUploadCapture());
+        $this->assertEquals('', $remotePath->getUploadAccept());
+        $this->assertEquals(array(), $remotePath->getMimeTypes());
+        $this->assertFalse($remotePath->isImageUpload());
+
 
     }
 }
