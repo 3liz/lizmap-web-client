@@ -2672,6 +2672,12 @@ input[type="color"].digitizing-color{
   font-size: x-large;
 }
 
+.digitizing-constraints details {
+  padding: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
 .digitizing-text{
   font-weight: bold;
 }

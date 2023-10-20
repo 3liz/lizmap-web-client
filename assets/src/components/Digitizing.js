@@ -155,6 +155,9 @@ export default class Digitizing extends HTMLElement {
                 </div>
             </div>
             <div class="digitizing-constraints ${mainLizmap.digitizing.hasConstraintsPanelVisible ? '' : 'hide'}">
+                <details>
+                    <summary>${lizDict['digitizing.constraint.title']}</summary>${lizDict['digitizing.constraint.details']}
+                </details>
                 <div class="input-append">
                     <input type="number" placeholder="${lizDict['digitizing.constraint.distance']}" class="distance" min="0" @input=${(event)=> mainLizmap.digitizing.distanceConstraint = event.target.value}>
                     <span class="add-on">m</span>
