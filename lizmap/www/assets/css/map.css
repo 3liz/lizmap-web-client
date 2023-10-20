@@ -2672,7 +2672,7 @@ input[type="color"].digitizing-color{
   font-size: x-large;
 }
 
-.digitizing-constraints details {
+lizmap-digitizing details {
   padding: 5px;
   cursor: pointer;
   font-size: 14px;
