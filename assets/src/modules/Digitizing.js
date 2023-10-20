@@ -295,9 +295,9 @@ export default class Digitizing {
 
     get editedFeatureTextScale() {
         if (this.editedFeatures.length !== 0) {
-            return this.editedFeatures[0].get('scale') || '';
+            return this.editedFeatures[0].get('scale') || 1;
         }
-        return '';
+        return 1;
     }
 
     set editedFeatureTextScale(scale) {
