@@ -14,7 +14,7 @@ import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
-import { Point, LineString, Polygon, Circle as CircleGeom } from 'ol/geom.js';
+import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint } from 'ol/geom.js';
 import { circular } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
@@ -107,6 +107,24 @@ export default class Digitizing {
                             color: color,
                             width: this._strokeWidth
                         }),
+                    }),
+                    new Style({
+                        image: new Circle({
+                            radius: 5,
+                            fill: new Fill({
+                                color: color,
+                            }),
+                        }),
+                        geometry: feature => {
+                            const geometryType = feature.getGeometry().getType();
+                            if (geometryType === "LineString") {
+                                return new MultiPoint(feature.getGeometry().getCoordinates());
+                            }
+                            if (geometryType === "Polygon") {
+                                // return the coordinates of the first ring of the polygon
+                                return new MultiPoint(feature.getGeometry().getCoordinates()[0]);
+                            }
+                        },
                     }),
                 ];
             }
