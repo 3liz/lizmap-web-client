@@ -582,6 +582,10 @@ export default class Digitizing {
         mainEventDispatcher.dispatch('digitizing.measure');
     }
 
+    get hasConstraintsPanelVisible() {
+        return this._hasMeasureVisible && ['line', 'polygon'].includes(this.toolSelected);
+    }
+
     get isSaved() {
         return this._isSaved;
     }
