@@ -64,6 +64,10 @@ class QgisFormControl
 
     public $DefaultRoot;
 
+    public $isWebDAV;
+
+    public $webDavStorageUrl;
+
     public const QGIS_NULL_VALUE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
 
     // Table mapping QGIS and jelix forms
@@ -348,6 +352,12 @@ class QgisFormControl
         $upload->accept = $this->properties->getUploadAccept();
         $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
+        //WebDAV External Resource
+        if($this->getEditAttribute('StorageType') == "WebDAV"){
+                  $this->isWebDAV = true;
+                  $this->webDavStorageUrl = $this->getEditAttribute("webDAVStorageUrl");
+
+        }
         $this->ctrl = $upload;
     }
 
