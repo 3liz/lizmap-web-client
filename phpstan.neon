@@ -11,3 +11,8 @@ parameters:
   paths:
     - lizmap/modules
   tmpDir: .phpstan.cache
+  ignoreErrors:
+    - '#^Call to an undefined method jDaoFactoryBase#'
+  universalObjectCratesClasses:
+    - jDaoRecordBase
+    - jEvent
