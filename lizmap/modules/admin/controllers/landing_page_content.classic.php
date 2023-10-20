@@ -28,6 +28,7 @@ class landing_page_contentCtrl extends jController
 
         // Create the form, or get the existing one if we are here because of
         // a failed check
+        /** @var null|jFormsBase $form */
         $form = jForms::get('admin~landing_page_content');
         if (!$form) {
             $form = jForms::create('admin~landing_page_content');
@@ -68,6 +69,8 @@ class landing_page_contentCtrl extends jController
     {
         try {
             $form = jForms::fill('admin~landing_page_content');
+
+            /** @var null|jFormsBase $form */
             if (!$form || !$form->check()) {
                 // no form... this was a direct call to the save action
                 // or content is invalid
