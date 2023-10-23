@@ -44,13 +44,12 @@ class JelixContext implements AppContextInterface
      *
      * @param string $right    the key of the right to check
      * @param string $resource the id of a resource if any
-     * @param mixed  $role
      *
      * @return bool The result of jAcl2::check()
      */
-    public function aclCheck($role, $resource = null)
+    public function aclCheck($right, $resource = null)
     {
-        return \jAcl2::check($role, $resource);
+        return \jAcl2::check($right, $resource);
     }
 
     /**
@@ -217,8 +216,7 @@ class JelixContext implements AppContextInterface
      * Log an Exception.
      *
      * @param \Exception $exception The exception to log
-     * @param string The category of the logged Exception
-     * @param mixed $cat
+     * @param string     $cat       The category of the logged Exception
      */
     public function logException($exception, $cat = 'default')
     {
@@ -254,13 +252,10 @@ class JelixContext implements AppContextInterface
     /**
      * Return the properties of a profile by calling jProfile::get().
      *
-     * @param string The profile category
-     * @param string the profile name
-     * @param bool If true and if the profile doesn't exist, throw an error
-     * instead of getting the default profile
-     * @param mixed $category
-     * @param mixed $name
-     * @param mixed $noDefault
+     * @param string $category  The profile category
+     * @param string $name      the profile name
+     * @param bool   $noDefault If true and if the profile doesn't exist, throw an error
+     *                          instead of getting the default profile
      *
      * @return array properties
      */
@@ -272,10 +267,8 @@ class JelixContext implements AppContextInterface
     /**
      * Call jEvent::notify().
      *
-     * @param string The name of the event
-     * @param array the parameters of the event
-     * @param mixed $name
-     * @param mixed $params
+     * @param string $name   The name of the event
+     * @param array  $params the parameters of the event
      *
      * @return \jEvent
      */

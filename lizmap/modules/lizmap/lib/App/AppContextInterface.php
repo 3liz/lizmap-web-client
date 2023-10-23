@@ -50,11 +50,10 @@ interface AppContextInterface
      *
      * @param string $right    the key of the right to check
      * @param string $resource the id of a resource if any
-     * @param mixed  $role
      *
      * @return bool true if the right is ok
      */
-    public function aclCheck($role, $resource = null);
+    public function aclCheck($right, $resource = null);
 
     /**
      * Retrieve the list of groups id, the current user is member of,
@@ -97,9 +96,6 @@ interface AppContextInterface
     /**
      * Retrieve the list of groups properties, the current user is member of,
      * in the acl system.
-     *
-     * @param string $login login of the user. if not given, the current user
-     *                      is taken account
      *
      * @return array list of groups objects
      */
@@ -183,8 +179,7 @@ interface AppContextInterface
      * Log an Exception.
      *
      * @param \Exception $exception The exception to log
-     * @param string The category of the logged Exception
-     * @param mixed $cat
+     * @param string     $cat       The category of the logged Exception
      */
     public function logException($exception, $cat = 'default');
 
@@ -200,13 +195,11 @@ interface AppContextInterface
     /**
      * Return the properties of a profile.
      *
-     * @param string The profile category
-     * @param string the profile name
-     * @param bool If true and if the profile doesn't exist, throw an error
      * instead of getting the default profile
-     * @param mixed $category
-     * @param mixed $name
-     * @param mixed $noDefault
+     *
+     * @param string $category  The profile category
+     * @param string $name      the profile name
+     * @param bool   $noDefault If true and if the profile doesn't exist, throw an error
      *
      * @return array properties
      */
@@ -215,10 +208,8 @@ interface AppContextInterface
     /**
      * Send an application event.
      *
-     * @param string The name of the event
-     * @param array the parameters of the event
-     * @param mixed $eventName
-     * @param mixed $params
+     * @param string $eventName The name of the event
+     * @param array  $params    the parameters of the event
      *
      * @return object
      */
@@ -285,8 +276,7 @@ interface AppContextInterface
      * Returns the absolute Url.
      *
      * @param string $selector The Jelix selector of the Url
-     * @param array an associative array with the parameters of the Url
-     * @param mixed $params
+     * @param array  $params   an associative array with the parameters of the Url
      */
     public function getFullUrl($selector, $params = array());
 

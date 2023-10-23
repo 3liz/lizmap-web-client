@@ -30,9 +30,6 @@ class lizMapCtrl extends jController
     /**
      * Load the map page for the given project.
      *
-     * @param string $repository name of the repository
-     * @param string $project    name of the project
-     *
      * @return jResponseHtml|jResponseRedirect with map and content for the chose Qgis project
      */
     public function index()
