@@ -6,7 +6,7 @@
         "latest_release_date": "",
         "latest_release_version": "3.7.0",
         "qgis_max_version_recommended": 39900,
-        "qgis_min_version_recommended": 31000,
+        "qgis_min_version_recommended": 32200,
         "status": "dev"
     },
     {
@@ -40,7 +40,7 @@
         "first_release_date": "2020-12-18",
         "latest_release_date": "2022-10-18",
         "latest_release_version": "3.4.14",
-        "qgis_max_version_recommended": 39900,
+        "qgis_max_version_recommended": 32200,
         "qgis_min_version_recommended": 30000,
         "status": "retired"
     },
