@@ -2672,12 +2672,24 @@ input[type="color"].digitizing-color{
   font-size: x-large;
 }
 
+lizmap-digitizing details {
+  padding: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
 .digitizing-text{
   font-weight: bold;
 }
 
 .digitizing-text-tools{
   margin-top: 5px;
+}
+
+.digitizing-text-tools label{
+  display: inline-block;
+  width: 50px;
+  text-align: right;
 }
 
 .ol-tooltip {
