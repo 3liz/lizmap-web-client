@@ -2,41 +2,6 @@ parameters:
 	ignoreErrors:
 
 		-
-			message: "#^Access to an undefined property jEvent\\:\\:\\$tpl\\.$#"
-			count: 1
-			path: lizmap/modules/admin/classes/config.listener.php
-
-		-
-			message: "#^Call to an undefined method jDaoFactoryBase\\:\\:getDetailRange\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/admin/controllers/logs.classic.php
-
-		-
-			message: "#^Call to an undefined method jDaoFactoryBase\\:\\:getSortedCounter\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/admin/controllers/logs.classic.php
-
-		-
-			message: "#^Access to an undefined property jDaoRecordBase\\:\\:\\$id_aclgrp\\.$#"
-			count: 1
-			path: lizmap/modules/admin/controllers/maps.classic.php
-
-		-
-			message: "#^Access to an undefined property jDaoRecordBase\\:\\:\\$name\\.$#"
-			count: 1
-			path: lizmap/modules/admin/controllers/maps.classic.php
-
-		-
-			message: "#^Call to an undefined method jDaoFactoryBase\\:\\:findAllPublicGroup\\(\\)\\.$#"
-			count: 2
-			path: lizmap/modules/admin/controllers/maps.classic.php
-
-		-
-			message: "#^Call to an undefined method jDaoFactoryBase\\:\\:findAllSubject\\(\\)\\.$#"
-			count: 2
-			path: lizmap/modules/admin/controllers/maps.classic.php
-
-		-
 			message: "#^Comparison operation \"\\=\\=\" between 0\\|0\\.0\\|''\\|'0'\\|array\\{\\}\\|false\\|null and 0 results in an error\\.$#"
 			count: 1
 			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
@@ -365,25 +330,6 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
-		-
-			message: "#^Access to an undefined property jDaoRecordBase\\:\\:\\$login\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
-
-		-
-			message: "#^Access to an undefined property jDaoRecordBase\\:\\:\\$map\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
-
-		-
-			message: "#^Access to an undefined property jDaoRecordBase\\:\\:\\$name\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
-
-		-
-			message: "#^Access to an undefined property jDaoRecordBase\\:\\:\\$params\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
@@ -455,91 +401,6 @@ parameters:
 			count: 1
 			path: lizmap/modules/lizmap/install/upgrade_configjcommunity.php
 
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(array an associative array with the parameters of the Url\\)\\: Unexpected token \"an\", expected variable at offset 125$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(array the parameters of the event\\)\\: Unexpected token \"the\", expected variable at offset 108$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: """
-				#^PHPDoc tag @param has invalid value \\(bool If true and if the profile doesn't exist, throw an error
-				instead of getting the default profile\\)\\: Unexpected token "If", expected variable at offset 153$#
-			"""
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string The category of the logged Exception\\)\\: Unexpected token \"The\", expected variable at offset 114$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string The name of the event\\)\\: Unexpected token \"The\", expected variable at offset 66$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string The profile category\\)\\: Unexpected token \"The\", expected variable at offset 75$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string the profile name\\)\\: Unexpected token \"the\", expected variable at offset 117$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$login$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$right$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/AppContextInterface.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(array the parameters of the event\\)\\: Unexpected token \"the\", expected variable at offset 104$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
-
-		-
-			message: """
-				#^PHPDoc tag @param has invalid value \\(bool If true and if the profile doesn't exist, throw an error
-				instead of getting the default profile\\)\\: Unexpected token "If", expected variable at offset 180$#
-			"""
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string The category of the logged Exception\\)\\: Unexpected token \"The\", expected variable at offset 114$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string The name of the event\\)\\: Unexpected token \"The\", expected variable at offset 62$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string The profile category\\)\\: Unexpected token \"The\", expected variable at offset 102$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(string the profile name\\)\\: Unexpected token \"the\", expected variable at offset 144$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$right$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
 
 		-
 			message: "#^Return type \\(Iterator\\) of method Lizmap\\\\App\\\\JelixContext\\:\\:aclUserGroupsInfo\\(\\) should be compatible with return type \\(array\\) of method Lizmap\\\\App\\\\AppContextInterface\\:\\:aclUserGroupsInfo\\(\\)$#"
@@ -786,12 +647,4 @@ parameters:
 			count: 1
 			path: lizmap/modules/view/controllers/lizMap.classic.php
 
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$project$#"
-			count: 1
-			path: lizmap/modules/view/controllers/lizMap.classic.php
 
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
-			count: 1
-			path: lizmap/modules/view/controllers/lizMap.classic.php
