@@ -297,7 +297,7 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
-			count: 9
+			count: 6
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
