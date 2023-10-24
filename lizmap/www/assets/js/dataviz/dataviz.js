@@ -163,48 +163,43 @@ let lizDataviz = function () {
             }
         });
 
-
         // Toggle the plot visibility based on the plot configuration
         // and the layer visibility
         // Add event to hide/show plots if needed
         // We use the id variable for the plot: we are in the buildPlot function
-        lizMap.events.on({
-            'lizmaplayerchangevisibility': e => {
-                if (e.config !== undefined && 'datavizLayers' in lizMap.config) {
-                    // Get layer info
-                    let layerConfig = e.config;
-                    let layerId = layerConfig.id;
+        lizMap.mainLizmap.state.rootMapGroup.addListener(
+            evt => {
+                const layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(evt.name);
+                if (!layer) {
+                    return;
+                }
+                let layerId = layer.layerConfig.id;
 
-                    for (let pid in dv.config.layers) {
-                        // Plot container ID
-                        let plotContainerId = `dataviz_plot_${pid}`;
+                for (let pid in dv.config.layers) {
+                    // Plot container ID
+                    let plotContainerId = `dataviz_plot_${pid}`;
 
-                        // Plot global configuration
-                        let plot_config = dv.config.layers[pid];
-                        if (!('display_when_layer_visible' in plot_config.plot)) {
-                            continue;
-                        }
+                    // Plot global configuration
+                    let plot_config = dv.config.layers[pid];
+                    if (!('display_when_layer_visible' in plot_config.plot)) {
+                        continue;
+                    }
 
-                        // Check correspondance between layers
-                        let pLayerId = plot_config['layer_id'];
-                        let displayPlot = optionToBoolean(plot_config.plot.display_when_layer_visible);
-                        if (pLayerId == layerId && displayPlot) {
-                            // Set plot visibility depending on layer visibility
-                            let layer = lizMap.map.getLayersByName(layerConfig.cleanname)[0]
-                            let showPlot = (
-                                layer.getVisibility() && layer.inRange
-                            );
-                            $('#' + plotContainerId + '_container').toggle(showPlot);
-                            dv.plots[pid]['show_plot'] = showPlot;
-                            if (showPlot) {
-                                resizePlot(plotContainerId);
-                            }
+                    // Check correspondance between layers
+                    let pLayerId = plot_config['layer_id'];
+                    let displayPlot = optionToBoolean(plot_config.plot.display_when_layer_visible);
+                    if (pLayerId == layerId && displayPlot) {
+                        // Set plot visibility depending on layer visibility
+                        let showPlot = layer.visibility;
+                        $('#' + plotContainerId + '_container').toggle(showPlot);
+                        dv.plots[pid]['show_plot'] = showPlot;
+                        if (showPlot) {
+                            resizePlot(plotContainerId);
                         }
                     }
                 }
-            }
-        });
-
+            }, 'layer.visibility.changed'
+        );
     }
 
     /**
@@ -719,19 +714,13 @@ let lizDataviz = function () {
                 // OpenLayers configuration
                 let layerConfig = getLayerConfig[1];
 
-                // Get the OL layer
-                let oLayers = lizMap.map.getLayersByName(layerConfig.cleanname);
-                if (oLayers.length == 1) {
-                    // Layer visibility in the map
-                    let oLayer = oLayers[0];
-                    let layerVisibility = oLayer.visibility;
-
+                // Get the associated layer
+                const layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(layerConfig.name);
+                if (layer) {
                     // Plot visibility
                     let targetId = `dataviz_plot_${plotId}`;
                     let plotVisibility = $('#' + targetId + '_container').is(":visible");
-                    let showPlot = (
-                        layerVisibility
-                    );
+                    let showPlot = layer.visibility;
 
                     // Toggle plot container visibility
                     $('#' + targetId + '_container').toggle(showPlot);
