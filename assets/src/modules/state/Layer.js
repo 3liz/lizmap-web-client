@@ -666,6 +666,9 @@ export class LayerLayerState extends LayerItemState {
      * @param {String} styleName
      **/
     set wmsSelectedStyleName(styleName) {
+        if (styleName == '') {
+            styleName = this.wmsStyles[0].wmsName;
+        }
         if (this._wmsSelectedStyleName == styleName) {
             return;
         }

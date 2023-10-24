@@ -1715,6 +1715,83 @@ describe('LayersAndGroupsCollection', function () {
         expect(collectionGroupOpacityChangedEvt[0]).to.be.deep.equal(tramGroupGroupOpacityChangedEvt)
     })
 
+    it('WMS selected styles', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const transports = collection.getGroupByName('datalayers');
+        expect(transports).to.be.instanceOf(LayerGroupState)
+
+        const tramGroup = collection.getGroupByName('Tramway')
+        expect(tramGroup).to.be.instanceOf(LayerGroupState)
+
+        const tramway = collection.getLayerByName('tramway')
+        expect(tramway).to.be.instanceOf(LayerVectorState)
+        expect(tramway.name).to.be.eq('tramway')
+        expect(tramway.wmsSelectedStyleName).to.be.eq('black')
+        expect(tramway.wmsStyles).to.be.an('array').that.be.lengthOf(2)
+        expect(tramway.wmsStyles[0].wmsName).to.be.eq('black')
+        expect(tramway.wmsStyles[1].wmsName).to.be.eq('colored')
+
+        // Apply a known style name
+        tramway.wmsSelectedStyleName = 'colored'
+        expect(tramway.wmsSelectedStyleName).to.be.eq('colored')
+
+        // listen to layer style change
+        let tramwayStyleChangedEvt = null;
+        let collectionStyleChangedEvt = null;
+        tramway.addListener(evt => {
+            tramwayStyleChangedEvt = evt
+        }, 'layer.style.changed');
+        collection.addListener(evt => {
+            collectionStyleChangedEvt = evt
+        }, 'layer.style.changed');
+
+        // Apply a default style name
+        tramway.wmsSelectedStyleName = ''
+        expect(tramway.wmsSelectedStyleName).to.be.eq('black')
+        // Event dispatched
+        expect(tramwayStyleChangedEvt).to.not.be.null
+        expect(tramwayStyleChangedEvt.name).to.be.eq('tramway')
+        expect(tramwayStyleChangedEvt.style).to.be.eq('black')
+        expect(collectionStyleChangedEvt).to.not.be.null
+        expect(collectionStyleChangedEvt).to.be.deep.equal(tramwayStyleChangedEvt)
+
+        //Reset
+        tramwayStyleChangedEvt = null;
+        collectionStyleChangedEvt = null;
+
+        // Apply same style
+        tramway.wmsSelectedStyleName = 'black'
+        // No event dispatched
+        expect(tramwayStyleChangedEvt).to.be.null
+        expect(collectionStyleChangedEvt).to.be.null
+
+        // Try to apply an unknown style name
+        try {
+            tramway.wmsSelectedStyleName = 'foobar'
+        } catch (error) {
+            expect(error.name).to.be.eq('TypeError')
+            expect(error.message).to.be.eq('Cannot assign an unknown WMS style name! `foobar` is not in the layer `tramway` WMS styles!')
+            expect(error).to.be.instanceOf(TypeError)
+        }
+        // No event dispatched
+        expect(tramwayStyleChangedEvt).to.be.null
+        expect(collectionStyleChangedEvt).to.be.null
+    })
+
     it('Legend ON/OFF', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
