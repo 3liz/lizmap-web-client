@@ -7,9 +7,9 @@
   ],
   "require": {
     "php": ">=7.4",
-    "jelix/jelix": "1.8.3-rc.1",
+    "jelix/jelix": "1.8.3",
     "jelix/composer-module-setup": "^1.1.0",
-    "jelix/jcommunity-module": "1.4.0-rc.2",
+    "jelix/jcommunity-module": "1.4.0",
     "jelix/ldapdao-module": "~2.2.4",
     "proj4php/proj4php": "~2.0.0",
     "violet/streaming-json-encoder": "^1.1.5",
