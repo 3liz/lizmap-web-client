@@ -821,8 +821,8 @@ describe('MapGroupState', function () {
             rootStyleChangedEvt = evt
         }, 'layer.style.changed');
 
-        // Apply a known style name
-        tram.wmsSelectedStyleName = 'black'
+        // Apply a default style name
+        tram.wmsSelectedStyleName = ''
         expect(tram.wmsSelectedStyleName).to.be.eq('black')
         // Event dispatched
         expect(tramStyleChangedEvt).to.not.be.null
