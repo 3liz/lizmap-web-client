@@ -1332,19 +1332,32 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             .addClass( "custom-autocomplete-input" )
             .autocomplete({
               source: function( request, response ) {
-                  var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                // Get the unaccentuated version of the requested term
+                let unaccentuatedTerm = (request.term) ? request.term.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : request.term;
+                  var matcher = new RegExp( $.ui.autocomplete.escapeRegex(unaccentuatedTerm), "i" );
                   response( selectAutocomplete.children( "option" ).map(function() {
-                    var text = $( this ).text();
-                    if ( this.value && ( !request.term || matcher.test(text) ) )
+                    let text = $( this ).text();
+                    // Remove accentuated characters
+                    text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    // Compare the normalized requested term to the normalized option text
+                    if (this.value && ( !unaccentuatedTerm || matcher.test(text) )) {
                       return {
                         label: text,
                         value: text,
                         option: this
                       };
+                    }
                   }) );
                 }
             });
         input.autocomplete( "widget" ).css("z-index","1050");
+
+        // Add delay and minimum length to avoid performance issues
+        // for big datasets
+        input.autocomplete('option', 'delay', 300);
+        input.autocomplete('option', 'minLength', 3);
+
+
         input.attr('name', selectAutocomplete.attr('name'));
         selectAutocomplete.attr('name', input.attr('name')+'_source');
         selectAutocomplete.hide();
