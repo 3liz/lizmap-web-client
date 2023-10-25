@@ -621,7 +621,16 @@ var lizLayerFilterTool = function () {
 
                 // max date filter
                 if (max_val && Date.parse(max_val)) {
-                    filters.push('( "' + startField + '"' + " <= '" + max_val + "'" + " OR " + ' "' + endField + '"' + " <= '" + max_val + "' )");
+                    // Add one day to the max values as we cannot select hours
+                    // This allow to select features with the max value. Eg a feature with 2023-10-25 12:20:01
+                    // must be selected if max date is 2023-10-25 wich is indeed 2023-10-25 00:00:00
+                    let max_val_new = new Date(Date.parse(max_val));
+                    // Add a day
+                    max_val_new.setDate(max_val_new.getDate() + 1);
+                    // Truncate to keep only date & transform into string
+                    let max_val_new_str = formatDT(max_val_new, 'yy-mm-dd');
+                    // We use strict < instead of <= because we just add a day to the max value
+                    filters.push('( "' + startField + '"' + " < '" + max_val_new_str + "'" + " OR " + ' "' + endField + '"' + " < '" + max_val_new_str + "' )");
                 } else {
                     max_val = null;
                 }
