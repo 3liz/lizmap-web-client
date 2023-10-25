@@ -15,6 +15,12 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
+
+      - name: Sleep for 5 minutes
+        # The action is not going to conflict with manually set labels when creating the PR
+        run: sleep 5m
+        shell: bash
+    
       - uses: actions/labeler@v4
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
