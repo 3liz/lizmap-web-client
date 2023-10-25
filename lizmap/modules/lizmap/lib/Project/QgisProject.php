@@ -1226,6 +1226,9 @@ class QgisProject
         list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
     }
 
+    /**
+     * @param \SimpleXMLElement $xml
+     */
     protected function readWMSInformation($qgsLoad)
     {
 
