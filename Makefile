@@ -203,10 +203,10 @@ deploy_download_stable:
 	upload_to_packages_server $(ZIP_DEMO_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 
 saas_deploy_snap:
-	saas_release_lizmap snap $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
+	saas_release_lizmap unstable $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
 saas_release: check-release
-	saas_release_lizmap release $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
+	saas_release_lizmap stable $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
 docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
 
