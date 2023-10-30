@@ -5319,7 +5319,7 @@ window.lizMap = function() {
           return false;
 
       var pkVal = feat.properties[pkey];
-      filter = qgisName + ':"' + pkey + '" = ' + "'" + pkVal + "'" ;
+      filter = aName + ':"' + pkey + '" = ' + "'" + pkVal + "'" ;
 
       var crs = 'EPSG:4326';
       if(('crs' in lizMap.config.layers[qgisName]) && lizMap.config.layers[qgisName].crs != ''){
