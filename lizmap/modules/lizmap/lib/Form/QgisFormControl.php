@@ -352,11 +352,10 @@ class QgisFormControl
         $upload->accept = $this->properties->getUploadAccept();
         $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
-        //WebDAV External Resource
-        if($this->getEditAttribute('StorageType') == "WebDAV") {
+        // WebDAV External Resource
+        if ($this->getEditAttribute('StorageType') == 'WebDAV') {
             $this->isWebDAV = true;
-            $this->webDavStorageUrl = $this->getEditAttribute("webDAVStorageUrl");
-
+            $this->webDavStorageUrl = $this->getEditAttribute('webDAVStorageUrl');
         }
         $this->ctrl = $upload;
     }

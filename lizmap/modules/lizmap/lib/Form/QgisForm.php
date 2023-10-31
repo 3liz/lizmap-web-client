@@ -566,10 +566,10 @@ class QgisForm implements QgisFormControlsInterface
 
             if ($form->getControl($fieldName) instanceof \jFormsControlUpload2) {
                 list($targetPath, $targetFullPath) = $this->getStoragePathForControl($fieldName);
-                if($this->getQgisControl($fieldName)->isWebDAV) {
-                    if(!RemoteStorageRequest::checkWebDAVStorageConnection()) {
+                if ($this->getQgisControl($fieldName)->isWebDAV) {
+                    if (!RemoteStorageRequest::checkWebDAVStorageConnection()) {
                         $check = false;
-                        $form->setErrorOn($fieldName, "WEBDAV storage unavailable");
+                        $form->setErrorOn($fieldName, 'WEBDAV storage unavailable');
                     }
                 }
                 // if the target path to store the file is not valid: error
@@ -820,6 +820,7 @@ class QgisForm implements QgisFormControlsInterface
                     $form->setErrorOn($ref, $e->getMessage());
                     $this->appContext->logMessage($e->getMessage(), 'lizmapadmin');
                     $this->appContext->logException($e, 'lizmapadmin');
+
                     return false;
                 }
 
@@ -1042,30 +1043,29 @@ class QgisForm implements QgisFormControlsInterface
         $newFilename = $uploadCtrl->getUniqueFileName($targetFullPath);
 
         // check if the control is WEBDAV type
-        if($this->formControls[$ref]->isWebDAV && isset($this->formControls[$ref]->webDavStorageUrl)) {
+        if ($this->formControls[$ref]->isWebDAV && isset($this->formControls[$ref]->webDavStorageUrl)) {
             $originalFile = $form->getContainer()->privateData[$ref]['originalfile'];
             $newFile = $form->getContainer()->privateData[$ref]['newfile'];
             $action = $form->getContainer()->privateData[$ref]['action'];
 
-
             $storageUrl = $this->formControls[$ref]->webDavStorageUrl;
-            if($action == 'new' && trim($filename) != '') {
+            if ($action == 'new' && trim($filename) != '') {
                 // upload a new file
 
                 // replace filename expression with the $filename
 
-                //TODO @selected_file_path property is not evaluated, for now replace the expression with the file name
-                $storageUrl = str_replace("file_name(@selected_file_path)", "'".$filename."'", $storageUrl);
-                //evaluate expression
+                // TODO @selected_file_path property is not evaluated, for now replace the expression with the file name
+                $storageUrl = str_replace('file_name(@selected_file_path)', "'".$filename."'", $storageUrl);
+                // evaluate expression
                 $evaluatedStorageUrl = $this->evaluateExpression(array($ref => $storageUrl));
                 if ($evaluatedStorageUrl && property_exists($evaluatedStorageUrl, $ref)) {
-                    $newStorageUrl =  $evaluatedStorageUrl->{$ref};
+                    $newStorageUrl = $evaluatedStorageUrl->{$ref};
                 } else {
-                    //error in expression evaluation
-                    throw new \Exception("Failed to evaluate file name");
+                    // error in expression evaluation
+                    throw new \Exception('Failed to evaluate file name');
                 }
                 if (substr($newStorageUrl, -1) == DIRECTORY_SEPARATOR) {
-                    //it's a directory, this should't happen, maybe it's better to throw an exception
+                    // it's a directory, this should't happen, maybe it's better to throw an exception
                     $newStorageUrl = $newStorageUrl.$filename;
                 }
 
@@ -1076,31 +1076,28 @@ class QgisForm implements QgisFormControlsInterface
 
                 if ($uploadResult) {
                     return $cnx->quote($uploadResult);
-                } else {
-                    throw new \Exception($uploadMessage);
                 }
+
+                throw new \Exception($uploadMessage);
             } elseif ($originalFile !== '' && $newFile == '' && $action == 'keep') {
                 // keep previous file
-                $profile = RemoteStorageRequest::getProfile("webdav");
-                if($profile && is_array($profile) && array_key_exists("enabled", $profile) && $profile["enabled"] == 1 && array_key_exists("baseUri", $profile)) {
-                    return $cnx->quote($profile["baseUri"].$originalFile);
-                } else {
-                    throw new \Exception("WEBDAV storage unavailable");
+                $profile = RemoteStorageRequest::getProfile('webdav');
+                if ($profile && is_array($profile) && array_key_exists('enabled', $profile) && $profile['enabled'] == 1 && array_key_exists('baseUri', $profile)) {
+                    return $cnx->quote($profile['baseUri'].$originalFile);
                 }
+
+                throw new \Exception('WEBDAV storage unavailable');
             } elseif ($originalFile !== '' && $newFile == '' && $action == 'del') {
                 // delete remote file
-                $profile = RemoteStorageRequest::getProfile("webdav");
-                if($profile && is_array($profile) && array_key_exists("enabled", $profile) && $profile["enabled"] == 1 && array_key_exists("baseUri", $profile)) {
+                $profile = RemoteStorageRequest::getProfile('webdav');
+                if ($profile && is_array($profile) && array_key_exists('enabled', $profile) && $profile['enabled'] == 1 && array_key_exists('baseUri', $profile)) {
+                    list($deleteStatus, $deleteMessage) = RemoteStorageRequest::deleteFromWebDAVStorage($profile['baseUri'], $originalFile);
 
-                    list($deleteStatus, $deleteMessage) = RemoteStorageRequest::deleteFromWebDAVStorage($profile["baseUri"], $originalFile);
-
-                    if($deleteMessage) {
+                    if ($deleteMessage) {
                         throw new \Exception($deleteMessage);
-                    } else {
-                        return 'NULL';
                     }
                 } else {
-                    throw new \Exception("WEBDAV storage unavailable");
+                    throw new \Exception('WEBDAV storage unavailable');
                 }
             }
         } else {

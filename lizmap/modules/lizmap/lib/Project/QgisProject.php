@@ -1748,18 +1748,13 @@ class QgisProject
             }
 
             $webDAV = (array_key_exists('StorageType', $fieldEditOptions) && $fieldEditOptions['StorageType'] == 'WebDAV') ? $fieldEditOptions['StorageType'] : null;
-            if($webDAV) {
-                if(isset($fieldEditOptions['PropertyCollection']) &&
-                         isset($fieldEditOptions['PropertyCollection']['properties']) &&
-                         isset($fieldEditOptions['PropertyCollection']['properties']['storageUrl']) &&
-                         isset($fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'])
-                ) {
-                    $fieldEditOptions["webDAVStorageUrl"] = $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'];
+            if ($webDAV) {
+                if (isset($fieldEditOptions['PropertyCollection'], $fieldEditOptions['PropertyCollection']['properties'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'])) {
+                    $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'];
                 } else {
-                    $fieldEditOptions["webDAVStorageUrl"] = $fieldEditOptions['StorageUrl'];
+                    $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['StorageUrl'];
                 }
             }
-
         }
 
         $fieldEditOptions['UploadMimeTypes'] = $mimeTypes;
@@ -1874,22 +1869,20 @@ class QgisProject
             // Option with list of values as Map or string list of values
             } elseif ($optionType === 'Map' || $optionType === 'StringList') {
                 $fieldEditOptions[$optionName] = $this->getValuesFromOptions($option, $valuesExtraction);
-                if($optionName === 'PropertyCollection') {
+                if ($optionName === 'PropertyCollection') {
                     foreach ($option->Option as $propertyCollectionOption) {
-                        //get properties of property collection
-                        if((string) $propertyCollectionOption->attributes()->name == 'properties') {
+                        // get properties of property collection
+                        if ((string) $propertyCollectionOption->attributes()->name == 'properties') {
                             $propName = (string) $propertyCollectionOption->attributes()->name;
                             $fieldEditOptions[$optionName][$propName] = array();
                             foreach ($propertyCollectionOption->Option as $subOptions) {
-
                                 $subOpt = (string) $subOptions->attributes()->name;
-                                $fieldEditOptions[$optionName][$propName][$subOpt] =  $this->getValuesFromOptions($subOptions, $valuesExtraction);
-
+                                $fieldEditOptions[$optionName][$propName][$subOpt] = $this->getValuesFromOptions($subOptions, $valuesExtraction);
                             }
                         }
                     }
                 }
-            // Simple option
+                // Simple option
             } else {
                 $fieldEditOptions[$optionName] = $this->convertValueOptions((string) $option->attributes()->value, (string) $option->attributes()->type);
             }
