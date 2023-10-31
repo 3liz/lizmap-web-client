@@ -286,12 +286,12 @@ class QgisFormControl
                 $this->ctrl = new \jFormsControlCheckbox($this->ref);
                 $this->fillCheckboxValues();
 
-               break;
+                break;
 
             case 'htmleditor':
                 $this->ctrl = new \jFormsControlHtmlEditor($this->ref);
 
-               break;
+                break;
 
             case 'menulist':
             case 'hidden':
@@ -353,9 +353,9 @@ class QgisFormControl
         $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
         //WebDAV External Resource
-        if($this->getEditAttribute('StorageType') == "WebDAV"){
-                  $this->isWebDAV = true;
-                  $this->webDavStorageUrl = $this->getEditAttribute("webDAVStorageUrl");
+        if($this->getEditAttribute('StorageType') == "WebDAV") {
+            $this->isWebDAV = true;
+            $this->webDavStorageUrl = $this->getEditAttribute("webDAVStorageUrl");
 
         }
         $this->ctrl = $upload;

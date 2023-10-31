@@ -1747,18 +1747,17 @@ class QgisProject
                 $defaultRoot = '';
             }
 
-            $webDAV = isset($fieldEditOptions['StorageType']) && $fieldEditOptions['StorageType'] == 'WebDAV' ?? '';
+            $webDAV = (array_key_exists('StorageType', $fieldEditOptions) && $fieldEditOptions['StorageType'] == 'WebDAV') ? $fieldEditOptions['StorageType'] : null;
             if($webDAV) {
-                  if(isset($fieldEditOptions['PropertyCollection']) && 
-                           isset($fieldEditOptions['PropertyCollection']['properties']) && 
-                           isset($fieldEditOptions['PropertyCollection']['properties']['storageUrl']) &&
-                           isset($fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'])
-                  ){
-                           $fieldEditOptions["webDAVStorageUrl"] = $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'];
-                  }
-                  else {
-                           $fieldEditOptions["webDAVStorageUrl"] = $fieldEditOptions['StorageUrl'];
-                  }
+                if(isset($fieldEditOptions['PropertyCollection']) &&
+                         isset($fieldEditOptions['PropertyCollection']['properties']) &&
+                         isset($fieldEditOptions['PropertyCollection']['properties']['storageUrl']) &&
+                         isset($fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'])
+                ) {
+                    $fieldEditOptions["webDAVStorageUrl"] = $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'];
+                } else {
+                    $fieldEditOptions["webDAVStorageUrl"] = $fieldEditOptions['StorageUrl'];
+                }
             }
 
         }
@@ -1875,20 +1874,20 @@ class QgisProject
             // Option with list of values as Map or string list of values
             } elseif ($optionType === 'Map' || $optionType === 'StringList') {
                 $fieldEditOptions[$optionName] = $this->getValuesFromOptions($option, $valuesExtraction);
-                if($optionName === 'PropertyCollection'){
-                  foreach ($option->Option as $propertyCollectionOption ){
-                           //get properties of property collection
-                           if((string) $propertyCollectionOption->attributes()->name == 'properties'){
-                                    $propName = (string) $propertyCollectionOption->attributes()->name;
-                                    $fieldEditOptions[$optionName][$propName] = array();
-                                    foreach ($propertyCollectionOption->Option as $subOptions) {
+                if($optionName === 'PropertyCollection') {
+                    foreach ($option->Option as $propertyCollectionOption) {
+                        //get properties of property collection
+                        if((string) $propertyCollectionOption->attributes()->name == 'properties') {
+                            $propName = (string) $propertyCollectionOption->attributes()->name;
+                            $fieldEditOptions[$optionName][$propName] = array();
+                            foreach ($propertyCollectionOption->Option as $subOptions) {
 
-                                             $subOpt = (string) $subOptions->attributes()->name;
-                                             $fieldEditOptions[$optionName][$propName][$subOpt] =  $this->getValuesFromOptions($subOptions, $valuesExtraction); 
-                                             
-                                    }
-                           }
-                  }
+                                $subOpt = (string) $subOptions->attributes()->name;
+                                $fieldEditOptions[$optionName][$propName][$subOpt] =  $this->getValuesFromOptions($subOptions, $valuesExtraction);
+
+                            }
+                        }
+                    }
                 }
             // Simple option
             } else {
