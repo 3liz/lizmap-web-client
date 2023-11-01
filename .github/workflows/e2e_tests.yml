@@ -91,7 +91,7 @@ jobs:
             sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
       # Playwright
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
 
       - name: Install dependencies
         run: cd end2end && npm ci
