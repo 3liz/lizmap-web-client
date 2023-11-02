@@ -30,12 +30,11 @@
                     <option value="l">{@view~map.permalink.embed.size.large@}</option>
                     <option value="p">{@view~map.permalink.embed.size.personalized@}</option>
                 </select>
-                <span id="span-embed-personalized-permalink" class="permalink-personalized" style="display:none;">
-                  <input id="input-embed-width-permalink" type="text" value="800">
-                  <pan>×</pan>
-                  <input id="input-embed-height-permalink" type="text" value="600">
-                </span>
-                <br/>
+                <div id="span-embed-personalized-permalink" class="permalink-personalized hide">
+                  <input id="input-embed-width-permalink" type="number" min="0" class="input-mini" value="800">
+                  <span>×</span>
+                  <input id="input-embed-height-permalink" type="number" min="0" class="input-mini" value="600">
+                </div>
                 <input id="input-embed-permalink" class="permalink-embed-input" type="text">
             </div>
         </div>
