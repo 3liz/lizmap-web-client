@@ -165,7 +165,7 @@ export default class Lizmap {
      * @param {Array} bounds - Left, bottom, right, top
      */
     set extent(bounds) {
-        this.map.getView().fit(bounds);
+        this.map.getView().fit(bounds, {nearest: true});
     }
 
     getNameByTypeName(typeName) {
