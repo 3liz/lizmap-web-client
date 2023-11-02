@@ -1368,6 +1368,13 @@ class Project
         if (!empty($config->title)) {
             $title = trim($config->title);
         }
+        // Since LWC 3.7, the title can be different
+        // when the plot is displayed in popup
+        $title_popup = $title;
+        if (property_exists($config, 'title_popup') && !empty(trim($config->title_popup))) {
+            $title_popup = trim($config->title_popup);
+        }
+
         $type = 'bar';
         $allowedTypes = array(
             'bar', 'pie', 'scatter', 'box',
@@ -1381,6 +1388,7 @@ class Project
             'plot_id' => (int) $config->order,
             'layer_id' => $layer->id,
             'title' => $title,
+            'title_popup' => $title_popup,
             'plot' => array(
                 'type' => $type,
             ),

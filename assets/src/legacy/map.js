@@ -2397,13 +2397,13 @@ window.lizMap = function() {
                               // Be sure the id is unique ( popup can be displayed in atlas tool too)
                               popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
                               var phtml = lizDataviz.buildPlotContainerHtml(
-                                  plot_config.title,
+                                  plot_config.title_popup,
                                   plot_config.abstract,
                                   popupId,
                                   false
                               );
                               var html = '<div class="lizmapPopupChildren lizdataviz">';
-                              html+= '<h4>'+ plot_config.title+'</h4>';
+                              html+= '<h4>'+ plot_config.title_popup+'</h4>';
                               html+= phtml
                               html+= '</div>';
                               var haspc = $(mydiv).find('div.lizmapPopupChildren:last');

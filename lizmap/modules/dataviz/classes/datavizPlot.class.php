@@ -247,6 +247,8 @@ class datavizPlot
     }
 
     /**
+     * Set the plot title from the plot config.
+     *
      * @param string $title
      */
     protected function setTitle($title)
