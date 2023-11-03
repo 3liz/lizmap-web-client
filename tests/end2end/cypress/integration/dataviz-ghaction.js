@@ -55,8 +55,8 @@ describe('Dataviz tests', function () {
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
         .click()
 
-        // Wait for graphics displayed 4 plots are displayed
-        cy.wait(['@getPlot', '@getPlot', '@getPlot', '@getPlot'])
+        // Wait for graphics displayed 5 plots are displayed
+        cy.wait(['@getPlot', '@getPlot', '@getPlot', '@getPlot', '@getPlot'])
 
         // Test first plot - Municipalities
         cy.get('#dataviz_plot_0_container > h3:nth-child(1) > span:nth-child(1) > span:nth-child(2)')
@@ -114,6 +114,10 @@ describe('Dataviz tests', function () {
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
+        // Never filtered plot
+        cy.get('#dataviz_plot_4 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 10)
+
         // Click back to the first tab
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
         .click()
@@ -133,14 +137,17 @@ describe('Dataviz tests', function () {
         cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
-        // Activate the Second tab dock to update one graphic
+        // Activate the Second tab dock to update one graphic only (the other one has the trigger_filter: false
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
             .click()
 
         cy.wait(['@getPlot'])
-
+        // This plot is filtered
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 1)
+        // This plot must not have been refreshed
+        cy.get('#dataviz_plot_4 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+            .should('have.length', 10)
 
         // Go back to the first tab
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')

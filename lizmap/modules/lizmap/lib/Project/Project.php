@@ -1421,6 +1421,11 @@ class Project
         if (property_exists($config, 'only_show_child')) {
             $plotConfig['only_show_child'] = $config->only_show_child;
         }
+        // Since LWC 3.7
+        $plotConfig['trigger_filter'] = true;
+        if (property_exists($config, 'trigger_filter')) {
+            $plotConfig['trigger_filter'] = $config->trigger_filter;
+        }
 
         $abstract = $layer->abstract;
         if (property_exists($config, 'description')) {

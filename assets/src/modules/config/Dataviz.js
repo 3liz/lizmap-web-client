@@ -228,10 +228,12 @@ const requiredProperties = {
     'title': {type: 'string'},
     'popup_display_child_plot': {type: 'boolean'},
     'only_show_child': {type: 'boolean'},
+    'trigger_filter': {type: 'boolean'},
 };
 
 const optionalProperties = {
     'abstract': {type: 'string', default: ''},
+    'title_popup': {type: 'string', default: ''},
 };
 
 /**
@@ -283,7 +285,16 @@ export class DatavizElementConfig extends BaseObjectConfig {
     }
 
     /**
-     * The title
+     * The title in popup
+     *
+     * @type {String}
+     **/
+    get titlePopup() {
+        return this._title_popup;
+    }
+
+    /**
+     * The abstract
      *
      * @type {String}
      **/
@@ -316,6 +327,15 @@ export class DatavizElementConfig extends BaseObjectConfig {
      **/
     get onlyShowChild() {
         return this._only_show_child;
+    }
+
+    /**
+     * The trigger filter
+     *
+     * @type {Boolean}
+     **/
+    get triggerFilter() {
+        return this._trigger_filter;
     }
 }
 
