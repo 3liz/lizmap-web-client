@@ -33,7 +33,7 @@ export default class WFS {
                 ...options
             })
         });
-        return await response.json();
+        return response.json();
     }
 
     /**
@@ -49,6 +49,6 @@ export default class WFS {
                 ...options
             })
         });
-        return await response.json();
+        return response.json();
     }
 }
