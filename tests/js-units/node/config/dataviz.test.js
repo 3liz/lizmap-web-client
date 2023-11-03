@@ -154,6 +154,7 @@ describe('DatavizElementConfig', function () {
             "plot_id": 1,
             "layer_id": "bakeries_1dbdac14_931c_4568_ad56_3a947a77d810",
             "title": "Bar Bakeries by municipalities",
+            "title_popup": "Bar Bakeries for this municipalities",
             "abstract": "",
             "plot":{
                 "type": "bar",
@@ -174,10 +175,12 @@ describe('DatavizElementConfig', function () {
             },
             "popup_display_child_plot": "False",
             "only_show_child": "False",
+            "trigger_filter": true
         })
         expect(element.plotId).to.be.eq(1)
         expect(element.layerId).to.be.eq('bakeries_1dbdac14_931c_4568_ad56_3a947a77d810')
         expect(element.title).to.be.eq('Bar Bakeries by municipalities')
+        expect(element.titlePopup).to.be.eq('Bar Bakeries for this municipalities')
         expect(element.abstract).to.be.eq('')
 
         expect(element.plot).to.not.be.eq(undefined)
@@ -200,6 +203,7 @@ describe('DatavizElementConfig', function () {
 
         expect(element.popupDisplayChildPlot).to.be.eq(false)
         expect(element.onlyShowChild).to.be.eq(false)
+        expect(element.triggerFilter).to.be.eq(true)
     })
 
     it('ValidationError', function () {
@@ -219,6 +223,7 @@ describe('DatavizElementConfig', function () {
                 "abstract": "",
                 "popup_display_child_plot": "False",
                 "only_show_child": "False",
+                "trigger_filter": "False"
             })
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
@@ -255,6 +260,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "popup_display_child_plot": "False",
                 "only_show_child": "False",
+                "trigger_filter": true
             },
             "1": {
                 "plot_id": 1,
@@ -279,6 +285,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "only_show_child": "False",
                 "popup_display_child_plot": "False",
+                "trigger_filter": true
             },
             "2": {
                 "plot_id": 2,
@@ -303,6 +310,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "only_show_child": "False",
                 "popup_display_child_plot": "False",
+                "trigger_filter": true
             }
         })
 
@@ -342,6 +350,7 @@ describe('DatavizLayersConfig', function () {
 
         expect(element.popupDisplayChildPlot).to.be.eq(false)
         expect(element.onlyShowChild).to.be.eq(false)
+        expect(element.triggerFilter).to.be.eq(true)
 
         const bakeriesElements = config.getElementConfigsByLayerId('bakeries_1dbdac14_931c_4568_ad56_3a947a77d810')
         expect(bakeriesElements.length).to.be.eq(2)
@@ -377,6 +386,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "popup_display_child_plot": "False",
                 "only_show_child": "False",
+                "trigger_filter": true
             },{
                 "plot_id": 2,
                 "layer_id": "bakeries_1dbdac14_931c_4568_ad56_3a947a77d810",
@@ -400,6 +410,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "only_show_child": "False",
                 "popup_display_child_plot": "False",
+                "trigger_filter": true
             },{
                 "plot_id": 1,
                 "layer_id": "bakeries_1dbdac14_931c_4568_ad56_3a947a77d810",
@@ -423,6 +434,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "only_show_child": "False",
                 "popup_display_child_plot": "False",
+                "trigger_filter": true
             }
         ])
 
@@ -464,6 +476,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "popup_display_child_plot": "False",
                 "only_show_child": "False",
+                "trigger_filter": true
             },{
                 "plot_id": 2,
                 "layer_id": "bakeries_1dbdac14_931c_4568_ad56_3a947a77d810",
@@ -487,6 +500,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "only_show_child": "False",
                 "popup_display_child_plot": "False",
+                "trigger_filter": true
             },{
                 "plot_id": 1,
                 "layer_id": "bakeries_1dbdac14_931c_4568_ad56_3a947a77d810",
@@ -510,6 +524,7 @@ describe('DatavizLayersConfig', function () {
                 },
                 "only_show_child": "False",
                 "popup_display_child_plot": "False",
+                "trigger_filter": true
             }
         ])
 
