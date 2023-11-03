@@ -220,6 +220,12 @@ let lizDataviz = function () {
                 let layerId = lizMap.config.layers[featureType].id;
                 // Do it only if the plot layer ID corresponds to the filtered layer
                 if (layerId == dvLayerId) {
+                    // LWC 3.7 - Do it only if the new option trigger_filter is true
+                    let trigger_filter = dv.config.layers[i]['trigger_filter'];
+                    if (!trigger_filter) {
+                        continue;
+                    }
+
                     // Reset the status of data_fetched
                     dv.plots[i]['data_fetched'] = false;
 

@@ -1146,7 +1146,8 @@
         },
         "popup_display_child_plot": "True",
         "only_show_child": "False",
-        "abstract": ""
+        "abstract": "",
+        "trigger_filter": true
       },
       {
         "plot_id": 1,
@@ -1175,7 +1176,8 @@
         },
         "popup_display_child_plot": "False",
         "only_show_child": "False",
-        "abstract": ""
+        "abstract": "",
+        "trigger_filter": true
       },
       {
         "plot_id": 2,
@@ -1198,7 +1200,8 @@
         },
         "popup_display_child_plot": "False",
         "only_show_child": "False",
-        "abstract": ""
+        "abstract": "",
+        "trigger_filter": true
       }
     ],
     "dataviz": {
