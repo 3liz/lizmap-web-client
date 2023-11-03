@@ -14,14 +14,14 @@ namespace Lizmap\App;
 
 class XmlTools
 {
-    /*
-     * Interprets a string of XML into an object
+    /**
+     * Interprets a string of XML into an object.
      *
      * @param string $xml_str a well-formed XML string
      *
-     * @return SimpleXmlElement|string an object of class SimpleXMLElement with properties
-     *                                 containing the data held within the XML document, or
-     *                                 a string containing the error message.
+     * @return \SimpleXmlElement|string an object of class SimpleXMLElement with properties
+     *                                  containing the data held within the XML document, or
+     *                                  a string containing the error message
      */
     public static function xmlFromString($xml_str)
     {
@@ -34,14 +34,14 @@ class XmlTools
         return $xml;
     }
 
-    /*
-     * Interprets an XML file into an object
+    /**
+     * Interprets an XML file into an object.
      *
      * @param string $xml_path the path to the xml file
      *
-     * @return SimpleXmlElement|string an object of class SimpleXMLElement with properties
-     *                                 containing the data held within the XML document, or
-     *                                 a string containing the error message.
+     * @return \SimpleXmlElement|string an object of class SimpleXMLElement with properties
+     *                                  containing the data held within the XML document, or
+     *                                  a string containing the error message
      */
     public static function xmlFromFile($xml_path)
     {
@@ -54,12 +54,12 @@ class XmlTools
         return $xml;
     }
 
-    /*
-     * Get XML error message
+    /**
+     * Get XML error message.
      *
      * Build an error message based on LibXMLError object
      *
-     * @return string the error message.
+     * @return string the error message
      */
     private static function xmlErrorMsg()
     {
