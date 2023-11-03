@@ -6146,24 +6146,34 @@ window.lizMap = function() {
       }
 
       // Request config and capabilities in parallel
-      Promise.all([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest, featureExtentRequest, getFeatureInfoRequest]).then(responses => {
-        // config is defined globally
-        config = responses[0];
-        keyValueConfig = responses[1];
-        const wmsCapaData = responses[2];
-        const wmtsCapaData = responses[3];
-        const wfsCapaData = responses[4];
+      Promise.allSettled([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest, featureExtentRequest, getFeatureInfoRequest]).then(responses => {
+        // Raise an error when one those required requests fails
+        // Other requests can fail silently
+        const requiredRequests = [responses[0], responses[2], responses[3], responses[4]];
 
-        let featuresExtent = responses[5]?.features?.[0]?.bbox;
-        let features = responses[5]?.features;
+        for (const request of requiredRequests) {
+          if (request.status === "rejected") {
+            throw new Error(request.reason);
+          }
+        }
+
+        // `config` is defined globally
+        config = responses[0].value;
+        keyValueConfig = responses[1].value;
+        const wmsCapaData = responses[2].value;
+        const wmtsCapaData = responses[3].value;
+        const wfsCapaData = responses[4].value;
+
+        let featuresExtent = responses[5].value?.features?.[0]?.bbox;
+        let features = responses[5].value?.features;
 
         if(featuresExtent){
-          for (const feature of responses[5].features) {
+          for (const feature of features) {
             featuresExtent = extend(featuresExtent, feature.bbox);
           }
         }
 
-        getFeatureInfo = responses[6];
+        getFeatureInfo = responses[6].value;
 
         const domparser = new DOMParser();
 
