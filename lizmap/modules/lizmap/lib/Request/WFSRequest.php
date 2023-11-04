@@ -849,7 +849,36 @@ class WFSRequest extends OGCRequest
         return new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', (function () use ($q) {
             yield '{"type": "FeatureCollection", "features": [';
             $virg = '';
+            $davProfile = RemoteStorageRequest::getProfile('webdav');
+            $baseUri = '';
+            if ($davProfile) {
+                $baseUri = $davProfile['baseUri'];
+            }
             foreach ($q as $d) {
+                $geoJson = json_decode($d->geojson, true);
+                // replace webdavUrl with a generic url
+                if ($geoJson['properties']) {
+                    // get webDav fields
+                    $webDavConfiguration = $this->qgisLayer->getWebDavFieldConfiguration();
+                    foreach ($geoJson['properties'] as $key => $value) {
+                        if (array_key_exists($key, $webDavConfiguration) && $value) {
+                            // if the base path starts with base URI, replace it with a genric path
+                            if ($baseUri && strpos($value, $baseUri) === 0) {
+                                $geoJson['properties'][$key] = str_replace($baseUri, 'dav/', $value);
+                            } else {
+                                // set filename as value
+                                $pathInfo = pathinfo($value);
+                                if ($pathInfo['filename'] !== '') {
+                                    $geoJson['properties'][$key] = $pathInfo['filename'].'.'.$pathInfo['extension'];
+                                } else {
+                                    $geoJson['properties'][$key] = $pathInfo['basename'];
+                                }
+                            }
+                        }
+                    }
+                }
+                $d->geojson = json_encode($geoJson);
+
                 yield $virg.$d->geojson;
                 $virg = ',';
             }

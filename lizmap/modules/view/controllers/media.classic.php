@@ -11,6 +11,7 @@
  */
 
 use Jelix\FileUtilities\File;
+use Lizmap\Request\RemoteStorageRequest;
 
 class mediaCtrl extends jController
 {
@@ -119,58 +120,81 @@ class mediaCtrl extends jController
             return $this->error403(jLocale::get('view~default.repository.access.denied'));
         }
 
-        // Get the file
+        $finalPath = null;
+        $isWebDavResource = false;
         $path = $this->param('path');
-        $repositoryPath = realpath($lrep->getPath());
-        $abspath = realpath($repositoryPath.'/'.$path);
 
-        $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
-        $n_abspath = $n_repositoryPath.'/'.trim($path, '/');
-        // manually canonize path to authorize symlink
-        $n_abspath = explode('/', $n_abspath);
-        $n_keys = array_keys($n_abspath, '..');
-        foreach ($n_keys as $keypos => $key) {
-            array_splice($n_abspath, $key - ($keypos * 2 + 1), 2);
-        }
-        $n_abspath = implode('/', $n_abspath);
-        $n_abspath = str_replace('./', '', $n_abspath);
+        // check if a remote file is requested from WebDAV Storage
+        if (strpos($path, 'dav/') === 0) {
+            // replace the path with the webdav url
+            $profile = RemoteStorageRequest::getProfile('webdav');
+            if ($profile) {
+                $webdavPath = str_replace('dav/', $profile['baseUri'], $path);
+                // assumes that last part of the url is the filename
+                $urlPart = explode('/', $webdavPath);
+                $fileName = array_pop($urlPart);
+                $url = implode('/', $urlPart).'/';
 
-        $ok = true;
-        // Only allow files within the repository for safety reasons
-        // and in the media folder
-        // accept ../media folder to centralize medias
-        $repex = explode('/', $n_repositoryPath);
-        array_pop($repex);
-        $reptest = implode('/', $repex);
-        if (!preg_match('#^'.$n_repositoryPath.'(/)?media/#', $n_abspath)
-            && !preg_match('#^'.$reptest.'(/)?media/#', $n_abspath)
-        ) {
-            $ok = false;
-        }
+                $tempFileUrl = RemoteStorageRequest::getRemoteFile($url, $fileName);
+                if (!is_file($tempFileUrl)) {
+                    $content = 'No media file in the specified path: '.$path;
 
-        // Check if file exists
-        if ($ok && !is_file($abspath)) {
-            $ok = false;
-        }
-
-        // Redirect if errors
-        if (!$ok) {
-            $content = 'No media file in the specified path: '.$path;
-            if (is_link($repositoryPath.'/'.$path)) {
-                $content .= ' '.readlink($repositoryPath.'/'.$path);
+                    return $this->error404($content);
+                }
+                $isWebDavResource = true;
+                $finalPath = $tempFileUrl;
             }
+        } else {
+            // Get the file
+            $repositoryPath = realpath($lrep->getPath());
+            $abspath = realpath($repositoryPath.'/'.$path);
+            $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
+            $n_abspath = $n_repositoryPath.'/'.trim($path, '/');
+            // manually canonize path to authorize symlink
+            $n_abspath = explode('/', $n_abspath);
+            $n_keys = array_keys($n_abspath, '..');
+            foreach ($n_keys as $keypos => $key) {
+                array_splice($n_abspath, $key - ($keypos * 2 + 1), 2);
+            }
+            $n_abspath = implode('/', $n_abspath);
+            $n_abspath = str_replace('./', '', $n_abspath);
 
-            return $this->error404($content);
+            $ok = true;
+
+            // Only allow files within the repository for safety reasons
+            // and in the media folder
+            // accept ../media folder to centralize medias
+            $repex = explode('/', $n_repositoryPath);
+            array_pop($repex);
+            $reptest = implode('/', $repex);
+            if (!preg_match('#^'.$n_repositoryPath.'(/)?media/#', $n_abspath)
+               && !preg_match('#^'.$reptest.'(/)?media/#', $n_abspath)
+            ) {
+                $ok = false;
+            }
+            // Check if file exists
+            if ($ok && !is_file($abspath)) {
+                $ok = false;
+            }
+            // Redirect if errors
+            if (!$ok) {
+                $content = 'No media file in the specified path: '.$path;
+                if (is_link($repositoryPath.'/'.$path)) {
+                    $content .= ' '.readlink($repositoryPath.'/'.$path);
+                }
+
+                return $this->error404($content);
+            }
+            $finalPath = $abspath;
         }
-
         // Prepare the file to return
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         $rep->doDownload = false;
-        $rep->fileName = $abspath;
+        $rep->fileName = $finalPath;
 
         // Get the name of the file
-        $path_parts = pathinfo($abspath);
+        $path_parts = pathinfo($finalPath);
         // If the basename of the path starts with a dot, the following characters are interpreted as extension, and the filename is empty
         if ($path_parts['filename'] !== '') {
             $rep->outputFileName = $path_parts['filename'].'.'.$path_parts['extension'];
@@ -178,26 +202,38 @@ class mediaCtrl extends jController
             $rep->outputFileName = $path_parts['basename'];
         }
 
+        if ($isWebDavResource) {
+            // remove uuid from filename
+            $name = $rep->outputFileName;
+            $nameEx = explode('-', $name);
+            array_shift($nameEx);
+            $name = implode('-', $nameEx);
+            $rep->outputFileName = $name;
+        }
         // Get the mime type
-        $mime = File::getMimeType($abspath);
+        $mime = File::getMimeType($finalPath);
         if ($mime == 'text/plain' || $mime == ''
             || $mime == 'application/octet-stream'
             || in_array(strtolower($path_parts['extension']), array('svg', 'svgz'))
             || ($mime == 'text/html'
                 && !in_array($path_parts['extension'], array('html', 'htm')))
         ) {
-            $mime = jFile::getMimeTypeFromFilename($abspath);
+            $mime = jFile::getMimeTypeFromFilename($finalPath);
         }
         $rep->mimeType = $mime;
 
         $mimeTextArray = array('text/html', 'text/text');
         if (in_array($mime, $mimeTextArray)) {
-            $content = jFile::read($abspath);
+            $content = jFile::read($finalPath);
             $rep->fileName = '';
             $rep->content = $content;
         }
 
         $rep->setExpires('+1 days');
+
+        if ($isWebDavResource) {
+            $rep->deleteFileAfterSending = true;
+        }
 
         return $rep;
     }
