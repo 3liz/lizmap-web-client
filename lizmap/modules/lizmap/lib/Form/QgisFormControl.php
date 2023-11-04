@@ -760,8 +760,8 @@ class QgisFormControl
                 $targetFullPath = $fullPath;
             }
         }
-
-        if (!is_dir($targetFullPath)) {
+        // avoid to create local directory if the files will be stored on remote webdav server
+        if (!is_dir($targetFullPath) && !$this->isWebDAV) {
             \jFile::createDir($targetFullPath);
         }
 

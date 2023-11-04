@@ -1579,6 +1579,19 @@ CREATE TABLE tests_projects.form_edition_upload_webdav (
     local_path text
 );
 
+
+--
+-- Name: form_edition_upload_webdav_geom; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav_geom (
+    id SERIAL PRIMARY KEY,
+    remote_path text,
+    local_path text,
+    geom public.geometry(Point,4326)
+);
+
+
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
 --
@@ -2151,6 +2164,17 @@ COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file
 --
 
 COPY tests_projects.form_edition_upload_webdav (id, remote_path, local_path) FROM stdin;
+\.
+
+
+--
+-- Data for Name: form_edition_upload_webdav_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_upload_webdav_geom (id, remote_path, local_path, geom) FROM stdin;
+1	\N	\N	010100000006521A766BB0FC3F8A557EA334084740
+2	\N	\N	0101000000E0283E5447A8E7BFA6E8291692404740
+3	\N	\N	0101000000A0440C44BB0ACD3F7E59E5616BE54640
 \.
 
 

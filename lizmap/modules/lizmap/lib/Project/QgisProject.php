@@ -1531,6 +1531,8 @@ class QgisProject
                     $aliases = array();
                     $defaults = array();
                     $constraints = array();
+                    $webDavFields = array();
+                    $webDavBaseUris = array();
                     $edittypes = $xmlLayer->xpath('.//edittype');
                     if ($edittypes) {
                         foreach ($edittypes as $edittype) {
@@ -1557,6 +1559,20 @@ class QgisProject
                                 $aliases[$field] = $field;
                                 $defaults[$field] = null;
                                 $constraints[$field] = null;
+                                // check for storage type
+                                $storage = $fieldconfiguration->xpath('.//editWidget/config/Option/Option[@name="StorageType"]');
+                                if ($storage && count($storage) == 1) {
+                                    // expecting only one record
+                                    if ($storage[0]->attributes()->value == 'WebDAV') {
+                                        $storageUrlExpression = $fieldconfiguration->xpath('.//editWidget/config/Option/Option[@name="PropertyCollection"]/Option[@name="properties"]/Option[@name="storageUrl"]/Option[@name="expression"]');
+                                        if ($storageUrlExpression && count($storageUrlExpression) == 1) {
+                                            if ($storageUrlExpression[0]->attributes()->value) {
+                                                $webDavFields[] = $field;
+                                                $webDavBaseUris[] = (string) $storageUrlExpression[0]->attributes()->value;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -1618,6 +1634,8 @@ class QgisProject
                     $layer['defaults'] = $defaults;
                     $layer['constraints'] = $constraints;
                     $layer['wfsFields'] = $wfsFields;
+                    $layer['webDavFields'] = $webDavFields;
+                    $layer['webDavBaseUris'] = $webDavBaseUris;
 
                     // Do not expose fields with HideFromWfs parameter
                     // Format in .qgs has changed in QGIS 3.16

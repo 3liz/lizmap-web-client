@@ -1522,6 +1522,12 @@ var lizAttributeTable = function() {
                                     rdata = data.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
                             }
+                            else if (data.substring(0, 4) == 'dav/') {
+                                    var rdata = data;
+                                    var colMeta = meta.settings.aoColumns[meta.col];
+                                    return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
+
+                            }
                             else if (data.substring(0, 4) == 'http' || data.substring(0, 3) == 'www') {
                                 var rdata = data;
                                 if (data.substring(0, 3) == 'www')

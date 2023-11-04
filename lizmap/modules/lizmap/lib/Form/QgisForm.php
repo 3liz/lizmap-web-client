@@ -1051,28 +1051,23 @@ class QgisForm implements QgisFormControlsInterface
             $storageUrl = $this->formControls[$ref]->webDavStorageUrl;
             if ($action == 'new' && trim($filename) != '') {
                 // upload a new file
-
-                // replace filename expression with the $filename
-
-                // TODO @selected_file_path property is not evaluated, for now replace the expression with the file name
-                $storageUrl = str_replace('file_name(@selected_file_path)', "'".$filename."'", $storageUrl);
-                // evaluate expression
-                $evaluatedStorageUrl = $this->evaluateExpression(array($ref => $storageUrl));
-                if ($evaluatedStorageUrl && property_exists($evaluatedStorageUrl, $ref)) {
-                    $newStorageUrl = $evaluatedStorageUrl->{$ref};
-                } else {
-                    // error in expression evaluation
-                    throw new \Exception('Failed to evaluate file name');
+                $newStorageUrl = $this->evaluateWebDavUrlExpression($ref, $storageUrl, $filename);
+                if (!$newStorageUrl) {
+                    throw new \Exception('Invalid file path');
                 }
-                if (substr($newStorageUrl, -1) == DIRECTORY_SEPARATOR) {
+                if (substr($newStorageUrl, -1) == '/') {
                     // it's a directory, this should't happen, maybe it's better to throw an exception
                     $newStorageUrl = $newStorageUrl.$filename;
                 }
-
                 // temp file on local file system
                 $newFileToCopy = $uploadCtrl->getTempFile($form->getContainer()->privateData[$ref]['newfile']);
 
                 list($uploadResult, $http_code, $uploadMessage) = RemoteStorageRequest::uploadToWebDAVStorage($newStorageUrl, $newFileToCopy);
+
+                // delete temp file
+                if (is_file($newFileToCopy)) {
+                    unlink($newFileToCopy);
+                }
 
                 if ($uploadResult) {
                     return $cnx->quote($uploadResult);
@@ -1081,24 +1076,25 @@ class QgisForm implements QgisFormControlsInterface
                 throw new \Exception($uploadMessage);
             } elseif ($originalFile !== '' && $newFile == '' && $action == 'keep') {
                 // keep previous file
-                $profile = RemoteStorageRequest::getProfile('webdav');
-                if ($profile && is_array($profile) && array_key_exists('enabled', $profile) && $profile['enabled'] == 1 && array_key_exists('baseUri', $profile)) {
-                    return $cnx->quote($profile['baseUri'].$originalFile);
+                $realStorageUrl = $this->evaluateWebDavUrlExpression($ref, $storageUrl);
+                if (!$realStorageUrl) {
+                    throw new \Exception('Invalid file path');
                 }
 
-                throw new \Exception('WEBDAV storage unavailable');
+                return $cnx->quote($realStorageUrl.$originalFile);
             } elseif ($originalFile !== '' && $newFile == '' && $action == 'del') {
                 // delete remote file
-                $profile = RemoteStorageRequest::getProfile('webdav');
-                if ($profile && is_array($profile) && array_key_exists('enabled', $profile) && $profile['enabled'] == 1 && array_key_exists('baseUri', $profile)) {
-                    list($deleteStatus, $deleteMessage) = RemoteStorageRequest::deleteFromWebDAVStorage($profile['baseUri'], $originalFile);
-
-                    if ($deleteMessage) {
-                        throw new \Exception($deleteMessage);
-                    }
-                } else {
-                    throw new \Exception('WEBDAV storage unavailable');
+                $realStorageUrl = $this->evaluateWebDavUrlExpression($ref, $storageUrl);
+                if (!$realStorageUrl) {
+                    throw new \Exception('Invalid file path');
                 }
+                list($deleteStatus, $deleteMessage) = RemoteStorageRequest::deleteFromWebDAVStorage($realStorageUrl, $originalFile);
+
+                if ($deleteMessage) {
+                    throw new \Exception($deleteMessage);
+                }
+
+                return 'NULL';
             }
         } else {
 
@@ -1692,5 +1688,35 @@ class QgisForm implements QgisFormControlsInterface
             $expression,
             $form_feature
         );
+    }
+
+    public function evaluateWebDavUrlExpression($fieldRef, $storageUrl, $fileName = null)
+    {
+        $storageUrlFilePath = RemoteStorageRequest::getRemoteUrl($storageUrl, $fileName);
+        if ($storageUrlFilePath) {
+            // evaluate expression
+            $evaluatedStorageUrl = $this->evaluateExpression(array($fieldRef => $storageUrlFilePath));
+
+            if ($evaluatedStorageUrl && property_exists($evaluatedStorageUrl, $fieldRef)) {
+                $path = $evaluatedStorageUrl->{$fieldRef};
+                // ../ or ./ are not allowed
+                if (!preg_match('/\.\.\//', $path) && !preg_match('/\.\//', $path)) {
+                    $profile = RemoteStorageRequest::getProfile('webdav');
+                    if ($profile && strpos($path, $profile['baseUri']) === 0) {
+                        if (substr($path, -1) !== '/') {
+                            // the path is a file, remove the last part of the url
+                            $uri_parts = explode('/', $path);
+                            array_pop($uri_parts);
+
+                            return implode('/', $uri_parts).'/';
+                        }
+
+                        return $path;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
