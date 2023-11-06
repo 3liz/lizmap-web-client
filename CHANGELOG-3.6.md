@@ -8,6 +8,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Fix error when executing the command "jcommunity~user:create" and
+  when the multiauth module is installed
+
 ## 3.6.7 - 2023-10-12
 
 ### Added
