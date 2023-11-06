@@ -143,10 +143,12 @@ export default class Permalink {
             if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
                 const itemIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
                 item.checked = true;
-                if(item.type === 'layer'){
+                if (item.type === 'layer' && stylesInURL[itemIndex]) {
                     item.wmsSelectedStyleName = decodeURIComponent(stylesInURL[itemIndex]);
                 }
-                item.opacity = parseFloat(opacitiesInURL[itemIndex]);
+                if (opacitiesInURL[itemIndex]) {
+                    item.opacity = parseFloat(opacitiesInURL[itemIndex]);
+                }
             } else {
                 item.checked = false;
             }
@@ -213,7 +215,7 @@ export default class Permalink {
 
         for (const item of lizMap.mainLizmap.state.rootMapGroup.findMapLayersAndGroups()) {
             if (item.checked){
-                itemsVisibility.push(item.name);
+                itemsVisibility.push(encodeURIComponent(item.name));
                 itemsStyle.push(item.wmsSelectedStyleName);
                 itemsOpacity.push(item.opacity);
             }

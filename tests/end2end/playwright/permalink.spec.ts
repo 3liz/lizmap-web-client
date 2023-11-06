@@ -378,7 +378,7 @@ test.describe('Permalink', () => {
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
     });
 
-    test('Permalink parameters error: not enough styles', async ({ page }) => {
+    test('Permalink parameters error: not enough styles -> No errors', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=permalink'
         const bbox = '3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254'
         const layers = 'sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier'
@@ -388,11 +388,11 @@ test.describe('Permalink', () => {
         await page.goto(url, { waitUntil: 'networkidle' });
 
         // Errors
-        await expect(page.locator('p.error-msg')).toHaveCount(1);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).toHaveCount(0);
+        await expect(page.locator('p.error-msg')).toHaveCount(0);
+        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
     });
 
-    test('Permalink parameters error: not enough opacities', async ({ page }) => {
+    test('Permalink parameters error: not enough opacities -> No errors', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=permalink'
         const bbox = '3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254'
         const layers = 'sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier'
@@ -402,7 +402,7 @@ test.describe('Permalink', () => {
         await page.goto(url, { waitUntil: 'networkidle' });
 
         // Errors
-        await expect(page.locator('p.error-msg')).toHaveCount(1);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).toHaveCount(0);
+        await expect(page.locator('p.error-msg')).toHaveCount(0);
+        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
     });
 });
