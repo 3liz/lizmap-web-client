@@ -215,7 +215,7 @@ export default class Permalink {
 
         for (const item of lizMap.mainLizmap.state.rootMapGroup.findMapLayersAndGroups()) {
             if (item.checked){
-                itemsVisibility.push(item.name);
+                itemsVisibility.push(encodeURIComponent(item.name));
                 itemsStyle.push(item.wmsSelectedStyleName);
                 itemsOpacity.push(item.opacity);
             }
