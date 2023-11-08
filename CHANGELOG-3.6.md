@@ -12,6 +12,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 * Fix error when executing the command "jcommunity~user:create" and
   when the multiauth module is installed
+* Fix the auto-login feature ("remember me" checkbox): the encryption key was not upgraded during upgrade from Lizmap 3.5 to 3.6 
 
 ## 3.6.7 - 2023-10-12
 
