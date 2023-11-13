@@ -9,7 +9,10 @@ import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';
 
 const attributionProperties = {
-    'title': { type: 'string' },
+    'title': { type: 'string' }
+}
+
+const optionalAttributionProperties = {
     'url': { type: 'string' }
 }
 
@@ -23,7 +26,7 @@ export class AttributionConfig extends BaseObjectConfig {
      * Create an attribution instance based on a config object
      * @param {Object} cfg       - the lizmap config object for attribution
      * @param {String} cfg.title - the attribution title
-     * @param {String} cfg.url   - the attribution url
+     * @param {?String} cfg.url   - the attribution url
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -34,7 +37,7 @@ export class AttributionConfig extends BaseObjectConfig {
             throw new ValidationError('The `options` in the config is empty!');
         }
 
-        super(cfg, attributionProperties, {})
+        super(cfg, attributionProperties, optionalAttributionProperties)
     }
 
     /**
@@ -49,7 +52,7 @@ export class AttributionConfig extends BaseObjectConfig {
     /**
      * The attribution url
      *
-     * @type {String}
+     * @type {?String}
      **/
     get url() {
         return this._url;
