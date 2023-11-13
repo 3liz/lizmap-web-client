@@ -75,7 +75,7 @@
       <lizmap-mouse-position></lizmap-mouse-position>
     </div>
     <div id="attribution-box">
-      <span id="attribution"></span>
+      <div id="attribution-ol"></div>
       <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
     </div>
 
