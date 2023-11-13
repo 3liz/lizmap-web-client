@@ -1946,12 +1946,13 @@ lizmap-mouse-position > div.coords-unit > select{
   background-color : white;
   background-color : rgba(255,255,255,0.7);
   border-top-left-radius: 1em;
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
 }
-#attribution {
-  font-size: 0.75em;
-  line-height: 10px;
-  vertical-align : text-bottom;
-  margin-right : 0.5em;
+#attribution-ol .ol-attribution {
+  position: unset;
+  max-width: none;
 }
 .olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
   display:none;
