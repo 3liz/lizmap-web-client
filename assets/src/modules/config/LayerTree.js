@@ -324,12 +324,12 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
             return null;
         }
         const attribution = this._wmsCapa.Attribution;
-        if(!attribution.hasOwnProperty('Title') || !attribution.hasOwnProperty('OnlineResource')) {
+        if (!attribution.hasOwnProperty('Title')) {
             return null;
         }
         return new AttributionConfig({
             title: attribution.Title,
-            url: attribution.OnlineResource,
+            url: attribution.hasOwnProperty('OnlineResource') ? attribution.OnlineResource : null,
         });
     }
 }
