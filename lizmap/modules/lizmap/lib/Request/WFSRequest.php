@@ -396,7 +396,7 @@ class WFSRequest extends OGCRequest
         }
         // check for webdav fields
         $webDavConfiguration = $this->getWebDavConf();
-        if (count($webDavConfiguration['webDavFields']) == 0) {
+        if (!array_key_exists('webDavFields', $webDavConfiguration) || count($webDavConfiguration['webDavFields']) == 0) {
             return $wfsResult;
         }
 
@@ -426,16 +426,20 @@ class WFSRequest extends OGCRequest
      */
     protected function getWebDavConf()
     {
-        $davProfile = RemoteStorageRequest::getProfile('webdav');
-        $baseUri = '';
-        if ($davProfile) {
-            $baseUri = $davProfile['baseUri'];
+        if ($this->qgisLayer) {
+            $davProfile = RemoteStorageRequest::getProfile('webdav');
+            $baseUri = '';
+            if ($davProfile) {
+                $baseUri = $davProfile['baseUri'];
+            }
+
+            return array(
+                'baseUri' => $baseUri,
+                'webDavFields' => $this->qgisLayer->getWebDavFieldConfiguration(),
+            );
         }
 
-        return array(
-            'baseUri' => $baseUri,
-            'webDavFields' => $this->qgisLayer->getWebDavFieldConfiguration(),
-        );
+        return array();
     }
 
     /**
