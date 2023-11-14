@@ -2172,9 +2172,9 @@ COPY tests_projects.form_edition_upload_webdav (id, remote_path, local_path) FRO
 --
 
 COPY tests_projects.form_edition_upload_webdav_geom (id, remote_path, local_path, geom) FROM stdin;
-1	\N	\N	010100000006521A766BB0FC3F8A557EA334084740
-2	\N	\N	0101000000E0283E5447A8E7BFA6E8291692404740
-3	\N	\N	0101000000A0440C44BB0ACD3F7E59E5616BE54640
+1	http://webdav/logo.png	\N	010100000006521A766BB0FC3F8A557EA334084740
+2	http://webdav/test_upload.conf	\N	0101000000E0283E5447A8E7BFA6E8291692404740
+3	http://webdav/test_upload.txt	\N	0101000000A0440C44BB0ACD3F7E59E5616BE54640
 \.
 
 
