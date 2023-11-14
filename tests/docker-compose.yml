@@ -99,8 +99,8 @@ services:
     environment:
       - USERNAME=webdav
       - PASSWORD=webdav
-      - UID=1000
-      - GID=1000
+      - UID=${LIZMAP_USER_ID}
+      - GID=${LIZMAP_GROUP_ID}
       - TZ=Europe/Rome
 volumes:
   pg_data:

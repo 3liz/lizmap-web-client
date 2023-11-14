@@ -143,6 +143,8 @@ class mediaCtrl extends jController
                 }
                 $isWebDavResource = true;
                 $finalPath = $tempFileUrl;
+            } else {
+                return $this->error404('Unable to get media');
             }
         } else {
             // Get the file

@@ -97,6 +97,11 @@ tests/qgis-projects/*
 # Zip file coming with QGIS 3.28
 tests/qgis-projects/*/*_attachments.zip
 !tests/qgis-projects/tests
+!tests/qgis-projects/webdav
+tests/qgis-projects/webdav/test/*
+!tests/qgis-projects/webdav/test/logo.png
+!tests/qgis-projects/webdav/test/test_upload.conf
+!tests/qgis-projects/webdav/test/test_upload.txt
 !tests/qgis-projects/ProJets 1982*!
 tests/qgis-projects/tests/media
 tests/qgis-server-plugins/*

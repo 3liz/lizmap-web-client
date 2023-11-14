@@ -36,16 +36,12 @@ class RemoteStorageRequest
         $returnUrl = null;
         // checks on file
         if (!is_file($file)) {
-            \jLog::log($file.' The file is not valid', 'error');
-
             return array(null, 400, 'The file is not valid');
         }
 
         try {
             $resource = Psr7\Utils::tryFopen($file, 'r');
         } catch (\RuntimeException $e) {
-            \jLog::log($e->getMessage(), 'error');
-
             return array(null, 400, 'Error on file upload');
         }
 
@@ -56,20 +52,10 @@ class RemoteStorageRequest
             // baseUri check
             if (strpos($storageUrl, $profile['baseUri']) === 0) {
                 $opt = array();
-                $headers = array();
-                $headers['User-Agent'] = 'lizmap-user-agent';
-
-                if (array_key_exists('user', $profile) && array_key_exists('password', $profile)) {
-                    $opt['auth'] = array();
-                    array_push($opt['auth'], $profile['user']);
-                    array_push($opt['auth'], $profile['password']);
-                }
-                $opt['headers'] = $headers;
 
                 $stream = \GuzzleHttp\Psr7\Utils::streamFor($resource);
                 $opt['body'] = $stream;
-
-                $client = new Client();
+                $client = self::buildClient($profile);
 
                 try {
                     $response = $client->request('PUT', $storageUrl, $opt);
@@ -89,9 +75,6 @@ class RemoteStorageRequest
             }
         } else {
             $message = 'WebDAV configuration not found';
-        }
-        if ($message) {
-            \jLog::log($message, 'error');
         }
 
         return array($returnUrl, $http_code, $message);
@@ -115,28 +98,16 @@ class RemoteStorageRequest
             if (strpos($storageUrl, $profile['baseUri']) !== 0) {
                 $http_code = 500;
                 $message = 'Invalid file '.$fileName;
-                \jLog::log($message, 'error');
             } else {
                 if (!self::isFileRemoteWebDAVResource($storageUrl, $fileName)) {
                     $http_code = 404;
                     $message = 'Resource '.$fileName.' is not a file';
-                    \jLog::log($message, 'error');
                 } else {
                     // deleting file
-                    $opt = array();
-                    $headers = array();
-                    $headers['User-Agent'] = 'lizmap-user-agent';
-                    if (array_key_exists('user', $profile) && array_key_exists('password', $profile)) {
-                        $opt['auth'] = array();
-                        array_push($opt['auth'], $profile['user']);
-                        array_push($opt['auth'], $profile['password']);
-                    }
-                    $opt['headers'] = $headers;
-
-                    $client = new Client();
+                    $client = self::buildClient($profile);
 
                     try {
-                        $response = $client->request('DELETE', $storageUrl.$fileName, $opt);
+                        $response = $client->request('DELETE', $storageUrl.$fileName);
                         $http_code = $response->getStatusCode();
                     } catch (\GuzzleHttp\Exception\RequestException $e) {
                         $message = 'Error on deleting remote file '.$e->getMessage();
@@ -167,20 +138,10 @@ class RemoteStorageRequest
         $profile = self::getProfile('webdav');
 
         if ($profile) {
-            $opt = array();
-            $headers = array();
-            $headers['User-Agent'] = 'lizmap-user-agent';
-            if (array_key_exists('user', $profile) && array_key_exists('password', $profile)) {
-                $opt['auth'] = array();
-                array_push($opt['auth'], $profile['user']);
-                array_push($opt['auth'], $profile['password']);
-            }
-            $opt['headers'] = $headers;
-
-            $client = new Client();
+            $client = self::buildClient($profile);
 
             try {
-                $response = $client->request('PROPFIND', $storageUrl.$fileName, $opt);
+                $response = $client->request('PROPFIND', $storageUrl.$fileName);
             } catch (\GuzzleHttp\Exception\RequestException $e) {
                 return false;
             } catch (\Exception $e) {
@@ -229,20 +190,10 @@ class RemoteStorageRequest
         if ($profile) {
             if (strpos($storageUrl, $profile['baseUri']) === 0) {
                 if (!self::isFileRemoteWebDAVResource($storageUrl, $fileName)) {
-                    $http_code = 404;
-                    $message = 'Resource '.$fileName.' is not a file';
-                    \jLog::log($message, 'error');
+                    self::getAppContext()->logMessage('Resource '.$fileName.' is not a file', 'error');
                 } else {
                     $opt = array();
-                    $headers = array();
-                    $headers['User-Agent'] = 'lizmap-user-agent';
-
-                    if (array_key_exists('user', $profile) && array_key_exists('password', $profile)) {
-                        $opt['auth'] = array();
-                        array_push($opt['auth'], $profile['user']);
-                        array_push($opt['auth'], $profile['password']);
-                    }
-                    $opt['headers'] = $headers;
+                    $client = self::buildClient($profile);
 
                     \jFile::createDir(\jApp::tempPath('davDownloads/'));
                     $tempFile = \jApp::tempPath('davDownloads/'.uniqid('dav_', true).'-'.$fileName);
@@ -250,18 +201,16 @@ class RemoteStorageRequest
                     $output = Psr7\Utils::streamFor(fopen($tempFile, 'w+'));
                     $opt['sink'] = $output;
 
-                    $client = new Client();
-
                     try {
                         $response = $client->request('GET', $storageUrl.$fileName, $opt);
 
                         return $tempFile;
                     } catch (\GuzzleHttp\Exception\RequestException $e) {
-                        \jLog::log($e->getMessage(), 'error');
+                        self::getAppContext()->logMessage($e->getMessage(), 'error');
 
                         return null;
                     } catch (\Exception $e) {
-                        \jLog::log($e->getMessage(), 'error');
+                        self::getAppContext()->logMessage($e->getMessage(), 'error');
 
                         return null;
                     }
@@ -281,21 +230,10 @@ class RemoteStorageRequest
     {
         $profile = self::getProfile('webdav');
         if ($profile) {
-            $opt = array();
-            $headers = array();
-            $headers['User-Agent'] = 'lizmap-user-agent';
-
-            if (array_key_exists('user', $profile) && array_key_exists('password', $profile)) {
-                $opt['auth'] = array();
-                array_push($opt['auth'], $profile['user']);
-                array_push($opt['auth'], $profile['password']);
-            }
-            $opt['headers'] = $headers;
-
-            $client = new Client();
+            $client = self::buildClient($profile);
 
             try {
-                $response = $client->request('GET', $profile['baseUri'], $opt);
+                $response = $client->request('GET', $profile['baseUri']);
 
                 return true;
             } catch (\GuzzleHttp\Exception\RequestException $e) {
@@ -345,17 +283,34 @@ class RemoteStorageRequest
      */
     public static function getRemoteUrl($storageUrl, $filename = null)
     {
-        $storeLen = strlen($storageUrl);
-        $fileNameLen = strlen(self::$fileNameExpression);
-        if ($fileNameLen < $storeLen && substr_compare($storageUrl, self::$fileNameExpression, $storeLen - $fileNameLen, $fileNameLen) === 0) {
-            if ($filename) {
-                // TODO @selected_file_path property is not evaluated, for now replace the expression with the file name
-                return str_replace('file_name(@selected_file_path)', "'".$filename."'", $storageUrl);
-            }
-
-            return str_replace('file_name(@selected_file_path)', "''", $storageUrl);
+        if ($filename) {
+            // TODO @selected_file_path property is not evaluated, for now replace the expression with the file name
+            return str_replace(self::$fileNameExpression, "'".$filename."'", $storageUrl);
         }
 
-        return null;
+        return str_replace(self::$fileNameExpression, "''", $storageUrl);
+    }
+
+    /**
+     * Create HttpClient for webDav requests.
+     *
+     * @param array $profile The webDav profile
+     *
+     * @return \GuzzleHttp\Client
+     */
+    protected static function buildClient($profile)
+    {
+        $opt = array();
+        $headers = array();
+        $headers['User-Agent'] = 'lizmap-user-agent';
+
+        if (array_key_exists('user', $profile) && array_key_exists('password', $profile)) {
+            $opt['auth'] = array();
+            array_push($opt['auth'], $profile['user']);
+            array_push($opt['auth'], $profile['password']);
+        }
+        $opt['headers'] = $headers;
+
+        return new Client($opt);
     }
 }

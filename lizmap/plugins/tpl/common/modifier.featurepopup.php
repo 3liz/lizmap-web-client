@@ -9,10 +9,11 @@
  *
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  *
- * @param mixed $attributeName
- * @param mixed $attributeValue
- * @param mixed $repository
- * @param mixed $project
+ * @param mixed      $attributeName
+ * @param mixed      $attributeValue
+ * @param mixed      $repository
+ * @param mixed      $project
+ * @param null|mixed $remoteStorageProfile
  */
 
 /**
@@ -21,16 +22,17 @@
  *  {$attribute['name']|featurepopup:$attribute['value'],$repository,$project}
  * </pre>.
  *
- * @param string $attributeName  feature Attribute name
- * @param string $attributeValue feature Attribute value
- * @param string $repository     lizmap Repository
- * @param string $project        name of the project
+ * @param string     $attributeName        feature Attribute name
+ * @param string     $attributeValue       feature Attribute value
+ * @param string     $repository           lizmap Repository
+ * @param string     $project              name of the project
+ * @param null|array $remoteStorageProfile webDav configuration
  *
  * @return html string
  */
-function jtpl_modifier_common_featurepopup($attributeName, $attributeValue, $repository, $project)
+function jtpl_modifier_common_featurepopup($attributeName, $attributeValue, $repository, $project, $remoteStorageProfile = null)
 {
     $popupClass = jClasses::getService('view~popup');
 
-    return $popupClass->getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, null);
+    return $popupClass->getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, null, $remoteStorageProfile);
 }

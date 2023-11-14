@@ -1764,15 +1764,7 @@ class QgisProject
             } else {
                 $defaultRoot = '';
             }
-
-            $webDAV = (array_key_exists('StorageType', $fieldEditOptions) && $fieldEditOptions['StorageType'] == 'WebDAV') ? $fieldEditOptions['StorageType'] : null;
-            if ($webDAV) {
-                if (isset($fieldEditOptions['PropertyCollection'], $fieldEditOptions['PropertyCollection']['properties'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'])) {
-                    $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'];
-                } else {
-                    $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['StorageUrl'];
-                }
-            }
+            $this->readWebDavStorageOptions($fieldEditOptions);
         }
 
         $fieldEditOptions['UploadMimeTypes'] = $mimeTypes;
@@ -1780,6 +1772,23 @@ class QgisProject
         $fieldEditOptions['UploadAccept'] = $acceptAttr;
         $fieldEditOptions['UploadCapture'] = $captureAttr;
         $fieldEditOptions['UploadImage'] = $imageUpload;
+    }
+
+    /**
+     * update the upload options with the property 'webDAVStorageUrl'.
+     *
+     * @param array $fieldEditOptions
+     */
+    protected function readWebDavStorageOptions(&$fieldEditOptions)
+    {
+        $webDAV = (array_key_exists('StorageType', $fieldEditOptions) && $fieldEditOptions['StorageType'] == 'WebDAV') ? $fieldEditOptions['StorageType'] : null;
+        if ($webDAV) {
+            if (isset($fieldEditOptions['PropertyCollection'], $fieldEditOptions['PropertyCollection']['properties'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'])) {
+                $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'];
+            } else {
+                $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['StorageUrl'];
+            }
+        }
     }
 
     public const MAP_VALUES_AS_VALUES = 0;
