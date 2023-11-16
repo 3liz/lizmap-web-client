@@ -174,7 +174,7 @@ class Project
                 ) {
                     $qgsProj = new QgisProject($layer['file'], $services, $this->appContext);
                     $newLayer = $qgsProj->getLayerDefinition($layer['id']);
-                    $newLayer['qsgmtime'] = filemtime($layer['file']);
+                    $newLayer['qgsmtime'] = filemtime($layer['file']);
                     $newLayer['file'] = $layer['file'];
                     $newLayer['embedded'] = 1;
                     $newLayer['projectPath'] = $layer['projectPath'];
