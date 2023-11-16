@@ -571,10 +571,11 @@ class QgisForm implements QgisFormControlsInterface
                         $check = false;
                         $form->setErrorOn($fieldName, 'WEBDAV storage unavailable');
                     }
-                }
-                // if the target path to store the file is not valid: error
-                if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
-                    $form->setErrorOn($fieldName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
+                } else {
+                    // if the target path to store the file is not valid: error
+                    if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
+                        $form->setErrorOn($fieldName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
+                    }
                 }
             }
         }
