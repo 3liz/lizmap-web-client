@@ -1615,7 +1615,7 @@ class QgisProject
                 $xmlFile = realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project);
                 $qgsProj = new QgisProject($xmlFile, $this->services, $this->appContext);
                 $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
-                $layer['qsgmtime'] = filemtime($xmlFile);
+                $layer['qgsmtime'] = filemtime($xmlFile);
                 $layer['file'] = $xmlFile;
                 $layer['embedded'] = 1;
                 $layer['projectPath'] = (string) $attributes->project;
