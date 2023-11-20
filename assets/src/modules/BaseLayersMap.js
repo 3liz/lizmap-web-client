@@ -5,6 +5,7 @@ import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
 import { get as getProjection } from 'ol/proj.js';
+import { Attribution } from 'ol/control.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
@@ -28,7 +29,9 @@ export default class BaseLayersMap extends olMap {
         const mapProjection = getProjection(qgisProjectProjection);
 
         super({
-            controls: [], // disable default controls
+            controls: [
+                new Attribution({ target: 'attribution-ol', collapsed: false })
+            ],
             interactions: defaultInteractions({
                 dragPan: false,
                 mouseWheelZoom: false
@@ -155,8 +158,20 @@ export default class BaseLayersMap extends olMap {
                 this._hasEmptyBaseLayer = true;
             }
 
-            if(!baseLayer){
+            if (!baseLayer) {
                 continue;
+            }
+
+            if (baseLayerState.hasAttribution) {
+                const url = baseLayerState.attribution.url;
+                const title = baseLayerState.attribution.title;
+                let attribution = title;
+
+                if (url) {
+                    attribution = `<a href='${url}' target='_blank'>${title}</a>`;
+                }
+
+                baseLayer.getSource().setAttributions(attribution);
             }
 
             const visible = mainLizmap.initialConfig.baseLayers.startupBaselayerName === baseLayerState.name;
