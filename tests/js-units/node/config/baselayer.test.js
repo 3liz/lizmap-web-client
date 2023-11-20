@@ -83,7 +83,7 @@ describe('BaseLayerConfig', function () {
             new BaseLayerConfig('name', {'title': 'title', 'attribution': {'name': 'name'}})
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
-            expect(error.message).to.be.eq('The cfg object has not enough properties compared to required!\n- The cfg properties: name\n- The required properties: title,url')
+            expect(error.message).to.be.eq('The properties: `title` are required in the cfg object!')
             expect(error).to.be.instanceOf(ValidationError)
         }
     })
