@@ -164,7 +164,8 @@ export default class BaseLayersMap extends olMap {
 
             if (baseLayerState.hasAttribution) {
                 const url = baseLayerState.attribution.url;
-                let attribution = baseLayerState.attribution.title;
+                const title = baseLayerState.attribution.title;
+                let attribution = title;
 
                 if (url) {
                     attribution = `<a href='${url}' target='_blank'>${title}</a>`;
