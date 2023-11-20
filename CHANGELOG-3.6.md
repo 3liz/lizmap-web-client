@@ -10,10 +10,25 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Fix loading relations which is coming from a "embedded layer", contribution from @mind84
+* Fix typo about wrong key used for caching an embedded layer, contribution from @mind84
+* Do not block the loading of the map if the layer name is wrong in a permalink
 * Fix error when executing the command "jcommunity~user:create" and
   when the multiauth module is installed
 * Fix the auto-login feature ("remember me" checkbox): the encryption key was not upgraded during upgrade from Lizmap 3.5 to 3.6 
 * Fix a potential regression in the password reset feature
+* Fix getting the table for sub-queries with escaped double-quotes
+* Form filter - Date range: add a day to the max values when requesting data
+* In the Lizmap atlas, fix the popup when the name has an accent or a space
+
+### Backend
+
+* Update some PHP packages
+
+### Funders
+
+* [Faunalia](https://www.faunalia.eu/fr)
+* [CIRAD](https://www.cirad.fr/)
 
 ## 3.6.7 - 2023-10-12
 
