@@ -8,6 +8,43 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Dataviz :
+  * Use the popup title when showing plot in a popup
+  * Respect the new option "trigger filter" to avoid filtering the plot on layer filtered
+
+### Fixed
+
+* Fix typo about wrong key used for caching an embedded layer, contribution from @mind84
+* Dataviz : Fix the option "Display when layer is visible" option
+* Fix selected default style on a WMS layer
+* In the Lizmap atlas, fix the popup when the name has an accent or a space
+* Do not block the loading of the map if the layer name is wrong in a permalink
+
+### Changed
+
+* Change the configurations of the Lizmap editing form fields published with autocompletion
+  * add a delay of 300ms to lessen the number of requests sent to the server
+  * add a minimum of 3 characters to trigger the autocompletion
+  * the search is now accent-insensitive : You can type forets and it will find Forêts
+* Permalink : 
+  * Opacity,style, layer with a comma in its name
+  * use mini-dock
+  * review the hash used
+* Refactor the geobookmark feature
+* Improve UI about adding text on top of the map : rotation, scales etc
+* Improve UI about geometric constraints
+* Javascript events `lizmapeditionfeaturecreated` and `lizmapeditionfeaturemodified`
+
+### Backend
+
+* Update some PHP packages
+
+### Funders
+
+* [Avignon city](https://www.avignon.fr/)
+
 ## 3.7.0-beta.1 - 2023-10-13
 
 ### Added
