@@ -115,7 +115,7 @@ jobs:
           body: |
             The latest **weekly** run of end2end "playwright" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
 
-            CC @nboisteault and @Gustry, please have a look to the logs 💪 Maybe it's a false positive ? 🙍
+            CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
 
             Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -146,7 +146,7 @@ jobs:
           body: |
             The latest **weekly** run of end2end "cypress" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
 
-            CC @nboisteault and @Gustry, please have a look to the logs 💪 Maybe it's a false positive ? 🙍
+            CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
 
             Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
