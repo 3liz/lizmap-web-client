@@ -21,9 +21,3 @@ jobs:
         with:
           event-type: run-e2e-branches
           client-payload: '{"branch": "release_3_6"}'
-
-      - name: Branch 3.5
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          event-type: run-e2e-branches
-          client-payload: '{"branch": "release_3_5"}'
