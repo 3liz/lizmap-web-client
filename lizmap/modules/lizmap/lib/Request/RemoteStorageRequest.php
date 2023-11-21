@@ -261,9 +261,9 @@ class RemoteStorageRequest
         $profile = null;
 
         try {
-            $profile = $context->getProfile($storageType, $profileName, true);
-            if ($profile && is_array($profile) && array_key_exists('enabled', $profile) && $profile['enabled'] == 1 && array_key_exists('baseUri', $profile)) {
-                return $profile;
+            $webDavProfile = $context->getProfile($storageType, $profileName, true);
+            if ($webDavProfile && is_array($webDavProfile) && array_key_exists('enabled', $webDavProfile) && $webDavProfile['enabled'] == 1 && array_key_exists('baseUri', $webDavProfile)) {
+                $profile = $webDavProfile;
             }
         } catch (\Exception $e) {
             $profile = null;

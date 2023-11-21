@@ -12,9 +12,6 @@
 
 namespace Lizmap\Request;
 
-use GuzzleHttp\Psr7;
-use JsonMachine;
-
 /**
  * @see https://en.wikipedia.org/wiki/Web_Feature_Service.
  */
@@ -387,59 +384,7 @@ class WFSRequest extends OGCRequest
 
         // Else pass query to QGIS Server
         // Get remote data
-        $wfsResult = $this->request(true, true);
-        if ($wfsResult->code >= 400) {
-            return $wfsResult;
-        }
-        if ($wfsResult->mime != 'application/vnd.geo+json; charset=utf-8') {
-            return $wfsResult;
-        }
-        // check for webdav fields
-        $webDavConfiguration = $this->getWebDavConf();
-        if (!array_key_exists('webDavFields', $webDavConfiguration) || count($webDavConfiguration['webDavFields']) == 0) {
-            return $wfsResult;
-        }
-
-        $featureStream = Psr7\StreamWrapper::getResource($wfsResult->getBodyAsStream());
-        $features = JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
-
-        return new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', (function () use ($features, $webDavConfiguration) {
-            yield '{"type": "FeatureCollection", "features": [';
-            $virg = '';
-            foreach ($features as $feat) {
-                if (property_exists($feat, 'properties')) {
-                    $feat->properties = $this->processFeatureGeoJSON($feat->properties, $webDavConfiguration);
-                }
-
-                yield $virg.json_encode($feat);
-                $virg = ',';
-            }
-
-            yield ']}';
-        })());
-    }
-
-    /**
-     * return the configuration for webdav fields for current layer.
-     *
-     * @return array the configuration
-     */
-    protected function getWebDavConf()
-    {
-        if ($this->qgisLayer) {
-            $davProfile = RemoteStorageRequest::getProfile('webdav');
-            $baseUri = '';
-            if ($davProfile) {
-                $baseUri = $davProfile['baseUri'];
-            }
-
-            return array(
-                'baseUri' => $baseUri,
-                'webDavFields' => $this->qgisLayer->getWebDavFieldConfiguration(),
-            );
-        }
-
-        return array();
+        return $this->request(true, true);
     }
 
     /**
@@ -904,53 +849,13 @@ class WFSRequest extends OGCRequest
         return new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', (function () use ($q) {
             yield '{"type": "FeatureCollection", "features": [';
             $virg = '';
-            // check for webdav configuration
-            $webDavConfiguration = $this->getWebDavConf();
             foreach ($q as $d) {
-                if (count($webDavConfiguration['webDavFields']) > 0) {
-                    $geoJson = json_decode($d->geojson);
-                    if (property_exists($geoJson, 'properties')) {
-                        $geoJson->properties = $this->processFeatureGeoJSON($geoJson->properties, $webDavConfiguration);
-                        $d->geojson = json_encode($geoJson);
-                    }
-                }
-
                 yield $virg.$d->geojson;
                 $virg = ',';
             }
 
             yield ']}';
         })());
-    }
-
-    /**
-     * parse geoJSON response properties.
-     *
-     * @param object $properties record properties array
-     * @param array  $webDavConf list of webdav fields
-     *
-     * @return object
-     */
-    protected function processFeatureGeoJSON($properties, $webDavConf)
-    {
-        foreach ($webDavConf['webDavFields'] as $field => $url) {
-            if ($properties->{$field}) {
-                // if the base path starts with base URI, replace it with a genric path
-                if ($webDavConf['baseUri'] && strpos($properties->{$field}, $webDavConf['baseUri']) === 0) {
-                    $properties->{$field} = str_replace($webDavConf['baseUri'], 'dav/', $properties->{$field});
-                } else {
-                    // set filename as value
-                    $pathInfo = pathinfo($properties->{$field});
-                    if ($pathInfo['filename'] !== '') {
-                        $properties->{$field} = $pathInfo['filename'].'.'.$pathInfo['extension'];
-                    } else {
-                        $properties->{$field} = $pathInfo['basename'];
-                    }
-                }
-            }
-        }
-
-        return $properties;
     }
 
     /**

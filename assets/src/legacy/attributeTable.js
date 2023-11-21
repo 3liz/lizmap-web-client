@@ -1459,7 +1459,6 @@ var lizAttributeTable = function() {
             function createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues){
                 const columns = [];
                 let firstDisplayedColIndex = 0;
-
                 // Column with selected status
                 columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
                 firstDisplayedColIndex+=1;
@@ -1511,10 +1510,18 @@ var lizAttributeTable = function() {
                         }
                     } else {
                         // Check if we need to replace url or media by link
+                        let davConf = lizUrls['webDavUrl'] && config.layers[aName]?.webDavFields && Array.isArray(config.layers[aName].webDavFields) && config.layers[aName].webDavFields.includes(columnName) || false;
                         colConf['render'] = function (data, type, row, meta) {
                             // Replace media and URL with links
                             if (!data || !(typeof data === 'string'))
                                 return data;
+                            if (davConf) {
+                                // replace the root of the url
+                                if(data.startsWith(lizUrls['webDavUrl'])){
+                                    data = data.replace(lizUrls['webDavUrl'],'dav/')
+                                }
+                            }
+
                             if (data.substring(0, 6) == 'media/' || data.substring(0, 7) == '/media/' || data.substring(0, 9) == '../media/') {
                                 var rdata = data;
                                 var colMeta = meta.settings.aoColumns[meta.col];
