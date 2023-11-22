@@ -1531,6 +1531,8 @@ class QgisProject
                     $aliases = array();
                     $defaults = array();
                     $constraints = array();
+                    $webDavFields = array();
+                    $webDavBaseUris = array();
                     $edittypes = $xmlLayer->xpath('.//edittype');
                     if ($edittypes) {
                         foreach ($edittypes as $edittype) {
@@ -1557,6 +1559,20 @@ class QgisProject
                                 $aliases[$field] = $field;
                                 $defaults[$field] = null;
                                 $constraints[$field] = null;
+                                // check for storage type
+                                $storage = $fieldconfiguration->xpath('.//editWidget/config/Option/Option[@name="StorageType"]');
+                                if ($storage && count($storage) == 1) {
+                                    // expecting only one record
+                                    if ($storage[0]->attributes()->value == 'WebDAV') {
+                                        $storageUrlExpression = $fieldconfiguration->xpath('.//editWidget/config/Option/Option[@name="PropertyCollection"]/Option[@name="properties"]/Option[@name="storageUrl"]/Option[@name="expression"]');
+                                        if ($storageUrlExpression && count($storageUrlExpression) == 1) {
+                                            if ($storageUrlExpression[0]->attributes()->value) {
+                                                $webDavFields[] = $field;
+                                                $webDavBaseUris[] = (string) $storageUrlExpression[0]->attributes()->value;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -1618,6 +1634,8 @@ class QgisProject
                     $layer['defaults'] = $defaults;
                     $layer['constraints'] = $constraints;
                     $layer['wfsFields'] = $wfsFields;
+                    $layer['webDavFields'] = $webDavFields;
+                    $layer['webDavBaseUris'] = $webDavBaseUris;
 
                     // Do not expose fields with HideFromWfs parameter
                     // Format in .qgs has changed in QGIS 3.16
@@ -1746,6 +1764,7 @@ class QgisProject
             } else {
                 $defaultRoot = '';
             }
+            $this->readWebDavStorageOptions($fieldEditOptions);
         }
 
         $fieldEditOptions['UploadMimeTypes'] = $mimeTypes;
@@ -1753,6 +1772,23 @@ class QgisProject
         $fieldEditOptions['UploadAccept'] = $acceptAttr;
         $fieldEditOptions['UploadCapture'] = $captureAttr;
         $fieldEditOptions['UploadImage'] = $imageUpload;
+    }
+
+    /**
+     * update the upload options with the property 'webDAVStorageUrl'.
+     *
+     * @param array $fieldEditOptions
+     */
+    protected function readWebDavStorageOptions(&$fieldEditOptions)
+    {
+        $webDAV = (array_key_exists('StorageType', $fieldEditOptions) && $fieldEditOptions['StorageType'] == 'WebDAV') ? $fieldEditOptions['StorageType'] : null;
+        if ($webDAV) {
+            if (isset($fieldEditOptions['PropertyCollection'], $fieldEditOptions['PropertyCollection']['properties'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl'], $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'])) {
+                $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['PropertyCollection']['properties']['storageUrl']['expression'];
+            } else {
+                $fieldEditOptions['webDAVStorageUrl'] = $fieldEditOptions['StorageUrl'];
+            }
+        }
     }
 
     public const MAP_VALUES_AS_VALUES = 0;
@@ -1860,7 +1896,20 @@ class QgisProject
             // Option with list of values as Map or string list of values
             } elseif ($optionType === 'Map' || $optionType === 'StringList') {
                 $fieldEditOptions[$optionName] = $this->getValuesFromOptions($option, $valuesExtraction);
-            // Simple option
+                if ($optionName === 'PropertyCollection') {
+                    foreach ($option->Option as $propertyCollectionOption) {
+                        // get properties of property collection
+                        if ((string) $propertyCollectionOption->attributes()->name == 'properties') {
+                            $propName = (string) $propertyCollectionOption->attributes()->name;
+                            $fieldEditOptions[$optionName][$propName] = array();
+                            foreach ($propertyCollectionOption->Option as $subOptions) {
+                                $subOpt = (string) $subOptions->attributes()->name;
+                                $fieldEditOptions[$optionName][$propName][$subOpt] = $this->getValuesFromOptions($subOptions, $valuesExtraction);
+                            }
+                        }
+                    }
+                }
+                // Simple option
             } else {
                 $fieldEditOptions[$optionName] = $this->convertValueOptions((string) $option->attributes()->value, (string) $option->attributes()->type);
             }

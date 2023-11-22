@@ -13,6 +13,7 @@
 namespace Lizmap\Form;
 
 use Lizmap\App;
+use Lizmap\Request\RemoteStorageRequest;
 
 class QgisForm implements QgisFormControlsInterface
 {
@@ -565,9 +566,16 @@ class QgisForm implements QgisFormControlsInterface
 
             if ($form->getControl($fieldName) instanceof \jFormsControlUpload2) {
                 list($targetPath, $targetFullPath) = $this->getStoragePathForControl($fieldName);
-                // if the target path to store the file is not valid: error
-                if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
-                    $form->setErrorOn($fieldName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
+                if ($this->getQgisControl($fieldName)->isWebDAV) {
+                    if (!RemoteStorageRequest::checkWebDAVStorageConnection()) {
+                        $check = false;
+                        $form->setErrorOn($fieldName, 'WEBDAV storage unavailable');
+                    }
+                } else {
+                    // if the target path to store the file is not valid: error
+                    if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
+                        $form->setErrorOn($fieldName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
+                    }
                 }
             }
         }
@@ -806,7 +814,20 @@ class QgisForm implements QgisFormControlsInterface
             }
             // Control is an upload control
             if ($jCtrl instanceof \jFormsControlUpload2 || $jCtrl instanceof \jFormsControlUpload) {
-                $values[$ref] = $this->processUploadedFile($form, $ref);
+                if (array_key_exists($ref, $this->formControls) && $this->formControls[$ref]->isWebDAV && isset($this->formControls[$ref]->webDavStorageUrl)) {
+                    try {
+                        $values[$ref] = $this->processWebDavUploadFile($form, $ref);
+                    } catch (\Exception $e) {
+                        // Need to catch Exception if operation on remote storage fails
+                        $form->setErrorOn($ref, $e->getMessage());
+                        $this->appContext->logMessage($e->getMessage(), 'lizmapadmin');
+                        $this->appContext->logException($e, 'lizmapadmin');
+
+                        return false;
+                    }
+                } else {
+                    $values[$ref] = $this->processUploadedFile($form, $ref);
+                }
 
                 continue;
             }
@@ -1036,6 +1057,82 @@ class QgisForm implements QgisFormControlsInterface
         if ($filename) {
             // we keep the current file
             return $cnx->quote($targetPath.$filename);
+        }
+
+        return 'NULL';
+    }
+
+    /**
+     * Upload, delete or keep webdav file.
+     *
+     * @param \jFormsBase $form
+     * @param string      $ref
+     *
+     * @throws \Exception
+     *
+     * @return string
+     */
+    protected function processWebDavUploadFile($form, $ref)
+    {
+        /** @var \jFormsControlUpload2 $uploadCtrl */
+        $uploadCtrl = $form->getControl($ref);
+        $filename = $form->getData($ref);
+        $cnx = $this->layer->getDatasourceConnection();
+
+        $originalFile = $form->getContainer()->privateData[$ref]['originalfile'];
+        $newFile = $form->getContainer()->privateData[$ref]['newfile'];
+        $action = $form->getContainer()->privateData[$ref]['action'];
+
+        $storageUrl = $this->formControls[$ref]->webDavStorageUrl;
+        if (!$storageUrl) {
+            throw new \Exception('WEBDAV storage unavailable');
+        }
+        if ($action == 'new' && trim($filename) != '') {
+            // upload a new file
+            $newStorageUrl = $this->evaluateWebDavUrlExpression($ref, $storageUrl, $filename);
+            if (!$newStorageUrl) {
+                throw new \Exception('Invalid file path');
+            }
+            if (substr($newStorageUrl, -1) == '/') {
+                // it's a directory, this should't happen, maybe it's better to throw an exception
+                $newStorageUrl = $newStorageUrl.$filename;
+            }
+            // temp file on local file system
+            $newFileToCopy = $uploadCtrl->getTempFile($form->getContainer()->privateData[$ref]['newfile']);
+
+            list($uploadResult, $http_code, $uploadMessage) = RemoteStorageRequest::uploadToWebDAVStorage($newStorageUrl, $newFileToCopy);
+
+            // delete temp file
+            if (is_file($newFileToCopy)) {
+                unlink($newFileToCopy);
+            }
+
+            if ($uploadResult) {
+                return $cnx->quote($uploadResult);
+            }
+
+            throw new \Exception($uploadMessage);
+        } elseif ($originalFile !== '' && $newFile == '' && $action == 'keep') {
+            // keep previous file
+            $realStorageUrl = $this->evaluateWebDavUrlExpression($ref, $storageUrl);
+            if (!$realStorageUrl) {
+                throw new \Exception('Invalid file path');
+            }
+
+            return $cnx->quote($realStorageUrl.$originalFile);
+        } elseif ($originalFile !== '' && $newFile == '' && $action == 'del') {
+            // delete remote file
+            $realStorageUrl = $this->evaluateWebDavUrlExpression($ref, $storageUrl);
+            if (!$realStorageUrl) {
+                throw new \Exception('Invalid file path');
+            }
+            list($deleteStatus, $deleteMessage) = RemoteStorageRequest::deleteFromWebDAVStorage($realStorageUrl, $originalFile);
+
+            if ($deleteMessage) {
+                throw new \Exception($deleteMessage);
+            }
+
+            return 'NULL';
         }
 
         return 'NULL';
@@ -1615,5 +1712,35 @@ class QgisForm implements QgisFormControlsInterface
             $expression,
             $form_feature
         );
+    }
+
+    public function evaluateWebDavUrlExpression($fieldRef, $storageUrl, $fileName = null)
+    {
+        $storageUrlFilePath = RemoteStorageRequest::getRemoteUrl($storageUrl, $fileName);
+        if ($storageUrlFilePath) {
+            // evaluate expression
+            $evaluatedStorageUrl = $this->evaluateExpression(array($fieldRef => $storageUrlFilePath));
+
+            if ($evaluatedStorageUrl && property_exists($evaluatedStorageUrl, $fieldRef)) {
+                $path = $evaluatedStorageUrl->{$fieldRef};
+                // ../ or ./ are not allowed
+                if (!preg_match('/\.\.\//', $path) && !preg_match('/\.\//', $path)) {
+                    $profile = RemoteStorageRequest::getProfile('webdav');
+                    if ($profile && strpos($path, $profile['baseUri']) === 0) {
+                        if (substr($path, -1) !== '/' && !$fileName) {
+                            // the path is a file, remove the last part of the url for delete and keep methods.
+                            $uri_parts = explode('/', $path);
+                            array_pop($uri_parts);
+
+                            return implode('/', $uri_parts).'/';
+                        }
+                        // if the fileName is NOT null it means that a new upload is required, so return entire path
+                        return $path;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -33,6 +33,10 @@ class qgisVectorLayer extends qgisMapLayer
 
     protected $wfsFields = array();
 
+    protected $webDavFields = array();
+
+    protected $webDavBaseUris = array();
+
     /**
      * @var null|object connection parameters
      */
@@ -73,6 +77,8 @@ class qgisVectorLayer extends qgisMapLayer
         $this->defaultValues = $propLayer['defaults'];
         $this->constraints = $propLayer['constraints'];
         $this->wfsFields = $propLayer['wfsFields'];
+        $this->webDavFields = $propLayer['webDavFields'];
+        $this->webDavBaseUris = $propLayer['webDavBaseUris'];
     }
 
     /**
@@ -171,6 +177,16 @@ class qgisVectorLayer extends qgisMapLayer
     public function getWfsFields()
     {
         return $this->wfsFields;
+    }
+
+    public function getWebDavFieldConfiguration()
+    {
+        $davConf = array();
+        foreach ($this->webDavFields as $index => $webDavField) {
+            $davConf[$webDavField] = $this->webDavBaseUris[$index];
+        }
+
+        return $davConf;
     }
 
     /**
