@@ -205,6 +205,7 @@ class lizMapCtrl extends jController
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
             'service' => jUrl::get('lizmap~service:index').'?repository='.$repository.'&project='.$project,
+            'resourceUrlReplacement' => array(),
         );
 
         // Get optional WMS public url list
@@ -226,6 +227,7 @@ class lizMapCtrl extends jController
         $webDavProfile = RemoteStorageRequest::getProfile('webdav');
         if ($webDavProfile) {
             $lizUrls['webDavUrl'] = $webDavProfile['baseUri'];
+            $lizUrls['resourceUrlReplacement']['webdav'] = 'dav/';
         }
 
         $rep->addJSCode('var lizUrls = '.json_encode($lizUrls).';');
