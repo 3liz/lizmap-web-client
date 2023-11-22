@@ -1510,15 +1510,15 @@ var lizAttributeTable = function() {
                         }
                     } else {
                         // Check if we need to replace url or media by link
-                        let davConf = lizUrls['webDavUrl'] && config.layers[aName]?.webDavFields && Array.isArray(config.layers[aName].webDavFields) && config.layers[aName].webDavFields.includes(columnName) || false;
+                        let davConf = lizUrls.webDavUrl && lizUrls?.resourceUrlReplacement?.webdav && config.layers[aName]?.webDavFields && Array.isArray(config.layers[aName].webDavFields) && config.layers[aName].webDavFields.includes(columnName);
                         colConf['render'] = function (data, type, row, meta) {
                             // Replace media and URL with links
                             if (!data || !(typeof data === 'string'))
                                 return data;
                             if (davConf) {
                                 // replace the root of the url
-                                if(data.startsWith(lizUrls['webDavUrl'])){
-                                    data = data.replace(lizUrls['webDavUrl'],'dav/')
+                                if(data.startsWith(lizUrls.webDavUrl)){
+                                    data = data.replace(lizUrls.webDavUrl, lizUrls.resourceUrlReplacement.webdav)
                                 }
                             }
 
@@ -1529,7 +1529,7 @@ var lizAttributeTable = function() {
                                     rdata = data.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
                             }
-                            else if (data.substring(0, 4) == 'dav/') {
+                            else if (davConf && data.substring(0, 4) == lizUrls.resourceUrlReplacement.webdav) {
                                     var rdata = data;
                                     var colMeta = meta.settings.aoColumns[meta.col];
                                     return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
