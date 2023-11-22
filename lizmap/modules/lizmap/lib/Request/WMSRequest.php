@@ -663,7 +663,7 @@ class WMSRequest extends OGCRequest
 
                 // replace webdav url, if any
                 if ($remoteStorageProfile) {
-                    $popupTemplate = $this->replaceWebDavPathByMediaUrl($popupTemplate, $remoteStorageProfile);
+                    $popupTemplate = $this->replaceWebDavPathByMediaUrl($popupTemplate, $remoteStorageProfile['baseUri']);
                 }
                 // Replace : html encoded chars to let further regexp_replace find attributes
                 $popupTemplate = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $popupTemplate);
@@ -874,7 +874,7 @@ class WMSRequest extends OGCRequest
             function ($matches) use ($remoteStorageUri) {
                 $appContext = $this->appContext;
 
-                $replaced = preg_replace('#'.$remoteStorageUri.'#', 'dav/', $matches[0]);
+                $replaced = preg_replace('#'.$remoteStorageUri.'#', RemoteStorageRequest::$davUrlRootPrefix, $matches[0]);
                 $return = '"';
                 $return .= $appContext->getFullUrl(
                     'view~media:getMedia',

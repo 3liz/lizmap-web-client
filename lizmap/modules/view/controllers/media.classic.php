@@ -125,11 +125,11 @@ class mediaCtrl extends jController
         $path = $this->param('path');
 
         // check if a remote file is requested from WebDAV Storage
-        if (strpos($path, 'dav/') === 0) {
+        if (strpos($path, RemoteStorageRequest::$davUrlRootPrefix) === 0) {
             // replace the path with the webdav url
             $profile = RemoteStorageRequest::getProfile('webdav');
             if ($profile) {
-                $webdavPath = str_replace('dav/', $profile['baseUri'], $path);
+                $webdavPath = str_replace(RemoteStorageRequest::$davUrlRootPrefix, $profile['baseUri'], $path);
                 // assumes that last part of the url is the filename
                 $urlPart = explode('/', $webdavPath);
                 $fileName = array_pop($urlPart);
