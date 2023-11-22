@@ -77,8 +77,8 @@ export default class Popup {
                     FEATURE_COUNT: 10,
                     WIDTH: width,
                     HEIGHT: height,
-                    I: evt.xy.x,
-                    J: evt.xy.y,
+                    I: Math.round(evt.xy.x),
+                    J: Math.round(evt.xy.y),
                     FI_POINT_TOLERANCE: this._pointTolerance,
                     FI_LINE_TOLERANCE: this._lineTolerance,
                     FI_POLYGON_TOLERANCE: this._polygonTolerance
