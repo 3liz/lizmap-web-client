@@ -162,4 +162,8 @@ driver=file
 ;db=2
 ;ttl=0
 
-
+[webdav:default]
+baseUri=http://webdav/
+enabled=1
+user=webdav
+password=webdav

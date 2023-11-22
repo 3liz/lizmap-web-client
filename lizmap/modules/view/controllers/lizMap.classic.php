@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Request\RemoteStorageRequest;
+
 /**
  * Displays a full featured map based on one Qgis project.
  *
@@ -190,6 +193,7 @@ class lizMapCtrl extends jController
         $lizUrls = array(
             'params' => array('repository' => $repository, 'project' => $project),
             'config' => jUrl::get('lizmap~service:getProjectConfig'),
+            'remoteStorageConfig' => jUrl::get('lizmap~service:getRemoteStorageConfig'),
             'keyValueConfig' => jUrl::get('lizmap~service:getKeyValueConfig'),
             'wms' => jUrl::get('lizmap~service:index'),
             'media' => jUrl::get('view~media:getMedia'),
@@ -201,6 +205,7 @@ class lizMapCtrl extends jController
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
             'service' => jUrl::get('lizmap~service:index').'?repository='.$repository.'&project='.$project,
+            'resourceUrlReplacement' => array(),
         );
 
         // Get optional WMS public url list
@@ -217,6 +222,12 @@ class lizMapCtrl extends jController
 
         if (jAcl2::check('lizmap.admin.repositories.delete')) {
             $lizUrls['removeCache'] = jUrl::get('admin~maps:removeLayerCache');
+        }
+
+        $webDavProfile = RemoteStorageRequest::getProfile('webdav');
+        if ($webDavProfile) {
+            $lizUrls['webDavUrl'] = $webDavProfile['baseUri'];
+            $lizUrls['resourceUrlReplacement']['webdav'] = 'dav/';
         }
 
         $rep->addJSCode('var lizUrls = '.json_encode($lizUrls).';');

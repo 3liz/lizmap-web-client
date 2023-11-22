@@ -1459,7 +1459,6 @@ var lizAttributeTable = function() {
             function createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues){
                 const columns = [];
                 let firstDisplayedColIndex = 0;
-
                 // Column with selected status
                 columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
                 firstDisplayedColIndex+=1;
@@ -1511,16 +1510,30 @@ var lizAttributeTable = function() {
                         }
                     } else {
                         // Check if we need to replace url or media by link
+                        let davConf = lizUrls.webDavUrl && lizUrls?.resourceUrlReplacement?.webdav && config.layers[aName]?.webDavFields && Array.isArray(config.layers[aName].webDavFields) && config.layers[aName].webDavFields.includes(columnName);
                         colConf['render'] = function (data, type, row, meta) {
                             // Replace media and URL with links
                             if (!data || !(typeof data === 'string'))
                                 return data;
+                            if (davConf) {
+                                // replace the root of the url
+                                if(data.startsWith(lizUrls.webDavUrl)){
+                                    data = data.replace(lizUrls.webDavUrl, lizUrls.resourceUrlReplacement.webdav)
+                                }
+                            }
+
                             if (data.substring(0, 6) == 'media/' || data.substring(0, 7) == '/media/' || data.substring(0, 9) == '../media/') {
                                 var rdata = data;
                                 var colMeta = meta.settings.aoColumns[meta.col];
                                 if (data.substring(0, 7) == '/media/')
                                     rdata = data.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
+                            }
+                            else if (davConf && data.substring(0, 4) == lizUrls.resourceUrlReplacement.webdav) {
+                                    var rdata = data;
+                                    var colMeta = meta.settings.aoColumns[meta.col];
+                                    return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
+
                             }
                             else if (data.substring(0, 4) == 'http' || data.substring(0, 3) == 'www') {
                                 var rdata = data;

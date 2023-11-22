@@ -642,6 +642,8 @@ class WMSRequest extends OGCRequest
         $content = array();
         $popupClass = $this->appContext->getClassService('view~popup');
 
+        $remoteStorageProfile = RemoteStorageRequest::getProfile('webdav');
+
         // Get the template for the popup content
         $templateConfigured = false;
         $popupTemplate = '';
@@ -649,6 +651,7 @@ class WMSRequest extends OGCRequest
             // Get template content
             $popupTemplate = (string) trim($configLayer->popupTemplate);
             // Use it if not empty
+
             if (!empty($popupTemplate)) {
                 $templateConfigured = true;
                 // first replace all "media/bla/bla/llkjk.ext" by full url
@@ -657,6 +660,11 @@ class WMSRequest extends OGCRequest
                     array($this, 'replaceMediaPathByMediaUrl'),
                     $popupTemplate
                 );
+
+                // replace webdav url, if any
+                if ($remoteStorageProfile) {
+                    $popupTemplate = $this->replaceWebDavPathByMediaUrl($popupTemplate, $remoteStorageProfile['baseUri']);
+                }
                 // Replace : html encoded chars to let further regexp_replace find attributes
                 $popupTemplate = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $popupTemplate);
             }
@@ -691,9 +699,9 @@ class WMSRequest extends OGCRequest
             $popupFeatureContent = $this->getViewTpl('view~popupDefaultContent', $layerName, $layerId, $layerTitle, array(
                 'featureId' => $id,
                 'attributes' => $feature->Attribute,
+                'remoteStorageProfile' => $remoteStorageProfile,
             ));
             $autoContent = $popupFeatureContent;
-
             // Get specific template for the layer has been configured
             $lizmapContent = '';
             if ($templateConfigured) {
@@ -707,7 +715,8 @@ class WMSRequest extends OGCRequest
                         $attribute['value'],
                         $this->repository->getKey(),
                         $this->project->getKey(),
-                        $popupFeatureContent
+                        $popupFeatureContent,
+                        $remoteStorageProfile
                     );
                 }
                 $lizmapContent = $popupFeatureContent;
@@ -727,6 +736,10 @@ class WMSRequest extends OGCRequest
                         array($this, 'replaceMediaPathByMediaUrl'),
                         $attribute['value']
                     );
+
+                    if ($remoteStorageProfile) {
+                        $maptipValue = $this->replaceWebDavPathByMediaUrl($maptipValue, $remoteStorageProfile['baseUri']);
+                    }
                     // Replace : html encoded chars to let further regexp_replace find attributes
                     $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
                 } elseif ($attribute['name'] == 'geometry') {
@@ -844,6 +857,39 @@ class WMSRequest extends OGCRequest
         $return .= '"';
 
         return $return;
+    }
+
+    /**
+     * replaceWebDavPathByMediaUrl : replace all webdav remote url to corresponding path for getMedia endpoint.
+     *
+     * @param string $template         The string to search on
+     * @param string $remoteStorageUri The remote baseUri to replace
+     *
+     * @return string replaced text
+     */
+    protected function replaceWebDavPathByMediaUrl($template, $remoteStorageUri)
+    {
+        return preg_replace_callback(
+            '#(["\']){1}('.$remoteStorageUri.'){1}(.*?)(["\'])#',
+            function ($matches) use ($remoteStorageUri) {
+                $appContext = $this->appContext;
+
+                $replaced = preg_replace('#'.$remoteStorageUri.'#', RemoteStorageRequest::$davUrlRootPrefix, $matches[0]);
+                $return = '"';
+                $return .= $appContext->getFullUrl(
+                    'view~media:getMedia',
+                    array(
+                        'repository' => $this->repository->getKey(),
+                        'project' => $this->project->getKey(),
+                        'path' => preg_replace('#(["\'])#', '', $replaced),
+                    )
+                );
+                $return .= '"';
+
+                return $return;
+            },
+            $template
+        );
     }
 
     /**

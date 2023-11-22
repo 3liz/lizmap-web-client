@@ -1866,6 +1866,10 @@ class Project
                 $layerDef = $this->getLayerDefinition($obj->id);
                 // Add layer type
                 $obj->layerType = $layerDef['type'];
+                // add webDav fields as layer property
+                if ($layerDef && array_key_exists('webDavFields', $layerDef)) {
+                    $obj->webDavFields = $layerDef['webDavFields'];
+                }
                 // Extract layer datasource parameters only for raster/wms
                 if ($layerDef['type'] == 'raster' && $layerDef['provider'] == 'wms') {
                     // source xyz: $layerDatasource['type'] == 'xyz'
