@@ -19,8 +19,10 @@ class RemoteStorageRequest
 {
     protected static $webDAVNamespace = 'DAV:';
 
-    protected static $fileNameExpression = 'file_name(@selected_file_path)';
+    protected static $fileNameExpression = '/file_name\(\s*@selected_file_path\s*\)/';
     protected static $appContext;
+
+    public static $davUrlRootPrefix = 'dav/';
 
     /**
      * @param string $storageUrl remote destination path
@@ -285,10 +287,10 @@ class RemoteStorageRequest
     {
         if ($filename) {
             // TODO @selected_file_path property is not evaluated, for now replace the expression with the file name
-            return str_replace(self::$fileNameExpression, "'".$filename."'", $storageUrl);
+            return preg_replace(self::$fileNameExpression, "'".$filename."'", $storageUrl);
         }
 
-        return str_replace(self::$fileNameExpression, "''", $storageUrl);
+        return preg_replace(self::$fileNameExpression, "''", $storageUrl);
     }
 
     /**

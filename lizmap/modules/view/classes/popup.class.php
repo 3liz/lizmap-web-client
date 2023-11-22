@@ -9,6 +9,9 @@
  *
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+ use Lizmap\Request\RemoteStorageRequest;
+
 class popup
 {
     /**
@@ -42,7 +45,7 @@ class popup
 
         $isWebDav = false;
         if ($remoteStorageProfile && preg_match('#'.$remoteStorageProfile['baseUri'].'#', $attributeValue)) {
-            $attributeValue = preg_replace('#'.$remoteStorageProfile['baseUri'].'#', 'dav/', $attributeValue);
+            $attributeValue = preg_replace('#'.$remoteStorageProfile['baseUri'].'#', RemoteStorageRequest::$davUrlRootPrefix, $attributeValue);
             $isWebDav = true;
         }
 
