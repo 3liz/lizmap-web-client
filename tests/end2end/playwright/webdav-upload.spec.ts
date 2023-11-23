@@ -197,7 +197,7 @@ test.describe('WebDAV Server',()=>{
 
                   let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
 
-                  await page.locator('#OpenLayers_Layer_Vector_100 canvas').click({
+                  await page.locator('#map').click({
                     position: {
                       x: 644,
                       y: 282
@@ -234,7 +234,7 @@ test.describe('WebDAV Server',()=>{
 
                   let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
 
-                  await page.locator('#OpenLayers_Layer_Vector_100 canvas').click({
+                  await page.locator('#map').click({
                            position: {
                              x: 397,
                              y: 180
