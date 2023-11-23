@@ -96,12 +96,12 @@ export default class Popup {
                     wmsParams['FILTERTOKEN'] = filterTokens.join(';');
                 }
     
-                document.querySelector('body').style.cursor = 'wait'
+                document.getElementById('map').style.cursor = 'wait';
     
                 wms.getFeatureInfo(wmsParams).then(response => {
                     lizMap.displayGetFeatureInfo(response, evt.xy);
                 }).finally(() => {
-                    document.querySelector('body').style.cursor = 'auto';
+                    document.getElementById('map').style.cursor = 'auto';
                 });
             }
         });
