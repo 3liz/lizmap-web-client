@@ -18,7 +18,7 @@ Toolbar buttons
 */
 
 #dataviz h3 .icon {
-    background-image: url(dataviz-icon-white.png);
+    background-image: url(dataviz-icon-dark.png);
     background-position: 0 0;
 }
 
@@ -48,7 +48,7 @@ Toolbar buttons
 #nav-tab-dataviz-main > a{
     background: none !important;
     border: none;
-    color: white;
+    color: var(--color-contrasted-text);
     margin-top: 10px;
     font-weight: bold;
 }
@@ -64,9 +64,13 @@ Toolbar buttons
 /*
 DARK THEME
 */
+#dataviz-content.dark h3 .icon {
+    background-image: url(dataviz-icon-white.png);
+    background-position: 0 0;
+}
 #dataviz-content.dark div.menu-content {
     background: rgb(74, 74, 74) !important;
-    color: white;
+    color: var(--color-contrasted-text);
 }
 #dataviz-content.dark h3 {
     font-weight: bold !important;
@@ -75,7 +79,7 @@ DARK THEME
 #dataviz-content.dark g text.legendtext,
 #dataviz-content.dark g.xtick text,
 #dataviz-content.dark g.ytick text{
-    fill: white !important;
+    fill: var(--color-contrasted-text) !important;
 }
 
 /*
@@ -89,12 +93,12 @@ Diagram height, 450px by default*/
 /*
 TABS AND GROUPS
 */
-/* Edition style */
+
 #dataviz ul.nav-tabs {
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid var(--color-contrasted-elements-light);
 }
 #dataviz .nav-tabs > li > a {
-    color: white;
+    color: var(--color-text-primary);
     padding: 5px;
     border: none;
 }
@@ -106,9 +110,8 @@ TABS AND GROUPS
 #dataviz .nav-tabs > li > a:focus {
     background: none;
     border: none;
-    /* border-bottom: 3px solid #0094d6; */
-    border-bottom: 3px solid white;
-    color: white;
+    border-bottom: 3px solid var(--color-contrasted-elements);
+    color: var(--color-text-primary);
     cursor: pointer;
 }
 
@@ -117,32 +120,38 @@ TABS AND GROUPS
 #dataviz .nav-tabs > li.active > a:focus {
     background: none;
     border: none;
-    border-bottom: 3px solid white;
-    color: white;
+    border-bottom: 3px solid var(--color-contrasted-elements);
+    color: var(--color-text-primary);
     cursor: auto;
+}
+/* In bottom-dock, do not use a thick border bottom */
+#bottom-dock #nav-tab-dataviz-main > a {
+  border: none;
 }
 
 #dataviz div.tab-pane {
-    border-left: 1px solid gray;
-    border-right: 1px solid gray;
-    border-bottom: 1px solid gray;
+    border-left: 1px solid var(--color-contrasted-elements-light);
+    border-right: 1px solid var(--color-contrasted-elements-light);
+    border-bottom: 1px solid var(--color-contrasted-elements-light);
     padding: 5px;
 }
 
 #dataviz legend {
-    color: white;
+    color: var(--color-text-primary);
     border-bottom: none;
     padding: 5px;
     width: unset;
     max-width: 100%;
     margin-bottom: 0px;
+    font-weight: normal !important;
+    font-size: 1em;
 }
 
 #dataviz fieldset {
     padding: 10px;
     padding-top: 0px;
     margin: 0px 5px;
-    border: 1px solid lightgray;
+    border: 1px solid var(--color-contrasted-elements);
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.2);
 }
