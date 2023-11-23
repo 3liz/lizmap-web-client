@@ -881,23 +881,6 @@ window.lizMap = function() {
       if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
 
-      //Manage attribution
-      if (typeof layer.attribution == "object") {
-          // Update href if needed
-          if ( 'href' in layer.attribution &&
-               layer.attribution.href != '' &&
-               layer.attribution.href.indexOf('://') == -1) {
-            layer.attribution.href = 'http://'+layer.attribution.href;
-          }
-          // Update attribution
-          if ( !('title' in layer.attribution) || layer.attribution.title == '' ) {
-              layer.attribution.title = layer.attribution.href.split('://')[1];
-          } else
-          if ( !('href' in layer.attribution) || layer.attribution.href == '' ) {
-              layer.attribution = layer.attribution.title;
-          }
-      }
-
       var wmtsLayer = null;
       if ( layerConfig.cached == 'True' && wmtsCapabilities ) {
           $.each(wmtsCapabilities.contents.layers, function(i, l) {
@@ -908,7 +891,6 @@ window.lizMap = function() {
                 matrixSet: config.options.projection.ref,
                 name: layerName,
                 params: layerWmsParams,
-                attribution:layer.attribution,
                 isBaseLayer: (layerConfig.baseLayer == 'True'),
                 alwaysInRange: false,
                 url: serviceUrl
@@ -996,7 +978,6 @@ window.lizMap = function() {
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
                ,ratio:1
-               ,attribution:layer.attribution
               }));
       }
       else if (layerConfig.type == 'layer') {
@@ -1014,7 +995,6 @@ window.lizMap = function() {
                ,singleTile:(layerConfig.singleTile == 'True' || (layerConfig.cached == 'True' && !wmtsCapabilities))
                ,ratio:1
                ,order:getLayerOrder(layer)
-               ,attribution:layer.attribution
               });
           if ( layer.nestedLayers.length != 0 ) {
               var scales = getLayerScale(layer,null,null);
@@ -1427,7 +1407,6 @@ window.lizMap = function() {
        ,units:projection.proj.units !== null ? projection.proj.units : "degrees"
        ,allOverlays:(baselayers.length == 0)
     });
-    map.addControl(new OpenLayers.Control.Attribution({div:document.getElementById('attribution')}));
 
     // add handler to update the map size
     window.addEventListener('resize', updateContentSize);
