@@ -484,7 +484,8 @@ var lizAttributeTable = function() {
                 var canPopup = false
                 if( config.layers[lname]
                     && config.layers[lname]['popup'] == 'True'
-                    && config.layers[lname]['geometryType'] != 'none'
+                    // We should NOT  deactivate popup for non-spatial layers, as it can be very useful
+                    // && config.layers[lname]['geometryType'] != 'none'
                     && config.layers[lname]['geometryType'] != 'unknown'
                 ){
                     canPopup = true;
@@ -666,6 +667,7 @@ var lizAttributeTable = function() {
                 }
 
                 // Bind click on detail button
+                // It just toggles the right panel visibility
                 if( canPopup ){
                     $('#attribute-layer-'+ cleanName + ' button.btn-detail-attributeTable')
                     .click(function(){
@@ -1685,6 +1687,11 @@ var lizAttributeTable = function() {
                 };
             }
 
+            /**
+             *
+             * @param {string} aName  The layer name
+             * @param {string} aTable The HTML table selector
+             */
             function bindTableLineClick(aName, aTable){
                 $(aTable +' tr').click(function() {
 
@@ -1711,6 +1718,8 @@ var lizAttributeTable = function() {
 
                         lizMap.getFeaturePopupContent( aName, feat, function(data){
                             $('#attribute-table-panel-' + parentLayerCleanName ).html(data);
+                            // Add the missing Bootstrap classes
+                            $('#attribute-table-panel-' + parentLayerCleanName + ' table').addClass('table table-condensed table-striped table-bordered');
 
                             // Trigger event
                             lizMap.events.triggerEvent('lizmappopupdisplayed_inattributetable'
