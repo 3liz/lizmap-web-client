@@ -4,7 +4,7 @@
         "changelog": {},
         "first_release_date": "",
         "latest_release_date": "",
-        "latest_release_version": "",
+        "latest_release_version": "3.8.0",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 32200,
         "status": "dev"
@@ -14,7 +14,7 @@
         "changelog": {},
         "first_release_date": "",
         "latest_release_date": "",
-        "latest_release_version": "",
+        "latest_release_version": "3.7.0",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 32200,
         "status": "feature_freeze"

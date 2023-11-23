@@ -30,3 +30,4 @@ This file must be edited manually when :
 
 * The `status` which can be `dev`, `feature_freeze`, `stable` and `retired`
 * QGIS Desktop will check `qgis_min <= Qgis.QGIS_VERSION_INT < qgis_max`
+* `latest_release_version` must have a value for now, even if there isn't any release. The `date` will be empty.
