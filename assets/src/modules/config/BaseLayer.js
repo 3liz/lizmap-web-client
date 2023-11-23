@@ -685,7 +685,7 @@ const defaultCompleteBaseLayersCfg = {
     "ign-plan": {
         "type": "wmts",
         "title": "IGN Plan",
-        "url": "https://wxs.ign.fr/cartes/geoportail/wmts",
+        "url": "https://data.geopf.fr/wmts?",
         "layers": "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2",
         "format": "image/png",
         "styles": "normal",
@@ -700,7 +700,7 @@ const defaultCompleteBaseLayersCfg = {
     "ign-photo": {
         "type": "wmts",
         "title": "IGN Orthophoto",
-        "url": "https://wxs.ign.fr/ortho/geoportail/wmts",
+        "url": "https://data.geopf.fr/wmts?",
         "layers": "ORTHOIMAGERY.ORTHOPHOTOS",
         "format": "image/jpeg",
         "styles": "normal",
@@ -715,7 +715,7 @@ const defaultCompleteBaseLayersCfg = {
     "ign-scan": {
         "type": "wmts",
         "title": "IGN Scans",
-        "url": "https://wxs.ign.fr/{key}/geoportail/wmts",
+        "url": "https://data.geopf.fr/private/wmts/?apikey={key}&",
         "key": "",
         "layers": "GEOGRAPHICALGRIDSYSTEMS.MAPS",
         "format": "image/jpeg",
@@ -731,7 +731,7 @@ const defaultCompleteBaseLayersCfg = {
     "ign-cadastral": {
         "type": "wmts",
         "title": "IGN Cadastre",
-        "url": "https://wxs.ign.fr/parcellaire/geoportail/wmts",
+        "url": "https://data.geopf.fr/wmts?",
         "layers": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS",
         "format": "image/png",
         "styles": "normal",
