@@ -12,7 +12,7 @@ test.describe('Display embedded relation in popup',()=>{
                   let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
                   
                   //first point
-                  await page.locator('#OpenLayers_Layer_Vector_45 canvas').click({
+                  await page.locator('#map').click({
                     position: {
                       x: 74,
                       y: 40
@@ -58,7 +58,7 @@ test.describe('Display embedded relation in popup',()=>{
                   await page.locator('#dock-close').click();
 
                   //second point
-                  await page.locator('#OpenLayers_Layer_Vector_45 canvas').click({
+                  await page.locator('#map').click({
                            position: {
                            x: 392,
                            y: 257
