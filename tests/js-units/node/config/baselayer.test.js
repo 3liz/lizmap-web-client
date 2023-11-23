@@ -94,7 +94,7 @@ describe('WmtsBaseLayerConfig', function () {
         const ignPhotoBl = new WmtsBaseLayerConfig("ign-photo", {
             "type": "wmts",
             "title": "IGN Orthophoto",
-            "url": "https://wxs.ign.fr/ortho/geoportail/wmts",
+            "url": "https://data.geopf.fr/wmts?",
             "layers": "ORTHOIMAGERY.ORTHOPHOTOS",
             "format": "image/jpeg",
             "styles": "normal",
@@ -112,7 +112,7 @@ describe('WmtsBaseLayerConfig', function () {
         expect(ignPhotoBl.name).to.be.eq('ign-photo')
         expect(ignPhotoBl.title).to.be.eq('IGN Orthophoto')
         expect(ignPhotoBl.layerConfig).to.be.null
-        expect(ignPhotoBl.url).to.be.eq('https://wxs.ign.fr/ortho/geoportail/wmts')
+        expect(ignPhotoBl.url).to.be.eq('https://data.geopf.fr/wmts?')
         expect(ignPhotoBl.hasKey).to.be.false
         expect(ignPhotoBl.key).to.be.null
         expect(ignPhotoBl.layer).to.be.eq('ORTHOIMAGERY.ORTHOPHOTOS')
@@ -292,7 +292,7 @@ describe('BaseLayersConfig', function () {
         expect(ignPhotoBl.name).to.be.eq('ign-photo')
         expect(ignPhotoBl.title).to.be.eq('IGN Orthophoto')
         expect(ignPhotoBl.layerConfig).to.be.null
-        expect(ignPhotoBl.url).to.be.eq('https://wxs.ign.fr/ortho/geoportail/wmts')
+        expect(ignPhotoBl.url).to.be.eq('https://data.geopf.fr/wmts?')
         expect(ignPhotoBl.hasKey).to.be.false
         expect(ignPhotoBl.key).to.be.null
         expect(ignPhotoBl.layer).to.be.eq('ORTHOIMAGERY.ORTHOPHOTOS')
@@ -313,7 +313,7 @@ describe('BaseLayersConfig', function () {
         expect(ignScanBl.name).to.be.eq('ign-scan')
         expect(ignScanBl.title).to.be.eq('IGN Scans')
         expect(ignScanBl.layerConfig).to.be.null
-        expect(ignScanBl.url).to.be.eq('https://wxs.ign.fr/{key}/geoportail/wmts')
+        expect(ignScanBl.url).to.be.eq('https://data.geopf.fr/private/wmts/?apikey={key}&')
         expect(ignScanBl.hasKey).to.be.true
         expect(ignScanBl.key).to.be.eq('ign-key')
         expect(ignScanBl.layer).to.be.eq('GEOGRAPHICALGRIDSYSTEMS.MAPS')
