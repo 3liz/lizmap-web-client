@@ -10,17 +10,22 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Added
 
+* Support of the Webdav attachement widget (contributions from @mind84) :
+  * Upload and delete files on a Webdav server from Lizmap Web Client
+  * View files stored in a webdav server within a Lizmap popup
 * Dataviz :
   * Use the popup title when showing plot in a popup
   * Respect the new option "trigger filter" to avoid filtering the plot on layer filtered
 
 ### Fixed
 
+* Fix missing attributions (name and links) found in the layer properties
 * Fix typo about wrong key used for caching an embedded layer, contribution from @mind84
 * Dataviz : Fix the option "Display when layer is visible" option
 * Fix selected default style on a WMS layer
 * In the Lizmap atlas, fix the popup when the name has an accent or a space
 * Do not block the loading of the map if the layer name is wrong in a permalink
+* Round the `I` and `J` parameters of WMS GetFeatureInfo service, contributions from @mind84
 
 ### Changed
 
@@ -36,14 +41,28 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Improve UI about adding text on top of the map : rotation, scales etc
 * Improve UI about geometric constraints
 * Javascript events `lizmapeditionfeaturecreated` and `lizmapeditionfeaturemodified`
+* Update URLs from the French IGN map provider
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ### Backend
 
 * Update some PHP packages
+* Update OL to 8.2.0 and proj4 to 2.9.2
+
+### Removed
+
+* Remove some code from OpenLayers 2
 
 ### Funders
 
+* [Faunalia](https://www.faunalia.eu/fr), contributions from @mind84
 * [Avignon city](https://www.avignon.fr/)
+* Direction Départementale des Territoires et de la Mer de l’Hérault (DDTM 34)
 
 ## 3.7.0-beta.1 - 2023-10-13
 
