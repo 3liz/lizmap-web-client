@@ -28,9 +28,9 @@ jobs:
     env:
       CYPRESS_CI: TRUE
       # For testing only
-      # PHP_VERSION: 8.2
-      # LZMPOSTGISVERSION: 15-3
-      # LZMQGSRVVERSION: 3.34
+      PHP_VERSION: 8.2
+      LZMPOSTGISVERSION: 15-3
+      LZMQGSRVVERSION: 3.28
 
     steps:
 
@@ -76,11 +76,11 @@ jobs:
           make env
           cat .env
 
-       # For testing only
-#      - name: Update projects
-#        run: |
-#          make upgrade-projects
-#          git status
+#        For testing only
+      - name: Update projects
+        run: |
+          make upgrade-projects
+          git status
 
       - name: Install QGIS server plugins
         run: make build-plugins
