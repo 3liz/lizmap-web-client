@@ -26,6 +26,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * In the Lizmap atlas, fix the popup when the name has an accent or a space
 * Do not block the loading of the map if the layer name is wrong in a permalink
 * Round the `I` and `J` parameters of WMS GetFeatureInfo service, contributions from @mind84
+* When clicking for a popup, fix the mouse spinner
 
 ### Changed
 
@@ -51,8 +52,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Backend
 
+* Update of Jelix to version 1.8.4
 * Update some PHP packages
 * Update OL to 8.2.0 and proj4 to 2.9.2
+* Update some JS dependencies
 
 ### Removed
 
