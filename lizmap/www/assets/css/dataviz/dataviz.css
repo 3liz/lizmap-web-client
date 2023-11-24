@@ -37,7 +37,7 @@ Toolbar buttons
 }
 
 #dataviz-main.bottom-content div.menu-content{
-    background-color: #F0F0F0 !important;
+    background-color: var(--color-background-primary-content) !important;
     border:none !important;
 }
 
@@ -45,12 +45,13 @@ Toolbar buttons
     padding: 5px;
     font-size: 0.8em;
 }
+/* Title "Dataviz" of the bottom dock */
 #nav-tab-dataviz-main > a{
     background: none !important;
     border: none;
-    color: var(--color-contrasted-text);
+    color: var(--color-text-primary);
     margin-top: 10px;
-    font-weight: bold;
+    font-weight: 500;
 }
 #dataviz-content > h3{
     margin-left:0px;
@@ -93,7 +94,6 @@ Diagram height, 450px by default*/
 /*
 TABS AND GROUPS
 */
-
 #dataviz ul.nav-tabs {
     border-bottom: 1px solid var(--color-contrasted-elements-light);
 }
@@ -154,4 +154,34 @@ TABS AND GROUPS
     border: 1px solid var(--color-contrasted-elements);
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dataviz in bottom-dock */
+#bottom-dock #dataviz ul.nav-tabs {
+    border: none;
+}
+#bottom-dock div.dataviz_plot_container,
+#right-dock div.dataviz_plot_container
+{
+    border: 1px solid lightgray;
+    margin-top: 10px;
+}
+
+#bottom-dock div.dataviz_plot_container h3,
+#right-dock div.dataviz_plot_container h3
+{
+    margin-left: 0px !important;
+    border-bottom: 1px solid lightgray;
+}
+#bottom-dock #dataviz-content.light span.icon {
+    background-image: url("dataviz-icon-dark.png");
+}
+
+
+/* Some plotly adaptations */
+/* deactivated because it moves the plotly toolbar */
+.js-plotly-plot .plotly
+/* ,.js-plotly-plot .plotly div  */
+{
+  margin: 0 auto;
 }

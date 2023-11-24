@@ -85,10 +85,6 @@ button.btn-primary:hover > [class*=" icon-"] {
   display:none;
 }
 
-#headermenu .dropdown-menu > li > a{
-  color:white;
-}
-
 /* mapmenu */
 #mapmenu {
   position:absolute;
@@ -2120,7 +2116,7 @@ lizmap-mouse-position > div.coords-unit > select{
 #map-content .lizmapPopupContent h4,
 #popupcontent .lizmapPopupContent h4{
   margin: 0px;
-  color : white !important;
+  color : white;
   font-size: 1em;
   padding: 2px;
   padding-left: 5px;
@@ -2364,7 +2360,6 @@ lizmap-mouse-position > div.coords-unit > select{
 
 .edition-tabs .nav-pills > .active > a, .edition-tabs .nav-pills > .active > a:hover, .edition-tabs .nav-pills > .active > a:focus{
   background-color: #93C01F;
-  background-image: linear-gradient(to bottom, #9BC144, #93C01F);
   color: white;
 }
 
@@ -2469,14 +2464,15 @@ div.tooltip {
     border: 1px solid darkgray;
     border-bottom-color: transparent;
 }
+/* Remove border & padding */
 #edition div.tab-content {
-  border: 1px solid lightgrey;
-  padding: 10px;
+  /* border: 1px solid lightgrey;
+  padding: 10px; */
 }
 #edition div.jforms-table-group{
-  background-color: lightgrey;
-  padding: 10px 0px;
-  border-radius: 10px;
+  /* background-color: lightgrey; */
+  padding: 5px 0px;
+  /* border-radius: 10px; */
 }
 
 #edition-point-coord-form,
@@ -3154,6 +3150,10 @@ lizmap-treeview .icon-remove-sign {
 lizmap-treeview .icon-info-sign {
   visibility: hidden;
   margin-left: auto;
+  /* Make it centered vertically & horizontally */
+  background-origin: content-box;
+  border: 1px solid gray;
+  border-radius: 5px;
 }
 
 lizmap-treeview .node:hover .icon-info-sign {
