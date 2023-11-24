@@ -21,6 +21,12 @@ import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
 import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 
+import MVT from 'ol/format/MVT.js';
+import VectorTileSource from 'ol/source/VectorTile.js';
+import VectorTileLayer from 'ol/layer/VectorTile.js';
+
+import { applyStyle } from 'ol-mapbox-style';
+
 /** Class initializing Openlayers Map. */
 export default class BaseLayersMap extends olMap {
 
@@ -63,7 +69,16 @@ export default class BaseLayersMap extends olMap {
 
         for (const baseLayerState of mainLizmap.state.baseLayers.getBaseLayers()) {
             let baseLayer;
-            if (baseLayerState.type === BaseLayerTypes.XYZ) {
+
+            if(true) {
+                baseLayer = new VectorTileLayer({
+                    source: new VectorTileSource({
+                        url: 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/tiles/v1/bm_web_de_3857/{z}/{x}/{y}.pbf',
+                        format: new MVT(),
+                    })
+                });
+                applyStyle(baseLayer, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_gry.json');
+            } else if (baseLayerState.type === BaseLayerTypes.XYZ) {
                 baseLayer = new TileLayer({
                     source: new XYZ({
                         url: baseLayerState.url,
