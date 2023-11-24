@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.0-rc.1 - 2023-11-24
+
 ### Added
 
 * Support of the Webdav attachement widget (contributions from @mind84) :
