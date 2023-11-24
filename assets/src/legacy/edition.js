@@ -1,5 +1,20 @@
 var lizEdition = function() {
 
+    /**
+     * Prevent the user from quitting the page
+     * when and editing session is active.
+     *
+     * @param {Event} event
+     */
+    const beforeUnloadHandler = (event) => {
+        if (lizMap.editionPending) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
+    }
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+
+
     function FeatureEditionData(layerID, feature, relation) {
         /** @var {string} QGIS layer id */
         this.layerId = layerID;
@@ -1005,6 +1020,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 },
                 'geolocation.position'
             );
+
         } else {
             $('#edition').parent().remove();
             $('#button-edition').remove();
