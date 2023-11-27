@@ -2590,7 +2590,7 @@ div.tooltip {
   vertical-align: text-bottom;
 }
 
-#selectiontool .digitizing-circle{
+#selectiontool .digitizing-circle, #selectiontool .digitizing-text{
   display: none;
 }
 
