@@ -4,7 +4,7 @@ describe('Base layers', () => {
     })
 
     it('Base layers list', function () {
-        cy.get('#switcher-baselayer-select option').should('have.length', 7)
+        cy.get('#switcher-baselayer-select option').should('have.length', 6)
         cy.get('#switcher-baselayer-select').should('have.value', 'ignplan')
         cy.get('#switcher-baselayer-select').select('emptyBaselayer').should('have.value', 'emptyBaselayer')
     })
