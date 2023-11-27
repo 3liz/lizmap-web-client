@@ -12,6 +12,19 @@ body {
   flex-grow: 1;
 }
 
+.form-row {
+  display: flex;
+}
+
+.form-row label {
+  width: 20%;
+  flex: 0 0 auto;
+}
+
+.form-row label + * {
+  width: 80%;
+}
+
 #title {
   margin-top : 5px;
 }
@@ -2685,12 +2698,6 @@ lizmap-digitizing details {
 
 .digitizing-text-tools{
   margin-top: 5px;
-}
-
-.digitizing-text-tools label{
-  display: inline-block;
-  width: 50px;
-  text-align: right;
 }
 
 .ol-tooltip {
