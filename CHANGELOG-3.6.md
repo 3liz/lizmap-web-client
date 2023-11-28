@@ -8,21 +8,34 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Update
+
+* Update URL from the French map provider IGN
+
 ### Fixed
 
-* Fix loading relations which is coming from a "embedded layer", contribution from @mind84
-* Fix typo about wrong key used for caching an embedded layer, contribution from @mind84
+* For an "embedded layer", both contributions from @mind84:
+  * Fix loading relations
+  * Fix typo about wrong key used for caching
 * Do not block the loading of the map if the layer name is wrong in a permalink
-* Fix error when executing the command "jcommunity~user:create" and
-  when the multiauth module is installed
-* Fix the auto-login feature ("remember me" checkbox): the encryption key was not upgraded during upgrade from Lizmap 3.5 to 3.6 
+* Fix error when executing the command `jcommunity~user:create` and
+  when the "multiauth" module is installed
+* Fix the auto-login feature ("remember me" checkbox)
+  The encryption key was not upgraded during upgrade from Lizmap 3.5 to 3.6 
 * Fix a potential regression in the password reset feature
 * Fix getting the table for sub-queries with escaped double-quotes
 * Form filter - Date range: add a day to the max values when requesting data
 * In the Lizmap atlas, fix the popup when the name has an accent or a space
 
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
 ### Backend
 
+* Upgrade Jelix to version 1.8.4
 * Update some PHP packages
 
 ### Funders
