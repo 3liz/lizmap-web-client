@@ -46,7 +46,7 @@ var JelixPasswordEditor = {
         }
 
         buttonRegen.addEventListener('click',  function () {
-            inputEl.value = JelixPasswordEditor.generatePassword(minlength, Math.min(maxlength, 30));
+            inputEl.setAttribute('value', JelixPasswordEditor.generatePassword(minlength, Math.min(maxlength, 30)));
             launchTimerListener();
         });
         buttonToggleVisibility.addEventListener('click', function () {
