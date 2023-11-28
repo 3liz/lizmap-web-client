@@ -44,8 +44,10 @@
   background-position: -400px 0px;
 }
 #header-clear {
-  background-position: -400px 0px;
-}#headermenu .dropdown-menu > li > a
+  background-position: -875px 0px !important;
+}
+
+#headermenu .dropdown-menu > li > a
 
 #headermenu .btn-locate-clear.icon {
   background-color: transparent;
@@ -1001,6 +1003,6 @@ edition-form-container > div > h3 {
 /* DATAVIZ */
 /* MUST BE SET IN DATAVIZ.CSS FILE */
 /* Dataviz plot title */
-.text {
+#dataviz .text {
   color: var(--color-text-primary);
 }

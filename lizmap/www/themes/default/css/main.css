@@ -78,7 +78,6 @@ div.jforms-submit-buttons {
 /* Form submit buttons */
 div.jforms-submit-buttons.form-actions .btn{
   transition: none;
-  background: none;
   border: 1px solid transparent;
   box-shadow: none;
   text-shadow: none;
