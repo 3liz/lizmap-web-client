@@ -8,6 +8,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.8 - 2023-11-28
+
 ### Update
 
 * Update URL from the French map provider IGN
