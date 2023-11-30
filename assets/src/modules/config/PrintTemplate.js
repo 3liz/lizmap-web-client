@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
@@ -21,8 +21,7 @@ const atlasRequiredProperties = {
 export class PrintAtlasConfig extends BaseObjectConfig {
     /**
      * Create a print atlas config instance
-     *
-     * @param {Object} cfg - the lizmap config object for print atlas
+     * @param {object} cfg - the lizmap config object for print atlas
      */
     constructor(cfg) {
         super(cfg, atlasRequiredProperties, {})
@@ -30,18 +29,16 @@ export class PrintAtlasConfig extends BaseObjectConfig {
 
     /**
      * Atlas is enabled
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get enabled() {
         return this._enabled;
     }
 
     /**
      * The coverage layer id
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get coverageLayerId() {
         return this._coverageLayer;
     }
@@ -61,8 +58,7 @@ const labelRequiredProperties = {
 export class PrintLabelConfig extends BaseObjectConfig {
     /**
      * Create an print label config instance
-     *
-     * @param {Object} cfg - the lizmap config object for print label
+     * @param {object} cfg - the lizmap config object for print label
      */
     constructor(cfg) {
         super(cfg, labelRequiredProperties, {})
@@ -70,27 +66,24 @@ export class PrintLabelConfig extends BaseObjectConfig {
 
     /**
      * The id
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get id() {
         return this._id;
     }
 
     /**
      * html state
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get htmlState() {
         return this._htmlState;
     }
 
     /**
      * The text
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get text() {
         return this._text;
     }
@@ -111,8 +104,7 @@ const mapRequiredProperties = {
 export class PrintMapConfig extends BaseObjectConfig {
     /**
      * Create a print map config instance
-     *
-     * @param {Object} cfg - the lizmap config object for layer
+     * @param {object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
         super(cfg, mapRequiredProperties, {})
@@ -120,36 +112,32 @@ export class PrintMapConfig extends BaseObjectConfig {
 
     /**
      * The id
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get id() {
         return this._id;
     }
 
     /**
      * The uuid
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get uuid() {
         return this._uuid;
     }
 
     /**
      * The width
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get width() {
         return this._width;
     }
 
     /**
      * The height
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get height() {
         return this._height;
     }
@@ -172,8 +160,7 @@ const optionalProperties = {
 export class PrintTemplateConfig extends BaseObjectConfig {
     /**
      * Create a print template config instance
-     *
-     * @param {Object} cfg - the lizmap config object for print template
+     * @param {object} cfg - the lizmap config object for print template
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
@@ -201,46 +188,41 @@ export class PrintTemplateConfig extends BaseObjectConfig {
 
     /**
      * The title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get title() {
         return this._title;
     }
 
     /**
      * The width
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get width() {
         return this._width;
     }
 
     /**
      * The height
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get height() {
         return this._height;
     }
 
     /**
      * The maps
-     *
      * @type {PrintMapConfig[]} the copy of print maps
-     **/
+     */
     get maps() {
         return [...this._maps];
     }
 
     /**
      * Iterate through print maps
-     *
      * @generator
      * @yields {PrintMapConfig} The next print map
-     **/
+     */
     *getMaps() {
         for (const map of this._maps) {
             yield map;
@@ -249,19 +231,17 @@ export class PrintTemplateConfig extends BaseObjectConfig {
 
     /**
      * The labels
-     *
      * @type {PrintLabelConfig[]} the copy of print labels
-     **/
+     */
     get labels() {
         return [...this._labels];
     }
 
     /**
      * Iterate through print labels
-     *
      * @generator
      * @yields {PrintLabelConfig} The next print label
-     **/
+     */
     *getLabels() {
         for (const label of this._labels) {
             yield label;
@@ -270,9 +250,8 @@ export class PrintTemplateConfig extends BaseObjectConfig {
 
     /**
      * The atlas
-     *
      * @type {PrintAtlasConfig}
-     **/
+     */
     get atlas() {
         return this._atlas;
     }

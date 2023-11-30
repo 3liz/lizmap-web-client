@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
@@ -26,9 +26,8 @@ const optionalProperties = {
 export class TimeManagerLayerConfig extends BaseObjectLayerConfig {
     /**
      * Create a time manager layer config instance
-     *
-     * @param {String} layerName - the layer name
-     * @param {Object} cfg       - the lizmap config object for tooltip layer
+     * @param {string} layerName - the layer name
+     * @param {object} cfg       - the lizmap config object for tooltip layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -36,45 +35,40 @@ export class TimeManagerLayerConfig extends BaseObjectLayerConfig {
 
     /**
      * The start attribute
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get startAttribute() {
         return this._startAttribute;
     }
 
     /**
      * The end attribute
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get endAttribute() {
         return this._endAttribute;
     }
 
     /**
      * The attribute resolution
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get attributeResolution() {
         return this._attributeResolution;
     }
 
     /**
      * The minimum timestamp
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get minTimestamp() {
         return this._min_timestamp;
     }
 
     /**
      * The maximum timestamp
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get maxTimestamp() {
         return this._max_timestamp;
     }
@@ -89,8 +83,7 @@ export class TimeManagerLayersConfig extends BaseObjectLayersConfig {
 
     /**
      * Create a time manager layers config instance
-     *
-     * @param {Object} cfg - the lizmap tooltipLayers config object
+     * @param {object} cfg - the lizmap tooltipLayers config object
      */
     constructor(cfg) {
         super(TimeManagerLayerConfig, cfg)

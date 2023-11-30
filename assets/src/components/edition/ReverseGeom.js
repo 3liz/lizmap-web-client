@@ -4,7 +4,7 @@ import '../../images/svg/mActionReverseLine.svg';
 
 /**
  * Webcomponent used to reverse vertices order for a modified feature
- * @extends HTMLElement
+ * @augments HTMLElement
  */
 export default class reverseGeom extends HTMLElement {
     constructor() {

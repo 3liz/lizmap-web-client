@@ -18,9 +18,8 @@ export const base64svgRasterLayer = 'PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA
 
 /**
  * @param {LayerConfig} layerCfg
- *
- * @returns {?String}
- **/
+ * @returns {?string}
+ */
 export function getDefaultLayerIcon(layerCfg) {
     if (layerCfg.type == 'group' || layerCfg.groupAsLayer) {
         return base64png + base64pngNullData;
@@ -51,12 +50,11 @@ export class BaseObjectSymbology extends EventDispatcher {
 
     /**
      * Create a base symbology instance based on a node object provided by QGIS Server
-     *
-     * @param {Object} node                                             - the QGIS node symbology
-     * @param {String} node.title                                       - the node title
-     * @param {Object} [requiredProperties={'title': {type: 'string'}}] - the required properties definition
-     * @param {Object} [optionalProperties={}]                          - the optional properties definition
-     **/
+     * @param {object} node                                             - the QGIS node symbology
+     * @param {string} node.title                                       - the node title
+     * @param {object} [requiredProperties] - the required properties definition
+     * @param {object} [optionalProperties]                          - the optional properties definition
+     */
     constructor(node, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = {}) {
 
         if (!requiredProperties.hasOwnProperty('title')) {
@@ -69,9 +67,8 @@ export class BaseObjectSymbology extends EventDispatcher {
 
     /**
      * The symbology title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get title() {
         return this._title;
     }
@@ -85,13 +82,12 @@ export class BaseObjectSymbology extends EventDispatcher {
 export class BaseIconSymbology extends BaseObjectSymbology {
     /**
      * Create a base icon symbology instance based on a node object provided by QGIS Server
-     *
-     * @param {Object} node                    - the QGIS node symbology
-     * @param {String} node.icon               - the png image in base64
-     * @param {String} node.title              - the node title
-     * @param {Object} [requiredProperties={}] - the required properties definition
-     * @param {Object} [optionalProperties={}] - the optional properties definition
-     **/
+     * @param {object} node                    - the QGIS node symbology
+     * @param {string} node.icon               - the png image in base64
+     * @param {string} node.title              - the node title
+     * @param {object} [requiredProperties] - the required properties definition
+     * @param {object} [optionalProperties] - the optional properties definition
+     */
     constructor(node, requiredProperties={}, optionalProperties = {}) {
 
         if (!requiredProperties.hasOwnProperty('icon')) {
@@ -107,9 +103,8 @@ export class BaseIconSymbology extends BaseObjectSymbology {
 
     /**
      * The src icon
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get icon() {
         return base64png + this._icon;
     }
@@ -129,13 +124,12 @@ export class LayerIconSymbology extends BaseIconSymbology {
 
     /**
      * Create a layer icon symbology instance based on a node object provided by QGIS Server
-     *
-     * @param {Object}  node      - the QGIS node symbology
-     * @param {String}  node.type  - the node type: layer
-     * @param {String}  node.icon  - the png image in base64
-     * @param {String}  node.name  - the layer name
-     * @param {String}  node.title - the node title
-     **/
+     * @param {object}  node      - the QGIS node symbology
+     * @param {string}  node.type  - the node type: layer
+     * @param {string}  node.icon  - the png image in base64
+     * @param {string}  node.name  - the layer name
+     * @param {string}  node.title - the node title
+     */
     constructor(node) {
 
         if (!node.hasOwnProperty('type') || node.type != 'layer') {
@@ -147,9 +141,8 @@ export class LayerIconSymbology extends BaseIconSymbology {
 
     /**
      * The layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._name;
     }
@@ -172,13 +165,12 @@ const symbolIconOptionalProperties = {
 export class SymbolIconSymbology extends BaseIconSymbology {
     /**
      * Create a symbol icon symbology instance based on a node object provided by QGIS Server
-     *
-     * @param {Object}  node        - the QGIS node symbology
-     * @param {String}  node.icon    - the png image in base64
-     * @param {String}  node.title   - the node title
-     * @param {String}  node.ruleKey - the node rule key for filtering
-     * @param {Boolean} node.checked - the node is checked by default
-     **/
+     * @param {object}  node        - the QGIS node symbology
+     * @param {string}  node.icon    - the png image in base64
+     * @param {string}  node.title   - the node title
+     * @param {string}  node.ruleKey - the node rule key for filtering
+     * @param {boolean} node.checked - the node is checked by default
+     */
     constructor(node) {
         super(node, symbolIconProperties, symbolIconOptionalProperties)
         this._childrenRules = []
@@ -186,27 +178,24 @@ export class SymbolIconSymbology extends BaseIconSymbology {
 
     /**
      * The rule key
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get ruleKey() {
         return this._ruleKey;
     }
 
     /**
      * Is rule checked ?
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get checked() {
         return this._checked;
     }
 
     /**
      * Checked or Unchecked rule
-     *
-     * @param {Boolean}
-     **/
+     * @param {boolean}
+     */
     set checked(val) {
         const newVal = convertBoolean(val);
         // No changes
@@ -225,9 +214,8 @@ export class SymbolIconSymbology extends BaseIconSymbology {
 
     /**
      * Is legend ON ?
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get legendOn() {
         return this._checked;
     }
@@ -260,9 +248,8 @@ export class SymbolRuleSymbology extends SymbolIconSymbology {
 
     /**
      * Is legend ON ?
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get legendOn() {
         if (this.parentRule === null) {
             return this._checked;
@@ -275,64 +262,57 @@ export class SymbolRuleSymbology extends SymbolIconSymbology {
 
     /**
      * The parent rule key
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get parentRuleKey() {
         return this._parentRuleKey;
     }
 
     /**
      * The parent rule
-     *
      * @type {?SymbolRuleSymbology}
-     **/
+     */
     get parentRule() {
         return this._parentRule;
     }
 
     /**
      * The minimum scale denominator
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get minScaleDenominator() {
         return this._scaleMinDenom;
     }
 
     /**
      * The maximum scale denominator
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get maxScaleDenominator() {
         return this._scaleMaxDenom;
     }
 
     /**
      * Children rules count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         return this._childrenRules.length;
     }
 
     /**
      * The children rule
-     *
      * @type {BaseIconSymbology[]}
-     **/
+     */
     get children() {
         return [...this._childrenRules];
     }
 
     /**
      * Iterate through children rules
-     *
      * @generator
      * @yields {BaseIconSymbology} The next child icon
-     **/
+     */
     *getChildren() {
         for (const icon of this._childrenRules) {
             yield icon;
@@ -349,14 +329,14 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
 
     /**
      * Create a layer symbols symbology instance based on a node object provided by QGIS Server
-     *
-     * @param {Object}  node         - the QGIS node symbology
-     * @param {String}  node.type    - the node type: layer
+     * @param {object}  node         - the QGIS node symbology
+     * @param {string}  node.type    - the node type: layer
      * @param {Array}   node.symbols - the png image in base64
-     * @param {String}  node.title   - the node title
-     * @param {Object} [requiredProperties={}] - the required properties definition
-     * @param {Object} [optionalProperties={}] - the optional properties definition
-     **/
+     * @param {string}  node.title   - the node title
+     * @param {object} [requiredProperties] - the required properties definition
+     * @param {object} [optionalProperties] - the optional properties definition
+     * @param iconClass
+     */
     constructor(node, requiredProperties={}, optionalProperties = {}, iconClass = BaseIconSymbology) {
 
         if (!node.hasOwnProperty('type') || node.type != 'layer') {
@@ -377,28 +357,25 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
 
     /**
      * Children icons count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         return this._icons.length;
     }
 
     /**
      * The children icons
-     *
      * @type {BaseIconSymbology[]}
-     **/
+     */
     get children() {
         return [...this._icons];
     }
 
     /**
      * Iterate through children icons
-     *
      * @generator
      * @yields {BaseIconSymbology} The next child icon
-     **/
+     */
     *getChildren() {
         for (const icon of this._icons) {
             yield icon;
@@ -420,13 +397,12 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * Create a layer symbols symbology instance based on a node object provided by QGIS Server
-     *
-     * @param {Object}  node         - the QGIS node symbology
-     * @param {String}  node.type    - the node type: layer
+     * @param {object}  node         - the QGIS node symbology
+     * @param {string}  node.type    - the node type: layer
      * @param {Array}   node.symbols - the png image in base64
-     * @param {String}  node.name    - the layer name
-     * @param {String}  node.title   - the node title
-     **/
+     * @param {string}  node.name    - the layer name
+     * @param {string}  node.title   - the node title
+     */
     constructor(node) {
 
         if (!node.hasOwnProperty('type') || node.type != 'layer') {
@@ -459,18 +435,16 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * The layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._name;
     }
 
     /**
      * Is legend ON ?
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get legendOn() {
         for (const symbol of this._icons) {
             if (symbol.rulekey === '') {
@@ -485,9 +459,8 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * Children icons count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         if (this._root !== null) {
             return this._root.size;
@@ -497,9 +470,8 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * The children icons
-     *
      * @type {Array<SymbolIconSymbology|SymbolRuleSymbology>}
-     **/
+     */
     get children() {
         if (this._root !== null) {
             return [...this._root.values()];
@@ -509,10 +481,9 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * Iterate through children icons
-     *
      * @generator
      * @yields {SymbolIconSymbology|SymbolRuleSymbology} The next child icon
-     **/
+     */
     *getChildren() {
         for (const child of this.children) {
             yield child;
@@ -521,11 +492,9 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * Parameters for OGC WMS Request
-     *
-     * @param {String} wmsName
-     *
-     * @returns {Object} can contain LEGEND_ON and LEGEND_OFF parameters
-     **/
+     * @param {string} wmsName
+     * @returns {object} can contain LEGEND_ON and LEGEND_OFF parameters
+     */
     wmsParameters(wmsName) {
         let params = {
         }
@@ -566,13 +535,12 @@ export class LayerGroupSymbology extends BaseObjectSymbology {
 
     /**
      * Create a layer group symbology instance based on a node object provided by QGIS Server
-     *
-     * @param {Object}  node       - the QGIS node symbology
-     * @param {String}  node.type  - the node type: group
+     * @param {object}  node       - the QGIS node symbology
+     * @param {string}  node.type  - the node type: group
      * @param {Array}   node.nodes - the png image in base64
-     * @param {String}  node.name  - the layer name
-     * @param {String}  node.title - the node title
-     **/
+     * @param {string}  node.name  - the layer name
+     * @param {string}  node.title - the node title
+     */
     constructor(node) {
 
         if (!node.hasOwnProperty('type') || node.type != 'group') {
@@ -593,37 +561,33 @@ export class LayerGroupSymbology extends BaseObjectSymbology {
 
     /**
      * The layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._name;
     }
 
     /**
      * Children nodes count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         return this._symbologyNodes.length;
     }
 
     /**
      * The children nodes
-     *
      * @type {Array.<BaseIconSymbology|BaseSymbolsSymbology>}
-     **/
+     */
     get children() {
         return [...this._symbologyNodes];
     }
 
     /**
      * Iterate through children nodes
-     *
      * @generator
      * @yields {(BaseIconSymbology|BaseSymbolsSymbology)} The next child node
-     **/
+     */
     *getChildren() {
         for (const node of this._symbologyNodes) {
             yield node;
@@ -633,11 +597,9 @@ export class LayerGroupSymbology extends BaseObjectSymbology {
 
 /**
  * Build layer symbology
- *
- * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
- *
+ * @param {(object | LayerIconSymbology | LayerSymbolsSymbology | LayerGroupSymbology)} node - The symbology node
  * @returns {(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
- **/
+ */
 export function buildLayerSymbology(node) {
     if (node instanceof LayerIconSymbology
         || node instanceof LayerSymbolsSymbology

@@ -22,18 +22,16 @@ export class State extends EventDispatcher {
 
     /**
      * The map state
-     *
      * @type {MapState}
-     **/
+     */
     get map() {
         return this._map;
     }
 
     /**
      * The base layers state
-     *
      * @type {BaseLayersState}
-     **/
+     */
     get baseLayers() {
         if (this._baseLayers == null) {
             this._baseLayers = new BaseLayersState(this._initialConfig.baseLayers, this.layersAndGroupsCollection);
@@ -45,9 +43,8 @@ export class State extends EventDispatcher {
 
     /**
      * The layers and groups collection
-     *
      * @type {LayersAndGroupsCollection}
-     **/
+     */
     get layersAndGroupsCollection() {
         if (this._collection == null) {
             this._collection = new LayersAndGroupsCollection(this._initialConfig.layerTree, this._initialConfig.layersOrder);
@@ -68,9 +65,8 @@ export class State extends EventDispatcher {
 
     /**
      * Root map group
-     *
      * @type {MapGroupState}
-     **/
+     */
     get rootMapGroup() {
         if (this._rootMapGroup == null) {
             this._rootMapGroup = new MapGroupState(this.layersAndGroupsCollection.root);
@@ -80,9 +76,8 @@ export class State extends EventDispatcher {
 
     /**
      * Root tree layer group
-     *
      * @type {LayerTreeGroupState}
-     **/
+     */
     get layerTree() {
         if (this._layerTree == null) {
             this._layerTree = new LayerTreeGroupState(this.rootMapGroup);

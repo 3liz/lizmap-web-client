@@ -4,6 +4,9 @@ var lizSearch = function() {
     var config = null;
     var map = null;
 
+    /**
+     *
+     */
     function startExternalSearch() {
         if($('#search-query').val().length != 0){
             $('#lizmap-search .items li > a').unbind('click');
@@ -14,6 +17,10 @@ var lizSearch = function() {
         }
     }
 
+    /**
+     *
+     * @param aHTML
+     */
     function updateExternalSearch( aHTML ) {
         if($('#search-query').val().length != 0){
             var wgs84 = new OpenLayers.Projection('EPSG:4326');
@@ -64,6 +71,9 @@ var lizSearch = function() {
         }
     }
 
+    /**
+     *
+     */
     function getHighlightRegEx() {
         // Format answers to highlight searched keywords
         var sqval = $('#search-query').val();
@@ -91,6 +101,7 @@ var lizSearch = function() {
      *
      * Returns:
      * {Boolean} external search is in the user interface
+     * @param searchConfig
      */
     function addSearch( searchConfig ) {
         if ( searchConfig.type == 'externalSearch' ){
@@ -112,11 +123,11 @@ var lizSearch = function() {
             var labrex = getHighlightRegEx();
             $.get(searchConfig.url
                 ,{
-                  "repository": lizUrls.params.repository,
-                  "project": lizUrls.params.project,
-                  "query":$('#search-query').val(),
-                  "bbox":extent.toBBOX()
-                 }
+                    "repository": lizUrls.params.repository,
+                    "project": lizUrls.params.project,
+                    "query":$('#search-query').val(),
+                    "bbox":extent.toBBOX()
+                }
                 ,function(results) {
                     var text = '';
                     var count = 0;
@@ -134,9 +145,9 @@ var lizSearch = function() {
                             }
                             var bbox = ftsGeometry.getBounds();
                             if ( extent.intersectsBounds(bbox) ) {
-                              var lab = ftsFeat.label.replace(labrex,'<b style="color:#0094D6;">$1</b>');
-                              text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+lab+'</a></li>';
-                              count++;
+                                var lab = ftsFeat.label.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                                text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+lab+'</a></li>';
+                                count++;
                             }
                         }
                         text += '</ul></li>';
@@ -161,6 +172,7 @@ var lizSearch = function() {
      *
      * Returns:
      * {Boolean} external search is in the user interface
+     * @param searchConfig
      */
     function addExternalSearch( searchConfig ) {
         if ( searchConfig.type != 'externalSearch' ){
@@ -178,13 +190,13 @@ var lizSearch = function() {
             case 'nominatim':
                 if ( 'url' in searchConfig ){
                     service = OpenLayers.Util.urlAppend(searchConfig.url
-                                ,new URLSearchParams(lizUrls.params)
-                              );
+                        ,new URLSearchParams(lizUrls.params)
+                    );
                 }
                 break;
             case 'ign':
                 service = 'https://wxs.ign.fr/essentiels/geoportail/ols?';
-            break;
+                break;
             case 'google':
                 if ( google && 'maps' in google && 'Geocoder' in google.maps ){
                     service = new google.maps.Geocoder();
@@ -237,20 +249,20 @@ var lizSearch = function() {
                     break;
                 case 'ign':
                     var xmlIGN = '<?xml version="1.0" encoding="UTF-8"?>';
-                        xmlIGN +=   '<XLS ';
-                        xmlIGN +=       'xmlns:gml="http://www.opengis.net/gml" ';
-                        xmlIGN +=       'xmlns="http://www.opengis.net/xls" ';
-                        xmlIGN +=       'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" ';
-                        xmlIGN +=        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">';
-                        xmlIGN +=           '<RequestHeader srsName="epsg:4326"/>';
-                        xmlIGN +=           '<Request maximumResponses="10" methodName="GeocodeRequest" requestID="uid42" version="1.2">';
-                        xmlIGN +=               '<GeocodeRequest returnFreeForm="false">';
-                        xmlIGN +=                   '<Address countryCode="StreetAddress">';
-                        xmlIGN +=                      '<freeFormAddress>'+$('#search-query').val()+'</freeFormAddress>';
-                        xmlIGN +=                   '</Address>';
-                        xmlIGN +=                '</GeocodeRequest>';
-                        xmlIGN +=           '</Request>';
-                        xmlIGN +=    '</XLS>';
+                    xmlIGN +=   '<XLS ';
+                    xmlIGN +=       'xmlns:gml="http://www.opengis.net/gml" ';
+                    xmlIGN +=       'xmlns="http://www.opengis.net/xls" ';
+                    xmlIGN +=       'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" ';
+                    xmlIGN +=        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">';
+                    xmlIGN +=           '<RequestHeader srsName="epsg:4326"/>';
+                    xmlIGN +=           '<Request maximumResponses="10" methodName="GeocodeRequest" requestID="uid42" version="1.2">';
+                    xmlIGN +=               '<GeocodeRequest returnFreeForm="false">';
+                    xmlIGN +=                   '<Address countryCode="StreetAddress">';
+                    xmlIGN +=                      '<freeFormAddress>'+$('#search-query').val()+'</freeFormAddress>';
+                    xmlIGN +=                   '</Address>';
+                    xmlIGN +=                '</GeocodeRequest>';
+                    xmlIGN +=           '</Request>';
+                    xmlIGN +=    '</XLS>';
 
                     $.get(
                         encodeURI(service+'xls='+xmlIGN)
@@ -291,20 +303,20 @@ var lizSearch = function() {
                                     count++;
                                 }
 
-                             });
+                            });
                             if (count == 0 || text == ''){
                                 text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
                             }
                             updateExternalSearch( '<li><b>IGN</b><ul>'+text+'</ul></li>' );
-                    });
+                        });
                     break;
                 case 'google':
                     service.geocode( {
                         'address': $('#search-query').val(),
                         'bounds': new google.maps.LatLngBounds(
-                          new google.maps.LatLng(extent.top,extent.left),
-                          new google.maps.LatLng(extent.bottom,extent.right)
-                          )
+                            new google.maps.LatLng(extent.top,extent.left),
+                            new google.maps.LatLng(extent.bottom,extent.right)
+                        )
                     }, function(results, status) {
                         if (status == google.maps.GeocoderStatus.OK) {
                             var text = '';
@@ -346,7 +358,7 @@ var lizSearch = function() {
                         } else
                             updateExternalSearch( '<li><b>Google</b><ul><li>'+lizDict['externalsearch.notfound']+'</li></ul></li>' );
                     });
-                break;
+                    break;
             }
             return false;
         });

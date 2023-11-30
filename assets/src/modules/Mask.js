@@ -27,95 +27,95 @@ import {toRadians} from 'ol/math.js';
  * @augments {Layer<import("ol/source/Source").default>}
  */
 export default class Mask extends Layer {
-  constructor(options = {}) {
-    super(options);
+    constructor(options = {}) {
+        super(options);
+
+        /**
+         * @private
+         */
+        this.context_ = createCanvasContext2D();
+
+        this.context_.canvas.style.opacity = '0.5';
+        this.context_.canvas.style.position = 'absolute';
+
+        /**
+         * @type {function(import('ol/Map').FrameState):number}
+         */
+        this.getScale;
+
+        /**
+         * @type {function():import('ol/size').Size}
+         */
+        this.getSize;
+
+        /**
+         * @type {undefined|function():number}
+         */
+        this.getRotation;
+    }
 
     /**
-     * @private
+     * @param {import("ol/Map").FrameState} frameState
+     * @returns {HTMLElement}
      */
-    this.context_ = createCanvasContext2D();
+    render(frameState) {
 
-    this.context_.canvas.style.opacity = '0.5';
-    this.context_.canvas.style.position = 'absolute';
+        const INCHES_PER_METER = 39.37;
+        const DOTS_PER_INCH = 72;
 
-    /**
-     * @type {function(import('ol/Map').FrameState):number}
-     */
-    this.getScale;
+        const cwidth = frameState.size[0];
+        this.context_.canvas.width = cwidth;
+        const cheight = frameState.size[1];
+        this.context_.canvas.height = cheight;
+        const center = [cwidth / 2, cheight / 2];
 
-    /**
-     * @type {function():import('ol/size').Size}
-     */
-    this.getSize;
+        // background (clockwise)
+        this.context_.beginPath();
+        this.context_.moveTo(0, 0);
+        this.context_.lineTo(cwidth, 0);
+        this.context_.lineTo(cwidth, cheight);
+        this.context_.lineTo(0, cheight);
+        this.context_.lineTo(0, 0);
+        this.context_.closePath();
 
-    /**
-     * @type {undefined|function():number}
-     */
-    this.getRotation;
-  }
+        const size = this.getSize();
+        const height = size[1];
+        const width = size[0];
+        const scale = this.getScale(frameState);
+        const resolution = frameState.viewState.resolution;
 
-  /**
-   * @param {import("ol/Map").FrameState} frameState
-   * @returns {HTMLElement}
-   */
-  render(frameState) {
+        const extentHalfWidth = ((width / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
+        const extentHalfHeight = ((height / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
 
-    const INCHES_PER_METER = 39.37;
-    const DOTS_PER_INCH = 72;
+        const rotation = this.getRotation !== undefined ? toRadians(this.getRotation()) : 0;
 
-    const cwidth = frameState.size[0];
-    this.context_.canvas.width = cwidth;
-    const cheight = frameState.size[1];
-    this.context_.canvas.height = cheight;
-    const center = [cwidth / 2, cheight / 2];
+        // diagonal = distance p1 to center.
+        const diagonal = Math.sqrt(Math.pow(extentHalfWidth, 2) + Math.pow(extentHalfHeight, 2));
+        // gamma = angle between horizontal and diagonal (with rotation).
+        const gamma = Math.atan(extentHalfHeight / extentHalfWidth) - rotation;
+        // omega = angle between diagonal and vertical (with rotation).
+        const omega = Math.atan(extentHalfWidth / extentHalfHeight) - rotation;
+        // Calculation of each corner.
+        const x1 = center[0] - Math.cos(gamma) * diagonal;
+        const y1 = center[1] + Math.sin(gamma) * diagonal;
+        const x2 = center[0] + Math.sin(omega) * diagonal;
+        const y2 = center[1] + Math.cos(omega) * diagonal;
+        const x3 = center[0] + Math.cos(gamma) * diagonal;
+        const y3 = center[1] - Math.sin(gamma) * diagonal;
+        const x4 = center[0] - Math.sin(omega) * diagonal;
+        const y4 = center[1] - Math.cos(omega) * diagonal;
 
-    // background (clockwise)
-    this.context_.beginPath();
-    this.context_.moveTo(0, 0);
-    this.context_.lineTo(cwidth, 0);
-    this.context_.lineTo(cwidth, cheight);
-    this.context_.lineTo(0, cheight);
-    this.context_.lineTo(0, 0);
-    this.context_.closePath();
+        // hole (counter-clockwise)
+        this.context_.moveTo(x1, y1);
+        this.context_.lineTo(x2, y2);
+        this.context_.lineTo(x3, y3);
+        this.context_.lineTo(x4, y4);
+        this.context_.lineTo(x1, y1);
+        this.context_.closePath();
 
-    const size = this.getSize();
-    const height = size[1];
-    const width = size[0];
-    const scale = this.getScale(frameState);
-    const resolution = frameState.viewState.resolution;
+        this.context_.fillStyle = '#000';
+        this.context_.fill();
 
-    const extentHalfWidth = ((width / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
-    const extentHalfHeight = ((height / DOTS_PER_INCH / INCHES_PER_METER) * scale) / resolution / 2;
-
-    const rotation = this.getRotation !== undefined ? toRadians(this.getRotation()) : 0;
-
-    // diagonal = distance p1 to center.
-    const diagonal = Math.sqrt(Math.pow(extentHalfWidth, 2) + Math.pow(extentHalfHeight, 2));
-    // gamma = angle between horizontal and diagonal (with rotation).
-    const gamma = Math.atan(extentHalfHeight / extentHalfWidth) - rotation;
-    // omega = angle between diagonal and vertical (with rotation).
-    const omega = Math.atan(extentHalfWidth / extentHalfHeight) - rotation;
-    // Calculation of each corner.
-    const x1 = center[0] - Math.cos(gamma) * diagonal;
-    const y1 = center[1] + Math.sin(gamma) * diagonal;
-    const x2 = center[0] + Math.sin(omega) * diagonal;
-    const y2 = center[1] + Math.cos(omega) * diagonal;
-    const x3 = center[0] + Math.cos(gamma) * diagonal;
-    const y3 = center[1] - Math.sin(gamma) * diagonal;
-    const x4 = center[0] - Math.sin(omega) * diagonal;
-    const y4 = center[1] - Math.cos(omega) * diagonal;
-
-    // hole (counter-clockwise)
-    this.context_.moveTo(x1, y1);
-    this.context_.lineTo(x2, y2);
-    this.context_.lineTo(x3, y3);
-    this.context_.lineTo(x4, y4);
-    this.context_.lineTo(x1, y1);
-    this.context_.closePath();
-
-    this.context_.fillStyle = '#000';
-    this.context_.fill();
-
-    return this.context_.canvas;
-  }
+        return this.context_.canvas;
+    }
 }

@@ -3,7 +3,6 @@ import {LayerTreeLayerState, LayerTreeGroupState} from './../state/LayerTree.js'
 
 /**
  * @param {LayerTreeLayerState[]} treeLayers - The tree layer group in which tree layers will be updated
- *
  * @returns {Promise} Promise object represents the tree layers updated
  */
 export async function updateLayerTreeLayersSymbology(treeLayers) {
@@ -40,7 +39,6 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
 
 /**
  * @param {LayerTreeLayerState} treeLayer - The tree layer to be updated
- *
  * @returns {Promise} Promise object represents the tree layer updated
  */
 export async function updateLayerTreeLayerSymbology(treeLayer) {
@@ -52,7 +50,6 @@ export async function updateLayerTreeLayerSymbology(treeLayer) {
 
 /**
  * @param {LayerTreeGroupState} treeGroup - The tree layer group in which tree layers will be updated
- *
  * @returns {Promise} Promise object represents the tree layers updated
  */
 export async function updateLayerTreeGroupLayersSymbology(treeGroup) {

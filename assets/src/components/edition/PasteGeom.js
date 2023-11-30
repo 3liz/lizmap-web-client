@@ -5,7 +5,7 @@ import '../../images/svg/mActionEditPaste.svg';
 
 /**
  * Webcomponent used to reverse vertices order for a modified feature
- * @extends HTMLElement
+ * @augments HTMLElement
  */
 export default class pasteGeom extends HTMLElement {
     constructor() {
@@ -36,7 +36,7 @@ export default class pasteGeom extends HTMLElement {
 
     connectedCallback() {
         this._template = () => 
-        html`
+            html`
         <button class='btn btn-small' data-original-title='${lizDict['edition.geom.paste']}' ?disabled=${!mainLizmap.featureStorage.get().length} @click=${() => this._paste()}>
             <svg>
                 <use xlink:href="#mActionEditPaste"></use>
