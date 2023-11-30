@@ -6,11 +6,11 @@ import { LayerGroupState, LayerLayerState, LayerVectorState } from './Layer.js';
 /**
  * Enum for map layer load status
  * @readonly
- * @enum {String}
- * @property {String} Undefined - The map layer's load status is undefined (not yet loading, ready or error)
- * @property {String} Loading   - The map layer is loading
- * @property {String} Ready     - The map layer is ready
- * @property {String} Error     - The map layer's load status is error (an error has been raised during loading)
+ * @enum {string}
+ * @property {string} Undefined - The map layer's load status is undefined (not yet loading, ready or error)
+ * @property {string} Loading   - The map layer is loading
+ * @property {string} Ready     - The map layer is ready
+ * @property {string} Error     - The map layer's load status is error (an error has been raised during loading)
  * @see {@link https://openlayers.org/en/latest/apidoc/module-ol_source_Source.html#~State|OpenLayer Source State}
  */
 export const MapLayerLoadStatus = createEnum({
@@ -29,8 +29,7 @@ export class MapItemState extends EventDispatcher {
 
     /**
      * Create a map item
-     *
-     * @param {String}         type             - the map layer item type
+     * @param {string}         type             - the map layer item type
      * @param {LayerItemState} layerItemState   - the layer item state
      * @param {MapItemState}   [parentMapGroup] - the parent layer map group
      */
@@ -70,63 +69,56 @@ export class MapItemState extends EventDispatcher {
     }
     /**
      * Config layers
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._layerItemState.name;
     }
 
     /**
      * Config layers
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._type;
     }
 
     /**
      * the layer tree item level
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get level() {
         return this._layerItemState.level;
     }
 
     /**
      * WMS layer name
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get wmsName() {
         return this._layerItemState.wmsName;
     }
 
     /**
      * WMS layer title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsTitle() {
         return this._layerItemState.wmsTitle;
     }
 
     /**
      * WMS layer Geographic Bounding Box
-     *
      * @type {?LayerGeographicBoundingBoxConfig}
-     **/
+     */
     get wmsGeographicBoundingBox() {
         return this._layerItemState.wmsGeographicBoundingBox;
     }
 
     /**
      * WMS layer Bounding Boxes
-     *
      * @type {LayerBoundingBoxConfig[]}
-     **/
+     */
     get wmsBoundingBoxes() {
         return this._layerItemState.wmsBoundingBoxes;
     }
@@ -138,9 +130,8 @@ export class MapItemState extends EventDispatcher {
      * If the WMS layer is a group, the minimum scale denominator is -1 if only one layer
      * minimum scale denominator is not defined else the smallest layer minimum scale denominator
      * in the group
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMinScaleDenominator() {
         return this._layerItemState.wmsMinScaleDenominator;
     }
@@ -149,27 +140,24 @@ export class MapItemState extends EventDispatcher {
      * WMS layer maximum scale denominator
      * If the maximum scale denominator is not defined: -1 is returned
      * If the WMS layer is a group, the maximum scale denominator is the largest of the layers in the group
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMaxScaleDenominator() {
         return this._layerItemState.wmsMaxScaleDenominator;
     }
 
     /**
      * Layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get checked() {
         return this._layerItemState.checked;
     }
 
     /**
      * Set layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     set checked(val) {
         this._layerItemState.checked = val;
     }
@@ -177,54 +165,48 @@ export class MapItemState extends EventDispatcher {
     /**
      * Layer tree item is visible
      * It depends on the parent visibility
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get visibility() {
         return this._layerItemState.visibility;
     }
 
     /**
      * Layer tree item opacity
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get opacity() {
         return this._layerItemState.opacity;
     }
 
     /**
      * Set layer tree item opacity
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     set opacity(val) {
         this._layerItemState.opacity = val;
     }
 
     /**
      * Lizmap layer config
-     *
      * @type {?LayerConfig}
-     **/
+     */
     get layerConfig() {
         return this._layerItemState.layerConfig;
     }
 
     /**
      * Lizmap layer item state
-     *
      * @type {?LayerConfig}
-     **/
+     */
     get itemState() {
         return this._layerItemState;
     }
 
     /**
      * Calculate and save visibility
-     *
      * @returns {boolean} the calculated visibility
-     **/
+     */
     calculateVisibility() {
         return this._layerItemState.calculateVisibility();
     }
@@ -239,7 +221,6 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Creating a map group state instance
-     *
      * @param {LayerGroupState} layerGroupState  - the layer tree group config
      * @param {MapGroupState}   [parentMapGroup] - the parent layer map group
      */
@@ -361,9 +342,8 @@ export class MapGroupState extends MapItemState {
 
     /**
      * The layer mutually exclusive activation (group only)
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get mutuallyExclusive() {
         if (this.layerConfig == null) {
             return false;
@@ -373,28 +353,25 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Children items count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         return this._items.length;
     }
 
     /**
      * Children items
-     *
      * @type {MapItemState[]}
-     **/
+     */
     get children() {
         return [...this._items];
     }
 
     /**
      * Iterate through children items
-     *
      * @generator
      * @yields {MapItemState} The next child item
-     **/
+     */
     *getChildren() {
         for (const item of this._items) {
             yield item;
@@ -403,9 +380,8 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Find layer names
-     *
-     * @returns {String[]}
-     **/
+     * @returns {string[]}
+     */
     findMapLayerNames() {
         let names = []
         for(const item of this.getChildren()) {
@@ -420,9 +396,8 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Find layer items
-     *
      * @returns {MapLayerState[]}
-     **/
+     */
     findMapLayers() {
         let items = []
         for(const item of this.getChildren()) {
@@ -437,9 +412,8 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Find layer and group items
-     *
      * @returns {Array<MapLayerState|MapGroupState>}
-     **/
+     */
     findMapLayersAndGroups() {
         let items = []
         for(const item of this.getChildren()) {
@@ -455,10 +429,9 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Get layer item by its name
-     *
-     * @param {String} name - the layer name
+     * @param {string} name - the layer name
      * @returns {MapLayerState} The MapLayerState associated to the name
-     **/
+     */
     getMapLayerByName(name) {
         for (const layer of this.findMapLayers()) {
             if(layer.name === name) {
@@ -470,10 +443,9 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Get layer or group item by its name
-     *
-     * @param {String} name - the layer or group name
+     * @param {string} name - the layer or group name
      * @returns {MapLayerState|MapGroupState} The MapLayerState or MapGroupState associated to the name
-     **/
+     */
     getMapLayerOrGroupByName(name) {
         for (const item of this.findMapLayersAndGroups()) {
             if(item.name === name) {
@@ -493,7 +465,6 @@ export class MapLayerState extends MapItemState {
 
     /**
      * Creating a map layer state instance
-     *
      * @param {LayerVectorState|LayerRasterState|LayerGroupState} layerItemState   - the layer item state
      * @param {MapGroupState}                                     [parentMapGroup] - the parent layer map group
      */
@@ -518,9 +489,8 @@ export class MapLayerState extends MapItemState {
 
     /**
      * Layer type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get layerType() {
         if (this.itemState instanceof LayerGroupState) {
             return 'group';
@@ -530,18 +500,16 @@ export class MapLayerState extends MapItemState {
 
     /**
      * Layer order from top to bottom
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get layerOrder() {
         return this._layerItemState.layerOrder;
     }
 
     /**
      * Is the map layer displayed in layer tree
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get displayInLayerTree() {
         return this._layerItemState.displayInLegend;
     }
@@ -549,9 +517,8 @@ export class MapLayerState extends MapItemState {
     /**
      * Vector layer has selected features
      * The selected features is not empty
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasSelectedFeatures() {
         if (this._layerItemState instanceof LayerVectorState) {
             return this._layerItemState.hasSelectedFeatures;
@@ -562,9 +529,8 @@ export class MapLayerState extends MapItemState {
     /**
      * Vector layer is filtered
      * The expression filter is not null
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get isFiltered() {
         if (this._layerItemState instanceof LayerVectorState) {
             return this._layerItemState.isFiltered;
@@ -574,9 +540,8 @@ export class MapLayerState extends MapItemState {
 
     /**
      * WMS selected layer style name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsSelectedStyleName() {
         return this._layerItemState.wmsSelectedStyleName;
     }
@@ -584,18 +549,16 @@ export class MapLayerState extends MapItemState {
     /**
      * Update WMS selected layer style name
      * based on wmsStyles list
-     *
-     * @param {String} styleName
-     **/
+     * @param {string} styleName
+     */
     set wmsSelectedStyleName(styleName) {
         this._layerItemState.wmsSelectedStyleName = styleName;
     }
 
     /**
      * WMS layer styles
-     *
      * @type {LayerStyleConfig[]}
-     **/
+     */
     get wmsStyles() {
         if ( this._layerItemState.type == 'layer' ) {
             return this._layerItemState.wmsStyles;
@@ -605,9 +568,8 @@ export class MapLayerState extends MapItemState {
 
     /**
      * WMS layer attribution
-     *
      * @type {?AttributionConfig}
-     **/
+     */
     get wmsAttribution() {
         if ( this._layerItemState.type == 'layer' ) {
             return this._layerItemState.wmsAttribution;
@@ -617,27 +579,24 @@ export class MapLayerState extends MapItemState {
 
     /**
      * Parameters for OGC WMS Request
-     *
-     * @type {Object}
-     **/
+     * @type {object}
+     */
     get wmsParameters() {
         return this._layerItemState.wmsParameters;
     }
 
     /**
      * Layer symbology
-     *
      * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
-     **/
+     */
     get symbology() {
         return this._layerItemState.symbology;
     }
 
     /**
      * Update layer symbology
-     *
-     * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
-     **/
+     * @param {(object | LayerIconSymbology | LayerSymbolsSymbology | LayerGroupSymbology)} node - The symbology node
+     */
     set symbology(node) {
         this._layerItemState.symbology = node;
     }
@@ -645,9 +604,8 @@ export class MapLayerState extends MapItemState {
     /**
      * The layer load status
      * @see MapLayerLoadStatus
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get loadStatus() {
         return this._loadStatus;
     }
@@ -656,9 +614,8 @@ export class MapLayerState extends MapItemState {
     /**
      * Set layer load status
      * @see MapLayerLoadStatus
-     *
-     * @param {String} status - Expected values provided by the map layer load status enum
-     **/
+     * @param {string} status - Expected values provided by the map layer load status enum
+     */
     set loadStatus(status) {
         const statusKeys = Object.keys(MapLayerLoadStatus).filter(key => MapLayerLoadStatus[key] === status);
         if (statusKeys.length != 1) {

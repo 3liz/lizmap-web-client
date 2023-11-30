@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectConfig, BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
@@ -23,8 +23,7 @@ const capabilitiesProperties = {
 export class EditionCapabilitiesConfig extends BaseObjectConfig {
     /**
      * Create an editions capabilities config instance
-     *
-     * @param {Object} cfg - the lizmap config object for edition capabilities
+     * @param {object} cfg - the lizmap config object for edition capabilities
      */
     constructor(cfg) {
         super(cfg, capabilitiesProperties, {})
@@ -32,36 +31,32 @@ export class EditionCapabilitiesConfig extends BaseObjectConfig {
 
     /**
      * Create feature capability
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get createFeature() {
         return this._createFeature;
     }
 
     /**
      * Modify attribute capability
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get modifyAttribute() {
         return this._modifyAttribute;
     }
 
     /**
      * Modify geometry capability
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get modifyGeometry() {
         return this._modifyGeometry;
     }
 
     /**
      * Delete feature capability
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get deleteFeature() {
         return this._deleteFeature;
     }
@@ -82,9 +77,8 @@ const optionalProperties = {
 export class EditionLayerConfig extends BaseObjectLayerConfig {
     /**
      * Create an edition layer config instance
-     *
-     * @param {String} layerName - the layer name
-     * @param {Object} cfg       - the lizmap config object for edition layer
+     * @param {string} layerName - the layer name
+     * @param {object} cfg       - the lizmap config object for edition layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -98,27 +92,24 @@ export class EditionLayerConfig extends BaseObjectLayerConfig {
 
     /**
      * The layer geometry type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get geometryType() {
         return this._geometryType;
     }
 
     /**
      * The capabilities
-     *
      * @type {capabilitiesEditionConfig}
-     **/
+     */
     get capabilities() {
         return this._capabilities;
     }
 
     /**
      * Acces control list
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get acl() {
         return this._acl;
     }
@@ -133,8 +124,7 @@ export class EditionLayersConfig extends BaseObjectLayersConfig {
 
     /**
      * Create an edition layers config instance
-     *
-     * @param {Object} cfg - the lizmap editionLayers config object
+     * @param {object} cfg - the lizmap editionLayers config object
      */
     constructor(cfg) {
         super(EditionLayerConfig, cfg)

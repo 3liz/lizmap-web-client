@@ -9,8 +9,8 @@ import { MapLayerLoadStatus } from './MapLayer.js';
 export class BaseLayerState extends EventDispatcher {
     /**
      * Create a base layer state based on the base layer config
-     *
      * @param {BaseLayersConfig}                                  baseLayersCfg - the lizmap config object for base layer
+     * @param baseLayerCfg
      * @param {LayerVectorState|LayerRasterState|LayerGroupState} [itemState]   - the lizmap layer item state of the base layer if exists
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -25,96 +25,85 @@ export class BaseLayerState extends EventDispatcher {
 
     /**
      * The base layer type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._baseLayerConfig.type;
     }
 
     /**
      * The base layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._baseLayerConfig.name;
     }
 
     /**
      * The base layer title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get title() {
         return this._baseLayerConfig.title;
     }
 
     /**
      * The base layer key is defined
-     *
      * @type {boolean}
-     **/
+     */
     get hasKey() {
         return this._baseLayerConfig.hasKey;
     }
 
     /**
      * The base layer key
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get key() {
         return this._baseLayerConfig.key;
     }
 
     /**
      * Attribution is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasAttribution() {
         return this._baseLayerConfig.hasAttribution;
     }
     /**
      * Attribution
-     *
      * @type {?AttributionConfig}
-     **/
+     */
     get attribution() {
         return this._baseLayerConfig.attribution;
     }
 
     /**
      * A Lizmap layer config is associated with this base layer
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasLayerConfig() {
         return this._baseLayerConfig.hasLayerConfig;
     }
     /**
      * The Lizmap layer config associated with this base layer
-     *
      * @type {?LayerConfig}
-     **/
+     */
     get layerConfig() {
         return this._baseLayerConfig.layerConfig;
     }
 
     /**
      * A Lizmap layer item state is associated with this base layer
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasItemState() {
         return this._itemState !== null;
     }
     /**
      * The Lizmap layer item state associated with this base layer
-     *
      * @type {?LayerVectorState|LayerRasterState|LayerGroupState}
-     **/
+     */
     get itemState() {
         return this._itemState;
     }
@@ -122,9 +111,8 @@ export class BaseLayerState extends EventDispatcher {
     /**
      * The layer load status
      * @see MapLayerLoadStatus
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get loadStatus() {
         return this._loadStatus;
     }
@@ -133,9 +121,8 @@ export class BaseLayerState extends EventDispatcher {
     /**
      * Set layer load status
      * @see MapLayerLoadStatus
-     *
-     * @param {String} status - Expected values provided by the map layer load status enum
-     **/
+     * @param {string} status - Expected values provided by the map layer load status enum
+     */
     set loadStatus(status) {
         const statusKeys = Object.keys(MapLayerLoadStatus).filter(key => MapLayerLoadStatus[key] === status);
         if (statusKeys.length != 1) {
@@ -165,8 +152,8 @@ export class BaseLayerState extends EventDispatcher {
 export class EmptyBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers empty state based on the empty base layer config
-     *
      * @param {EmptyBaseLayersConfig} baseLayersCfg - the lizmap empty base layer config object
+     * @param baseLayerCfg
      * @param {LayerGroupState}       [itemState]   - the lizmap empty layer group state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -185,8 +172,8 @@ export class EmptyBaseLayerState extends BaseLayerState {
 export class XyzBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers xyz state based on the xyz base layer config
-     *
      * @param {EmptyBaseLayersConfig} baseLayersCfg - the lizmap xyz base layer config object
+     * @param baseLayerCfg
      * @param {LayerRasterState}      [itemState]   - the lizmap xyz layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -198,36 +185,32 @@ export class XyzBaseLayerState extends BaseLayerState {
 
     /**
      * The base layer url
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get url() {
         return this._baseLayerConfig.url;
     }
 
     /**
      * The base layer zmin
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get zmin() {
         return this._baseLayerConfig.zmin;
     }
 
     /**
      * The base layer zmax
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get zmax() {
         return this._baseLayerConfig.zmax;
     }
 
     /**
      * The base layer crs
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this._baseLayerConfig.crs;
     }
@@ -241,8 +224,8 @@ export class XyzBaseLayerState extends BaseLayerState {
 export class BingBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers bing state based on the bing base layer config
-     *
      * @param {EmptyBaseLayersConfig} baseLayersCfg - the lizmap bing base layer config object
+     * @param baseLayerCfg
      * @param {LayerRasterState}      [itemState]   - the lizmap bing layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -254,9 +237,8 @@ export class BingBaseLayerState extends BaseLayerState {
 
     /**
      * The bing imagerySet
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get imagerySet() {
         return this._baseLayerConfig.imagerySet;
     }
@@ -270,8 +252,8 @@ export class BingBaseLayerState extends BaseLayerState {
 export class WmtsBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers WMTS state based on the WMTS base layer config
-     *
      * @param {EmptyBaseLayersConfig} baseLayersCfg - the lizmap WMTS base layer config object
+     * @param baseLayerCfg
      * @param {LayerRasterState}      [itemState]   - the lizmap WMTS layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -283,63 +265,56 @@ export class WmtsBaseLayerState extends BaseLayerState {
 
     /**
      * The base layer url
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get url() {
         return this._baseLayerConfig.url;
     }
 
     /**
      * The base layer wmts layer
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get layer() {
         return this._baseLayerConfig.layer;
     }
 
     /**
      * The base layer wmts format
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get format() {
         return this._baseLayerConfig.format;
     }
 
     /**
      * The base layer wmts style
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get style() {
         return this._baseLayerConfig.style;
     }
 
     /**
      * The base layer matrixSet
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get matrixSet() {
         return this._baseLayerConfig.matrixSet;
     }
 
     /**
      * The base layer crs
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this._baseLayerConfig.crs;
     }
 
     /**
      * The base layer numZoomLevels
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get numZoomLevels() {
         return this._baseLayerConfig.numZoomLevels;
     }
@@ -353,8 +328,8 @@ export class WmtsBaseLayerState extends BaseLayerState {
 export class WmsBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers WMS state based on the WMS base layer config
-     *
      * @param {EmptyBaseLayersConfig} baseLayersCfg - the lizmap WMS base layer config object
+     * @param baseLayerCfg
      * @param {LayerRasterState}      [itemState]   - the lizmap WMS layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -366,45 +341,40 @@ export class WmsBaseLayerState extends BaseLayerState {
 
     /**
      * The base layer url
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get url() {
         return this._baseLayerConfig.url;
     }
 
     /**
      * The base layer wms layer
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get layers() {
         return this._baseLayerConfig.layers;
     }
 
     /**
      * The base layer wms format
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get format() {
         return this._baseLayerConfig.format;
     }
 
     /**
      * The base layer wms style
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get styles() {
         return this._baseLayerConfig.styles;
     }
 
     /**
      * The base layer crs
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this._baseLayerConfig.crs;
     }
@@ -418,7 +388,6 @@ export class BaseLayersState extends EventDispatcher {
 
     /**
      * Create a base layers state based on the base layers config
-     *
      * @param {BaseLayersConfig}          baseLayersCfg - the lizmap config object for base layers
      * @param {LayersAndGroupsCollection} lgCollection  - the collection of layers and groups state
      */
@@ -458,20 +427,17 @@ export class BaseLayersState extends EventDispatcher {
 
     /**
      * Selected base layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get selectedBaseLayerName() {
         return this._selectedBaseLayerName;
     }
 
     /**
      * Set elected base layer name
-     *
-     * @param {String} name
-     *
+     * @param {string} name
      * @throws {RangeError} When the base layer name is unknown!
-     **/
+     */
     set selectedBaseLayerName(name) {
         if (this._selectedBaseLayerName === name) {
             return;
@@ -488,40 +454,34 @@ export class BaseLayersState extends EventDispatcher {
 
     /**
      * Selected base layer config
-     *
      * @type {BaseLayerState}
-     **/
+     */
     get selectedBaseLayer() {
         return this._baseLayersMap.get(this._selectedBaseLayerName);
     }
 
     /**
      * Base layer names
-     *
-     * @type {String[]}
-     **/
+     * @type {string[]}
+     */
     get baseLayerNames() {
         return [...this._baseLayersMap.keys()];
     }
 
     /**
      * Base layer configs
-     *
      * @type {BaseLayerState[]}
-     **/
+     */
     get baseLayers() {
         return [...this._baseLayersMap.values()];
     }
 
     /**
      * Get a base layer config by base layer name
-     *
-     * @param {String} name - the base layer name
-     *
+     * @param {string} name - the base layer name
      * @returns {BaseLayerState} The base layer config associated to the name
-     *
      * @throws {RangeError} The base layer name is unknown
-     **/
+     */
     getBaseLayerByName(name) {
         const layer = this._baseLayersMap.get(name);
         if (layer !== undefined) {
@@ -535,10 +495,9 @@ export class BaseLayersState extends EventDispatcher {
 
     /**
      * Iterate through base layer names
-     *
      * @generator
-     * @yields {String} The next base layer name
-     **/
+     * @yields {string} The next base layer name
+     */
     *getBaseLayerNames() {
         for (const name of this._baseLayersMap.keys()) {
             yield name;
@@ -547,10 +506,9 @@ export class BaseLayersState extends EventDispatcher {
 
     /**
      * Iterate through base layer configs
-     *
      * @generator
      * @yields {BaseLayerState} The next base layer config
-     **/
+     */
     *getBaseLayers() {
         for (const layer of this._baseLayersMap.values()) {
             yield layer;

@@ -12,7 +12,6 @@ export class LayerTreeItemState extends EventDispatcher {
 
     /**
      * Instantiate a layer tree item
-     *
      * @param {MapItemState}       mapItemState       - the map item state
      * @param {LayerTreeItemState} [parentGroupState] - the parent layer tree group
      */
@@ -52,63 +51,56 @@ export class LayerTreeItemState extends EventDispatcher {
     }
     /**
      * Config layers
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._mapItemState.name;
     }
 
     /**
      * Config layers
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._mapItemState.type;
     }
 
     /**
      * Layer tree item level
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get level() {
         return this._mapItemState.level;
     }
 
     /**
      * WMS layer name
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get wmsName() {
         return this._mapItemState.wmsName;
     }
 
     /**
      * WMS layer title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsTitle() {
         return this._mapItemState.wmsTitle;
     }
 
     /**
      * WMS layer Geographic Bounding Box
-     *
      * @type {?LayerGeographicBoundingBoxConfig}
-     **/
+     */
     get wmsGeographicBoundingBox() {
         return this._mapItemState.wmsGeographicBoundingBox;
     }
 
     /**
      * WMS layer Bounding Boxes
-     *
      * @type {LayerBoundingBoxConfig[]}
-     **/
+     */
     get wmsBoundingBoxes() {
         return this._mapItemState.wmsBoundingBoxes;
     }
@@ -119,9 +111,8 @@ export class LayerTreeItemState extends EventDispatcher {
      * If the WMS layer is a group, the minimum scale denominator is -1 if only one layer
      * minimum scale denominator is not defined else the smallest layer minimum scale denominator
      * in the group
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMinScaleDenominator() {
         return this._mapItemState.wmsMinScaleDenominator;
     }
@@ -130,27 +121,24 @@ export class LayerTreeItemState extends EventDispatcher {
      * WMS layer maximum scale denominator
      * If the maximum scale denominator is not defined: -1 is returned
      * If the WMS layer is a group, the maximum scale denominator is the largest of the layers in the group
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMaxScaleDenominator() {
         return this._mapItemState.wmsMaxScaleDenominator;
     }
 
     /**
      * Layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get checked() {
         return this._mapItemState.checked;
     }
 
     /**
      * Set layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     set checked(val) {
         this._mapItemState.checked = val;
     }
@@ -158,63 +146,56 @@ export class LayerTreeItemState extends EventDispatcher {
     /**
      * Layer tree item is visible
      * It depends on the parent visibility
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get visibility() {
         return this._mapItemState.visibility;
     }
 
     /**
      * Layer tree item opacity
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get opacity() {
         return this._mapItemState.opacity;
     }
 
     /**
      * Set layer tree item opacity
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     set opacity(val) {
         this._mapItemState.opacity = val;
     }
 
     /**
      * Lizmap layer config
-     *
      * @type {?LayerConfig}
-     **/
+     */
     get layerConfig() {
         return this._mapItemState.layerConfig;
     }
 
     /**
      * Map item state
-     *
      * @type {?MapItemState}
-     **/
+     */
     get mapItemState() {
         return this._mapItemState;
     }
 
     /**
      * Layer tree item is expanded
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get expanded() {
         return this._expanded;
     }
 
     /**
      * Set layer tree item is expanded
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     set expanded(val) {
         const newVal = convertBoolean(val);
         if(this._expanded === newVal){
@@ -231,18 +212,17 @@ export class LayerTreeItemState extends EventDispatcher {
 
     /**
      * Calculate and save visibility
-     *
      * @returns {boolean} the calculated visibility
-     **/
+     */
     calculateVisibility() {
         return this._mapItemState.calculateVisibility();
     }
 
     /**
      * Get item visibility taking care of this.visibility and scale
-     *
+     * @param scaleDenominator
      * @returns {boolean} the item visibility
-     **/
+     */
     isVisible(scaleDenominator) {
         if (this.type === 'group') {
             return this.visibility;
@@ -265,7 +245,6 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Instantiate a layer tree group
-     *
      * @param {MapGroupState}       mapGroupState      - the map layer group state
      * @param {LayerTreeGroupState} [parentGroupState] - the parent layer tree group
      */
@@ -323,9 +302,8 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * The layer mutually exclusive activation (group only)
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get mutuallyExclusive() {
         if (this.layerConfig == null) {
             return false;
@@ -335,28 +313,25 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Children items count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         return this._items.length;
     }
 
     /**
      * Children items
-     *
      * @type {LayerTreeItemState[]}
-     **/
+     */
     get children() {
         return [...this._items];
     }
 
     /**
      * Iterate through children items
-     *
      * @generator
      * @yields {LayerTreeItem} The next child item
-     **/
+     */
     *getChildren() {
         for (const item of this._items) {
             yield item;
@@ -365,9 +340,8 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer names
-     *
-     * @returns {String[]}
-     **/
+     * @returns {string[]}
+     */
     findTreeLayerNames() {
         let names = []
         for(const item of this.getChildren()) {
@@ -382,9 +356,8 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer items
-     *
      * @returns {LayerTreeLayerState[]}
-     **/
+     */
     findTreeLayers() {
         let items = []
         for(const item of this.getChildren()) {
@@ -399,9 +372,8 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer and group items
-     *
      * @returns {LayerTreeLayerState[]}
-     **/
+     */
     findTreeLayersAndGroups() {
         let items = []
         for(const item of this.getChildren()) {
@@ -417,10 +389,9 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Get tree layer item by its name
-     *
-     * @param {String} name - the layer name
+     * @param {string} name - the layer name
      * @returns {LayerTreeLayerState} The LayerTreeLayerState associated to the name
-     **/
+     */
     getTreeLayerByName(name) {
         for (const layer of this.findTreeLayers()) {
             if(layer.name === name) {
@@ -440,7 +411,6 @@ export class LayerTreeLayerState extends LayerTreeItemState {
 
     /**
      * Instantiate a layer tree layer
-     *
      * @param {MapLayerState}       mapLayerState      - the map layer state
      * @param {LayerTreeGroupState} [parentGroupState] - the parent layer tree group
      */
@@ -453,9 +423,8 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * Vector layer has selected features
      * The selected features is not empty
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasSelectedFeatures() {
         return this._mapItemState.hasSelectedFeatures;
     }
@@ -463,18 +432,16 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * Vector layer is filtered
      * The expression filter is not null
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get isFiltered() {
         return this._mapItemState.isFiltered;
     }
 
     /**
      * The source icon of the layer
-     *
      * @type {string}
-     **/
+     */
     get icon() {
         if (this._mapItemState.symbology instanceof LayerIconSymbology) {
             return this.symbology.icon;
@@ -484,9 +451,8 @@ export class LayerTreeLayerState extends LayerTreeItemState {
 
     /**
      * WMS selected layer style name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsSelectedStyleName() {
         return this._mapItemState.wmsSelectedStyleName;
     }
@@ -494,36 +460,32 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * Update WMS selected layer style name
      * based on wmsStyles list
-     *
-     * @param {String} styleName
-     **/
+     * @param {string} styleName
+     */
     set wmsSelectedStyleName(styleName) {
         this._mapItemState.wmsSelectedStyleName = styleName;
     }
 
     /**
      * WMS layer styles
-     *
      * @type {LayerStyleConfig[]}
-     **/
+     */
     get wmsStyles() {
         return this._mapItemState.wmsStyles;
     }
 
     /**
      * WMS layer attribution
-     *
      * @type {?AttributionConfig}
-     **/
+     */
     get wmsAttribution() {
         return this._mapItemState.wmsAttribution;
     }
 
     /**
      * Parameters for OGC WMS Request
-     *
-     * @type {Object}
-     **/
+     * @type {object}
+     */
     get wmsParameters() {
         return this._mapItemState.wmsParameters;
     }
@@ -531,36 +493,32 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * The layer load status
      * @see MapLayerLoadStatus
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get loadStatus() {
         return this._mapItemState.loadStatus;
     }
 
     /**
      * Layer symbology
-     *
      * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
-     **/
+     */
     get symbology() {
         return this._mapItemState.symbology;
     }
 
     /**
      * Update layer symbology
-     *
-     * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
-     **/
+     * @param {(object | LayerIconSymbology | LayerSymbolsSymbology | LayerGroupSymbology)} node - The symbology node
+     */
     set symbology(node) {
         this._mapItemState.symbology = node;
     }
 
     /**
      * Children symbology count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get symbologyChildrenCount() {
         if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
             || this._mapItemState.symbology instanceof LayerGroupSymbology) {
@@ -571,9 +529,8 @@ export class LayerTreeLayerState extends LayerTreeItemState {
 
     /**
      * Children symbology
-     *
      * @type {(SymbolIconSymbology[]|Array.<BaseIconSymbology|BaseSymbolsSymbology>)}
-     **/
+     */
     get symbologyChildren() {
         if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
             || this._mapItemState.symbology instanceof LayerGroupSymbology) {
@@ -585,10 +542,9 @@ export class LayerTreeLayerState extends LayerTreeItemState {
 
     /**
      * Iterate through children nodes
-     *
      * @generator
      * @yields {SymbolIconSymbology|BaseIconSymbology|BaseSymbolsSymbology} The next child node
-     **/
+     */
     *getSymbologyChildren() {
         if (this._mapItemState.symbology instanceof LayerSymbolsSymbology
             || this._mapItemState.symbology instanceof LayerGroupSymbology) {

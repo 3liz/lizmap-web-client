@@ -1,7 +1,6 @@
 /**
  * UI components or any other components can be notified by this object of some
  * application events, in order to update their state or to do something
- *
  * @version 0.1
  * @author Laurent Jouanneau
  * @licence MIT
@@ -23,9 +22,8 @@ export default class EventDispatcher {
 
     /**
      * add a listener that will be called for one or several given events
-     *
      * @param {Function} listener - Callback
-     * @param {Array|String|Object} supportedEvents events on which the listener will
+     * @param {Array | string | object} supportedEvents events on which the listener will
      *                       be called. if undefined or "*", it will be called for any events
      */
     addListener(listener, supportedEvents) {
@@ -60,9 +58,8 @@ export default class EventDispatcher {
 
     /**
      * remove a listener that is associated for one or several given events
-     *
      * @param {Function} listenerToRemove - Callback
-     * @param {Array|String} supportedEvents list of events from which the listener
+     * @param {Array | string} supportedEvents list of events from which the listener
      *                       will be removed. if undefined or "*", it will be removed from any events
      */
     removeListener(listenerToRemove, supportedEvents) {
@@ -112,8 +109,7 @@ export default class EventDispatcher {
 
     /**
      * Call listeners associated with the given event
-     *
-     * @param {Object|String} event  an event name, or an object with a 'type'
+     * @param {object | string} event  an event name, or an object with a 'type'
      *                               property having the event name. In this
      *                               case other properties are parameters for
      *                               listeners.

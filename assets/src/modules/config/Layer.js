@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
@@ -54,16 +54,15 @@ const optionalProperties = {
 export class LayerConfig extends BaseObjectConfig {
     /**
      * Create a layer config instance based on a config object
-     *
-     * @param {Object}   cfg                       - the lizmap config object for layer
-     * @param {String}   cfg.id                    - the layer id
-     * @param {String}   cfg.name                  - the layer name
-     * @param {String}   cfg.type                  - the layer type
-     * @param {String}   cfg.title                 - the layer title
-     * @param {String}   cfg.abstract              - the layer abstract
-     * @param {String}   cfg.link                  - the layer link
-     * @param {Number}   cfg.minScale              - the layer minScale
-     * @param {Number}   cfg.maxScale              - the layer maxScale
+     * @param {object}   cfg                       - the lizmap config object for layer
+     * @param {string}   cfg.id                    - the layer id
+     * @param {string}   cfg.name                  - the layer name
+     * @param {string}   cfg.type                  - the layer type
+     * @param {string}   cfg.title                 - the layer title
+     * @param {string}   cfg.abstract              - the layer abstract
+     * @param {string}   cfg.link                  - the layer link
+     * @param {number}   cfg.minScale              - the layer minScale
+     * @param {number}   cfg.maxScale              - the layer maxScale
      * @param {Boolean}  cfg.toggled               - the layer toggled activation
      * @param {Boolean}  cfg.popup                 - the layer popup activation
      * @param {String}   cfg.popupSource           - the layer popup source
@@ -95,234 +94,208 @@ export class LayerConfig extends BaseObjectConfig {
 
     /**
      * The layer id - QGIS layer id
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get id() {
         return this._id;
     }
 
     /**
      * The layer name - QGIS layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._name;
     }
 
     /**
      * The layer type: layer or group
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._type;
     }
 
     /**
      * The layer short name - will be the WMS/WFS/WMTS name if not null
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get shortname() {
         return this._shortname;
     }
 
     /**
      * The layer title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get title() {
         return this._title;
     }
 
     /**
      * The layer abstract
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get abstract() {
         return this._abstract;
     }
 
     /**
      * The layer link
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get link() {
         return this._link;
     }
 
     /**
      * The layer minScale
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get minScale() {
         return this._minScale;
     }
 
     /**
      * The layer maxScale
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get maxScale() {
         return this._maxScale;
     }
 
     /**
      * The layer type (layer only)
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get layerType() {
         return this._layerType;
     }
 
     /**
      * The layer geometry type (layer only)
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get geometryType() {
         return this._geometryType;
     }
 
     /**
      * The layer extent (layer only)
-     *
      * @type {?Extent}
-     **/
+     */
     get extent() {
         return this._extent;
     }
 
     /**
      * The layer crs (layer only)
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get crs() {
         return this._crs;
     }
 
     /**
      * The layer toggled activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get toggled() {
         return this._toggled;
     }
 
     /**
      * The layer popup activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get popup() {
         return this._popup;
     }
 
     /**
      * The layer popup source
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get popupSource() {
         return this._popupSource;
     }
 
     /**
      * The layer popup template
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get popupTemplate() {
         return this._popupTemplate;
     }
 
     /**
      * The layer popup max features
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get popupMaxFeatures() {
         return this._popupMaxFeatures;
     }
 
     /**
      * The layer popup display children activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get popupDisplayChildren() {
         return this._popupDisplayChildren;
     }
 
     /**
      * The layer as group as layer activation (group only)
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get groupAsLayer() {
         return this._groupAsLayer;
     }
 
     /**
      * The layer as base layer activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get baseLayer() {
         return this._baseLayer;
     }
 
     /**
      * The layer display in legend activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get displayInLegend() {
         return this._displayInLegend;
     }
 
     /**
      * The layer singleTile activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get singleTile() {
         return this._singleTile;
     }
 
     /**
      * The layer image format
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get imageFormat() {
         return this._imageFormat;
     }
 
     /**
      * The layer cached activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get cached() {
         return this._cached;
     }
 
     /**
      * The layer opacity defined in QGIS project
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get opacity() {
         return this._opacity;
     }
@@ -330,55 +303,49 @@ export class LayerConfig extends BaseObjectConfig {
     /**
      * The layer no legend image activation
      * replaced by legendImageOption
-     *
-     * @type {Boolean}
+     * @type {boolean}
      * @deprecated
-     **/
+     */
     get noLegendImage() {
         return this._noLegendImage;
     }
 
     /**
      * The layer legend image option
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get legendImageOption() {
         return this._legend_image_option;
     }
 
     /**
      * The layer client cache expiration
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get clientCacheExpiration() {
         return this._clientCacheExpiration;
     }
 
     /**
      * The layer mutually exclusive activation (group only)
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get mutuallyExclusive() {
         return this._mutuallyExclusive;
     }
 
     /**
      * The layer provides parameters for external access (layer only)
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get externalWmsToggle() {
         return this._externalWmsToggle;
     }
 
     /**
      * The layer layer external access (layer only)
-     *
-     * @type {?Object}
-     **/
+     * @type {?object}
+     */
     get externalAccess() {
         return this._externalAccess;
     }
@@ -392,8 +359,7 @@ export class LayersConfig {
 
     /**
      * Create a layers config accessor instance based on a config object
-     *
-     * @param {Object} cfg - the lizmap config object for layers
+     * @param {object} cfg - the lizmap config object for layers
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -414,37 +380,33 @@ export class LayersConfig {
 
     /**
      * The copy of the layer names
-     *
-     * @type {String[]}
-     **/
+     * @type {string[]}
+     */
     get layerNames() {
         return [...this._names];
     }
 
     /**
      * The copy of the layer ids
-     *
-     * @type {String[]}
-     **/
+     * @type {string[]}
+     */
     get layerIds() {
         return [...this._ids];
     }
 
     /**
      * The copy of the layer configs
-     *
      * @type {LayerConfig[]}
-     **/
+     */
     get layerConfigs() {
         return [...this._configs];
     }
 
     /**
      * Iterate through layer names
-     *
      * @generator
      * @yields {string} The next layer name
-     **/
+     */
     *getLayerNames() {
         for (const name of this._names) {
             yield name;
@@ -453,10 +415,9 @@ export class LayersConfig {
 
     /**
      * Iterate through layer ids
-     *
      * @generator
      * @yields {string} The next layer id
-     **/
+     */
     *getLayerIds() {
         for (const id of this._ids) {
             yield id;
@@ -465,10 +426,9 @@ export class LayersConfig {
 
     /**
      * Iterate through layer configs
-     *
      * @generator
      * @yields {LayerConfig} The next layer config
-     **/
+     */
     *getLayerConfigs() {
         for (const config of this._configs) {
             yield config;
@@ -477,13 +437,10 @@ export class LayersConfig {
 
     /**
      * Get a layer config by layer name
-     *
-     * @param {String} name the layer name
-     *
+     * @param {string} name the layer name
      * @returns {LayerConfig} The layer config associated to the name
-     *
      * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
-     **/
+     */
     getLayerConfigByLayerName(name) {
         const idx = this._names.indexOf(name);
         if (idx == -1) {
@@ -500,13 +457,10 @@ export class LayersConfig {
 
     /**
      * Get a layer config by layer id
-     *
-     * @param {String} id the layer id
-     *
+     * @param {string} id the layer id
      * @returns {LayerConfig} The layer config associated to the id
-     *
      * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
-     **/
+     */
     getLayerConfigByLayerId(id) {
         const idx = this._ids.indexOf(id);
         if (idx == -1) {
@@ -523,13 +477,10 @@ export class LayersConfig {
 
     /**
      * Get a layer config by layer WMS name
-     *
-     * @param {String} name the layer WMS name
-     *
+     * @param {string} name the layer WMS name
      * @returns {?LayerConfig} The layer config associated to the WMS name
-     *
      * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
-     **/
+     */
     getLayerConfigByWmsName(name) {
         const idx = this._names.indexOf(name);
         if (idx != -1) {

@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectConfig } from './BaseObject.js';
 
@@ -22,13 +22,12 @@ export class MetadataConfig extends BaseObjectConfig {
 
     /**
      * Create a metadata config instance based on a config object
-     *
-     * @param {Object}  cfg                                          - the lizmap config object
-     * @param {String}  [cfg.lizmap_plugin_version]                  - the lizmap plugin version as number used to configure the project
-     * @param {String}  [cfg.lizmap_plugin_version_str]              - the lizmap plugin version as string used to configure the project
-     * @param {Number}  [cfg.lizmap_web_client_target_version=30200] - the target lizmap web client version as integer
-     * @param {Boolean} [cfg.project_valid]                          - Is the project valid ?
-     * @param {Number}  [cfg.qgis_desktop_version=30000]             - the QGIS Desktop version as integer used to build the project
+     * @param {object}  cfg                                          - the lizmap config object
+     * @param {string}  [cfg.lizmap_plugin_version]                  - the lizmap plugin version as number used to configure the project
+     * @param {string}  [cfg.lizmap_plugin_version_str]              - the lizmap plugin version as string used to configure the project
+     * @param {number}  [cfg.lizmap_web_client_target_version] - the target lizmap web client version as integer
+     * @param {boolean} [cfg.project_valid]                          - Is the project valid ?
+     * @param {number}  [cfg.qgis_desktop_version]             - the QGIS Desktop version as integer used to build the project
      */
     constructor(cfg = {}) {
         super(cfg, {}, optionalProperties)
@@ -67,27 +66,24 @@ export class MetadataConfig extends BaseObjectConfig {
 
     /**
      * The lizmap plugin version as string used to configure the project
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get lizmap_plugin_version_str() {
         return this._lizmap_plugin_version_str;
     }
 
     /**
      * The lizmap plugin version as integer used to configure the project
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get lizmap_plugin_version() {
         return this._lizmap_plugin_version;
     }
 
     /**
      * The target lizmap web client version as integer
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get lizmap_web_client_target_version() {
         return this._lizmap_web_client_target_version;
     }
@@ -95,18 +91,16 @@ export class MetadataConfig extends BaseObjectConfig {
 
     /**
      * Is the project valid ?
-     *
-     * @type {?Boolean}
-     **/
+     * @type {?boolean}
+     */
     get project_valid() {
         return this._project_valid;
     }
 
     /**
      * The QGIS Desktop version as integer used to build the project
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get qgis_desktop_version() {
         return this._qgis_desktop_version;
     }

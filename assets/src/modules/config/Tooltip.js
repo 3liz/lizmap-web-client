@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
@@ -24,9 +24,8 @@ const optionalProperties = {
 export class TooltipLayerConfig extends BaseObjectLayerConfig {
     /**
      * Create a tooltip layer config instance
-     *
-     * @param {String} layerName - the layer name
-     * @param {Object} cfg       - the lizmap config object for tooltip layer
+     * @param {string} layerName - the layer name
+     * @param {object} cfg       - the lizmap config object for tooltip layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -34,27 +33,24 @@ export class TooltipLayerConfig extends BaseObjectLayerConfig {
 
     /**
      * The layer tooltip fields
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get fields() {
         return this._fields;
     }
 
     /**
      * The feature's geometry will be displayed
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get displayGeom() {
         return this._displayGeom;
     }
 
     /**
      * The feature's geometry color
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get colorGeom() {
         return this._colorGeom;
     }
@@ -69,8 +65,7 @@ export class TooltipLayersConfig extends BaseObjectLayersConfig {
 
     /**
      * Create a tooltip layers config instance
-     *
-     * @param {Object} cfg - the lizmap tooltipLayers config object
+     * @param {object} cfg - the lizmap tooltipLayers config object
      */
     constructor(cfg) {
         super(TooltipLayerConfig, cfg)

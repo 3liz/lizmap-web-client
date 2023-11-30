@@ -21,8 +21,8 @@ export default class WFS {
     }
 
     /**
-     * @param {Object} options - optional parameters which can override this._defaultParameters
-     * @return {Promise} Promise object represents data
+     * @param {object} options - optional parameters which can override this._defaultParameters
+     * @returns {Promise} Promise object represents data
      * @memberof WFS
      */
     async getFeature(options) {
@@ -37,8 +37,8 @@ export default class WFS {
     }
 
     /**
-     * @param {Object} options - optional parameters which can override this._defaultParameters
-     * @return {Promise} Promise object represents data
+     * @param {object} options - optional parameters which can override this._defaultParameters
+     * @returns {Promise} Promise object represents data
      * @memberof WFS
      */
     async describeFeatureType(options) {

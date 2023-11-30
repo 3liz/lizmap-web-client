@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { Extent } from './../utils/Extent.js';
 import { AttributionConfig } from './Attribution.js';
@@ -17,9 +17,7 @@ export class LayerGeographicBoundingBoxConfig extends Extent {
 
     /**
      * Create the WMS layer Geographic Bounding Box
-     *
-     * @param {...Number} args - the 4 values describing the Geographic Bounding Box: west, south, east, north
-     *
+     * @param {...number} args - the 4 values describing the Geographic Bounding Box: west, south, east, north
      * @throws {ValidationError} for number of args different of 4
      * @throws {ConversionError} for values not number
      */
@@ -28,29 +26,29 @@ export class LayerGeographicBoundingBoxConfig extends Extent {
     }
 
     /**
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get west() {
         return this[0];
     }
 
     /**
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get south() {
         return this[1];
     }
 
     /**
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get east() {
         return this[2];
     }
 
     /**
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get north() {
         return this[3];
     }
@@ -64,9 +62,8 @@ export class LayerGeographicBoundingBoxConfig extends Extent {
 export class LayerBoundingBoxConfig extends Extent {
     /**
      * Create the WMS layer Geographic Bounding Box
-     * @param {String}   crs    - the CRS name
-     * @param {Number[]} values - the 4 values describing the Geographic Bounding Box: west, south, east, north
-     *
+     * @param {string}   crs    - the CRS name
+     * @param {number[]} values - the 4 values describing the Geographic Bounding Box: west, south, east, north
      * @throws {ValidationError} for number of args different of 4
      * @throws {ConversionError} for values not number
      */
@@ -77,9 +74,8 @@ export class LayerBoundingBoxConfig extends Extent {
 
     /**
      * The CRS name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this._crs;
     }
@@ -93,9 +89,8 @@ export class LayerStyleConfig {
 
     /**
      * Create a WMS layer Style instance
-     *
-     * @param {String} wmsName  - the layer WMS style name
-     * @param {String} wmsTitle - the layer WMS style title
+     * @param {string} wmsName  - the layer WMS style name
+     * @param {string} wmsTitle - the layer WMS style title
      */
     constructor(wmsName, wmsTitle) {
         this._wmsName = wmsName;
@@ -104,18 +99,16 @@ export class LayerStyleConfig {
 
     /**
      * WMS Style name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsName() {
         return this._wmsName;
     }
 
     /**
      * WMS Style title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsTitle() {
         if (!this._wmsTitle) {
             return this._wmsName;
@@ -133,11 +126,10 @@ export class LayerTreeItemConfig {
 
     /**
      * Create a layer tree item config instance
-     *
-     * @param {String}      name         - the QGIS layer name
-     * @param {String}      type         - the layer tree item type
-     * @param {Number}      level        - the layer tree item level
-     * @param {Object}      wmsCapaLayer - the WMS capabilities layer element
+     * @param {string}      name         - the QGIS layer name
+     * @param {string}      type         - the layer tree item type
+     * @param {number}      level        - the layer tree item level
+     * @param {object}      wmsCapaLayer - the WMS capabilities layer element
      * @param {LayerConfig} [layerCfg]   - the lizmap layer config
      */
     constructor(name, type, level, wmsCapaLayer, layerCfg) {
@@ -154,36 +146,32 @@ export class LayerTreeItemConfig {
 
     /**
      * The layer name - QGIS layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._name;
     }
 
     /**
      * The layer tree item type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._type;
     }
 
     /**
      * the layer tree item level
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get level() {
         return this._level;
     }
 
     /**
      * WMS layer name
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get wmsName() {
         if(!this._wmsCapa.hasOwnProperty('Name')) {
             return null;
@@ -193,18 +181,16 @@ export class LayerTreeItemConfig {
 
     /**
      * WMS layer title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsTitle() {
         return this._wmsCapa.Title;
     }
 
     /**
      * WMS layer abstract
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get wmsAbstract() {
         if(!this._wmsCapa.hasOwnProperty('Abstract')) {
             return null;
@@ -214,9 +200,8 @@ export class LayerTreeItemConfig {
 
     /**
      * WMS layer Geographic Bounding Box
-     *
      * @type {?LayerGeographicBoundingBoxConfig}
-     **/
+     */
     get wmsGeographicBoundingBox() {
         if(!this._wmsCapa.hasOwnProperty('EX_GeographicBoundingBox')) {
             return null;
@@ -226,9 +211,8 @@ export class LayerTreeItemConfig {
 
     /**
      * WMS layer Bounding Boxes
-     *
      * @type {LayerBoundingBoxConfig[]}
-     **/
+     */
     get wmsBoundingBoxes() {
         let wmsBoundingBoxes = [];
         for(const wmsBoundingBox of this._wmsCapa.BoundingBox) {
@@ -240,9 +224,8 @@ export class LayerTreeItemConfig {
     /**
      * WMS layer minimum scale denominator
      * If the minimum scale denominator is not defined: -1 is returned
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMinScaleDenominator() {
         if(!this._wmsCapa.hasOwnProperty('MinScaleDenominator')) {
             return -1;
@@ -253,9 +236,8 @@ export class LayerTreeItemConfig {
     /**
      * WMS layer maximum scale denominator
      * If the maximum scale denominator is not defined: -1 is returned
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMaxScaleDenominator() {
         if(!this._wmsCapa.hasOwnProperty('MaxScaleDenominator')) {
             return -1;
@@ -265,9 +247,8 @@ export class LayerTreeItemConfig {
 
     /**
      * Lizmap layer config
-     *
      * @type {?LayerConfig}
-     **/
+     */
     get layerConfig() {
         return this._layerCfg;
     }
@@ -282,10 +263,9 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
 
     /**
      * Create a layer tree layer config instance
-     *
-     * @param {String}      name         - the QGIS layer name
-     * @param {Number}      level        - the layer tree item level
-     * @param {Object}      wmsCapaLayer - the WMS capabilities layer element
+     * @param {string}      name         - the QGIS layer name
+     * @param {number}      level        - the layer tree item level
+     * @param {object}      wmsCapaLayer - the WMS capabilities layer element
      * @param {LayerConfig} layerCfg     - the lizmap layer config
      */
     constructor(name, level, wmsCapaLayer, layerCfg) {
@@ -295,9 +275,8 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
 
     /**
      * WMS layer styles
-     *
      * @type {LayerStyleConfig[]}
-     **/
+     */
     get wmsStyles() {
         if (this._wmsStyles !== null) {
             return this._wmsStyles;
@@ -316,9 +295,8 @@ export class LayerTreeLayerConfig extends LayerTreeItemConfig {
 
     /**
      * WMS layer attribution
-     *
      * @type {?AttributionConfig}
-     **/
+     */
     get wmsAttribution() {
         if(!this._wmsCapa?.['Attribution']) {
             return null;
@@ -343,11 +321,10 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 
     /**
      * Create a layer tree group config instance
-     *
-     * @param {String}                name         - the QGIS layer name
-     * @param {Number}                level        - the layer tree item level
+     * @param {string}                name         - the QGIS layer name
+     * @param {number}                level        - the layer tree item level
      * @param {LayerTreeItemConfig[]} items        - the children layer tree items
-     * @param {Object}                wmsCapaLayer - the WMS capabilities layer element
+     * @param {object}                wmsCapaLayer - the WMS capabilities layer element
      * @param {LayerConfig}           [layerCfg]   - the lizmap layer config
      */
     constructor(name, level, items, wmsCapaLayer, layerCfg) {
@@ -357,28 +334,25 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 
     /**
      * Children items count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         return this._items.length;
     }
 
     /**
      * Children items
-     *
      * @type {LayerTreeItemConfig[]}
-     **/
+     */
     get children() {
         return [...this._items];
     }
 
     /**
      * Iterate through children items
-     *
      * @generator
      * @yields {LayerTreeItemConfig} The next child item
-     **/
+     */
     *getChildren() {
         for (const item of this._items) {
             yield item;
@@ -388,9 +362,8 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 
     /**
      * Find layer names
-     *
-     * @returns {String[]}
-     **/
+     * @returns {string[]}
+     */
     findTreeLayerConfigNames() {
         let names = []
         for(const item of this.getChildren()) {
@@ -405,9 +378,8 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 
     /**
      * Find layer items
-     *
      * @returns {LayerTreeLayer[]}
-     **/
+     */
     findTreeLayerConfigs() {
         let items = []
         for(const item of this.getChildren()) {
@@ -424,11 +396,9 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 /**
  * Function to build layer tree items config based on WMS capabilities
  * @function
- *
- * @param {Object}       wmsCapaLayerGroup - the wms layer capabilities
+ * @param {object}       wmsCapaLayerGroup - the wms layer capabilities
  * @param {LayersConfig} layersCfg         - the lizmap layers config instance
- * @param {Number}       level             - the wms layer level
- *
+ * @param {number}       level             - the wms layer level
  * @returns {LayerTreeItemConfig[]} the layer tree items of the wms layer
  */
 function buildLayerTreeGroupConfigItems(wmsCapaLayerGroup, layersCfg, level) {
@@ -455,10 +425,8 @@ function buildLayerTreeGroupConfigItems(wmsCapaLayerGroup, layersCfg, level) {
 /**
  * Function to build the root layer tree config based on WMS capabilities
  * @function
- *
- * @param {Object}       wmsCapaLayerRoot - the wms root layer capabilities
+ * @param {object}       wmsCapaLayerRoot - the wms root layer capabilities
  * @param {LayersConfig} layersCfg        - the lizmap layers config instance
- *
  * @returns {LayerTreeGroupConfig} The root layer tree config based on WMS capabilities
  */
 export function buildLayerTreeConfig(wmsCapaLayerRoot, layersCfg) {
