@@ -16,7 +16,7 @@
 
 /* BODY */
 body {
-  background : var(--color-background-primary);
+  background-color : var(--color-background-primary);
 }
 
 /* BUTTONS */
