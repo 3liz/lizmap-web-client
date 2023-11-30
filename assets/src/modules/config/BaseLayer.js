@@ -570,7 +570,7 @@ const defaultCompleteBaseLayersCfg = {
     "osm-mapnik": {
         "type": "xyz",
         "title": "OpenStreetMap",
-        "url": "http://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         "zmin": 0,
         "zmax": 19,
         "crs": "EPSG:3857",
