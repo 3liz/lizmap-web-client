@@ -221,7 +221,7 @@ describe('BaseLayersConfig', function () {
         expect(osmMapnikBl.name).to.be.eq('osm-mapnik')
         expect(osmMapnikBl.title).to.be.eq('OpenStreetMap')
         expect(osmMapnikBl.layerConfig).to.be.null
-        expect(osmMapnikBl.url).to.be.eq('http://tile.openstreetmap.org/{z}/{x}/{y}.png')
+        expect(osmMapnikBl.url).to.be.eq('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
         expect(osmMapnikBl.hasKey).to.be.false
         expect(osmMapnikBl.key).to.be.null
         expect(osmMapnikBl.crs).to.be.eq('EPSG:3857')
