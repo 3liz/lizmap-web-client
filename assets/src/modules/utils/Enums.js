@@ -3,36 +3,31 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 /**
  * A factory function that accepts a plain enum object and returns a proxied enum object.
  * The enum proxy intercepts the read and write operations on an enum object and:
- * * Throws an error when a non-existent enum value is accessed
- * * Throws an error when an enum object property is changed
+ * Throws an error when a non-existent enum value is accessed
+ * Throws an error when an enum object property is changed
  * @function
- *
  * @example
  * const Sizes = createEnum({
  *      Small: 'small',
  *      Medium: 'medium',
  *      Large: 'large',
  *  })
- *
  * @example
  * const Bool = createEnum({
  *      'Yes': true,
  *      'No': false,
  *      'Undefined': undefined,
  *  });
- *
- * @param {Object} structure - The enum structure
- *
+ * @param {object} structure - The enum structure
  * @throws {TypeError} Will throws an error if the structure is not an oject and the values
  * associated to the structure keys are not 'number', 'string', 'boolean' or 'undefined'.
- *
- * @return {Proxy} The enum based on the structure
- **/
+ * @returns {Proxy} The enum based on the structure
+ */
 const createEnum = (structure) => {
     if (structure === null || typeof structure !== 'object' || Array.isArray(structure)) {
         throw new TypeError(`'${structure}' is not a valid enum structure.`);

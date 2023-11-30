@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
@@ -26,9 +26,8 @@ const optionalProperties = {
 export class AttributeLayerConfig extends BaseObjectLayerConfig {
     /**
      * Create an attribute layer config instance
-     *
-     * @param {String} layerName - the layer name
-     * @param {Object} cfg       - the lizmap config object for tooltip layer
+     * @param {string} layerName - the layer name
+     * @param {object} cfg       - the lizmap config object for tooltip layer
      */
     constructor(layerName, cfg) {
         super(layerName, cfg, requiredProperties, optionalProperties)
@@ -36,45 +35,40 @@ export class AttributeLayerConfig extends BaseObjectLayerConfig {
 
     /**
      * The layer primary key
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get primaryKey() {
         return this._primaryKey;
     }
 
     /**
      * The layer hidden fields
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get hiddenFields() {
         return this._hiddenFields;
     }
 
     /**
      * The layer is pivot table
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get pivot() {
         return this._pivot;
     }
 
     /**
      * The layer is hide as child
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hideAsChild() {
         return this._hideAsChild;
     }
 
     /**
      * The layer is hide in attribute table list
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hideLayer() {
         return this._hideLayer;
     }
@@ -89,8 +83,7 @@ export class AttributeLayersConfig extends BaseObjectLayersConfig {
 
     /**
      * Create an attribute layers config instance
-     *
-     * @param {Object} cfg - the lizmap attributeLayers config object
+     * @param {object} cfg - the lizmap attributeLayers config object
      */
     constructor(cfg) {
         super(AttributeLayerConfig, cfg)

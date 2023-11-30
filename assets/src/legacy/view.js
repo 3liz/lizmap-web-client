@@ -1,14 +1,14 @@
 var addDescriptionSlider = function(){
     $('.liz-project-img').parent().mouseenter(function(){
-      var self = $(this);
-      self.find('.liz-project-desc').slideDown();
+        var self = $(this);
+        self.find('.liz-project-desc').slideDown();
     }).mouseleave(function(){
-      var self = $(this);
-      self.find('.liz-project-desc').hide();
+        var self = $(this);
+        self.find('.liz-project-desc').hide();
     }).click(function(){
-      var self = $(this);
-      window.location = self.parent().find('a.liz-project-view').attr('href');
-      return false;
+        var self = $(this);
+        window.location = self.parent().find('a.liz-project-view').attr('href');
+        return false;
     });
 }
 

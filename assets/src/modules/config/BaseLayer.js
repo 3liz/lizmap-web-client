@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';
@@ -15,12 +15,12 @@ import { LayerConfig, LayersConfig } from './Layer.js';
 /**
  * Enum for base layer types
  * @readonly
- * @enum {String}
- * @property {String} Empty  - The base layer type for project background color
- * @property {String} XYZ    - The base layer type for xyz layers
- * @property {String} Bing   - The base layer type for Bing layers
- * @property {String} WMTS   - The base layer type for Web Map Tile Service layers
- * @property {String} Lizmap - The base layer type for Lizmap layers
+ * @enum {string}
+ * @property {string} Empty  - The base layer type for project background color
+ * @property {string} XYZ    - The base layer type for xyz layers
+ * @property {string} Bing   - The base layer type for Bing layers
+ * @property {string} WMTS   - The base layer type for Web Map Tile Service layers
+ * @property {string} Lizmap - The base layer type for Lizmap layers
  */
 export const BaseLayerTypes = createEnum({
     'Empty': 'empty',
@@ -39,14 +39,14 @@ export const BaseLayerTypes = createEnum({
 export class BaseLayerConfig extends BaseObjectConfig {
     /**
      * Create a base layer config instance based on a config object
-     * @param {String}      name                                                           - the base layer name
-     * @param {Object}      cfg                                                            - the base layer lizmap config object
-     * @param {String}      cfg.title                                                      - the base layer title
+     * @param {string}      name                                                           - the base layer name
+     * @param {object}      cfg                                                            - the base layer lizmap config object
+     * @param {string}      cfg.title                                                      - the base layer title
      * @param {LayerConfig} [cfg.layerConfig]                                              - the base layer Lizmap layer config
-     * @param {String}      [cfg.key]                                                      - the base layer key
-     * @param {Object}      [cfg.attribution]                                              - the base layer attribution config object
-     * @param {Object}      [requiredProperties={'title': {type: 'string'}}]               - the required properties definition
-     * @param {Object}      [optionalProperties={'key': {type: 'string', nullable: true}}] - the optional properties definition
+     * @param {string}      [cfg.key]                                                      - the base layer key
+     * @param {object}      [cfg.attribution]                                              - the base layer attribution config object
+     * @param {object}      [requiredProperties]               - the required properties definition
+     * @param {object}      [optionalProperties] - the optional properties definition
      */
     constructor(name, cfg, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'key': { type: 'string', nullable: true } }) {
 
@@ -87,62 +87,55 @@ export class BaseLayerConfig extends BaseObjectConfig {
     /**
      * The base layer type
      * @see BaseLayerTypes
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._type;
     }
 
     /**
      * The base layer name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._name;
     }
 
     /**
      * The base layer title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get title() {
         return this._title;
     }
 
     /**
      * A Lizmap layer config is associated with this base layer
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasLayerConfig() {
         return this._hasLayerConfig;
     }
     /**
      * The Lizmap layer config associated with this base layer
-     *
      * @type {?LayerConfig}
-     **/
+     */
     get layerConfig() {
         return this._layerConfig;
     }
 
     /**
      * The base layer key is defined
-     *
      * @type {boolean}
-     **/
+     */
     get hasKey() {
         return (this._key != null && typeof this._key == 'string' && this._key != '');
     }
 
     /**
      * The base layer key
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get key() {
         if (this.hasKey)
             return this._key;
@@ -151,17 +144,15 @@ export class BaseLayerConfig extends BaseObjectConfig {
 
     /**
      * Attribution is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasAttribution() {
         return this._hasAttribution;
     }
     /**
      * Attribution
-     *
      * @type {?AttributionConfig}
-     **/
+     */
     get attribution() {
         return this._attribution;
     }
@@ -175,7 +166,8 @@ export class BaseLayerConfig extends BaseObjectConfig {
 export class EmptyBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create an empty base layer config based on a config object (it can be empty)
-     * @param {Object} cfg - an object for empty base layer
+     * @param name
+     * @param {object} cfg - an object for empty base layer
      */
     constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -212,15 +204,15 @@ const xyzOptionalProperties = {
 export class XyzBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create an XYZ base layer config based on a config object
-     * @param {String} name              - the base layer name
-     * @param {Object} cfg               - the lizmap config object for XYZ base layer
-     * @param {String} cfg.title         - the base layer title
-     * @param {String} cfg.url           - the base layer url
-     * @param {String} cfg.crs           - the base layer crs
-     * @param {Number} [cfg.zmin]        - the base layer zmin
-     * @param {Number} [cfg.zmax]        - the base layer zmax
-     * @param {String} [cfg.key]         - the base layer key
-     * @param {Object} [cfg.attribution] - the base layer attribution config object
+     * @param {string} name              - the base layer name
+     * @param {object} cfg               - the lizmap config object for XYZ base layer
+     * @param {string} cfg.title         - the base layer title
+     * @param {string} cfg.url           - the base layer url
+     * @param {string} cfg.crs           - the base layer crs
+     * @param {number} [cfg.zmin]        - the base layer zmin
+     * @param {number} [cfg.zmax]        - the base layer zmax
+     * @param {string} [cfg.key]         - the base layer key
+     * @param {object} [cfg.attribution] - the base layer attribution config object
      */
     constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -237,36 +229,32 @@ export class XyzBaseLayerConfig extends BaseLayerConfig {
 
     /**
      * The base layer url
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get url() {
         return this._url;
     }
 
     /**
      * The base layer zmin
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get zmin() {
         return this._zmin;
     }
 
     /**
      * The base layer zmax
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get zmax() {
         return this._zmax;
     }
 
     /**
      * The base layer crs
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this._crs;
     }
@@ -289,11 +277,11 @@ const bingOptionalProperties = {
 export class BingBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create a BING base layer config based on a config object
-     * @param {String} name           - the base layer name
-     * @param {Object} cfg            - the lizmap config object for BING base layer
-     * @param {String} cfg.title      - the base layer title
-     * @param {String} cfg.imagerySet - the base layer imagerySet
-     * @param {String} [cfg.key]      - the base layer key
+     * @param {string} name           - the base layer name
+     * @param {object} cfg            - the lizmap config object for BING base layer
+     * @param {string} cfg.title      - the base layer title
+     * @param {string} cfg.imagerySet - the base layer imagerySet
+     * @param {string} [cfg.key]      - the base layer key
      */
     constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -310,9 +298,8 @@ export class BingBaseLayerConfig extends BaseLayerConfig {
 
     /**
      * The bing imagerySet
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get imagerySet() {
         return this._imagerySet;
     }
@@ -342,16 +329,16 @@ const wmtsOptionalProperties = {
 export class WmtsBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create a WMTS base layer config based on a config object
-     * @param {String} name                - the base layer name
-     * @param {Object} cfg                 - the lizmap config object for WMTS base layer
-     * @param {String} cfg.title           - the base layer title
-     * @param {String} cfg.url             - the base layer url
-     * @param {String} cfg.layers          - the base layer layer
-     * @param {String} cfg.format          - the base layer format
-     * @param {String} cfg.styles          - the base layer style
-     * @param {String} cfg.tileMatrixSet   - the base layer matrixSet
-     * @param {String} cfg.crs             - the base layer crs
-     * @param {Number} [cfg.numZoomLevels] - the base layer numZoomLevels
+     * @param {string} name                - the base layer name
+     * @param {object} cfg                 - the lizmap config object for WMTS base layer
+     * @param {string} cfg.title           - the base layer title
+     * @param {string} cfg.url             - the base layer url
+     * @param {string} cfg.layers          - the base layer layer
+     * @param {string} cfg.format          - the base layer format
+     * @param {string} cfg.styles          - the base layer style
+     * @param {string} cfg.tileMatrixSet   - the base layer matrixSet
+     * @param {string} cfg.crs             - the base layer crs
+     * @param {number} [cfg.numZoomLevels] - the base layer numZoomLevels
      * @param {String} [cfg.key]           - the base layer key
      * @param {Object} [cfg.attribution]   - the base layer attribution config object
      */
@@ -387,63 +374,56 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
 
     /**
      * The base layer url
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get url() {
         return this._url;
     }
 
     /**
      * The base layer wmts layer
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get layer() {
         return decodeURIComponent(this._layers);
     }
 
     /**
      * The base layer wmts format
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get format() {
         return decodeURIComponent(this._format);
     }
 
     /**
      * The base layer wmts style
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get style() {
         return decodeURIComponent(this._styles);
     }
 
     /**
      * The base layer matrixSet
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get matrixSet() {
         return decodeURIComponent(this._tileMatrixSet);
     }
 
     /**
      * The base layer crs
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this._crs;
     }
 
     /**
      * The base layer numZoomLevels
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get numZoomLevels() {
         return this._numZoomLevels;
     }
@@ -471,15 +451,15 @@ const wmsOptionalProperties = {
 export class WmsBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create a WMS base layer config based on a config object
-     * @param {String} name                - the base layer name
-     * @param {Object} cfg                 - the lizmap config object for WMTS base layer
-     * @param {String} cfg.title           - the base layer title
-     * @param {String} cfg.url             - the base layer url
-     * @param {String} cfg.layers          - the base layer layer
-     * @param {String} cfg.format          - the base layer format
-     * @param {String} cfg.styles          - the base layer style
-     * @param {String} cfg.crs             - the base layer crs
-     * @param {String} [cfg.key]           - the base layer key
+     * @param {string} name                - the base layer name
+     * @param {object} cfg                 - the lizmap config object for WMTS base layer
+     * @param {string} cfg.title           - the base layer title
+     * @param {string} cfg.url             - the base layer url
+     * @param {string} cfg.layers          - the base layer layer
+     * @param {string} cfg.format          - the base layer format
+     * @param {string} cfg.styles          - the base layer style
+     * @param {string} cfg.crs             - the base layer crs
+     * @param {string} [cfg.key]           - the base layer key
      */
     constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -513,45 +493,40 @@ export class WmsBaseLayerConfig extends BaseLayerConfig {
 
     /**
      * The base layer url
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get url() {
         return this._url;
     }
 
     /**
      * The base layer wms layers
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get layers() {
         return decodeURIComponent(this._layers);
     }
 
     /**
      * The base layer wms format
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get format() {
         return decodeURIComponent(this._format);
     }
 
     /**
      * The base layer wms styles
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get styles() {
         return decodeURIComponent(this._styles);
     }
 
     /**
      * The base layer crs
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this._crs;
     }
@@ -561,7 +536,7 @@ export class WmsBaseLayerConfig extends BaseLayerConfig {
  * The default complete lizmap config object for base layers
  * It will be used to translate lizmap options config to base layers config
  * @constant
- * @type {Object}
+ * @type {object}
  * @private
  */
 const defaultCompleteBaseLayersCfg = {
@@ -753,8 +728,8 @@ const defaultCompleteBaseLayersCfg = {
 export class BaseLayersConfig {
     /**
      * Create a base layers config based on a config object, the options config object and the layers config
-     * @param {Object} cfg          - the lizmap config object for base layers
-     * @param {Object} options      - the lizmap config object for options
+     * @param {object} cfg          - the lizmap config object for base layers
+     * @param {object} options      - the lizmap config object for options
      * @param {LayersConfig} layers - the lizmap layers config
      * @param {LayerTreeGroupConfig} [baseLayersTreeGroup]
      */
@@ -958,37 +933,33 @@ export class BaseLayersConfig {
 
     /**
      *  The startup base layer name
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get startupBaselayerName() {
         return this._startupBaselayer;
     }
 
     /**
      * The copy of base layer names
-     *
-     * @type {String[]}
-     **/
+     * @type {string[]}
+     */
     get baseLayerNames() {
         return [...this._names];
     }
 
     /**
      * The copy of base layer configs
-     *
      * @type {BaseLayerConfig[]}
-     **/
+     */
     get baseLayerConfigs() {
         return [...this._configs];
     }
 
     /**
      * Iterate through base layer names
-     *
      * @generator
      * @yields {string} The next base layer name
-     **/
+     */
     *getBaseLayerNames() {
         for (const name of this._names) {
             yield name;
@@ -997,10 +968,9 @@ export class BaseLayersConfig {
 
     /**
      * Iterate through base layer configs
-     *
      * @generator
      * @yields {BaseLayerConfig} The next base layer config
-     **/
+     */
     *getBaseLayerConfigs() {
         for (const config of this._configs) {
             yield config;
@@ -1009,13 +979,10 @@ export class BaseLayersConfig {
 
     /**
      * Get a base layer config by base layer name
-     *
-     * @param {String} name the base layer name
-     *
+     * @param {string} name the base layer name
      * @returns {BaseLayerConfig} The base layer config associated to the name
-     *
      * @throws {RangeError|Error} The base layer name is unknown or the config has been corrupted
-     **/
+     */
     getBaseLayerConfigByBaseLayerName(name) {
         const idx = this._names.indexOf(name);
         if (idx == -1) {

@@ -2,7 +2,6 @@ import { mainEventDispatcher } from '../modules/Globals.js';
 
 /**
  * Proxy old Lizmap events to new ones
- *
  * @export
  * @class ProxyEvents
  */

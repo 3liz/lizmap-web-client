@@ -4,6 +4,10 @@ var lizLayerActionButtons = function() {
     var tooltipLayers = [];
     var featureTypes = null;
 
+    /**
+     *
+     * @param html
+     */
     function fillSubDock( html ){
         $('#sub-dock').html( html );
 
@@ -50,6 +54,10 @@ var lizLayerActionButtons = function() {
         });
     }
 
+    /**
+     *
+     * @param aName
+     */
     function getLayerMetadataHtml( aName ){
         var html = '';
         var metadatas = {
@@ -211,6 +219,11 @@ var lizLayerActionButtons = function() {
         return html;
     }
 
+    /**
+     *
+     * @param layerName
+     * @param selected
+     */
     function toggleMetadataSubDock(layerName, selected){
         if( selected ){
             var html = getLayerMetadataHtml( layerName );

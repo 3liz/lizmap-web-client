@@ -799,7 +799,7 @@ export default class Digitizing {
     /**
      * Format length output.
      * @param {Geometry} geom The geom.
-     * @return {string} The formatted length.
+     * @returns {string} The formatted length.
      */
     formatLength(geom) {
         const length = getLength(geom);
@@ -815,7 +815,7 @@ export default class Digitizing {
     /**
      * Format area output.
      * @param {Polygon} polygon The polygon.
-     * @return {string} Formatted area.
+     * @returns {string} Formatted area.
      */
     formatArea(polygon) {
         const area = getArea(polygon);
