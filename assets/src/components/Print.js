@@ -62,7 +62,7 @@ export default class Print extends HTMLElement {
 
                     this._printScales = Array.from(mainLizmap.config.options.mapScales);
                     this._printScales.reverse();
-                    this._printScale = 50_000;
+                    this._printScale = 50000;
 
                     this._updateScaleFromResolution();
 
@@ -424,6 +424,10 @@ export default class Print extends HTMLElement {
      * @param {string | number} index
      */
     set printTemplate(index){
+        // No print templats defined do nothing
+        if (this._printTemplates.length == 0) {
+            return;
+        }
 
         this._printTemplate = index;
 

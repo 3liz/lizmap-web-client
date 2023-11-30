@@ -86,6 +86,11 @@ export default class Lizmap {
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup();
                 this.legend = new Legend();
+
+                // Removed unusable button
+                if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
+                    $('#button-print').parent().remove();
+                }
             }
         });
     }
