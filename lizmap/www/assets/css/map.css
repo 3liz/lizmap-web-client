@@ -3178,7 +3178,7 @@ lizmap-treeview .loading {
 lizmap-treeview .spinner::after {
   border-width: 2px;
   border-color: black transparent black transparent;
-  right: 8px;
+  right: 2px;
 }
 
 lizmap-treeview img.legend{
