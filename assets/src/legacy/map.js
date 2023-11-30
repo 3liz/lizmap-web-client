@@ -4728,7 +4728,7 @@ window.lizMap = function() {
             else if ((typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
               layerName = shortNameMap[typeName];
             else {
-              for (l in config.layers) {
+              for (var l in config.layers) {
                 if (l.split(' ').join('_') == typeName) {
                   layerName = l;
                   break;
