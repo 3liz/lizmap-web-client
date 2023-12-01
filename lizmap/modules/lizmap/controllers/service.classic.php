@@ -306,6 +306,8 @@ class serviceCtrl extends jController
             }
         }
 
+        $this->setACAOHeader($rep);
+
         return $rep;
     }
 
