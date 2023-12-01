@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { ValidationError } from './../Errors.js';
 import { BaseObjectConfig } from './BaseObject.js';
@@ -24,9 +24,9 @@ const optionalAttributionProperties = {
 export class AttributionConfig extends BaseObjectConfig {
     /**
      * Create an attribution instance based on a config object
-     * @param {Object} cfg       - the lizmap config object for attribution
-     * @param {String} cfg.title - the attribution title
-     * @param {?String} cfg.url   - the attribution url
+     * @param {object} cfg       - the lizmap config object for attribution
+     * @param {string} cfg.title - the attribution title
+     * @param {?string} cfg.url   - the attribution url
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -42,18 +42,16 @@ export class AttributionConfig extends BaseObjectConfig {
 
     /**
      * The attribution title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get title() {
         return this._title;
     }
 
     /**
      * The attribution url
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get url() {
         return this._url;
     }

@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
@@ -24,8 +24,7 @@ const optionOptionalProperties = {
 export class DatavizOptionsConfig extends BaseObjectConfig {
     /**
      * Create a dataviz options config instance
-     *
-     * @param {Object} cfg - the lizmap config object for layer
+     * @param {object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
         super(cfg, optionRequiredProperties, optionOptionalProperties)
@@ -33,18 +32,16 @@ export class DatavizOptionsConfig extends BaseObjectConfig {
 
     /**
      * The location
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get location() {
         return this._location;
     }
 
     /**
      * The theme
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get theme() {
         return this._theme;
     }
@@ -68,8 +65,7 @@ const traceOptionalProperties = {
 export class DatavizTraceConfig extends BaseObjectConfig {
     /**
      * Create a dataviz trace config instance
-     *
-     * @param {Object} cfg - the lizmap config object for layer
+     * @param {object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
         super(cfg, traceRequiredProperties, traceOptionalProperties)
@@ -77,36 +73,32 @@ export class DatavizTraceConfig extends BaseObjectConfig {
 
     /**
      * The color
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get color() {
         return this._color;
     }
 
     /**
      * The color field
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get colorField() {
         return this._colorfield;
     }
 
     /**
      * The y field
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get yField() {
         return this._y_field;
     }
 
     /**
      * The x field
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get zField() {
         return this._z_field;
     }
@@ -133,8 +125,7 @@ const plotOptionalProperties = {
 export class DatavizPlotConfig extends BaseObjectConfig {
     /**
      * Create a dataviz plot config instance
-     *
-     * @param {Object} cfg - the lizmap config object for layer
+     * @param {object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
         super(cfg, plotRequiredProperties, plotOptionalProperties)
@@ -151,72 +142,64 @@ export class DatavizPlotConfig extends BaseObjectConfig {
 
     /**
      * The type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._type;
     }
 
     /**
      * The x field
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get xField() {
         return this._x_field;
     }
 
     /**
      * The aggregation
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get aggregation() {
         return this._aggregation;
     }
 
     /**
      * The traces
-     *
      * @type {DatavizTraceConfig[]}
-     **/
+     */
     get traces() {
         return this._traces;
     }
 
     /**
      * The stacked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get stacked() {
         return this._stacked;
     }
 
     /**
      * The horizontal
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get horizontal() {
         return this._horizontal;
     }
 
     /**
      * The display legend
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get displayLegend() {
         return this._display_legend;
     }
 
     /**
      * The display when layer visible
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get displayWhenLayerVisible() {
         return this._display_when_layer_visible;
     }
@@ -244,8 +227,7 @@ const optionalProperties = {
 export class DatavizElementConfig extends BaseObjectConfig {
     /**
      * Create a dataviz element config instance
-     *
-     * @param {Object} cfg - the lizmap config object for layer
+     * @param {object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
@@ -259,81 +241,72 @@ export class DatavizElementConfig extends BaseObjectConfig {
 
     /**
      * The plot id
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get plotId() {
         return this._plot_id;
     }
 
     /**
      * The layer id
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get layerId() {
         return this._layer_id;
     }
 
     /**
      * The title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get title() {
         return this._title;
     }
 
     /**
      * The title in popup
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get titlePopup() {
         return this._title_popup;
     }
 
     /**
      * The abstract
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get abstract() {
         return this._abstract;
     }
 
     /**
      * The plot
-     *
      * @type {DatavizPlotConfig[]}
-     **/
+     */
     get plot() {
         return this._plot;
     }
 
     /**
      * The popup display child plot
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get popupDisplayChildPlot() {
         return this._popup_display_child_plot;
     }
 
     /**
      * The only show child
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get onlyShowChild() {
         return this._only_show_child;
     }
 
     /**
      * The trigger filter
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get triggerFilter() {
         return this._trigger_filter;
     }
@@ -347,8 +320,7 @@ export class DatavizLayersConfig {
 
     /**
      * Create a dataviz layers config instance
-     *
-     * @param {Object} cfg - the lizmap config object for layer
+     * @param {object} cfg - the lizmap config object for layer
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -375,28 +347,25 @@ export class DatavizLayersConfig {
 
     /**
      * The layer ids from config
-     *
-     * @type {String[]} the copy of the layer ids
-     **/
+     * @type {string[]} the copy of the layer ids
+     */
     get layerIds() {
         return [...this._layerIds];
     }
 
     /**
      * The element configs from config
-     *
      * @type {FormFilterElementConfig[]} the copy of the edition layer configs
-     **/
+     */
     get elementConfigs() {
         return [...this._configs];
     }
 
     /**
      * Iterate through layer ids
-     *
      * @generator
      * @yields {string} The next layer id
-     **/
+     */
     *getLayerIds() {
         for (const id of this._layerIds) {
             yield id;
@@ -405,10 +374,9 @@ export class DatavizLayersConfig {
 
     /**
      * Iterate through layer configs
-     *
      * @generator
      * @yields {DatavizElementConfig} The next edition layer config
-     **/
+     */
     *getElementConfigs() {
         for (const config of this._configs) {
             yield config;
@@ -417,13 +385,10 @@ export class DatavizLayersConfig {
 
     /**
      * Get element configs by layer id
-     *
-     * @param {String} id the layer id
-     *
+     * @param {string} id the layer id
      * @returns {DatavizElementConfig[]} The element configs associated to the layer id
-     *
      * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
-     **/
+     */
     getElementConfigsByLayerId(id) {
         const idx = this._layerIds.indexOf(id);
         if (idx == -1) {

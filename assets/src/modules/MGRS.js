@@ -29,8 +29,8 @@ import { mainLizmap } from './Globals.js';
 class MGRS extends Graticule {
 
     /**
-   * @param {Options} [options] Options.
-   */
+     * @param {Options} [options] Options.
+     */
     constructor(options) {
         super(options);
 
@@ -56,7 +56,7 @@ class MGRS extends Graticule {
      * @param {number} squaredTolerance Squared tolerance.
      * @param {import("../extent.js").Extent} extent Extent.
      * @param {number} index Index.
-     * @return {number} Index.
+     * @returns {number} Index.
      * @private
      */
     addMeridian_(lon, minLat, maxLat, squaredTolerance, extent, index) {
@@ -114,11 +114,11 @@ class MGRS extends Graticule {
     }
 
     /**
-   * Update geometries in the source based on current view
-   * @param {import("../extent").Extent} extent Extent
-   * @param {number} resolution Resolution
-   * @param {import("../proj/Projection.js").default} projection Projection
-   */
+     * Update geometries in the source based on current view
+     * @param {import("../extent").Extent} extent Extent
+     * @param {number} resolution Resolution
+     * @param {import("../proj/Projection.js").default} projection Projection
+     */
     loaderFunction(extent, resolution, projection) {
         this.loadedExtent_ = extent;
         const source = this.getSource();
@@ -203,31 +203,31 @@ class MGRS extends Graticule {
                     stroke: new Stroke({
                         color: '#000',
                         width: 1.25,
-                      }),
+                    }),
                     text: new Text({
                         text: feature.getGeometry().get('label'),
                         offsetY: -10,
                         fill: new Fill({
                             color: '#000',
-                          }),
-                          stroke: new Stroke({
+                        }),
+                        stroke: new Stroke({
                             color: '#fff',
                             width: 4,
-                          }),
+                        }),
                     })
-                  })
+                })
             });
             featuresColl.push(feature);
         }
     }
 
     /**
-    * @param {import("../extent.js").Extent} extent Extent.
-    * @param {import("../coordinate.js").Coordinate} center Center.
-    * @param {number} resolution Resolution.
-    * @param {number} squaredTolerance Squared tolerance.
-    * @private
-    */
+     * @param {import("../extent.js").Extent} extent Extent.
+     * @param {import("../coordinate.js").Coordinate} center Center.
+     * @param {number} resolution Resolution.
+     * @param {number} squaredTolerance Squared tolerance.
+     * @private
+     */
     createGraticule_(extent, center, resolution, squaredTolerance) {
 
         const zoom = mainLizmap.map.getView().getZoomForResolution(resolution);

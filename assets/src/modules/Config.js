@@ -17,8 +17,8 @@ import { buildLayersOrder } from './config/LayersOrder.js';
 export class Config {
 
     /**
-     * @param {Object} cfg - the lizmap config object
-     * @param {Object} wmsCapabilities - the wms capabilities
+     * @param {object} cfg - the lizmap config object
+     * @param {object} wmsCapabilities - the wms capabilities
      */
     constructor(cfg, wmsCapabilities) {
         if (!cfg || typeof cfg !== "object") {
@@ -116,9 +116,8 @@ export class Config {
 
     /**
      * Config options
-     *
      * @type {OptionsConfig}
-     **/
+     */
     get options() {
         if (this._options != null) {
             return this._options;
@@ -129,9 +128,8 @@ export class Config {
 
     /**
      * Config layers
-     *
      * @type {LayersConfig}
-     **/
+     */
     get layers() {
         if (this._layers != null) {
             return this._layers;
@@ -142,9 +140,8 @@ export class Config {
 
     /**
      * Root tree layer group
-     *
      * @type {LayerTreeGroupConfig}
-     **/
+     */
     get layerTree() {
         if (this._layerTree == null) {
             this._layerTree = buildLayerTreeConfig(this._theWmsCapabilities.Capability.Layer, this.layers);
@@ -154,9 +151,8 @@ export class Config {
 
     /**
      * Config base layers
-     *
      * @type {BaseLayersConfig}
-     **/
+     */
     get baseLayers() {
         if (this._baselayers != null) {
             return this._baselayers;
@@ -181,9 +177,8 @@ export class Config {
      *
      * The first one in this list is the top one in the map
      * The last one in this list is the bottom one in the map
-     *
-     * @type {String[]}
-     **/
+     * @type {string[]}
+     */
     get layersOrder() {
         if (this._layersOrder == null) {
             this._layersOrder = buildLayersOrder(this._theConfig, this.layerTree);
@@ -193,9 +188,8 @@ export class Config {
 
     /**
      * Config metadata
-     *
      * @type {MetadataConfig}
-     **/
+     */
     get metadata() {
         if (this._metadata != null) {
             return this._metadata;
@@ -210,18 +204,16 @@ export class Config {
 
     /**
      * Locate by layer config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasLocateByLayer() {
         return this._hasLocateByLayer;
     }
 
     /**
      * Config locateByLayer
-     *
      * @type {LocateByLayerConfig}
-     **/
+     */
     get locateByLayer() {
         if (this._locateByLayer != null) {
             return this._locateByLayer;
@@ -234,18 +226,16 @@ export class Config {
 
     /**
      * Attribute layers config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasAttributeLayers() {
         return this._hasAttributeLayers;
     }
 
     /**
      * Config attribueLayers
-     *
      * @type {AttributeLayersConfig}
-     **/
+     */
     get attributeLayers() {
         if (this._attributeLayers != null) {
             return this._attributeLayers;
@@ -258,18 +248,16 @@ export class Config {
 
     /**
      * Time manager config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasTimemanagerLayers() {
         return this._hasTimemanagerLayers;
     }
 
     /**
      * Config timemanagerLayers
-     *
      * @type {AttributeLayersConfig}
-     **/
+     */
     get timemanagerLayers() {
         if (this._timemanagerLayers != null) {
             return this._timemanagerLayers;
@@ -282,36 +270,32 @@ export class Config {
 
     /**
      * Relations config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasRelations() {
         return this._hasRelations;
     }
 
     /**
      * Print templates config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasPrintTemplates() {
         return this._hasPrintTemplates;
     }
 
     /**
      * Tooltip layers config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasTooltipLayers() {
         return this._hasTooltipLayers;
     }
 
     /**
      * Config tooltipLayers
-     *
      * @type {TooltipLayersConfig}
-     **/
+     */
     get tooltipLayers() {
         if (this._tooltipLayers != null) {
             return this._tooltipLayers;
@@ -324,18 +308,16 @@ export class Config {
 
     /**
      * Edition layers config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasEditionLayers() {
         return this._hasEditionLayers;
     }
 
     /**
      * Config editionLayers
-     *
      * @type {EditionLayersConfig}
-     **/
+     */
     get editionLayers() {
         if (this._editionLayers != null) {
             return this._editionLayers;
@@ -348,18 +330,16 @@ export class Config {
 
     /**
      * Form filter layers config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasFormFilterLayers() {
         return this._hasFormFilterLayers;
     }
 
     /**
      * Config formFilterLayers
-     *
      * @type {FormFilterConfig}
-     **/
+     */
     get formFilterLayers() {
         if (this._formFilterLayers != null) {
             return this._formFilterLayers;
@@ -372,36 +352,32 @@ export class Config {
 
     /**
      * Login filtered layers config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasLoginFilteredLayers() {
         return this._hasLoginFilteredLayers;
     }
 
     /**
      * Dataviz locale
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get datavizLocale() {
         return this._theConfig.datavizLayers.locale;
     }
 
     /**
      * Dataviz config is defined
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasDatavizConfig() {
         return this._hasDatavizConfig;
     }
 
     /**
      * Config datavizLayers
-     *
      * @type {DatavizLayersConfig}
-     **/
+     */
     get datavizLayers() {
         if (this._datavizLayers != null) {
             return this._datavizLayers;
@@ -414,9 +390,8 @@ export class Config {
 
     /**
      * Config datavizOptions
-     *
      * @type {DatavizOptionsConfig}
-     **/
+     */
     get datavizOptions() {
         if (this._datavizOptions != null) {
             return this._datavizOptions;

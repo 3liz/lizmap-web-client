@@ -13,7 +13,7 @@ var lizTimemanager = function() {
             var tmLayersReady = false;
 
             if (!('timemanagerLayers' in config))
-              return -1;
+                return -1;
 
             // Count layers
             tmLayersNumber = Object.keys(lizMap.config.timemanagerLayers).length;
@@ -59,6 +59,9 @@ var lizTimemanager = function() {
                 tmAnimationFrameLength = 1000;
 
             // Activate timemanager
+            /**
+             *
+             */
             function activateTimemanager(){
 
                 // hourglass
@@ -105,6 +108,9 @@ var lizTimemanager = function() {
             }
 
             // Deactivate Timemanager feature
+            /**
+             *
+             */
             function deactivateTimemanager(){
                 // Stop animation
                 stopAnimation(true);
@@ -117,6 +123,11 @@ var lizTimemanager = function() {
                 unFilterTimeLayers();
             }
 
+            /**
+             *
+             * @param layerConfig
+             * @param aCallback
+             */
             function getDataFromLayer(layerConfig, aCallback){
 
                 // Get min and max timestamp from layer
@@ -185,6 +196,14 @@ var lizTimemanager = function() {
             $("#tmNext").click(function(){stopAnimation(false);moveNext();});
 
 
+            /**
+             *
+             * @param curDate
+             * @param timeFrameSize
+             * @param timeFrameType
+             * @param factor
+             * @param fDirection
+             */
             function getSideDate(curDate, timeFrameSize, timeFrameType, factor, fDirection){
                 var returnVal = moment(curDate).startOf(timeFrameType);
                 var addValue = factor * tmTimeFrameSize * fDirection;
@@ -193,6 +212,10 @@ var lizTimemanager = function() {
             }
 
 
+            /**
+             *
+             * @param ready
+             */
             function loadTimemanager(ready){
                 if(!ready){
                     return true;
@@ -201,6 +224,9 @@ var lizTimemanager = function() {
                 onSliderStop();
             }
 
+            /**
+             *
+             */
             function startAnimation() {
                 // Stop animation if already loaded (play/pause behaviour)
                 if (tmAnimationTimer) {
@@ -222,6 +248,12 @@ var lizTimemanager = function() {
 
 
             // Build the filter for QGIS Server
+            /**
+             *
+             * @param layerConfig
+             * @param min_val
+             * @param max_val
+             */
             function buildDateFilter(layerConfig, min_val, max_val){
                 var filters = [];
 
@@ -280,6 +312,11 @@ var lizTimemanager = function() {
             }
 
 
+            /**
+             *
+             * @param lowerBoundary
+             * @param upperBoundary
+             */
             function setLayersFilter(lowerBoundary, upperBoundary){
 
                 // shift upperBoundary for 1 millisecond to have strict <
@@ -295,6 +332,9 @@ var lizTimemanager = function() {
 
 
 
+            /**
+             *
+             */
             function moveNext(){
                 var nextLowerBoundary = getSideDate(
                     tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, 1
@@ -320,6 +360,9 @@ var lizTimemanager = function() {
                 }
             }
 
+            /**
+             *
+             */
             function movePrev() {
                 var prevLowerBoundary = getSideDate(
                     tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, -1
@@ -342,12 +385,20 @@ var lizTimemanager = function() {
             }
 
             // Display/hide the span containing the next time value
+            /**
+             *
+             */
             function toggleNextSpan() {
                 var hideNextSpan = ($('#tmCurrentValue').text() == $('#tmNextValue').text());
                 $('#tmNextValue').toggle(!hideNextSpan);
                 $('#tmNextValue').prev("span").toggle(!hideNextSpan);
             }
 
+            /**
+             *
+             * @param lowerBoundary
+             * @param upperBoundary
+             */
             function updateStep(lowerBoundary, upperBoundary) {
                 // Set layers filter
                 setLayersFilter(lowerBoundary, upperBoundary);
@@ -362,10 +413,18 @@ var lizTimemanager = function() {
                 $("#tmSlider").slider( "option", "value", tmCurrentDate.valueOf() );
             }
 
+            /**
+             *
+             */
             function onSliderUpdate() {
                 var sliderVal = $("#tmSlider").slider( "option", "value" );
             }
 
+            /**
+             *
+             * @param sliderDate
+             * @param type
+             */
             function setSliderStep(sliderDate, type){
                 if (type == 'seconds') sliderDate = sliderDate.set( {'millisecond' : 0} );
                 if (type == 'minutes') sliderDate = sliderDate.set( {'second' : 0});
@@ -379,6 +438,9 @@ var lizTimemanager = function() {
                 return sliderDate;
             }
 
+            /**
+             *
+             */
             function onSliderStop() {
                 // Get slider data
                 var sliderVal = $("#tmSlider").slider( "option", "value" );
@@ -397,6 +459,10 @@ var lizTimemanager = function() {
             }
 
 
+            /**
+             *
+             * @param reset
+             */
             function stopAnimation(reset) {
                 // Deactivate javascript timer
                 window.clearInterval(tmAnimationTimer);
@@ -418,6 +484,9 @@ var lizTimemanager = function() {
                 }
             }
 
+            /**
+             *
+             */
             function unFilterTimeLayers() {
                 // Remove filter
                 for(var layerName in lizMap.config.timemanagerLayers){
@@ -434,6 +503,11 @@ var lizTimemanager = function() {
                 }
             }
 
+            /**
+             *
+             * @param mytime
+             * @param timeResolution
+             */
             function formatDatetime(mytime, timeResolution){
                 var myDate = moment(mytime);
                 var dString = null;

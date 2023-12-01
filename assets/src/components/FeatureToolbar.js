@@ -219,7 +219,6 @@ export default class FeatureToolbar extends HTMLElement {
 
     /**
      * Return true if childLayer has a relation with parentLayer
-     *
      * @readonly
      */
     get hasRelation(){
@@ -228,7 +227,6 @@ export default class FeatureToolbar extends HTMLElement {
 
     /**
      * Return true if layer has geometry, WFS capability and popup_allow_download = true
-     *
      * @readonly
      */
     get isFeatureExportable(){
@@ -274,8 +272,7 @@ export default class FeatureToolbar extends HTMLElement {
 
     /**
      * Return the list of children layers for which a feature can be created
-     *
-     * @return array
+     * @returns array
      */
     get editableChildrenLayers() {
         const editableChildrenLayers = [];
@@ -561,7 +558,7 @@ export default class FeatureToolbar extends HTMLElement {
 
     /**
      * Launch the creation of a new feature for the given child layer
-     *
+     * @param childItem
      */
     createChild(childItem) {
         // Get the parent feature corresponding to the popup

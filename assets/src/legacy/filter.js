@@ -11,6 +11,9 @@ var lizLayerFilterTool = function () {
 
 
             // Compute the HTML container for the form
+            /**
+             *
+             */
             function getLayerFilterDockRoot() {
                 var html = '';
 
@@ -61,6 +64,9 @@ var lizLayerFilterTool = function () {
                 return html;
             }
 
+            /**
+             *
+             */
             function addLayerFilterToolInterface() {
                 if (!filterConfig || (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0)) {
                     return false;
@@ -103,6 +109,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Launch the form filter feature
+            /**
+             *
+             * @param layerId
+             */
             function launchLayerFilterTool(layerId) {
 
                 // Get layer name
@@ -134,6 +144,9 @@ var lizLayerFilterTool = function () {
 
             // Get the HTML form
             // By getting form element for each field
+            /**
+             *
+             */
             function getLayerFilterForm() {
                 var layerId = filterConfigData.layerId;
 
@@ -156,6 +169,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Get the HTML form element for a specific field
+            /**
+             *
+             * @param field_item
+             */
             function getFormFieldInput(field_item) {
                 var field_config = filterConfig[field_item.order];
 
@@ -182,6 +199,10 @@ var lizLayerFilterTool = function () {
                 return '';
             }
 
+            /**
+             *
+             * @param field_item
+             */
             function getFormFieldHeader(field_item) {
                 var html = '';
                 html += '<div class="liz-filter-field-box" id="liz-filter-box-';
@@ -195,6 +216,9 @@ var lizLayerFilterTool = function () {
                 return html;
             }
 
+            /**
+             *
+             */
             function getFormFieldFooter() {
                 var html = '';
                 html += '</p>';
@@ -203,6 +227,10 @@ var lizLayerFilterTool = function () {
                 return html;
             }
 
+            /**
+             *
+             * @param result
+             */
             function checkResult(result) {
                 if (!result) {
                     return false;
@@ -215,6 +243,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Get the HTML form element for the date field type
+            /**
+             *
+             * @param field_item
+             */
             function dateFormInput(field_item) {
                 // For LWC >=3.7, the min_date and max_date
                 // are replaced by start_field & end_field
@@ -286,6 +318,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Get the HTML form element for the numeric field type
+            /**
+             *
+             * @param field_item
+             */
             function numericFormInput(field_item) {
                 // Since LWC >=3.7, we can configure a field with the end value
                 var fieldNames = '';
@@ -340,6 +376,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Get the HTML form element for the text field type
+            /**
+             *
+             * @param field_item
+             */
             function textFormInput(field_item) {
                 // Ajout des données d'autocompletion
                 var field = field_item['field'];
@@ -387,6 +427,10 @@ var lizLayerFilterTool = function () {
 
             // Get the HTML form element for the uniqueValues field type
             // possible format: checkboxes or select
+            /**
+             *
+             * @param field_item
+             */
             function uniqueValuesFormInput(field_item) {
 
                 // Get data
@@ -500,6 +544,10 @@ var lizLayerFilterTool = function () {
 
             // Generate filter string for a field
             // Depending on the selected inputs
+            /**
+             *
+             * @param field_item
+             */
             function setFormFieldFilter(field_item) {
                 if (filterConfigData.deactivated) {
                     return false;
@@ -531,6 +579,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Set the filter for the uniqueValues field type
+            /**
+             *
+             * @param field_item
+             */
             function setUniqueValuesFilter(field_item) {
                 var field_config = filterConfig[field_item.order]
 
@@ -614,6 +666,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Set the filter for the Date type
+            /**
+             *
+             * @param field_item
+             */
             function setDateFilter(field_item) {
                 var filters = [];
 
@@ -680,6 +736,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Set the filter for the Numeric type
+            /**
+             *
+             * @param field_item
+             */
             function setNumericFilter(field_item) {
                 var filters = [];
 
@@ -749,6 +809,10 @@ var lizLayerFilterTool = function () {
             }
 
             // Set the filter for a text field_item
+            /**
+             *
+             * @param field_item
+             */
             function setTextFilter(field_item) {
 
                 var id = '#liz-filter-field-text' + lizMap.cleanName(field_item.title);
@@ -777,9 +841,9 @@ var lizLayerFilterTool = function () {
              * Get the list of feature ids for a given filter.
              *
              * This is needed to trigger the filter with the selection tool
-             *
              * @param {string} filter - The SQL like filter
-             *
+             * @param pkField
+             * @param aCallBack
              */
             function getFilteredFeatureIds(filter, pkField, aCallBack) {
                 filter = typeof filter !== 'undefined' ? filter : '';
@@ -824,8 +888,7 @@ var lizLayerFilterTool = function () {
              *
              * You can force the method in the JS console with;
              * filterConfigData.filterMethod = 'simple'
-             *
-             * @return {string} filterMethod - The method: simple or full
+             * @returns {string} filterMethod - The method: simple or full
              */
             function getFilterMethod() {
 
@@ -925,6 +988,9 @@ var lizLayerFilterTool = function () {
 
             // Deactivate the layer filter
             // And display all features
+            /**
+             *
+             */
             function deactivateFilter() {
                 var layerId = filterConfigData.layerId;
 
@@ -977,6 +1043,10 @@ var lizLayerFilterTool = function () {
 
             }
 
+            /**
+             *
+             * @param field_item_order
+             */
             function resetFormField(field_item_order) {
 
                 var field_item = filterConfig[field_item_order];
@@ -991,7 +1061,7 @@ var lizLayerFilterTool = function () {
                 }
                 else if (field_item['type'] == 'uniquevalues') {
                     if (field_item.format == 'checkboxes') {
-                        $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' input.liz-filter-field-value').prop("checked", false);;
+                        $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' input.liz-filter-field-value').prop("checked", false);
                     }
                     else if (field_item.format == 'select') {
                         var selectField = $('#liz-filter-field-' + lizMap.cleanName(field_item.title));
@@ -1019,6 +1089,9 @@ var lizLayerFilterTool = function () {
 
 
             // Removes the getFeatureInfo geometry
+            /**
+             *
+             */
             function removeFeatureInfoGeometry() {
                 var layer = lizMap.map.getLayersByName('locatelayer');
                 if (layer.length == 1)
@@ -1026,6 +1099,9 @@ var lizLayerFilterTool = function () {
             }
 
             // Adapt the size of the dock
+            /**
+             *
+             */
             function adaptLayerFilterSize() {
                 lizMap.events.on({
                     // Adapt dock size to display metadata
@@ -1039,7 +1115,7 @@ var lizLayerFilterTool = function () {
                     minidockclosed: function () {
                     },
                     layerfeatureremovefilter: function () {
-                        var layerId = filterConfigData.layerId;;
+                        var layerId = filterConfigData.layerId;
 
                         // We need to reset the form
                         // Deactivate all triggers to avoid unnecessary requests
@@ -1060,14 +1136,23 @@ var lizLayerFilterTool = function () {
 
             }
 
+            /**
+             *
+             * @param aDate
+             * @param dateFormat
+             */
             function formatDT(aDate, dateFormat) {
                 var formatted = $.datepicker.formatDate(dateFormat, aDate);
                 return formatted;
-            };
+            }
 
             // Add an event on the inputs of a given field
             // For example, do something when a checkbox is clicked
             // This triggers the calculation of the filter for the field
+            /**
+             *
+             * @param field_item
+             */
             function addFieldEvents(field_item) {
                 var container = 'liz-filter-box-' + lizMap.cleanName(field_item.title);
                 var field_config = filterConfig[field_item.order]
@@ -1106,6 +1191,11 @@ var lizLayerFilterTool = function () {
                         // to prevent too heavy load on server
                         // when using setFormFieldFilter
                         var timer = null;
+                        /**
+                         *
+                         * @param e
+                         * @param ui
+                         */
                         function onDateChange(e, ui) {
                             if (filterConfigData.deactivated)
                                 return false;
@@ -1175,6 +1265,11 @@ var lizLayerFilterTool = function () {
                         // to prevent too heavy load on server
                         // when using setFormFieldFilter
                         var timer = null;
+                        /**
+                         *
+                         * @param e
+                         * @param ui
+                         */
                         function onNumericChange(e, ui) {
                             if (filterConfigData.deactivated)
                                 return false;
@@ -1244,6 +1339,10 @@ var lizLayerFilterTool = function () {
 
             }
 
+            /**
+             *
+             * @param filter
+             */
             function getFeatureCount(filter) {
                 filter = typeof filter !== 'undefined' ? filter : '';
                 var layerId = filterConfigData.layerId;
@@ -1274,6 +1373,10 @@ var lizLayerFilterTool = function () {
                 }, 'json');
             }
 
+            /**
+             *
+             * @param filter
+             */
             function setZoomExtent(filter) {
                 filter = typeof filter !== 'undefined' ? filter : '';
 
@@ -1329,6 +1432,9 @@ var lizLayerFilterTool = function () {
                 }, 'json');
             }
 
+            /**
+             *
+             */
             function zoomToFeatures() {
                 var bounds = $('#liz-filter-zoom').val();
                 var abounds = null;

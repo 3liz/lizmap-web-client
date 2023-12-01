@@ -3,7 +3,6 @@ var lizEdition = function() {
     /**
      * Prevent the user from quitting the page
      * when and editing session is active.
-     *
      * @param {Event} event
      */
     const beforeUnloadHandler = (event) => {
@@ -15,20 +14,26 @@ var lizEdition = function() {
     window.addEventListener('beforeunload', beforeUnloadHandler);
 
 
+    /**
+     *
+     * @param layerID
+     * @param feature
+     * @param relation
+     */
     function FeatureEditionData(layerID, feature, relation) {
-        /** @var {string} QGIS layer id */
+        /** @member {string} QGIS layer id */
         this.layerId = layerID;
-        /** @var {Object} QGIS layer config */
+        /** @member {object} QGIS layer config */
         this.config = null;
-        /** @var {} */
+        /** @member {} */
         this.feature = feature;
-        /** @var {} */
+        /** @member {} */
         this.relation = relation;
-        /** @var {FeatureEditionData}  parent feature */
+        /** @member {FeatureEditionData}  parent feature */
         this.parent = null;
-        /** @var {boolean} backToParent tell if we can edit the parent after a save */
+        /** @member {boolean} backToParent tell if we can edit the parent after a save */
         this.backToParent = false;
-        /** @var {[Feature, FormData][]} new features to save on submit (features created after a split) */
+        /** @member {[Feature, FormData][]} new features to save on submit (features created after a split) */
         this.newfeatures = [];
     }
     FeatureEditionData.prototype = {
@@ -44,23 +49,26 @@ var lizEdition = function() {
         },
     };
 
+    /**
+     *
+     */
     function EditionLayerData() {
-        /** @var {boolean} If the layer is spatial or not */
+        /** @member {boolean} If the layer is spatial or not */
         this.spatial = false;
-        /** @var {Object} draw control */
+        /** @member {object} draw control */
         this.drawControl = null;
-        /** @var {string} Which submit button has been clicked */
+        /** @member {string} Which submit button has been clicked */
         this.submitActor = 'submit';
-        /** @var {OpenLayers.Layer.Vector} OL layer editLayer for edition */
+        /** @member {OpenLayers.Layer.Vector} OL layer editLayer for edition */
         this.ol = null;
-        /** @var {FeatureEditionData}  the current data about the edited feature */
+        /** @member {FeatureEditionData}  the current data about the edited feature */
         this.currentFeature = null;
-        /** @var {OpenLayers.Layer.Vector}  layer editSplitLayer to stores temporary geometry of new features */
+        /** @member {OpenLayers.Layer.Vector}  layer editSplitLayer to stores temporary geometry of new features */
         this.splitOl = null;
 
-        /** @var {OpenLayers.Rule[]} custom rules for the editLayer */
+        /** @member {OpenLayers.Rule[]} custom rules for the editLayer */
         this.olStyleCustomRules = [];
-        /** @var {OpenLayers.Rule[]} custom rules for the editSplitLayer */
+        /** @member {OpenLayers.Rule[]} custom rules for the editSplitLayer */
         this.splitOlStyleCustomRules = [];
 
     }
@@ -155,16 +163,16 @@ var lizEdition = function() {
                 style = new OpenLayers.Style();
                 style.addRules([
                     new OpenLayers.Rule({symbolizer:  {
-                            "Point": {
-                                pointRadius: 6
-                            },
-                            "Line": {
-                                strokeWidth: 4,
-                            },
-                            "Polygon": {
-                                strokeWidth: 2
-                            }
-                        }})
+                        "Point": {
+                            pointRadius: 6
+                        },
+                        "Line": {
+                            strokeWidth: 4,
+                        },
+                        "Polygon": {
+                            strokeWidth: 2
+                        }
+                    }})
                 ]);
 
                 if (this.olStyleCustomRules.length) {
@@ -239,6 +247,9 @@ var lizEdition = function() {
 
     // Edition message management
     var editionMessageTimeoutId = null;
+    /**
+     *
+     */
     function cleanEditionMessage() {
         var $EditionMessage = $('#lizmap-edition-message');
         if ( $EditionMessage.length != 0 ) {
@@ -246,6 +257,12 @@ var lizEdition = function() {
         }
         editionMessageTimeoutId = null;
     }
+    /**
+     *
+     * @param aMessage
+     * @param aType
+     * @param aClose
+     */
     function addEditionMessage(aMessage, aType, aClose){
         if ( editionMessageTimeoutId ) {
             window.clearTimeout(editionMessageTimeoutId);
@@ -259,6 +276,10 @@ var lizEdition = function() {
         editionMessageTimeoutId = window.setTimeout(cleanEditionMessage, 5000);
     }
 
+    /**
+     *
+     * @param evt
+     */
     function afterReshapeSpliting(evt) {
         var splitFeatures = evt.features;
         var geometryType = editionLayer.geometryType;
@@ -288,6 +309,10 @@ var lizEdition = function() {
     }
 
 
+    /**
+     *
+     * @param evt
+     */
     function beforeFeatureSpliting(evt) {
 
         var form = $('#edition-form-container form');
@@ -304,6 +329,10 @@ var lizEdition = function() {
     }
 
 
+    /**
+     *
+     * @param evt
+     */
     function afterFeatureSpliting(evt) {
 
         // determine the two new geometry
@@ -372,45 +401,50 @@ var lizEdition = function() {
     }
 
 
-/**
- * Function: OpenLayers.Geometry.pointOnSegment
- * Note that the OpenLayers.Geometry.segmentsIntersect doesn't work with points
- *
- * Parameters:
- * point - {Object} An object with x and y properties representing the
- *     point coordinates.
- * segment - {Object} An object with x1, y1, x2, and y2 properties
- *     representing endpoint coordinates.
- *
- * Returns:
- * {Boolean} Returns true if the point is on the segment.
- */
-OpenLayers.Geometry.pointOnSegment = function(point, segment) {
+    /**
+     * Function: OpenLayers.Geometry.pointOnSegment
+     * Note that the OpenLayers.Geometry.segmentsIntersect doesn't work with points
+     *
+     * Parameters:
+     * point - {Object} An object with x and y properties representing the
+     *     point coordinates.
+     * segment - {Object} An object with x1, y1, x2, and y2 properties
+     *     representing endpoint coordinates.
+     *
+     * Returns:
+     * {Boolean} Returns true if the point is on the segment.
+     * @param point
+     * @param segment
+     */
+    OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     // Is the point inside the BBox of the segment
-    if(point.x < Math.min(segment.x1, segment.x2) || point.x > Math.max(segment.x1, segment.x2) ||
+        if(point.x < Math.min(segment.x1, segment.x2) || point.x > Math.max(segment.x1, segment.x2) ||
        point.y < Math.min(segment.y1, segment.y2) || point.y > Math.max(segment.y1, segment.y2))
-    {
-        return false;
-    }
+        {
+            return false;
+        }
 
-    // Avoid dividing by zero
-    if( segment.x1 == segment.x2 || segment.y1 == segment.y2 ||
+        // Avoid dividing by zero
+        if( segment.x1 == segment.x2 || segment.y1 == segment.y2 ||
         (point.x == segment.x1 && point.y == segment.y1) ||
         (point.x == segment.x2 && point.y == segment.y2) )
-    {
-        return true;
-    }
+        {
+            return true;
+        }
 
-    // Is the point on the line
-    if(((segment.x1 - point.x) / (segment.y1 - point.y)).toFixed(5) ==
+        // Is the point on the line
+        if(((segment.x1 - point.x) / (segment.y1 - point.y)).toFixed(5) ==
        ((segment.x2 - point.x) / (segment.y2 - point.y)).toFixed(5))
-    {
-        return true;
-    }
+        {
+            return true;
+        }
 
-    return false;
-};
+        return false;
+    };
 
+    /**
+     *
+     */
     function deactivateDrawFeature() {
         $('#edition-point-coord-crs-layer').html(lizDict['edition.point.coord.crs.layer']).val('').hide();
         $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']).val('').hide();
@@ -430,6 +464,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         );
     }
 
+    /**
+     *
+     */
     function activateDrawFeature() {
         var eform = $('#edition-form-container form');
         var srid = eform.find('input[name="liz_srid"]').val();
@@ -457,6 +494,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         );
     }
 
+    /**
+     *
+     */
     function keyUpPointCoord() {
         var x = parseFloat($('#edition-point-coord-x').val());
         var y = parseFloat($('#edition-point-coord-y').val());
@@ -484,6 +524,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     // Redraw layers
+    /**
+     *
+     * @param layerId
+     */
     function redrawLayers( layerId ) {
         var willBeRedrawnLayerIds = [layerId];
 
@@ -554,6 +598,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return redrawnLayerIds;
     }
 
+    /**
+     *
+     * @param parentLayerId
+     * @param childLayerId
+     */
     function getRelationInfo(parentLayerId,childLayerId){
         if( 'relations' in config && parentLayerId in config.relations) {
             var layerRelations = config.relations[parentLayerId];
@@ -567,6 +616,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return null;
     }
 
+    /**
+     *
+     */
     function finishEdition() {
         // Lift the constraint on edition
         lizMap.editionPending = false;
@@ -608,6 +660,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     // Is there at least one layer with creation capability?
+    /**
+     *
+     */
     function hasCreateLayers(){
         if ('editionLayers' in config) {
             for (const name in config.editionLayers) {
@@ -620,6 +675,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return false;
     }
 
+    /**
+     *
+     */
     function addEditionControls() {
         // Edition layers
         if ('editionLayers' in config) {
@@ -633,7 +691,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                  && al.capabilities.modifyAttribute == "False"
                  && al.capabilities.deleteFeature == "False"
                  && al.capabilities.modifyGeometry == "False"
-                 ) {
+                ) {
                     delete config.editionLayers[alName];
                     continue;
                 }
@@ -644,7 +702,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 ) {
                     var alConfig = config.layers[alName];
                     elconfig[al.order] = {
-                       id: alConfig.id,
+                        id: alConfig.id,
                         title: alConfig.title,
                         order: al.order
                     };
@@ -686,26 +744,26 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     }
                 }),
                 point: new OpenLayers.Control.DrawFeature(editLayer,
-                     OpenLayers.Handler.Point,{
+                    OpenLayers.Handler.Point,{
                         eventListeners: {
                             activate: activateDrawFeature,
                             deactivate: deactivateDrawFeature
                         }
-                     }),
+                    }),
                 line: new OpenLayers.Control.DrawFeature(editLayer,
                     OpenLayers.Handler.Path,{
                         eventListeners: {
                             activate: activateDrawFeature,
                             deactivate: deactivateDrawFeature
                         }
-                     }),
+                    }),
                 polygon: new OpenLayers.Control.DrawFeature(editLayer,
                     OpenLayers.Handler.Polygon,{
                         eventListeners: {
                             activate: activateDrawFeature,
                             deactivate: deactivateDrawFeature
                         }
-                     }),
+                    }),
                 modify: new OpenLayers.Control.ModifyFeature(editLayer),
                 reshape: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterReshapeSpliting}}),
                 featsplit: new OpenLayers.Control.Split({
@@ -1029,6 +1087,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     // Display coordinates. Vertex is in map projection
+    /**
+     *
+     * @param vertex
+     */
     function displayCoordinates(vertex){
         // Get SRID and transform geometry
         var srid = $('#edition-point-coord-crs').val();
@@ -1044,6 +1106,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }
     }
 
+    /**
+     *
+     * @param components
+     * @param projection
+     * @param showTotal
+     */
     function displaySegmentsLength(components, projection, showTotal){
         $('#edition-segment-length').parents('.control-group').removeClass('hidden');
 
@@ -1077,6 +1145,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     * B center point
     * C second point
     */
+    /**
+     *
+     * @param A
+     * @param B
+     * @param C
+     */
     function displayAngleBetweenThreePoints(A, B, C){
         $('#edition-segment-angle').parents('.control-group').removeClass('hidden');
 
@@ -1093,6 +1167,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     // Display drawing segment length and angle when eligible
+    /**
+     *
+     * @param drawingGeom
+     */
     function displaySegmentsLengthAndAngle(drawingGeom){
         if (drawingGeom.CLASS_NAME === "OpenLayers.Geometry.LineString"
             && drawingGeom.components
@@ -1128,6 +1206,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }
     }
 
+    /**
+     *
+     */
     function cancelEdition(){
         // Deactivate previous edition
         finishEdition();
@@ -1145,6 +1226,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     // Start edition of a new feature or an existing one
+    /**
+     *
+     * @param aLayerId
+     * @param aFid
+     * @param aParent
+     * @param aCallback
+     */
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
 
         var editedFeature = new FeatureEditionData(aLayerId, null, null);
@@ -1190,6 +1278,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return internalLaunchEdition(editedFeature, aFid, aCallback);
     }
 
+    /**
+     *
+     */
     function launchEditionOfParent() {
         var parentInfo = editionLayer['parent'];
         var parentFeat = parentInfo.feature;
@@ -1219,7 +1310,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Check if edition is configured in lizmap
         if ( !('editionLayers' in config) )
-                return false;
+            return false;
 
         // Get edition map controls
         if( !editCtrls )
@@ -1263,6 +1354,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     /*
      * Get edition form from service
      * @param featureId Feature id to edit : in null-> create feature
+     */
+    /**
+     *
+     * @param featureId
+     * @param aCallback
      */
     function getEditionForm( featureId, aCallback ){
 
@@ -1312,18 +1408,22 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
      * Activate combobox widget
      *
      */
+    /**
+     *
+     * @param selectCombobox
+     */
     function activateCombobox( selectCombobox ){
         selectCombobox.combobox({
             "minLength": 1,
             "position": { my : "left bottom", position: "flip" },
             "selected": function(evt, ui){
-              if ( ui.item ) {
-                var self = $(this);
-                var uiItem = $(ui.item);
-                window.setTimeout(function(){
-                  self.val(uiItem.val()).change();
-                }, 1);
-              }
+                if ( ui.item ) {
+                    var self = $(this);
+                    var uiItem = $(ui.item);
+                    window.setTimeout(function(){
+                        self.val(uiItem.val()).change();
+                    }, 1);
+                }
             }
         });
         selectCombobox.parent().find('span > input')
@@ -1333,6 +1433,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     /*
      * Activate autocomplete widget
      *
+     */
+    /**
+     *
+     * @param selectAutocomplete
      */
     function activateAutocomplete( selectAutocomplete ){
         var wrapper = $( "<span>" )
@@ -1346,23 +1450,23 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             .attr( "title", "" )
             .addClass( "custom-autocomplete-input" )
             .autocomplete({
-              source: function( request, response ) {
+                source: function( request, response ) {
                 // Get the unaccentuated version of the requested term
-                let unaccentuatedTerm = (request.term) ? request.term.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : request.term;
-                  var matcher = new RegExp( $.ui.autocomplete.escapeRegex(unaccentuatedTerm), "i" );
-                  response( selectAutocomplete.children( "option" ).map(function() {
-                    let text = $( this ).text();
-                    // Remove accentuated characters
-                    text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                    // Compare the normalized requested term to the normalized option text
-                    if (this.value && ( !unaccentuatedTerm || matcher.test(text) )) {
-                      return {
-                        label: text,
-                        value: text,
-                        option: this
-                      };
-                    }
-                  }) );
+                    let unaccentuatedTerm = (request.term) ? request.term.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : request.term;
+                    var matcher = new RegExp( $.ui.autocomplete.escapeRegex(unaccentuatedTerm), "i" );
+                    response( selectAutocomplete.children( "option" ).map(function() {
+                        let text = $( this ).text();
+                        // Remove accentuated characters
+                        text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                        // Compare the normalized requested term to the normalized option text
+                        if (this.value && ( !unaccentuatedTerm || matcher.test(text) )) {
+                            return {
+                                label: text,
+                                value: text,
+                                option: this
+                            };
+                        }
+                    }) );
                 }
             });
         input.autocomplete( "widget" ).css("z-index","1050");
@@ -1381,6 +1485,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     /*
      * Display the edition form
      * @param {string} data  html corresponding to the form or the result of a submit
+     */
+    /**
+     *
+     * @param data
      */
     function displayEditionForm (data) {
         // Firstly does the edition-form-container already has a form ?
@@ -1421,7 +1529,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 if( select.length == 1 ){
                     // Disable the select, the value will be stored in an hidden input
                     select.val(parentFeatProp)
-                          .attr('disabled','disabled');
+                        .attr('disabled','disabled');
                     // Create hidden input to store value because the select is disabled
                     var hiddenInput = $('<input type="hidden"></input>')
                         .attr('id', select.attr('id')+'_hidden')
@@ -1437,7 +1545,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     if( input.length == 1 && input.attr('type') != 'hidden'){
                         // Disable the select, the value will be stored in an hidden input
                         input.val(parentFeatProp)
-                              .attr('disabled','disabled');
+                            .attr('disabled','disabled');
                         // Create hidden input to store value because the select is disabled
                         var hiddenInput = $('<input type="hidden"></input>')
                             .attr('id', input.attr('id')+'_hidden')
@@ -1671,6 +1779,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }
     }
 
+    /**
+     *
+     * @param form
+     */
     function dynamicGroupVisibilities( form ){
         const tForm = jFormsJQ.getForm(form.attr('id'));
 
@@ -1752,6 +1864,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         });
     }
 
+    /**
+     *
+     * @param form
+     */
     function handleGroupVisibilities( form ){
         // use jFormsJQ
         var tForm = jFormsJQ.getForm(form.attr('id'));
@@ -1775,6 +1891,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }
     }
 
+    /**
+     *
+     * @param form
+     */
     function handleEditionFormSubmit( form ){
         // Detect click on submit buttons
         editionLayer['submitActor'] = 'submit';
@@ -1851,8 +1971,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
     /**
      *
+     * @param url
      * @param {FormData} formData
-     * @return {Promise}
+     * @returns {Promise}
      */
     function sendNewFeatureForm(url, formData) {
         return new Promise(function(resolve, reject) {
@@ -1907,6 +2028,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return msg;
     }
 
+    /**
+     *
+     * @param feat
+     */
     function calculateGeometryColumnFromFeature(feat) {
         if (feat.geometry == null) {
             return '';
@@ -1930,6 +2055,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
 
+    /**
+     *
+     * @param feat
+     */
     function updateGeometryColumnFromFeature( feat ){
 
         var geom = calculateGeometryColumnFromFeature(feat);
@@ -1963,6 +2092,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return true;
     }
 
+    /**
+     *
+     */
     function getFeatureFromGeometryColumn(){
         // Get editLayer
         var editLayer = editionLayer['ol'];
@@ -1992,6 +2124,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return null;
     }
 
+    /**
+     *
+     */
     function updateFeatureFromGeometryColumn(){
 
         var feat = getFeatureFromGeometryColumn();
@@ -2006,6 +2141,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
 
+    /**
+     *
+     * @param aLayerId
+     * @param aFeatureId
+     * @param aMessage
+     * @param aCallback
+     */
     function deleteEditionFeature( aLayerId, aFeatureId, aMessage, aCallback ){
         // Edition layers
         if ( !('editionLayers' in config) )
@@ -2094,6 +2236,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 }();
 
 
+/**
+ *
+ */
 function lizEditionErrorDecorator(){
     this.message = '';
 }
