@@ -11,7 +11,6 @@
   --color-contrasted-elements-light: #c3dceb;
   --color-contrasted-text: white;
   --color-dark-gray-elements: rgb(51, 51, 51);
-  --color-red-elements: #da4f49;
 }
 
 /* BODY */
@@ -41,16 +40,49 @@ input.btn.active {
   background-color: var(--color-contrasted-elements);
   color: var(--color-contrasted-text);
 }
+/* button types (bootstrap) */
 /* button types */
 .btn.btn-primary, .btn.btn-primary:focus {
-  background-color: var(--color-contrasted-elements);
+  background-color: #43718c;
+  color: white;
+}
+.btn.btn-info, .btn.btn-info:focus {
+  background-color: #57bcda;
+  color: white;
+}
+.btn.btn-success, .btn.btn-success:focus {
+  background-color: #95c02a;
+  color: white;
+}
+.btn.btn-warning, .btn.btn-warning:focus {
+  background-color: #f9a227;
   color: white;
 }
 .btn.btn-danger, .btn.btn-danger:focus {
-  background-color: var(--color-red-elements);
+  background-color: #da4f49;
   color: white;
 }
-
+/* hover & active */
+.btn.btn-primary:hover, .btn.btn-primary.active {
+  background-color: #43718c;
+    filter:brightness(110%);
+}
+.btn.btn-info:hover, .btn.btn-info.active {
+  background-color: #57bcda;
+    filter:brightness(110%);
+}
+.btn.btn-success:hover, .btn.btn-success.active {
+  background-color: #95c02a;
+    filter:brightness(110%);
+}
+.btn.btn-warning:hover, .btn.btn-warning.active {
+  background-color: #f9a227;
+    filter:brightness(110%);
+}
+.btn.btn-danger:hover, .btn.btn-danger.active {
+  background-color: #da4f49;
+    filter:brightness(110%);
+}
 
 /* DROP-DOWN LISTS */
 .dropdown-menu > li > a:hover,
