@@ -50,6 +50,9 @@ export default class WMS {
                 ...options
             })
         });
-        return response.json();
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error(response.text);
     }
 }
