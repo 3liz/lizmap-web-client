@@ -32,10 +32,8 @@ export class MapState extends EventDispatcher {
 
     /**
      * Update the map state
-     *
-     * @param {Object} evt - the map state changed object
-     *
-     **/
+     * @param {object} evt - the map state changed object
+     */
     update(evt) {
         let updatedProperties = {};
         for (const prop in mapStateProperties) {
@@ -100,72 +98,64 @@ export class MapState extends EventDispatcher {
 
     /**
      * Map projection code
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get projection() {
         return this._projection;
     }
 
     /**
      * Map center
-     *
-     * @type {Number[]}
-     **/
+     * @type {number[]}
+     */
     get center() {
         return this._center;
     }
 
     /**
      * Map size
-     *
-     * @type {Number[]}
-     **/
+     * @type {number[]}
+     */
     get size() {
         return this._size;
     }
 
     /**
      * Map extent (calculate by the map view)
-     *
-     * @type {Number[]}
-     **/
+     * @type {number[]}
+     */
     get extent() {
         return this._extent;
     }
 
     /**
      * Map resolution
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get resolution() {
         return this._resolution;
     }
 
     /**
      * Map scale denominator
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get scaleDenominator() {
         return this._scaleDenominator;
     }
 
     /**
      * Map resolution (calculate from the center)
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get pointResolution() {
         return this._pointResolution;
     }
 
     /**
      * Map scale denominator (calculate from the center)
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get pointScaleDenominator() {
         return this._pointScaleDenominator;
     }

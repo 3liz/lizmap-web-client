@@ -38,7 +38,7 @@ export default class Layers {
 
     /**
      * Add a vector layer from a GeoJSON.
-     * @param {ArrayBuffer|Document|Element|Object|string} geojson geojson in EPSG:4326 projection
+     * @param {ArrayBuffer | Document | Element | object | string} geojson geojson in EPSG:4326 projection
      * @param {string} dataProjection
      * @param {StyleLike | null} style Layer style
      * @memberof Layers

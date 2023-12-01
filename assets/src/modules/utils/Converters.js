@@ -3,20 +3,17 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { ConversionError } from './../Errors.js';
 
 /**
  * Convert a value to Number
  * @function
- *
  * @param {*} val - A value to convert to number
- *
- * @returns {Number} the converting value
- *
+ * @returns {number} the converting value
  * @throws {ConversionError}
- **/
+ */
 export function convertNumber(val) {
     const value = val*1;
     if (isNaN(value)) {
@@ -28,13 +25,10 @@ export function convertNumber(val) {
 /**
  * Convert a value to boolean
  * @function
- *
  * @param {*} val - A value to convert to boolean
- *
- * @returns {Boolean} the converting value
- *
+ * @returns {boolean} the converting value
  * @throws {ConversionError}
- **/
+ */
 export function convertBoolean(val) {
     switch (typeof val) {
         case 'boolean':
@@ -74,14 +68,11 @@ export function convertBoolean(val) {
 /**
  * Convert a value to array
  * @function
- *
- * @param {String|Array} val         - A value to convert to array
- * @param {String}       contentType - The type of values contained in the array
- *
+ * @param {string | Array} val         - A value to convert to array
+ * @param {string}       contentType - The type of values contained in the array
  * @returns {Array} the converting value
- *
  * @throws {ConversionError}
- **/
+ */
 export function convertArray(val, contentType) {
     if (!(Array.isArray(val) || 'string' == typeof val)) {
         throw new ConversionError(
@@ -121,10 +112,9 @@ export function convertArray(val, contentType) {
  * and ^ indicates exponentiation.
  * (The hash value of the empty string is zero.)
  * @function
- *
  * @param {string} s - A string
- * @return {number} a hash code value for the given string.
- **/
+ * @returns {number} a hash code value for the given string.
+ */
 export function hashCode(s) {
     let h = 0;
     for(let i = 0; i < s.length; i++) {

@@ -3,7 +3,7 @@
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
- **/
+ */
 
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
@@ -38,16 +38,15 @@ export class OptionsConfig  extends BaseObjectConfig {
 
     /**
      * Create an options config instance based on a config object
-     *
-     * @param {Object}   cfg                                  - the lizmap config object for options
-     * @param {Number[]} cfg.bbox                            - the project and web services max extent
-     * @param {Number[]} cfg.initialExtent                   - the map extent at the loading page
-     * @param {Number[]} cfg.mapScales                       - the map scales
-     * @param {Number}   cfg.minScale                        - the map's min scale
-     * @param {Number}   cfg.maxScale                        - the map's max scale
-     * @param {Object}   cfg.projection                      - the web map projection
-     * @param {Number}   cfg.pointTolerance                  - the point tolerance for QGIS Server WMS GetFeatureInfo request
-     * @param {Number}   cfg.lineTolerance                   - the line tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {object}   cfg                                  - the lizmap config object for options
+     * @param {number[]} cfg.bbox                            - the project and web services max extent
+     * @param {number[]} cfg.initialExtent                   - the map extent at the loading page
+     * @param {number[]} cfg.mapScales                       - the map scales
+     * @param {number}   cfg.minScale                        - the map's min scale
+     * @param {number}   cfg.maxScale                        - the map's max scale
+     * @param {object}   cfg.projection                      - the web map projection
+     * @param {number}   cfg.pointTolerance                  - the point tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {number}   cfg.lineTolerance                   - the line tolerance for QGIS Server WMS GetFeatureInfo request
      * @param {Number}   cfg.polygonTolerance                - the polygon tolerance for QGIS Server WMS GetFeatureInfo request
      * @param {String}   cfg.popupLocation                   - the popup location in the User interface: dock, bottom-dock, right-dock, mini-dock, map
      * @param {String}   cfg.datavizLocation                 - the popup location in the User interface: dock, bottom-dock, right-dock
@@ -71,63 +70,56 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * The project is hidden in user interface
      * Services are still available
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hideProject() {
         return this._hideProject;
     }
 
     /**
      * The project and web services max extent
-     *
      * @type {Extent}
-     **/
+     */
     get bbox() {
         return this._bbox;
     }
 
     /**
      * The map extent at the loading page
-     *
      * @type {Extent}
-     **/
+     */
     get initialExtent() {
         return this._initialExtent;
     }
 
     /**
      * The web map scales
-     *
      * @type {Array}
-     **/
+     */
     get mapScales() {
         return this._mapScales;
     }
 
     /**
      * The web map min scale
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get minScale() {
         return this._minScale;
     }
 
     /**
      * The web map max scale
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get maxScale() {
         return this._maxScale;
     }
 
     /**
      * The web map projection
-     *
-     * @type {Object}
-     **/
+     * @type {object}
+     */
     get projection() {
         return this._projection;
     }
@@ -135,9 +127,8 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * The QGIS Server point tolerance for
      * WMS GetFeatureInfo request
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get pointTolerance() {
         return this._pointTolerance;
     }
@@ -145,9 +136,8 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * The QGIS Server line tolerance for
      * WMS GetFeatureInfo request
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get lineTolerance() {
         return this._lineTolerance;
     }
@@ -155,9 +145,8 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * The QGIS Server polygon tolerance for
      * WMS GetFeatureInfo request
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get polygonTolerance() {
         return this._polygonTolerance;
     }
@@ -165,9 +154,8 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * The popup location in the User interface
      * dock, bottom-dock, right-dock, mini-dock, map
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get popupLocation() {
         return this._popupLocation;
     }
@@ -175,36 +163,32 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * The popup location in the User interface
      * dock, bottom-dock, right-dock
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get datavizLocation() {
         return this._datavizLocation;
     }
 
     /**
      * The image max height for WMS GetMap request
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMaxHeight() {
         return this._wmsMaxHeight;
     }
 
     /**
      * The image max width for WMS GetMap request
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMaxWidth() {
         return this._wmsMaxWidth;
     }
 
     /**
      * The Overview map has fixed scale
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get fixed_scale_overview_map() {
         return this._fixed_scale_overview_map;
     }

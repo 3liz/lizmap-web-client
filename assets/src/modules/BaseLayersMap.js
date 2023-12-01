@@ -489,6 +489,7 @@ export default class BaseLayersMap extends olMap {
     /**
      * Return overlay layer if `name` matches.
      * `name` is unique for every layers
+     * @param name
      */
     getLayerByName(name){
         return this.overlayLayers.find(
@@ -499,6 +500,7 @@ export default class BaseLayersMap extends olMap {
     /**
      * Return overlay layer or group if `name` matches.
      * `name` is unique for every layers/groups
+     * @param name
      */
     getLayerOrGroupByName(name){
         return this.overlayLayersAndGroups.find(

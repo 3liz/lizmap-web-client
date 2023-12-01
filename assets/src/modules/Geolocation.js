@@ -172,8 +172,8 @@ export default class Geolocation {
     }
 
     /**
-    * @param  {number} interval - Interval in second
-    */
+     * @param  {number} interval - Interval in second
+     */
     set bindIntervalInSecond(interval) {
         this._bindIntervalInSecond = interval;
 

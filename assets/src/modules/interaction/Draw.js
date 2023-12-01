@@ -11,9 +11,9 @@ export default class Draw {
 
     /**
      * Initialize Draw based on new OL
-     * @param {string} [geomType="Point"] The geometry type. One of 'Point', 'LineString', 'LinearRing', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon', 'GeometryCollection', 'Circle'.
-     * @param {number} [maxFeatures=-1] Limit the draw to maxFeatures features
-     * @param {boolean} [modify=true] Allow to modify features after being drawn
+     * @param {string} [geomType] The geometry type. One of 'Point', 'LineString', 'LinearRing', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon', 'GeometryCollection', 'Circle'.
+     * @param {number} [maxFeatures] Limit the draw to maxFeatures features
+     * @param {boolean} [modify] Allow to modify features after being drawn
      * @param {StyleLike | null} style Layer style
      * @memberof Draw
      */

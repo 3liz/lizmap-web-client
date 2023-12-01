@@ -265,7 +265,7 @@ export default class SelectionTool {
      * @todo active state should be set on UI's events
      * @readonly
      * @memberof SelectionTool
-     * @return {boolean}
+     * @returns {boolean}
      */
     get isActive() {
         return document.getElementById('button-selectiontool').parentElement.classList.contains('active')

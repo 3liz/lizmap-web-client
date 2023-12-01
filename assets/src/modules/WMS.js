@@ -22,8 +22,8 @@ export default class WMS {
     }
 
     /**
-     * @param {Object} options - optional parameters which can override this._defaultGetFeatureInfoParameters
-     * @return {Promise} Promise object represents data
+     * @param {object} options - optional parameters which can override this._defaultGetFeatureInfoParameters
+     * @returns {Promise} Promise object represents data
      * @memberof WMS
      */
     async getFeatureInfo(options) {
@@ -38,8 +38,8 @@ export default class WMS {
     }
 
     /**
-     * @param {Object} options - optional parameters which can override this._defaultGetLegendGraphicsParameters
-     * @return {Promise} Promise object represents data
+     * @param {object} options - optional parameters which can override this._defaultGetLegendGraphicsParameters
+     * @returns {Promise} Promise object represents data
      * @memberof WMS
      */
     async getLegendGraphic(options) {
