@@ -10,7 +10,6 @@
   --color-contrasted-elements-light: #c3dceb;
   --color-contrasted-text: white;
   --color-dark-gray-elements: rgb(51, 51, 51);
-  --color-red-elements: #da4f49;
 }
 
 
@@ -894,6 +893,7 @@ lizmap-feature-toolbar button.btn:hover,
   background-repeat: no-repeat;
   background-position-x: center;
   background-position-y: center;
+  filter: hue-rotate(140deg) brightness(70%);
 }
 
 
