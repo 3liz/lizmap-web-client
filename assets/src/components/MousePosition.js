@@ -117,7 +117,11 @@ export default class MousePosition extends HTMLElement {
             let lon,lat;
             // OL2
             if(evt.xy){
-                ({ lon, lat } = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy));
+                const lonlat = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy);
+                if (lonlat !== null) {
+                    lon = lonlat.lon;
+                    lat = lonlat.lat;
+                }
             } else if (evt.pixel){ //OL6
                 [lon, lat ] = mainLizmap.map.getCoordinateFromPixel(evt.pixel);
             }
