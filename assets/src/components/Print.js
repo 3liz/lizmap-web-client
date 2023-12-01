@@ -235,7 +235,7 @@ export default class Print extends HTMLElement {
 
         // Add selected base layer if any
         const selectedBaseLayer = lizMap.mainLizmap.state.baseLayers.selectedBaseLayer;
-        if (selectedBaseLayer) {
+        if (selectedBaseLayer && selectedBaseLayer.layerConfig !== null) {
             printLayers.push(selectedBaseLayer.layerConfig.shortname);
             styleLayers.push(selectedBaseLayer.itemState.wmsSelectedStyleName);
             opacityLayers.push(parseInt(255 * selectedBaseLayer.itemState.opacity * selectedBaseLayer.layerConfig.opacity));
