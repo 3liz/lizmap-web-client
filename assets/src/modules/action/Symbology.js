@@ -27,13 +27,14 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
         STYLES: wmsStyles,
     };
 
-    const response = await wms.getLegendGraphic(wmsParams);
-    for (const node of response.nodes) {
-        // If the layer has no symbology, there is no type property
-        if (node.hasOwnProperty('type')) {
-            treeLayersByName[node.name].symbology = node;
+    await wms.getLegendGraphic(wmsParams).then((response) => {
+        for (const node of response.nodes) {
+            // If the layer has no symbology, there is no type property
+            if (node.hasOwnProperty('type')) {
+                treeLayersByName[node.name].symbology = node;
+            }
         }
-    }
+    }).catch(console.error);
     return treeLayers;
 }
 
