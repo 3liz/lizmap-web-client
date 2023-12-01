@@ -26,8 +26,8 @@ export default class Popup {
                 );
                 this.handler = new OpenLayers.Handler.Click(
                     this, {
-                    'click': this.trigger
-                }, this.handlerOptions
+                        'click': this.trigger
+                    }, this.handlerOptions
                 );
             },
             trigger: evt => {

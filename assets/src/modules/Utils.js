@@ -1,9 +1,9 @@
 export default class Utils {
 
     /**
-     * @param {String} text - file content
-     * @param {String} fileType - file's MIME type
-     * @param {String} fileName - file'name with extension
+     * @param {string} text - file content
+     * @param {string} fileType - file's MIME type
+     * @param {string} fileName - file'name with extension
      */
     static downloadFileFromString(text, fileType, fileName) {
         var blob = new Blob([text], { type: fileType });
@@ -21,11 +21,9 @@ export default class Utils {
 
     /**
      * Send an ajax POST request to download a file
-     *
-     * @param {String} url
+     * @param {string} url
      * @param {Array} parameters
      * @param {Function} callback optionnal callback executed when download ends
-     *
      */
     static downloadFile(url, parameters, callback) {
         var xhr = new XMLHttpRequest();

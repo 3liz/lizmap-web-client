@@ -96,7 +96,7 @@ export default class Lizmap {
     }
 
     /**
-     * @param {Boolean} mode - switch new OL map on top of OL2 one
+     * @param {boolean} mode - switch new OL map on top of OL2 one
      */
     set newOlMap(mode){
         this.map._newOlMap = mode;
@@ -110,18 +110,16 @@ export default class Lizmap {
     /**
      * The lizmap initial config instance
      * It is based on the freezed config
-     *
      * @type {Config}
-     **/
+     */
     get initialConfig() {
         return this._initialConfig;
     }
 
     /**
      * The lizmap user interface state
-     *
      * @type {Config}
-     **/
+     */
     get state() {
         return this._state;
     }
@@ -194,11 +192,10 @@ export default class Lizmap {
      * See {@link module:ol/proj.transformExtent} for extent transformation.
      * See the transform method of {@link module:ol/geom/Geometry~Geometry} and its
      * subclasses for geometry transforms.
-     *
      * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
      * @param {ProjectionLike} source Source projection-like.
      * @param {ProjectionLike} destination Destination projection-like.
-     * @return {import("./coordinate.js").Coordinate} Coordinate.
+     * @returns {import("./coordinate.js").Coordinate} Coordinate.
      */
     transform(coordinate, source, destination) {
         return transformOL(coordinate, source, destination);
@@ -208,11 +205,10 @@ export default class Lizmap {
      * Expose OpenLayers transformExtent method for external JS.
      * Transforms an extent from source projection to destination projection.  This
      * returns a new extent (and does not modify the original).
-     *
      * @param {import("./extent.js").Extent} extent The extent to transform.
      * @param {ProjectionLike} source Source projection-like.
      * @param {ProjectionLike} destination Destination projection-like.
-     * @return {import("./extent.js").Extent} The transformed extent.
+     * @returns {import("./extent.js").Extent} The transformed extent.
      */
     transformExtent(extent, source, destination){
         return transformExtentOL(extent, source, destination);

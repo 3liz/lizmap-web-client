@@ -13,8 +13,7 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Creating a layer item state
-     *
-     * @param {String} type                          - the layer item type
+     * @param {string} type                          - the layer item type
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
      */
@@ -43,72 +42,64 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Item name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get name() {
         return this._layerTreeItemCfg.name;
     }
 
     /**
      * Item type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get type() {
         return this._type;
     }
 
     /**
      * Item map type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get mapType() {
         return this._type;
     }
 
     /**
      * The layer tree item level
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get level() {
         return this._layerTreeItemCfg.level;
     }
 
     /**
      * WMS layer name
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get wmsName() {
         return this._layerTreeItemCfg.wmsName;
     }
 
     /**
      * WMS layer title
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsTitle() {
         return this._layerTreeItemCfg.wmsTitle;
     }
 
     /**
      * WMS layer abstract
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get wmsAbstract() {
         return this._layerTreeItemCfg.wmsAbstract;
     }
 
     /**
      * Item unique id
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get id() {
         if (this.layerConfig == null) {
             return null;
@@ -118,9 +109,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Item title
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get title() {
         if (this.layerConfig == null) {
             return null;
@@ -130,9 +120,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Item abstract
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get abstract() {
         if (this.layerConfig == null) {
             return null;
@@ -142,9 +131,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Item link
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get link() {
         if (this.layerConfig == null) {
             return null;
@@ -154,9 +142,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * WMS layer Geographic Bounding Box
-     *
      * @type {?LayerGeographicBoundingBoxConfig}
-     **/
+     */
     get wmsGeographicBoundingBox() {
         if (this.layerConfig == null) {
             return null;
@@ -191,9 +178,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * WMS layer Bounding Boxes
-     *
      * @type {LayerBoundingBoxConfig[]}
-     **/
+     */
     get wmsBoundingBoxes() {
         if (this.layerConfig == null) {
             return [];
@@ -222,9 +208,8 @@ export class LayerItemState extends EventDispatcher {
      * If the WMS layer is a group, the minimum scale denominator is -1 if only one layer
      * minimum scale denominator is not defined else the smallest layer minimum scale denominator
      * in the group
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMinScaleDenominator() {
         if ( this._layerTreeItemCfg.type == 'group') {
             if (this._minScaleDenominator == null) {
@@ -252,9 +237,8 @@ export class LayerItemState extends EventDispatcher {
      * WMS layer maximum scale denominator
      * If the maximum scale denominator is not defined: -1 is returned
      * If the WMS layer is a group, the maximum scale denominator is the largest of the layers in the group
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get wmsMaxScaleDenominator() {
         if ( this._layerTreeItemCfg.type == 'group' ) {
             if (this._maxScaleDenominator == null) {
@@ -280,18 +264,16 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get checked() {
         return this._checked;
     }
 
     /**
      * Set layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     set checked(val) {
         const newVal = convertBoolean(val);
         // Set new value
@@ -316,9 +298,8 @@ export class LayerItemState extends EventDispatcher {
     /**
      * Layer tree item is visible
      * It depends on the parent visibility
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get visibility() {
         if (this._visibility !== null) {
             return this._visibility;
@@ -328,18 +309,16 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Item symbology
-     *
      * @type {?(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
-     **/
+     */
     get symbology() {
         return this._symbology;
     }
 
     /**
      * Update Item symbology
-     *
-     * @param {(Object|LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} node - The symbology node
-     **/
+     * @param {(object | LayerIconSymbology | LayerSymbolsSymbology | LayerGroupSymbology)} node - The symbology node
+     */
     set symbology(node) {
         if (!node.hasOwnProperty('name')) {
             throw new ValidationError('Node symbology required `name` property!');
@@ -382,9 +361,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Set layer tree item opacity
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     set opacity(val) {
         const newVal = convertNumber(val);
 
@@ -407,18 +385,16 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * The item is in a group as layer
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get isInGroupAsLayer() {
         return this._inGroupAsLayer;
     }
 
     /**
      * The layer as base layer activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get baseLayer() {
         if (this.layerConfig == null) {
             return false;
@@ -428,9 +404,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * The layer display in legend activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get displayInLegend() {
         if (this.layerConfig == null) {
             return true;
@@ -443,9 +418,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * The layer image format
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get imageFormat() {
         if (this.layerConfig == null) {
             return null;
@@ -455,9 +429,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * The layer singleTile activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get singleTile() {
         if (this.layerConfig == null) {
             return true;
@@ -467,9 +440,8 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * The layer cached activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get cached() {
         if (this.layerConfig == null) {
             return false;
@@ -479,18 +451,16 @@ export class LayerItemState extends EventDispatcher {
 
     /**
      * Lizmap layer config
-     *
      * @type {?LayerConfig}
-     **/
+     */
     get layerConfig() {
         return this._layerTreeItemCfg.layerConfig;
     }
 
     /**
      * Calculate and save visibility
-     *
      * @returns {boolean} the calculated visibility
-     **/
+     */
     calculateVisibility() {
         // Save visibility before changing
         const oldVisibility = this._visibility;
@@ -551,10 +521,10 @@ export class LayerLayerState extends LayerItemState {
 
     /**
      * Creating a layer state
-     *
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
-     * @param {Number[]}            layersOrder      - the layers order
+     * @param {number[]}            layersOrder      - the layers order
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
+     * @param parentMapGroup
      */
     constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
         super('layer', layerTreeItemCfg, parentMapGroup);
@@ -580,81 +550,72 @@ export class LayerLayerState extends LayerItemState {
 
     /**
      * Layer type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get layerType() {
         return this._layerType;
     }
 
     /**
      * Layer type from top to bottom
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get layerOrder() {
         return this._layerOrder;
     }
 
     /**
      * The layer extent
-     *
      * @type {Extent}
-     **/
+     */
     get extent() {
         return this.layerConfig.extent;
     }
 
     /**
      * The layer crs
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get crs() {
         return this.layerConfig.crs;
     }
 
     /**
      * Layer popup activated
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get popup() {
         return this.layerConfig.popup;
     }
 
     /**
      * The layer popup source
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get popupSource() {
         return this.layerConfig.popupSource;
     }
 
     /**
      * The layer popup template
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get popupTemplate() {
         return this.layerConfig.popupTemplate;
     }
 
     /**
      * The layer popup max features
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get popupMaxFeatures() {
         return this.layerConfig.popupMaxFeatures;
     }
 
     /**
      * WMS selected layer style name
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get wmsSelectedStyleName() {
         return this._wmsSelectedStyleName;
     }
@@ -662,9 +623,8 @@ export class LayerLayerState extends LayerItemState {
     /**
      * Update WMS selected layer style name
      * based on wmsStyles list
-     *
-     * @param {String} styleName
-     **/
+     * @param {string} styleName
+     */
     set wmsSelectedStyleName(styleName) {
         if (styleName == '') {
             styleName = this.wmsStyles[0].wmsName;
@@ -685,27 +645,24 @@ export class LayerLayerState extends LayerItemState {
 
     /**
      * WMS layer styles
-     *
      * @type {LayerStyleConfig[]}
-     **/
+     */
     get wmsStyles() {
         return this._layerTreeItemCfg.wmsStyles;
     }
 
     /**
      * WMS layer attribution
-     *
      * @type {AttributionConfig}
-     **/
+     */
     get wmsAttribution() {
         return this._layerTreeItemCfg.wmsAttribution;
     }
 
     /**
      * Parameters for OGC WMS Request
-     *
-     * @type {Object}
-     **/
+     * @type {object}
+     */
     get wmsParameters() {
         let params = {
             'LAYERS': this.wmsName,
@@ -721,9 +678,8 @@ export class LayerLayerState extends LayerItemState {
 
     /**
      * Calculate and save visibility
-     *
      * @returns {boolean} the calculated visibility
-     **/
+     */
     calculateVisibility() {
         if (this.symbology instanceof LayerSymbolsSymbology
             && !this.symbology.legendOn) {
@@ -752,10 +708,10 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Creating a vector layer state
-     *
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
-     * @param {Number[]}            layersOrder      - the layers order
+     * @param {number[]}            layersOrder      - the layers order
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
+     * @param parentMapGroup
      */
     constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
         super(layerTreeItemCfg, layersOrder, parentMapGroup)
@@ -774,18 +730,16 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get checked() {
         return super.checked;
     }
 
     /**
      * Set layer tree item is checked
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     set checked(val) {
         if (!this.isSpatial) {
             const newVal = convertBoolean(val);
@@ -798,9 +752,8 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * WMS layer Geographic Bounding Box
-     *
      * @type {?LayerGeographicBoundingBoxConfig}
-     **/
+     */
     get wmsGeographicBoundingBox() {
         if (!this.isSpatial) {
             return null;
@@ -810,9 +763,8 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * The layer extent
-     *
      * @type {?Extent}
-     **/
+     */
     get extent() {
         if (!this.isSpatial) {
             return null;
@@ -822,9 +774,8 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * The layer is spatial
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get isSpatial() {
         if (this.layerConfig.geometryType == 'none'
             || this.layerConfig.geometryType == 'unknown') {
@@ -835,18 +786,16 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * The layer geometry type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get geometryType() {
         return this.layerConfig.geometryType;
     }
 
     /**
      * The layer popup display children activation
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get popupDisplayChildren() {
         return this.layerConfig.popupDisplayChildren;
     }
@@ -854,27 +803,24 @@ export class LayerVectorState extends LayerLayerState {
     /**
      * Vector layer has selected features
      * The selected features is not empty
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get hasSelectedFeatures() {
         return (this._selectedFeatures.length !== 0);
     }
 
     /**
      * Vector layer selection
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get selectedFeatures() {
         return [...this._selectedFeatures];
     }
 
     /**
      * Update vector layer selection
-     *
-     * @param {?String} select - The selection
-     **/
+     * @param {?string} select - The selection
+     */
     set selectedFeatures(selectIds) {
         // Validate selectIds
         if (selectIds != null && !(selectIds instanceof Array)) {
@@ -913,18 +859,16 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Vector layer selection token
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get selectionToken() {
         return this._selectionToken;
     }
 
     /**
      * Update vector layer selection token
-     *
-     * @param {?String} token - The selection token
-     **/
+     * @param {?string} token - The selection token
+     */
     set selectionToken(token) {
         // Validate selection token
         if (!(token == null || typeof(token) == 'string' || (token != null && typeof(token) == 'object'))) {
@@ -992,27 +936,24 @@ export class LayerVectorState extends LayerLayerState {
     /**
      * Vector layer is filtered
      * The expression filter is not null
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get isFiltered() {
         return (this._expressionFilter !== null && this._expressionFilter !== '');
     }
 
     /**
      * Vector layer expression filter
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get expressionFilter() {
         return this._expressionFilter;
     }
 
     /**
      * Update vector layer expression filter
-     *
-     * @param {?String} exp - The QGIS expression
-     **/
+     * @param {?string} exp - The QGIS expression
+     */
     set expressionFilter(exp) {
         if (this._expressionFilter === exp) {
             return;
@@ -1047,18 +988,16 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Vector layer filter token
-     *
-     * @type {?String}
-     **/
+     * @type {?string}
+     */
     get filterToken() {
         return this._filterToken;
     }
 
     /**
      * Update vector layer filter token
-     *
-     * @param {?(String|object)} token - The filter token
-     **/
+     * @param {?(string | object)} token - The filter token
+     */
     set filterToken(token) {
         // Validate filter token
         if (!(token == null || typeof(token) == 'string' || (token != null && typeof(token) == 'object'))) {
@@ -1120,9 +1059,8 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Parameters for OGC WMS Request
-     *
-     * @type {Object}
-     **/
+     * @type {object}
+     */
     get wmsParameters() {
         let params = super.wmsParameters;
         if (this.selectionToken != null) {
@@ -1140,9 +1078,8 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Calculate and save visibility
-     *
      * @returns {boolean} the calculated visibility
-     **/
+     */
     calculateVisibility() {
         if (!this.isSpatial) {
             this._visibility = false;
@@ -1161,10 +1098,10 @@ export class LayerRasterState extends LayerLayerState {
 
     /**
      * Creating a raster layer state
-     *
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
-     * @param {String[]}            layersOrder      - the layers order
+     * @param {string[]}            layersOrder      - the layers order
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
+     * @param parentMapGroup
      */
     constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
         super(layerTreeItemCfg, layersOrder, parentMapGroup)
@@ -1175,18 +1112,16 @@ export class LayerRasterState extends LayerLayerState {
 
     /**
      * The layer provides parameters for external access (layer only)
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get externalWmsToggle() {
         return this.layerConfig.externalWmsToggle;
     }
 
     /**
      * The layer layer external access (layer only)
-     *
-     * @type {?Object}
-     **/
+     * @type {?object}
+     */
     get externalAccess() {
         return this.layerConfig.externalAccess;
     }
@@ -1201,10 +1136,10 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Creating a layer group state
-     *
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
-     * @param {Number[]}            layersOrder        - the layers order
+     * @param {number[]}            layersOrder        - the layers order
      * @param {LayerItemState}      [parentGroup]      - the parent layer group
+     * @param parentMapGroup
      */
     constructor(layerTreeGroupCfg, layersOrder, parentMapGroup) {
         super('group', layerTreeGroupCfg, parentMapGroup);
@@ -1268,9 +1203,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Item map type
-     *
-     * @type {String}
-     **/
+     * @type {string}
+     */
     get mapType() {
         if (this.groupAsLayer) {
             return 'layer';
@@ -1280,9 +1214,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Layer type from top to bottom
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get layerOrder() {
         if (this._layerOrder == -1) {
             for (const layer of this.findLayers()) {
@@ -1296,9 +1229,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * WMS layer Geographic Bounding Box
-     *
      * @type {?LayerGeographicBoundingBoxConfig}
-     **/
+     */
     get wmsGeographicBoundingBox() {
         if (this.layerConfig == null) {
             return null;
@@ -1330,9 +1262,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * The group will be displayed as layer
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get groupAsLayer() {
         if (this.layerConfig == null) {
             return false;
@@ -1342,9 +1273,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * The group is mutually exclusive
-     *
-     * @type {Boolean}
-     **/
+     * @type {boolean}
+     */
     get mutuallyExclusive() {
         if (this.layerConfig == null) {
             return false;
@@ -1354,28 +1284,25 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Children items count
-     *
-     * @type {Number}
-     **/
+     * @type {number}
+     */
     get childrenCount() {
         return this._items.length;
     }
 
     /**
      * Children items
-     *
      * @type {LayerItemState[]}
-     **/
+     */
     get children() {
         return [...this._items];
     }
 
     /**
      * Iterate through children items
-     *
      * @generator
      * @yields {LayerItemState} The next child item
-     **/
+     */
     *getChildren() {
         for (const item of this._items) {
             yield item;
@@ -1384,9 +1311,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Find layer names
-     *
-     * @returns {String[]}
-     **/
+     * @returns {string[]}
+     */
     findLayerNames() {
         let names = []
         for(const item of this.getChildren()) {
@@ -1401,9 +1327,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Find layer items
-     *
      * @returns {LayerLayerState[]}
-     **/
+     */
     findLayers() {
         let items = []
         for(const item of this.getChildren()) {
@@ -1418,9 +1343,8 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Find group items
-     *
      * @returns {LayerGroupState[]}
-     **/
+     */
     findGroups() {
         let items = []
         for(const item of this.getChildren()) {
@@ -1442,9 +1366,8 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Creating the collection of layers and groups state
-     *
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
-     * @param {Number[]}             layersOrder       - the layers order
+     * @param {number[]}             layersOrder       - the layers order
      */
     constructor(layerTreeGroupCfg, layersOrder) {
         super();
@@ -1470,58 +1393,50 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * The root group state
-     *
      * @type {LayerGroupState}
-     **/
+     */
     get root() {
         return this._root;
     }
 
     /**
      * The layers state
-     *
      * @type {Array<LayerVectorState|LayerRasterState>}
-     **/
+     */
     get layers() {
         return [...this._layersMap.values()];
     }
 
     /**
      * The layer names
-     *
-     * @type {String[]}
-     **/
+     * @type {string[]}
+     */
     get layerNames() {
         return [...this._layersMap.keys()];
     }
 
     /**
      * The groups
-     *
      * @type {LayerGroupState[]}
-     **/
+     */
     get groups() {
         return [...this._groupsMap.values()];
     }
 
     /**
      * The group names
-     *
-     * @type {String[]}
-     **/
+     * @type {string[]}
+     */
     get groupNames() {
         return [...this._groupsMap.keys()];
     }
 
     /**
      * Get a layer state by layer name
-     *
-     * @param {String} name - the layer name
-     *
+     * @param {string} name - the layer name
      * @returns {LayerVectorState|LayerRasterState} The layer state associated to the name
-     *
      * @throws {RangeError} The layer name is unknown
-     **/
+     */
     getLayerByName(name) {
         const layer = this._layersMap.get(name);
         if (layer !== undefined) {
@@ -1535,13 +1450,10 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Get a layer state by layer id
-     *
-     * @param {String} layerId - the layer id
-     *
+     * @param {string} layerId - the layer id
      * @returns {LayerVectorState|LayerRasterState} The layer state associated to the id
-     *
      * @throws {RangeError} The layer id is unknown
-     **/
+     */
     getLayerById(layerId) {
         for (const layer of this.getLayers()) {
             if (layer.id === layerId) {
@@ -1553,13 +1465,10 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Get a layer state by WMS Name
-     *
-     * @param {String} wmsName - the layer WMS Name
-     *
+     * @param {string} wmsName - the layer WMS Name
      * @returns {LayerVectorState|LayerRasterState} The layer state associated to the WMS Name
-     *
      * @throws {RangeError} The layer WMS Name is unknown
-     **/
+     */
     getLayerByWmsName(wmsName) {
         for (const layer of this.getLayers()) {
             if (layer.wmsName === wmsName) {
@@ -1571,10 +1480,9 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Iterate through layer states
-     *
      * @generator
      * @yields {LayerVectorState|LayerRasterState} The next layer state
-     **/
+     */
     *getLayers() {
         for (const layer of this._layersMap.values()) {
             yield layer;
@@ -1583,13 +1491,10 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Get a group state by group name
-     *
-     * @param {String} name the group name
-     *
+     * @param {string} name the group name
      * @returns {LayerVectorState|LayerRasterState} The group state associated to the name
-     *
      * @throws {RangeError} The group name is unknown
-     **/
+     */
     getGroupByName(name) {
         const group = this._groupsMap.get(name);
         if (group !== undefined) {
@@ -1603,13 +1508,10 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Get a group state by WMS Name
-     *
-     * @param {String} wmsName the group WMS Name
-     *
+     * @param {string} wmsName the group WMS Name
      * @returns {LayerGroupState} The group state associated to the WMS Name
-     *
      * @throws {RangeError} The group WMS Name is unknown
-     **/
+     */
     getGroupByWmsName(wmsName) {
         for (const group of this.getGroups()) {
             if (group.wmsName === wmsName) {
@@ -1621,10 +1523,9 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Iterate through group states
-     *
      * @generator
      * @yields {LayerGroupState} The next group state
-     **/
+     */
     *getGroups() {
         for (const group of this._groupsMap.values()) {
             yield group;
@@ -1633,13 +1534,10 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Get a layer or group state by name
-     *
-     * @param {String} name the name
-     *
+     * @param {string} name the name
      * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the name
-     *
      * @throws {RangeError} The name is unknown
-     **/
+     */
     getLayerOrGroupByName(name) {
         const layer = this._layersMap.get(name);
         if (layer !== undefined) {
@@ -1655,13 +1553,10 @@ export class LayersAndGroupsCollection extends EventDispatcher {
 
     /**
      * Get a layer or group state by WMS Name
-     *
-     * @param {String} wmsName the WMS Name
-     *
+     * @param {string} wmsName the WMS Name
      * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the WMS Name
-     *
      * @throws {RangeError} The WMS Name is unknown
-     **/
+     */
     getLayerOrGroupByWmsName(wmsName) {
         for (const layer of this.getLayers()) {
             if (layer.wmsName === wmsName) {

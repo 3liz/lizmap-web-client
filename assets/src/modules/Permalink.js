@@ -239,4 +239,4 @@ export default class Permalink {
 
         this._refreshURLsInPermalinkComponent();
     }
-};
+}

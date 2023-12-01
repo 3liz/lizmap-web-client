@@ -119,6 +119,11 @@
                 layerOrder++;
             }
 
+            /**
+             *
+             * @param lizAtlasConfig
+             * @param layerOrder
+             */
             function getAtlasData(lizAtlasConfig, layerOrder) {
 
                 var featureType = lizAtlasConfig.layername;
@@ -144,6 +149,9 @@
                     });
             }
 
+            /**
+             *
+             */
             function updateAtlasData() {
                 // Get data
                 lizMap.getFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType'] + ':', null, 'geom', false, null, null,
@@ -173,6 +181,10 @@
                     });
             }
 
+            /**
+             *
+             * @param lizAtlasConfig
+             */
             function prepareFeatures(lizAtlasConfig) {
 
                 // Get and order features
@@ -223,6 +235,10 @@
                 lizAtlasConfig['features_sorted'] = items;
             }
 
+            /**
+             *
+             * @param lizAtlasConfig
+             */
             function getAtlasHome(lizAtlasConfig) {
 
 
@@ -269,6 +285,11 @@
                 return home;
             }
 
+            /**
+             *
+             * @param lizAtlasConfigArray
+             * @param lizAtlasGlobalConfig
+             */
             function launchAtlas(lizAtlasConfigArray, lizAtlasGlobalConfig) {
 
                 let atlasHTML = '';
@@ -342,6 +363,9 @@
                 adaptAtlasSize();
             }
 
+            /**
+             *
+             */
             function displayAtlasContent(){
                 // Get Atlas home
                 var home = getAtlasHome(lizAtlasConfig);
@@ -384,6 +408,9 @@
                 });
             }
 
+            /**
+             *
+             */
             function adaptAtlasSize() {
                 lizMap.events.on({
                     // Adapt dock size to display metadata
@@ -409,6 +436,9 @@
                 });
             }
 
+            /**
+             *
+             */
             function activateAtlasTrigger() {
                 $('#liz-atlas-select')
                     .change(function () {
@@ -488,6 +518,10 @@
             }
 
 
+            /**
+             *
+             * @param feature
+             */
             function runAtlasItem(feature) {
 
                 // Use OL tools to reproject feature geometry
@@ -560,6 +594,9 @@
                 }
             }
 
+            /**
+             *
+             */
             function deactivateAtlas() {
                 // Stop animation
                 if (lizAtlasTimer) {

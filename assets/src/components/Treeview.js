@@ -18,7 +18,7 @@ export default class Treeview extends HTMLElement {
         };
 
         this._symbolTemplate = symbol =>
-        html`
+            html`
         <li>
             <label class="symbol-title">
                 ${symbol.ruleKey
@@ -38,7 +38,7 @@ export default class Treeview extends HTMLElement {
         </li>`
 
         this._layerTemplate = layerTreeGroupState =>
-        html`
+            html`
         <ul>
             ${layerTreeGroupState.children.map(item => html`
             <li data-testid="${item.name}" class="${this._isVisible(item) ? '' : 'not-visible'}">
