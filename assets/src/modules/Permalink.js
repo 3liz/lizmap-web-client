@@ -42,7 +42,7 @@ export default class Permalink {
             });
         }
 
-        document.querySelectorAll('#input-embed-width-permalink, #input-embed-height-permalink').forEach(input => 
+        document.querySelectorAll('#input-embed-width-permalink, #input-embed-height-permalink').forEach(input =>
             input.addEventListener('input', this._refreshURLsInPermalinkComponent)
         );
 
@@ -213,7 +213,7 @@ export default class Permalink {
         let itemsStyle = [];
         let itemsOpacity = [];
 
-        for (const item of lizMap.mainLizmap.state.rootMapGroup.findMapLayersAndGroups()) {
+        for (const item of mainLizmap.state.rootMapGroup.findMapLayersAndGroups()) {
             if (item.checked){
                 itemsVisibility.push(encodeURIComponent(item.name));
                 itemsStyle.push(item.wmsSelectedStyleName);
