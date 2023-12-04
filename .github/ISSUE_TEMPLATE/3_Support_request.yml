@@ -24,8 +24,9 @@ body:
     attributes:
       label: Versions
       description: |
-        Go in QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard". Finally paste here. There isn't any personal data provided.
+        You must go in QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard". Finally paste here. There isn't any personal data provided.
         Check any messages displayed by the plugin if any. Read https://docs.lizmap.com/current/en/publish/lizmap_plugin/information.html#request-for-support
+        Do not make a screenshot, it's not a searchable by a search engine for instance.
     validations:
       required: true
 
@@ -36,12 +37,6 @@ body:
       options:
         - label: I have done the step just before in the Lizmap QGIS desktop plugin before opening this ticket. Otherwise, my ticket is not considered valid and might get closed.
 #          required: true
-
-  - type: input
-    id: qgis-server-version
-    attributes:
-      label: QGIS server version, only if the section above doesn't mention the QGIS Server version
-      placeholder: 3.16.8
 
   - type: input
     id: os
