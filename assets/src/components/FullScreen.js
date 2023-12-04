@@ -17,13 +17,13 @@ export default class FullScreen extends HTMLElement {
         // Get element selector
         const selector = this.getAttribute('selector');
         if (!selector) {
-            console.log('A selector must be provided');
+            console.warn('Fullscreen: a selector must be provided as an attribute for the element to work.');
             return;
         }
 
         this._elementFullscreened = document.querySelector(selector);
         if (!this._elementFullscreened) {
-            console.log('The selected element does not exist');
+            console.warn('Fullscreen: the selected element does not exist.');
             return;
         }
 
