@@ -30,23 +30,22 @@ class mapCtrl extends lizMapCtrl
             'project' => $project,
         );
         // other map params
-        if ($this->param('layers')) {
-            $url_params['layers'] = $this->param('layers');
-        }
-        if ($this->param('bbox')) {
-            $url_params['bbox'] = $this->param('bbox');
-        }
-        if ($this->param('crs')) {
-            $url_params['crs'] = $this->param('crs');
-        }
-        if ($this->param('filter')) {
-            $url_params['filter'] = $this->param('filter');
-        }
-        if ($this->param('layerStyles')) {
-            $url_params['layerStyles'] = $this->param('layerStyles');
-        }
-        if ($this->param('layerOpacities')) {
-            $url_params['layerOpacities'] = $this->param('layerOpacities');
+        $knownKeyParams = array(
+            'layers',
+            'bbox',
+            'crs',
+            'filter',
+            'layerStyles',
+            'layerOpacities',
+        );
+        // Get redirection parameters
+        $redirectKeyParams = jEvent::notify('getRedirectKeyParams', array('repository' => $repository, 'project' => $project))->getResponse();
+        $keyParams = array_unique(array_merge($knownKeyParams, $redirectKeyParams), SORT_REGULAR);
+        $params = $this->params();
+        foreach ($keyParams as $key) {
+            if (array_key_exists($key, $params)) {
+                $url_params[$key] = $params[$key];
+            }
         }
 
         if ($rep->getType() === 'html') {
