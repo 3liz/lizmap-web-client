@@ -1855,6 +1855,10 @@ a.btn.btn-opacity-layer.active {
   padding: 4px;
 }
 
+.ol-dragzoom{
+  border: solid 2px rgba(255, 0, 0, 0.5);
+}
+
 /*Loading window*/
 #ui-dialog-title-loading {
   font-size:0.7em;
