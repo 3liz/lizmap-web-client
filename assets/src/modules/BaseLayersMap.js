@@ -186,7 +186,8 @@ export default class BaseLayersMap extends olMap {
                             params: {
                                 LAYERS: baseLayerState.itemState.wmsName,
                                 FORMAT: baseLayerState.layerConfig.imageFormat,
-                                DPI: 96
+                                DPI: 96,
+                                TILED: 'true'
                             },
                         })
                     });
@@ -333,7 +334,8 @@ export default class BaseLayersMap extends olMap {
                                     LAYERS: node.wmsName,
                                     FORMAT: node.layerConfig.imageFormat,
                                     STYLES: node.wmsSelectedStyleName,
-                                    DPI: 96
+                                    DPI: 96,
+                                    TILED: 'true'
                                 },
                             })
                         });
