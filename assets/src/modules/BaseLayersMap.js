@@ -12,6 +12,8 @@ import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
 import WMTSTileGrid from 'ol/tilegrid/WMTS.js';
 import {getWidth} from 'ol/extent.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
+import TileGrid from 'ol/tilegrid/TileGrid.js';
+import TileWMS from 'ol/source/TileWMS.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
 import LayerGroup from 'ol/layer/Group.js';
@@ -54,6 +56,23 @@ export default class BaseLayersMap extends olMap {
 
         // Ratio between WMS single tiles and map viewport
         this._WMSRatio = 1.1;
+
+        // Respecting WMS max size
+        const wmsMaxSize = [
+            mainLizmap.initialConfig.options.wmsMaxWidth,
+            mainLizmap.initialConfig.options.wmsMaxheight,
+        ];
+
+        const customTileGrid = new TileGrid({
+            extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+            resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
+            tileSize: this.getSize().map((x, i) => Math.min(Math.ceil(x*this._WMSRatio/2), Math.ceil(wmsMaxSize[i]*this._WMSRatio/2))),
+        });
+
+        const useTileWms = this.getSize().map((x) => Math.ceil(x*this._WMSRatio)).reduce(
+            (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || x > wmsMaxSize[i],
+            false,
+        );
 
         // Mapping between states and OL layers and groups
         this._statesOlLayersandGroupsMap = new Map();
@@ -154,6 +173,25 @@ export default class BaseLayersMap extends olMap {
                         },
                     })
                 });
+                if (useTileWms) {
+                    baseLayer = new TileLayer({
+                        // extent: extent,
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        source: new TileWMS({
+                            url: mainLizmap.serviceURL,
+                            projection: qgisProjectProjection,
+                            serverType: 'qgis',
+                            tileGrid: customTileGrid,
+                            params: {
+                                LAYERS: baseLayerState.itemState.wmsName,
+                                FORMAT: baseLayerState.layerConfig.imageFormat,
+                                DPI: 96,
+                                TILED: 'true'
+                            },
+                        })
+                    });
+                }
             } else if (baseLayerState.type === BaseLayerTypes.Empty) {
                 this._hasEmptyBaseLayer = true;
             }
@@ -282,6 +320,34 @@ export default class BaseLayersMap extends olMap {
                             (image.getImage()).src = src + '&ts=' + Date.now();
                         });
                     }
+
+                    if (useTileWms) {
+                        layer = new TileLayer({
+                            // extent: extent,
+                            minResolution: minResolution,
+                            maxResolution: maxResolution,
+                            source: new TileWMS({
+                                url: mainLizmap.serviceURL,
+                                serverType: 'qgis',
+                                tileGrid: customTileGrid,
+                                params: {
+                                    LAYERS: node.wmsName,
+                                    FORMAT: node.layerConfig.imageFormat,
+                                    STYLES: node.wmsSelectedStyleName,
+                                    DPI: 96,
+                                    TILED: 'true'
+                                },
+                            })
+                        });
+
+                        // Force no cache w/ Firefox
+                        if(navigator.userAgent.includes("Firefox")){
+                            layer.getSource().setTileLoadFunction((image, src) => {
+                                (image.getImage()).src = src + '&ts=' + Date.now();
+                            });
+                        }
+                    }
+
                 }
 
                 layer.setVisible(node.visibility);
