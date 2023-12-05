@@ -198,6 +198,7 @@ class WMTSRequest extends OGCRequest
         $wmsParams['width'] = $tileWidth;
         $wmsParams['height'] = $tileHeight;
         $wmsParams['dpi'] = '96';
+        $wmsParams['tiled'] = 'true';
         if (preg_match('#png#', $Format)) {
             $wmsParams['transparent'] = 'true';
         }
