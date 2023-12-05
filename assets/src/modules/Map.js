@@ -7,7 +7,9 @@ import { getPointResolution } from 'ol/proj.js';
 import DragPan from 'ol/interaction/DragPan.js';
 import MouseWheelZoom from 'ol/interaction/MouseWheelZoom.js';
 import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
+import DragZoom from 'ol/interaction/DragZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
+import { always } from 'ol/events/condition.js';
 
 /** Class initializing Openlayers Map. */
 export default class Map extends olMap {
@@ -33,6 +35,19 @@ export default class Map extends olMap {
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
             target: 'newOlMap'
+        });
+
+        // Zoom to box
+        const dragZoom = new DragZoom({
+            condition: always
+        });
+
+        document.querySelector('#navbar .pan').addEventListener('click', () => {
+            this.removeInteraction(dragZoom);
+        });
+
+        document.querySelector('#navbar .zoom').addEventListener('click', () => {
+            this.addInteraction(dragZoom);
         });
 
         this._newOlMap = false;
