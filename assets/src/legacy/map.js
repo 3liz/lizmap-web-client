@@ -669,6 +669,114 @@ window.lizMap = function() {
     /**
      *
      */
+    function buildNativeScales() {
+        if (('EPSG:900913' in Proj4js.defs)
+            && !('EPSG:3857' in Proj4js.defs)) {
+            Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
+        }
+
+        var proj = config.options.projection;
+        if (proj.ref) {
+            if ( !(proj.ref in Proj4js.defs) ) {
+                Proj4js.defs[proj.ref]=proj.proj4;
+            }
+            // Build proj
+            new OpenLayers.Projection(proj.ref);
+        } else {
+            proj.ref = 'EPSG:3857';
+            proj.proj4 = Proj4js.defs['EPSG:3857'];
+        }
+
+        var scales = [];
+        if ('mapScales' in config.options){
+            scales = Array.from(config.options.mapScales);
+        }
+
+        if (scales.length < 2){
+            scales = [config.options.maxScale,config.options.minScale];
+        }
+        scales.sort(function(a, b) {
+            return Number(b) - Number(a);
+        });
+
+        var useNativeZoomLevels = false;
+        if (!('use_native_zoom_levels' in config.options)) {
+            if (proj.ref == 'EPSG:3857') {
+                useNativeZoomLevels = true;
+            }
+            if (scales.length == 2) {
+                useNativeZoomLevels = true;
+            }
+        } else {
+            useNativeZoomLevels = config.options['use_native_zoom_levels'];
+        }
+
+        // Nothing to change
+        if (!useNativeZoomLevels) {
+            return;
+        }
+
+        if (proj.ref == 'EPSG:3857') {
+            var projOSM = new OpenLayers.Projection('EPSG:3857');
+            var resolutions = [];
+            config.options.zoomLevelNumber = 24;
+            var maxScale = scales[0];
+            var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
+            var minScale = scales[scales.length-1];
+            var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
+            var res = 156543.03390625;
+            var n = 1;
+            while ( res > minRes && n < config.options.zoomLevelNumber) {
+                if ( res < maxRes ) {
+                    //Add extra scale
+                    resolutions.push(res);
+                }
+                res = res/2;
+                n++;
+            }
+            maxRes = resolutions[0];
+            minRes = resolutions[resolutions.length-1];
+            //Add extra scale
+            var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
+            var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
+            config.options['resolutions'] = resolutions;
+
+            if (resolutions.length != 0 ) {
+                config.options.zoomLevelNumber = resolutions.length;
+                config.options.maxScale = maxScale;
+                config.options.minScale = minScale;
+            }
+        } else if (scales.length == 2) {
+            var nativeScales = [];
+            var maxScale = scales[0];
+            var minScale = scales[scales.length-1];
+            let n=1;
+            while (10*Math.pow(10,n)-1 < maxScale) {
+                nativeScales = nativeScales.concat([10, 25, 50].map((x) => Math.pow(10,n)*x));
+                n++;
+            }
+            let mapScales = [];
+            for (const scale of nativeScales) {
+                if (scale < minScale) {
+                    continue;
+                }
+                if (scale > maxScale) {
+                    break;
+                }
+                mapScales.push(scale);
+            }
+            mapScales.sort(function(a, b) {
+                return Number(b) - Number(a);
+            });
+            config.options.mapScales = mapScales;
+            config.options.maxScale = scales[0];
+            config.options.minScale = scales[scales.length-1];
+        }
+    }
+
+    /**
+     *
+     */
     function beforeLayerTreeCreated() {
         if (
             (('osmMapnik' in config.options)
@@ -839,6 +947,7 @@ window.lizMap = function() {
      * @param pNode
      */
     function getLayerTree(nested,pNode) {
+        return;
         pNode.children = [];
 
         var service = lizUrls.service;
@@ -2304,7 +2413,7 @@ window.lizMap = function() {
                             $('#navbar').show();
                             $('#overview-box').show();
                         }
-    
+
                         // clean locate layer
                         clearDrawLayer('locatelayer');
                         return false;
@@ -5042,16 +5151,17 @@ window.lizMap = function() {
                 // before Lizmap will create the layer tree
                 self.config = config;
                 self.events.triggerEvent("beforetreecreated", self);
-                beforeLayerTreeCreated();
+                buildNativeScales();
+                //beforeLayerTreeCreated();
 
                 var firstLayer = capability.nestedLayers[0];
-                getLayerTree(firstLayer, tree);
-                analyseNode(tree);
+                //getLayerTree(firstLayer, tree);
+                //analyseNode(tree);
 
                 // Re-save the config in self
                 self.config = config;
                 self.keyValueConfig = keyValueConfig;
-                self.tree = tree;
+                //self.tree = tree;
                 self.events.triggerEvent("treecreated", self);
 
                 // create the map
