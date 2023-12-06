@@ -45,7 +45,8 @@ describe('OptionsConfig', function () {
             "theme": "light",
             //"wmsMaxHeight": 3000,
             //"wmsMaxWidth": 3000,
-            //"fixed_scale_overview_map": true
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": false,
         })
         expect(opt.hideProject).to.be.eq(true)
 
@@ -67,7 +68,100 @@ describe('OptionsConfig', function () {
         expect(opt.wmsMaxHeight).to.be.eq(3000)
         expect(opt.wmsMaxWidth).to.be.eq(3000)
         expect(opt.fixed_scale_overview_map).to.be.eq(true)
+        // Default value for multiple mapScales without use_native_zoom_levels defined
+        expect(opt.use_native_zoom_levels).to.be.eq(false)
     })
+
+    it('use_native_zoom_levels', function () {
+        let opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs",
+                "ref": "EPSG:3857"
+            },
+            "bbox": [
+                "-3.5",
+                "-1.0",
+                "3.5",
+                "1.0"
+            ],
+            "mapScales": [
+                10000,
+                25000,
+                50000,
+                100000,
+                250000,
+                500000
+            ],
+            "minScale": 10000,
+            "maxScale": 500000,
+            "initialExtent": [
+                -3.5,
+                -1.0,
+                3.5,
+                1.0
+            ],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "hideProject": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "light",
+            //"wmsMaxHeight": 3000,
+            //"wmsMaxWidth": 3000,
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": true,
+        })
+
+        // Default value for EPSG:3857 without use_native_zoom_levels defined
+        expect(opt.use_native_zoom_levels).to.be.eq(true)
+
+        opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=longlat +datum=WGS84 +no_defs",
+                "ref": "EPSG:4326"
+            },
+            "bbox": [
+                "-3.5",
+                "-1.0",
+                "3.5",
+                "1.0"
+            ],
+            "mapScales": [
+                10000,
+                500000
+            ],
+            "minScale": 10000,
+            "maxScale": 500000,
+            "initialExtent": [
+                -3.5,
+                -1.0,
+                3.5,
+                1.0
+            ],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "hideProject": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "light",
+            //"wmsMaxHeight": 3000,
+            //"wmsMaxWidth": 3000,
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": true,
+        })
+
+        // Default value for 2 mapScales without use_native_zoom_levels defined
+        expect(opt.use_native_zoom_levels).to.be.eq(true)
+    })
+
     it('ValidationError', function () {
         try {
             new OptionsConfig()

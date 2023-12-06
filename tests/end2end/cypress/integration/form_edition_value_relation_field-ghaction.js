@@ -172,10 +172,10 @@ describe('Form edition all field type', function() {
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
-        cy.get('#jforms_view_edition_geom').invoke('val')
+        cy.get('#jforms_view_edition_geom').invoke('val') // POINT(0.9309666914884532 47.03679573512455)
             .should('contain', 'POINT')
-            .should('contain', '(0.816082')
-            .should('contain', ' 47.072853')
+            .should('contain', '(0.93096')
+            .should('contain', ' 47.036795')
 
         cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
         cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
@@ -192,10 +192,10 @@ describe('Form edition all field type', function() {
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
-        cy.get('#jforms_view_edition_geom').invoke('val')
+        cy.get('#jforms_view_edition_geom').invoke('val') // POINT(3.128232316182592 47.03679573512455)
             .should('contain', 'POINT')
-            .should('contain', '(3.192879')
-            .should('contain', ' 47.072853')
+            .should('contain', '(3.128232')
+            .should('contain', ' 47.036795')
 
         cy.get('#jforms_view_edition_code_with_geom_exp option').should('have.length', 2)
         cy.get('#jforms_view_edition_code_with_geom_exp option').first().should('have.text', '')
