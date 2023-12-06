@@ -20,7 +20,9 @@ export default class Permalink {
                     this._ignoreHashChange = false;
                     return;
                 }
-                this._runPermalink()
+                if (window.location.hash) {
+                    this._runPermalink();
+                }
             }
         );
 
@@ -128,9 +130,14 @@ export default class Permalink {
 
     _runPermalink(setExtent = true) {
         const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
+
+        if (window.location.hash === "") {
+            return;
+        }
+
         const [extent4326, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
 
-        if (setExtent) {
+        if (setExtent && extent4326.length === 4) {
             const mapExtent = transformExtent(
                 extent4326.map(coord => parseFloat(coord)),
                 'EPSG:4326',
