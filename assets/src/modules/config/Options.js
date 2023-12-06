@@ -27,6 +27,7 @@ const optionalProperties = {
     'wmsMaxHeight': {type: 'number', default: 3000},
     'wmsMaxWidth': {type: 'number', default: 3000},
     'fixed_scale_overview_map': {type: 'boolean', default: true},
+    'use_native_zoom_levels': {type: 'boolean', nullable: true, default: null},
 };
 
 /**
@@ -54,6 +55,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {Number}   [cfg.wmsMaxHeight=3000]             - the image max height for WMS GetMap request
      * @param {Number}   [cfg.wmsMaxWidth=3000]              - the image max width for WMS GetMap request
      * @param {Boolean}  [cfg.fixed_scale_overview_map=true] - does the Overview map have fixed scale ?
+     * @param {Boolean}  [cfg.use_native_zoom_levels=false]  - does the map use native zoom levels ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -191,5 +193,23 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get fixed_scale_overview_map() {
         return this._fixed_scale_overview_map;
+    }
+
+    /**
+     * The map uses native zoom levels
+     * @type {boolean}
+     */
+    get use_native_zoom_levels() {
+        if (this._use_native_zoom_levels !== null) {
+            return this._use_native_zoom_levels;
+        }
+
+        if (this.projection.ref == 'EPSG:3857') {
+            return true;
+        }
+        if (this.mapScales.length == 2) {
+            return true;
+        }
+        return false;
     }
 }
