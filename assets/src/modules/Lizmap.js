@@ -95,6 +95,10 @@ export default class Lizmap {
         });
     }
 
+    get newOlMap() {
+        return this.map._newOlMap;
+    }
+
     /**
      * @param {boolean} mode - switch new OL map on top of OL2 one
      */
