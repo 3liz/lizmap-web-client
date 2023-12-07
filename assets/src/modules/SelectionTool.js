@@ -259,7 +259,6 @@ export default class SelectionTool {
         });
     }
 
-
     /**
      * Is selection tool active or not
      * @todo active state should be set on UI's events
@@ -268,7 +267,8 @@ export default class SelectionTool {
      * @returns {boolean}
      */
     get isActive() {
-        return document.getElementById('button-selectiontool').parentElement.classList.contains('active')
+        const isActive = document.getElementById('button-selectiontool')?.parentElement?.classList?.contains('active');
+        return isActive ? true : false;
     }
 
     get layers() {
