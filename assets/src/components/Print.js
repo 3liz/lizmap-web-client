@@ -156,7 +156,7 @@ export default class Print extends HTMLElement {
                         </div>
                     </div>
                 </div>
-                <div class='print-rotation'>
+                <div class='print-rotation' style="display:none;">
                     <span>${lizDict['print.rotation']}</span>
                     <div class="input-append">
                         <input type="number" class="input-small" @change=${(event) => { this._rotation = parseInt(event.target.value) }}>
