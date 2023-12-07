@@ -2282,31 +2282,38 @@ window.lizMap = function() {
             }
         }
         else{
-            if (!text || text == null || text == '')
+            if (!text || text == null || text == ''){
                 return false;
-            // Use openlayers map popup anchored
-            popupContainerId = "liz_layer_popup";
-            popup = new OpenLayers.Popup.LizmapAnchored(
-                popupContainerId,
-                eventLonLatInfo,
-                null,
-                text,
-                null,
-                true,
-                function() {
-                    map.removePopup(this);
-                    if(mCheckMobile()){
-                        $('#navbar').show();
-                        $('#overview-box').show();
-                    }
+            }
 
-                    // clean locate layer
-                    clearDrawLayer('locatelayer');
-                    return false;
-                }
-            );
-            popup.panMapIfOutOfView = true;
-            map.addPopup(popup);
+            if (lizMap.mainLizmap.newOlMap) {
+                document.getElementById('popup-content').innerHTML = text;
+            } else {
+                // Use openlayers map popup anchored
+                popupContainerId = "liz_layer_popup";
+                popup = new OpenLayers.Popup.LizmapAnchored(
+                    popupContainerId,
+                    eventLonLatInfo,
+                    null,
+                    text,
+                    null,
+                    true,
+                    function() {
+                        map.removePopup(this);
+                        if(mCheckMobile()){
+                            $('#navbar').show();
+                            $('#overview-box').show();
+                        }
+    
+                        // clean locate layer
+                        clearDrawLayer('locatelayer');
+                        return false;
+                    }
+                );
+                popup.panMapIfOutOfView = true;
+                map.addPopup(popup);
+                popup.verifySize();
+            }
 
             // Activate Boostrap 2 tabs here as they are not
             // automatically activated when created in popup anchored
@@ -2315,7 +2322,6 @@ window.lizMap = function() {
                 $(this).tab('show');
             });
 
-            popup.verifySize();
             // Hide navbar and overview in mobile mode
             if(mCheckMobile()){
                 $('#navbar').hide();

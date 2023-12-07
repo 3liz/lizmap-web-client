@@ -491,6 +491,18 @@ export default class Digitizing {
         return null;
     }
 
+    /**
+     * Is digitizing tool active or not
+     * @todo active state should be set on UI's events
+     * @readonly
+     * @memberof Digitizing
+     * @returns {boolean}
+     */
+    get isActive() {
+        const isActive = document.getElementById('button-draw')?.parentElement?.classList?.contains('active');
+        return isActive ? true : false;
+    }
+
     get isEdited() {
         return this._isEdited;
     }
