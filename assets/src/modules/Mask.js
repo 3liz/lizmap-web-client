@@ -71,11 +71,11 @@ export default class Mask extends Layer {
 
         // background (clockwise)
         this.context_.beginPath();
-        this.context_.moveTo(0, 0);
-        this.context_.lineTo(cwidth, 0);
-        this.context_.lineTo(cwidth, cheight);
-        this.context_.lineTo(0, cheight);
-        this.context_.lineTo(0, 0);
+        this.context_.moveTo(-1, -1);
+        this.context_.lineTo(cwidth+1, -1);
+        this.context_.lineTo(cwidth+1, cheight+1);
+        this.context_.lineTo(-1, cheight+1);
+        this.context_.lineTo(-1, -1);
         this.context_.closePath();
 
         const size = this.getSize();
@@ -95,21 +95,18 @@ export default class Mask extends Layer {
         const gamma = Math.atan(extentHalfHeight / extentHalfWidth) - rotation;
         // omega = angle between diagonal and vertical (with rotation).
         const omega = Math.atan(extentHalfWidth / extentHalfHeight) - rotation;
-        // Calculation of each corner.
-        const x1 = center[0] - Math.cos(gamma) * diagonal;
-        const y1 = center[1] + Math.sin(gamma) * diagonal;
-        const x2 = center[0] + Math.sin(omega) * diagonal;
-        const y2 = center[1] + Math.cos(omega) * diagonal;
-        const x3 = center[0] + Math.cos(gamma) * diagonal;
-        const y3 = center[1] - Math.sin(gamma) * diagonal;
-        const x4 = center[0] - Math.sin(omega) * diagonal;
-        const y4 = center[1] - Math.cos(omega) * diagonal;
+        // Calculation of up left corner.
+        const x1 = Math.round(center[0] - Math.cos(gamma) * diagonal);
+        const y1 = Math.round(center[1] + Math.sin(gamma) * diagonal);
+        // Calculation of down right corner
+        const x2 = Math.round(center[0] + Math.cos(gamma) * diagonal);
+        const y2 = Math.round(center[1] - Math.sin(gamma) * diagonal);
 
         // hole (counter-clockwise)
         this.context_.moveTo(x1, y1);
+        this.context_.lineTo(x2, y1);
         this.context_.lineTo(x2, y2);
-        this.context_.lineTo(x3, y3);
-        this.context_.lineTo(x4, y4);
+        this.context_.lineTo(x1, y2);
         this.context_.lineTo(x1, y1);
         this.context_.closePath();
 
