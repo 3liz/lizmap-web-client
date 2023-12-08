@@ -12,7 +12,7 @@ export default class Scaleline extends HTMLElement {
             target: this,
             minWidth: 76,
             bar: true,
-            text: true,
+            text: !mainLizmap.initialConfig.options.hide_numeric_scale_value,
             dpi: ADJUSTED_DPI
         });
 

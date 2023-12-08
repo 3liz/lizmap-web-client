@@ -47,6 +47,7 @@ describe('OptionsConfig', function () {
             //"wmsMaxWidth": 3000,
             //"fixed_scale_overview_map": true,
             //"use_native_zoom_levels": false,
+            //"hide_numeric_scale_value": false,
         })
         expect(opt.hideProject).to.be.eq(true)
 
@@ -68,6 +69,7 @@ describe('OptionsConfig', function () {
         expect(opt.wmsMaxHeight).to.be.eq(3000)
         expect(opt.wmsMaxWidth).to.be.eq(3000)
         expect(opt.fixed_scale_overview_map).to.be.eq(true)
+        expect(opt.hide_numeric_scale_value).to.be.eq(false)
         // Default value for multiple mapScales without use_native_zoom_levels defined
         expect(opt.use_native_zoom_levels).to.be.eq(false)
     })

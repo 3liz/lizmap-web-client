@@ -28,6 +28,7 @@ const optionalProperties = {
     'wmsMaxWidth': {type: 'number', default: 3000},
     'fixed_scale_overview_map': {type: 'boolean', default: true},
     'use_native_zoom_levels': {type: 'boolean', nullable: true, default: null},
+    'hide_numeric_scale_value': {type: 'boolean', default: false},
 };
 
 /**
@@ -40,22 +41,23 @@ export class OptionsConfig  extends BaseObjectConfig {
     /**
      * Create an options config instance based on a config object
      * @param {object}   cfg                                  - the lizmap config object for options
-     * @param {number[]} cfg.bbox                            - the project and web services max extent
-     * @param {number[]} cfg.initialExtent                   - the map extent at the loading page
-     * @param {number[]} cfg.mapScales                       - the map scales
-     * @param {number}   cfg.minScale                        - the map's min scale
-     * @param {number}   cfg.maxScale                        - the map's max scale
-     * @param {object}   cfg.projection                      - the web map projection
-     * @param {number}   cfg.pointTolerance                  - the point tolerance for QGIS Server WMS GetFeatureInfo request
-     * @param {number}   cfg.lineTolerance                   - the line tolerance for QGIS Server WMS GetFeatureInfo request
-     * @param {Number}   cfg.polygonTolerance                - the polygon tolerance for QGIS Server WMS GetFeatureInfo request
-     * @param {String}   cfg.popupLocation                   - the popup location in the User interface: dock, bottom-dock, right-dock, mini-dock, map
-     * @param {String}   cfg.datavizLocation                 - the popup location in the User interface: dock, bottom-dock, right-dock
-     * @param {Boolean}  [cfg.hideProject=false]             - is the project hidden in user interface ? Only services are available.
-     * @param {Number}   [cfg.wmsMaxHeight=3000]             - the image max height for WMS GetMap request
-     * @param {Number}   [cfg.wmsMaxWidth=3000]              - the image max width for WMS GetMap request
-     * @param {Boolean}  [cfg.fixed_scale_overview_map=true] - does the Overview map have fixed scale ?
-     * @param {Boolean}  [cfg.use_native_zoom_levels=false]  - does the map use native zoom levels ?
+     * @param {number[]} cfg.bbox                             - the project and web services max extent
+     * @param {number[]} cfg.initialExtent                    - the map extent at the loading page
+     * @param {number[]} cfg.mapScales                        - the map scales
+     * @param {number}   cfg.minScale                         - the map's min scale
+     * @param {number}   cfg.maxScale                         - the map's max scale
+     * @param {object}   cfg.projection                       - the web map projection
+     * @param {number}   cfg.pointTolerance                   - the point tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {number}   cfg.lineTolerance                    - the line tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {Number}   cfg.polygonTolerance                 - the polygon tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {String}   cfg.popupLocation                    - the popup location in the User interface: dock, bottom-dock, right-dock, mini-dock, map
+     * @param {String}   cfg.datavizLocation                  - the popup location in the User interface: dock, bottom-dock, right-dock
+     * @param {Boolean}  [cfg.hideProject=false]              - is the project hidden in user interface ? Only services are available.
+     * @param {Number}   [cfg.wmsMaxHeight=3000]              - the image max height for WMS GetMap request
+     * @param {Number}   [cfg.wmsMaxWidth=3000]               - the image max width for WMS GetMap request
+     * @param {Boolean}  [cfg.fixed_scale_overview_map=true]  - does the Overview map have fixed scale ?
+     * @param {Boolean}  [cfg.use_native_zoom_levels=false]   - does the map use native zoom levels ?
+     * @param {Boolean}  [cfg.hide_numeric_scale_value=false] - does the scale line hide numeric scale value ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -211,5 +213,13 @@ export class OptionsConfig  extends BaseObjectConfig {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Hide numeric scale value
+     * @type {boolean}
+     */
+    get hide_numeric_scale_value() {
+        return this._hide_numeric_scale_value;
     }
 }
