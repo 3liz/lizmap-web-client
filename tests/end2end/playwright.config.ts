@@ -68,6 +68,14 @@ export default defineConfig({
       dependencies: ['setup'],
     },
 
+    {
+      name: 'end2end',
+      use: {
+        browserName: 'chromium',
+      },
+      dependencies: ['setup'],
+      testIgnore: '**/localonly/**',
+    },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',

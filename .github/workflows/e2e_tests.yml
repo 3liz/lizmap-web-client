@@ -116,7 +116,7 @@ jobs:
 
       - name: Run Playwright tests
         id: test-playwright
-        run: cd end2end && npx playwright test --project=chromium
+        run: cd end2end && npx playwright test --project=end2end
 
       - name: Notify in case of playwright failure, from mainstream branches only
         uses: peter-evans/commit-comment@v3
