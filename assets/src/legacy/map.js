@@ -61,11 +61,6 @@ window.lizMap = function() {
      * {Object({key:<OpenLayers.Control>})} Dictionary of controls
      */
     var controls = {};
-    /**
-     * PRIVATE Property: tree
-     * {object} The layer's tree
-     */
-    var tree = {config:{type:'group'}};
 
     /**
      * PRIVATE Property: getFeatureInfoVendorParams
@@ -97,29 +92,6 @@ window.lizMap = function() {
         'ignplan': 'ign-plan',
         'ignphoto': 'ign-photo',
         'igncadastral': 'ign-cadastral'
-    };
-
-    /**
-     * PRIVATE Property: externalBaselayersReplacement
-     *
-     */
-    var startupBaselayersReplacement = {
-        'osm-mapnik': 'osm',
-        'osm-stamen-toner': 'osm-toner',
-        'open-topo-map': 'opentopomap',
-        'osm-cyclemap': 'osm-cycle',
-        'google-satellite': 'gsat',
-        'google-hybrid': 'ghyb',
-        'google-terrain': 'gphy',
-        'google-street': 'gmap',
-        'bing-road': 'bmap',
-        'bing-aerial': 'baerial',
-        'bing-hybrid': 'bhybrid',
-        'ign-scan': 'ignmap',
-        'ign-plan': 'ignplan',
-        'ign-photo': 'ignphoto',
-        'ign-cadastral': 'igncadastral',
-        'empty': 'emptyBaselayer'
     };
 
     /**
@@ -669,146 +641,76 @@ window.lizMap = function() {
     /**
      *
      */
-    function beforeLayerTreeCreated() {
-        if (
-            (('osmMapnik' in config.options)
-        && config.options.osmMapnik == 'True') ||
-       (('osmStamenToner' in config.options)
-        && config.options.osmStamenToner == 'True') ||
-       (('openTopoMap' in config.options)
-        && config.options.openTopoMap == 'True') ||
-       (('osmCyclemap' in config.options)
-        && config.options.osmCyclemap == 'True'
-        && ('OCMKey' in config.options)) ||
-       (('googleStreets' in config.options)
-        && config.options.googleStreets == 'True') ||
-       (('googleSatellite' in config.options)
-        && config.options.googleSatellite == 'True') ||
-       (('googleHybrid' in config.options)
-        && config.options.googleHybrid == 'True') ||
-       (('googleTerrain' in config.options)
-        && config.options.googleTerrain == 'True') ||
-       (('bingStreets' in config.options)
-        && config.options.bingStreets == 'True'
-        && ('bingKey' in config.options)) ||
-       (('bingSatellite' in config.options)
-        && config.options.bingSatellite == 'True'
-        && ('bingKey' in config.options)) ||
-       (('bingHybrid' in config.options)
-        && config.options.bingHybrid == 'True'
-        && ('bingKey' in config.options)) ||
-       (('ignTerrain' in config.options)
-        && config.options.ignTerrain == 'True') ||
-       (('ignStreets' in config.options)
-        && config.options.ignStreets == 'True') ||
-       (('ignSatellite' in config.options)
-        && config.options.ignSatellite == 'True') ||
-       (('ignCadastral' in config.options)
-        && config.options.ignCadastral == 'True')
-        ) {
+    function buildNativeScales() {
+        if (('EPSG:900913' in Proj4js.defs)
+            && !('EPSG:3857' in Proj4js.defs)) {
             Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
+        }
 
-            var proj = config.options.projection;
-            if ( !(proj.ref in Proj4js.defs) )
+        var proj = config.options.projection;
+        if (proj.ref) {
+            if ( !(proj.ref in Proj4js.defs) ) {
                 Proj4js.defs[proj.ref]=proj.proj4;
-            var projection = new OpenLayers.Projection(proj.ref);
-
-            var projOSM = new OpenLayers.Projection('EPSG:3857');
+            }
+            // Build proj
+            new OpenLayers.Projection(proj.ref);
+        } else {
             proj.ref = 'EPSG:3857';
             proj.proj4 = Proj4js.defs['EPSG:3857'];
+        }
 
-            // Transform the bbox
-            var bbox = config.options.bbox;
-            var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-            extent = extent.transform(projection,projOSM);
-            bbox = extent.toArray();
+        var scales = [];
+        if ('mapScales' in config.options){
+            scales = Array.from(config.options.mapScales);
+        }
 
-            var scales = [];
-            if ('mapScales' in config.options){
-                scales = Array.from(config.options.mapScales);
-            }
-            if ( scales.length == 0 ){
-                scales = [config.options.maxScale,config.options.minScale];
-            }
+        if (scales.length < 2){
+            scales = [config.options.maxScale,config.options.minScale];
+        }
+        scales.sort(function(a, b) {
+            return Number(b) - Number(a);
+        });
 
-            config.options.projection = proj;
-            config.options.bbox = bbox;
-            config.options.zoomLevelNumber = 16;
+        var useNativeZoomLevels = false;
+        if (!('use_native_zoom_levels' in config.options)) {
+            if (proj.ref == 'EPSG:3857') {
+                useNativeZoomLevels = true;
+            }
+            if (scales.length == 2) {
+                useNativeZoomLevels = true;
+            }
+        } else {
+            useNativeZoomLevels = config.options['use_native_zoom_levels'];
+        }
 
-            // Transform the initial bbox
-            if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
-                var initBbox = config.options.initialExtent;
-                var initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
-                initialExtent = initialExtent.transform(projection,projOSM);
-                config.options.initialExtent = initialExtent.toArray();
-            }
+        // Nothing to change
+        if (!useNativeZoomLevels) {
+            return;
+        }
 
-            // Specify zoom level number
-            if (
-                (('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
-             (('osmStamenToner' in config.options) && config.options.osmStamenToner == 'True') ||
-             (('openTopoMap' in config.options) && config.options.openTopoMap == 'True') ||
-             (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True' && ('OCMKey' in config.options)) ||
-             (('bingStreets' in config.options) && config.options.bingStreets == 'True' && ('bingKey' in config.options)) ||
-             (('bingSatellite' in config.options) && config.options.bingSatellite == 'True' && ('bingKey' in config.options)) ||
-             (('bingHybrid' in config.options) && config.options.bingHybrid == 'True' && ('bingKey' in config.options)) ||
-             (('ignTerrain' in config.options) && config.options.ignTerrain == 'True') ||
-             (('ignStreets' in config.options) && config.options.ignStreets == 'True')) {
-                config.options.zoomLevelNumber = 23;
-            }
-            if ((('googleStreets' in config.options) && config.options.googleStreets == 'True') ||
-             (('googleHybrid' in config.options) && config.options.googleHybrid == 'True') ||
-             (('ignCadastral' in config.options) && config.options.ignCadastral == 'True')) {
-                config.options.zoomLevelNumber = 20;
-            }
-            if ( 'googleSatellite' in config.options && config.options.googleSatellite == 'True'){
-                config.options.zoomLevelNumber = 21;
-            }
-            if ( 'ignSatellite' in config.options && config.options.ignSatellite == 'True' ) {
-                config.options.zoomLevelNumber = 22;
-            }
-            config.options.maxScale = 591659030.3224756;
-            config.options.minScale = 2257.0000851534865;
-            var hasBaselayers = (('emptyBaselayer' in config.options) && config.options.emptyBaselayer == "True");
-            if ( !hasBaselayers ) {
-                for ( var l in config.layers ) {
-                    if ( config.layers[l]["baseLayer"] == "True" ) {
-                        hasBaselayers = true;
-                        break;
-                    }
-                }
-            }
-            // for minRes evaluating to scale 100
-            // zoomLevelNumber is equal to 24
-            if ( hasBaselayers ) {
-                config.options.zoomLevelNumber = 24;
-            }
-
+        if (proj.ref == 'EPSG:3857') {
+            var projOSM = new OpenLayers.Projection('EPSG:3857');
             var resolutions = [];
-            if (scales.length != 0 ) {
-                scales.sort(function(a, b) {
-                    return Number(b) - Number(a);
-                });
-                var maxScale = scales[0];
-                var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
-                var minScale = scales[scales.length-1];
-                var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
-                var res = 156543.03390625;
-                var n = 1;
-                while ( res > minRes && n < config.options.zoomLevelNumber) {
-                    if ( res < maxRes ) {
-                        //Add extra scale
-                        resolutions.push(res);
-                    }
-                    res = res/2;
-                    n++;
+            config.options.zoomLevelNumber = 24;
+            var maxScale = scales[0];
+            var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
+            var minScale = scales[scales.length-1];
+            var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
+            var res = 156543.03390625;
+            var n = 1;
+            while ( res > minRes && n < config.options.zoomLevelNumber) {
+                if ( res < maxRes ) {
+                    //Add extra scale
+                    resolutions.push(res);
                 }
-                maxRes = resolutions[0];
-                minRes = resolutions[resolutions.length-1];
-                //Add extra scale
-                var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
-                var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
+                res = res/2;
+                n++;
             }
+            maxRes = resolutions[0];
+            minRes = resolutions[resolutions.length-1];
+            //Add extra scale
+            var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
+            var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
             config.options['resolutions'] = resolutions;
 
             if (resolutions.length != 0 ) {
@@ -816,283 +718,32 @@ window.lizMap = function() {
                 config.options.maxScale = maxScale;
                 config.options.minScale = minScale;
             }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * PRIVATE function: getLayerTree
-     * get the layer tree
-     * create OpenLayers WMS base or not layer {<OpenLayers.Layer.WMS>}
-     * push these layers in layers or baselayers
-     *
-     * Parameters:
-     * nested - {Object} a capability layer
-     * pNode - {Object} the nested tree node
-     *
-     * Dependencies:
-     * config
-     * layers
-     * baselayers
-     * @param nested
-     * @param pNode
-     */
-    function getLayerTree(nested,pNode) {
-        pNode.children = [];
-
-        var service = lizUrls.service;
-        if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
-            service = [];
-            for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
-                service.push(
-                    OpenLayers.Util.urlAppend(
-                        lizUrls.publicUrlList[j],
-                        new URLSearchParams(lizUrls.params)
-                    )
-                );
+        } else if (scales.length == 2) {
+            var nativeScales = [];
+            var maxScale = scales[0];
+            var minScale = scales[scales.length-1];
+            let n=1;
+            while (10*Math.pow(10,n)-1 < maxScale) {
+                nativeScales = nativeScales.concat([10, 25, 50].map((x) => Math.pow(10,n)*x));
+                n++;
             }
-        }
-
-        var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
-
-        for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
-            var serviceUrl = service
-            var layer = nested.nestedLayers[i];
-            var qgisLayerName = layer.name;
-            if ( ('useLayerIDs' in config.options) && config.options.useLayerIDs == 'True' )
-                qgisLayerName = layerIdMap[layer.name];
-            else if ( layer.name in shortNameMap )
-                qgisLayerName = shortNameMap[layer.name];
-            // The found name is not in config
-            if (!(qgisLayerName in config.layers)) {
-                continue;
+            let mapScales = [];
+            for (const scale of nativeScales) {
+                if (scale < minScale) {
+                    continue;
+                }
+                if (scale > maxScale) {
+                    break;
+                }
+                mapScales.push(scale);
             }
-            var layerConfig = config.layers[qgisLayerName];
-            var layerName = cleanName(qgisLayerName);
-            layerCleanNames[layerName] = qgisLayerName;
-
-            if ( qgisLayerName.toLowerCase() == 'hidden' )
-                continue;
-            if ( qgisLayerName.toLowerCase() == 'overview' ) {
-                config.options.hasOverview = true;
-                continue;
-            }
-            if ( !layerConfig )
-                continue;
-
-            if ( layerConfig.groupAsLayer == 'True' )
-                layerConfig.type = 'layer';
-
-            var wmsStyles = $.map(layer.styles, function(s){
-                return s.name;
+            mapScales.sort(function(a, b) {
+                return Number(b) - Number(a);
             });
-            if ( wmsStyles.length != 0 ) {
-                layerConfig.styles = wmsStyles;
-            } else {
-                layerConfig.styles = [''];
-            }
-            // if the layer is not the Overview and had a config
-            // creating the {<OpenLayers.Layer.WMS>} and the tree node
-            var node = {name:layerName,config:layerConfig,parent:pNode};
-            var styles = ('styles' in layerConfig) ? layerConfig.styles[0] : 'default' ;
-            if( !( typeof lizLayerStyles === 'undefined' )
-        && layerName in lizLayerStyles
-        && lizLayerStyles[ layerName ]
-            ){
-                styles = lizLayerStyles[ layerName ];
-            }
-            var layerWmsParams = {
-                layers:layer.name
-                ,styles: styles
-                ,version:'1.3.0'
-                ,exceptions:'application/vnd.ogc.se_inimage'
-                ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
-                ,dpi:96
-            };
-            if (layerWmsParams.format != 'image/jpeg')
-                layerWmsParams['transparent'] = true;
-
-            var wmtsLayer = null;
-            if ( layerConfig.cached == 'True' && wmtsCapabilities ) {
-                $.each(wmtsCapabilities.contents.layers, function(i, l) {
-                    if ( l.identifier != layer.name)
-                        return true;
-                    var wmtsOptions = {
-                        layer: layer.name,
-                        matrixSet: config.options.projection.ref,
-                        name: layerName,
-                        params: layerWmsParams,
-                        isBaseLayer: (layerConfig.baseLayer == 'True'),
-                        alwaysInRange: false,
-                        url: serviceUrl
-                    };
-                    if ( $.inArray( config.options.projection.ref.toUpperCase(), ['EPSG:3857','EPSG:900913'] ) != -1
-              && ('resolutions' in config.options)
-              && config.options.resolutions.length != 0 ) {
-                        var resolutions = config.options.resolutions;
-                        var maxRes = resolutions[0];
-                        var numZoomLevels = resolutions.length;
-                        var zoomOffset = 0;
-                        var res = 156543.03390625;
-                        while ( res > maxRes ) {
-                            zoomOffset += 1;
-                            res = 156543.03390625 / Math.pow(2, zoomOffset);
-                        }
-                        wmtsOptions['zoomOffset'] = zoomOffset;
-                        wmtsOptions['maxResolution'] = maxRes;
-                        wmtsOptions['numZoomLevels'] = numZoomLevels;
-                        wmtsOptions['minZoomLevel'] = zoomOffset;
-                        wmtsOptions['resolutions'] = resolutions;
-                    }
-                    wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, wmtsOptions);
-                    wmtsLayer.yx = {};
-                    wmtsLayer.reverseAxisOrder = function() {
-                        var projCode = this.projection.getCode();
-                        return parseFloat('1.3.0') >= 1.3 &&
-                    !!(this.yx[projCode] || (OpenLayers.Projection.defaults[projCode] &&
-                    OpenLayers.Projection.defaults[projCode].yx));
-                    };
-                    return false;
-                });
-            }
-
-            // Override WMS url if external WMS server
-            var extConfig = null;
-            if ('externalAccess' in layerConfig && layerConfig.externalAccess
-       && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess ) {
-                extConfig = layerConfig.externalAccess;
-                extConfig.layers = decodeURI(extConfig.layers);
-                serviceUrl = extConfig.url;
-                layerWmsParams = {
-                    layers: extConfig.layers
-                    ,styles:(extConfig.styles) ? extConfig.styles : ''
-                    ,crs:(extConfig.crs) ? extConfig.crs : 'EPSG:3857'
-                    ,format:(extConfig.format) ? extConfig.format : 'image/png'
-                    ,transparent:(extConfig.transparent) ? extConfig.transparent : 'true'
-                    ,exceptions:'application/vnd.ogc.se_inimage'
-                }
-            }
-
-            // Add optional filter at start
-            if( !( typeof lizLayerFilter === 'undefined' )
-          && qgisLayerName in lizLayerFilter
-          && lizLayerFilter[ qgisLayerName ]
-            ){
-                layerWmsParams['FILTER'] = qgisLayerName+':'+lizLayerFilter[ qgisLayerName ];
-            }
-
-            if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
-                // creating the base layer
-                baselayers.push( wmtsLayer );
-            }
-            else if (layerConfig.type == 'layer' && wmtsLayer != null) {
-                wmtsLayer.options.minScale = layerConfig.maxScale;
-                wmtsLayer.options.maxScale =(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale;
-                if ( layer.nestedLayers.length != 0 ) {
-                    var scales = getLayerScale(layer,null,null);
-                    wmtsLayer.options.minScale = scales.maxScale;
-                    wmtsLayer.options.maxScale = scales.minScale;
-                }
-                wmtsLayer.isVisible = (layerConfig.toggled=='True');
-                wmtsLayer.visibility = false;
-                wmtsLayer.transitionEffect = null;
-                wmtsLayer.removeBackBufferDelay = 250;
-                wmtsLayer.order = getLayerOrder(layer);
-                layers.push( wmtsLayer );
-            }
-            else if (layerConfig.baseLayer == 'True') {
-                // creating the base layer
-                baselayers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
-                    ,layerWmsParams
-                    ,{isBaseLayer:true
-                        ,gutter:(layerConfig.cached == 'True') ? 0 : 5
-                        ,buffer:0
-                        ,singleTile:(layerConfig.singleTile == 'True')
-                        ,ratio:1
-                    }));
-            }
-            else if (layerConfig.type == 'layer') {
-                var wmsLayer = new OpenLayers.Layer.WMS(layerName,serviceUrl
-                    ,layerWmsParams
-                    ,{isBaseLayer:false
-                        ,minScale:layerConfig.maxScale
-                        ,maxScale:(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale
-                        ,isVisible:(layerConfig.toggled=='True')
-                        ,visibility:false
-                        ,gutter:(layerConfig.cached == 'True') ? 0 : 5
-                        ,buffer:0
-                        ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
-                        ,removeBackBufferDelay:250
-                        ,singleTile:(layerConfig.singleTile == 'True' || (layerConfig.cached == 'True' && !wmtsCapabilities))
-                        ,ratio:1
-                        ,order:getLayerOrder(layer)
-                    });
-                if ( layer.nestedLayers.length != 0 ) {
-                    var scales = getLayerScale(layer,null,null);
-                    wmsLayer.minScale = scales.maxScale;
-                    wmsLayer.options.minScale = scales.maxScale;
-                    wmsLayer.maxScale = scales.minScale;
-                    wmsLayer.options.maxScale = scales.minScale;
-                }
-                // External WMS layers - respect the image format of the WMS source layer
-                // We do not want to respect the configuration layerConfig.imageFormat
-                // to avoid requesting a format not compatible with the external WMS server
-                // Fix the jpeg WMS layers requesting png
-                if (extConfig && 'format' in layerWmsParams && 'params' in wmsLayer
-              && wmsLayer.params['FORMAT'] != layerWmsParams.format) {
-                    wmsLayer.params['FORMAT'] = layerWmsParams.format;
-                }
-                layers.push( wmsLayer );
-            }
-            // creating the layer tree because it's a group, has children and is not a base layer
-            if (layerConfig.type == 'group' && layer.nestedLayers.length != 0 && layerConfig.baseLayer == 'False')
-                getLayerTree(layer,node);
-            if (layerConfig.baseLayer != 'True')
-                pNode.children.push(node);
-
-            // Add bbox from WMS data into lizmap configuration (used by switcher-layers-actions
-            layerConfig.bbox = layer.bbox;
-
+            config.options.mapScales = mapScales;
+            config.options.maxScale = scales[0];
+            config.options.minScale = scales[scales.length-1];
         }
-    }
-
-    /**
-     * PRIVATE function: analyseNode
-     * analyse Node Config
-     * define if the node has to be a child of his parent node
-     *
-     * Parameters:
-     * aNode - {Object} a node config
-     *
-     * Returns:
-     * {Boolean} maintains the node in the tree
-     * @param aNode
-     */
-    function analyseNode(aNode) {
-        var nodeConfig = aNode.config;
-        if (nodeConfig.type == 'layer' && nodeConfig.baseLayer != 'True')
-            return true;
-        else if (nodeConfig.type == 'layer')
-            return false;
-
-        if (!('children' in aNode))
-            return false;
-        var children = aNode.children;
-        var result = false;
-        var removeIdx = [];
-        for (var i=0, len=children.length; i<len; i++) {
-            var child = children[i];
-            var analyse = analyseNode(child);
-            if (!analyse)
-                removeIdx.push(i);
-            result = (result || analyse);
-        }
-        removeIdx.reverse();
-        for (var i=0, len=removeIdx.length; i<len; i++) {
-            children.splice(removeIdx[i],1);
-        }
-        return result;
     }
 
     /**
@@ -5036,16 +4687,13 @@ window.lizMap = function() {
                 // before Lizmap will create the layer tree
                 self.config = config;
                 self.events.triggerEvent("beforetreecreated", self);
-                beforeLayerTreeCreated();
+                buildNativeScales();
 
                 var firstLayer = capability.nestedLayers[0];
-                getLayerTree(firstLayer, tree);
-                analyseNode(tree);
 
                 // Re-save the config in self
                 self.config = config;
                 self.keyValueConfig = keyValueConfig;
-                self.tree = tree;
                 self.events.triggerEvent("treecreated", self);
 
                 // create the map
@@ -5317,179 +4965,6 @@ window.lizMap = function() {
  */
 lizMap.events.on({
     'mapcreated':function(evt){
-        // Add empty baselayer to the map
-        if ( ('emptyBaselayer' in evt.config.options)
-         && evt.config.options.emptyBaselayer == 'True') {
-        // creating the empty base layer
-            const layerConfig = {};
-            layerConfig.title = lizDict['baselayer.empty.title'];
-            layerConfig.name = 'emptyBaselayer';
-            evt.config.layers['emptyBaselayer'] = layerConfig;
-        }
-
-        // Add OpenStreetMap, Google Maps, Bing Maps, IGN Geoportail
-        // baselayers to the map
-        if (
-            (('osmMapnik' in evt.config.options)
-    && evt.config.options.osmMapnik == 'True') ||
-    (('osmStamenToner' in evt.config.options)
-     && evt.config.options.osmStamenToner == 'True') ||
-    (('openTopoMap' in evt.config.options)
-     && evt.config.options.openTopoMap == 'True') ||
-    (('osmCyclemap' in evt.config.options)
-     && evt.config.options.osmCyclemap == 'True'
-     && ('OCMKey' in evt.config.options)) ||
-    (('googleStreets' in evt.config.options)
-     && evt.config.options.googleStreets == 'True') ||
-    (('googleSatellite' in evt.config.options)
-     && evt.config.options.googleSatellite == 'True') ||
-    (('googleHybrid' in evt.config.options)
-     && evt.config.options.googleHybrid == 'True') ||
-    (('googleTerrain' in evt.config.options)
-     && evt.config.options.googleTerrain == 'True') ||
-    (('bingStreets' in evt.config.options)
-     && evt.config.options.bingStreets == 'True'
-     && ('bingKey' in evt.config.options)) ||
-    (('bingSatellite' in evt.config.options)
-     && evt.config.options.bingSatellite == 'True'
-     && ('bingKey' in evt.config.options)) ||
-    (('bingHybrid' in evt.config.options)
-     && evt.config.options.bingHybrid == 'True'
-     && ('bingKey' in evt.config.options)) ||
-    (('ignTerrain' in evt.config.options)
-     && evt.config.options.ignTerrain == 'True') ||
-    (('ignStreets' in evt.config.options)
-     && evt.config.options.ignStreets == 'True') ||
-    (('ignSatellite' in evt.config.options)
-     && evt.config.options.ignSatellite == 'True') ||
-    (('ignCadastral' in evt.config.options)
-     && evt.config.options.ignCadastral == 'True')
-        ) {
-            //adding baselayers
-            var maxExtent = null;
-            if ( OpenLayers.Projection.defaults['EPSG:900913'].maxExtent )
-                maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:900913'].maxExtent);
-            else if ( OpenLayers.Projection.defaults['EPSG:3857'].maxExtent )
-                maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
-
-            var lOptions = {zoomOffset:0,maxResolution:156543.03390625};
-            if (('resolutions' in evt.config.options)
-          && evt.config.options.resolutions.length != 0 ){
-                var resolutions = evt.config.options.resolutions;
-                var maxRes = resolutions[0];
-                var numZoomLevels = resolutions.length;
-                var zoomOffset = 0;
-                var res = 156543.03390625;
-                while ( res > maxRes ) {
-                    zoomOffset += 1;
-                    res = 156543.03390625 / Math.pow(2, zoomOffset);
-                }
-                lOptions['zoomOffset'] = zoomOffset;
-                lOptions['maxResolution'] = maxRes;
-                lOptions['numZoomLevels'] = numZoomLevels;
-            }
-
-            if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
-                var osmCfg = {
-                    "name":"osm"
-                    ,"title":"OpenStreetMap"
-                    ,"type":"baselayer"
-                };
-                evt.config.layers['osm-mapnik'] = osmCfg;
-            }
-
-            if (('osmStamenToner' in evt.config.options) && evt.config.options.osmStamenToner == 'True') {
-                var stamenTonerCfg = {
-                    "name":"osm-toner"
-                    ,"title":"OSM Stamen Toner"
-                    ,"type":"baselayer"
-                };
-                evt.config.layers['osm-stamen-toner'] = stamenTonerCfg;
-            }
-
-            if (('openTopoMap' in evt.config.options) && evt.config.options.openTopoMap == 'True') {
-                var openTopoMapCfg = {
-                    "name":"opentopomap"
-                    ,"title":"OpenTopoMap"
-                    ,"type":"baselayer"
-                };
-                evt.config.layers['open-topo-map'] = openTopoMapCfg;
-            }
-
-            if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in evt.config.options)) {
-                var cyclemapCfg = {
-                    "name":"osm-cycle"
-                    ,"title":"OSM CycleMap"
-                    ,"type":"baselayer"
-                };
-                evt.config.layers['osm-cycle'] = cyclemapCfg;
-            }
-            try {
-                if (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options))  {
-                    var bmapCfg = {
-                        "name":"bmap"
-                        ,"title":"Bing Road"
-                        ,"type":"baselayer"
-                    };
-                    evt.config.layers['bing-map'] = bmapCfg;
-                }
-                if (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options))  {
-                    var baerialCfg = {
-                        "name":"baerial"
-                        ,"title":"Bing Aerial"
-                        ,"type":"baselayer"
-                    };
-                    evt.config.layers['bing-aerial'] = baerialCfg;
-                }
-                if (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options))  {
-                    var bhybridCfg = {
-                        "name":"bhybrid"
-                        ,"title":"Bing Hybrid"
-                        ,"type":"baselayer"
-                    };
-                    evt.config.layers['bing-hybrid'] = bhybridCfg;
-                }
-
-
-                // IGN base layers
-                if ('ignKey' in evt.config.options){
-
-                    if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') {
-                        var ignmapCfg = {
-                            "name": "ign-map"
-                            , "title": "IGN Scan"
-                            , "type": "baselayer"
-                        };
-                        evt.config.layers['ign-map'] = ignmapCfg;
-                    }
-                }
-                if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') {
-                    var ignplanCfg = {
-                        "name": "ignplan"
-                        , "title": "IGN Plan"
-                        , "type": "baselayer"
-                    };
-                    evt.config.layers['ign-plan'] = ignplanCfg;
-                }
-                if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True') {
-                    var ignphotoCfg = {
-                        "name": "ignphoto"
-                        , "title": "IGN Photos"
-                        , "type": "baselayer"
-                    };
-                    evt.config.layers['ign-photo'] = ignphotoCfg;
-                }
-                if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True') {
-                    var igncadastralCfg = {
-                        "name": "igncadastral"
-                        , "title": "IGN Cadastre"
-                        , "type": "baselayer"
-                    };
-                    evt.config.layers['ign-cadastral'] = igncadastralCfg;
-                }
-            } catch(e) {
-            }
-        }
     }
     ,
     'uicreated': function(evt){

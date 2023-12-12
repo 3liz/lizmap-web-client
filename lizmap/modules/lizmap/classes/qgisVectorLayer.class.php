@@ -77,8 +77,12 @@ class qgisVectorLayer extends qgisMapLayer
         $this->defaultValues = $propLayer['defaults'];
         $this->constraints = $propLayer['constraints'];
         $this->wfsFields = $propLayer['wfsFields'];
-        $this->webDavFields = $propLayer['webDavFields'];
-        $this->webDavBaseUris = $propLayer['webDavBaseUris'];
+        if (array_key_exists('webDavFields', $propLayer)) {
+            $this->webDavFields = $propLayer['webDavFields'];
+        }
+        if (array_key_exists('webDavBaseUris', $propLayer)) {
+            $this->webDavBaseUris = $propLayer['webDavBaseUris'];
+        }
     }
 
     /**

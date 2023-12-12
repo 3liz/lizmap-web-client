@@ -60,9 +60,14 @@ export default class Print extends HTMLElement {
                         }
                     });
 
-                    this._printScales = Array.from(mainLizmap.config.options.mapScales);
-                    this._printScales.reverse();
-                    this._printScale = 50000;
+                    const dpi = ADJUSTED_DPI;
+                    const inchesPerMeter = 1000 / 25.4;
+                    this._printScales = mainLizmap.map.getView().getResolutions().map((r) => {return Math.round(r * inchesPerMeter * dpi);})
+                    this._printScale = this._printScales[0];
+
+                    //this._printScales = Array.from(mainLizmap.config.options.mapScales);
+                    //this._printScales.reverse();
+                    //this._printScale = 50000;
 
                     this._updateScaleFromResolution();
 
@@ -156,7 +161,7 @@ export default class Print extends HTMLElement {
                         </div>
                     </div>
                 </div>
-                <div class='print-rotation'>
+                <div class='print-rotation' style="display:none;">
                     <span>${lizDict['print.rotation']}</span>
                     <div class="input-append">
                         <input type="number" class="input-small" @change=${(event) => { this._rotation = parseInt(event.target.value) }}>
