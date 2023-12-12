@@ -8,6 +8,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+- Fix support of SSL PostgreSQL connection in PostgreSQL layers 
+
+
 ## 3.6.8 - 2023-11-28
 
 ### Update
