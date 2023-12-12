@@ -222,13 +222,15 @@ describe('Filter layer data by polygon for groups', function () {
 
         // 2/ popup
         cy.mapClick(630, 415)
+        //cy.mapClick(605, 400)
         cy.wait('@postGetFeatureInfo')
 
+        cy.get('.lizmapPopupTitle').should('have.length', 1)
         cy.get('.lizmapPopupTitle').should('have.text', 'townhalls_pg')
 
         cy.get('.lizmapPopupDiv .feature-edit').should('have.class', 'hide')
 
-        cy.mapClick(555, 345) //588,420
+        cy.mapClick(575, 275)
         cy.wait('@postGetFeatureInfo')
         cy.get('.lizmapPopupDiv .feature-edit').should('not.have.class', 'hide')
 
@@ -357,7 +359,15 @@ describe('Filter layer data by polygon for groups', function () {
 
         cy.get('.lizmapPopupDiv .feature-edit').should('not.have.class', 'hide')
 
-        cy.mapClick(555, 345) //588,420
+        cy.mapClick(605, 400)
+        cy.wait('@postGetFeatureInfo')
+
+        cy.get('.lizmapPopupTitle').should('have.length', 1)
+        cy.get('.lizmapPopupTitle').should('have.text', 'townhalls_pg')
+
+        cy.get('.lizmapPopupDiv .feature-edit').should('not.have.class', 'hide')
+
+        cy.mapClick(575, 275)
         cy.wait('@postGetFeatureInfo')
         cy.get('.lizmapPopupDiv .feature-edit').should('not.have.class', 'hide')
 

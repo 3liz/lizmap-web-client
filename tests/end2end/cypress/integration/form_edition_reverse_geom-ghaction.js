@@ -7,7 +7,7 @@ describe('Form edition reverse geom', function () {
 
     it('must reverse geom', function () {
         //Launch edition via the feature popup
-        cy.mapClick(708, 505)
+        cy.mapClick(650, 415)
         cy.get('#popupcontent .feature-edit').click()
 
         // Go to digitization tab

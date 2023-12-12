@@ -354,21 +354,35 @@ var lizLayerActionButtons = function() {
                 if(mapProjection == 'EPSG:900913')
                     mapProjection = 'EPSG:3857';
 
-                if( !( 'bbox' in itemConfig ) || !( mapProjection in itemConfig['bbox'] ) ){
+                /*if( !( 'bbox' in itemConfig ) || !( mapProjection in itemConfig['bbox'] ) ){
                     console.log('The layer bbox information has not been found in config');
                     console.log(itemConfig);
                     return false;
-                }
+                }*/
 
-                var lex = itemConfig['bbox'][mapProjection]['bbox'];
+                /*var lex = itemConfig['bbox'][mapProjection]['bbox'];
                 var lBounds = new OpenLayers.Bounds(
                     lex[0],
                     lex[1],
                     lex[2],
                     lex[3]
-                );
+                );*/
+
+                if ( !('extent' in itemConfig) ) {
+                    console.log('The layer extent information has not been found in config');
+                    console.log(itemConfig);
+                    return false;
+                }
+                if ( !('crs' in itemConfig) ) {
+                    console.log('The layer crs information has not been found in config');
+                    console.log(itemConfig);
+                    return false;
+                }
+                var lBounds = OpenLayers.Bounds.fromArray(itemConfig['extent']);
+                lBounds = lBounds.transform(itemConfig['crs'],mapProjection);
+
                 // Reverse axis
-                if (OpenLayers.Projection.defaults[mapProjection] &&
+                /*if (OpenLayers.Projection.defaults[mapProjection] &&
                     OpenLayers.Projection.defaults[mapProjection].yx) {
                     lBounds = new OpenLayers.Bounds(
                         lex[1],
@@ -376,7 +390,7 @@ var lizLayerActionButtons = function() {
                         lex[3],
                         lex[2]
                     );
-                }
+                }*/
                 lizMap.map.zoomToExtent( lBounds );
 
                 return false;
