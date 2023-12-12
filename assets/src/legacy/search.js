@@ -1,3 +1,5 @@
+import {transformExtent} from 'ol/proj.js';
+
 var lizSearch = function() {
 
     // Attributes
@@ -183,8 +185,8 @@ var lizSearch = function() {
                 }
                 break;
             case 'ign':
-                service = 'https://wxs.ign.fr/essentiels/geoportail/ols?';
-            break;
+                service = 'https://data.geopf.fr/geocodage/completion/';
+                break;
             case 'google':
                 if ( google && 'maps' in google && 'Geocoder' in google.maps ){
                     service = new google.maps.Geocoder();
@@ -236,66 +238,20 @@ var lizSearch = function() {
                         }, 'json');
                     break;
                 case 'ign':
-                    var xmlIGN = '<?xml version="1.0" encoding="UTF-8"?>';
-                        xmlIGN +=   '<XLS ';
-                        xmlIGN +=       'xmlns:gml="http://www.opengis.net/gml" ';
-                        xmlIGN +=       'xmlns="http://www.opengis.net/xls" ';
-                        xmlIGN +=       'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" ';
-                        xmlIGN +=        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">';
-                        xmlIGN +=           '<RequestHeader srsName="epsg:4326"/>';
-                        xmlIGN +=           '<Request maximumResponses="10" methodName="GeocodeRequest" requestID="uid42" version="1.2">';
-                        xmlIGN +=               '<GeocodeRequest returnFreeForm="false">';
-                        xmlIGN +=                   '<Address countryCode="StreetAddress">';
-                        xmlIGN +=                      '<freeFormAddress>'+$('#search-query').val()+'</freeFormAddress>';
-                        xmlIGN +=                   '</Address>';
-                        xmlIGN +=                '</GeocodeRequest>';
-                        xmlIGN +=           '</Request>';
-                        xmlIGN +=    '</XLS>';
-
-                    $.get(
-                        encodeURI(service+'xls='+xmlIGN)
-                        ,function(xml) {
-                            var text = '';
-                            var count = 0;
-
-                            $(xml).find("GeocodedAddress").each(function () {
-                                if (count > 9){
-                                    return false;
-                                }
-                                var bbox = $(this).find("Place[type=Bbox]").text().split(';');
-
-                                var number = $(this).find("Building").attr('number');
-                                var street = $(this).find("Street").text();
-                                var municipality = $(this).find("Place[type=Municipality]").text();
-                                var departement = $(this).find("Place[type=Departement]").text();
-
-                                var formatted_address = '';
-
-                                if(number && number !== ''){
-                                    formatted_address += number + ' ';
-                                }
-                                if(street !== ''){
-                                    formatted_address += street + ', ';
-                                }
-                                if(municipality !== ''){
-                                    formatted_address += municipality + ', ';
-                                }
-                                if(departement !== ''){
-                                    formatted_address += departement;
-                                }
-
-                                bbox = new OpenLayers.Bounds(bbox);
-                                if ( extent.intersectsBounds(bbox) ) {
-                                    var lab = formatted_address.replace(labrex,'<b style="color:#0094D6;">$1</b>');
-                                    text += '<li><a href="#'+bbox.toBBOX()+'">'+lab+'</a></li>';
-                                    count++;
-                                }
-
-                             });
-                            if (count == 0 || text == ''){
-                                text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
-                            }
-                            updateExternalSearch( '<li><b>IGN</b><ul>'+text+'</ul></li>' );
+                    let mapExtent4326 = transformExtent(lizMap.mainLizmap.map.getView().calculateExtent(), lizMap.mainLizmap.projection, 'EPSG:4326');
+                    let queryParam = '?text='+$('#search-query').val()+'&type=StreetAddress&maximumResponses=10&bbox='+mapExtent4326
+                    $.getJSON(encodeURI(service+queryParam), function(data ) {
+                        let text = '';
+                        let count = 0;
+                        for( const result of data.results) {
+                            var lab = result.fulltext.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                            text += '<li><a href="#'+result.x+','+result.y+','+result.x+','+result.y+'">'+lab+'</a></li>';
+                            count++;
+                        }
+                        if (count == 0 || text == ''){
+                            text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
+                        }
+                        updateExternalSearch( '<li><b>IGN</b><ul>'+text+'</ul></li>' );
                     });
                     break;
                 case 'google':
