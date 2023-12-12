@@ -276,6 +276,9 @@ class qgisVectorLayer extends qgisMapLayer
                     'password' => $dtParams->password,
                     'timeout' => $timeout,
                 );
+                if (!empty($dtParams->sslmode)) {
+                    $jdbParams['sslmode'] = $dtParams->sslmode;
+                }
             }
             if (!empty($dtParams->schema) && $setSearchPathFromLayer) {
                 $jdbParams['search_path'] = '"'.$dtParams->schema.'",public';
