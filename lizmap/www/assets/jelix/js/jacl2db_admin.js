@@ -494,6 +494,12 @@ $("document").ready( function () {
                         if (type === 'display') {
                             let content = tplUserLinks.cloneNode(true);
                             $(content).find('.user-rights-link').attr('href', data.rights);
+                            if (data.profile) {
+                                $(content).find('.user-profile-link').attr('href', data.profile);
+                            }
+                            else {
+                                $(content).find('.user-profile-link').remove();
+                            }
 
                             let div = document.createElement("div");
                             div.appendChild(content);
