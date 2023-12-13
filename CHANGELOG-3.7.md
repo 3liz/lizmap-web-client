@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.0 - 2023-12-13
+
 ### Added
 
 * New theme of the Lizmap Web Client interface
