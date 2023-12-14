@@ -30,7 +30,16 @@ with open(json_file, 'r') as f:
 
 for version in versions:
     if version['branch'] == f'{major}.{minor}':
-        version['latest_release_date'] = datetime.today().strftime('%Y-%m-%d')
+        date = datetime.today().strftime('%Y-%m-%d')
+        version['latest_release_date'] = date
+
+        if not version['first_release_date']:
+            # First stable release on the branch
+            print(f'First release for branch for {major}.{minor}')
+            # 'bugfix' variable must be equal to 0
+            version['first_release_date'] = date
+            version['status'] = "stable"
+
         version['latest_release_version'] = f'{major}.{minor}.{bugfix}'
         break
 else:
