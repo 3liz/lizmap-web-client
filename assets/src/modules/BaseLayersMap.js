@@ -478,6 +478,15 @@ export default class BaseLayersMap extends olMap {
             },
             ['baselayers.selection.changed']
         );
+
+        // Create the highlight layer
+        // used to display features on top of all layers
+        this._highlightLayer = new VectorLayer({
+            source: new VectorSource({
+                wrapX: false
+            })
+        });
+        this.addLayer(this._highlightLayer);
     }
 
     get hasEmptyBaseLayer() {
@@ -499,6 +508,21 @@ export default class BaseLayersMap extends olMap {
 
     get overlayLayersGroup(){
         return this._overlayLayersGroup;
+    }
+
+    /**
+     * Add highlight features on top of all layer
+     * @param {Feature[]} features 
+     */
+    addHighlightFeatures(features){
+        this._highlightLayer.getSource().addFeatures(features);
+    }
+    
+    /**
+     * Clear all highlight features
+     */
+    clearHighlightFeatures() {
+        this._highlightLayer.getSource().clear();
     }
 
     /**
