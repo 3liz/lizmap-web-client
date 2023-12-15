@@ -4591,23 +4591,23 @@ window.lizMap = function() {
                 const wmsCapaData = responses[2].value;
                 const wmtsCapaData = responses[3].value;
                 const wfsCapaData = responses[4].value;
+                let featuresExtent = responses[5].value?.features?.[0]?.bbox;
+                let startupFeatures = responses[5].value?.features;
+                
+                if(featuresExtent){
+                    for (const feature of startupFeatures) {
+                        featuresExtent = extend(featuresExtent, feature.bbox);
+                    }
+                }
 
                 self.events.triggerEvent("configsloaded", {
                     initialConfig: config,
                     wmsCapabilities: wmsCapaData,
                     wmtsCapabilities: wmtsCapaData,
                     wfsCapabilities: wfsCapaData,
+                    startupFeatures: responses[5].value,
                 });
-
-                let featuresExtent = responses[5].value?.features?.[0]?.bbox;
-                let features = responses[5].value?.features;
-
-                if(featuresExtent){
-                    for (const feature of features) {
-                        featuresExtent = extend(featuresExtent, feature.bbox);
-                    }
-                }
-
+                
                 getFeatureInfo = responses[6].value;
 
                 const domparser = new DOMParser();
@@ -4727,26 +4727,9 @@ window.lizMap = function() {
 
                 // initialize the map
                 // Set map extent depending on options
-                var verifyingVisibility = true;
-                var hrefParam = OpenLayers.Util.getParameters(window.location.href);
                 if (!map.getCenter()) {
                     const zoomToClosest = window.location.hash.substring(1).split('|')[0].split(',').length === 4;
                     map.zoomToExtent(map.initialExtent, zoomToClosest);
-                    if(featuresExtent){
-                        var format = new OpenLayers.Format.GeoJSON({
-                            ignoreExtraDims: true
-                        });
-                        var locatelayer = map.getLayersByName('locatelayer')[0];
-                        for (const feature of features) {
-                            if( feature.geometry != null){
-                                var feat = format.read(feature)[0];
-                                feat.geometry.transform('EPSG:4326', map.getProjection());
-                                locatelayer.addFeatures([feat]);
-                                locatelayer.setVisibility(true);
-                            }
-                        }
-                    }
-                    verifyingVisibility = false;
                 }
 
                 updateContentSize();
