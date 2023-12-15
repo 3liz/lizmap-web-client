@@ -280,11 +280,6 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
-			message: "#^Call to function is_array\\(\\) with int\\|non\\-empty\\-string will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
@@ -311,17 +306,7 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
-			message: "#^Property editionCtrl\\:\\:\\$layerName is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
 			message: "#^Property editionCtrl\\:\\:\\$layerXml \\(SimpleXMLElement\\) does not accept default value of type string\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$layerXml is never read, only written\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
