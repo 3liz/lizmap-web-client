@@ -17,6 +17,9 @@ import TileWMS from 'ol/source/TileWMS.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
 import LayerGroup from 'ol/layer/Group.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
 
 import DragPan from "ol/interaction/DragPan.js";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
@@ -487,6 +490,12 @@ export default class BaseLayersMap extends olMap {
             })
         });
         this.addLayer(this._highlightLayer);
+
+        // Add startup features to map if any
+        const startupFeatures = mainLizmap.state.map.startupFeatures;
+        if (startupFeatures) {
+            this.addHighlightFeatures((new GeoJSON()).readFeatures(startupFeatures, { featureProjection: mapProjection }));
+        }
     }
 
     get hasEmptyBaseLayer() {

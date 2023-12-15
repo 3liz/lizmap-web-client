@@ -16,17 +16,18 @@ const mapStateProperties = {
 
 export class MapState extends EventDispatcher {
 
-    constructor() {
-        super()
+    constructor(startupFeatures) {
+        super();
         // default values
-        this._projection = 'EPSG:3857'
-        this._center = [0, 0]
-        this._size = [0, 0]
-        this._extent = new Extent(0, 0, 0, 0)
-        this._resolution = -1
-        this._scaleDenominator = -1
-        this._pointResolution = -1
-        this._pointScaleDenominator = -1
+        this._projection = 'EPSG:3857';
+        this._center = [0, 0];
+        this._size = [0, 0];
+        this._extent = new Extent(0, 0, 0, 0);
+        this._resolution = -1;
+        this._scaleDenominator = -1;
+        this._pointResolution = -1;
+        this._pointScaleDenominator = -1;
+        this._startupFeatures = startupFeatures;
     }
 
 
@@ -158,5 +159,13 @@ export class MapState extends EventDispatcher {
      */
     get pointScaleDenominator() {
         return this._pointScaleDenominator;
+    }
+
+    /**
+    * The features to highlight at startup in GeoJSON
+    * @type {string|undefined}
+    */
+    get startupFeatures() {
+        return this._startupFeatures;
     }
 }

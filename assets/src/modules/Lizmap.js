@@ -35,7 +35,7 @@ export default class Lizmap {
                 const wmsCapabilities = wmsParser.read(configs.wmsCapabilities);
                 // The initialConfig has been cloned because it will be freezed
                 this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
-                this._state = new State(this._initialConfig);
+                this._state = new State(this._initialConfig, configs.startupFeatures);
             },
             uicreated: () => {
                 this._lizmap3 = lizMap;
