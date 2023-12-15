@@ -858,6 +858,18 @@ class Project
         return property_exists($attributeLayers, $layerName);
     }
 
+    public function isPivotLayer($layerName)
+    {
+        $attributeLayers = $this->cfg->getAttributeLayers();
+        if (property_exists($attributeLayers, $layerName)) {
+            $attributeLayer = $attributeLayers->{$layerName};
+
+            return property_exists($attributeLayer, 'pivot') && $attributeLayer->pivot == 'True';
+        }
+
+        return false;
+    }
+
     public function hasFtsSearches()
     {
         // Virtual jdb profile corresponding to the layer database

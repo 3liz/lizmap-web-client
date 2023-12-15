@@ -949,21 +949,26 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * @param object     $feature
-     * @param null|array $loginFilteredLayers array with these keys:
-     *                                        - where: SQL WHERE statement
-     *                                        - type: 'groups' or 'login'
-     *                                        - attribute: filter attribute from the layer
+     * @param object             $feature
+     * @param null|array         $loginFilteredLayers array with these keys:
+     *                                                - where: SQL WHERE statement
+     *                                                - type: 'groups' or 'login'
+     *                                                - attribute: filter attribute from the layer
+     * @param null|jDbConnection $connection          DBConnection, if not null then the parameter conneciton is used, default value null
      *
      * @throws Exception
      *
      * @return int
      */
-    public function deleteFeature($feature, $loginFilteredLayers)
+    public function deleteFeature($feature, $loginFilteredLayers, $connection = null)
     {
         // Get database connection object
         $dtParams = $this->getDatasourceParameters();
-        $cnx = $this->getDatasourceConnection();
+        if ($connection) {
+            $cnx = $connection;
+        } else {
+            $cnx = $this->getDatasourceConnection();
+        }
         $dbFieldsInfo = $this->getDbFieldsInfo();
 
         // SQL for deleting on line in the edition table

@@ -2057,6 +2057,13 @@ lizmap-mouse-position > div.coords-unit > select{
   opacity : 0.8
 }
 
+.alert-info ul li.jelix-msg-item-warning {
+    color:#ff9100;
+}
+
+.alert-info ul li.jelix-msg-item-error {
+    color:#DA4F49;
+}
 /**
  * LizMap icons
  */
