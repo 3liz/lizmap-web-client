@@ -59,7 +59,7 @@ export default class Search {
     }
 
     /**
-     * PRIVATE function: addExternalSearch
+     * PRIVATE method: addExternalSearch
      * add external search capability
      *
      * Returns:
@@ -130,7 +130,7 @@ export default class Search {
     }
 
     /**
-     * PRIVATE function: addExternalSearch
+     * PRIVATE method: addExternalSearch
      * add external search capability
      *
      * Returns:
@@ -171,7 +171,7 @@ export default class Search {
             return false;
         }
 
-        $('#nominatim-search').submit(function () {
+        $('#nominatim-search').submit(() => {
             this._startExternalSearch();
 
             // Format answers to highlight searched keywords
@@ -180,30 +180,30 @@ export default class Search {
                 case 'nominatim':
                     $.get(service
                         , { "query": $('#search-query').val(), "bbox": extent.toBBOX() }
-                        , function (data) {
+                        , data => {
                             var text = '';
                             var count = 0;
-                            $.each(data, function (i, e) {
+                            for (const address of data) {
                                 if (count > 9) {
                                     return false;
                                 }
-                                if (!e.boundingbox) {
+                                if (!address.boundingbox) {
                                     return true;
                                 }
 
                                 var bbox = [
-                                    e.boundingbox[2],
-                                    e.boundingbox[0],
-                                    e.boundingbox[3],
-                                    e.boundingbox[1]
+                                    address.boundingbox[2],
+                                    address.boundingbox[0],
+                                    address.boundingbox[3],
+                                    address.boundingbox[1]
                                 ];
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if (extent.intersectsBounds(bbox)) {
-                                    var lab = e.display_name.replace(labrex, '<b style="color:#0094D6;">$1</b>');
+                                    var lab = address.display_name.replace(labrex, '<b style="color:#0094D6;">$1</b>');
                                     text += '<li><a href="#' + bbox.toBBOX() + '">' + lab + '</a></li>';
                                     count++;
                                 }
-                            });
+                            }
                             if (count == 0 || text == '') {
                                 text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                             }
@@ -213,7 +213,7 @@ export default class Search {
                 case 'ign':
                     let mapExtent4326 = transformExtent(mainLizmap.map.getView().calculateExtent(), mainLizmap.projection, 'EPSG:4326');
                     let queryParam = '?text=' + $('#search-query').val() + '&type=StreetAddress&maximumResponses=10&bbox=' + mapExtent4326
-                    $.getJSON(encodeURI(service + queryParam), function (data) {
+                    $.getJSON(encodeURI(service + queryParam), data => {
                         let text = '';
                         let count = 0;
                         for (const result of data.results) {
@@ -234,28 +234,28 @@ export default class Search {
                             new google.maps.LatLng(extent.top, extent.left),
                             new google.maps.LatLng(extent.bottom, extent.right)
                         )
-                    }, function (results, status) {
+                    }, (results, status) => {
                         if (status == google.maps.GeocoderStatus.OK) {
                             var text = '';
                             var count = 0;
-                            $.each(results, function (i, e) {
+                            for (const address of results) {
                                 if (count > 9) {
                                     return false;
                                 }
                                 var bbox = [];
-                                if (e.geometry.viewport) {
+                                if (address.geometry.viewport) {
                                     bbox = [
-                                        e.geometry.viewport.getSouthWest().lng(),
-                                        e.geometry.viewport.getSouthWest().lat(),
-                                        e.geometry.viewport.getNorthEast().lng(),
-                                        e.geometry.viewport.getNorthEast().lat()
+                                        address.geometry.viewport.getSouthWest().lng(),
+                                        address.geometry.viewport.getSouthWest().lat(),
+                                        address.geometry.viewport.getNorthEast().lng(),
+                                        address.geometry.viewport.getNorthEast().lat()
                                     ];
-                                } else if (e.geometry.bounds) {
+                                } else if (address.geometry.bounds) {
                                     bbox = [
-                                        e.geometry.bounds.getSouthWest().lng(),
-                                        e.geometry.bounds.getSouthWest().lat(),
-                                        e.geometry.bounds.getNorthEast().lng(),
-                                        e.geometry.bounds.getNorthEast().lat()
+                                        address.geometry.bounds.getSouthWest().lng(),
+                                        address.geometry.bounds.getSouthWest().lat(),
+                                        address.geometry.bounds.getNorthEast().lng(),
+                                        address.geometry.bounds.getNorthEast().lat()
                                     ];
                                 }
                                 if (bbox.length != 4) {
@@ -263,11 +263,11 @@ export default class Search {
                                 }
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if (extent.intersectsBounds(bbox)) {
-                                    var lab = e.formatted_address.replace(labrex, '<b style="color:#0094D6;">$1</b>');
+                                    var lab = address.formatted_address.replace(labrex, '<b style="color:#0094D6;">$1</b>');
                                     text += '<li><a href="#' + bbox.toBBOX() + '">' + lab + '</a></li>';
                                     count++;
                                 }
-                            });
+                            }
                             if (count == 0 || text == '') {
                                 text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                             }
@@ -285,7 +285,7 @@ export default class Search {
     }
 
     /**
-     * PRIVATE function: addSearches
+     * PRIVATE method: _addSearches
      * add searches capability
      *
      * Returns:
@@ -369,7 +369,7 @@ export default class Search {
                 });
             });
             
-            $('#lizmap-search-close button').click(function () {
+            $('#lizmap-search-close button').click(() => {
                 $('#lizmap-search, #lizmap-search-close').removeClass('open');
                 return false;
             });
