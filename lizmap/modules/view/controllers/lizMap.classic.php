@@ -246,9 +246,6 @@ class lizMapCtrl extends jController
         $title .= ' - '.$lser->appName;
         $rep->title = $title;
 
-        // Add search js
-        $rep->addJSLink($bp.'assets/js/search.js');
-
         // Add moment.js for timemanager
         if ($lproj->hasTimemanagerLayers()) {
             $rep->addJSLink($bp.'assets/js/moment.js');
