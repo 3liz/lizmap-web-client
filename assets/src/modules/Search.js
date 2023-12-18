@@ -1,5 +1,7 @@
 import { mainLizmap } from '../modules/Globals.js';
 import { transformExtent } from 'ol/proj.js';
+import WKT from 'ol/format/WKT.js';
+import Feature from 'ol/Feature.js';
 
 export default class Search {
 
@@ -320,49 +322,54 @@ export default class Search {
      * @param aHTML
      */
     _updateExternalSearch(aHTML) {
-        if($('#search-query').val().length != 0){
+        if ($('#search-query').val().length != 0) {
             var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
             $('#lizmap-search .items li > a').unbind('click');
-            if ( $('#lizmap-search .items li.start').length != 0 ){
-                $('#lizmap-search .items').html( aHTML );
+            if ($('#lizmap-search .items li.start').length != 0) {
+                $('#lizmap-search .items').html(aHTML);
             }
-            else{
-                $('#lizmap-search .items').append( aHTML );
+            else {
+                $('#lizmap-search .items').append(aHTML);
             }
             $('#lizmap-search, #lizmap-search-close').addClass('open');
-            $('#lizmap-search .items li > a').click(function() {
-                var bbox = $(this).attr('href').replace('#','');
-                var bbox = OpenLayers.Bounds.fromString(bbox);
-                bbox.transform(wgs84, map.getProjectionObject());
-                map.zoomToExtent(bbox);
-
-                var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
-                var data = $(this).attr('data');
-                if ( data ) {
-                    var geom = OpenLayers.Geometry.fromWKT(data);
-                    geom.transform(wgs84, map.getProjectionObject());
-                    feat = new OpenLayers.Feature.Vector(geom);
-                }
-
-                var locateLayer = map.getLayersByName('locatelayer');
-                if (locateLayer.length != 0) {
-                    locateLayer = locateLayer[0];
-                    locateLayer.destroyFeatures();
-                    locateLayer.setVisibility(true);
-                    locateLayer.addFeatures([feat]);
-                }
-
-                $('#lizmap-search, #lizmap-search-close').removeClass('open');
-                // trigger event containing selected feature
-                lizMap.events.triggerEvent('lizmapexternalsearchitemselected',
-                    {
-                        'feature': feat
+            document.querySelectorAll('#lizmap-search .items li > a').forEach(link => {
+                link.addEventListener('click', evt => {
+                    evt.preventDefault();
+                    const linkClicked = evt.currentTarget;
+                    var bbox = linkClicked.getAttribute('href').replace('#', '');
+                    var bbox = OpenLayers.Bounds.fromString(bbox);
+                    bbox.transform(wgs84, this._map.getProjectionObject());
+                    this._map.zoomToExtent(bbox);
+    
+                    var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
+                    var geomWKT = linkClicked.getAttribute('data');
+                    if (geomWKT) {
+                        const map = mainLizmap.baseLayersMap;
+    
+                        const geom = (new WKT()).readGeometry(geomWKT, {
+                            dataProjection: 'EPSG:4326',
+                            featureProjection: mainLizmap.qgisProjectProjection
+                        });
+    
+                        const feature = new Feature(geom);
+    
+                        map.clearHighlightFeatures();
+                        map.addHighlightFeatures([feature]);
                     }
-                );
-                return false;
+    
+                    $('#lizmap-search, #lizmap-search-close').removeClass('open');
+                    // trigger event containing selected feature
+                    lizMap.events.triggerEvent('lizmapexternalsearchitemselected',
+                        {
+                            'feature': feat
+                        }
+                    );
+                    return false;
+                });
             });
-            $('#lizmap-search-close button').click(function() {
+            
+            $('#lizmap-search-close button').click(function () {
                 $('#lizmap-search, #lizmap-search-close').removeClass('open');
                 return false;
             });
