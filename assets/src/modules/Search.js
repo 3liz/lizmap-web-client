@@ -98,7 +98,7 @@ export default class Search {
                     // Loop through results
                     for (var ftsId in results) {
                         var ftsLayerResult = results[ftsId];
-                        text += '<li><b>' + ftsLayerResult.search_name + '</b>';
+                        text += '<li><strong>' + ftsLayerResult.search_name + '</strong>';
                         text += '<ul>';
                         for (var i = 0, len = ftsLayerResult.features.length; i < len; i++) {
                             var ftsFeat = ftsLayerResult.features[i];
@@ -108,7 +108,7 @@ export default class Search {
                             }
                             var bbox = ftsGeometry.getBounds();
                             if (extent.intersectsBounds(bbox)) {
-                                var lab = ftsFeat.label.replace(labrex, '<b style="color:#0094D6;">$1</b>');
+                                var lab = ftsFeat.label.replace(labrex, '<strong class="highlight">$1</strong>');
                                 text += '<li><a href="#' + bbox.toBBOX() + '" data="' + ftsGeometry.toString() + '">' + lab + '</a></li>';
                                 count++;
                             }
@@ -120,7 +120,7 @@ export default class Search {
                         this._updateExternalSearch(text);
                     }
                     else {
-                        this._updateExternalSearch('<li><b>' + lizDict['externalsearch.mapdata'] + '</b><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
+                        this._updateExternalSearch('<li><strong>' + lizDict['externalsearch.mapdata'] + '</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
                     }
                 }, 'json');
             return false;
@@ -199,7 +199,7 @@ export default class Search {
                                 ];
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if (extent.intersectsBounds(bbox)) {
-                                    var lab = address.display_name.replace(labrex, '<b style="color:#0094D6;">$1</b>');
+                                    var lab = address.display_name.replace(labrex, '<strong class="highlight">$1</strong>');
                                     text += '<li><a href="#' + bbox.toBBOX() + '">' + lab + '</a></li>';
                                     count++;
                                 }
@@ -207,7 +207,7 @@ export default class Search {
                             if (count == 0 || text == '') {
                                 text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                             }
-                            this._updateExternalSearch('<li><b>OpenStreetMap</b><ul>' + text + '</ul></li>');
+                            this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>');
                         }, 'json');
                     break;
                 case 'ign':
@@ -217,14 +217,14 @@ export default class Search {
                         let text = '';
                         let count = 0;
                         for (const result of data.results) {
-                            var lab = result.fulltext.replace(labrex, '<b style="color:#0094D6;">$1</b>');
+                            var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
                             text += '<li><a href="#' + result.x + ',' + result.y + ',' + result.x + ',' + result.y + '">' + lab + '</a></li>';
                             count++;
                         }
                         if (count == 0 || text == '') {
                             text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                         }
-                        this._updateExternalSearch('<li><b>IGN</b><ul>' + text + '</ul></li>');
+                        this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
                     });
                     break;
                 case 'google':
@@ -263,7 +263,7 @@ export default class Search {
                                 }
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if (extent.intersectsBounds(bbox)) {
-                                    var lab = address.formatted_address.replace(labrex, '<b style="color:#0094D6;">$1</b>');
+                                    var lab = address.formatted_address.replace(labrex, '<strong class="highlight">$1</strong>');
                                     text += '<li><a href="#' + bbox.toBBOX() + '">' + lab + '</a></li>';
                                     count++;
                                 }
@@ -271,9 +271,9 @@ export default class Search {
                             if (count == 0 || text == '') {
                                 text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
                             }
-                            this._updateExternalSearch('<li><b>Google</b><ul>' + text + '</ul></li>');
+                            this._updateExternalSearch('<li><strong>Google</strong><ul>' + text + '</ul></li>');
                         } else {
-                            this._updateExternalSearch('<li><b>Google</b><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
+                            this._updateExternalSearch('<li><strong>Google</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
                         }
                     });
                     break;

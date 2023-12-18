@@ -2627,6 +2627,10 @@ div.tooltip {
   display:block;
 }
 
+#lizmap-search .highlight {
+  color: #0094D6;
+}
+
 /* Selection */
 
 .selectiontool-export button:disabled{
