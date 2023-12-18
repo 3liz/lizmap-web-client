@@ -20,7 +20,7 @@
 .liz-project-desc {
   color: white;
   font-size: 0.8em;
-  line-height: 0.8em;
+  line-height: 0em;
   position: absolute;
   bottom:-1px;
   right:0px;
@@ -28,10 +28,16 @@
   text-align: left;
   text-transform: none;
   background-color: rgba(0, 0, 0, 0.5);
-  padding:5px;
+  padding:0px;
   margin:0px;
   overflow-wrap: break-word;
 }
+.liz-project:hover .liz-project-desc {
+  line-height: 0.8em;
+  transition: line-height 300ms ease-in;
+  padding:5px;
+}
+
 
 .liz-project-title{
   overflow-wrap: anywhere;
