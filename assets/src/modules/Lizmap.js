@@ -18,6 +18,7 @@ import FeatureStorage from './FeatureStorage.js';
 import Popup from './Popup.js';
 import Legend from './Legend.js';
 import Permalink from './Permalink.js';
+import Search from './Search.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
@@ -86,6 +87,7 @@ export default class Lizmap {
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup();
                 this.legend = new Legend();
+                this.search = new Search();
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
