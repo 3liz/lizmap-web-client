@@ -482,7 +482,8 @@ export class LayersConfig {
      * @throws {RangeError|Error} The layer name is unknown or the config has been corrupted
      */
     getLayerConfigByWmsName(name) {
-        const idx = this._names.indexOf(name);
+        // WMS Name can be the layer name
+        let idx = this._names.indexOf(name);
         if (idx != -1) {
             const cfg = this._configs[idx];
             if (cfg.name != name) {
@@ -491,6 +492,17 @@ export class LayersConfig {
             return cfg;
         }
 
+        // WMS Name can be the layer id
+        idx = this._ids.indexOf(name);
+        if (idx != -1) {
+            const cfg = this._configs[idx];
+            if (cfg.id != name) {
+                throw 'The config has been corrupted!'
+            }
+            return cfg;
+        }
+
+        // WMS Name can be the short name
         for (const layer of this.getLayerConfigs()) {
             if (layer.shortname == name) {
                 return layer;
