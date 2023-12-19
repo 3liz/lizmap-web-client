@@ -616,6 +616,131 @@ describe('LayersConfig', function () {
         expect(complexeGetLayerConfigs.next().value).to.be.instanceOf(LayerConfig)
     })
 
+    it('getLayerConfigByWmsName', function () {
+        const francePartsLayers = new LayersConfig({
+            "france_parts bordure": {
+                "abstract": "",
+                "displayInLegend": "True",
+                "popupMaxFeatures": 10,
+                "baseLayer": "False",
+                "noLegendImage": "False",
+                "id": "france_parts_copier20180110163243267",
+                "title": "france_parts bordure",
+                "singleTile": "True",
+                "geometryType": "polygon",
+                "groupAsLayer": "False",
+                "popupTemplate": "",
+                "popup": "False",
+                "popupDisplayChildren": "False",
+                "clientCacheExpiration": 300,
+                "link": "",
+                "extent": [
+                    -5.1326269187,
+                    46.2791909858,
+                    3.11792890789,
+                    49.7264741072
+                ],
+                "toggled": "True",
+                "crs": "EPSG:4326",
+                "name": "france_parts bordure",
+                "cached": "False",
+                "type": "layer",
+                "maxScale": 1000000000000,
+                "popupSource": "lizmap",
+                "imageFormat": "image/png",
+                "minScale": 1,
+                "layerType": 'vector',
+                "shortname": "france_parts_bordure",
+            },
+            "france_parts tuilé en cache": {
+                "abstract": "",
+                "displayInLegend": "True",
+                "popupMaxFeatures": 10,
+                "cacheExpiration": 0,
+                "baseLayer": "False",
+                "noLegendImage": "False",
+                "id": "france_parts_copier20180110163329820",
+                "title": "france_parts tuilé en cache",
+                "singleTile": "False",
+                "geometryType": "polygon",
+                "groupAsLayer": "False",
+                "popupTemplate": "",
+                "popup": "False",
+                "popupDisplayChildren": "False",
+                "clientCacheExpiration": 300,
+                "link": "",
+                "extent": [
+                    -5.1326269187,
+                    46.2791909858,
+                    3.11792890789,
+                    49.7264741072
+                ],
+                "toggled": "False",
+                "crs": "EPSG:4326",
+                "name": "france_parts tuilé en cache",
+                "cached": "True",
+                "type": "layer",
+                "maxScale": 1000000000000,
+                "popupSource": "lizmap",
+                "imageFormat": "image/png",
+                "minScale": 1,
+                "layerType": 'vector',
+                "shortname": "france_parts_tuile",
+            },
+            "france_parts": {
+                "abstract": "",
+                "displayInLegend": "True",
+                "popupMaxFeatures": 10,
+                "baseLayer": "False",
+                "noLegendImage": "False",
+                "id": "france_parts_8d8d649f_7748_43cc_8bde_b013e17ede29",
+                "title": "france_parts",
+                "singleTile": "True",
+                "geometryType": "polygon",
+                "groupAsLayer": "False",
+                "popupTemplate": "",
+                "popup": "True",
+                "popupDisplayChildren": "False",
+                "clientCacheExpiration": 300,
+                "link": "",
+                "extent": [
+                    -5.1326269187,
+                    46.2791909858,
+                    3.11792890789,
+                    49.7264741072
+                ],
+                "toggled": "True",
+                "crs": "EPSG:4326",
+                "name": "france_parts",
+                "cached": "False",
+                "type": "layer",
+                "maxScale": 1000000000000,
+                "popupSource": "auto",
+                "imageFormat": "image/png",
+                "minScale": 1,
+                "layerType": 'vector',
+                "shortname": "france_parts",
+            }
+        })
+
+        const francePartsLayer = francePartsLayers.getLayerConfigByWmsName('france_parts_8d8d649f_7748_43cc_8bde_b013e17ede29');
+        expect(francePartsLayer.name).to.be.eq('france_parts')
+        expect(francePartsLayer.id).to.be.eq('france_parts_8d8d649f_7748_43cc_8bde_b013e17ede29')
+        expect(francePartsLayer.shortname).to.be.eq('france_parts')
+
+        const francePartsTuileLayer = francePartsLayers.getLayerConfigByWmsName('france_parts_tuile');
+        expect(francePartsTuileLayer.name).to.be.eq('france_parts tuilé en cache')
+        expect(francePartsTuileLayer.id).to.be.eq('france_parts_copier20180110163329820')
+        expect(francePartsTuileLayer.shortname).to.be.eq('france_parts_tuile')
+
+        const francePartsBordureLayer = francePartsLayers.getLayerConfigByWmsName('france_parts bordure');
+        expect(francePartsBordureLayer.name).to.be.eq('france_parts bordure')
+        expect(francePartsBordureLayer.id).to.be.eq('france_parts_copier20180110163243267')
+        expect(francePartsBordureLayer.shortname).to.be.eq('france_parts_bordure')
+
+        expect(francePartsLayers.getLayerConfigByWmsName('unknown')).to.be.null
+    })
+
     it('ValidationError', function () {
         try {
             new LayersConfig()
