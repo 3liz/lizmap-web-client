@@ -1,7 +1,5 @@
 import { mainLizmap } from '../modules/Globals.js';
 import { transformExtent } from 'ol/proj.js';
-import WKT from 'ol/format/WKT.js';
-import Feature from 'ol/Feature.js';
 
 export default class Search {
 
@@ -345,17 +343,7 @@ export default class Search {
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
                     var geomWKT = linkClicked.getAttribute('data');
                     if (geomWKT) {
-                        const map = mainLizmap.baseLayersMap;
-    
-                        const geom = (new WKT()).readGeometry(geomWKT, {
-                            dataProjection: 'EPSG:4326',
-                            featureProjection: mainLizmap.qgisProjectProjection
-                        });
-    
-                        const feature = new Feature(geom);
-    
-                        map.clearHighlightFeatures();
-                        map.addHighlightFeatures([feature]);
+                        mainLizmap.baseLayersMap.setHighlightFeatures(geomWKT, "wkt");
                     }
     
                     $('#lizmap-search, #lizmap-search-close').removeClass('open');
