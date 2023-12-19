@@ -8,7 +8,7 @@ import { get as getProjection } from 'ol/proj.js';
 import { Attribution } from 'ol/control.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
-import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
+import { WMTSCapabilities, GeoJSON, WKT } from 'ol/format.js';
 import WMTSTileGrid from 'ol/tilegrid/WMTS.js';
 import {getWidth} from 'ol/extent.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
@@ -17,7 +17,6 @@ import TileWMS from 'ol/source/TileWMS.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
 import LayerGroup from 'ol/layer/Group.js';
-import GeoJSON from 'ol/format/GeoJSON.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 
@@ -494,7 +493,7 @@ export default class BaseLayersMap extends olMap {
         // Add startup features to map if any
         const startupFeatures = mainLizmap.state.map.startupFeatures;
         if (startupFeatures) {
-            this.addHighlightFeatures((new GeoJSON()).readFeatures(startupFeatures, { featureProjection: mapProjection }));
+            this.setHighlightFeatures(startupFeatures, "geojson");
         }
     }
 
@@ -521,10 +520,37 @@ export default class BaseLayersMap extends olMap {
 
     /**
      * Add highlight features on top of all layer
-     * @param {Feature[]} features 
+     * @param {string} features features as GeoJSON or WKT
+     * @param {string} format format string as `geojson` or `wkt`
+     * @param {string|undefined} projection optional features projection
      */
-    addHighlightFeatures(features){
-        this._highlightLayer.getSource().addFeatures(features);
+    addHighlightFeatures(features, format, projection){
+        let olFeatures;
+        if (format === "geojson") {
+            olFeatures = (new GeoJSON()).readFeatures(features, {
+                dataProjection: projection,
+                featureProjection: mainLizmap.projection
+            });
+        } else if (format === "wkt") {
+            olFeatures = (new WKT()).readFeatures(features, {
+                dataProjection: projection,
+                featureProjection: mainLizmap.projection
+            });
+        } else {
+            return;
+        }
+        this._highlightLayer.getSource().addFeatures(olFeatures);
+    }
+
+    /**
+     * Set highlight features on top of all layer
+     * @param {string} features features as GeoJSON or WKT
+     * @param {string} format format string as `geojson` or `wkt`
+     * @param {string|undefined} projection optional features projection
+     */
+    setHighlightFeatures(features, format, projection){
+        this.clearHighlightFeatures();
+        this.addHighlightFeatures(features, format, projection);
     }
     
     /**
