@@ -34,6 +34,7 @@ import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
 import DragZoom from 'ol/interaction/DragZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { always } from 'ol/events/condition.js';
+import SingleWMSLayer from './SingleWMSLayer.js';
 
 /**
  * Class initializing Openlayers Map.
@@ -135,12 +136,12 @@ export default class map extends olMap {
         // Get pixel ratio, if High DPI is disabled do not use device pixel ratio
         const pixelRatio = this._hidpi ? this.pixelRatio_ : 1;
 
-        const useTileWms = this.getSize().reduce(
+        this._useTileWms = this.getSize().reduce(
             (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || Math.ceil(x*this._WMSRatio*pixelRatio) > wmsMaxSize[i],
             false,
         );
 
-        const customTileGrid = useTileWms ? new TileGrid({
+        this._customTileGrid = this._useTileWms ? new TileGrid({
             extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
             resolutions: resolutions,
             tileSize: this.getSize().map((x, i) => {
@@ -165,6 +166,8 @@ export default class map extends olMap {
 
         // Array of layers and groups in overlayLayerGroup
         this._overlayLayersAndGroups = [];
+        // Mapping between layers name and states used to construct the singleWMSLayer, if needed
+        this._statesSingleWMSLayers = new Map();
 
         const layersCount = mainLizmap.state.rootMapGroup.countExplodedMapLayers();
 
@@ -177,7 +180,10 @@ export default class map extends olMap {
                     if(node.type !== 'layer' && node.type !== 'group'){
                         continue;
                     }
-                    layers.push(createNode(layer, statesOlLayersandGroupsMap, overlayLayersAndGroups, metersPerUnit, WMSRatio));
+                    let newNode = createNode(layer, statesOlLayersandGroupsMap, overlayLayersAndGroups, metersPerUnit, WMSRatio)
+                    if(newNode){
+                        layers.push(newNode);
+                    }
                 }
                 const layerGroup = new LayerGroup({
                     layers: layers
@@ -200,7 +206,6 @@ export default class map extends olMap {
                 if(node.type !== 'layer'){
                     return;
                 }
-
                 /* Sometimes throw an Error and extent is not used
                 let extent = node.layerConfig.extent;
                 if(node.layerConfig.crs !== "" && node.layerConfig.crs !== mainLizmap.projection){
@@ -236,84 +241,89 @@ export default class map extends olMap {
                             source: new WMTS(options)
                         });
                     }
-                }
-
-                // The layer has not been yet build
-                if (!layer) {
-                    layer = new ImageLayer({
-                        // extent: extent,
-                        minResolution: minResolution,
-                        maxResolution: maxResolution,
-                        source: new ImageWMS({
-                            url: mainLizmap.serviceURL,
-                            serverType: 'qgis',
-                            ratio: WMSRatio,
-                            hidpi: this._hidpi,
-                            params: {
-                                LAYERS: node.wmsName,
-                                FORMAT: node.layerConfig.imageFormat,
-                                STYLES: node.wmsSelectedStyleName,
-                                DPI: 96
-                            },
-                        })
-                    });
-
-                    // Force no cache w/ Firefox
-                    if(navigator.userAgent.includes("Firefox")){
-                        layer.getSource().setImageLoadFunction((image, src) => {
-                            (image.getImage()).src = src + '&ts=' + Date.now();
-                        });
-                    }
-
-                    if (useTileWms) {
-                        layer = new TileLayer({
-                            // extent: extent,
-                            minResolution: minResolution,
-                            maxResolution: maxResolution,
-                            source: new TileWMS({
-                                url: mainLizmap.serviceURL,
-                                serverType: 'qgis',
-                                tileGrid: customTileGrid,
-                                params: {
-                                    LAYERS: node.wmsName,
-                                    FORMAT: node.layerConfig.imageFormat,
-                                    STYLES: node.wmsSelectedStyleName,
-                                    DPI: 96,
-                                    TILED: 'true'
-                                },
-                                wrapX: false, // do not reused across the 180° meridian.
-                                hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
-                            })
-                        });
-
-                        // Force no cache w/ Firefox
-                        if(navigator.userAgent.includes("Firefox")){
-                            layer.getSource().setTileLoadFunction((image, src) => {
-                                (image.getImage()).src = src + '&ts=' + Date.now();
+                } else {
+                    if(mainLizmap.initialConfig.singleWMSLayer){
+                        this._statesSingleWMSLayers.set(node.name,node);
+                        node.singleWMSLayer = true;
+                        return
+                    } else {
+                        if (this._useTileWms) {
+                            layer = new TileLayer({
+                                // extent: extent,
+                                minResolution: minResolution,
+                                maxResolution: maxResolution,
+                                source: new TileWMS({
+                                    url: mainLizmap.serviceURL,
+                                    serverType: 'qgis',
+                                    tileGrid: this._customTileGrid,
+                                    params: {
+                                        LAYERS: node.wmsName,
+                                        FORMAT: node.layerConfig.imageFormat,
+                                        STYLES: node.wmsSelectedStyleName,
+                                        DPI: 96,
+                                        TILED: 'true'
+                                    },
+                                    wrapX: false, // do not reused across the 180° meridian.
+                                    hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
+                                })
                             });
-                        }
-                    }
 
+                            // Force no cache w/ Firefox
+                            if(navigator.userAgent.includes("Firefox")){
+                                layer.getSource().setTileLoadFunction((image, src) => {
+                                    (image.getImage()).src = src + '&ts=' + Date.now();
+                                });
+                            }
+                        } else {
+                            layer = new ImageLayer({
+                                // extent: extent,
+                                minResolution: minResolution,
+                                maxResolution: maxResolution,
+                                source: new ImageWMS({
+                                    url: mainLizmap.serviceURL,
+                                    serverType: 'qgis',
+                                    ratio: WMSRatio,
+                                    hidpi: this._hidpi,
+                                    params: {
+                                        LAYERS: node.wmsName,
+                                        FORMAT: node.layerConfig.imageFormat,
+                                        STYLES: node.wmsSelectedStyleName,
+                                        DPI: 96
+                                    },
+                                })
+                            });
+        
+                            // Force no cache w/ Firefox
+                            if(navigator.userAgent.includes("Firefox")){
+                                layer.getSource().setImageLoadFunction((image, src) => {
+                                    (image.getImage()).src = src + '&ts=' + Date.now();
+                                });
+                            }                            
+                        }                       
+                    }                   
                 }
 
-                layer.setVisible(node.visibility);
+                if(layer){
+                    layer.setVisible(node.visibility);
 
-                layer.setOpacity(node.opacity);
+                    layer.setOpacity(node.opacity);
+    
+                    layer.setProperties({
+                        name: node.name
+                    });
+    
+                    layer.getSource().setProperties({
+                        name: node.name
+                    });
+    
+                    // OL layers zIndex is the reverse of layer's order given by cfg
+                    layer.setZIndex(layersCount - 1 - node.layerOrder);
+    
+                    overlayLayersAndGroups.push(layer);
+                    statesOlLayersandGroupsMap.set(node.name, [node, layer]);
+                    return layer;
+                }
 
-                layer.setProperties({
-                    name: node.name
-                });
-
-                layer.getSource().setProperties({
-                    name: node.name
-                });
-
-                // OL layers zIndex is the reverse of layer's order given by cfg
-                layer.setZIndex(layersCount - 1 - node.layerOrder);
-
-                overlayLayersAndGroups.push(layer);
-                statesOlLayersandGroupsMap.set(node.name, [node, layer]);
-                return layer;
             }
         }
 
@@ -398,7 +408,6 @@ export default class map extends olMap {
                 if (layerMinResolution === undefined || layerMinResolution < resolutions[resolutions.length-1]) {
                     layerMinResolution = resolutions[resolutions.length-1];
                 }
-
                 const tileGrid = new WMTSTileGrid({
                     origin: [-20037508, 20037508],
                     resolutions: resolutions,
@@ -451,43 +460,49 @@ export default class map extends olMap {
                         source: new WMTS(options)
                     });
                 } else {
-                    baseLayer = new ImageLayer({
-                        // extent: extent,
-                        minResolution: layerMinResolution,
-                        maxResolution: layerMaxResolution,
-                        source: new ImageWMS({
-                            url: mainLizmap.serviceURL,
-                            projection: qgisProjectProjection,
-                            serverType: 'qgis',
-                            ratio: this._WMSRatio,
-                            hidpi: this._hidpi,
-                            params: {
-                                LAYERS: baseLayerState.itemState.wmsName,
-                                FORMAT: baseLayerState.layerConfig.imageFormat,
-                                DPI: 96
-                            },
-                        })
-                    });
-                    if (useTileWms) {
-                        baseLayer = new TileLayer({
-                            // extent: extent,
-                            minResolution: layerMinResolution,
-                            maxResolution: layerMaxResolution,
-                            source: new TileWMS({
-                                url: mainLizmap.serviceURL,
-                                projection: qgisProjectProjection,
-                                serverType: 'qgis',
-                                tileGrid: customTileGrid,
-                                params: {
-                                    LAYERS: baseLayerState.itemState.wmsName,
-                                    FORMAT: baseLayerState.layerConfig.imageFormat,
-                                    DPI: 96,
-                                    TILED: 'true'
-                                },
-                                wrapX: false, // do not reused across the 180° meridian.
-                                hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
-                            })
-                        });
+                    if(mainLizmap.initialConfig.singleWMSLayer){
+                        baseLayerState.singleWMSLayer = true;
+                        this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState); 
+                    } else {
+                        if (this._useTileWms) {
+                            baseLayer = new TileLayer({
+                                // extent: extent,
+                                minResolution: layerMinResolution,
+                                maxResolution: layerMaxResolution,
+                                source: new TileWMS({
+                                    url: mainLizmap.serviceURL,
+                                    projection: qgisProjectProjection,
+                                    serverType: 'qgis',
+                                    tileGrid: this._customTileGrid,
+                                    params: {
+                                        LAYERS: baseLayerState.itemState.wmsName,
+                                        FORMAT: baseLayerState.layerConfig.imageFormat,
+                                        DPI: 96,
+                                        TILED: 'true'
+                                    },
+                                    wrapX: false, // do not reused across the 180° meridian.
+                                    hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
+                                })
+                            });
+                        } else {
+                            baseLayer = new ImageLayer({
+                                // extent: extent,
+                                minResolution: layerMinResolution,
+                                maxResolution: layerMaxResolution,
+                                source: new ImageWMS({
+                                    url: mainLizmap.serviceURL,
+                                    projection: qgisProjectProjection,
+                                    serverType: 'qgis',
+                                    ratio: this._WMSRatio,
+                                    hidpi: this._hidpi,
+                                    params: {
+                                        LAYERS: baseLayerState.itemState.wmsName,
+                                        FORMAT: baseLayerState.layerConfig.imageFormat,
+                                        DPI: 96
+                                    },
+                                })
+                            });
+                        }
                     }
                 }
             } else if (baseLayerState.type === BaseLayerTypes.Empty) {
@@ -538,9 +553,21 @@ export default class map extends olMap {
             this._baseLayersGroup = new LayerGroup();
         }
 
+        this._singleImageWmsGroup = new LayerGroup();
+
+        if (this._statesSingleWMSLayers.size > 0) {
+            //create new Image layer and add it to the map
+            const singleWMSLayer = new SingleWMSLayer(this);
+
+            // create a new group
+            this._singleImageWmsGroup = new LayerGroup({
+                layers:[singleWMSLayer.layer]
+            });
+        }
+
         // Add base and overlay layers to the map's main LayerGroup
         this.setLayerGroup(new LayerGroup({
-            layers: [this._baseLayersGroup, this._overlayLayersGroup]
+            layers: [this._baseLayersGroup, this._singleImageWmsGroup, this._overlayLayersGroup]
         }));
 
         // Sync new OL view with OL2 view
@@ -620,7 +647,7 @@ export default class map extends olMap {
                 if (activeBaseLayer && activeBaseLayer.get("name") === evt.name) {
                     activeBaseLayer.setOpacity(evt.opacity);
                 } else {
-                    this.getLayerOrGroupByName(evt.name).setOpacity(evt.opacity);
+                    this.getLayerOrGroupByName(evt.name)?.setOpacity(evt.opacity);
                 }
             },
             ['layer.opacity.changed', 'group.opacity.changed']
@@ -628,7 +655,9 @@ export default class map extends olMap {
 
         mainLizmap.state.rootMapGroup.addListener(
             evt => {
-                const [state, olLayer] = this._statesOlLayersandGroupsMap.get(evt.name);
+                const stateOlLayerAndMap = this._statesOlLayersandGroupsMap.get(evt.name);
+                if (!stateOlLayerAndMap) return;
+                const [state, olLayer] = stateOlLayerAndMap;
                 const wmsParams = olLayer.getSource().getParams();
 
                 // Delete entries in `wmsParams` not in `state.wmsParameters`
@@ -720,6 +749,21 @@ export default class map extends olMap {
         return this._overlayLayersGroup;
     }
 
+    get statesSingleWMSLayers(){
+        return this._statesSingleWMSLayers;
+    }
+
+    get useTileWms(){
+        return this._useTileWms;
+    }
+
+    get customTileGrid(){
+        return this._customTileGrid;
+    }
+
+    get hidpi(){
+        return this._hidpi;
+    }
     /**
      * Add highlight features on top of all layer
      * @param {string} features features as GeoJSON or WKT

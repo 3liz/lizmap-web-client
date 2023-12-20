@@ -432,6 +432,15 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     }
 
     /**
+     * vector layer is loaded in a single layer ImageLayer or not
+     * @type {boolean}
+     */
+    get singleWMSLayer(){
+        return this._mapItemState.singleWMSLayer;
+    }
+
+
+    /**
      * Vector layer has selected features
      * The selected features is not empty
      * @type {boolean}

@@ -1685,6 +1685,86 @@ CREATE TABLE tests_projects.birds_areas (
 
 
 
+
+--
+-- Name: single_wms_points; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_points (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: single_wms_lines; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_lines (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: single_wms_lines; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_polygons (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: single_wms_points_group; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_points_group (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: single_wms_lines_group; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_lines_group (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: single_wms_lines_group_as_layer; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_lines_group_as_layer (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: single_wms_polygons_group_as_layer; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_polygons_group_as_layer (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+--
+-- Name: single_wms_baselayer; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_baselayer (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
 --
@@ -2477,6 +2557,92 @@ COPY tests_projects.many_date_formats (id, field_date, field_time, field_timesta
 COPY tests_projects.parent_layer (id, geom) FROM stdin;
 1	01010000206A080000E9DB1DB8AD8E274172033A2F24F45741
 2	01010000206A080000DF431F18D8E027417C598F864DF45741
+\.
+
+
+--
+-- Data for Name: single_wms_points; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_points ("title", geom) FROM stdin;
+Point_1	0101000000D4E246DD68DA0E40F6FE852F6FCE4540
+Point_2	01010000009F4B2640BA2E0F40BC7596500ECF4540
+Point_3	010100000086E099F00A170F404BD17ACF65CC4540
+Point_4	01010000000FC4C44FC7EE0E404BD17ACF65CC4540
+Point_5	01010000005E67816DC7000F40DD6303E4BDCF4540
+Point_6	01010000003BD9D5F0D5A10F40C372465718C94540
+\.
+
+
+--
+-- Data for Name: single_wms_lines; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_lines ("title", geom) FROM stdin;
+Line_1	010200000003000000F9B211BC9ED60E408E3A65F50FCD4540540A8151ACE70E40CE34022A99CD4540959FB13B18FB0E408E3A65F50FCD4540
+Line_2	010200000003000000D834E225840E0F40D9FC65426DCD454033359F5F9F390F408A58458ECACD4540E7426E59180D0F40EA80A308B1CE4540
+Line_3	0102000000030000004DFF1B7EAC020F404E56A30FE0CA4540832F0ED991310F406B3AC4F516CB454059AEB7E2E24F0F40D560CC5F30CA4540
+Line_4	01020000000400000050B8E50891B30E40DBAB490552D0454043B2974868800E40FF555E11C5CD4540BACE6CE9ABA80E40EE7C290001CB4540DF96F95476D90E405E6107B231C84540
+\.
+
+
+--
+-- Data for Name: single_wms_polygons; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_polygons ("title", geom) FROM stdin;
+Polygon_1	01030000000100000005000000B4C30716ACC30E40483F48BDBFD04540DF96F95476D90E408FC7AF52D9CF4540353DDDD20A050F401952B198F6D0454072CFE65CE2FE0E4016AE93289BD14540B4C30716ACC30E40483F48BDBFD04540
+Polygon_2	0103000000010000000500000084D85B7D9F4B0F4016605975F6CD454091E6E7B0334A0F4093FE883C2FCF45409B925CB5D57D0F407B4B94215BCF454058FD2BCB696A0F4019537694BFCD454084D85B7D9F4B0F4016605975F6CD4540
+Polygon_3	01030000000100000006000000ECA485880AD80E404588118DE5CA4540FC5B5F60ACF00E40C7E5AC6425CA4540ADB8A242ACDE0E40E0E730B56AC94540233468B24DB80E40739AD9C084CB4540FE639DD317BC0E40EA2CE38FE7CB4540ECA485880AD80E404588118DE5CA4540
+\.
+
+
+--
+-- Data for Name: single_wms_points_group; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_points_group ("title", geom) FROM stdin;
+Gr_Point_1	01010000008E4139C6DB150F40C481FBED12D04540
+Gr_Point_2	01010000003CEDF090621E0F40FC92BD25BBCF4540
+\.
+
+
+--
+-- Data for Name: single_wms_lines_group; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_lines_group ("title", geom) FROM stdin;
+Gr_Line_1	010200000003000000ECF2811770260F40C0783E418FCF4540560909F88A1B0F40B5BD472386D04540D487F5C7C00E0F402B69E0A680D04540
+Gr_Line_2	010200000003000000DE3BA83FCE0D0F4090257F710DD04540A95D512D04130F40C0783E418FCF4540F7A6348F7D250F4084DFE2DF5DCF4540
+\.
+
+
+--
+-- Data for Name: single_wms_lines_group_as_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_lines_group_as_layer ("title", geom) FROM stdin;
+GrL_Line_1	0102000000050000005C0C30581F350F40AE3AB89756D14540368BD96170530F402696EF0472D1454004AD824FA6580F40DA545E06B2D04540A0A160428B480F40B407A0CA49D0454075CE6E03C1320F40F8F619FFBCD04540
+GrL_Line_1	010200000003000000A152EC59042E0F40D13CCBCB09D1454094446026702F0F4020530203F2CF4540858548DB624B0F4023B1837FF7CF4540
+\.
+
+
+--
+-- Data for Name: single_wms_polygons_group_as_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_polygons_group_as_layer ("title", geom) FROM stdin;
+GrL_Polygon_1	010300000001000000050000004047CA4CE91D0F407A324B0E1CD24540369317D5DB1E0F4095FB91B52AD145408736D4F2DB300F402472445BAED14540721DE3EB474D0F40666B678A21D245404047CA4CE91D0F407A324B0E1CD24540
+GrL_Polygon_2	01030000000100000005000000DDDCB770705C0F40B407A0CA49D04540C71A79C5CE5E0F408F1E65FD7CD145401B180F9F55700F4034D366C414D14540B75B617AC17A0F40B407A0CA49D04540DDDCB770705C0F40B407A0CA49D04540
+\.
+
+
+--
+-- Data for Name: single_wms_baselayer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_baselayer ("title", geom) FROM stdin;
+BaseLayer	010300000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
 \.
 
 
