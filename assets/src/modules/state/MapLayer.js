@@ -518,9 +518,27 @@ export class MapLayerState extends MapItemState {
             this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
         }
+        // load the layer in a single ImageWMS layer
+        this._singleWMSLayer = false;
         // set isLoading to false
         this._loading = false;
         this._loadStatus = MapLayerLoadStatus.Undefined;
+    }
+
+    /**
+     * set if the map layer is loaded in a single ImageWMS layer or not
+     * @param {boolean} val
+     */
+    set singleWMSLayer(val){
+        this._singleWMSLayer = val;
+    }
+
+    /**
+     * vector layer is loaded in a single layer ImageLayer or not
+     * @type {boolean}
+     */
+    get singleWMSLayer(){
+        return this._singleWMSLayer;
     }
 
     /**
