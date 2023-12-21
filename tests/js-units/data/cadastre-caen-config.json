@@ -1183,8 +1183,7 @@
         "lizmap_plugin_version": 31400,
         "lizmap_web_client_target_version": 30500,
         "lizmap_web_client_target_status": "Stable",
-        "instance_target_url": "https://demo.lizmap.com/lizmap_3_5/",
-        "project_valid": false
+        "instance_target_url": "https://demo.lizmap.com/lizmap_3_5/"
     },
     "options": {
         "projection": {

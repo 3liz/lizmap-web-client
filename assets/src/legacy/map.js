@@ -163,7 +163,6 @@ window.lizMap = function() {
             lizmap_plugin_version_str: "3.1.8",
             lizmap_plugin_version: 30108,
             lizmap_web_client_target_version: 30200,
-            project_valid: null,
             qgis_desktop_version: 30000
         };
 
@@ -175,9 +174,6 @@ window.lizMap = function() {
         }
         if ('lizmap_web_client_target_version' in config['metadata']) {
             plugin_metadata['lizmap_web_client_target_version'] = config['metadata']['lizmap_web_client_target_version'];
-        }
-        if ('project_valid' in config['metadata']) {
-            plugin_metadata['project_valid'] = config['metadata']['project_valid'];
         }
         if ('qgis_desktop_version' in config['metadata']) {
             plugin_metadata['qgis_desktop_version'] = config['metadata']['qgis_desktop_version'];
