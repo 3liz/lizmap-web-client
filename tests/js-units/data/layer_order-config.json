@@ -202,8 +202,7 @@
         "lizmap_web_client_target_version": 30700,
         "lizmap_web_client_target_status": "Dev",
         "instance_target_url": "http://localhost:8130/",
-        "instance_target_repository": "intranet",
-        "project_valid": true
+        "instance_target_repository": "intranet"
     },
     "options": {
         "projection": {

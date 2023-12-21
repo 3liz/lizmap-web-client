@@ -827,8 +827,7 @@
         "lizmap_web_client_target_version": 30700,
         "lizmap_web_client_target_status": "Dev",
         "instance_target_url": "https://demo.snap.lizmap.com/lizmap_3_7/",
-        "instance_target_repository": "features",
-        "project_valid": true
+        "instance_target_repository": "features"
     },
     "options": {
         "projection": {
