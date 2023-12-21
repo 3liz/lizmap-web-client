@@ -413,11 +413,6 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
 
 		-
-			message: "#^Access to an undefined property jFormsControl\\:\\:\\$emptyItemLabel\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
 			message: "#^Access to an undefined property jICoordPlugin\\:\\:\\$config\\.$#"
 			count: 2
 			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
