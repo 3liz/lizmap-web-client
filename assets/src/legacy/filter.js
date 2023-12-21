@@ -1087,20 +1087,15 @@ var lizLayerFilterTool = function () {
 
             }
 
-
-            // Removes the getFeatureInfo geometry
             /**
-             *
+             * Removes the getFeatureInfo geometry
              */
             function removeFeatureInfoGeometry() {
-                var layer = lizMap.map.getLayersByName('locatelayer');
-                if (layer.length == 1)
-                    layer[0].destroyFeatures();
+                lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
             }
 
-            // Adapt the size of the dock
             /**
-             *
+             * Adapt the size of the dock
              */
             function adaptLayerFilterSize() {
                 lizMap.events.on({

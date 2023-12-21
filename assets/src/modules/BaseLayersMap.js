@@ -524,7 +524,7 @@ export default class BaseLayersMap extends olMap {
      * @param {string} format format string as `geojson` or `wkt`
      * @param {string|undefined} projection optional features projection
      */
-    addHighlightFeatures(features, format, projection){
+    addHighlightFeatures(features, format, projection) {
         let olFeatures;
         if (format === "geojson") {
             olFeatures = (new GeoJSON()).readFeatures(features, {

@@ -517,7 +517,6 @@
                 });
             }
 
-
             /**
              *
              * @param feature
@@ -547,11 +546,8 @@
                 }
 
                 // Draw feature geometry
-                var getLayer = lizMap.map.getLayersByName('locatelayer');
-                if (lizAtlasConfig.drawFeatureGeom && getLayer.length > 0) {
-                    const alayer = getLayer[0];
-                    alayer.destroyFeatures();
-                    alayer.addFeatures([f]);
+                if (lizAtlasConfig.drawFeatureGeom) {
+                    lizMap.mainLizmap.baseLayersMap.setHighlightFeatures(feature,"geojson");
                 }
 
                 // Display popup
@@ -614,7 +610,7 @@
 
                 // Deactivate highlight
                 if (lizAtlasConfig.drawFeatureGeom) {
-                    lizMap.clearDrawLayer('locatelayer');
+                    lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
                 }
 
                 // Deactivate filter
