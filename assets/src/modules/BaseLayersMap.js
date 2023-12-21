@@ -8,7 +8,7 @@ import { get as getProjection } from 'ol/proj.js';
 import { Attribution } from 'ol/control.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
-import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
+import { WMTSCapabilities, GeoJSON, WKT } from 'ol/format.js';
 import WMTSTileGrid from 'ol/tilegrid/WMTS.js';
 import {getWidth} from 'ol/extent.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
@@ -17,6 +17,8 @@ import TileWMS from 'ol/source/TileWMS.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
 import LayerGroup from 'ol/layer/Group.js';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
 
 import DragPan from "ol/interaction/DragPan.js";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
@@ -478,6 +480,30 @@ export default class BaseLayersMap extends olMap {
             },
             ['baselayers.selection.changed']
         );
+
+        // Create the highlight layer
+        // used to display features on top of all layers
+        const styleColor = 'rgba(255,255,0,0.8)';
+        const styleWidth = 3;
+        this._highlightLayer = new VectorLayer({
+            source: new VectorSource({
+                wrapX: false
+            }),
+            style: {
+                'circle-stroke-color': styleColor,
+                'circle-stroke-width': styleWidth,
+                'circle-radius': 6,
+                'stroke-color': styleColor,
+                'stroke-width': styleWidth,
+            }
+        });
+        this.addLayer(this._highlightLayer);
+
+        // Add startup features to map if any
+        const startupFeatures = mainLizmap.state.map.startupFeatures;
+        if (startupFeatures) {
+            this.setHighlightFeatures(startupFeatures, "geojson");
+        }
     }
 
     get hasEmptyBaseLayer() {
@@ -499,6 +525,48 @@ export default class BaseLayersMap extends olMap {
 
     get overlayLayersGroup(){
         return this._overlayLayersGroup;
+    }
+
+    /**
+     * Add highlight features on top of all layer
+     * @param {string} features features as GeoJSON or WKT
+     * @param {string} format format string as `geojson` or `wkt`
+     * @param {string|undefined} projection optional features projection
+     */
+    addHighlightFeatures(features, format, projection) {
+        let olFeatures;
+        if (format === "geojson") {
+            olFeatures = (new GeoJSON()).readFeatures(features, {
+                dataProjection: projection,
+                featureProjection: mainLizmap.projection
+            });
+        } else if (format === "wkt") {
+            olFeatures = (new WKT()).readFeatures(features, {
+                dataProjection: projection,
+                featureProjection: mainLizmap.projection
+            });
+        } else {
+            return;
+        }
+        this._highlightLayer.getSource().addFeatures(olFeatures);
+    }
+
+    /**
+     * Set highlight features on top of all layer
+     * @param {string} features features as GeoJSON or WKT
+     * @param {string} format format string as `geojson` or `wkt`
+     * @param {string|undefined} projection optional features projection
+     */
+    setHighlightFeatures(features, format, projection){
+        this.clearHighlightFeatures();
+        this.addHighlightFeatures(features, format, projection);
+    }
+    
+    /**
+     * Clear all highlight features
+     */
+    clearHighlightFeatures() {
+        this._highlightLayer.getSource().clear();
     }
 
     /**
