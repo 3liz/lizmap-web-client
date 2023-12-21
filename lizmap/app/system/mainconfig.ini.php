@@ -36,7 +36,7 @@ lizmapServerPlugin="2.8.1"
 ; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
 ; Lizmap CFG files with this target version are still displayed in the landing page, but have a warning in the administration panel
 ; 3 versions behind the current version of LWC
-lizmapWebClientTargetVersion=30400
+lizmapWebClientTargetVersion=30500
 
 [lizmap]
 ; CSP header for the map interface
