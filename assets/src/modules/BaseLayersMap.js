@@ -483,10 +483,19 @@ export default class BaseLayersMap extends olMap {
 
         // Create the highlight layer
         // used to display features on top of all layers
+        const styleColor = 'rgba(255,255,0,0.8)';
+        const styleWidth = 3;
         this._highlightLayer = new VectorLayer({
             source: new VectorSource({
                 wrapX: false
-            })
+            }),
+            style: {
+                'circle-stroke-color': styleColor,
+                'circle-stroke-width': styleWidth,
+                'circle-radius': 6,
+                'stroke-color': styleColor,
+                'stroke-width': styleWidth,
+            }
         });
         this.addLayer(this._highlightLayer);
 
