@@ -344,9 +344,7 @@ window.lizMap = function() {
             $('div.locate-layer select').hide();
             $('span.custom-combobox').show();
         }
-
     }
-
 
     /**
      * PRIVATE function: updateContentSize
@@ -1604,16 +1602,6 @@ window.lizMap = function() {
                 locateContent.push(html);
             }
             $('#locate .menu-content').html(locateContent.join('<hr/>'));
-            map.addLayer(new OpenLayers.Layer.Vector('locatelayer',{
-                styleMap: new OpenLayers.StyleMap({
-                    pointRadius: 6,
-                    fill: false,
-                    stroke: true,
-                    strokeWidth: 3,
-                    strokeColor: 'yellow',
-                    strokeOpacity: 0.8
-                })
-            }));
 
             var featureTypes = getVectorLayerFeatureTypes();
             if (featureTypes.length == 0 ){
