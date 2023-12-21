@@ -69,15 +69,13 @@ export default class MousePosition extends HTMLElement {
 
             mainLizmap.center = lonlatInputInMapProj;
             // Display point
-            const centerPoint = new OpenLayers.Geometry.Point(lonlatInputInMapProj[0], lonlatInputInMapProj[1]);
-            const locateLayer = mainLizmap.lizmap3.map.getLayersByName('locatelayer')[0];
-            locateLayer.removeAllFeatures();
-            locateLayer.addFeatures(new OpenLayers.Feature.Vector(centerPoint));
+            const featureAsWKT = `POINT(${lonlatInputInMapProj[0]} ${lonlatInputInMapProj[1]})`;
+            mainLizmap.baseLayersMap.setHighlightFeatures(featureAsWKT,"wkt", mainLizmap.projection);
         }
     }
 
     _removeCenterPoint() {
-        mainLizmap.lizmap3.map.getLayersByName('locatelayer')[0].removeAllFeatures();
+        mainLizmap.baseLayersMap.clearHighlightFeatures();
     }
 
     /**

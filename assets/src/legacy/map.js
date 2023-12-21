@@ -1191,8 +1191,8 @@ window.lizMap = function() {
      * @param aName
      */
     function zoomToLocateFeature(aName) {
-    // clean locate layer
-        clearDrawLayer('locatelayer');
+        // clear highlight layer
+        lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
 
         // get locate by layer val
         var locate = config.locateByLayer[aName];
@@ -1219,28 +1219,21 @@ window.lizMap = function() {
                 feat.geometry.transform(proj, map.getProjection());
                 // Show geometry if asked
                 if (locate.displayGeom == 'True') {
-                    var layer = map.getLayersByName('locatelayer')[0];
-                    if( typeof layer === 'undefined' )
-                        return;
                     var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
                     getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
                     getFeatureUrlData['options']['FEATUREID'] = val;
                     // Get data
                     $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-                        if ( !data.features )
+                        if ( !data.features ){
                             data = JSON.parse(data);
-                        if( data.features.length != 0) {
-                            feat = format.read(data.features[0])[0];
-                            feat.geometry.transform(proj, map.getProjection());
                         }
-                        layer.addFeatures([feat]);
+                        lizMap.mainLizmap.baseLayersMap.setHighlightFeatures(data.features[0], "geojson");
                     }).fail(function(){
-                        layer.addFeatures([feat]);
+                        lizMap.mainLizmap.baseLayersMap.setHighlightFeatures(feat, "geojson");
                     });
                 }
-                //zoom to extent
+                // zoom to extent
                 map.zoomToExtent(feat.geometry.getBounds());
-
             }
 
             var fid = val.split('.')[1];
@@ -1692,7 +1685,7 @@ window.lizMap = function() {
                     getLocateFeature(lname);
                 }
                 $('.btn-locate-clear').click(function() {
-                    clearDrawLayer('locatelayer');
+                    lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
                     $('#locate select').val('-1');
                     $('div.locate-layer span > input').val('');
 
@@ -1956,8 +1949,8 @@ window.lizMap = function() {
                             $('#overview-box').show();
                         }
 
-                        // clean locate layer
-                        clearDrawLayer('locatelayer');
+                        // clear highlight layer
+                        lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
                         return false;
                     }
                 );
@@ -2000,49 +1993,17 @@ window.lizMap = function() {
      * @param containerId
      */
     function addGeometryFeatureInfo( popup, containerId ) {
-        // clean locate layer
-        clearDrawLayer('locatelayer');
-        var layer = map.getLayersByName('locatelayer')[0];
-        if( typeof layer === 'undefined' )
-            return;
-
-        // build selector
-        var selector = 'div.lizmapPopupContent div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry';
-        if ( containerId )
+        // Build selector
+        let selector = 'div.lizmapPopupContent div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry';
+        if ( containerId ){
             selector = '#'+ containerId +' '+ selector;
-        // get geometries and crs
-        var geometries = [];
-        $(selector).each(function(){
-            var self = $(this);
-            var val = self.val();
-            if ( val == '' )
-                return;
-            var crs = self.parent().find('input.lizmap-popup-layer-feature-crs').val();
-            if ( crs == '' )
-                return;
-            var fid = self.parent().find('input.lizmap-popup-layer-feature-id').val();
-            var minx = self.parent().find('input.lizmap-popup-layer-feature-bbox-minx').val();
-            var miny = self.parent().find('input.lizmap-popup-layer-feature-bbox-miny').val();
-            var maxx = self.parent().find('input.lizmap-popup-layer-feature-bbox-maxx').val();
-            var maxy = self.parent().find('input.lizmap-popup-layer-feature-bbox-maxy').val();
-            geometries.push( { fid: fid, geom: val, crs: crs, bbox:[minx,miny,maxx,maxy] } );
-        });
-
-        // load proj and build features from popup
-        var projLoaded = [];
-        for ( var i=0, len=geometries.length; i<len; i++ ) {
-            loadProjDefinition(geometries[i].crs, function( aProj ) {
-                projLoaded.push( aProj );
-                if ( projLoaded.length == geometries.length ) {
-                    var features = [];
-                    for (const geomInfo of geometries) {
-                        var geometry = OpenLayers.Geometry.fromWKT( geomInfo.geom );
-                        geometry.transform(geomInfo.crs, map.getProjection());
-                        features.push( new OpenLayers.Feature.Vector( geometry ) );
-                    }
-                    layer.addFeatures( features );
-                }
-            });
+        }
+        // Highlight geometries
+        const geometriesWKT = [];
+        document.querySelectorAll(selector).forEach(element => geometriesWKT.push(element.value));
+        if (geometriesWKT.length) {
+            const geometryCollectionWKT = `GEOMETRYCOLLECTION(${geometriesWKT.join()})`;
+            lizMap.mainLizmap.baseLayersMap.setHighlightFeatures(geometryCollectionWKT, "wkt");
         }
     }
 
@@ -2385,8 +2346,8 @@ window.lizMap = function() {
             addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
             $('#button-popupcontent').click(function(){
                 if($(this).parent().hasClass('active')) {
-                    // clean locate layer
-                    clearDrawLayer('locatelayer');
+                    // clear highlight layer
+                    lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
                     // remove information
                     $('#popupcontent div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
                 }
