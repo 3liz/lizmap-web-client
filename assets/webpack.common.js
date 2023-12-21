@@ -13,7 +13,6 @@ export default {
         atlas: './src/legacy/atlas.js',
         'switcher-layers-actions': './src/legacy/switcher-layers-actions.js',
         timemanager: './src/legacy/timemanager.js',
-        search: './src/legacy/search.js',
         view: './src/legacy/view.js',
         'bottom-dock': './src/legacy/bottom-dock.js',
     },

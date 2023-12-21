@@ -18,6 +18,7 @@ import FeatureStorage from './FeatureStorage.js';
 import Popup from './Popup.js';
 import Legend from './Legend.js';
 import Permalink from './Permalink.js';
+import Search from './Search.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
@@ -35,7 +36,7 @@ export default class Lizmap {
                 const wmsCapabilities = wmsParser.read(configs.wmsCapabilities);
                 // The initialConfig has been cloned because it will be freezed
                 this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
-                this._state = new State(this._initialConfig);
+                this._state = new State(this._initialConfig, configs.startupFeatures);
             },
             uicreated: () => {
                 this._lizmap3 = lizMap;
@@ -86,6 +87,7 @@ export default class Lizmap {
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup();
                 this.legend = new Legend();
+                this.search = new Search();
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {

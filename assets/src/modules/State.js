@@ -8,11 +8,12 @@ import { LayerTreeGroupState } from './state/LayerTree.js';
 export class State extends EventDispatcher {
     /**
      * @param {Config} initialCfg - the lizmap initial config instance
+     * @param {Array|undefined} startupFeatures - the features to highlight at startup
      */
-    constructor(initialCfg) {
+    constructor(initialCfg, startupFeatures) {
         super()
         this._initialConfig = initialCfg;
-        this._map = new MapState();
+        this._map = new MapState(startupFeatures);
         this._map.addListener(this.dispatch.bind(this), 'map.state.changed');
         this._baseLayers = null;
         this._collection = null;

@@ -1770,7 +1770,7 @@ var lizEdition = function() {
                 launchEditionOfParent();
             } else {
                 editionLayer.clear();
-                lizMap.clearDrawLayer('locatelayer');
+                lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
                 // trigger edition form closed
                 lizMap.events.triggerEvent(
                     'lizmapeditionformclosed'
