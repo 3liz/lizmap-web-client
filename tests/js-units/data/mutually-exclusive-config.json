@@ -128,8 +128,7 @@
     "metadata": {
       "qgis_desktop_version": 32205,
       "lizmap_plugin_version": "master",
-      "lizmap_web_client_target_version": 30500,
-      "project_valid": true
+      "lizmap_web_client_target_version": 30500
     },
     "options": {
       "projection": {

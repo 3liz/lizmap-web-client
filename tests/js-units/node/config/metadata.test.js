@@ -8,7 +8,6 @@ describe('MetadataConfig', function () {
         expect(mt.lizmap_plugin_version_str).to.be.eq('3.1.8')
         expect(mt.lizmap_plugin_version).to.be.eq(30108)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30200)
-        expect(mt.project_valid).to.be.eq(null)
         expect(mt.qgis_desktop_version).to.be.eq(30000)
     })
 
@@ -23,7 +22,6 @@ describe('MetadataConfig', function () {
         expect(mt.lizmap_plugin_version_str).to.be.eq('3.8.1')
         expect(mt.lizmap_plugin_version).to.be.eq(30801)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30503)
-        expect(mt.project_valid).to.be.true
         expect(mt.qgis_desktop_version).to.be.eq(32200)
     })
 
@@ -31,13 +29,11 @@ describe('MetadataConfig', function () {
         const mt = new MetadataConfig({
             "qgis_desktop_version": 31615,
             "lizmap_plugin_version": "3.7.7",
-            "lizmap_web_client_target_version": 30500,
-            "project_valid": true
+            "lizmap_web_client_target_version": 30500
         });
         expect(mt.lizmap_plugin_version_str).to.be.eq('3.7.7')
         expect(mt.lizmap_plugin_version).to.be.eq(30707)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30500)
-        expect(mt.project_valid).to.be.true
         expect(mt.qgis_desktop_version).to.be.eq(31615)
     })
 
@@ -47,13 +43,11 @@ describe('MetadataConfig', function () {
             "lizmap_plugin_version_str": "3.9.1",
             "lizmap_plugin_version": 30901,
             "lizmap_web_client_target_version": 30500,
-            "lizmap_web_client_target_status": "Stable",
-            "project_valid": true
+            "lizmap_web_client_target_status": "Stable"
         });
         expect(mt.lizmap_plugin_version_str).to.be.eq('3.9.1')
         expect(mt.lizmap_plugin_version).to.be.eq(30901)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30500)
-        expect(mt.project_valid).to.be.true
         expect(mt.qgis_desktop_version).to.be.eq(32211)
     })
 
@@ -64,13 +58,11 @@ describe('MetadataConfig', function () {
             "lizmap_plugin_version": 31301,
             "lizmap_web_client_target_version": 30700,
             "lizmap_web_client_target_status": "Dev",
-            "instance_target_url": "http://localhost:8130/",
-            "project_valid": true
+            "instance_target_url": "http://localhost:8130/"
         });
         expect(mt.lizmap_plugin_version_str).to.be.eq('3.13.1-alpha')
         expect(mt.lizmap_plugin_version).to.be.eq(31301)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30700)
-        expect(mt.project_valid).to.be.true
         expect(mt.qgis_desktop_version).to.be.eq(32216)
     })
 
@@ -78,13 +70,11 @@ describe('MetadataConfig', function () {
         const mt = new MetadataConfig({
             "qgis_desktop_version": 31615,
             "lizmap_plugin_version": "3.7.8-pre",
-            "lizmap_web_client_target_version": 30500,
-            "project_valid": true
+            "lizmap_web_client_target_version": 30500
         });
         expect(mt.lizmap_plugin_version_str).to.be.eq('3.7.8-pre')
         expect(mt.lizmap_plugin_version).to.be.eq(30708)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30500)
-        expect(mt.project_valid).to.be.true
         expect(mt.qgis_desktop_version).to.be.eq(31615)
     })
 
@@ -96,7 +86,6 @@ describe('MetadataConfig', function () {
         expect(mt.lizmap_plugin_version_str).to.be.eq('3.2.18')
         expect(mt.lizmap_plugin_version).to.be.eq(30218)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30300)
-        expect(mt.project_valid).to.be.null
         expect(mt.qgis_desktop_version).to.be.eq(30000)
     })
 
@@ -104,13 +93,11 @@ describe('MetadataConfig', function () {
         const mt = new MetadataConfig({
             "qgis_desktop_version": 32204,
             "lizmap_plugin_version": "master",
-            "lizmap_web_client_target_version": 30500,
-            "project_valid": true
+            "lizmap_web_client_target_version": 30500
         });
         expect(mt.lizmap_plugin_version_str).to.be.eq('master')
         expect(mt.lizmap_plugin_version).to.be.eq(999999)
         expect(mt.lizmap_web_client_target_version).to.be.eq(30500)
-        expect(mt.project_valid).to.be.true
         expect(mt.qgis_desktop_version).to.be.eq(32204)
     })
 })

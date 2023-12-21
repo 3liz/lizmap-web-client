@@ -1213,8 +1213,7 @@
   "metadata": {
     "qgis_desktop_version": 31615,
     "lizmap_plugin_version": "3.7.7",
-    "lizmap_web_client_target_version": 30500,
-    "project_valid": true
+    "lizmap_web_client_target_version": 30500
   },
   "options": {
     "projection": {

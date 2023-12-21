@@ -9,7 +9,6 @@ import { BaseObjectConfig } from './BaseObject.js';
 
 const optionalProperties = {
     'lizmap_web_client_target_version': {type: 'number', default: 30200},
-    'project_valid': {type: 'boolean', nullable: true, default: null},
     'qgis_desktop_version': {type: 'null', default: 30000}
 };
 
@@ -26,7 +25,6 @@ export class MetadataConfig extends BaseObjectConfig {
      * @param {string}  [cfg.lizmap_plugin_version]                  - the lizmap plugin version as number used to configure the project
      * @param {string}  [cfg.lizmap_plugin_version_str]              - the lizmap plugin version as string used to configure the project
      * @param {number}  [cfg.lizmap_web_client_target_version] - the target lizmap web client version as integer
-     * @param {boolean} [cfg.project_valid]                          - Is the project valid ?
      * @param {number}  [cfg.qgis_desktop_version]             - the QGIS Desktop version as integer used to build the project
      */
     constructor(cfg = {}) {
@@ -88,14 +86,6 @@ export class MetadataConfig extends BaseObjectConfig {
         return this._lizmap_web_client_target_version;
     }
 
-
-    /**
-     * Is the project valid ?
-     * @type {?boolean}
-     */
-    get project_valid() {
-        return this._project_valid;
-    }
 
     /**
      * The QGIS Desktop version as integer used to build the project
