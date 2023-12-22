@@ -106,7 +106,7 @@ export default class Lizmap {
      */
     set newOlMap(mode){
         this.map._newOlMap = mode;
-        document.getElementById('newOlMap').style.zIndex = mode ? 750 : 'auto';
+        document.getElementById('newOlMap').style.zIndex = mode ? 751 : 'auto';
     }
 
     get lizmap3() {

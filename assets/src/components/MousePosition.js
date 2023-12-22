@@ -98,12 +98,12 @@ export default class MousePosition extends HTMLElement {
             }
             mainLizmap.map.addLayer(this._MGRS);
 
-            mainLizmap.newOlMap = true;
+            // mainLizmap.newOlMap = true;
         }else{
             if(this._MGRS){
                 mainLizmap.map.removeLayer(this._MGRS);
             }
-            mainLizmap.newOlMap = false;
+            // mainLizmap.newOlMap = false;
         }
     }
 

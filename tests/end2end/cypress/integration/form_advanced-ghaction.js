@@ -77,7 +77,7 @@ describe('Advanced form', function () {
 
         // nboisteault : I tried to drag and drop the point but did not achieve to have this behavior
         // TODO: Try again with OpenLayers >= 6.x
-        // cy.get('#map')
+        // cy.get('#newOlMap')
         //     .trigger('mousedown', 600, 250, { button: 0, force: true })
         //     .trigger('mousemove', 600, 450, { button: 0, force: true })
         //     .trigger('mouseup', 600, 450, { button: 0, force: true })
@@ -87,7 +87,7 @@ describe('Advanced form', function () {
         //     .trigger('drop', 600, 450 )
         //     .trigger('dragend', 600, 450 )
 
-        // cy.get('#map')
+        // cy.get('#newOlMap')
         //     .trigger('pointerdown', 600, 250, { isPrimary: true})
         //     .trigger('pointermove', 600, 450)
         //     .trigger('pointerup', 600, 450)
