@@ -2524,7 +2524,7 @@ window.lizMap = function() {
                 }
 
                 for ( var  lName in config.layers ) {
-                    var lConfig = config.layers[lName];
+                    let lConfig = config.layers[lName];
 
                     // Do not request if the layer has no popup
                     if ( lConfig.popup != 'True' )
