@@ -676,7 +676,7 @@ class ProjectConfig
      * Get the metadata written by Lizmap plugin
      * about the desktop version used.
      * qgis_desktop_version, lizmap_plugin_version,
-     * lizmap_web_client_target_version, project_valid.
+     * lizmap_web_client_target_version.
      *
      * @return null|object
      */

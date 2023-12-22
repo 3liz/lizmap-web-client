@@ -13,7 +13,6 @@ describe('Request Lizmap GetProjectConfig', function () {
             expect(resp.body.metadata).to.have.property('lizmap_plugin_version')
             expect(resp.body.metadata).to.have.property('lizmap_plugin_version_str')
             expect(resp.body.metadata).to.have.property('lizmap_web_client_target_version')
-            expect(resp.body.metadata).to.have.property('project_valid')
             expect(resp.body.metadata).to.have.property('qgis_desktop_version')
 
             expect(resp.body).to.have.property('options')
