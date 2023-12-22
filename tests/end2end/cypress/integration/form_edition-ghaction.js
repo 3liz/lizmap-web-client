@@ -54,7 +54,7 @@ describe('Form edition', function () {
         cy.get('.edition-tabs a[href="#tabdigitization"]').should('be.visible')
 
         // Draw point
-        cy.mapClick(630, 325)
+        cy.ol2MapClick(630, 325)
 
         // Save feature with new geom point
         cy.get('#jforms_view_edition__submit_submit').click()
