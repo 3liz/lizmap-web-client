@@ -1920,6 +1920,7 @@ window.lizMap = function() {
 
             if (lizMap.mainLizmap.newOlMap) {
                 document.getElementById('popup-content').innerHTML = text;
+                lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
             } else {
                 // Use openlayers map popup anchored
                 popupContainerId = "liz_layer_popup";
