@@ -103,7 +103,7 @@ test.describe('Draw', () => {
         await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
         await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#map').screenshot()).toMatchSnapshot('draw-all-tools.png');
+        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-all-tools.png');
     });
 
     test('Edition', async ({ page }) => {
@@ -188,6 +188,6 @@ test.describe('Draw', () => {
         await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
         await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#map').screenshot()).toMatchSnapshot('draw-edition.png');
+        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-edition.png');
     });
 });

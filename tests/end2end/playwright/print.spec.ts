@@ -132,7 +132,7 @@ test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
         await page.goto(url, { waitUntil: 'networkidle' });
-        await page.locator('#map').click({ position: { x: 409, y: 186 } });
+        await page.locator('#newOlMap').click({ position: { x: 409, y: 186 } });
     });
 
     test('Popup content print', async ({ page }) => {

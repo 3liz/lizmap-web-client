@@ -1908,41 +1908,13 @@ window.lizMap = function() {
             ){
                 $('#button-popupcontent').click();
             }
-        }
-        else{
+        } else {
             if (!text || text == null || text == ''){
                 return false;
             }
 
-            if (lizMap.mainLizmap.newOlMap) {
-                document.getElementById('popup-content').innerHTML = text;
-                lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
-            } else {
-                // Use openlayers map popup anchored
-                popupContainerId = "liz_layer_popup";
-                popup = new OpenLayers.Popup.LizmapAnchored(
-                    popupContainerId,
-                    eventLonLatInfo,
-                    null,
-                    text,
-                    null,
-                    true,
-                    function() {
-                        map.removePopup(this);
-                        if(mCheckMobile()){
-                            $('#navbar').show();
-                            $('#overview-box').show();
-                        }
-
-                        // clear highlight layer
-                        lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
-                        return false;
-                    }
-                );
-                popup.panMapIfOutOfView = true;
-                map.addPopup(popup);
-                popup.verifySize();
-            }
+            document.getElementById('liz_layer_popup_contentDiv').innerHTML = text;
+            lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
 
             // Activate Boostrap 2 tabs here as they are not
             // automatically activated when created in popup anchored
@@ -1950,12 +1922,6 @@ window.lizMap = function() {
                 e.preventDefault();
                 $(this).tab('show');
             });
-
-            // Hide navbar and overview in mobile mode
-            if(mCheckMobile()){
-                $('#navbar').hide();
-                $('#overview-box').hide();
-            }
         }
         lastLonLatInfo = eventLonLatInfo;
 
