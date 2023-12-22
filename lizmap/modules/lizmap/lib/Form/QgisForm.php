@@ -1356,7 +1356,9 @@ class QgisForm implements QgisFormControlsInterface
         // if ($this->ctrl->emptyItemLabel !== null || !$this->ctrl->required)
         // To add an empty value to ValueRelation displayed as menulist, we only
         // have to set an emptyItemLabel !== null
-        $formControl->ctrl->emptyItemLabel = '';
+        if (property_exists($formControl->ctrl, 'emptyItemLabel')) {
+            $formControl->ctrl->emptyItemLabel = '';
+        }
 
         // Create Datasource
         $dataSource = new QgisFormValueRelationDynamicDatasource($formControl->ref);
