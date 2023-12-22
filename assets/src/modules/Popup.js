@@ -39,12 +39,12 @@ export default class Popup {
         /**
         * Create an overlay to anchor the popup to the map.
         */
-        document.getElementById('popup-closer').onclick = () => {
+        document.getElementById('liz_layer_popup_closer').onclick = () => {
             this._overlay.setPosition(undefined);
             return false;
         };
         this._overlay = new Overlay({
-            element: document.getElementById('popup'),
+            element: document.getElementById('liz_layer_popup'),
             autoPan: {
                 animation: {
                     duration: 250,
@@ -136,7 +136,6 @@ export default class Popup {
         document.getElementById('map').style.cursor = 'wait';
 
         wms.getFeatureInfo(wmsParams).then(response => {
-            this._overlay.setPosition(evt.coordinate);
             lizMap.displayGetFeatureInfo(response, {x: xCoord, y: yCoord});
         }).finally(() => {
             document.getElementById('map').style.cursor = 'auto';

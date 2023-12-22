@@ -2083,11 +2083,7 @@ lizmap-mouse-position > div.coords-unit > select{
   font-family: century gothic,arial,sans serif;
 }
 
-/*Popup OpenLayers*/
-#liz_layer_popup {
-  z-index:2000;
-}
-
+/* Popup OpenLayers */
 .lizmapPopup.olPopup,
 #map-content .lizmapPopup{
   background-color:#4A4A4A !important;
