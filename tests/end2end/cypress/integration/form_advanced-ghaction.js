@@ -8,7 +8,7 @@ describe('Advanced form', function () {
 
         cy.wait(1500)
         // Click on map as form needs a geometry
-        cy.mapClick(630, 325)
+        cy.ol2MapClick(630, 325)
 
         cy.wait(1500)
     })
@@ -67,7 +67,7 @@ describe('Advanced form', function () {
         cy.wait(800)
 
         // Assert quartier value is good for another drawn point
-        cy.mapClick(630, 425)
+        cy.ol2MapClick(630, 425)
         cy.get('#jforms_view_edition_quartier option').should('have.length', 2)
         cy.get('#jforms_view_edition_quartier option').last().should('have.text', 'MONTPELLIER CENTRE')
         cy.get('#jforms_view_edition_quartier').select('MC')

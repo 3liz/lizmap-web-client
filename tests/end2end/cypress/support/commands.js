@@ -73,3 +73,9 @@ Cypress.Commands.add(
         cy.get('#newOlMap').click(x - 30, y - 75)
     }
 )
+
+Cypress.Commands.add(
+    'ol2MapClick', (x, y) => {
+        cy.get('#map').click(x - 30, y - 75)
+    }
+)

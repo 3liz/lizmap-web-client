@@ -16,9 +16,9 @@ test.describe('Popup', () => {
                 y: 415
             }
         });
-        await expect(page.locator('#map #liz_layer_popup')).toBeVisible();
-        await expect(page.locator('#map #liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
-        await expect(page.locator('#map #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
     });
 
     test('changes popup tab', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('Popup', () => {
                 y: 415
             }
         });
-        await expect(page.locator('#map #liz_layer_popup .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
+        await expect(page.locator('#newOlMap #liz_layer_popup .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
     });
 
     test('getFeatureInfo request should contain a FILTERTOKEN parameter when the layer is filtered', async ({ page }) => {
