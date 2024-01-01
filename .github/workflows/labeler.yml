@@ -21,7 +21,7 @@ jobs:
         run: sleep 5m
         shell: bash
     
-      - uses: actions/labeler@v4
+      - uses: actions/labeler@v5
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           sync-labels: ''
