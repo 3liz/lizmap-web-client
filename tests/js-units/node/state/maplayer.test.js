@@ -239,6 +239,17 @@ describe('MapGroupState', function () {
         ])
     })
 
+    it('findMapLayers && countExplodedMapLayers', function(){
+        const root = getRootMapGroupState('layer-count');
+        expect(root).to.be.instanceOf(MapGroupState);
+
+        // map layer count and order
+        expect(root.findMapLayers().length).to.be.eq(5); 
+
+        // map layer exploded count
+        expect(root.countExplodedMapLayers()).to.be.eq(7);
+    })
+
     it('getMapLayerByName', function () {
         const root = getRootMapGroupState('montpellier');
         expect(root).to.be.instanceOf(MapGroupState)
