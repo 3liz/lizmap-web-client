@@ -395,6 +395,31 @@ export class MapGroupState extends MapItemState {
     }
 
     /**
+     * Count map layers by exploding the layers within every "group as layer" groups.
+     * Used to get the actual total layers number for ordering purpose (i.e. assign correct zIndex value to each map layer)
+     * @returns {number}
+     */
+     countExplodedMapLayers() {
+        let layersCount = 0;
+        for(const item of this.getChildren()) {
+            if (item instanceof MapLayerState) {
+                const itemState = item.itemState;
+                if(itemState instanceof LayerGroupState && itemState.groupAsLayer){
+                    //count the layers inside the group
+                    layersCount += itemState.findLayers().length;
+                }
+                else if(itemState instanceof LayerLayerState){
+                    layersCount++;
+                }
+            } else if (item instanceof MapGroupState) {
+                layersCount += item.countExplodedMapLayers();
+            }
+        }
+
+        return layersCount;
+    }
+
+    /**
      * Find layer items
      * @returns {MapLayerState[]}
      */

@@ -240,7 +240,7 @@ export default class BaseLayersMap extends olMap {
         // Array of layers and groups in overlayLayerGroup
         this._overlayLayersAndGroups = [];
 
-        const layersCount = mainLizmap.state.rootMapGroup.findMapLayers().length;
+        const layersCount = mainLizmap.state.rootMapGroup.countExplodedMapLayers();
 
         // Returns a layer or a layerGroup depending of the node type
         const createNode = (node) => {
