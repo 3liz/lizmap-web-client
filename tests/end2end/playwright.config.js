@@ -61,6 +61,13 @@ module.exports = defineConfig({
       },
     },
 
+    {
+      name: 'end2end',
+      use: {
+        browserName: 'chromium',
+      },
+      testIgnore: '**/localonly/**',
+    },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
