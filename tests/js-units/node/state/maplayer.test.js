@@ -10,7 +10,6 @@ import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '
 import { LayerGroupState, LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 
 import { MapLayerLoadStatus, MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
-import exp from 'constants';
 
 /**
  * Returns the root MapGroupState for the project
