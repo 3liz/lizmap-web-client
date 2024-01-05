@@ -9,10 +9,10 @@
  */
 
 import {extend} from 'ol/extent.js';
+import GML3 from 'ol/format/GML3.js';
 
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
-
 import Utils from '../modules/Utils.js';
 
 window.lizMap = function() {
@@ -3718,107 +3718,82 @@ window.lizMap = function() {
     /**
      *
      * @param targetFeatureType
-     * @param selectionFeature
+     * @param selectionFeature - selection feature in map projection
      * @param geomOperator
      */
     function selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){
 
-        var lConfig = config.layers[targetFeatureType];
-        lizMap.loadProjDefinition( lConfig.crs, function( aProj ) {
+        const lConfig = config.layers[targetFeatureType];
 
-            var gml3 = new OpenLayers.Format.GML.v3(
-                {
-                    internalProjection: lizMap.map.getProjection(),
-                    externalProjection: aProj,
-                    srsName: aProj
-                }
-            );
-            var gml = gml3.writeNode(
-                'feature:_geometry',
-                selectionFeature.geometry
-            );
-            var spatialFilter = geomOperator+"($geometry, geom_from_gml('" ;
-            spatialFilter+= OpenLayers.Format.XML.prototype.write.apply(
-                gml3,
-                gml.children
-            );
-            spatialFilter+= "'))";
+        const geomAsGML = (new GML3()).writeGeometryNode( selectionFeature.getGeometry());
 
-            if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
-                var rFilter = lConfig['request_params']['filter'];
-                if( rFilter ){
-                    rFilter = rFilter.replace( targetFeatureType + ':', '');
-                    spatialFilter = rFilter +' AND '+ spatialFilter;
-                }
+        var spatialFilter = geomOperator+"($geometry, geom_from_gml('" + geomAsGML.innerHTML + "'))";
+
+        if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
+            var rFilter = lConfig['request_params']['filter'];
+            if( rFilter ){
+                rFilter = rFilter.replace( targetFeatureType + ':', '');
+                spatialFilter = rFilter +' AND '+ spatialFilter;
             }
-            if( 'request_params' in lConfig && 'exp_filter' in lConfig['request_params'] ){
-                // Add exp_filter, for example if set by another tool( filter module )
-                // Often 'filter' is not set because filtertoken is set instead
-                // But in this case, exp_filter must also been set and must be added
-                var eFilter = lConfig['request_params']['exp_filter'];
-                if( eFilter ){
-                    spatialFilter = eFilter +' AND '+ spatialFilter;
-                }
+        }
+        if( 'request_params' in lConfig && 'exp_filter' in lConfig['request_params'] ){
+            // Add exp_filter, for example if set by another tool( filter module )
+            // Often 'filter' is not set because filtertoken is set instead
+            // But in this case, exp_filter must also been set and must be added
+            var eFilter = lConfig['request_params']['exp_filter'];
+            if( eFilter ){
+                spatialFilter = eFilter +' AND '+ spatialFilter;
             }
-            var limitDataToBbox = false;
-            if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
-                limitDataToBbox = true;
-            }
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( targetFeatureType, spatialFilter, null, null, limitDataToBbox );
+        }
+        var limitDataToBbox = false;
+        if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
+            limitDataToBbox = true;
+        }
+        var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( targetFeatureType, spatialFilter, null, null, limitDataToBbox );
 
-            // add BBox to restrict to geom bbox but not with some geometry operator
-            if (geomOperator !== 'disjoint'){
-                var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(), aProj).getBounds();
-                if (geomBounds.getWidth() == 0 || geomBounds.getHeight() == 0) {
-                    geomBounds.extend(new OpenLayers.Bounds(
-                        geomBounds.left - 0.000001,
-                        geomBounds.bottom - 0.000001,
-                        geomBounds.right + 0.000001,
-                        geomBounds.top + 0.000001
-                    ));
-                }
-                getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
-                getFeatureUrlData['options']['SRSNAME'] = lConfig.crs;
-            }
+        // add BBox to restrict to geom bbox but not with some geometry operator
+        if (geomOperator !== 'disjoint'){
+            getFeatureUrlData['options']['BBOX'] = selectionFeature.getGeometry().getExtent().join();
+            getFeatureUrlData['options']['SRSNAME'] = lConfig.crs;
+        }
 
-            // get features
-            $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
-                var gFormat = new OpenLayers.Format.GeoJSON({
-                    ignoreExtraDims: true,
-                    externalProjection: lConfig.crs,
-                    internalProjection: lizMap.map.getProjection()
-                });
-                var tfeatures = gFormat.read( result );
-                var sfIds = $.map(tfeatures, function(feat){
-                    return feat.fid.split('.')[1];
-                });
-
-                if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'add' ) {
-                    sfIds = config.layers[targetFeatureType]['selectedFeatures'].concat(sfIds);
-                    for(var i=0; i<sfIds.length; ++i) {
-                        for(var j=i+1; j<sfIds.length; ++j) {
-                            if(sfIds[i] === sfIds[j])
-                                sfIds.splice(j--, 1);
-                        }
-                    }
-                } else if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'remove' ) {
-                    var asfIds = config.layers[targetFeatureType]['selectedFeatures'].concat([]);
-                    for(var i=0; i<sfIds.length; ++i) {
-                        var asfIdIdx = asfIds.indexOf( sfIds[i] );
-                        if( asfIdIdx != -1 )
-                            asfIds.splice(asfIdIdx, 1);
-                    }
-                    sfIds = asfIds;
-                }
-                config.layers[targetFeatureType]['selectedFeatures'] = sfIds;
-                lizMap.events.triggerEvent("layerSelectionChanged",
-                    {
-                        'featureType': targetFeatureType,
-                        'featureIds': config.layers[targetFeatureType]['selectedFeatures'],
-                        'updateDrawing': true
-                    }
-                );
+        // get features
+        $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
+            var gFormat = new OpenLayers.Format.GeoJSON({
+                ignoreExtraDims: true,
+                externalProjection: lConfig.crs,
+                internalProjection: lizMap.map.getProjection()
             });
+            var tfeatures = gFormat.read( result );
+            var sfIds = $.map(tfeatures, function(feat){
+                return feat.fid.split('.')[1];
+            });
+
+            if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'add' ) {
+                sfIds = config.layers[targetFeatureType]['selectedFeatures'].concat(sfIds);
+                for(var i=0; i<sfIds.length; ++i) {
+                    for(var j=i+1; j<sfIds.length; ++j) {
+                        if(sfIds[i] === sfIds[j])
+                            sfIds.splice(j--, 1);
+                    }
+                }
+            } else if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'remove' ) {
+                var asfIds = config.layers[targetFeatureType]['selectedFeatures'].concat([]);
+                for(var i=0; i<sfIds.length; ++i) {
+                    var asfIdIdx = asfIds.indexOf( sfIds[i] );
+                    if( asfIdIdx != -1 )
+                        asfIds.splice(asfIdIdx, 1);
+                }
+                sfIds = asfIds;
+            }
+            config.layers[targetFeatureType]['selectedFeatures'] = sfIds;
+            lizMap.events.triggerEvent("layerSelectionChanged",
+                {
+                    'featureType': targetFeatureType,
+                    'featureIds': config.layers[targetFeatureType]['selectedFeatures'],
+                    'updateDrawing': true
+                }
+            );
         });
     }
 
