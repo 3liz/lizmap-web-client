@@ -407,20 +407,21 @@ export default class Action {
             }
 
             // Add the features in the OpenLayers map layer
-            let features = this.addFeaturesFromActionResponse(data, action.style);
+            const features = this.addFeaturesFromActionResponse(data, action.style);
 
             // Display a message if given in the first feature
             if (features.length > 0) {
-                let feat = features[0];
-                let message_field = 'message';
-                if ('attributes' in feat && message_field in feat.attributes) {
+                const feat = features[0];
+                const featureProperties = feat.getProperties();
+                const message_field = 'message';
+                if (featureProperties && featureProperties?.[message_field]) {
 
                     // Clear the previous message
-                    let previousMessage = document.getElementById('lizmap-action-message');
+                    const previousMessage = document.getElementById('lizmap-action-message');
                     if (previousMessage) previousMessage.remove();
 
                     // Display the message if given
-                    let message = feat.attributes[message_field].trim();
+                    const message = featureProperties[message_field].trim();
                     if (message) {
                         mainLizmap.lizmap3.addMessage(message, 'info', true).attr('id', 'lizmap-action-message');
                     }
