@@ -8,7 +8,7 @@ describe('Advanced form', function () {
 
         cy.wait(1500)
         // Click on map as form needs a geometry
-        cy.mapClick(630, 325)
+        cy.ol2MapClick(630, 325)
 
         cy.wait(1500)
     })
@@ -67,7 +67,7 @@ describe('Advanced form', function () {
         cy.wait(800)
 
         // Assert quartier value is good for another drawn point
-        cy.mapClick(630, 425)
+        cy.ol2MapClick(630, 425)
         cy.get('#jforms_view_edition_quartier option').should('have.length', 2)
         cy.get('#jforms_view_edition_quartier option').last().should('have.text', 'MONTPELLIER CENTRE')
         cy.get('#jforms_view_edition_quartier').select('MC')
@@ -77,7 +77,7 @@ describe('Advanced form', function () {
 
         // nboisteault : I tried to drag and drop the point but did not achieve to have this behavior
         // TODO: Try again with OpenLayers >= 6.x
-        // cy.get('#map')
+        // cy.get('#newOlMap')
         //     .trigger('mousedown', 600, 250, { button: 0, force: true })
         //     .trigger('mousemove', 600, 450, { button: 0, force: true })
         //     .trigger('mouseup', 600, 450, { button: 0, force: true })
@@ -87,7 +87,7 @@ describe('Advanced form', function () {
         //     .trigger('drop', 600, 450 )
         //     .trigger('dragend', 600, 450 )
 
-        // cy.get('#map')
+        // cy.get('#newOlMap')
         //     .trigger('pointerdown', 600, 250, { isPrimary: true})
         //     .trigger('pointermove', 600, 450)
         //     .trigger('pointerup', 600, 450)

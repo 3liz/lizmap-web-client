@@ -50,7 +50,7 @@ export default class Map extends olMap {
             this.addInteraction(dragZoom);
         });
 
-        this._newOlMap = false;
+        this._newOlMap = true;
 
         this._refreshOL2View = () => {
             // This refresh OL2 view and layers

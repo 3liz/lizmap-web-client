@@ -284,7 +284,7 @@ describe('Filter layer data by polygon for groups', function () {
         cy.wait(200)
 
         // Click to create feature outside allowed area
-        cy.mapClick(675, 465)
+        cy.ol2MapClick(675, 465)
 
         cy.get('#jforms_view_edition__submit_submit').click()
 

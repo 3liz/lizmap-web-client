@@ -10,37 +10,38 @@ test.describe('Popup', () => {
 
     test('click on the shape to show the popup', async ({ page }) => {
         // When clicking on triangle feature a popup with two tabs must appear
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 510,
                 y: 415
             }
         });
-        await expect(page.locator('#map #liz_layer_popup')).toBeVisible();
-        await expect(page.locator('#map #liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
-        await expect(page.locator('#map #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
     });
 
     test('changes popup tab', async ({ page }) => {
         // When clicking `tab2`, `tab2_value` must appear
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 510,
-                y: 415
+                y: 490
             }
         });
-        await page.locator('.container > ul:nth-child(2) > li:nth-child(2)').click();
+        await page.waitForTimeout(300);
+        await page.getByRole('link', { name: 'tab2' }).click({force: true});
         await expect(page.locator('#popup_dd_1_tab2')).toHaveClass(/active/);
     });
 
     test('displays children popups', async ({ page }) => {
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 510,
                 y: 415
             }
         });
-        await expect(page.locator('#map #liz_layer_popup .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
+        await expect(page.locator('#newOlMap #liz_layer_popup .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
     });
 
     test('getFeatureInfo request should contain a FILTERTOKEN parameter when the layer is filtered', async ({ page }) => {
@@ -52,7 +53,7 @@ test.describe('Popup', () => {
         await getMapRequestPromise;
 
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
           position: {
             x: 486,
             y: 136

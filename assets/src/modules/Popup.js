@@ -41,6 +41,7 @@ export default class Popup {
         */
         document.getElementById('liz_layer_popup_closer').onclick = () => {
             this._overlay.setPosition(undefined);
+            mainLizmap.baseLayersMap.clearHighlightFeatures();
             return false;
         };
         this._overlay = new Overlay({
@@ -133,12 +134,12 @@ export default class Popup {
             wmsParams['FILTERTOKEN'] = filterTokens.join(';');
         }
 
-        document.getElementById('map').style.cursor = 'wait';
+        document.getElementById('newOlMap').style.cursor = 'wait';
 
         wms.getFeatureInfo(wmsParams).then(response => {
             lizMap.displayGetFeatureInfo(response, {x: xCoord, y: yCoord});
         }).finally(() => {
-            document.getElementById('map').style.cursor = 'auto';
+            document.getElementById('newOlMap').style.cursor = 'auto';
         });
     }
 }

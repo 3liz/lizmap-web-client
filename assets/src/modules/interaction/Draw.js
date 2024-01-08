@@ -23,7 +23,7 @@ export default class Draw {
             this.clear();
         }
 
-        mainLizmap.newOlMap = true;
+        // mainLizmap.newOlMap = true;
 
         this._drawSource = new VectorSource();
 
@@ -91,7 +91,7 @@ export default class Draw {
 
     set visible(visible) {
         this._drawLayer.setVisible(visible);
-        mainLizmap.newOlMap = visible;
+        // mainLizmap.newOlMap = visible;
     }
 
     get features() {

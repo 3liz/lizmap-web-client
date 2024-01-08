@@ -12,7 +12,6 @@ import {extend} from 'ol/extent.js';
 
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
-
 import Utils from '../modules/Utils.js';
 
 window.lizMap = function() {
@@ -1908,41 +1907,13 @@ window.lizMap = function() {
             ){
                 $('#button-popupcontent').click();
             }
-        }
-        else{
+        } else {
             if (!text || text == null || text == ''){
                 return false;
             }
 
-            if (lizMap.mainLizmap.newOlMap) {
-                document.getElementById('popup-content').innerHTML = text;
-                lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
-            } else {
-                // Use openlayers map popup anchored
-                popupContainerId = "liz_layer_popup";
-                popup = new OpenLayers.Popup.LizmapAnchored(
-                    popupContainerId,
-                    eventLonLatInfo,
-                    null,
-                    text,
-                    null,
-                    true,
-                    function() {
-                        map.removePopup(this);
-                        if(mCheckMobile()){
-                            $('#navbar').show();
-                            $('#overview-box').show();
-                        }
-
-                        // clear highlight layer
-                        lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
-                        return false;
-                    }
-                );
-                popup.panMapIfOutOfView = true;
-                map.addPopup(popup);
-                popup.verifySize();
-            }
+            document.getElementById('liz_layer_popup_contentDiv').innerHTML = text;
+            lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
 
             // Activate Boostrap 2 tabs here as they are not
             // automatically activated when created in popup anchored
@@ -1950,12 +1921,6 @@ window.lizMap = function() {
                 e.preventDefault();
                 $(this).tab('show');
             });
-
-            // Hide navbar and overview in mobile mode
-            if(mCheckMobile()){
-                $('#navbar').hide();
-                $('#overview-box').hide();
-            }
         }
         lastLonLatInfo = eventLonLatInfo;
 
@@ -3748,114 +3713,6 @@ window.lizMap = function() {
         });
     }
 
-
-    /**
-     *
-     * @param targetFeatureType
-     * @param selectionFeature
-     * @param geomOperator
-     */
-    function selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){
-
-        var lConfig = config.layers[targetFeatureType];
-        lizMap.loadProjDefinition( lConfig.crs, function( aProj ) {
-
-            var gml3 = new OpenLayers.Format.GML.v3(
-                {
-                    internalProjection: lizMap.map.getProjection(),
-                    externalProjection: aProj,
-                    srsName: aProj
-                }
-            );
-            var gml = gml3.writeNode(
-                'feature:_geometry',
-                selectionFeature.geometry
-            );
-            var spatialFilter = geomOperator+"($geometry, geom_from_gml('" ;
-            spatialFilter+= OpenLayers.Format.XML.prototype.write.apply(
-                gml3,
-                gml.children
-            );
-            spatialFilter+= "'))";
-
-            if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
-                var rFilter = lConfig['request_params']['filter'];
-                if( rFilter ){
-                    rFilter = rFilter.replace( targetFeatureType + ':', '');
-                    spatialFilter = rFilter +' AND '+ spatialFilter;
-                }
-            }
-            if( 'request_params' in lConfig && 'exp_filter' in lConfig['request_params'] ){
-                // Add exp_filter, for example if set by another tool( filter module )
-                // Often 'filter' is not set because filtertoken is set instead
-                // But in this case, exp_filter must also been set and must be added
-                var eFilter = lConfig['request_params']['exp_filter'];
-                if( eFilter ){
-                    spatialFilter = eFilter +' AND '+ spatialFilter;
-                }
-            }
-            var limitDataToBbox = false;
-            if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
-                limitDataToBbox = true;
-            }
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( targetFeatureType, spatialFilter, null, null, limitDataToBbox );
-
-            // add BBox to restrict to geom bbox but not with some geometry operator
-            if (geomOperator !== 'disjoint'){
-                var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(), aProj).getBounds();
-                if (geomBounds.getWidth() == 0 || geomBounds.getHeight() == 0) {
-                    geomBounds.extend(new OpenLayers.Bounds(
-                        geomBounds.left - 0.000001,
-                        geomBounds.bottom - 0.000001,
-                        geomBounds.right + 0.000001,
-                        geomBounds.top + 0.000001
-                    ));
-                }
-                getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
-                getFeatureUrlData['options']['SRSNAME'] = lConfig.crs;
-            }
-
-            // get features
-            $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
-                var gFormat = new OpenLayers.Format.GeoJSON({
-                    ignoreExtraDims: true,
-                    externalProjection: lConfig.crs,
-                    internalProjection: lizMap.map.getProjection()
-                });
-                var tfeatures = gFormat.read( result );
-                var sfIds = $.map(tfeatures, function(feat){
-                    return feat.fid.split('.')[1];
-                });
-
-                if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'add' ) {
-                    sfIds = config.layers[targetFeatureType]['selectedFeatures'].concat(sfIds);
-                    for(var i=0; i<sfIds.length; ++i) {
-                        for(var j=i+1; j<sfIds.length; ++j) {
-                            if(sfIds[i] === sfIds[j])
-                                sfIds.splice(j--, 1);
-                        }
-                    }
-                } else if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'remove' ) {
-                    var asfIds = config.layers[targetFeatureType]['selectedFeatures'].concat([]);
-                    for(var i=0; i<sfIds.length; ++i) {
-                        var asfIdIdx = asfIds.indexOf( sfIds[i] );
-                        if( asfIdIdx != -1 )
-                            asfIds.splice(asfIdIdx, 1);
-                    }
-                    sfIds = asfIds;
-                }
-                config.layers[targetFeatureType]['selectedFeatures'] = sfIds;
-                lizMap.events.triggerEvent("layerSelectionChanged",
-                    {
-                        'featureType': targetFeatureType,
-                        'featureIds': config.layers[targetFeatureType]['selectedFeatures'],
-                        'updateDrawing': true
-                    }
-                );
-            });
-        });
-    }
-
     // Create new dock or minidock
     // Example : lizMap.addDock('mydock', 'My dock title', 'dock', 'Some content', 'icon-pencil');
     // see icon list here : http://getbootstrap.com/2.3.2/base-css.html#icons
@@ -4339,16 +4196,6 @@ window.lizMap = function() {
          */
         getFeaturePopupContentByFeatureIntersection: function( aName, feat, aCallback) {
             return getFeaturePopupContentByFeatureIntersection(aName, feat, aCallback);
-        },
-
-        /**
-         * Method: selectLayerFeaturesFromSelectionFeature
-         * @param targetFeatureType
-         * @param selectionFeature
-         * @param geomOperator
-         */
-        selectLayerFeaturesFromSelectionFeature: function (targetFeatureType, selectionFeature, geomOperator = 'intersects') {
-            return selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator);
         },
 
         /**
