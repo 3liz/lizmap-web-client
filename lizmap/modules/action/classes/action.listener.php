@@ -7,7 +7,6 @@ class actionListener extends jEventListener
         $basePath = jApp::config()->urlengine['basePath'];
 
         // Add JS and CSS for module
-        $js = array();
         $jsCode = array();
         $css = array();
 
@@ -15,9 +14,6 @@ class actionListener extends jEventListener
         jClasses::inc('action~actionConfig');
         $actionConfigInstance = new actionConfig($event->repository, $event->project);
         if ($actionConfigInstance->getStatus()) {
-            $js = array(
-                $basePath.'assets/js/action.js',
-            );
             $actionConfig = $actionConfigInstance->getConfig();
             $actionConfigData = array(
                 'url' => jUrl::get(
@@ -57,7 +53,6 @@ class actionListener extends jEventListener
 
         $event->add(
             array(
-                'js' => $js,
                 'jscode' => $jsCode,
                 'css' => $css,
             )
