@@ -343,7 +343,7 @@ export default class Search {
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
                     var geomWKT = linkClicked.getAttribute('data');
                     if (geomWKT) {
-                        mainLizmap.baseLayersMap.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
+                        mainLizmap.map.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
                     }
     
                     $('#lizmap-search, #lizmap-search-close').removeClass('open');

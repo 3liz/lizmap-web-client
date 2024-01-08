@@ -85,7 +85,7 @@ var lizLayerActionButtons = function() {
             if (layerActions.length) metadatas.actions = layerActions;
 
         }
-        if( lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer()?.get("name") == aName ){
+        if( lizMap.mainLizmap.map.getActiveBaseLayer()?.get("name") == aName ){
             metadatas.type = 'layer';
             metadatas.isBaselayer = true;
         }
@@ -328,7 +328,7 @@ var lizLayerActionButtons = function() {
 
                 $('#hide-sub-dock').click();
 
-                const activeBaseLayerName = lizMap.mainLizmap.baseLayersMap.getActiveBaseLayer().get("name");
+                const activeBaseLayerName = lizMap.mainLizmap.map.getActiveBaseLayer().get("name");
                 if( !activeBaseLayerName ){
                     return false;
                 }

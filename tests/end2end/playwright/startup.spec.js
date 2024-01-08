@@ -9,9 +9,9 @@ test.describe('Startup', () => {
 
     // Hide all elements but #map and its children
     await page.$eval("*", el => el.style.visibility = 'hidden');
-    await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
+    await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-    expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('zoom-features-extent.png', {
+    expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('zoom-features-extent.png', {
       maxDiffPixels: 700
     });
   });

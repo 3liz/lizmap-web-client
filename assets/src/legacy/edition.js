@@ -587,7 +587,7 @@ var lizEdition = function() {
             if (!('geometryType' in childLayerConfig) || childLayerConfig.geometryType == 'none')
                 continue;
 
-            const olLayer = lizMap.mainLizmap.baseLayersMap.getLayerByName(qgisName);
+            const olLayer = lizMap.mainLizmap.map.getLayerByName(qgisName);
 
             if (!olLayer.getVisible()) {
                 continue;
@@ -621,8 +621,8 @@ var lizEdition = function() {
      */
     function finishEdition() {
 
-        // Put old OL2 map on bottom
-        document.querySelectorAll("#baseLayersOlMap, #newOlMap").forEach(map => map.style.zIndex = 750);
+        // Put old OL2 map at bottom
+        document.getElementById("newOlMap").style.zIndex = 750;
 
         // Lift the constraint on edition
         lizMap.editionPending = false;
@@ -1240,7 +1240,7 @@ var lizEdition = function() {
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
 
         // Put old OL2 map on top
-        document.querySelectorAll("#baseLayersOlMap, #newOlMap").forEach(map => map.style.zIndex = 'unset');
+        document.getElementById("newOlMap").style.zIndex = 'unset';
 
         var editedFeature = new FeatureEditionData(aLayerId, null, null);
 
@@ -1777,7 +1777,7 @@ var lizEdition = function() {
                 launchEditionOfParent();
             } else {
                 editionLayer.clear();
-                lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
+                lizMap.mainLizmap.map.clearHighlightFeatures();
                 // trigger edition form closed
                 lizMap.events.triggerEvent(
                     'lizmapeditionformclosed'

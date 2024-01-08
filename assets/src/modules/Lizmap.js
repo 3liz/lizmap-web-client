@@ -1,7 +1,6 @@
 import {Config} from './Config.js';
 import {State} from './State.js';
-import Map from './Map.js';
-import BaseLayersMap from './BaseLayersMap.js';
+import map from './map.js';
 import Edition from './Edition.js';
 import Geolocation from './Geolocation.js';
 import GeolocationSurvey from './GeolocationSurvey.js';
@@ -69,8 +68,7 @@ export default class Lizmap {
 
                 // Create Lizmap modules
                 this.permalink = new Permalink();
-                this.map = new Map();
-                this.baseLayersMap = new BaseLayersMap();
+                this.map = new map();
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
@@ -106,7 +104,7 @@ export default class Lizmap {
      */
     set newOlMap(mode){
         this.map._newOlMap = mode;
-        document.getElementById('newOlMap').style.zIndex = mode ? 751 : 'auto';
+        document.getElementById('newOlMap').style.zIndex = mode ? 750 : 'auto';
     }
 
     get lizmap3() {

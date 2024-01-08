@@ -28,7 +28,7 @@ export default class Geolocation {
             }
         });
 
-        mainLizmap.baseLayersMap.addLayer(this._geolocationLayer);
+        mainLizmap.map.addLayer(this._geolocationLayer);
 
         this._firstGeolocation = true;
         this._isBind = false;

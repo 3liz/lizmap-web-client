@@ -1091,7 +1091,7 @@ var lizLayerFilterTool = function () {
              * Removes the getFeatureInfo geometry
              */
             function removeFeatureInfoGeometry() {
-                lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
+                lizMap.mainLizmap.map.clearHighlightFeatures();
             }
 
             /**
