@@ -8,3 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Display features at startup when set in URL
+
+### Backend
+
+* Improve migration to OpenLayers 8
