@@ -38,7 +38,7 @@
     },
     {
         "name": "project_map_center_buffer",
-        "title": "Get the buffer of the curent map center point",
+        "title": "Get the buffer of the current map center point",
         "description": "This is an example action which returns a circle at the center of the map",
         "scope": "project",
         "icon": "icon-star",
@@ -46,22 +46,16 @@
             "buffer_size": 2000
         },
         "style": {
-            "graphicName": "circle",
-            "pointRadius": 6,
-            "fill": true,
-            "fillColor": "orange",
-            "fillOpacity": 0.3,
-            "stroke": true,
-            "strokeWidth": 4,
-            "strokeColor": "red",
-            "strokeOpacity": 0.8
+            "fill-color": "rgba(255,165,0,0.3)",
+            "stroke-width": 4,
+            "stroke-color": "rgba(255,0,0,0.8)"
         },
         "callbacks": []
     },
     {
         "name": "layer_spatial_extent",
         "title": "Get the contour of all the layer features",
-        "description": "This action will draw a polygon which represent the contour of all the features",
+        "description": "This action will draw a polygon which represents the contour of all the features",
         "scope": "layer",
         "layers": [
             "parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111"
@@ -69,15 +63,9 @@
         "icon": "icon-star",
         "options": {},
         "style": {
-            "graphicName": "circle",
-            "pointRadius": 6,
-            "fill": true,
-            "fillColor": "orange",
-            "fillOpacity": 0.3,
-            "stroke": true,
-            "strokeWidth": 4,
-            "strokeColor": "red",
-            "strokeOpacity": 0.8
+            "fill-color": "rgba(255,165,0,0.3)",
+            "stroke-width": 4,
+            "stroke-color": "rgba(255,0,0,0.8)"
         },
         "callbacks": [
             {
