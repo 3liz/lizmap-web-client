@@ -64,6 +64,8 @@ class QgisFormControl
 
     public $DefaultRoot;
 
+    public $rootPathExpression;
+
     public $isWebDAV;
 
     public $webDavStorageUrl;
@@ -352,11 +354,29 @@ class QgisFormControl
         $upload->accept = $this->properties->getUploadAccept();
         $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
+
         // WebDAV External Resource
         if ($this->getEditAttribute('StorageType') == 'WebDAV') {
             $this->isWebDAV = true;
             $this->webDavStorageUrl = $this->getEditAttribute('webDAVStorageUrl');
         }
+
+        // Test if the root path must be calculated with a QGIS expression
+        $propertyCollection = $this->getEditAttribute('PropertyCollection');
+        if (
+            isset(
+                $propertyCollection,
+                $propertyCollection['properties'],
+                $propertyCollection['properties']['propertyRootPath'],
+                $propertyCollection['properties']['propertyRootPath']['expression'],
+                $propertyCollection['properties']['propertyRootPath']['active'],
+            )
+            && !empty(trim($propertyCollection['properties']['propertyRootPath']['expression']))
+            && $propertyCollection['properties']['propertyRootPath']['active'] == true
+        ) {
+            $this->rootPathExpression = trim($propertyCollection['properties']['propertyRootPath']['expression']);
+        }
+
         $this->ctrl = $upload;
     }
 
@@ -733,11 +753,12 @@ class QgisFormControl
     /**
      * gets the path where to store the file.
      *
-     * @param \qgisVectorLayer $layer the layer which have the column corresponding to the control
+     * @param \qgisVectorLayer $layer         the layer which have the column corresponding to the control
+     * @param string           $alternatePath an alternate path to store the file, depending on the field
      *
      * @return string[] the relative path to the project path, and the full path
      */
-    public function getStoragePath($layer)
+    public function getStoragePath($layer, $alternatePath = '')
     {
         $project = $layer->getProject();
         $dtParams = $layer->getDatasourceParameters();
@@ -746,21 +767,24 @@ class QgisFormControl
         // If not default root is set, use the old method media/upload/projectname/tablename/
         $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$this->ref.'/';
         $targetFullPath = $repPath.$targetPath;
+
         // Else use given root, but only if it is a child or brother of the repository path
-        if (!empty($this->DefaultRoot)) {
+        if (!empty($alternatePath)) {
             $fullPath = \Jelix\FileUtilities\Path::normalizePath(
-                $repPath.$this->DefaultRoot,
+                $repPath.$alternatePath,
                 \Jelix\FileUtilities\Path::NORM_ADD_TRAILING_SLASH
             );
             $parentPath = realpath($repPath.'../');
             if (strpos($fullPath, $repPath) === 0
                 || strpos($fullPath, $parentPath) === 0
             ) {
-                $targetPath = $this->DefaultRoot;
+                $targetPath = $alternatePath;
                 $targetFullPath = $fullPath;
             }
         }
-        // avoid to create local directory if the files will be stored on remote webdav server
+
+        // Create directory if needed
+        // Avoid to create local directory if the files will be stored on remote WEBDAV server
         if (!is_dir($targetFullPath) && !$this->isWebDAV) {
             \jFile::createDir($targetFullPath);
         }
