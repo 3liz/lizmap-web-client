@@ -86,7 +86,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone A1')
-        cy.mapClick(530, 375)
+        cy.ol2MapClick(530, 375)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -103,7 +103,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone A2')
-        cy.mapClick(730, 375)
+        cy.ol2MapClick(730, 375)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -119,7 +119,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone B1')
-        cy.mapClick(530, 575)
+        cy.ol2MapClick(530, 575)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -135,7 +135,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone B2')
-        cy.mapClick(730, 575)
+        cy.ol2MapClick(730, 575)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -151,7 +151,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry outside zones')
-        cy.mapClick(730, 775)
+        cy.ol2MapClick(730, 775)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -168,7 +168,7 @@ describe('Form edition all field type', function() {
 
         // Click on map as form needs a geometry
         cy.log('Create a geometry over Zone A1')
-        cy.mapClick(530, 375)
+        cy.ol2MapClick(530, 375)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 
@@ -188,7 +188,7 @@ describe('Form edition all field type', function() {
             .parent().should('have.class', 'active')
         cy.get('#edition-geomtool-restart-drawing').click(true)
 
-        cy.mapClick(730, 375)
+        cy.ol2MapClick(730, 375)
         // Wait getListData query ends + slight delay for UI to be ready
         cy.wait('@getListData')
 

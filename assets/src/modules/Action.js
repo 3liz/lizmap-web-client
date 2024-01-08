@@ -1,4 +1,7 @@
 import { mainLizmap } from '../modules/Globals.js';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
 
 export default class Action {
 
@@ -133,24 +136,26 @@ export default class Action {
      */
     createActionMapLayer() {
         // Create the OL layer
-        let actionLayer = new OpenLayers.Layer.Vector('actionLayer', {
-            styleMap: new OpenLayers.StyleMap({
-                graphicName: 'circle',
-                pointRadius: 6,
-                fill: true,
-                fillColor: 'lightblue',
-                fillOpacity: 0.3,
-                stroke: true,
-                strokeWidth: 3,
-                strokeColor: 'blue',
-                strokeOpacity: 0.8
-            })
+        const strokeColor = 'blue';
+        const strokeWidth = 3;
+        const fillColor = 'rgba(173,216,230,0.8)'; // lightblue
+        this.actionLayer = new VectorLayer({
+            source: new VectorSource({
+                wrapX: false
+            }),
+            style: {
+                'circle-radius': 6,
+                'circle-stroke-color': strokeColor,
+                'circle-stroke-width': strokeWidth,
+                'circle-fill-color': fillColor,
+                'stroke-color': strokeColor,
+                'stroke-width': strokeWidth,
+                'fill-color': fillColor,
+            }
         });
 
         // Add the layer inside Lizmap objects
-        mainLizmap.lizmap3.map.addLayer(actionLayer);
-        mainLizmap.lizmap3.layers['actionLayer'] = actionLayer;
-        this.actionLayer = actionLayer;
+        mainLizmap.baseLayersMap.addLayer(this.actionLayer);
     }
 
     /**
@@ -245,8 +250,7 @@ export default class Action {
 
             if (callback['method'] == this.CallbackMethods.Zoom && features.length) {
                 // Zoom to the returned features
-                let actionLayer = mainLizmap.lizmap3.map.getLayersByName('actionLayer')[0];
-                mainLizmap.lizmap3.map.zoomToExtent(this.actionLayer.getDataExtent());
+                mainLizmap.extent = this.actionLayer.getSource().getExtent();
             }
 
             // Check the given layerId is a valid Lizmap layer
@@ -277,8 +281,8 @@ export default class Action {
                 if (callback['method'] == this.CallbackMethods.Select && features.length) {
                     // Select features in the given layer
                     let feat = features[0];
-                    let f = feat.clone()
-                    mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, f);
+                    let f = feat.clone();
+                    mainLizmap.selectionTool.selectLayerFeaturesFromSelectionFeature(featureType, f);
                 }
             }
         }
@@ -403,21 +407,21 @@ export default class Action {
             }
 
             // Add the features in the OpenLayers map layer
-            let actionStyle = ('style' in action) ? action.style : null;
-            let features = this.addFeaturesFromActionResponse(data, actionStyle);
+            const features = this.addFeaturesFromActionResponse(data, action.style);
 
             // Display a message if given in the first feature
             if (features.length > 0) {
-                let feat = features[0];
-                let message_field = 'message';
-                if ('attributes' in feat && message_field in feat.attributes) {
+                const feat = features[0];
+                const featureProperties = feat.getProperties();
+                const message_field = 'message';
+                if (featureProperties && featureProperties?.[message_field]) {
 
                     // Clear the previous message
-                    let previousMessage = document.getElementById('lizmap-action-message');
+                    const previousMessage = document.getElementById('lizmap-action-message');
                     if (previousMessage) previousMessage.remove();
 
                     // Display the message if given
-                    let message = feat.attributes[message_field].trim();
+                    const message = featureProperties[message_field].trim();
                     if (message) {
                         mainLizmap.lizmap3.addMessage(message, 'info', true).attr('id', 'lizmap-action-message');
                     }
@@ -437,7 +441,7 @@ export default class Action {
                     'action': action,
                     'layerId': layerId,
                     'featureId': featureId,
-                    'features': features
+                    'features': features // in map projection
                 }
             );
 
@@ -466,8 +470,7 @@ export default class Action {
 
         // Remove the objects in the map
         if (destroyFeatures) {
-            let actionLayer = mainLizmap.lizmap3.map.getLayersByName('actionLayer')[0];
-            this.actionLayer.destroyFeatures();
+            this.actionLayer.getSource().clear();
         }
 
         // Clear the previous Lizmap message
@@ -495,34 +498,23 @@ export default class Action {
      * to the OpenLayers layer in the map
      *
      * @param {object} data - The data returned by the action
-     * @param {object} style - Optional OpenLayers style object
+     * @param {object|undefined} style - Optional OpenLayers style object
      *
      * @return {object} features The OpenLayers features converted from the data
      */
-    addFeaturesFromActionResponse(data, style = null) {
-
-        // Get action result layer
-        let actionLayer = mainLizmap.lizmap3.map.getLayersByName('actionLayer')[0];
-
-        // Get the layer projection
-        let layerProjectionName = 'EPSG:4326';
-
-        // Get the OpenLayers GeoJSON format reader
-        let gFormat = new OpenLayers.Format.GeoJSON({
-            externalProjection: layerProjectionName,
-            internalProjection: mainLizmap.lizmap3.map.getProjection()
-        });
-
+    addFeaturesFromActionResponse(data, style) {
         // Change the layer style
         if (style) {
-            this.actionLayer.styleMap.styles.default.defaultStyle = style;
+            this.actionLayer.setStyle(style);
         }
 
         // Convert the action GeoJSON data into OpenLayers features
-        let features = gFormat.read(data);
+        const features = (new GeoJSON()).readFeatures(data, {
+            featureProjection: mainLizmap.projection
+        });
 
         // Add them to the action layer
-        this.actionLayer.addFeatures(features);
+        this.actionLayer.getSource().addFeatures(features);
 
         return features;
     }

@@ -1,10 +1,35 @@
-import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olGeolocation from 'ol/Geolocation.js';
-import {transform} from 'ol/proj.js';
+import { transform } from 'ol/proj.js';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
+import Point from 'ol/geom/Point.js';
+import Circle from 'ol/geom/Circle.js';
+import Feature from 'ol/Feature.js';
 
 export default class Geolocation {
 
     constructor() {
+        const color = 'rgb(3, 149, 214)';
+        const fillColor = 'rgba(3, 149, 214, 0.1)';
+        const strokeWidth = 1;
+        this._geolocationLayer = new VectorLayer({
+            source: new VectorSource({
+                wrapX: false
+            }),
+            style: {
+                'circle-radius': 3,
+                'circle-stroke-color': color,
+                'circle-stroke-width': strokeWidth,
+                'circle-fill-color': color,
+                'stroke-color': color,
+                'stroke-width': strokeWidth,
+                'fill-color': fillColor,
+            }
+        });
+
+        mainLizmap.baseLayersMap.addLayer(this._geolocationLayer);
+
         this._firstGeolocation = true;
         this._isBind = false;
         this._bindIntervalID = 0;
@@ -12,7 +37,7 @@ export default class Geolocation {
         this._isLinkedToEdition = false;
 
         this._geolocation = new olGeolocation({
-            // enableHighAccuracy must be set to true to have the heading value.
+            // `enableHighAccuracy` must be set to true to have the heading value
             trackingOptions: {
                 enableHighAccuracy: true
             },
@@ -60,7 +85,7 @@ export default class Geolocation {
         });
 
         // Handle geolocation error
-        this._geolocation.on('error', function(error) {
+        this._geolocation.on('error', error => {
             mainLizmap.displayMessage(error.message, 'error', true);
         });
     }
@@ -181,66 +206,15 @@ export default class Geolocation {
     }
 
     moveGeolocationPointAndCircle(coordinates) {
-        let geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
-        const circleStyle = {
-            fillColor: '#0395D6',
-            fillOpacity: 0.1,
-            strokeColor: '#0395D6',
-            strokeWidth: 1
-        };
+        const positionFeature = new Feature({
+            geometry: new Point(coordinates)
+        });
 
-        // Create layer if it does not exist
-        if (geolocationLayer === undefined) {
-            geolocationLayer = new OpenLayers.Layer.Vector('geolocation');
+        const accuracyFeature = new Feature({
+            geometry: new Circle(coordinates, this._geolocation.getAccuracy() / 2)
+        });
 
-            geolocationLayer.addFeatures([
-                new OpenLayers.Feature.Vector(
-                    // Point
-                    new OpenLayers.Geometry.Point(coordinates[0], coordinates[1]),
-                    {},
-                    {
-                        graphicName: 'circle',
-                        strokeColor: '#0395D6',
-                        strokeWidth: 1,
-                        fillOpacity: 1,
-                        fillColor: '#0395D6',
-                        pointRadius: 3
-                    }
-                ),
-                // circle
-                new OpenLayers.Feature.Vector(
-                    OpenLayers.Geometry.Polygon.createRegularPolygon(
-                        new OpenLayers.Geometry.Point(coordinates[0], coordinates[1]),
-                        this._geolocation.getAccuracy() / 2,
-                        40,
-                        0
-                    ),
-                    {},
-                    circleStyle
-                )
-            ]);
-            mainLizmap._lizmap3.map.addLayer(geolocationLayer);
-        } else {
-            const geolocationPoint = geolocationLayer.features[0];
-
-            geolocationPoint.geometry.x = coordinates[0];
-            geolocationPoint.geometry.y = coordinates[1];
-            geolocationPoint.geometry.clearBounds();
-            geolocationLayer.drawFeature(geolocationPoint);
-
-            let geolocationCircle = geolocationLayer.features[1];
-            geolocationLayer.destroyFeatures([geolocationCircle]);
-            geolocationCircle = new OpenLayers.Feature.Vector(
-                OpenLayers.Geometry.Polygon.createRegularPolygon(
-                    new OpenLayers.Geometry.Point(coordinates[0], coordinates[1]),
-                    this._geolocation.getAccuracy() / 2,
-                    40,
-                    0
-                ),
-                {},
-                circleStyle
-            );
-            geolocationLayer.addFeatures([geolocationCircle]);
-        }
+        this._geolocationLayer.getSource().clear();
+        this._geolocationLayer.getSource().addFeatures([positionFeature, accuracyFeature]);
     }
 }

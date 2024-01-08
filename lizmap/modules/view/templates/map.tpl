@@ -45,8 +45,8 @@
     </div>
   </div>
   <div id="map-content">
-    <div id="newOlMap" style="width:100%;height:100%;position: absolute;"></div>
-    <div id="baseLayersOlMap" style="width:100%;height:100%;position: absolute;"></div>
+    <div id="baseLayersOlMap" style="width:100%;height:100%;position: absolute;z-index:750;"></div>
+    <div id="newOlMap" style="width:100%;height:100%;position: absolute;z-index:750;"></div>
     <div id="liz_layer_popup" class="ol-popup">
       <a href="#" id="liz_layer_popup_closer" class="ol-popup-closer"></a>
       <div id="liz_layer_popup_contentDiv" class="lizmapPopupContent"></div>

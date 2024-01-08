@@ -2137,13 +2137,18 @@ lizmap-mouse-position > div.coords-unit > select{
   border-bottom: 1px solid rgba(255,255,255,0.4);
 }
 
-
 .lizmapPopup.olPopup .lizmapPopupDiv,
 #map-content .lizmapPopupDiv{
   margin: 10px !important;
   margin-bottom: 20px !important;
   background-color:#F0F0F0 !important;
 }
+
+#liz_layer_popup_contentDiv {
+  max-height: 30vh;
+  overflow: auto;
+}
+
 #popupcontent .lizmapPopupDiv{
   margin: 10px !important;
   margin-bottom: 20px !important;
@@ -2250,7 +2255,7 @@ lizmap-mouse-position > div.coords-unit > select{
   position: absolute;
   background-color: white;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-  padding: 15px;
+  padding: 5px;
   border-radius: 10px;
   border: 1px solid #cccccc;
   bottom: 12px;

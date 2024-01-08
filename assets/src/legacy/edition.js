@@ -620,6 +620,10 @@ var lizEdition = function() {
      *
      */
     function finishEdition() {
+
+        // Put old OL2 map on bottom
+        document.querySelectorAll("#baseLayersOlMap, #newOlMap").forEach(map => map.style.zIndex = 750);
+
         // Lift the constraint on edition
         lizMap.editionPending = false;
         $('#mapmenu .edition').removeClass('edition-pending');
@@ -1234,6 +1238,9 @@ var lizEdition = function() {
      * @param aCallback
      */
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
+
+        // Put old OL2 map on top
+        document.querySelectorAll("#baseLayersOlMap, #newOlMap").forEach(map => map.style.zIndex = 'unset');
 
         var editedFeature = new FeatureEditionData(aLayerId, null, null);
 
