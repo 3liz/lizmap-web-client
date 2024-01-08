@@ -8,10 +8,19 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Update
+
+* Update URL from the French map provider IGN about geocoding service
+
 ### Fixed
 
 - Fix support of SSL PostgreSQL connection in PostgreSQL layers 
 
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ## 3.6.8 - 2023-11-28
 
