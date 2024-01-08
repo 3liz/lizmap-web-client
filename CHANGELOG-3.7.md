@@ -8,6 +8,24 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Update
+
+* Update URL from the French map provider IGN about geocoding service
+
+### Fixed
+
+* Fix the display order of layers when the `Group as layer` option is used
+* Fix support of SSL PostgreSQL connection in PostgreSQL layers
+* Javascript: Layer ID can be used as WMS Name
+* Fix uncaught exception on `layerFilterParamChanged` event
+* Fix a warning with PHP 8.2 about `emptyItemLabel`
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
 ## 3.7.0 - 2023-12-13
 
 ### Added
