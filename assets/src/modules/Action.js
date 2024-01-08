@@ -281,8 +281,8 @@ export default class Action {
                 if (callback['method'] == this.CallbackMethods.Select && features.length) {
                     // Select features in the given layer
                     let feat = features[0];
-                    let f = feat.clone()
-                    mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, f);
+                    let f = feat.clone();
+                    mainLizmap.selectionTool.selectLayerFeaturesFromSelectionFeature(featureType, f);
                 }
             }
         }
@@ -440,7 +440,7 @@ export default class Action {
                     'action': action,
                     'layerId': layerId,
                     'featureId': featureId,
-                    'features': features
+                    'features': features // in map projection
                 }
             );
 

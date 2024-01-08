@@ -467,4 +467,89 @@ export default class SelectionTool {
         }
         mainLizmap.lizmap3.exportVectorLayer(this._allFeatureTypeSelected[0], format, false);
     }
+
+    /**
+     * select layer's features with a feature and a geometry operator
+     * @param targetFeatureType
+     * @param selectionFeature - selection feature in map projection
+     * @param geomOperator
+     */
+    selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){
+
+        const lConfig = lizMap.config.layers[targetFeatureType];
+
+        const GML3Format = new GML3({srsName: mainLizmap.projection});
+
+        const geomAsGML = GML3Format.writeGeometryNode( selectionFeature.getGeometry());
+
+        let spatialFilter = geomOperator+"($geometry, geom_from_gml('" + geomAsGML.innerHTML + "'))";
+
+        if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
+            let rFilter = lConfig['request_params']['filter'];
+            if( rFilter ){
+                rFilter = rFilter.replace( targetFeatureType + ':', '');
+                spatialFilter = rFilter +' AND '+ spatialFilter;
+            }
+        }
+        if( 'request_params' in lConfig && 'exp_filter' in lConfig['request_params'] ){
+            // Add exp_filter, for example if set by another tool( filter module )
+            // Often 'filter' is not set because filtertoken is set instead
+            // But in this case, exp_filter must also been set and must be added
+            let eFilter = lConfig['request_params']['exp_filter'];
+            if( eFilter ){
+                spatialFilter = eFilter +' AND '+ spatialFilter;
+            }
+        }
+        let limitDataToBbox = false;
+        if ( 'limitDataToBbox' in lizMap.config.options && lizMap.config.options.limitDataToBbox == 'True'){
+            limitDataToBbox = true;
+        }
+        let getFeatureUrlData = lizMap.getVectorLayerWfsUrl( targetFeatureType, spatialFilter, null, null, limitDataToBbox );
+
+        // add BBox to restrict to geom bbox but not with some geometry operator
+        if (geomOperator !== 'disjoint'){
+            getFeatureUrlData['options']['BBOX'] = selectionFeature.getGeometry().getExtent().join();
+            getFeatureUrlData['options']['SRSNAME'] = lConfig.crs;
+        }
+
+        // get features
+        fetch(getFeatureUrlData['url'], {
+            method: "POST",
+            body: new URLSearchParams(getFeatureUrlData['options'])
+        }).then(response => {
+            return response.json();
+        }).then(result => {
+            const features = (new GeoJSON()).readFeatures(result, {
+                featureProjection: mainLizmap.projection
+            });
+
+            let sfIds = features.map(feat => feat.getId().split('.')[1]);
+
+            if (this._newAddRemoveSelected === 'add') {
+                sfIds = lConfig['selectedFeatures'].concat(sfIds);
+                for (let i = 0; i < sfIds.length; ++i) {
+                    for (let j = i + 1; j < sfIds.length; ++j) {
+                        if (sfIds[i] === sfIds[j])
+                            sfIds.splice(j--, 1);
+                    }
+                }
+            } else if (this._newAddRemoveSelected === 'remove') {
+                let asfIds = lConfig['selectedFeatures'].concat([]);
+                for (let i = 0; i < sfIds.length; ++i) {
+                    let asfIdIdx = asfIds.indexOf(sfIds[i]);
+                    if (asfIdIdx != -1)
+                        asfIds.splice(asfIdIdx, 1);
+                }
+                sfIds = asfIds;
+            }
+            lConfig['selectedFeatures'] = sfIds;
+            lizMap.events.triggerEvent("layerSelectionChanged",
+                {
+                    'featureType': targetFeatureType,
+                    'featureIds': lConfig['selectedFeatures'],
+                    'updateDrawing': true
+                }
+            );
+        });
+    }
 }
