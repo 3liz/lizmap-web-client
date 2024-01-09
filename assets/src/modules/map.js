@@ -1,10 +1,11 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import Utils from '../modules/Utils.js';
-import { BaseLayerTypes } from '../modules/config/BaseLayer.js';
-import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
+import { mainLizmap, mainEventDispatcher } from './Globals.js';
+import Utils from './Utils.js';
+import { BaseLayerTypes } from './config/BaseLayer.js';
+import { MapLayerLoadStatus } from './state/MapLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
-import { get as getProjection } from 'ol/proj.js';
+import { ADJUSTED_DPI } from '../utils/Constants.js';
+import { get as getProjection, getPointResolution } from 'ol/proj.js';
 import { Attribution } from 'ol/control.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
@@ -23,10 +24,12 @@ import { Vector as VectorLayer } from 'ol/layer.js';
 import DragPan from "ol/interaction/DragPan.js";
 import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
 import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
+import DragZoom from 'ol/interaction/DragZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
+import { always } from 'ol/events/condition.js';
 
 /** Class initializing Openlayers Map. */
-export default class BaseLayersMap extends olMap {
+export default class map extends olMap {
 
     constructor() {
         const qgisProjectProjection = mainLizmap.projection;
@@ -53,8 +56,47 @@ export default class BaseLayersMap extends olMap {
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
-            target: 'baseLayersOlMap'
+            target: 'newOlMap'
         });
+
+        this._newOlMap = true;
+
+        // Zoom to box
+        const dragZoom = new DragZoom({
+            condition: always
+        });
+
+        document.querySelector('#navbar .pan').addEventListener('click', () => {
+            this.removeInteraction(dragZoom);
+        });
+
+        document.querySelector('#navbar .zoom').addEventListener('click', () => {
+            this.addInteraction(dragZoom);
+        });
+
+        this._dispatchMapStateChanged = () => {
+            const view = this.getView();
+            const projection = view.getProjection();
+            const dpi = ADJUSTED_DPI;
+            const inchesPerMeter = 1000 / 25.4;
+            const resolution = view.getResolution();
+            const scaleDenominator = resolution * inchesPerMeter * dpi;
+            // The Scale line control uses this method to defined scale denominator
+            const pointResolution = getPointResolution(projection, view.getResolution(), view.getCenter(), projection.getUnits());
+            const pointScaleDenominator = pointResolution * inchesPerMeter * dpi;
+
+            mainLizmap.state.map.update({
+                'type': 'map.state.changing',
+                'projection': projection.getCode(),
+                'center': [...view.getCenter()],
+                'size': [...this.getSize()],
+                'extent': view.calculateExtent(),
+                'resolution': resolution,
+                'scaleDenominator': scaleDenominator,
+                'pointResolution': pointResolution,
+                'pointScaleDenominator': pointScaleDenominator,
+            });
+        };
 
         // Ratio between WMS single tiles and map viewport
         this._WMSRatio = 1.1;
@@ -81,6 +123,7 @@ export default class BaseLayersMap extends olMap {
 
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
+        const metersPerUnit = this.getView().getProjection().getMetersPerUnit();
 
         for (const baseLayerState of mainLizmap.state.baseLayers.getBaseLayers()) {
             let baseLayer;
@@ -94,7 +137,6 @@ export default class BaseLayersMap extends olMap {
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMS) {
-                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
                 let minResolution = baseLayerState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
                 let maxResolution = baseLayerState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
                 baseLayer = new ImageLayer({
@@ -156,7 +198,6 @@ export default class BaseLayersMap extends olMap {
                     }),
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
-                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
                 let minResolution = baseLayerState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
                 let maxResolution = baseLayerState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
                 baseLayer = new ImageLayer({
@@ -281,7 +322,7 @@ export default class BaseLayersMap extends olMap {
                 */
 
                 // Set min/max resolution only if different from default
-                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+                const metersPerUnit = this.getView().getProjection().getMetersPerUnit();
                 let minResolution = node.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale, metersPerUnit);
                 let maxResolution = node.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale, metersPerUnit);
 
@@ -390,6 +431,17 @@ export default class BaseLayersMap extends olMap {
                 this.syncNewOLwithOL2View();
             }
         });
+
+        // Sync OL2 view with new OL view
+        this.on('pointerdrag', () => {
+            mainLizmap.lizmap3.map.setCenter(
+                this.getView().getCenter(),
+                null,
+                true // avoid many WMS request in OL2 map and also movestart/end events.
+            );
+        });
+
+        this.on('moveend', this.refreshOL2View);
 
         // Init view
         this.syncNewOLwithOL2View();
@@ -580,6 +632,14 @@ export default class BaseLayersMap extends olMap {
             duration: 50
         });
     }
+
+    refreshOL2View() {
+        // This refresh OL2 view and layers
+        mainLizmap.lizmap3.map.setCenter(
+            this.getView().getCenter(),
+            this.getView().getZoom()
+        );
+    };
 
     changeBaseLayer(name){
         let selectedBaseLayer;

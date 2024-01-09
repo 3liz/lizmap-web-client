@@ -163,7 +163,7 @@ var lizAttributeTable = function() {
 
                             // Disable attribute table if limitDataToBbox and layer not visible in map
                             if(limitDataToBbox){
-                                let layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
+                                let layer = lizMap.mainLizmap.map.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
                                 if( layer ) {
                                     if(warnResolution(layer)){
                                         return false;
@@ -264,7 +264,7 @@ var lizAttributeTable = function() {
              * @param layer
              */
             function warnResolution(layer) {
-                const mapResolution = lizMap.mainLizmap.baseLayersMap.getView().getResolution();
+                const mapResolution = lizMap.mainLizmap.map.getView().getResolution();
                 const visibility = layer.getMaxResolution() > mapResolution && mapResolution > layer.getMinResolution();
                 if( !visibility ){
                     const msg = lizDict['attributeLayers.msg.layer.not.visible'];
@@ -663,7 +663,7 @@ var lizAttributeTable = function() {
                                 .removeClass('btn-warning');
 
                             // Disable if the layer is not visible
-                            let layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
+                            let layer = lizMap.mainLizmap.map.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
                             if( layer ) {
                                 if(warnResolution(layer)){
                                     return false;

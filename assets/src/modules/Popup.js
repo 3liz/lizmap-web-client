@@ -41,7 +41,7 @@ export default class Popup {
         */
         document.getElementById('liz_layer_popup_closer').onclick = () => {
             this._overlay.setPosition(undefined);
-            mainLizmap.baseLayersMap.clearHighlightFeatures();
+            mainLizmap.map.clearHighlightFeatures();
             return false;
         };
         this._overlay = new Overlay({

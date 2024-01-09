@@ -547,7 +547,7 @@
 
                 // Draw feature geometry
                 if (lizAtlasConfig.drawFeatureGeom) {
-                    lizMap.mainLizmap.baseLayersMap.setHighlightFeatures(feature,"geojson");
+                    lizMap.mainLizmap.map.setHighlightFeatures(feature,"geojson");
                 }
 
                 // Display popup
@@ -610,7 +610,7 @@
 
                 // Deactivate highlight
                 if (lizAtlasConfig.drawFeatureGeom) {
-                    lizMap.mainLizmap.baseLayersMap.clearHighlightFeatures();
+                    lizMap.mainLizmap.map.clearHighlightFeatures();
                 }
 
                 // Deactivate filter

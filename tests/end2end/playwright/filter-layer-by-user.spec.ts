@@ -11,11 +11,11 @@ test.describe('Filter layer data by user - not connected', () => {
     });
 
     test('GetMap', async ({ page }) => {
-        // Hide all elements but #baseLayersOlMap and its children
+        // Hide all elements but #newOlMap and its children
         await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_not_connected.png', {
+        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_not_connected.png', {
             maxDiffPixels: 500
           });
     });
@@ -132,11 +132,11 @@ test.describe('Filter layer data by user - user in group a', () => {
     });
 
     test('GetMap', async ({ page }) => {
-        // Hide all elements but #baseLayersOlMap and its children
+        // Hide all elements but #newOlMap and its children
         await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_user_in_group_a.png', {
+        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_connected_as_user_in_group_a.png', {
             maxDiffPixels: 500
           });
     });
@@ -257,11 +257,11 @@ test.describe('Filter layer data by user - admin', () => {
     });
 
     test('GetMap', async ({ page }) => {
-        // Hide all elements but #baseLayersOlMap and its children
+        // Hide all elements but #newOlMap and its children
         await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_admin.png', {
+        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_connected_as_admin.png', {
             maxDiffPixels: 500
           });
     });

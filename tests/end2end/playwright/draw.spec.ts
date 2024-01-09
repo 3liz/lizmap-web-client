@@ -100,7 +100,6 @@ test.describe('Draw', () => {
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
         await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
         expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-all-tools.png');
@@ -185,7 +184,6 @@ test.describe('Draw', () => {
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
         await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
         expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-edition.png');
