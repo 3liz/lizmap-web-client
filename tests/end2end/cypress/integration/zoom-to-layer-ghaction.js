@@ -52,7 +52,7 @@ describe('Zoom to layer', function() {
         // Go to world 4326
         cy.visit('/index.php/view/map/?repository=testsrepository&project=world-4326')
 
-        // Zoom to layer rectangle
+        // Zoom to 'rectangle' layer
         cy.get('#node-rectangle ~ .node .layer-actions .icon-info-sign').click({force: true})
         cy.get('#sub-dock button.layerActionZoom').click()
 
@@ -64,7 +64,7 @@ describe('Zoom to layer', function() {
         cy.get('#mapmenu li.nav-dock.popupcontent').should('have.class', 'active')
         cy.get('#popupcontent div.lizmapPopupContent h4.lizmapPopupTitle').should('length', 1)
 
-        // Zoom to world layer
+        // Zoom to 'world' layer
         cy.get('#button-switcher').click()
         cy.get('#node-world ~ .node .layer-actions .icon-info-sign').click({force: true})
         cy.get('#sub-dock button.layerActionZoom').click()

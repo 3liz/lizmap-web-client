@@ -70,12 +70,12 @@ export default class MousePosition extends HTMLElement {
             mainLizmap.center = lonlatInputInMapProj;
             // Display point
             const featureAsWKT = `POINT(${lonlatInputInMapProj[0]} ${lonlatInputInMapProj[1]})`;
-            mainLizmap.baseLayersMap.setHighlightFeatures(featureAsWKT,"wkt", mainLizmap.projection);
+            mainLizmap.map.setHighlightFeatures(featureAsWKT,"wkt", mainLizmap.projection);
         }
     }
 
     _removeCenterPoint() {
-        mainLizmap.baseLayersMap.clearHighlightFeatures();
+        mainLizmap.map.clearHighlightFeatures();
     }
 
     /**

@@ -155,7 +155,7 @@ export default class Action {
         });
 
         // Add the layer inside Lizmap objects
-        mainLizmap.baseLayersMap.addLayer(this.actionLayer);
+        mainLizmap.map.addLayer(this.actionLayer);
     }
 
     /**
@@ -265,7 +265,7 @@ export default class Action {
                 let layerConfig = getLayerConfig[1];
 
                 // Get the corresponding OpenLayers layer instance
-                const layer = lizMap.mainLizmap.baseLayersMap.getLayerByName(layerConfig.name);
+                const layer = lizMap.mainLizmap.map.getLayerByName(layerConfig.name);
 
                 if(!layer){
                     continue;
