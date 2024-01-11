@@ -410,7 +410,8 @@ function buildLayerTreeGroupConfigItems(wmsCapaLayerGroup, layersCfg, level) {
         const wmsName = wmsCapaLayer.Name;
         const cfg = layersCfg.getLayerConfigByWmsName(wmsName);
         if (cfg == null) {
-            throw new RangeError('The WMS layer name `'+ wmsName +'` is unknown!');
+            console.log('The WMS layer name `'+ wmsName +'` is unknown!');
+            continue;
         }
         if (wmsCapaLayer.hasOwnProperty('Layer') && wmsCapaLayer.Layer.length != 0) {
             const groupItems = buildLayerTreeGroupConfigItems(wmsCapaLayer, layersCfg, level+1);
