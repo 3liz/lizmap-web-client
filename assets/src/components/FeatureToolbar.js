@@ -337,11 +337,18 @@ export default class FeatureToolbar extends HTMLElement {
 
     center(){
         if (this.getAttribute('crs')) {
-            lizMap.mainLizmap.center = getCenter(transformExtent(
-                [this.getAttribute('bbox-minx'), this.getAttribute('bbox-miny'), this.getAttribute('bbox-maxx'), this.getAttribute('bbox-maxy')],
+            const featureExtent = [
+                parseInt(this.getAttribute('bbox-minx')),
+                parseInt(this.getAttribute('bbox-miny')),
+                parseInt(this.getAttribute('bbox-maxx')),
+                parseInt(this.getAttribute('bbox-maxy'))
+            ];
+            const targetMapCenter = getCenter(transformExtent(
+                featureExtent,
                 this.getAttribute('crs'),
                 lizMap.mainLizmap.projection
             ));
+            lizMap.mainLizmap.center = targetMapCenter;
         } else {
             lizMap.zoomToFeature(this.featureType, this.fid, 'center');
         }
