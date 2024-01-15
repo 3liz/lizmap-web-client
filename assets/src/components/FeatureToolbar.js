@@ -318,11 +318,18 @@ export default class FeatureToolbar extends HTMLElement {
         }
 
         if (this.getAttribute('crs')){
-            lizMap.mainLizmap.extent = transformExtent(
-                [this.getAttribute('bbox-minx'), this.getAttribute('bbox-miny'), this.getAttribute('bbox-maxx'), this.getAttribute('bbox-maxy')],
+            const featureExtent = [
+                parseInt(this.getAttribute('bbox-minx')),
+                parseInt(this.getAttribute('bbox-miny')),
+                parseInt(this.getAttribute('bbox-maxx')),
+                parseInt(this.getAttribute('bbox-maxy'))
+            ];
+            const targetMapExtent = transformExtent(
+                featureExtent,
                 this.getAttribute('crs'),
                 lizMap.mainLizmap.projection
             );
+            lizMap.mainLizmap.extent = targetMapExtent;
         }else{
             lizMap.zoomToFeature(this.featureType, this.fid, 'zoom');
         }
