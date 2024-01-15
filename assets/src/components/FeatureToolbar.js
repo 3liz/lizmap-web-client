@@ -212,10 +212,10 @@ export default class FeatureToolbar extends HTMLElement {
 
         if (this.getAttribute('crs')){
             const featureExtent = [
-                parseInt(this.getAttribute('bbox-minx')),
-                parseInt(this.getAttribute('bbox-miny')),
-                parseInt(this.getAttribute('bbox-maxx')),
-                parseInt(this.getAttribute('bbox-maxy'))
+                parseFloat(this.getAttribute('bbox-minx')),
+                parseFloat(this.getAttribute('bbox-miny')),
+                parseFloat(this.getAttribute('bbox-maxx')),
+                parseFloat(this.getAttribute('bbox-maxy'))
             ];
             const targetMapExtent = transformExtent(
                 featureExtent,
@@ -231,10 +231,10 @@ export default class FeatureToolbar extends HTMLElement {
     center(){
         if (this.getAttribute('crs')) {
             const featureExtent = [
-                parseInt(this.getAttribute('bbox-minx')),
-                parseInt(this.getAttribute('bbox-miny')),
-                parseInt(this.getAttribute('bbox-maxx')),
-                parseInt(this.getAttribute('bbox-maxy'))
+                parseFloat(this.getAttribute('bbox-minx')),
+                parseFloat(this.getAttribute('bbox-miny')),
+                parseFloat(this.getAttribute('bbox-maxx')),
+                parseFloat(this.getAttribute('bbox-maxy'))
             ];
             const targetMapCenter = getCenter(transformExtent(
                 featureExtent,
