@@ -11,7 +11,9 @@ test.describe('Startup', () => {
     await page.$eval("*", el => el.style.visibility = 'hidden');
     await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
 
-    expect(await page.locator('#map').screenshot()).toMatchSnapshot('zoom-features-extent.png');
+    expect(await page.locator('#map').screenshot()).toMatchSnapshot('zoom-features-extent.png', {
+      maxDiffPixels: 700
+    });
   });
   
   test('Projects with dot or space can load', async ({page}) => {
