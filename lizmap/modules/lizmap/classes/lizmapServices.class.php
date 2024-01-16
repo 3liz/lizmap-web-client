@@ -207,7 +207,7 @@ class lizmapServices
     // application id for google analytics
     public $googleAnalyticsID = '';
 
-    public $uploadedImageMaxWidthHeight = 1920;
+    public $uploadedImageMaxWidthHeight = 4224;
 
     /**
      * @var bool|int true/1 if metrics should be sent to the metric logger

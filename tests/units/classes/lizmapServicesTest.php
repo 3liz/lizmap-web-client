@@ -266,11 +266,11 @@ class lizmapServicesTest extends TestCase
         $ini1 = array(
             'appName' => 'Lizmap',
             'adminContactEmail' => 'test.test@test.com',
-            'uploadedImageMaxWidthHeight' => 1920
+            'uploadedImageMaxWidthHeight' => 4224
         );
         $ini1_1 = array(
             'appName' => 'Lizmap',
-            'uploadedImageMaxWidthHeight' => 1920
+            'uploadedImageMaxWidthHeight' => 4224
         );
         $ini2 = array(
             'webmasterName' => 'Adrien',

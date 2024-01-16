@@ -164,7 +164,7 @@
     </input>
 
     <!-- uploaded images properties -->
-    <input ref="uploadedImageMaxWidthHeight" type="integer" minvalue="480" maxvalue="3840">
+    <input ref="uploadedImageMaxWidthHeight" type="integer" minvalue="480" maxvalue="4224">
         <label locale="admin~admin.form.admin_services.uploadedImageMaxWidthHeight.label"/>
         <help locale="admin~admin.form.admin_services.uploadedImageMaxWidthHeight.help"/>
     </input>
