@@ -14,13 +14,20 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Fixed
 
-- Fix support of SSL PostgreSQL connection in PostgreSQL layers 
+* Fix support of SSL PostgreSQL connection in PostgreSQL layers 
+* Fix on the Feature toolbar :
+  * zoom to the feature
+  * center map on the feature
 
 ### Translations
 
 * Update translated strings from the Transifex website :
   * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
   * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Backend
+
+* Upgrade Jelix to version 1.8.6
 
 ## 3.6.8 - 2023-11-28
 
