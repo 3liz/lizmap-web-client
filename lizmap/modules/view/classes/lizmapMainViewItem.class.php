@@ -35,7 +35,7 @@ class lizmapMainViewItem
         $this->abstract = $abstract;
         $this->keywordList = $keywordList;
         $this->proj = $proj;
-        $this->bbox = $bbox;
+        $this->bbox = preg_replace('/([0-9]+\.[0-9]{2})[0-9]+/', '$1', $bbox);
         $this->url = $url;
         $this->img = $img;
         $this->order = $order;

@@ -14,8 +14,9 @@
     <a name="link-projet-{$idm}"></a>
     <div class="thumbnail">
       <div class="liz-project">
-        <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="liz-project-img">
-        <p class="liz-project-desc" style="display:none;">
+        <a href="{$p->url}{if $hide_header}&h=0{/if}">
+        <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="_liz-project-img">
+        <p class="liz-project-desc" >
           <b class="title">{$p->title}</b>
           <br/>
           <br/><b>{@default.project.abstract.label@}</b>&nbsp;: <span class="abstract">{$p->abstract|strip_tags|truncate:100}</span>
@@ -25,6 +26,7 @@
           <br/><b>{@default.project.projection.label@}</b>&nbsp;: <span class="proj">{$p->proj}</span>
           <br/><b>{@default.project.bbox.label@}</b>&nbsp;: <span class="bbox">{$p->bbox}</span>
         </p>
+        </a>
       </div>
       <h5 class="liz-project-title">{$p->title}</h5>
       <p>
