@@ -19,6 +19,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Javascript: Layer ID can be used as WMS Name
 * Fix uncaught exception on `layerFilterParamChanged` event
 * Fix a warning with PHP 8.2 about `emptyItemLabel`
+* The permalink has changed so the way to provide bbox between maps.
 
 ### Translations
 
