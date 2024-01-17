@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.1 - 2024-01-17
+
 ### Update
 
 * Update URL from the French map provider IGN about geocoding service
