@@ -20,7 +20,7 @@
             var view = lizmapModal.find('a.liz-project-view')
             var viewUrl = view.attr('href');
             view.attr('href', OpenLayers.Util.urlAppend( viewUrl
-                ,'bbox='+mapBounds.clone().transform('EPSG:4326',aProj)
+                ,'#'+mapBounds
             ));
           }
         });
@@ -37,7 +37,7 @@
           var mapBounds = lizMap.map.getExtent().transform(lizMap.map.getProjection(), 'EPSG:4326');
           if ( bounds.containsBounds( mapBounds ) )
             window.location = OpenLayers.Util.urlAppend(self.attr('href')
-              ,'bbox='+mapBounds.clone().transform('EPSG:4326',aProj)
+              ,'#'+mapBounds
             );
           else
             window.location = self.attr('href');
