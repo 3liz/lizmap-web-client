@@ -1,4 +1,4 @@
-# [![logo](icon.png "3Liz")][3liz]Lizmap Web Client 3.6.9
+# [![logo](icon.png "3Liz")][3liz]Lizmap Web Client 3.6.10-pre
 
 [![Unit tests 🎳](https://github.com/3liz/lizmap-web-client/actions/workflows/tests.yml/badge.svg)](https://github.com/3liz/lizmap-web-client/actions/workflows/tests.yml)
 [![Lint](https://github.com/3liz/lizmap-web-client/actions/workflows/lint.yml/badge.svg)](https://github.com/3liz/lizmap-web-client/actions/workflows/lint.yml)

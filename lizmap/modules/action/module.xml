@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="action" createdate="2019-11-23">
-        <version date="2024-01-16">3.6.9</version>
+        <version date="2024-01-17">3.6.10-pre</version>
         <label lang="en_US">action</label>
         <description lang="en_US" />
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
