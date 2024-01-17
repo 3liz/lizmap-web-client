@@ -146,18 +146,20 @@ export default class Permalink {
             mainLizmap.extent = mapExtent;
         }
 
-        for (const item of items){
-            if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
-                const itemIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
-                item.checked = true;
-                if (item.type === 'layer' && stylesInURL[itemIndex]) {
-                    item.wmsSelectedStyleName = decodeURIComponent(stylesInURL[itemIndex]);
+        if (itemsInURL && itemsInURL.length != 0) {
+            for (const item of items){
+                if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
+                    const itemIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
+                    item.checked = true;
+                    if (item.type === 'layer' && stylesInURL[itemIndex]) {
+                        item.wmsSelectedStyleName = decodeURIComponent(stylesInURL[itemIndex]);
+                    }
+                    if (opacitiesInURL[itemIndex]) {
+                        item.opacity = parseFloat(opacitiesInURL[itemIndex]);
+                    }
+                } else {
+                    item.checked = false;
                 }
-                if (opacitiesInURL[itemIndex]) {
-                    item.opacity = parseFloat(opacitiesInURL[itemIndex]);
-                }
-            } else {
-                item.checked = false;
             }
         }
     }
