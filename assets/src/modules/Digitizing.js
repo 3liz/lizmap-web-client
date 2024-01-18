@@ -4,6 +4,7 @@ import Utils from '../modules/Utils.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import GPX from 'ol/format/GPX.js';
 import KML from 'ol/format/KML.js';
+import WKT from 'ol/format/WKT.js';
 
 import { Draw, Modify, Select } from 'ol/interaction.js';
 import { createBox } from 'ol/interaction/Draw.js';
@@ -564,7 +565,7 @@ export default class Digitizing {
                                 }
                             });
                         }
-                        
+
                         this._drawSource.removeFeature(features[0]);
 
                         // Stop erasing mode when no features left
@@ -573,7 +574,7 @@ export default class Digitizing {
                         }
 
                         this.saveFeatureDrawn();
-                
+
                         mainEventDispatcher.dispatch('digitizing.erase');
                     }
                 };
@@ -967,7 +968,7 @@ export default class Digitizing {
                 const savedFeatures = [];
                 for(const feature of this.featureDrawn){
                     const geomType = feature.getGeometry().getType();
-    
+
                     if( geomType === 'Circle'){
                         savedFeatures.push({
                             type: geomType,
@@ -996,29 +997,65 @@ export default class Digitizing {
     loadFeatureDrawnToMap() {
         // get saved data without context for draw
         const oldSavedGeomJSON = this._context === 'draw' ? localStorage.getItem(this._repoAndProjectString + '_drawLayer') : null;
+
+        // Clear old saved data without context for draw from localStorage
+        if (oldSavedGeomJSON !== null) {
+            localStorage.removeItem(this._repoAndProjectString + '_drawLayer');
+            localStorage.setItem(this._repoAndProjectString + '_' + this._context + '_drawLayer', oldSavedGeomJSON);
+        }
+
+        // keep saved data without context for draw or get saved data with context
         const savedGeomJSON = oldSavedGeomJSON !== null ? oldSavedGeomJSON : localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
 
         if (savedGeomJSON) {
-            const savedFeatures = JSON.parse(savedGeomJSON);
-            const loadedFeatures = [];
-            for(const feature of savedFeatures){
-                let loadedGeom;
-                if(feature.type === 'Point'){
-                    loadedGeom = new Point(feature.coords);
-                } else if(feature.type === 'LineString'){
-                    loadedGeom = new LineString(feature.coords);
-                } else if(feature.type === 'Polygon'){
-                    loadedGeom = new Polygon(feature.coords);
-                } else if(feature.type === 'Circle'){
-                    loadedGeom = new CircleGeom(feature.center, feature.radius);
-                }
+            let loadedFeatures = [];
+            // the saved data could be an invalid JSON
+            try {
+                const savedFeatures = JSON.parse(savedGeomJSON);
 
-                if(loadedGeom){
-                    const loadedFeature = new Feature(loadedGeom);
-                    loadedFeature.set('color', feature.color);
-                    loadedFeatures.push(loadedFeature);
+                // convert saved data to features
+                for(const feature of savedFeatures){
+                    let loadedGeom;
+                    if(feature.type === 'Point'){
+                        loadedGeom = new Point(feature.coords);
+                    } else if(feature.type === 'LineString'){
+                        loadedGeom = new LineString(feature.coords);
+                    } else if(feature.type === 'Polygon'){
+                        loadedGeom = new Polygon(feature.coords);
+                    } else if(feature.type === 'Circle'){
+                        loadedGeom = new CircleGeom(feature.center, feature.radius);
+                    }
+
+                    if(loadedGeom){
+                        const loadedFeature = new Feature(loadedGeom);
+                        loadedFeature.set('color', feature.color);
+                        loadedFeatures.push(loadedFeature);
+                    }
+                }
+            } catch(json_error) {
+                // the saved data is an invalid JSON
+                console.log('`'+savedGeomJSON+'` is not a JSON!');
+                // the saved data could be a WKT from previous lizmap version
+                try {
+                    const formatWKT = new WKT();
+                    loadedFeatures = formatWKT.readFeatures(savedGeomJSON);
+                    console.log(loadedFeatures.length+' features read from WKT!');
+                    // set color
+                    for(const loadedFeature of loadedFeatures){
+                        loadedFeature.set('color', this._drawColor);
+                    }
+                    // No features read from localStorage so remove the data
+                    if (loadedFeatures.length == 0) {
+                        localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
+                    }
+                } catch(wkt_error) {
+                    console.log('`'+savedGeomJSON+'` is not a WKT!');
+                    console.error(json_error);
+                    console.error(wkt_error);
                 }
             }
+
+            // Draw features
             this._drawSource.addFeatures(loadedFeatures);
         }
     }
