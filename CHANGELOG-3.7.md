@@ -179,9 +179,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[ICRC](https://www.icrc.org/)**
 * **[Geolab.re](https://geolab.re/)**
 * **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
+* **[Lons-le-Saunier](https://www.lonslesaunier.fr/)**
 * **[Parc naturel régional du Haut-Jura](http://www.parc-haut-jura.fr/)**
+* **[Portes du Soleil](https://www.portesdusoleil.com/)**
+* **[SDEC Energie](https://www.sdec-energie.fr/)**
 * **[Tenergie](https://tenergie.fr/)**
 * **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com)**
+* **[Territoire de Belfort](https://www.territoiredebelfort.fr/)**
 * **[Vaucluse province in France](https://www.vaucluse.fr/)**
 * **[WPD](https://www.wpd.fr/)**
 
