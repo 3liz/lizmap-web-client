@@ -8,6 +8,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.2 - 2024-01-18
+
+### Fixed
+
+* Fix tile mode when `GetMap` requests are greater than the value `wmsMaxWidth` and `wmsMaxHeight` in the settings 
+
 ## 3.7.1 - 2024-01-17
 
 ### Update
