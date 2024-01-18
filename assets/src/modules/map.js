@@ -104,7 +104,7 @@ export default class map extends olMap {
         // Respecting WMS max size
         const wmsMaxSize = [
             mainLizmap.initialConfig.options.wmsMaxWidth,
-            mainLizmap.initialConfig.options.wmsMaxheight,
+            mainLizmap.initialConfig.options.wmsMaxHeight,
         ];
 
         const customTileGrid = new TileGrid({
