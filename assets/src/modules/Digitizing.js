@@ -14,7 +14,7 @@ import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
-import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint } from 'ol/geom.js';
+import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint, GeometryCollection } from 'ol/geom.js';
 import { circular } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
@@ -22,7 +22,6 @@ import Overlay from 'ol/Overlay.js';
 import { unByKey } from 'ol/Observable.js';
 
 import { transform } from 'ol/proj.js';
-import { boundingExtent } from 'ol/extent.js';
 
 export default class Digitizing {
 
@@ -1083,8 +1082,10 @@ export default class Digitizing {
                     // Add imported features to map
                     this._drawSource.addFeatures(OL6features);
                     // And zoom to their bounding extent
-                    const featuresCoordinates = OL6features.map( feature => feature.getGeometry().flatCoordinates);
-                    const extent = boundingExtent(featuresCoordinates);
+                    const featuresGeometry = OL6features.map(feature => feature.getGeometry());
+                    const featuresGeometryCollection = new GeometryCollection(featuresGeometry);
+                    const extent = featuresGeometryCollection.getExtent();
+
                     mainLizmap.map.getView().fit(extent);
                 }
             };
