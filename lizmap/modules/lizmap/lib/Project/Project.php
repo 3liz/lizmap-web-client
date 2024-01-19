@@ -2314,6 +2314,19 @@ class Project
     }
 
     /**
+     * test if provided version (int format 30520).
+     *
+     * @param int $targetVersion the desired version (maj.min) as int (<Maj><Min as 2 digit>00)
+     */
+    public function isCompatibleWithVersion(int $targetVersion): bool
+    {
+        // the projet version written for N are supported until N+2
+        $maxSupportedVersion = $this->getLizmapWebClientTargetVersion() + 200;
+
+        return $maxSupportedVersion >= $targetVersion;
+    }
+
+    /**
      * Check acl rights on the project.
      *
      * @return bool true if the current user as rights on the project
