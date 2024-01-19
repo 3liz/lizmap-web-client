@@ -1072,7 +1072,8 @@ export default class Digitizing {
                     } else if (fileExtension === 'gpx') {
                         OL6features = (new GPX()).readFeatures(fileContent, options);
                     } else if (fileExtension === 'kml') {
-                        OL6features = (new KML()).readFeatures(fileContent, options);
+                        // Remove features default style to display layer style
+                        OL6features = (new KML({ extractStyles: false })).readFeatures(fileContent, options);
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
