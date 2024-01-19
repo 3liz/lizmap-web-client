@@ -144,6 +144,12 @@ export default class SelectionTool {
 
                         for (const featureType of this.allFeatureTypeSelected) {
                             const lConfig = mainLizmap.config.layers[featureType];
+                            let typeName = featureType;
+                            if ('typename' in lConfig) {
+                                typeName = lConfig.typename;
+                            } else if ('shortname' in lConfig) {
+                                typeName = lConfig.shortname;
+                            }
 
                             // Yo avoid applying reverseAxis (not supported by QGIS GML Parser)
                             // Choose a srsName without reverseAxis
@@ -167,7 +173,7 @@ export default class SelectionTool {
 
                             let rFilter = lConfig?.request_params?.filter;
                             if( rFilter ){
-                                rFilter = rFilter.replace( featureType + ':', '');
+                                rFilter = rFilter.replace( typeName + ':', '');
                                 spatialFilter = rFilter + ' AND ' + spatialFilter;
                             }
 
@@ -181,7 +187,7 @@ export default class SelectionTool {
 
                             const wfs = new WFS();
                             const wfsParams = {
-                                TYPENAME: featureType,
+                                TYPENAME: typeName,
                                 EXP_FILTER: spatialFilter
                             };
 
