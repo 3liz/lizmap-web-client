@@ -1052,13 +1052,16 @@ export default class Digitizing {
 
                 // Handle GeoJSON, GPX or KML strings
                 try {
+                    const options = {
+                        featureProjection: mainLizmap.projection
+                    };
                     // Check extension for format type
                     if (['json', 'geojson'].includes(fileExtension)) {
-                        OL6features = (new GeoJSON()).readFeatures(fileContent);
+                        OL6features = (new GeoJSON()).readFeatures(fileContent, options);
                     } else if (fileExtension === 'gpx') {
-                        OL6features = (new GPX()).readFeatures(fileContent);
+                        OL6features = (new GPX()).readFeatures(fileContent, options);
                     } else if (fileExtension === 'kml') {
-                        OL6features = (new KML()).readFeatures(fileContent);
+                        OL6features = (new KML()).readFeatures(fileContent, options);
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
