@@ -284,7 +284,7 @@ var lizAttributeTable = function() {
             function getDataAndFillAttributeTable(layerName, filter, tableSelector, callBack){
 
                 let layerConfig = lizMap.config.layers[layerName];
-                const typeName = layerConfig.typename;
+                const typeName = layerConfig?.shortname || layerConfig?.typename || layerConfig?.name;
 
                 const wfsParams = {
                     TYPENAME: typeName,
@@ -328,7 +328,7 @@ var lizAttributeTable = function() {
                         // Get the layer typename based on its id
                         let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
                         if( !getSourceLayer || getSourceLayer.length != 2) continue;
-                        let source_typename = getSourceLayer[1].typename;
+                        const source_typename = getSourceLayer[1].typename;
                         if (source_typename == undefined) {
                             // The source layer is not published in WFS
                             continue;
@@ -386,7 +386,8 @@ var lizAttributeTable = function() {
              */
             function getDataAndRefreshAttributeTable(layerName, filter, tableSelector, callBack){
 
-                const typeName = lizMap.config.layers[layerName].typename;
+                const layerConfig = lizMap.config.layers[layerName];
+                const typeName = layerConfig?.shortname || layerConfig?.typename || layerConfig?.name;
 
                 const wfsParams = {
                     TYPENAME: typeName,

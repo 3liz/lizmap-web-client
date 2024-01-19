@@ -462,7 +462,8 @@ var lizLayerFilterTool = function () {
                         // Get source layer typename from it ID
                         let getSourceLayer = lizMap.getLayerConfigById(fieldConf.source_layer_id);
                         if( getSourceLayer && getSourceLayer.length == 2) {
-                            let source_typename = getSourceLayer[1].typename;
+                            const sourceLayerConfig = getSourceLayer[1];
+                            const source_typename = sourceLayerConfig?.shortname || sourceLayerConfig?.typename || sourceLayerConfig?.name;
                             if (source_typename != undefined) {
                                 fetchRequests.push(
                                     lizMap.mainLizmap.wfs.getFeature({
