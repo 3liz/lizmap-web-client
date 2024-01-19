@@ -14,7 +14,7 @@ import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
-import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint } from 'ol/geom.js';
+import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint, GeometryCollection } from 'ol/geom.js';
 import { circular } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
@@ -1051,22 +1051,30 @@ export default class Digitizing {
 
                 // Handle GeoJSON, GPX or KML strings
                 try {
+                    const options = {
+                        featureProjection: mainLizmap.projection
+                    };
                     // Check extension for format type
                     if (['json', 'geojson'].includes(fileExtension)) {
-                        OL6features = (new GeoJSON()).readFeatures(fileContent);
+                        OL6features = (new GeoJSON()).readFeatures(fileContent, options);
                     } else if (fileExtension === 'gpx') {
-                        OL6features = (new GPX()).readFeatures(fileContent);
+                        OL6features = (new GPX()).readFeatures(fileContent, options);
                     } else if (fileExtension === 'kml') {
-                        OL6features = (new KML()).readFeatures(fileContent);
+                        OL6features = (new KML()).readFeatures(fileContent, options);
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
                 }
 
                 if (OL6features) {
-                    // Add imported features to map and zoom to their extent
+                    // Add imported features to map
                     this._drawSource.addFeatures(OL6features);
-                    mainLizmap.extent = this._drawSource.getExtent();
+                    // And zoom to their bounding extent
+                    const featuresGeometry = OL6features.map(feature => feature.getGeometry());
+                    const featuresGeometryCollection = new GeometryCollection(featuresGeometry);
+                    const extent = featuresGeometryCollection.getExtent();
+
+                    mainLizmap.map.getView().fit(extent);
                 }
             };
         })(this);
