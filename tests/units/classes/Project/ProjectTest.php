@@ -411,4 +411,21 @@ class ProjectTest extends TestCase
         $proj->setCfg($config);
         $this->assertEquals($expectedRet, $proj->checkAcl());
     }
+
+    public function testVersion() {
+        $rep = new Project\Repository('key', array(), null, null, null);
+        $context = new ContextForTests();
+        /**
+         * no "lizmap_web_client_target_version" value in metadata,
+         * value will be set as 30200
+         */
+        $file = __DIR__.'/Ressources/events.qgs.cfg';
+        $data = json_decode(file_get_contents($file));
+        $config = new Project\ProjectConfig($data);
+        $proj = new ProjectForTests($context);
+        $proj->setRepo($rep);
+        $proj->setCfg($config);
+        $this->assertTrue($proj->isCompatibleWithVersion(30400), 'n+2 version still compatible');
+        $this->assertFalse($proj->isCompatibleWithVersion(30500), '>n+3 version break compatibility');
+    }
 }
