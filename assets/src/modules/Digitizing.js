@@ -22,6 +22,7 @@ import Overlay from 'ol/Overlay.js';
 import { unByKey } from 'ol/Observable.js';
 
 import { transform } from 'ol/proj.js';
+import { boundingExtent } from 'ol/extent.js';
 
 export default class Digitizing {
 
@@ -1064,9 +1065,12 @@ export default class Digitizing {
                 }
 
                 if (OL6features) {
-                    // Add imported features to map and zoom to their extent
+                    // Add imported features to map
                     this._drawSource.addFeatures(OL6features);
-                    mainLizmap.extent = this._drawSource.getExtent();
+                    // And zoom to their bounding extent
+                    const featuresCoordinates = OL6features.map( feature => feature.getGeometry().flatCoordinates);
+                    const extent = boundingExtent(featuresCoordinates);
+                    mainLizmap.map.getView().fit(extent);
                 }
             };
         })(this);
