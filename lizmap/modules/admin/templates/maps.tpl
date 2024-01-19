@@ -15,8 +15,11 @@
 
         {foreach $repositories as $repo}
 
-            <legend>{$repo->getKey()}</legend>
-
+            <legend>{$repo->getKey()}
+            {if !$repo->hasValidPath() }
+                <span class='badge badge-important'>{@admin~admin.form.admin_section.repository.path.invalid@}</span>
+            {/if}
+            </legend>
             <dl><dt>{@admin~admin.form.admin_section.data.label@}</dt>
                 <dd>
                     <table class="table">
