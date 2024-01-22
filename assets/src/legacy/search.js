@@ -1,5 +1,3 @@
-import {transformExtent} from 'ol/proj.js';
-
 var lizSearch = function() {
 
     // Attributes
@@ -238,8 +236,7 @@ var lizSearch = function() {
                         }, 'json');
                     break;
                 case 'ign':
-                    let mapExtent4326 = transformExtent(lizMap.mainLizmap.map.getView().calculateExtent(), lizMap.mainLizmap.projection, 'EPSG:4326');
-                    let queryParam = '?text='+$('#search-query').val()+'&type=StreetAddress&maximumResponses=10&bbox='+mapExtent4326
+                    const queryParam = '?text='+$('#search-query').val()+'&type=StreetAddress&maximumResponses=10&bbox=' + extent.toBBOX();
                     $.getJSON(encodeURI(service+queryParam), function(data ) {
                         let text = '';
                         let count = 0;
