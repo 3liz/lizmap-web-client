@@ -11,6 +11,9 @@ test.describe('Startup', () => {
     await page.$eval("*", el => el.style.visibility = 'hidden');
     await page.$eval("#baseLayersOlMap, #baseLayersOlMap *", el => el.style.visibility = 'visible');
 
+    // Wait for image stability
+    await page.waitForTimeout(300);
+
     expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('zoom-features-extent.png', {
       maxDiffPixels: 700
     });
