@@ -720,6 +720,11 @@ let lizDataviz = function () {
                 // OpenLayers configuration
                 let layerConfig = getLayerConfig[1];
 
+                // Layer needs a geometry to be visible
+                if (layerConfig.geometryType === "none") {
+                    return;
+                }
+
                 // Get the associated layer
                 const layer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(layerConfig.name);
                 if (layer) {
