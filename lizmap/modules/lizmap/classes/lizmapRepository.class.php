@@ -177,4 +177,9 @@ class lizmapRepository
     {
         return $this->repo->getACAOHeaderValue($referer);
     }
+
+    public function hasValidPath()
+    {
+        return $this->repo->getPath() !== false;
+    }
 }
