@@ -1486,18 +1486,20 @@ class QgisProject
         if (!$xmlLayers) {
             return $layers;
         }
+        // Associative array that stores the embedded projects path as key and the list of embedded layers attributes as value.
+        // The the embedded layers definition are retreived outside the main foreach loop to avoid loading the same embedded qgis project multiple times
+        // for each embedded layer
+        $embeddedProjects = array();
 
         foreach ($xmlLayers as $xmlLayer) {
             $attributes = $xmlLayer->attributes();
             if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
                 $xmlFile = realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project);
-                $qgsProj = new QgisProject($xmlFile, $this->services, $this->appContext);
-                $layer = $qgsProj->getLayerDefinition((string) $attributes->id);
-                $layer['qgsmtime'] = filemtime($xmlFile);
-                $layer['file'] = $xmlFile;
-                $layer['embedded'] = 1;
-                $layer['projectPath'] = (string) $attributes->project;
-                $layers[] = $layer;
+                if (!array_key_exists($xmlFile, $embeddedProjects)) {
+                    $embeddedProjects[$xmlFile] = array();
+                }
+                // populate array of embedded layers
+                $embeddedProjects[$xmlFile][] = $attributes;
             } else {
                 $layer = array(
                     'type' => (string) $attributes->type,
@@ -1657,6 +1659,20 @@ class QgisProject
                     }
                 }
                 $layers[] = $layer;
+            }
+        }
+        // loop through the embedded projects if any, to get the embedded layers definition
+        foreach ($embeddedProjects as $projectPath => $layersAttributes) {
+            if (is_array($layersAttributes)) {
+                $embeddedProject = new QgisProject($projectPath, $this->services, $this->appContext);
+                foreach ($layersAttributes as $attributes) {
+                    $layer = $embeddedProject->getLayerDefinition((string) $attributes->id);
+                    $layer['qgsmtime'] = filemtime($projectPath);
+                    $layer['file'] = $projectPath;
+                    $layer['embedded'] = 1;
+                    $layer['projectPath'] = (string) $attributes->project;
+                    $layers[] = $layer;
+                }
             }
         }
 
