@@ -1784,23 +1784,23 @@ class Project
             }
             unset($obj->group_visibility);
         }
-        foreach ($layersToRemove as $key => $obj) {
+        foreach ($layersToRemove as $key => $layerToRemoveCfg) {
             // locateByLayer
             if (property_exists($configJson->locateByLayer, $key)) {
                 unset($configJson->locateByLayer->{$key});
             }
             // locateByLayer vectorjoins
-            foreach ($configJson->locateByLayer as $o) {
-                if (!property_exists($o, 'vectorjoins')) {
+            foreach ($configJson->locateByLayer as $singleLocateByLayerCfg) {
+                if (!property_exists($singleLocateByLayerCfg, 'vectorjoins')) {
                     continue;
                 }
                 $vectorjoinsToKeep = array();
-                foreach ($o->vectorjoins as $i => $v) {
-                    if ($v->joinLayerId != $obj->id) {
-                        $vectorjoinsToKeep[] = $o;
+                foreach ($singleLocateByLayerCfg->vectorjoins as $vectorjoinCfg) {
+                    if ($vectorjoinCfg->joinLayerId != $layerToRemoveCfg->id) {
+                        $vectorjoinsToKeep[] = $vectorjoinCfg;
                     }
                 }
-                $o->vectorjoins = $vectorjoinsToKeep;
+                $singleLocateByLayerCfg->vectorjoins = $vectorjoinsToKeep;
             }
             // attributeLayers
             if (property_exists($configJson->attributeLayers, $key)) {
@@ -1819,7 +1819,7 @@ class Project
             if (property_exists($configJson, 'datavizLayers')) {
                 $dvlLayers = $configJson->datavizLayers['layers'];
                 foreach ($dvlLayers as $o => $c) {
-                    if ($c['layer_id'] == $obj->id) {
+                    if ($c['layer_id'] == $layerToRemoveCfg->id) {
                         unset($configJson->datavizLayers['layers'][$o]);
                     }
                 }
@@ -1827,7 +1827,7 @@ class Project
             // atlas
             if (property_exists($configJson->options, 'atlasEnabled')
                 && $this->optionToBoolean($configJson->options->atlasEnabled)
-                && $configJson->options->atlasLayer == $obj->id) {
+                && $configJson->options->atlasLayer == $layerToRemoveCfg->id) {
                 $configJson->options->atlasLayer = '';
                 $configJson->options->atlasPrimaryKey = '';
                 $configJson->options->atlasFeatureLabel = '';
@@ -1837,7 +1837,7 @@ class Project
             // multi-atlas
             // formFilterLayers
             foreach ($configJson->formFilterLayers as $o => $c) {
-                if (property_exists($c, 'layerId') && $c->layerId == $obj->id) {
+                if (property_exists($c, 'layerId') && $c->layerId == $layerToRemoveCfg->id) {
                     unset($configJson->formFilterLayers->{$o});
                 }
             }
@@ -1851,7 +1851,7 @@ class Project
                 }
                 $relationsToKeep = array();
                 foreach ($layerRelations as $r) {
-                    if ($r['referencingLayer'] != $obj->id) {
+                    if ($r['referencingLayer'] != $layerToRemoveCfg->id) {
                         $relationsToKeep[] = $r;
                     }
                 }
@@ -1867,7 +1867,7 @@ class Project
                 /** @var array $printTemplate */
                 if (array_key_exists('atlas', $printTemplate)
                     && array_key_exists('coverageLayer', $printTemplate['atlas'])
-                    && $printTemplate['atlas']['coverageLayer'] != $obj->id) {
+                    && $printTemplate['atlas']['coverageLayer'] != $layerToRemoveCfg->id) {
                     $printTemplatesToKeep[] = $printTemplate;
                 }
             }
