@@ -200,40 +200,56 @@ export default class map extends olMap {
             } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
                 let minResolution = baseLayerState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
                 let maxResolution = baseLayerState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
-                baseLayer = new ImageLayer({
-                    // extent: extent,
-                    minResolution: minResolution,
-                    maxResolution: maxResolution,
-                    source: new ImageWMS({
-                        url: mainLizmap.serviceURL,
-                        projection: qgisProjectProjection,
-                        serverType: 'qgis',
-                        ratio: this._WMSRatio,
-                        params: {
-                            LAYERS: baseLayerState.itemState.wmsName,
-                            FORMAT: baseLayerState.layerConfig.imageFormat,
-                            DPI: 96
-                        },
-                    })
-                });
-                if (useTileWms) {
+
+                if (baseLayerState.layerConfig.cached) {
+                    const parser = new WMTSCapabilities();
+                    const result = parser.read(lizMap.wmtsCapabilities);
+                    const options = optionsFromCapabilities(result, {
+                        layer: baseLayerState.itemState.wmsName,
+                        matrixSet: mainLizmap.projection,
+                    });
+
                     baseLayer = new TileLayer({
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        source: new WMTS(options)
+                    });                    
+                } else {
+                    baseLayer = new ImageLayer({
                         // extent: extent,
                         minResolution: minResolution,
                         maxResolution: maxResolution,
-                        source: new TileWMS({
+                        source: new ImageWMS({
                             url: mainLizmap.serviceURL,
                             projection: qgisProjectProjection,
                             serverType: 'qgis',
-                            tileGrid: customTileGrid,
+                            ratio: this._WMSRatio,
                             params: {
                                 LAYERS: baseLayerState.itemState.wmsName,
                                 FORMAT: baseLayerState.layerConfig.imageFormat,
-                                DPI: 96,
-                                TILED: 'true'
+                                DPI: 96
                             },
                         })
                     });
+                    if (useTileWms) {
+                        baseLayer = new TileLayer({
+                            // extent: extent,
+                            minResolution: minResolution,
+                            maxResolution: maxResolution,
+                            source: new TileWMS({
+                                url: mainLizmap.serviceURL,
+                                projection: qgisProjectProjection,
+                                serverType: 'qgis',
+                                tileGrid: customTileGrid,
+                                params: {
+                                    LAYERS: baseLayerState.itemState.wmsName,
+                                    FORMAT: baseLayerState.layerConfig.imageFormat,
+                                    DPI: 96,
+                                    TILED: 'true'
+                                },
+                            })
+                        });
+                    }
                 }
             } else if (baseLayerState.type === BaseLayerTypes.Empty) {
                 this._hasEmptyBaseLayer = true;
