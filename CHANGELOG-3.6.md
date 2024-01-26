@@ -8,6 +8,13 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Fix search result with IGN
+* Register projections from lizProj4 if unknown
+* Fix layer group visible only and location
+* Popup from the attribute table, use the correct content for the popup
+
 ## 3.6.9 - 2024-01-16
 
 ### Update
