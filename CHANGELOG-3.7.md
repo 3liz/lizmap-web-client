@@ -8,6 +8,27 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Editing form - Upload fields: allow to use an expression to set up the storage path
+
+### Fixed
+
+* Fix a 500 error if the folder was not existing on the file system
+* Fix the option "Display when layer is visible" in the dataviz for non-spatial layer 
+* When importing a KML :
+  * Fix extent used
+  * Use the correct projection
+* Fix the selection tool about layer name used 
+* Fix search result with IGN
+* Register projections from lizProj4 if unknown
+* Fix layer group visible only and location
+* Popup from the attribute table, use the correct content for the popup
+
+### Tests
+
+* Improvements on the Playwright stack
+
 ## 3.7.2 - 2024-01-18
 
 ### Fixed
