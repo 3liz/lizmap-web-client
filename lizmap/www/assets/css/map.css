@@ -3146,7 +3146,7 @@ lizmap-treeview input[type="checkbox"] {
   align-self: baseline;
   margin-top: 5px;
   accent-color: #0094D6;
-  width: 18px;
+  flex: 0 0 18px;
   height: 18px;
 }
 
