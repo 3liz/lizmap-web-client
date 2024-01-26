@@ -3583,16 +3583,24 @@ window.lizMap = function() {
             qgisName = lizMap.getLayerNameByCleanName(aName);
         }
 
+        var layerConfig = null;
+        if (qgisName in lizMap.config.layers) {
+            layerConfig = lizMap.config.layers[qgisName];
+        }
+
+        if( !layerConfig )
+            return false;
+
         var pkey = null;
         // Get primary key with attributelayer options
         if( (qgisName in lizMap.config.attributeLayers) ){
             pkey = lizMap.config.attributeLayers[qgisName]['primaryKey'];
         }
 
+
         // Test if primary key is set in the atlas tool
         // Atlas config with one layer (legacy)
         if( !pkey && 'atlasLayer' in lizMap.config.options && 'atlasPrimaryKey' in lizMap.config.options ){
-            var layerConfig = lizMap.config.layers[qgisName];
             if( layerConfig.id == lizMap.config.options['atlasLayer'] && lizMap.config.options['atlasPrimaryKey'] != '' ){
                 pkey = lizMap.config.options['atlasPrimaryKey'];
             }
@@ -3600,7 +3608,6 @@ window.lizMap = function() {
 
         // Atlas config with several layers (LWC >= 3.4)
         if (!pkey && 'atlas' in lizMap.config && 'layers' in lizMap.config.atlas && Array.isArray(lizMap.config.atlas['layers']) && lizMap.config.atlas['layers'].length > 0) {
-            const layerConfig = lizMap.config.layers[qgisName];
             for (let index = 0; index < lizMap.config.atlas.layers.length; index++) {
                 const layer = lizMap.config.atlas.layers[index];
                 if (layerConfig.id === layer.layer){
@@ -3614,7 +3621,9 @@ window.lizMap = function() {
             return false;
 
         var pkVal = feat.properties[pkey];
-        filter = aName + ':"' + pkey + '" = ' + "'" + pkVal + "'" ;
+
+        const wmsName = layerConfig?.shortname || layerConfig?.name || qgisName;
+        filter = wmsName + ':"' + pkey + '" = ' + "'" + pkVal + "'" ;
 
         var crs = 'EPSG:4326';
         if(('crs' in lizMap.config.layers[qgisName]) && lizMap.config.layers[qgisName].crs != ''){
@@ -3622,8 +3631,8 @@ window.lizMap = function() {
         }
 
         var wmsOptions = {
-            'LAYERS': aName
-            ,'QUERY_LAYERS': aName
+            'LAYERS': wmsName
+            ,'QUERY_LAYERS': wmsName
             ,'STYLES': ''
             ,'SERVICE': 'WMS'
             ,'VERSION': '1.3.0'
@@ -4386,7 +4395,7 @@ window.lizMap = function() {
                 const wfsCapaData = responses[4].value;
                 let featuresExtent = responses[5].value?.features?.[0]?.bbox;
                 let startupFeatures = responses[5].value?.features;
-                
+
                 if(featuresExtent){
                     for (const feature of startupFeatures) {
                         featuresExtent = extend(featuresExtent, feature.bbox);
@@ -4400,7 +4409,7 @@ window.lizMap = function() {
                     wfsCapabilities: wfsCapaData,
                     startupFeatures: responses[5].value,
                 });
-                
+
                 getFeatureInfo = responses[6].value;
 
                 const domparser = new DOMParser();
