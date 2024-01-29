@@ -29,7 +29,9 @@ fallbackLocale=en_US
 [minimumRequiredVersion]
 ; Versions on the server, for the system administrator
 ; The minimum version required about external software to make Lizmap Web Client happy
+; QGIS server required minimum version
 qgisServer="3.28"
+; Lizmap server QGIS plugin required minimum version
 lizmapServerPlugin="2.8.3"
 
 ; Versions written in QGIS/CFG files, for the GIS administrator
