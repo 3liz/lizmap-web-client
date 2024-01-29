@@ -1808,49 +1808,54 @@ class Project
         }
 
         // set printTemplates in config
-        $layoutsList = array();
+        $layoutsList = null;
         if (property_exists($configJson, 'layouts')
             && property_exists($configJson->layouts, 'list')) {
             $layoutsList = $configJson->layouts->list;
         }
-        $enabledLayoutNames = array();
-        $enabledLayouts = array();
-        foreach ($layoutsList as $layoutCfg) {
-            if (!$layoutCfg->enabled) {
-                continue;
-            }
-            $layoutName = $layoutCfg->layout;
-            if (!property_exists($layoutCfg, 'allowed_groups')
-                || empty($layoutCfg->allowed_groups)) {
-                $enabledLayoutNames[] = $layoutName;
-                if (property_exists($layoutCfg, 'allowed_groups')) {
-                    unset($layoutCfg->allowed_groups);
-                }
-                $enabledLayouts[] = $layoutCfg;
-
-                continue;
-            }
-            $allowed_groups = $layoutCfg->allowed_groups;
-            if (!is_array($allowed_groups)) {
-                $allowed_groups = explode(',', $allowed_groups);
-            }
-            $allowed_groups = array_map('trim', $allowed_groups);
-            foreach ($userGroups as $group) {
-                if (!in_array($group, $allowed_groups)) {
+        $enabledLayoutNames = null;
+        $enabledLayouts = null;
+        if ($layoutsList !== null) {
+            $enabledLayoutNames = array();
+            $enabledLayouts = array();
+            foreach ($layoutsList as $layoutCfg) {
+                if (!$layoutCfg->enabled) {
                     continue;
                 }
+                $layoutName = $layoutCfg->layout;
+                if (!property_exists($layoutCfg, 'allowed_groups')
+                    || empty($layoutCfg->allowed_groups)) {
+                    $enabledLayoutNames[] = $layoutName;
+                    if (property_exists($layoutCfg, 'allowed_groups')) {
+                        unset($layoutCfg->allowed_groups);
+                    }
+                    $enabledLayouts[] = $layoutCfg;
 
-                $enabledLayoutNames[] = $layoutName;
-                unset($layoutCfg->allowed_groups);
-                $enabledLayouts[] = $layoutCfg;
+                    continue;
+                }
+                $allowed_groups = $layoutCfg->allowed_groups;
+                if (!is_array($allowed_groups)) {
+                    $allowed_groups = explode(',', $allowed_groups);
+                }
+                $allowed_groups = array_map('trim', $allowed_groups);
+                foreach ($userGroups as $group) {
+                    if (!in_array($group, $allowed_groups)) {
+                        continue;
+                    }
 
-                break;
+                    $enabledLayoutNames[] = $layoutName;
+                    unset($layoutCfg->allowed_groups);
+                    $enabledLayouts[] = $layoutCfg;
+
+                    break;
+                }
             }
+            $configJson->layouts->list = $enabledLayouts;
         }
-        $configJson->layouts->list = $enabledLayouts;
         $configJson->printTemplates = array();
         foreach ($this->printCapabilities as $printCapabilities) {
-            if (in_array($printCapabilities['title'], $enabledLayoutNames)) {
+            if ($enabledLayoutNames === null
+                || in_array($printCapabilities['title'], $enabledLayoutNames)) {
                 $configJson->printTemplates[] = $printCapabilities;
             }
         }
