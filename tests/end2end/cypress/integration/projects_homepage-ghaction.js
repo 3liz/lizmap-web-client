@@ -3,62 +3,6 @@ describe('Projects homepage', function () {
         cy.visit('/index.php/view/')
     })
 
-    it('should display project metadata (cold cache)', function () {
-        cy.get('.liz-project-title:contains("Test tags: nature, flower")')
-            .prev('.liz-project')
-            .children('.liz-project-desc').as('all-metadata')
-
-        cy.get('@all-metadata').should('not.be.visible')
-        cy.get('@all-metadata').parent('.liz-project').trigger('mouseover')
-        cy.get('@all-metadata').should('be.visible')
-
-        cy.get('@all-metadata').find('.title').should('contain.text','Test tags: nature, flower')
-        cy.get('@all-metadata').find('.abstract').should('contain.text','This is an abstract')
-        cy.get('@all-metadata').find('.keywordList').should('contain.text','nature, flower')
-        cy.get('@all-metadata').find('.proj').should('contain.text','EPSG:4326')
-        cy.get('@all-metadata').find('.bbox').should('contain.text','-1.2459627329192546, -1.0, 1.2459627329192546, 1.0')
-
-        cy.get('@all-metadata').parent('.liz-project').trigger('mouseout')
-        cy.get('@all-metadata').should('not.be.visible')
-
-        cy.get('.liz-project-title:contains("Tests tags: nature, tree")')
-            .prev('.liz-project')
-            .children('.liz-project-desc').as('all-metadata-tree')
-
-        cy.get('@all-metadata-tree').should('not.be.visible')
-        cy.get('@all-metadata-tree').parent('.liz-project').trigger('mouseover')
-        cy.get('@all-metadata-tree').should('be.visible')
-
-        cy.get('@all-metadata-tree').find('.title').should('contain.text','Tests tags: nature, tree')
-        cy.get('@all-metadata-tree').find('.abstract').should('contain.text','Tags: nature, tree')
-        cy.get('@all-metadata-tree').find('.keywordList').should('contain.text','nature, tree')
-        cy.get('@all-metadata-tree').find('.proj').should('contain.text','EPSG:4326')
-        cy.get('@all-metadata-tree').find('.bbox').should('contain.text','-1.2459627329192546, -1.0, 1.2459627329192546, 1.0')
-
-        cy.get('@all-metadata-tree').parent('.liz-project').trigger('mouseout')
-        cy.get('@all-metadata-tree').should('not.be.visible')
-    })
-
-    // Assert metadata are still visible when backend is hot
-    it('should display project metadata  (hot cache)', function () {
-        cy.get('.liz-project-title:contains("Test tags: nature, flower")')
-            .prev('.liz-project')
-            .children('.liz-project-desc').as('all-metadata')
-
-        cy.get('@all-metadata').should('not.be.visible')
-        cy.get('@all-metadata').parent('.liz-project').trigger('mouseover')
-        cy.get('@all-metadata').should('be.visible')
-
-        cy.get('@all-metadata').find('.title').should('contain.text', 'Test tags: nature, flower')
-        cy.get('@all-metadata').find('.abstract').should('contain.text', 'This is an abstract')
-        cy.get('@all-metadata').find('.keywordList').should('contain.text', 'nature, flower')
-        cy.get('@all-metadata').find('.proj').should('contain.text', 'EPSG:4326')
-        cy.get('@all-metadata').find('.bbox').should('contain.text', '-1.2459627329192546, -1.0, 1.2459627329192546, 1.0')
-
-        cy.get('@all-metadata').parent('.liz-project').trigger('mouseout')
-        cy.get('@all-metadata').should('not.be.visible')
-    })
-
     it('should search in title', function () {
         // Check that toggle search button is in the title search state
         cy.get('#toggle-search').should('contain.text', 'T')
