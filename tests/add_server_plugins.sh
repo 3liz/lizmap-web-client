@@ -17,7 +17,7 @@ echo "https://packages.3liz.org/pub/server-plugins-repository/unstable/plugins.[
 qgis-plugin-manager update
 qgis-plugin-manager install -f "Lizmap server"
 qgis-plugin-manager install -f wfsOutputExtension
-qgis-plugin-manager remove atlasprint || true
+qgis-plugin-manager install -f atlasprint
 
 # echo "QGIS Server Lizmap plugin"
 # Latest commit
