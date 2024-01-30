@@ -512,38 +512,18 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     printAtlas(templateName) {
-        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref;
         const wmsParams = {
             SERVICE: 'WMS',
-            REQUEST: 'GetPrint',
+            REQUEST: 'GetPrintAtlas',
             VERSION: '1.3.0',
             FORMAT: 'pdf',
+            EXCEPTION: 'application/vnd.ogc.se_inimage',
             TRANSPARENT: true,
-            SRS: projectProjection,
             DPI: 100,
             TEMPLATE: templateName,
-            ATLAS_PK: this._fid
+            LAYER: this._layerConfig?.shortname || this._layerConfig?.name,
+            EXP_FILTER: '$id IN ('+ this._fid +')',
         };
-
-        // Add layers
-        const layers = [];
-
-        // Get active baselayer, and add the corresponding QGIS layer if needed
-        const activeBaseLayerName = mainLizmap._lizmap3.map.baseLayer.name;
-        const externalBaselayersReplacement = mainLizmap._lizmap3.getExternalBaselayersReplacement();
-        const exbl = externalBaselayersReplacement?.[activeBaseLayerName];
-        if (this._layerConfig?.[exbl]) {
-            const activeBaseLayerConfig = this._layerConfig[exbl];
-            if (activeBaseLayerConfig?.id && mainLizmap.config.options?.useLayerIDs == 'True') {
-                layers.push(activeBaseLayerConfig.id);
-            } else {
-                layers.push(exbl);
-            }
-        }
-
-        layers.push(this._typeName);
-
-        wmsParams['LAYERS'] = layers.join(',');
 
         // Custom labels
         this.querySelectorAll('.custom-labels:not(.hide) .custom-label').forEach(field => wmsParams[field.dataset.labelid] = field.value);
