@@ -1,0 +1,173 @@
+{
+    "metadata": {
+        "qgis_desktop_version": 32815,
+        "lizmap_plugin_version_str": "4.0.1",
+        "lizmap_plugin_version": 40001,
+        "lizmap_web_client_target_version": 30800,
+        "lizmap_web_client_target_status": "Dev",
+        "instance_target_url": "http://localhost:8130/",
+        "instance_target_repository": "intranet"
+    },
+    "warnings": {},
+    "options": {
+        "projection": {
+            "proj4": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs",
+            "ref": "EPSG:3857"
+        },
+        "bbox": [
+            "1331137.66540000005625188",
+            "5515070.85429999977350235",
+            "1384455.82700000004842877",
+            "5546857.61610000021755695"
+        ],
+        "mapScales": [
+            10000,
+            25000,
+            50000,
+            100000,
+            250000,
+            500000
+        ],
+        "minScale": 1,
+        "maxScale": 1000000000,
+        "initialExtent": [
+            1331137.6654,
+            5515070.8543,
+            1384455.827,
+            5546857.6161
+        ],
+        "popupLocation": "dock",
+        "pointTolerance": 25,
+        "lineTolerance": 10,
+        "polygonTolerance": 5,
+        "tmTimeFrameSize": 10,
+        "tmTimeFrameType": "seconds",
+        "tmAnimationFrameLength": 1000,
+        "datavizLocation": "dock",
+        "theme": "dark",
+        "fixed_scale_overview_map": true,
+        "dataviz_drag_drop": []
+    },
+    "layers": {
+        "baseLayers": {
+            "id": "baseLayers",
+            "name": "baseLayers",
+            "type": "group",
+            "title": "baseLayers",
+            "abstract": "",
+            "link": "",
+            "minScale": 1,
+            "maxScale": 1000000000000,
+            "toggled": "True",
+            "popup": "False",
+            "popupSource": "auto",
+            "popupTemplate": "",
+            "popupMaxFeatures": 10,
+            "popupDisplayChildren": "False",
+            "popup_allow_download": true,
+            "legend_image_option": "hide_at_startup",
+            "groupAsLayer": "False",
+            "baseLayer": "False",
+            "displayInLegend": "True",
+            "group_visibility": [],
+            "singleTile": "True",
+            "imageFormat": "image/png",
+            "cached": "False",
+            "clientCacheExpiration": 300
+        },
+        "wms_baselayer": {
+            "id": "wms_baselayer_bb968bb4_8c20_44bc_9fdf_0b61c9ed1e4e",
+            "name": "wms_baselayer",
+            "type": "layer",
+            "geometryType": "polygon",
+            "extent": [
+                11.971348125039231,
+                44.34013155074235,
+                12.377398836894544,
+                44.49823744527483
+            ],
+            "crs": "EPSG:4326",
+            "title": "wms_baselayer",
+            "abstract": "",
+            "link": "",
+            "minScale": 1,
+            "maxScale": 1000000000000,
+            "toggled": "False",
+            "popup": "False",
+            "popupSource": "auto",
+            "popupTemplate": "",
+            "popupMaxFeatures": 10,
+            "popupDisplayChildren": "False",
+            "popup_allow_download": true,
+            "legend_image_option": "hide_at_startup",
+            "groupAsLayer": "False",
+            "baseLayer": "False",
+            "displayInLegend": "True",
+            "group_visibility": [],
+            "singleTile": "True",
+            "imageFormat": "image/png",
+            "cached": "False",
+            "clientCacheExpiration": 300
+        },
+        "tiled_baselayer": {
+            "id": "tiled_baselayer_97a1e74a_5e80_4ac5_a5f3_4ff8cceca2aa",
+            "name": "tiled_baselayer",
+            "type": "layer",
+            "geometryType": "polygon",
+            "extent": [
+                1333324.8279461411,
+                5517403.827637763,
+                1383094.9258853875,
+                5543601.174111643
+            ],
+            "crs": "EPSG:3857",
+            "title": "tiled_baselayer",
+            "abstract": "",
+            "link": "",
+            "minScale": 1,
+            "maxScale": 1000000000000,
+            "toggled": "False",
+            "popup": "False",
+            "popupSource": "auto",
+            "popupTemplate": "",
+            "popupMaxFeatures": 10,
+            "popupDisplayChildren": "False",
+            "popup_allow_download": true,
+            "legend_image_option": "hide_at_startup",
+            "groupAsLayer": "False",
+            "baseLayer": "False",
+            "displayInLegend": "True",
+            "group_visibility": [],
+            "singleTile": "False",
+            "imageFormat": "image/png",
+            "cached": "True",
+            "cacheExpiration": 0,
+            "clientCacheExpiration": 300
+        }
+    },
+    "atlas": {
+        "layers": []
+    },
+    "locateByLayer": {},
+    "attributeLayers": {},
+    "tooltipLayers": {},
+    "editionLayers": {},
+    "layouts": {
+        "config": {
+            "default_popup_print": false
+        },
+        "list": []
+    },
+    "loginFilteredLayers": {},
+    "timemanagerLayers": {},
+    "datavizLayers": {},
+    "filter_by_polygon": {
+        "config": {
+            "polygon_layer_id": "tiled_baselayer_97a1e74a_5e80_4ac5_a5f3_4ff8cceca2aa",
+            "group_field": "id",
+            "filter_by_user": false
+        },
+        "layers": []
+    },
+    "formFilterLayers": {}
+}

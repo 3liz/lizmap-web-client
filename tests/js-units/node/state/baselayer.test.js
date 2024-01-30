@@ -261,4 +261,33 @@ describe('BaseLayersState', function () {
             ])
     });
 
+    it('Tiled baselayer', function () {
+        const baseLayers = getBaseLayersState('tiled_baselayers')
+        expect(baseLayers.selectedBaseLayerName).to.be.eq('wms_baselayer')
+        expect(baseLayers.selectedBaseLayer).to.not.be.undefined
+        expect(baseLayers.selectedBaseLayer.name).to.be.eq('wms_baselayer')
+        expect(baseLayers.baseLayerNames).to.be.an('array')
+        .that.have.length(2)
+        .that.be.deep.eq([
+            "wms_baselayer",
+            "tiled_baselayer",
+        ])
+
+        expect(baseLayers.baseLayers.map(l => l.type))
+            .to.be.an('array')
+            .that.have.length(2)
+            .that.ordered.members([
+                BaseLayerTypes.Lizmap,
+                BaseLayerTypes.Lizmap,
+        ])
+
+        expect(baseLayers.baseLayers.map(l => l.layerConfig.cached))
+        .to.be.an('array')
+        .that.have.length(2)
+        .that.ordered.members([
+            false,
+            true,
+    ])
+    })
+
 })
