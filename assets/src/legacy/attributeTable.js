@@ -1242,15 +1242,18 @@ var lizAttributeTable = function() {
                 if (['#attribute-layer-table-', '#edition-table-'].includes(aTable.replace(cleanName, ''))){
                     isChild = false;
                 }else{
-                    let parentLayerName = '';
+                    let parentLayerCleanName = '';
                     if (aTable.startsWith('#attribute-layer-table-')){
-                        parentLayerName =  aTable.replace('#attribute-layer-table-', '').split('-')[0];
+                        parentLayerCleanName =  aTable.replace('#attribute-layer-table-', '').split('-')[0];
                     } else if (aTable.startsWith('#edition-table-')) {
-                        parentLayerName = aTable.replace('#edition-table-', '').split('-')[0];
+                        parentLayerCleanName = aTable.replace('#edition-table-', '').split('-')[0];
                     }
 
-                    if(parentLayerName){
-                        parentLayerID = config.layers[parentLayerName]['id'];
+                    if(parentLayerCleanName){
+                        const parentLayerName = lizMap.getLayerNameByCleanName(parentLayerCleanName);
+                        if (parentLayerName) {
+                            parentLayerID = config.layers[parentLayerName]['id'];
+                        }
                     }
                 }
 
