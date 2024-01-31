@@ -37,7 +37,7 @@ export default class Lizmap {
                 this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
                 this._state = new State(this._initialConfig, configs.startupFeatures);
             },
-            uicreated: () => {
+            toolbarcreated: () => {
                 this._lizmap3 = lizMap;
 
                 // Register projections if unknown
@@ -61,14 +61,15 @@ export default class Lizmap {
 
                 register(proj4);
 
+                console.log(lizMap.map.getProjection());
                 // Override getPointResolution method to always return resolution
                 // without taking care of geodesic adjustment as it can be confusing for user to not have rounded scales
                 (getProjection(this.projection)).setGetPointResolution((resolution) => resolution);
                 (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
 
                 // Create Lizmap modules
-                this.permalink = new Permalink();
                 this.map = new map();
+                this.permalink = new Permalink();
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
