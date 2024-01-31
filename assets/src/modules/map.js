@@ -121,9 +121,165 @@ export default class map extends olMap {
         // Mapping between states and OL layers and groups
         this._statesOlLayersandGroupsMap = new Map();
 
+        // Array of layers and groups in overlayLayerGroup
+        this._overlayLayersAndGroups = [];
+
+        const layersCount = mainLizmap.state.rootMapGroup.countExplodedMapLayers();
+
+        // Returns a layer or a layerGroup depending of the node type
+        const createNode = (node, statesOlLayersandGroupsMap, overlayLayersAndGroups, metersPerUnit, WMSRatio) => {
+            if(node.type === 'group'){
+                const layers = [];
+                for (const layer of node.children.slice().reverse()) {
+                    // Keep only layers with a geometry and groups
+                    if(node.type !== 'layer' && node.type !== 'group'){
+                        continue;
+                    }
+                    layers.push(createNode(layer, statesOlLayersandGroupsMap, overlayLayersAndGroups, metersPerUnit, WMSRatio));
+                }
+                const layerGroup = new LayerGroup({
+                    layers: layers
+                });
+
+                if (node.name !== 'root') {
+                    layerGroup.setVisible(node.visibility);
+                    layerGroup.setProperties({
+                        name: node.name
+                    });
+
+                    statesOlLayersandGroupsMap.set(node.name, [node, layerGroup]);
+                    overlayLayersAndGroups.push(layerGroup);
+                }
+
+                return layerGroup;
+            } else {
+                let layer;
+                // Keep only layers with a geometry
+                if(node.type !== 'layer'){
+                    return;
+                }
+
+                /* Sometimes throw an Error and extent is not used
+                let extent = node.layerConfig.extent;
+                if(node.layerConfig.crs !== "" && node.layerConfig.crs !== mainLizmap.projection){
+                    extent = transformExtent(extent, node.layerConfig.crs, mainLizmap.projection);
+                }
+                */
+
+                // Set min/max resolution only if different from default
+                let minResolution = node.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale, metersPerUnit);
+                let maxResolution = node.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale, metersPerUnit);
+
+                if (node.layerConfig.cached) {
+                    const parser = new WMTSCapabilities();
+                    const result = parser.read(lizMap.wmtsCapabilities);
+                    const options = optionsFromCapabilities(result, {
+                        layer: node.wmsName,
+                        matrixSet: mainLizmap.projection,
+                    });
+
+                    layer = new TileLayer({
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        source: new WMTS(options)
+                    });
+                } else {
+                    layer = new ImageLayer({
+                        // extent: extent,
+                        minResolution: minResolution,
+                        maxResolution: maxResolution,
+                        source: new ImageWMS({
+                            url: mainLizmap.serviceURL,
+                            serverType: 'qgis',
+                            ratio: WMSRatio,
+                            params: {
+                                LAYERS: node.wmsName,
+                                FORMAT: node.layerConfig.imageFormat,
+                                STYLES: node.wmsSelectedStyleName,
+                                DPI: 96
+                            },
+                        })
+                    });
+
+                    // Force no cache w/ Firefox
+                    if(navigator.userAgent.includes("Firefox")){
+                        layer.getSource().setImageLoadFunction((image, src) => {
+                            (image.getImage()).src = src + '&ts=' + Date.now();
+                        });
+                    }
+
+                    if (useTileWms) {
+                        layer = new TileLayer({
+                            // extent: extent,
+                            minResolution: minResolution,
+                            maxResolution: maxResolution,
+                            source: new TileWMS({
+                                url: mainLizmap.serviceURL,
+                                serverType: 'qgis',
+                                tileGrid: customTileGrid,
+                                params: {
+                                    LAYERS: node.wmsName,
+                                    FORMAT: node.layerConfig.imageFormat,
+                                    STYLES: node.wmsSelectedStyleName,
+                                    DPI: 96,
+                                    TILED: 'true'
+                                },
+                            })
+                        });
+
+                        // Force no cache w/ Firefox
+                        if(navigator.userAgent.includes("Firefox")){
+                            layer.getSource().setTileLoadFunction((image, src) => {
+                                (image.getImage()).src = src + '&ts=' + Date.now();
+                            });
+                        }
+                    }
+
+                }
+
+                layer.setVisible(node.visibility);
+
+                layer.setOpacity(node.opacity);
+
+                layer.setProperties({
+                    name: node.name
+                });
+
+                layer.getSource().setProperties({
+                    name: node.name
+                });
+
+                // OL layers zIndex is the reverse of layer's order given by cfg
+                layer.setZIndex(layersCount - 1 - node.layerOrder);
+
+                overlayLayersAndGroups.push(layer);
+                statesOlLayersandGroupsMap.set(node.name, [node, layer]);
+                return layer;
+            }
+        }
+
+        this._overlayLayersGroup = new LayerGroup();
+
+        const metersPerUnit = this.getView().getProjection().getMetersPerUnit();
+        if(mainLizmap.state.layerTree.children.length){
+            this._overlayLayersGroup = createNode(
+                mainLizmap.state.rootMapGroup,
+                this._statesOlLayersandGroupsMap,
+                this._overlayLayersAndGroups,
+                metersPerUnit,
+                this._WMSRatio
+            );
+        }
+
+        // Get the base layers zIndex which is the layer min zIndex - 1
+        // to be sure base layers are under the others layers
+        const baseLayerZIndex = this.overlayLayers.map((layer) => layer.getZIndex()).reduce(
+            (minValue, currentValue) => minValue <= currentValue ? minValue : currentValue,
+            0
+        ) - 1;
+
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
-        const metersPerUnit = this.getView().getProjection().getMetersPerUnit();
 
         for (const baseLayerState of mainLizmap.state.baseLayers.getBaseLayers()) {
             let baseLayer;
@@ -213,7 +369,7 @@ export default class map extends olMap {
                         minResolution: minResolution,
                         maxResolution: maxResolution,
                         source: new WMTS(options)
-                    });                    
+                    });
                 } else {
                     baseLayer = new ImageLayer({
                         // extent: extent,
@@ -279,6 +435,9 @@ export default class map extends olMap {
                 visible: visible
             });
 
+            // Force baselayer to be under the others layers
+            baseLayer.setZIndex(baseLayerZIndex);
+
             baseLayers.push(baseLayer);
 
             if (visible && baseLayer.getSource().getProjection().getCode() !== qgisProjectProjection) {
@@ -294,146 +453,6 @@ export default class map extends olMap {
             });
         } else {
             this._baseLayersGroup = new LayerGroup();
-        }
-
-        // Array of layers and groups in overlayLayerGroup
-        this._overlayLayersAndGroups = [];
-
-        const layersCount = mainLizmap.state.rootMapGroup.countExplodedMapLayers();
-
-        // Returns a layer or a layerGroup depending of the node type
-        const createNode = (node) => {
-            if(node.type === 'group'){
-                const layers = [];
-                for (const layer of node.children.slice().reverse()) {
-                    layers.push(createNode(layer, node.name));
-                }
-                const layerGroup = new LayerGroup({
-                    layers: layers
-                });
-
-                if (node.name !== 'root') {
-                    layerGroup.setVisible(node.visibility);
-                    layerGroup.setProperties({
-                        name: node.name
-                    });
-
-                    this._statesOlLayersandGroupsMap.set(node.name, [node, layerGroup]);
-                    this._overlayLayersAndGroups.push(layerGroup);
-                }
-
-                return layerGroup;
-            } else {
-                let layer;
-                // Keep only layers with a geometry
-                if(node.type !== 'layer'){
-                    return;
-                }
-
-                /* Sometimes throw an Error and extent is not used
-                let extent = node.layerConfig.extent;
-                if(node.layerConfig.crs !== "" && node.layerConfig.crs !== mainLizmap.projection){
-                    extent = transformExtent(extent, node.layerConfig.crs, mainLizmap.projection);
-                }
-                */
-
-                // Set min/max resolution only if different from default
-                const metersPerUnit = this.getView().getProjection().getMetersPerUnit();
-                let minResolution = node.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale, metersPerUnit);
-                let maxResolution = node.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale, metersPerUnit);
-
-                if (node.layerConfig.cached) {
-                    const parser = new WMTSCapabilities();
-                    const result = parser.read(lizMap.wmtsCapabilities);
-                    const options = optionsFromCapabilities(result, {
-                        layer: node.wmsName,
-                        matrixSet: mainLizmap.projection,
-                    });
-
-                    layer = new TileLayer({
-                        minResolution: minResolution,
-                        maxResolution: maxResolution,
-                        source: new WMTS(options)
-                    });
-                } else {
-                    layer = new ImageLayer({
-                        // extent: extent,
-                        minResolution: minResolution,
-                        maxResolution: maxResolution,
-                        source: new ImageWMS({
-                            url: mainLizmap.serviceURL,
-                            serverType: 'qgis',
-                            ratio: this._WMSRatio,
-                            params: {
-                                LAYERS: node.wmsName,
-                                FORMAT: node.layerConfig.imageFormat,
-                                STYLES: node.wmsSelectedStyleName,
-                                DPI: 96
-                            },
-                        })
-                    });
-
-                    // Force no cache w/ Firefox
-                    if(navigator.userAgent.includes("Firefox")){
-                        layer.getSource().setImageLoadFunction((image, src) => {
-                            (image.getImage()).src = src + '&ts=' + Date.now();
-                        });
-                    }
-
-                    if (useTileWms) {
-                        layer = new TileLayer({
-                            // extent: extent,
-                            minResolution: minResolution,
-                            maxResolution: maxResolution,
-                            source: new TileWMS({
-                                url: mainLizmap.serviceURL,
-                                serverType: 'qgis',
-                                tileGrid: customTileGrid,
-                                params: {
-                                    LAYERS: node.wmsName,
-                                    FORMAT: node.layerConfig.imageFormat,
-                                    STYLES: node.wmsSelectedStyleName,
-                                    DPI: 96,
-                                    TILED: 'true'
-                                },
-                            })
-                        });
-
-                        // Force no cache w/ Firefox
-                        if(navigator.userAgent.includes("Firefox")){
-                            layer.getSource().setTileLoadFunction((image, src) => {
-                                (image.getImage()).src = src + '&ts=' + Date.now();
-                            });
-                        }
-                    }
-
-                }
-
-                layer.setVisible(node.visibility);
-
-                layer.setOpacity(node.opacity);
-
-                layer.setProperties({
-                    name: node.name
-                });
-
-                layer.getSource().setProperties({
-                    name: node.name
-                });
-
-                // OL layers zIndex is the reverse of layer's order given by cfg
-                layer.setZIndex(layersCount - 1 - node.layerOrder);
-
-                this._overlayLayersAndGroups.push(layer);
-                this._statesOlLayersandGroupsMap.set(node.name, [node, layer]);
-                return layer;
-            }
-        }
-
-        this._overlayLayersGroup = new LayerGroup();
-
-        if(mainLizmap.state.layerTree.children.length){
-            this._overlayLayersGroup = createNode(mainLizmap.state.rootMapGroup);
         }
 
         // Add base and overlay layers to the map's main LayerGroup
@@ -629,7 +648,7 @@ export default class map extends olMap {
         this.clearHighlightFeatures();
         this.addHighlightFeatures(features, format, projection);
     }
-    
+
     /**
      * Clear all highlight features
      */
