@@ -1852,11 +1852,24 @@ class Project
             }
             $configJson->layouts->list = $enabledLayouts;
         }
+        // Add printTemplates to the config
         $configJson->printTemplates = array();
-        foreach ($this->printCapabilities as $printCapabilities) {
+        // Get server metadata to check atlasprint plugin
+        $server = new \Lizmap\Server\Server();
+        $serverMetadata = $server->getMetadata();
+        $serverPlugins = $serverMetadata['qgis_server_info']['plugins'];
+        foreach ($this->printCapabilities as $printTemplate) {
+            /** @var array $printTemplate */
+            if ($serverPlugins['atlasprint']['version'] == 'not found'
+                && array_key_exists('atlas', $printTemplate)
+                && array_key_exists('coverageLayer', $printTemplate['atlas'])
+                && $printTemplate['atlas']['coverageLayer'] != '') {
+                // The atlasprint plugin is not available
+                continue;
+            }
             if ($enabledLayoutNames === null
-                || in_array($printCapabilities['title'], $enabledLayoutNames)) {
-                $configJson->printTemplates[] = $printCapabilities;
+                || in_array($printTemplate['title'], $enabledLayoutNames)) {
+                $configJson->printTemplates[] = $printTemplate;
             }
         }
 

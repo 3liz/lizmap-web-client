@@ -71,23 +71,6 @@ class server_informationCtrl extends jController
             $displayPluginActionColumn = true;
         }
 
-        // atlasPrint is not needed anymore starting from 3.7
-        // but Lizmap server QGIS plugin is not aware if the current LWC version
-        // and it's still providing 'atlasPrint' with a 'not found' value
-        // Lizmap server will stop when LWC 3.6 will be retired
-        $removeAtlasPrintPlugin = false;
-        if (array_key_exists('plugins', $data['qgis_server_info'])
-            && array_key_exists('atlasprint', $data['qgis_server_info']['plugins'])
-            && $data['qgis_server_info']['plugins']['atlasprint']['version'] == 'not found'
-        ) {
-            unset($data['qgis_server_info']['plugins']['atlasprint']);
-            // Show the deprecated warning
-            // Add the else statement again
-            // Temporary disabled, let's wait a little
-            // $displayPluginActionColumn = true;
-            // $removeAtlasPrintPlugin = true;
-        }
-
         // Set the HTML content
         $tpl = new jTpl();
         $assign = array(
@@ -98,7 +81,6 @@ class server_informationCtrl extends jController
             'displayPluginActionColumn' => $displayPluginActionColumn,
             'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,
             'lizmapPluginUpdate' => $updateLizmapPlugin,
-            'removeAtlasPrintPlugin' => $removeAtlasPrintPlugin,
             'minimumQgisVersion' => $qgisMinimumVersionRequired,
             'minimumLizmapServer' => $lizmapPluginMinimumVersionRequired,
         );

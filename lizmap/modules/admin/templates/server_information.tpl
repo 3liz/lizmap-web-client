@@ -157,8 +157,6 @@
             {if $displayPluginActionColumn }
                 {if $name == 'lizmap_server' && $lizmapQgisServerNeedsUpdate}
                     <td style="background-color:lightcoral;"><strong>{$lizmapPluginUpdate}</strong></td>
-                {elseif $name == 'atlasprint' && $removeAtlasPrintPlugin}
-                    <td>{@admin.server.information.qgis.plugin.atlasprint@}</td>
                 {else}
                 <td></td>
                 {/if}

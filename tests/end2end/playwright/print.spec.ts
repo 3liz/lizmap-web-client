@@ -134,7 +134,10 @@ test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
         await page.goto(url, { waitUntil: 'networkidle' });
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetFeatureInfo'));
         await page.locator('#map').click({ position: { x: 409, y: 186 } });
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        expect(getFeatureInfoRequest.postData()).toMatch(/GetFeatureInfo/);
     });
 
     test('Popup content print', async ({ page }) => {
@@ -168,15 +171,17 @@ test.describe('Print in popup', () => {
                 const postData = request.postData();
                 if (postData != null && postData.includes('GetPrint')){
                     expect(postData).toContain('SERVICE=WMS')
-                    expect(postData).toContain('REQUEST=GetPrint')
+                    expect(postData).toContain('REQUEST=GetPrintAtlas')
                     expect(postData).toContain('VERSION=1.3.0')
                     expect(postData).toContain('FORMAT=pdf')
                     expect(postData).toContain('TRANSPARENT=true')
-                    expect(postData).toContain('SRS=EPSG%3A2154')
+                    expect(postData).not.toContain('SRS=EPSG%3A2154')
                     expect(postData).toContain('DPI=100')
                     expect(postData).toContain('TEMPLATE=atlas_quartiers')
-                    expect(postData).toContain('ATLAS_PK=1')
-                    expect(postData).toContain('LAYERS=quartiers');
+                    expect(postData).not.toContain('LAYERS=quartiers')
+                    expect(postData).toContain('LAYER=quartiers')
+                    expect(postData).not.toContain('ATLAS_PK=1')
+                    expect(postData).toContain('EXP_FILTER=%24id%20IN%20(1)')
                 }
             }
         });
