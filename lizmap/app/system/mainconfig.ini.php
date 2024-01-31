@@ -32,7 +32,7 @@ fallbackLocale=en_US
 ; QGIS server required minimum version
 qgisServer="3.22"
 ; Lizmap server QGIS plugin required minimum version
-lizmapServerPlugin="2.8.3"
+lizmapServerPlugin="2.8.4"
 
 ; Versions written in QGIS/CFG files, for the GIS administrator
 ; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
