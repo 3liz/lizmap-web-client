@@ -725,6 +725,7 @@ class serviceCtrl extends jController
         $rep = $this->getResponse('binary');
         $fileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
         $this->setupBinaryResponse($rep, $result, $fileName);
+        $rep->doDownload = true;
 
         // Log
         $logContent = '
