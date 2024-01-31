@@ -33,7 +33,7 @@ export default class Utils {
             if (this.status === 200) {
                 var filename = "";
                 var disposition = xhr.getResponseHeader('Content-Disposition');
-                if (disposition && disposition.indexOf('attachment') !== -1) {
+                if (disposition && disposition.indexOf('filename') !== -1) {
                     var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
                     var matches = filenameRegex.exec(disposition);
                     if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
