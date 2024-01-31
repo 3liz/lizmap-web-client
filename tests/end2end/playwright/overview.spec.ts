@@ -61,6 +61,6 @@ test.describe('Overview', () => {
         expect(requestUrl).toContain('STYLES=');
         expect(requestUrl).toContain('WIDTH=232');
         expect(requestUrl).toContain('HEIGHT=110');
-        expect(requestUrl).toContain('BBOX=411699.32695692923%2C5396012.897530646%2C450848.73212012084%2C5414575.115495953');
+        expect(requestUrl).toContain('BBOX=411699.3269569552%2C5396012.897530658%2C450848.7321200949%2C5414575.115495941');
     });
 });

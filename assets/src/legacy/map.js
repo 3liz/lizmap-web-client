@@ -643,6 +643,7 @@ window.lizMap = function() {
             Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
         }
 
+        // Check config projection
         var proj = config.options.projection;
         if (proj.ref) {
             if ( !(proj.ref in Proj4js.defs) ) {
@@ -651,6 +652,39 @@ window.lizMap = function() {
             // Build proj
             new OpenLayers.Projection(proj.ref);
         } else {
+            proj.ref = 'EPSG:3857';
+            proj.proj4 = Proj4js.defs['EPSG:3857'];
+        }
+
+        // Force projection if config contains old external baselayers
+        // To be removed when baselayers only in the tree
+        if ('osmMapnik' in config.options
+            || 'osmStamenToner' in config.options
+            || 'openTopoMap' in config.options
+            || 'osmCyclemap' in config.options
+            || 'googleStreets' in config.options
+            || 'googleSatellite' in config.options
+            || 'googleHybrid' in config.options
+            || 'googleTerrain' in config.options
+            || 'bingStreets' in config.options
+            || 'bingSatellite' in config.options
+            || 'bingHybrid' in config.options
+            || 'ignTerrain' in config.options
+            || 'ignStreets' in config.options
+            || 'ignSatellite' in config.options
+            || 'ignCadastral' in config.options) {
+            // get projection
+            var projection = new OpenLayers.Projection(proj.ref);
+
+            // get and define the max extent
+            var bbox = config.options.bbox;
+            var initialBbox = config.options.initialExtent;
+            var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+            var initialExtent = new OpenLayers.Bounds(Number(initialBbox[0]),Number(initialBbox[1]),Number(initialBbox[2]),Number(initialBbox[3]));
+            extent.transform(projection, 'EPSG:3857');
+            initialExtent.transform(projection, 'EPSG:3857');
+            config.options.bbox = extent.toArray();
+            config.options.initialExtent = initialExtent.toArray();
             proj.ref = 'EPSG:3857';
             proj.proj4 = Proj4js.defs['EPSG:3857'];
         }
