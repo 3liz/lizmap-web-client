@@ -582,14 +582,14 @@ var lizEdition = function() {
                 continue;
 
             var qgisName = childLayerConfig[0];
-            var childLayerConfig = childLayerConfig[1];
+            childLayerConfig = childLayerConfig[1];
 
             if (!('geometryType' in childLayerConfig) || childLayerConfig.geometryType == 'none')
                 continue;
 
             const olLayer = lizMap.mainLizmap.baseLayersMap.getLayerByName(qgisName);
 
-            if (!olLayer.getVisible()) {
+            if (olLayer === undefined || !olLayer.getVisible()) {
                 continue;
             }
 
