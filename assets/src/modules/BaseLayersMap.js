@@ -136,20 +136,34 @@ export default class BaseLayersMap extends olMap {
                 let minResolution = node.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.minScale, metersPerUnit);
                 let maxResolution = node.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(node.layerConfig.maxScale, metersPerUnit);
 
+                // The layer is configured to be cached
                 if (node.layerConfig.cached) {
+                    // Using WMTS
                     const parser = new WMTSCapabilities();
                     const result = parser.read(lizMap.wmtsCapabilities);
-                    const options = optionsFromCapabilities(result, {
-                        layer: node.wmsName,
-                        matrixSet: mainLizmap.projection,
-                    });
 
-                    layer = new TileLayer({
-                        minResolution: minResolution,
-                        maxResolution: maxResolution,
-                        source: new WMTS(options)
-                    });
-                } else {
+                    // Build WMTS options
+                    let options;
+                    if (result['Contents']['Layer']) {
+                        options = optionsFromCapabilities(result, {
+                            layer: node.wmsName,
+                            matrixSet: mainLizmap.projection,
+                        });
+                    }
+
+                    // The options could be null if the layer has not be found in
+                    // WMTS capabilities
+                    if (options) {
+                        layer = new TileLayer({
+                            minResolution: minResolution,
+                            maxResolution: maxResolution,
+                            source: new WMTS(options)
+                        });
+                    }
+                }
+
+                // The layer has not been yet build
+                if (!layer) {
                     layer = new ImageLayer({
                         // extent: extent,
                         minResolution: minResolution,
