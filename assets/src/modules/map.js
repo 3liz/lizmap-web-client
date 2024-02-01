@@ -34,6 +34,10 @@ export default class map extends olMap {
     constructor() {
         const qgisProjectProjection = mainLizmap.projection;
         const mapProjection = getProjection(qgisProjectProjection);
+        let resolutions = mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions;
+        if (resolutions == undefined) {
+            resolutions= [mainLizmap.lizmap3.map.resolution];
+        }
 
         super({
             controls: [
@@ -48,7 +52,7 @@ export default class map extends olMap {
                 new DoubleClickZoom({ duration: 0 })
             ]),
             view: new View({
-                resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
+                resolutions: resolutions,
                 constrainResolution: true,
                 center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
                 projection: mapProjection,
@@ -109,7 +113,7 @@ export default class map extends olMap {
 
         const customTileGrid = new TileGrid({
             extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
-            resolutions: mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions,
+            resolutions: resolutions,
             tileSize: this.getSize().map((x, i) => Math.min(Math.ceil(x*this._WMSRatio/2), Math.ceil(wmsMaxSize[i]*this._WMSRatio/2))),
         });
 
