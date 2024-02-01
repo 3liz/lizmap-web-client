@@ -29,10 +29,16 @@ export default class BaseLayersMap extends olMap {
     constructor() {
         const qgisProjectProjection = mainLizmap.projection;
         const mapProjection = getProjection(qgisProjectProjection);
+
+        // Get resolutions from OL2 map
         let resolutions = mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions;
         if (resolutions == undefined) {
             resolutions= [mainLizmap.lizmap3.map.resolution];
         }
+        // Remove duplicated values
+        resolutions = [... new Set(resolutions)];
+        // Sorting in descending order
+        resolutions = resolutions.sort((a, b) => a < b);
 
         super({
             controls: [
