@@ -169,6 +169,8 @@ test.describe('Draw', () => {
             input.dispatchEvent(event);
         });
 
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
+
         // Delete polygon
         await page.locator('.digitizing-erase').click();
 
@@ -182,6 +184,20 @@ test.describe('Draw', () => {
         });
 
         await page.waitForTimeout(300);
+
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+        await page.locator('.digitizing-save').click();
+
+        // Get the JSON has been stored
+        const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
+
+        // Clear local storage
+        await page.evaluate(() => localStorage.removeItem('testsrepository_draw_draw_drawLayer'));
+        expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'))).toBeNull;
+
+        // Check the JSON
+        await expect(json_stored).toEqual('[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]');
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
