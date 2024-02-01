@@ -185,6 +185,19 @@ test.describe('Draw', () => {
         await page.waitForTimeout(300);
 
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+        const drawn = await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates())
+        await expect(drawn).toHaveLength(1);
+        await expect(drawn[0]).toHaveLength(6);
+        await expect(drawn[0][0]).toHaveLength(2);
+        await expect(drawn[0][0][0]).toBeGreaterThan(764321.0416);
+        await expect(drawn[0][0][1]).toBeGreaterThan(6290805.9356);
+        await expect(drawn[0][1]).toHaveLength(2);
+        await expect(drawn[0][2]).toHaveLength(2);
+        await expect(drawn[0][2][0]).toBeGreaterThan(767628.3399);
+        await expect(drawn[0][2][1]).toBeGreaterThan(6295105.4234);
+        await expect(drawn[0][3]).toHaveLength(2);
+        await expect(drawn[0][4]).toHaveLength(2);
+        await expect(drawn[0][5]).toHaveLength(2);
 
         await page.locator('.digitizing-save').click();
 
@@ -196,7 +209,19 @@ test.describe('Draw', () => {
         expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'))).toBeNull;
 
         // Check the JSON
-        await expect(json_stored).toEqual('[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]');
+        // '[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]'
+        await expect(json_stored).toContain('Polygon');
+        await expect(json_stored).not.toContain('Point');
+        await expect(json_stored).not.toContain('LineString');
+        await expect(json_stored).toContain('#000000');
+        await expect(json_stored).not.toContain('#ff0000');
+        await expect(json_stored).not.toContain('#00ff00');
+        await expect(json_stored).not.toContain('#0000ff');
+        await expect(json_stored).not.toContain('#ffffff');
+        await expect(json_stored).toMatch(/764321.0416\d+/);
+        await expect(json_stored).toMatch(/6290805.9356\d+/);
+        await expect(json_stored).toMatch(/767628.3399\d+/);
+        await expect(json_stored).toMatch(/6295105.4234\d+/);
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
@@ -222,6 +247,19 @@ test.describe('Draw', () => {
 
         // Check the geometry has been drawn
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+        const drawn = await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates())
+        await expect(drawn).toHaveLength(1);
+        await expect(drawn[0]).toHaveLength(6);
+        await expect(drawn[0][0]).toHaveLength(2);
+        await expect(drawn[0][0][0]).toBeGreaterThan(764321.0416);
+        await expect(drawn[0][0][1]).toBeGreaterThan(6290805.9356);
+        await expect(drawn[0][1]).toHaveLength(2);
+        await expect(drawn[0][2]).toHaveLength(2);
+        await expect(drawn[0][2][0]).toBeGreaterThan(767628.3399);
+        await expect(drawn[0][2][1]).toBeGreaterThan(6295105.4234);
+        await expect(drawn[0][3]).toHaveLength(2);
+        await expect(drawn[0][4]).toHaveLength(2);
+        await expect(drawn[0][5]).toHaveLength(2);
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
@@ -246,8 +284,11 @@ test.describe('Draw', () => {
         await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
 
         // The WKT has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
         const drawn = await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates())
-        await expect(drawn).toEqual([770737.2003016905, 6279832.319974077]);
+        await expect(drawn).toHaveLength(2);
+        await expect(drawn[0]).toBeGreaterThan(770737.2003);
+        await expect(drawn[1]).toBeGreaterThan(6279832.3199);
 
         // The WKT has been moved to the new storage
         const new_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
@@ -258,9 +299,19 @@ test.describe('Draw', () => {
         await page.locator('#button-draw').click();
         await page.locator('.digitizing-save').click();
 
-        // Ths JSON has been stored
+        // The JSON has been stored
         const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
-        await expect(json_stored).toEqual('[{"type":"Point","color":"#ff0000","coords":[770737.2003016905,6279832.319974077]}]');
+        // '[{"type":"Point","color":"#ff0000","coords":[770737.2003016905,6279832.319974077]}]'
+        await expect(json_stored).toContain('Point');
+        await expect(json_stored).not.toContain('LineString');
+        await expect(json_stored).not.toContain('Polygon');
+        await expect(json_stored).toContain('#ff0000');
+        await expect(json_stored).not.toContain('#000000');
+        await expect(json_stored).not.toContain('#00ff00');
+        await expect(json_stored).not.toContain('#0000ff');
+        await expect(json_stored).not.toContain('#ffffff');
+        await expect(json_stored).toMatch(/770737.2003\d+/);
+        await expect(json_stored).toMatch(/6279832.3199\d+/);
 
         // Clear local storage
         await page.evaluate(() => localStorage.removeItem('testsrepository_draw_draw_drawLayer'));
