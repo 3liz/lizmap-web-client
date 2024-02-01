@@ -207,6 +207,32 @@ test.describe('Draw', () => {
         expect(await page.locator('#map').screenshot()).toMatchSnapshot('draw-edition.png');
     });
 
+    test('From local storage', async ({ page }) => {
+        const the_json = '[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]';
+        await page.evaluate(token => localStorage.setItem('testsrepository_draw_draw_drawLayer', token), the_json);
+        const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
+        await expect(json_stored).toEqual(the_json);
+
+        // Reload
+        await page.reload({ waitUntil: 'networkidle' });
+        // Display
+        await page.locator('#button-draw').click();
+
+        // Clear local storage
+        await page.evaluate(() => localStorage.removeItem('testsrepository_draw_draw_drawLayer'));
+        expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'))).toBeNull;
+
+        // Check the geometry has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+        // Hide all elements but #map, #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        // Check rendering
+        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-edition.png');
+    });
+
     test('WKT found in local storage', async ({ page }) => {
         // Save WKT to the old local storage
         const wkt = 'POINT(770737.2003016905 6279832.319974077)';
