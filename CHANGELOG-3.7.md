@@ -12,6 +12,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Editing form - Upload fields: allow to use an expression to set up the storage path
 
+### Changed
+
+* Reintroduce the [AtlasPrint](https://docs.lizmap.com/current/en/install/pre_requirements.html#qgis-server-plugins) plugin for printing an atlas
+
 ### Fixed
 
 * Fix a 500 error if the folder was not existing on the file system
@@ -19,15 +23,32 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * When importing a KML :
   * Fix extent used
   * Use the correct projection
-* Fix the selection tool about layer name used 
+* Fix wrong order of baselayers (using the zIndex in OpenLayers)
+* Fix opening of "old" project not having a configuration in the 3.7 format :
+  * Fix projection and scales when the project has some "legacy" baselayers
+  * Keep print configurations
+* Fix the selection tool about layer name used
+* Fix using WMTS requests for baselayers, contribution from @mind84
 * Fix search result with IGN
 * Register projections from lizProj4 if unknown
 * Fix layer group visible only and location
 * Popup from the attribute table, use the correct content for the popup
+* Fix display of a child layer in attribute table tool, get the correct layer name from the parent layer
+* Fix display of the map if there is a single resolution in the configuration file
+* Do not refresh child layer not displayed in map
 
 ### Tests
 
 * Improvements on the Playwright stack
+
+### Funders
+
+* **[Agence de l'eau Rhône Méditerranée Corse](https://www.eaurmc.fr/)
+* **[Avignon](https://www.avignon.fr)**
+* **[Calvados](https://www.calvados.fr)**
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)
+* **[Territoire de Belfort](https://www.territoiredebelfort.fr/)**
 
 ## 3.7.2 - 2024-01-18
 
